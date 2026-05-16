@@ -117,9 +117,14 @@ const GLOBE_OVERLAY = (() => {
     currentTabId = site.tabs[0].id;
     renderTabContent(currentTabId, site);
 
-    // Open
-    overlayEl.classList.add('open');
-    isOpen = true;
+    // Open — use rAF to ensure the initial state is rendered first
+    // so the CSS transition animates from -105% to 0
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        overlayEl.classList.add('open');
+        isOpen = true;
+      });
+    });
 
     // Emit event
     dispatchEvent('overlay:open', { siteId });

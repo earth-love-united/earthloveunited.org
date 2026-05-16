@@ -84,6 +84,7 @@ const SITE_PANEL = (() => {
     GAIA_BUBBLE.speak('SITE_ENTRY', site.id);
     GAIA_ENGAGEMENT.addSignal('site_tap');
     GAIA_ENGAGEMENT.addMoodSignal('curiosity');
+    if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('site_entered', { siteId: site.id });
 
     // Build panel content
     renderLayer('story');
@@ -272,7 +273,10 @@ const SITE_PANEL = (() => {
     currentLayer++;
     if (currentLayer < LAYERS.length) {
       renderLayer(LAYERS[currentLayer]);
-      if (LAYERS[currentLayer] === 'data') GAIA_ENGAGEMENT.addSignal('data_reveal');
+      if (LAYERS[currentLayer] === 'data') {
+        GAIA_ENGAGEMENT.addSignal('data_reveal');
+        if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('data_revealed', { siteId: currentSite?.id, layer: 'data' });
+      }
       if (LAYERS[currentLayer] === 'mystery') GAIA_ENGAGEMENT.addMoodSignal('mystery');
     }
   }
@@ -298,6 +302,7 @@ const SITE_PANEL = (() => {
 
     // Signals
     GAIA_ENGAGEMENT.addSignal('prediction');
+    if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('prediction_made', { siteId: currentSite?.id, isCorrect });
     if (isCorrect) {
       GAIA_ENGAGEMENT.addSignal('correct_prediction');
       GAIA_ENGAGEMENT.addMoodSignal('pride');
@@ -316,6 +321,7 @@ const SITE_PANEL = (() => {
     GAIA_JOURNAL.addEntry(text, siteId);
     GAIA_ENGAGEMENT.addSignal('insight');
     GAIA_ENGAGEMENT.addMoodSignal('pride');
+    if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('narrative_read', { siteId });
 
     // Update button
     const btn = panelEl.querySelector('.insight-journal-btn');

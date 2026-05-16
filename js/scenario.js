@@ -74,6 +74,7 @@ const Scenario = {
         GAIA_ENGAGEMENT.addSignal('negative_scenario');
       }
     }
+    if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('scenario_run', { siteId: this.site?.id, result: r.cumulative_co2 });
 
     // Trigger pledge prompt after running a scenario
     if (typeof PLEDGE_WALL !== 'undefined') {

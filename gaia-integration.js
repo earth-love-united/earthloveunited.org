@@ -50,6 +50,19 @@ window.GaiaIntegration = (() => {
     // 3. Trigger initial greeting
     GaiaState.handleEvent('session_start');
 
+    // 3.5. Replay cross-page signals into GaiaMind
+    // index.html modules write to GAIA_SIG. We drain and replay here.
+    if (typeof GAIA_SIG !== 'undefined' && typeof GaiaMind !== 'undefined') {
+      const signals = GAIA_SIG.drain();
+      for (const s of signals) {
+        GaiaMind.updateParticipantModel(s.e, s.p);
+        GaiaState.addScore(s.e, s.p);
+      }
+      if (signals.length > 0) {
+        console.log('[GaiaIntegration] Replayed', signals.length, 'cross-page signals');
+      }
+    }
+
     // 4. Set up periodic engagement save
     setInterval(() => {
       if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.save();

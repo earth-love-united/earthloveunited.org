@@ -5,6 +5,9 @@ license: cc-by-4.0
 task_categories:
   - text-retrieval
   - question-answering
+task_ids:
+  - open-domain-qa
+  - document-retrieval
 tags:
   - climate
   - climate-change
@@ -18,6 +21,23 @@ tags:
 pretty_name: "Earth Love United Climate Knowledge"
 size_categories:
   - 10K<n<100K
+configs:
+  - config_name: text_chunks
+    data_files:
+      - split: train
+        path: earth_love_united_climate_knowledge_v3.jsonl
+  - config_name: climate_facts
+    data_files:
+      - split: train
+        path: climate-facts.json
+  - config_name: geological_memory
+    data_files:
+      - split: train
+        path: geological-memory.json
+  - config_name: bifurcation_points
+    data_files:
+      - split: train
+        path: climate-bifurcation-points.json
 ---
 
 # 🌍 Earth Love United Climate Knowledge Dataset
@@ -130,7 +150,6 @@ Specific thresholds beyond which the climate system shifts to a new state.
   "gaia_voice": "I have carried ice sheets for 3 million years..."
 }
 ```
-
 ## Loading the Dataset
 
 ```python
@@ -138,32 +157,34 @@ from datasets import load_dataset
 import json
 from huggingface_hub import hf_hub_download
 
-# Layer 1: Text chunks
-ds = load_dataset("ego0op/earth-love-united-climate-knowledge", split="train")
+# Layer 1: Text chunks (10,128 chunks)
+ds = load_dataset("ego0op/earth-love-united-climate-knowledge", "text_chunks", split="train")
 
-# Layer 2: Climate facts
+# Layer 2: Climate facts (124 structured facts)
 facts = json.load(open(hf_hub_download(repo_id="ego0op/earth-love-united-climate-knowledge",
                                         filename="climate-facts.json", repo_type="dataset")))
 
-# Layer 3: Geological memory
+# Layer 3: Geological memory (4.54B year timeline)
 geo = json.load(open(hf_hub_download(repo_id="ego0op/earth-love-united-climate-knowledge",
                                       filename="geological-memory.json", repo_type="dataset")))
 
-# Layer 4: Bifurcation points
+# Layer 4: Bifurcation points (11 tipping points)
 bp = json.load(open(hf_hub_download(repo_id="ego0op/earth-love-united-climate-knowledge",
                                      filename="climate-bifurcation-points.json", repo_type="dataset")))
 ```
 
 ## Sources and Licensing
 
-| Source | License |
-|--------|---------|
-| IPCC reports | Free for any use |
-| Wikipedia | CC-BY-SA 3.0 |
-| arXiv abstracts | Public domain |
-| Project Drawdown | Educational use |
-| US EPA | Public domain |
-| ELU Research | CC-BY-4.0 |
+| Source | License | Notes |
+|--------|---------|-------|
+| IPCC reports | Free for any use | |
+| Wikipedia | CC-BY-SA 3.0 | Share-alike obligations propagate to derivative works |
+| arXiv abstracts | Author-licensed (varies, typically CC-BY) | Not public domain; check individual paper licenses |
+| Project Drawdown | Copyright | Educational use permitted |
+| US EPA | Public domain | US government work |
+| ELU Research | CC-BY-4.0 | |
+
+**Overall dataset license**: CC-BY-4.0. However, the Wikipedia content within this dataset carries CC-BY-SA 3.0 share-alike obligations. If you redistribute derivative works incorporating Wikipedia content, those works must be licensed under CC-BY-SA 3.0 or compatible.
 
 ## What Makes This Dataset Different
 

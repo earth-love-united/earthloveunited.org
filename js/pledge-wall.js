@@ -264,6 +264,7 @@ const PLEDGE_WALL = (() => {
       GAIA_ENGAGEMENT.addSignal('share');
       GAIA_ENGAGEMENT.addMoodSignal('pride');
     }
+    if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('share', { type: 'pledge' });
 
     if (typeof GAIA_JOURNAL !== 'undefined') {
       GAIA_JOURNAL.checkQuestProgress('share', null);

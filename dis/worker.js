@@ -126,7 +126,7 @@ function _getBifurcationContext(topic) {
 // ─── LIVE CLIMATE DATA (NOAA) ───
 async function _getLiveClimateData() {
   try {
-    const co2Resp = await fetch('https://gml.noaa.gov/webdata/ccgg/trends/co2/mm_mlo.txt', { cf: { cacheTtl: 3600 } });
+    const co2Resp = await fetch('https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt', { cf: { cacheTtl: 3600 } });
     const co2Text = await co2Resp.text();
     let latestCO2 = null;
     for (const line of co2Text.split('\n')) {
