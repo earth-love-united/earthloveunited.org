@@ -1,0 +1,158 @@
+/* ═══════════════════════════════════════════
+   NDVI VERIFIER STYLES
+   Satellite verification badges & cards
+   ═══════════════════════════════════════════ */
+
+/* Verification badge — appears on site panel and globe tooltips */
+.verification-card {
+  padding: 12px 14px;
+  background: rgba(8, 18, 20, 0.8);
+  border: 1px solid rgba(78, 205, 196, 0.12);
+  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.verify-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.verify-icon {
+  font-size: 14px;
+}
+
+.verify-label {
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.verify-year {
+  margin-left: auto;
+  font-size: 9px;
+  color: var(--text3);
+  font-family: var(--mono);
+}
+
+.verify-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.verify-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.verify-val {
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.verify-val.sat {
+  color: var(--teal);
+}
+
+.verify-val.good {
+  color: var(--leaf);
+}
+
+.verify-val.ok {
+  color: var(--amber);
+}
+
+.verify-val.bad {
+  color: var(--warn);
+}
+
+.verify-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.verify-source {
+  font-size: 8px;
+  color: var(--text3);
+}
+
+.verify-coords {
+  font-size: 8px;
+  color: var(--text3);
+  font-family: var(--mono);
+}
+
+/* Globe node verification indicator */
+.node-verify-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  border: 1.5px solid rgba(8, 18, 20, 0.8);
+  z-index: 5;
+}
+
+.node-verify-badge.verified {
+  background: rgba(91, 191, 114, 0.3);
+  color: var(--leaf);
+}
+
+.node-verify-badge.pending {
+  background: rgba(78, 205, 196, 0.15);
+  color: var(--teal);
+}
+
+.node-verify-badge.discrepancy {
+  background: rgba(196, 92, 74, 0.2);
+  color: var(--warn);
+}
+
+/* Site panel verification section */
+.site-verify-section {
+  margin-top: 12px;
+  padding: 10px;
+  background: rgba(78, 205, 196, 0.03);
+  border: 1px solid rgba(78, 205, 196, 0.08);
+  border-radius: 6px;
+}
+
+.site-verify-section h4 {
+  font-size: 10px;
+  color: var(--teal);
+  margin-bottom: 6px;
+  font-family: var(--mono);
+  letter-spacing: 0.5px;
+}
+
+/* Refresh button */
+.verify-refresh {
+  background: none;
+  border: 1px solid rgba(78, 205, 196, 0.2);
+  color: var(--teal);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: all 0.2s;
+}
+
+.verify-refresh:hover {
+  background: rgba(78, 205, 196, 0.08);
+  border-color: rgba(78, 205, 196, 0.35);
+}

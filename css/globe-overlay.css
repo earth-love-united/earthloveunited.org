@@ -1,0 +1,246 @@
+/* ═══════════════════════════════════════════ */
+/* GLOBE OVERLAY — Scrollable left-anchored   */
+/* content box that opens over the globe       */
+/* ═══════════════════════════════════════════ */
+
+#globe-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 520px;
+  max-width: 80vw;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-105%);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+#globe-overlay.open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* ── Overlay background ── */
+#globe-overlay .globe-overlay-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(6, 8, 14, 0.97), rgba(10, 12, 22, 0.95));
+  border-right: 1px solid rgba(78, 205, 196, 0.1);
+  box-shadow: 4px 0 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  z-index: -1;
+}
+
+/* ── Header ── */
+.globe-overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid rgba(78, 205, 196, 0.06);
+  flex-shrink: 0;
+}
+
+.globe-overlay-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.globe-overlay-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.globe-overlay-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--mint);
+  letter-spacing: 1px;
+}
+
+.globe-overlay-subtitle {
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 1px;
+}
+
+.globe-overlay-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text3);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.globe-overlay-close:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: rgba(78, 205, 196, 0.06);
+}
+
+/* ── Tab bar ── */
+.globe-overlay-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.globe-overlay-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.globe-overlay-tab {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-family: var(--body);
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.globe-overlay-tab:hover {
+  color: var(--text2);
+  border-bottom-color: rgba(78, 205, 196, 0.2);
+}
+
+.globe-overlay-tab.active {
+  color: var(--teal);
+  border-bottom-color: var(--teal);
+}
+
+/* ── Scrollable content area ── */
+.globe-overlay-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 20px 40px;
+  min-height: 0; /* critical for flex scroll */
+}
+
+.globe-overlay-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.globe-overlay-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.globe-overlay-content::-webkit-scrollbar-thumb {
+  background: rgba(78, 205, 196, 0.12);
+  border-radius: 2px;
+}
+
+.globe-overlay-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(78, 205, 196, 0.25);
+}
+
+/* ── Tab content panels ── */
+.globe-overlay-tab-panel {
+  display: none;
+  animation: overlay-fadein 0.3s ease-out;
+}
+
+.globe-overlay-tab-panel.active {
+  display: block;
+}
+
+@keyframes overlay-fadein {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Placeholder content styling ── */
+.globe-overlay-content h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: 12px;
+  margin-top: 24px;
+}
+
+.globe-overlay-content h3:first-child {
+  margin-top: 0;
+}
+
+.globe-overlay-content p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+
+.globe-overlay-content .overlay-stat-row {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.globe-overlay-content .overlay-stat {
+  flex: 1;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+}
+
+.globe-overlay-content .overlay-stat-value {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--teal);
+}
+
+.globe-overlay-content .overlay-stat-label {
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+.globe-overlay-content .overlay-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.08), transparent);
+  margin: 24px 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  #globe-overlay {
+    width: 100vw;
+    max-width: 100vw;
+  }
+
+  .globe-overlay-header {
+    padding: 12px 16px 10px;
+  }
+
+  .globe-overlay-content {
+    padding: 16px 16px 32px;
+  }
+}

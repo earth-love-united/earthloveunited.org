@@ -1,0 +1,20 @@
+/* ═══════════════════════════════════════════
+   RESPONSIVE — Mobile & Tablet
+   ═══════════════════════════════════════════ */
+
+@media(max-width:768px){
+  #site-panel{width:100%}
+  .card{padding:28px 20px}
+  .sites-grid{grid-template-columns:1fr}
+  .cta-grid{grid-template-columns:1fr}
+  .biome-cards{grid-template-columns:1fr}
+  .big-counter{gap:12px}
+  .counter-box{padding:14px 18px;min-width:130px}
+  .cycle-flow{gap:4px}
+  .cycle-node{padding:8px 12px;font-size:12px}
+  .sb-options{gap:6px}
+  .sb-option{padding:8px 12px;font-size:12px}
+  #topbar{padding:10px 16px}
+  #topbar .stats{gap:12px}
+  .stat-label{font-size:8px}.stat-value{font-size:11px}
+}

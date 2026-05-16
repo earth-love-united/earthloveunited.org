@@ -1,0 +1,86 @@
+{
+  "tropical_rainforest": {
+    "name": "Tropical Rainforest",
+    "density": 350,
+    "seq": 2.5,
+    "icon": "\ud83c\udf33",
+    "desc": "The most biodiverse ecosystems on Earth. Dense canopy, year-round growth, massive carbon stocks in biomass."
+  },
+  "tropical_dry_forest": {
+    "name": "Tropical Dry Forest",
+    "density": 180,
+    "seq": 1.2,
+    "icon": "\ud83c\udf34",
+    "desc": "Seasonal forests with distinct wet/dry cycles. Often overlooked but critical for local carbon and biodiversity."
+  },
+  "mangrove": {
+    "name": "Mangrove",
+    "density": 950,
+    "seq": 6.5,
+    "icon": "\ud83c\udf3f",
+    "desc": "The most carbon-dense ecosystems on Earth. They store carbon in waterlogged soil for millennia."
+  },
+  "temperate_deciduous": {
+    "name": "Temperate Deciduous",
+    "density": 220,
+    "seq": 1.8,
+    "icon": "\ud83c\udf42",
+    "desc": "Seasonal forests that shed leaves annually. Moderate carbon storage with rich soil carbon pools."
+  },
+  "temperate_coniferous": {
+    "name": "Temperate Coniferous",
+    "density": 300,
+    "seq": 1.5,
+    "icon": "\ud83c\udf32",
+    "desc": "Pine and fir forests of the Mediterranean and northern climates. Resilient but vulnerable to fire."
+  },
+  "boreal_forest": {
+    "name": "Boreal Forest",
+    "density": 160,
+    "seq": 0.6,
+    "icon": "\ud83c\udf32",
+    "desc": "The world's largest land biome. Slow-growing but massive total carbon stock across vast areas."
+  },
+  "grassland_savanna": {
+    "name": "Grassland / Savanna",
+    "density": 90,
+    "seq": 0.3,
+    "icon": "\ud83c\udf3e",
+    "desc": "Open landscapes with deep root systems. Store carbon primarily below ground."
+  },
+  "wetland_peatland": {
+    "name": "Wetland / Peatland",
+    "density": 1400,
+    "seq": 0.8,
+    "icon": "\ud83d\udca7",
+    "desc": "Peat accumulates over thousands of years. The densest carbon stores per hectare on land."
+  },
+  "seagrass_meadow": {
+    "name": "Seagrass Meadow",
+    "density": 500,
+    "seq": 2.0,
+    "icon": "\ud83c\udf0a",
+    "desc": "Underwater meadows that sequester carbon 35x faster than tropical rainforests per area."
+  },
+  "agricultural_cropland": {
+    "name": "Agricultural Cropland",
+    "density": 50,
+    "seq": 0.0,
+    "icon": "\ud83c\udf3e",
+    "desc": "Depleted soils with minimal carbon. Monocultures that replace diverse ecosystems."
+  },
+  "degraded_bare_land": {
+    "name": "Degraded / Bare Land",
+    "density": 10,
+    "seq": 0.0,
+    "icon": "\ud83c\udfdc\ufe0f",
+    "desc": "Eroded, lifeless land. Almost no carbon storage. This is what we're fighting to restore."
+  },
+  "urban_built": {
+    "name": "Urban / Built",
+    "density": 30,
+    "seq": 0.0,
+    "icon": "\ud83c\udfd9\ufe0f",
+    "desc": "Concrete and asphalt. Heat islands with minimal biological carbon cycling."
+  }
+}

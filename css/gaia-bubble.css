@@ -1,0 +1,147 @@
+/* ═══════════════════════════════════════════ */
+/* GAIA BUBBLE — Persistent presence           */
+/* Natural teal/mint/green vibes               */
+/* ═══════════════════════════════════════════ */
+
+#gaia-bubble {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(8, 18, 20, 0.92);
+  border: 1px solid rgba(78, 205, 196, 0.2);
+  border-radius: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 12px rgba(78, 205, 196, 0.1);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 360px;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+
+/* ── Avatar ── */
+.gaia-bubble-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(78, 205, 196, 0.15), rgba(91, 191, 114, 0.1));
+  border: 1px solid rgba(78, 205, 196, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  transition: all 0.3s;
+  box-shadow: 0 0 12px rgba(78, 205, 196, 0.1);
+}
+
+/* ── Text ── */
+.gaia-bubble-text {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #d0e8e0;
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 260px;
+  opacity: 1;
+  transition: all 0.3s;
+  flex: 1;
+}
+
+/* ── Thinking dots ── */
+.gaia-bubble-thinking {
+  display: none;
+  gap: 3px;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.gaia-bubble-thinking span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #4ecdc4;
+  animation: bubble-think 1.2s infinite;
+}
+
+.gaia-bubble-thinking span:nth-child(2) { animation-delay: 0.2s; }
+.gaia-bubble-thinking span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bubble-think {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* ── Idle pulse ── */
+#gaia-bubble.idle .gaia-bubble-avatar {
+  animation: bubble-idle 3s ease-in-out infinite;
+}
+
+@keyframes bubble-idle {
+  0%, 100% { box-shadow: 0 0 8px rgba(78, 205, 196, 0.15); }
+  50% { box-shadow: 0 0 16px rgba(78, 205, 196, 0.3); }
+}
+
+/* ── Thinking state ── */
+#gaia-bubble.thinking .gaia-bubble-thinking {
+  display: flex;
+}
+
+/* ── Hover ── */
+#gaia-bubble:hover {
+  border-color: rgba(78, 205, 196, 0.35);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35), 0 0 16px rgba(78, 205, 196, 0.15);
+}
+
+#gaia-bubble:hover .gaia-bubble-avatar {
+  transform: scale(1.05);
+}
+
+/* ── Quest popup ── */
+.gaia-quest-popup {
+  position: fixed;
+  bottom: 70px;
+  right: 24px;
+  z-index: 201;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, rgba(91, 191, 114, 0.1), rgba(78, 205, 196, 0.05));
+  border: 1px solid rgba(91, 191, 114, 0.2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #5bbf72;
+  animation: quest-pop 0.4s ease-out;
+  backdrop-filter: blur(8px);
+}
+
+.qp-icon { font-size: 12px; }
+.qp-text { font-weight: 500; }
+
+@keyframes quest-pop {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  #gaia-bubble {
+    bottom: 16px;
+    right: 16px;
+    padding: 8px 12px;
+  }
+  .gaia-bubble-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+  .gaia-quest-popup {
+    bottom: 56px;
+    right: 16px;
+  }
+}

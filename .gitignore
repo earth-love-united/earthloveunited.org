@@ -1,0 +1,29 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+
+# Large files (should be in KV/R2, not served to browser)
+dis/knowledge-index.json
+dis/knowledge-index.json.gz
+
+# Build artifacts
+dis/dist/
+
+# Environment
+.env
+.env.local
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.pyc
+*.pyo

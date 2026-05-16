@@ -1,0 +1,142 @@
+/* ═══════════════════════════════════════════
+   GAIA PRESENCE — Site hover teasers &
+   ambient awareness indicators
+   ═══════════════════════════════════════════ */
+
+/* Site hover tooltip */
+.gaia-presence-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(8, 18, 20, 0.94);
+  border: 1px solid rgba(78, 205, 196, 0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 11px;
+  color: var(--text);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.2s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.gaia-presence-tooltip.visible {
+  opacity: 1;
+}
+
+.gaia-presence-tooltip .pt-name {
+  font-family: var(--display);
+  color: var(--mint);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.gaia-presence-tooltip .pt-subtitle {
+  font-size: 10px;
+  color: var(--text3);
+}
+
+.gaia-presence-tooltip .pt-xp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 2px 8px;
+  background: rgba(78, 205, 196, 0.08);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--teal);
+}
+
+/* Node state glow rings */
+.gaia-node-ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: nodePulse 3s ease-in-out infinite;
+}
+
+.gaia-node--locked .gaia-node-ring {
+  border: 1px solid rgba(78, 205, 196, 0.15);
+  background: rgba(78, 205, 196, 0.03);
+}
+
+.gaia-node--available .gaia-node-ring {
+  border: 1px solid rgba(78, 205, 196, 0.35);
+  background: rgba(78, 205, 196, 0.08);
+  animation-duration: 2s;
+}
+
+.gaia-node--explored .gaia-node-ring {
+  border: 2px solid rgba(91, 191, 114, 0.5);
+  background: rgba(91, 191, 114, 0.12);
+  animation-duration: 1.5s;
+}
+
+.gaia-node--mastered .gaia-node-ring {
+  border: 2px solid rgba(91, 191, 114, 0.8);
+  background: rgba(91, 191, 114, 0.2);
+  animation: nodeMasterPulse 2s ease-in-out infinite;
+}
+
+@keyframes nodePulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+
+@keyframes nodeMasterPulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; box-shadow: 0 0 12px rgba(91,191,114,0.2); }
+  50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 24px rgba(91,191,114,0.4); }
+}
+
+/* Engagement indicator (shows cumulative XP) */
+.gaia-engagement-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(8, 18, 20, 0.85);
+  border: 1px solid rgba(78, 205, 196, 0.15);
+  border-radius: 8px;
+  font-size: 10px;
+  color: var(--text3);
+  font-family: var(--mono);
+  backdrop-filter: blur(8px);
+}
+
+.gaia-engagement-bar .eb-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+}
+
+.gaia-engagement-bar .eb-value {
+  color: var(--teal);
+  font-weight: 600;
+}
+
+.gaia-engagement-bar .eb-tier {
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.eb-tier--cold { background: rgba(78,205,196,0.1); color: var(--teal); }
+.eb-tier--warm { background: rgba(91,191,114,0.15); color: var(--leaf); }
+.eb-tier--engaged { background: rgba(212,165,116,0.15); color: var(--amber); }
+.eb-tier--hooked { background: rgba(139,127,199,0.15); color: var(--violet); }
+.eb-tier--invested { background: rgba(196,92,74,0.15); color: var(--warn); }
+.eb-tier--committed { background: rgba(255,215,0,0.2); color: #ffd700; }

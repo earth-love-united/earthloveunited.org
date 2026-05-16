@@ -1,0 +1,28 @@
+/* ═══════════════════════════════════════════
+   BASE — Reset, Variables, Typography
+   ═══════════════════════════════════════════ */
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#050509;--bg2:#0a0b12;--bg3:#0e1018;
+  --teal:#4ecdc4;--mint:#7be8d0;--ocean:#2a8fa3;--deep:#1a3a5c;
+  --leaf:#5bbf72;--amber:#d4a574;--warn:#c45c4a;
+  --text:#e2dfd8;--text2:#9a9590;--text3:#5a5652;
+  --mono:'JetBrains Mono',monospace;
+  --display:'Cormorant Garamond',serif;
+  --body:'Outfit',sans-serif;
+}
+
+html{scroll-behavior:smooth}
+body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--body);overflow-x:hidden}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes correctPulse{0%{transform:scale(1)}50%{transform:scale(1.08);box-shadow:0 0 30px rgba(91,191,114,.4)}100%{transform:scale(1)}}
+@keyframes wrongShake{0%,100%{transform:translateX(0);border-color:var(--warn)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes bounce{0%,100%{transform:rotate(45deg) translate(0,0)}50%{transform:rotate(45deg) translate(6px,6px)}}
+
+/* ═══ SCROLL REVEAL ═══ */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease-out,transform .7s ease-out}
+.reveal.visible{opacity:1;transform:translateY(0)}

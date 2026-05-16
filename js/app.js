@@ -1,0 +1,203 @@
+// ═══════════════════════════════════════════════
+// APP — Init, navigation, scroll progress, events
+// GAIA Foundation Layer integration
+// ═══════════════════════════════════════════════
+
+const App = {
+  async init() {
+    // Load data first
+    await Data.init();
+
+    // ── GAIA Nodes — register site content + wire globe ──
+    if (typeof GAIA_NODES !== 'undefined') {
+      GAIA_NODES.init();
+      GAIA_NODES.populateSiteData();
+    }
+
+    // ── Carbon Clock — starts ticking immediately ──
+    if (typeof CARBON_CLOCK !== 'undefined') {
+      CARBON_CLOCK.init();
+    }
+
+    // ── Delegation Greeting — personalized country entry ──
+    if (typeof DELEGATION !== 'undefined') {
+      DELEGATION.init();
+    }
+
+    // ── Pledge Wall — public commitments ──
+    if (typeof PLEDGE_WALL !== 'undefined') {
+      PLEDGE_WALL.init();
+    }
+
+    // Init all existing modules
+    GlobeModule.init();
+    Quiz.init();
+    Biomes.init();
+    Scenario.init();
+
+    // ── GAIA Foundation Layer ──
+    // Fetch live data in background
+    GAIA_DATA.refreshAll().then(liveData => {
+      GAIA_DATA.saveSnapshot(liveData);
+      if (liveData.co2.latest) {
+        GAIA_DATA.saveVisitInfo(liveData.co2.latest);
+      }
+    });
+
+    // Session tracking
+    const sess = GAIA_DATA.getSessionInfo();
+    const now = Date.now();
+    if (!sess.firstVisit) {
+      GAIA_DATA.saveSessionInfo({ visitCount: 1, firstVisit: now, totalTimeSeconds: 0 });
+    } else {
+      GAIA_DATA.saveSessionInfo({ ...sess, visitCount: sess.visitCount + 1 });
+      // Welcome back
+      const wb = GAIA_DATA.getWelcomeBackInfo();
+      if (wb && wb.daysSince > 0) {
+        const days = wb.daysSince;
+        const _snap = GAIA_DATA.getCachedSnapshot();
+        const co2Now = (_snap && _snap.co2 && _snap.co2.latest) ? _snap.co2.latest : (wb.co2Then ? (wb.co2Then + 2.7 * (days / 365)) : 431.12);
+        const co2Then = wb.co2Then;
+        const co2Diff = co2Then ? +(co2Now - co2Then).toFixed(2) : null;
+        let msg = days === 1 ? 'Welcome back. One day.' : `Welcome back. ${days} days.`;
+        if (co2Diff && co2Diff > 0) msg += ` CO₂: ${co2Then.toFixed(1)} → ${co2Now.toFixed(1)} ppm. +${co2Diff}. Not a pause. Accumulation.`;
+        setTimeout(() => {
+          if (typeof GAIA_BUBBLE !== 'undefined') {
+            GAIA_BUBBLE.speak(msg, 'warm', 6000);
+          }
+        }, 1500);
+      }
+    }
+
+    // Create GAIA bubble — always visible after entering
+    if (typeof GAIA_BUBBLE !== 'undefined') {
+      GAIA_BUBBLE.create();
+    }
+
+    // Speak greeting after hero
+    setTimeout(() => {
+      if (typeof GAIA_BUBBLE !== 'undefined') {
+        const line = GAIA_VOICE.speak('GREETING', null, 'mysterious');
+        if (line) GAIA_BUBBLE.speak(line.text, line.tone, 8000);
+      }
+    }, 2000);
+
+    // Idle nudge loop
+    setInterval(() => {
+      const nudge = GAIA_ENGAGEMENT.shouldFireIdleNudge();
+      if (nudge && typeof GAIA_BUBBLE !== 'undefined') {
+        GAIA_BUBBLE.idleNudge();
+      }
+    }, 5000);
+
+    // ── Render site cards ──
+    const sitesGrid = document.getElementById('sites-grid');
+    if (sitesGrid) {
+      sitesGrid.innerHTML = Data.sites.map(s => `
+        <div class="site-card" onclick="flyToSite('${s.id}')">
+          <div class="site-icon">${s.id === 'sri_lanka' ? '🌳' : s.id === 'antalya' ? '🔥' : s.id === 'benin' ? '🌿' : '🌴'}</div>
+          <div class="site-name">${s.name}</div>
+          <div class="site-loc">${s.id === 'sri_lanka' ? 'SRI LANKA' : s.id === 'antalya' ? 'TURKEY' : s.id === 'benin' ? 'BENIN' : 'BORNEO'}</div>
+          <div class="site-desc">${s.narrative.substring(0, 120)}...</div>
+          <div class="site-stat">${s.area.toLocaleString()} ha · ${Data.getBiome(s.primaryBiome).name}</div>
+        </div>
+      `).join('');
+    }
+
+    // ── Scroll reveals ──
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          if (e.target.querySelector('#imbalance-counters')) Counters.animate();
+          if (e.target.querySelector('#compare-bars')) Biomes.animateBars();
+          if (e.target.querySelector('#biome-cards')) Biomes.animateBiomeCards();
+        }
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // ── Scroll progress ──
+    const progressBar = document.getElementById('scroll-progress');
+    const sectionsEl = document.querySelector('.sections');
+    const footerEl = document.querySelector('.footer');
+    const updateProgress = () => {
+      if (!sectionsEl || !footerEl) { if(progressBar) progressBar.style.width = '0'; return; }
+      const start = sectionsEl.offsetTop;
+      const end = footerEl.offsetTop + footerEl.offsetHeight - window.innerHeight;
+      const current = window.scrollY;
+      if (current <= start) { progressBar.style.width = '0'; return; }
+      if (current >= end) { progressBar.style.width = '100%'; return; }
+      progressBar.style.width = ((current - start) / (end - start) * 100) + '%';
+    };
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    // ── Panel close ──
+    const closeBtn = document.getElementById('panel-close-btn');
+    const backdrop = document.getElementById('panel-backdrop');
+    const onClose = (e) => { if (e.type === 'touchstart') e.preventDefault(); e.stopPropagation(); Panel.close(); };
+    if (closeBtn) {
+      closeBtn.addEventListener('click', onClose, true);
+      closeBtn.addEventListener('touchstart', onClose, { passive: false, capture: true });
+    }
+    if (backdrop) {
+      backdrop.addEventListener('click', onClose);
+      backdrop.addEventListener('touchstart', onClose, { passive: false });
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') Panel.close(); });
+
+    // ── Track all interactions for engagement ──
+    document.addEventListener('click', () => GAIA_ENGAGEMENT.interact());
+    document.addEventListener('scroll', () => GAIA_ENGAGEMENT.interact(), { passive: true });
+    document.addEventListener('keydown', () => GAIA_ENGAGEMENT.interact());
+  },
+
+  enterSite() {
+    document.getElementById('hero').classList.add('hidden');
+    document.getElementById('topbar').classList.add('visible');
+    setTimeout(() => { document.getElementById('quiz').scrollIntoView({ behavior: 'smooth' }); }, 300);
+    GAIA_ENGAGEMENT.interact();
+  },
+
+  flyToSite(id) {
+    const site = Data.getSite(id);
+    if (site) {
+      // Use GAIA Nodes (globe overlay) if available
+      if (typeof GAIA_NODES !== 'undefined') {
+        GAIA_NODES.onNodeClick(id);
+      } else if (typeof SITE_PANEL !== 'undefined') {
+        SITE_PANEL.open(site);
+      } else {
+        Panel.open(site);
+      }
+    }
+  }
+};
+
+// Global enter button
+function enterSite() { App.enterSite(); }
+function flyToSite(id) { App.flyToSite(id); }
+function showCycle(key) { Cycle.show(key); }
+
+// Start — handle both async and already-loaded DOM
+function startApp() {
+  if (typeof GlobeModule === 'undefined' || typeof Data === 'undefined') {
+    setTimeout(startApp, 100);
+    return;
+  }
+  App.init();
+}
+
+// Departure trigger — prompt pledge if user is leaving without pledging
+window.addEventListener('beforeunload', () => {
+  if (typeof PLEDGE_WALL !== 'undefined') {
+    PLEDGE_WALL.onDeparture();
+  }
+});
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp);
+} else {
+  startApp();
+}

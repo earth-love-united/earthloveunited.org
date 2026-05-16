@@ -1,0 +1,153 @@
+/* ═══════════════════════════════════════════ */
+/* CARBON CLOCK — Hero                        */
+/* ═══════════════════════════════════════════ */
+#carbon-clock-hero {
+  margin: 0 auto 20px;
+  max-width: 420px;
+  text-align: center;
+  animation: fadeUp 0.6s ease-out 0.8s both;
+}
+
+.cc-hero-inner {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, rgba(196, 92, 74, 0.06), rgba(196, 92, 74, 0.02));
+  border: 1px solid rgba(196, 92, 74, 0.12);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+}
+
+/* Subtle pulse animation on the border */
+.cc-hero-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(196, 92, 74, 0.4), transparent);
+  animation: cc-pulse 2s ease-in-out infinite;
+}
+
+@keyframes cc-pulse {
+  0%, 100% { opacity: 0.3; transform: translateX(-100%); }
+  50% { opacity: 1; transform: translateX(100%); }
+}
+
+.cc-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+
+.cc-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--warn);
+  line-height: 1.2;
+  margin-bottom: 2px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -1px;
+}
+
+.cc-rate {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+
+.cc-bar {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.cc-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(196, 92, 74, 0.3), var(--warn));
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.3s linear;
+}
+
+.cc-context {
+  font-size: 10px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cc-annual {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--warn);
+  font-weight: 500;
+}
+
+.cc-sep {
+  opacity: 0.3;
+}
+
+/* ═══════════════════════════════════════════ */
+/* CARBON CLOCK — Topbar Mini                 */
+/* ═══════════════════════════════════════════ */
+.cc-topbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(196, 92, 74, 0.06);
+  border: 1px solid rgba(196, 92, 74, 0.1);
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.cc-topbar-icon {
+  font-size: 12px;
+}
+
+.cc-topbar-value {
+  color: var(--warn);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  min-width: 50px;
+  text-align: right;
+}
+
+.cc-topbar-rate {
+  color: var(--text3);
+  font-size: 9px;
+}
+
+/* ═══════════════════════════════════════════ */
+/* Responsive                                */
+/* ═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  #carbon-clock-hero {
+    margin: 16px 12px 12px;
+  }
+  .cc-value {
+    font-size: 24px;
+  }
+  .cc-hero-inner {
+    padding: 12px 16px;
+  }
+  .cc-topbar {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+  .cc-topbar-value {
+    min-width: 40px;
+  }
+}

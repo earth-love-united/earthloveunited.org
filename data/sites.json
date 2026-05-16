@@ -1,0 +1,284 @@
+[
+  {
+    "id": "sri_lanka",
+    "name": "Northern Province",
+    "subtitle": "Multilayer Afforestation \u00b7 Sri Lanka",
+    "lat": 9.666,
+    "lng": 80.285,
+    "primaryBiome": "tropical_dry_forest",
+    "currentBiome": "degraded_bare_land",
+    "area": 2428,
+    "narrative": "SPE has identified over 6,000 acres across five districts of Sri Lanka's Northern Province for multilayer afforestation \u2014 peanuts, Ceylon cinnamon, jackfruit, black pepper \u2014 creating self-sustaining plantations that build long-term carbon stocks.",
+    "ndvi": [
+      {
+        "year": 2000,
+        "value": 0.45,
+        "label": "Post-conflict degraded land"
+      },
+      {
+        "year": 2010,
+        "value": 0.4,
+        "label": "Slow recovery"
+      },
+      {
+        "year": 2015,
+        "value": 0.42,
+        "label": "Restoration planning"
+      },
+      {
+        "year": 2020,
+        "value": 0.48,
+        "label": "SPE project initiation"
+      },
+      {
+        "year": 2025,
+        "value": 0.55,
+        "label": "Active planting"
+      }
+    ],
+    "climate": [
+      {
+        "year": 1980,
+        "temp": 27.8,
+        "precip": 1420
+      },
+      {
+        "year": 2000,
+        "temp": 28.3,
+        "precip": 1350
+      },
+      {
+        "year": 2025,
+        "temp": 29.1,
+        "precip": 1260
+      }
+    ],
+    "sandbox": [
+      {
+        "to": "tropical_dry_forest",
+        "label": "Multilayer Forest (SPE)",
+        "icon": "\ud83c\udf33"
+      },
+      {
+        "to": "agricultural_cropland",
+        "label": "Conventional Agriculture",
+        "icon": "\ud83c\udf3e"
+      },
+      {
+        "to": "mangrove",
+        "label": "Coastal Mangrove",
+        "icon": "\ud83c\udf3f"
+      }
+    ],
+    "connection": "SPE's flagship \u2014 approved by the Governor of Northern Province, land confirmed across Jaffna, Vavuniya, Mullaitivu, Mannar, and Kilinochchi."
+  },
+  {
+    "id": "antalya",
+    "name": "Manavgat, Antalya",
+    "subtitle": "Wildfire & Recovery \u00b7 Turkey",
+    "lat": 36.85,
+    "lng": 31.25,
+    "primaryBiome": "temperate_coniferous",
+    "currentBiome": "grassland_savanna",
+    "area": 2500,
+    "narrative": "July 2021: catastrophic wildfires burned 60,000+ hectares of Mediterranean pine. COP31 takes place here, November 2026. Four years on, early scrub recovery \u2014 but full restoration needs decades.",
+    "ndvi": [
+      {
+        "year": 2000,
+        "value": 0.72,
+        "label": "Mature Pine"
+      },
+      {
+        "year": 2010,
+        "value": 0.73,
+        "label": "Mature Pine"
+      },
+      {
+        "year": 2020,
+        "value": 0.7,
+        "label": "Drought-Stressed"
+      },
+      {
+        "year": 2021,
+        "value": 0.18,
+        "label": "Burn Scar"
+      },
+      {
+        "year": 2025,
+        "value": 0.38,
+        "label": "Scrub Recovery"
+      }
+    ],
+    "climate": [
+      {
+        "year": 1980,
+        "temp": 16.54,
+        "precip": 985
+      },
+      {
+        "year": 2000,
+        "temp": 17.2,
+        "precip": 915
+      },
+      {
+        "year": 2025,
+        "temp": 18.2,
+        "precip": 765
+      }
+    ],
+    "sandbox": [
+      {
+        "to": "temperate_coniferous",
+        "label": "Restore Pine Forest",
+        "icon": "\ud83c\udf32"
+      },
+      {
+        "to": "temperate_deciduous",
+        "label": "Mixed Reforestation",
+        "icon": "\ud83c\udf33"
+      },
+      {
+        "to": "grassland_savanna",
+        "label": "Natural Succession",
+        "icon": "\ud83c\udf31"
+      }
+    ],
+    "connection": "COP31 is in Antalya. This is what happened to the host region's forests."
+  },
+  {
+    "id": "benin",
+    "name": "Ouidah Wetlands",
+    "subtitle": "Mangrove Degradation \u00b7 Benin",
+    "lat": 6.35,
+    "lng": 2.1,
+    "primaryBiome": "mangrove",
+    "currentBiome": "degraded_bare_land",
+    "area": 2500,
+    "narrative": "Jean Missinhoun was from Benin. The Ouidah lagoons once held dense mangroves \u2014 the most carbon-dense ecosystems on Earth. Restoring them here is climate action and a homecoming.",
+    "ndvi": [
+      {
+        "year": 2000,
+        "value": 0.68,
+        "label": "Intact Mangroves"
+      },
+      {
+        "year": 2010,
+        "value": 0.45,
+        "label": "Degraded"
+      },
+      {
+        "year": 2025,
+        "value": 0.52,
+        "label": "Early Recovery"
+      }
+    ],
+    "climate": [
+      {
+        "year": 1980,
+        "temp": 27.2,
+        "precip": 1280
+      },
+      {
+        "year": 2000,
+        "temp": 27.7,
+        "precip": 1220
+      },
+      {
+        "year": 2025,
+        "temp": 28.6,
+        "precip": 1130
+      }
+    ],
+    "sandbox": [
+      {
+        "to": "mangrove",
+        "label": "Restore Mangrove",
+        "icon": "\ud83c\udf3f"
+      },
+      {
+        "to": "wetland_peatland",
+        "label": "Wetland Conservation",
+        "icon": "\ud83d\udca7"
+      },
+      {
+        "to": "agricultural_cropland",
+        "label": "Convert to Agriculture",
+        "icon": "\ud83c\udf3e"
+      }
+    ],
+    "connection": "Jean's homeland. Mangroves store 950 tC/ha \u2014 restoring them honors his legacy."
+  },
+  {
+    "id": "borneo",
+    "name": "West Kalimantan",
+    "subtitle": "Peat Swamp Deforestation \u00b7 Borneo",
+    "lat": 1.15,
+    "lng": 110.35,
+    "primaryBiome": "wetland_peatland",
+    "currentBiome": "agricultural_cropland",
+    "area": 2500,
+    "narrative": "Borneo's peat swamps stored 1,400 tC/ha. Grid-like clearing for oil palm released centuries of carbon in two decades. The plantation looks green. But green is not carbon.",
+    "ndvi": [
+      {
+        "year": 2000,
+        "value": 0.88,
+        "label": "Intact Peat Swamp"
+      },
+      {
+        "year": 2005,
+        "value": 0.85,
+        "label": "Intact"
+      },
+      {
+        "year": 2010,
+        "value": 0.35,
+        "label": "Active Clearing"
+      },
+      {
+        "year": 2015,
+        "value": 0.55,
+        "label": "Palm Canopy"
+      },
+      {
+        "year": 2025,
+        "value": 0.65,
+        "label": "Mature Plantation"
+      }
+    ],
+    "climate": [
+      {
+        "year": 1980,
+        "temp": 26.8,
+        "precip": 3200
+      },
+      {
+        "year": 2000,
+        "temp": 27.1,
+        "precip": 3100
+      },
+      {
+        "year": 2025,
+        "temp": 27.9,
+        "precip": 2850
+      }
+    ],
+    "sandbox": [
+      {
+        "to": "wetland_peatland",
+        "label": "Restore Peat Swamp",
+        "icon": "\ud83c\udf3f"
+      },
+      {
+        "to": "tropical_rainforest",
+        "label": "Tropical Reforestation",
+        "icon": "\ud83c\udf33"
+      },
+      {
+        "to": "agricultural_cropland",
+        "label": "Keep Plantation",
+        "icon": "\ud83c\udf3e"
+      }
+    ],
+    "connection": "Green \u2260 carbon. Oil palm (NDVI 0.65) stores a fraction of the peat swamp it replaced (1,400 vs 50 tC/ha)."
+  }
+]
