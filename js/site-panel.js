@@ -642,3 +642,4 @@ const SITE_PANEL = (() => {
 
   return { open, close, nextLayer, selectPrediction, addInsight, verifyCurrentSite, switchVerifyTab, toggleGAIA, speakGAIA, addInsightFromGAIA, scrollToLayer, getCurrentLayer: () => currentLayer, getCurrentSite: () => currentSite };
 })();
+window.SITE_PANEL = SITE_PANEL;

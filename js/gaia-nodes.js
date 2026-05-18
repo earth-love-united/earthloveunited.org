@@ -1101,18 +1101,36 @@ const GAIA_NODES = (() => {
 
   function renderAntalyaSynthesis(container, site) {
     container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('antalya', site);
+    _setupSynthesisRefresh(container, 'antalya', site);
   }
 
   function renderSriLankaSynthesis(container, site) {
     container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('sri_lanka', site);
+    _setupSynthesisRefresh(container, 'sri_lanka', site);
   }
 
   function renderBeninSynthesis(container, site) {
     container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('benin', site);
+    _setupSynthesisRefresh(container, 'benin', site);
   }
 
   function renderBorneoSynthesis(container, site) {
     container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('borneo', site);
+    _setupSynthesisRefresh(container, 'borneo', site);
+  }
+
+  function _setupSynthesisRefresh(container, siteId, site) {
+    // If already loaded, render immediately
+    if (GAIA_KNOWLEDGE.isReady()) {
+      container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis(siteId, site);
+      return;
+    }
+    // Otherwise, listen for the knowledge-ready event
+    const handler = () => {
+      container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis(siteId, site);
+      document.removeEventListener('gaia:knowledge-ready', handler);
+    };
+    document.addEventListener('gaia:knowledge-ready', handler);
   }
 
   // ── Init ──

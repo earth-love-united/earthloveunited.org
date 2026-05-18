@@ -15,16 +15,14 @@ const GaiaKnowledge = (() => {
 
   // ─── STATE ───
   let _chunks = [];           // Loaded knowledge chunks
-  let _embeddings = null;     // Float32Array of embeddings (flattened)
-  let _dim = 0;               // Embedding dimension
+  let _vocab = null;          // TF-IDF vocabulary
   let _loaded = false;
   let _loading = false;
 
   // ─── CONFIG ───
-  const DATASET_URL = 'https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge/resolve/main/earth_love_united_climate_knowledge_v2.jsonl';
-  const EMBEDDINGS_URL = 'https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge/resolve/main/embeddings.bin';
+  const DATASET_URL = 'data/climate-knowledge-curated.jsonl';
   const TOP_K = 5;            // Number of chunks to retrieve
-  const MIN_SCORE = 0.3;      // Minimum similarity threshold
+  const MIN_SCORE = 0.15;     // Minimum similarity threshold (lower for TF-IDF)
 
   // ─── SIMPLE EMBEDDING (TF-IDF-like, no model needed) ───
   // For production, use a proper embedding model. For now, we use
@@ -92,7 +90,7 @@ const GaiaKnowledge = (() => {
     console.log('[GaiaKnowledge] Loading climate knowledge dataset...');
 
     try {
-      // Load chunks from Hugging Face
+      // Load chunks from local dataset
       const response = await fetch(DATASET_URL);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
 

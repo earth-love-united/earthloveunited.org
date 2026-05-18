@@ -32,9 +32,11 @@ const GAIA_KNOWLEDGE = (() => {
   }
 
   function onOverlayOpen() {
-    if (_loadComplete) return;
-    console.log('[GAIA Knowledge] Starting cascading dataset load...');
-    GaiaKnowledge.init();
+    // Always try to init the core engine if not loaded
+    if (!GaiaKnowledge.isLoaded) {
+      console.log('[GAIA Knowledge] Starting cascading dataset load...');
+      GaiaKnowledge.init();
+    }
     _pollForReady();
   }
 
@@ -42,8 +44,9 @@ const GAIA_KNOWLEDGE = (() => {
     if (GaiaKnowledge.isLoaded) {
       _loadComplete = true;
       console.log('[GAIA Knowledge] Dataset ready:', GaiaKnowledge.getStats());
-      // Process any queued searches
       _processQueue();
+      // Dispatch event so synthesis tabs can refresh
+      document.dispatchEvent(new CustomEvent('gaia:knowledge-ready'));
       return;
     }
     setTimeout(_pollForReady, 200);
@@ -86,6 +89,10 @@ const GAIA_KNOWLEDGE = (() => {
   }
 
   function isReady() {
+    // Check core engine directly — it may have been loaded proactively
+    if (typeof GaiaKnowledge !== 'undefined' && GaiaKnowledge.isLoaded) {
+      _loadComplete = true;
+    }
     return _loadComplete;
   }
 
@@ -183,7 +190,9 @@ const GAIA_KNOWLEDGE = (() => {
 
   // ── GAIA Synthesis Generator ──
   function generateSynthesis(siteId, siteData) {
-    if (!_loadComplete) {
+    // Check core engine directly
+    const ready = (typeof GaiaKnowledge !== 'undefined' && GaiaKnowledge.isLoaded) || _loadComplete;
+    if (!ready) {
       return '<p style="color:var(--text3);font-style:italic">Loading knowledge synthesis...</p>';
     }
 
@@ -267,5 +276,13 @@ const GAIA_KNOWLEDGE = (() => {
   };
 })();
 
-// Auto-init the knowledge integration (waits for overlay:open to load dataset)
+// Auto-init the knowledge integration (starts loading dataset in background)
 GAIA_KNOWLEDGE.init();
+
+// Also init the core knowledge engine proactively so it's ready when needed
+// The dataset is large (~17MB) — start loading early so synthesis is ready on first overlay open
+setTimeout(() => {
+  if (typeof GaiaKnowledge !== 'undefined' && !GaiaKnowledge.isLoaded) {
+    GaiaKnowledge.init();
+  }
+}, 2000); // Start 2s after page load, after critical UI is ready

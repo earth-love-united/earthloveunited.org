@@ -384,6 +384,9 @@ function _escapeHtml(str){
 }
 
 function addMessage(role,content,meta){
+  if (typeof content === 'object') {
+    content = JSON.stringify(content, null, 2);
+  }
   const msgs=document.getElementById('messages');
   if(isFirstMessage){document.getElementById('welcome').classList.add('hidden');msgs.style.display='flex';isFirstMessage=false;}
   const div=document.createElement('div');div.className=`msg ${role}`;

@@ -166,6 +166,7 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
 @media(max-width:1024px){#right-panel{position:absolute;right:0;top:0;bottom:0;z-index:20}}
 @media(max-width:768px){#sidebar{position:absolute;left:0;top:0;bottom:0;z-index:20}.suggestion-grid{grid-template-columns:1fr}.msg-content{max-width:90%}#messages{padding:10px}}
 </style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
 </head>
 <body>
 
@@ -390,6 +391,9 @@ function toggleJournal() {
   const isVisible = journal.style.display !== 'none';
   journal.style.display = isVisible ? 'none' : 'block';
   if (!isVisible && typeof GaiaQuests !== 'undefined') updateQuestPanel();
+}
+if (window.innerWidth <= 768) {
+  document.getElementById('sidebar').classList.add('collapsed');
 }
 </script>
 
