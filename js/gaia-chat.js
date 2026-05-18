@@ -649,6 +649,7 @@ function processQuery(text){
 
   // Check if we have an API key for LLM mode
   const hasApiKey = typeof GaiaKeyGate !== 'undefined' && GaiaKeyGate.hasKey();
+  console.log('[GAIA] hasApiKey:', hasApiKey, 'GaiaKeyGate:', typeof GaiaKeyGate);
 
   if (hasApiKey) {
     // LLM mode: call OpenRouter with knowledge context
@@ -672,6 +673,7 @@ function processQuery(text){
     }, llmDelay);
   } else {
     // Pattern-matching mode (no API key)
+    console.log('[GAIA] Using pattern matching, no API key found');
     const delay = 400 + Math.random() * 600;
     setTimeout(() => {
       hideTyping(); if (toolId) completeToolCall(toolId, true);

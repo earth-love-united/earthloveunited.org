@@ -183,6 +183,20 @@ def parse_conditionality(cond_raw):
     return False, False
 
 
+def parse_finance(text):
+    """Parse absolute financial requirements (USD Billions)."""
+    if not text or "No " in text or "Not Specified" in text:
+        return None
+    try:
+        # Extract the first float found
+        m = re.search(r'(\d+(?:\.\d+)?)', text.replace(',', ''))
+        if m:
+            return float(m.group(1))
+    except Exception:
+        pass
+    return None
+
+
 def process_all():
     """Load CW indicator data and parse NDC targets into structured CSV."""
     # Load harvested data
@@ -217,7 +231,12 @@ def process_all():
         target_year = None
         if time_target_year and time_target_year not in ('Not Specified', ''):
             try:
-                target_year = int(re.search(r'\d{4}', time_target_year).group())
+                # Extract first 4-digit sequence that looks like a valid year
+                for m in __import__('re').finditer(r'\d{4}', str(time_target_year)):
+                    candidate = int(m.group())
+                    if 2020 <= candidate <= 2060:
+                        target_year = candidate
+                        break
             except (ValueError, AttributeError):
                 pass
         if not target_year:
@@ -260,9 +279,9 @@ def process_all():
             'cw_submission_date': cd.get('submission_date', ''),
             'cw_pa_ratified': cd.get('pa_ratified', ''),
             'cw_pa_status': cd.get('pa_status', ''),
-            'cw_mitigation_finance_bn': cd.get('mitigation_total_financial_requirements', ''),
-            'cw_adaptation_finance_bn': cd.get('adaptation_total_financial_requirements', ''),
-            'cw_total_finance_bn': cd.get('identified_total_financial_requirements', ''),
+            'cw_mitigation_finance_bn': parse_finance(cd.get('mitigation_total_financial_requirements', '')),
+            'cw_adaptation_finance_bn': parse_finance(cd.get('adaptation_total_financial_requirements', '')),
+            'cw_total_finance_bn': parse_finance(cd.get('identified_total_financial_requirements', '')),
         })
 
     df = pd.DataFrame(rows)

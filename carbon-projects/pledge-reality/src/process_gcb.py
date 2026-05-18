@@ -230,6 +230,9 @@ GCB_COUNTRY_MAP = {
     'YEMEN': 'Yemen',
     'ZAMBIA': 'Zambia',
     'ZIMBABWE': 'Zimbabwe',
+    # Mixed-case exact matches from GCB 2025 Excel
+    'USA': 'United States',
+    'Türkiye': 'Turkey',
 }
 
 def process():
@@ -257,7 +260,9 @@ def process():
             continue
         
         gcb_name = str(gcb_name).strip()
-        country = GCB_COUNTRY_MAP.get(gcb_name, gcb_name)
+        # Try exact match, then uppercase (map has UPPERCASE keys), then special cases
+        country = GCB_COUNTRY_MAP.get(gcb_name, 
+                  GCB_COUNTRY_MAP.get(gcb_name.upper(), gcb_name))
         
         # Skip regions and special categories
         if any(skip in gcb_name for skip in ['KP Annex', 'Non KP', 'OECD', 'Non-OECD', 'EU27',
@@ -273,7 +278,9 @@ def process():
             if pd.isna(year) or pd.isna(emissions[i]):
                 continue
             year = int(year)
-            if year < 2015 or year > 2024:
+            if year < 2015 and year not in [1990, 2000, 2005]:
+                continue
+            if year > 2024:
                 continue
             
             val = float(emissions[i])

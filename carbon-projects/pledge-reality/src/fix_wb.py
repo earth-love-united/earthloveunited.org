@@ -95,7 +95,7 @@ WB_COUNTRY_MAP = {
     'Montenegro': 'Montenegro', 'Slovenia': 'Slovenia',
     'Ukraine': 'Ukraine', 'Belarus': 'Belarus', 'Moldova': 'Moldova',
     'Lithuania': 'Lithuania', 'Latvia': 'Latvia', 'Estonia': 'Estonia',
-    'Russia': 'Russia', 'United States': 'USA',
+    'Russia': 'Russia', 'Turkiye': 'Turkey',
 }
 
 def load_wb_full():

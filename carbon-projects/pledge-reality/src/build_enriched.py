@@ -164,6 +164,16 @@ def load_ndgain():
         return df
     return pd.DataFrame()
 
+def load_lulucf():
+    """Load processed LULUCF data"""
+    print("Loading LULUCF data...")
+    path = os.path.join(PROC_DIR, 'gcb_lulucf.csv')
+    if os.path.exists(path):
+        df = pd.read_csv(path)
+        print(f"  LULUCF: {len(df)} records")
+        return df
+    return pd.DataFrame()
+
 def build_enriched_dataset():
     """Merge all sources into the enriched dataset"""
     
@@ -173,10 +183,19 @@ def build_enriched_dataset():
     cw = load_climate_watch_ndc()
     wb = load_world_bank()
     ndgain = load_ndgain()
+    lulucf = load_lulucf()
     
     # Start with GCB as base
     print("\nBuilding enriched dataset...")
     base = gcb[['country', 'year', 'fossil_co2_mtC', 'fossil_co2_mtCO2']].copy()
+    
+    # Merge LULUCF data
+    if not lulucf.empty:
+        base = base.merge(lulucf, on=['country', 'year'], how='left')
+        
+        # Calculate Total CO2 (Fossil + LULUCF)
+        # Some countries have negative LULUCF (sinks)
+        base['total_co2_mtCO2'] = base['fossil_co2_mtCO2'].fillna(0) + base['lulucf_co2_mtCO2'].fillna(0)
     
     # Add robust iso_code mapping
     iso_map = pd.read_csv(os.path.join(PROC_DIR, 'country_iso_map.csv'))
@@ -278,34 +297,72 @@ def build_enriched_dataset():
     }
     base['globe_color'] = base.get('cat_overall_rating', pd.Series(dtype=str)).map(color_map).fillna('#95a5a6')
     
-    # Gap analysis (for countries with NDC target year)
+    # ---------------------------------------------------------
+    # PHASE 1 & 2: Reality Gap Vector & Momentum Slope
+    # ---------------------------------------------------------
+    # Extract baseline emissions for cw_baseline_year
+    base['cw_baseline_year_flt'] = pd.to_numeric(base.get('cw_baseline_year', pd.Series(dtype=str)), errors='coerce')
+    
+    # Create lookup map for base emissions
+    base_emissions_map = base.dropna(subset=['fossil_co2_mtCO2']).set_index(['country', 'year'])['fossil_co2_mtCO2'].to_dict()
+    
+    def get_base_emission(row):
+        if pd.notna(row['cw_baseline_year_flt']):
+            return base_emissions_map.get((row['country'], int(row['cw_baseline_year_flt'])), np.nan)
+        return np.nan
+
+    base['baseline_emissions_mtco2e'] = base.apply(get_base_emission, axis=1)
+    
+    # Calculate implied target (MtCO2e)
+    base['implied_target_mtco2e'] = np.nan
+    
+    # 1. Base year targets
+    mask_base = (base.get('cw_target_type') == 'base_year') & base['baseline_emissions_mtco2e'].notna() & base.get('cw_reduction_pct').notna()
+    base.loc[mask_base, 'implied_target_mtco2e'] = base.loc[mask_base, 'baseline_emissions_mtco2e'] * (1 - base.loc[mask_base, 'cw_reduction_pct'] / 100.0)
+    
+    # 2. Fixed level absolute targets
+    if 'cw_target_mtco2e' in base.columns:
+        mask_absolute = base['cw_target_mtco2e'].notna()
+        base.loc[mask_absolute, 'implied_target_mtco2e'] = base.loc[mask_absolute, 'cw_target_mtco2e']
+    
+    # The Reality Gap: Current year emissions - Implied target
+    # > 0 means overshooting the pledge (Deficit)
+    base['reality_gap_mtco2e'] = np.where(
+        base['implied_target_mtco2e'].notna(),
+        base['fossil_co2_mtCO2'] - base['implied_target_mtco2e'],
+        np.nan
+    )
+    
+    # Calculate 10-Year Momentum Slope (CAGR 2015-2024)
+    cagr_2015 = base[base['year'] == 2015].set_index('country')['fossil_co2_mtCO2']
+    cagr_2024 = base[base['year'] == 2024].set_index('country')['fossil_co2_mtCO2']
+    momentum_cagr = ((cagr_2024 / cagr_2015.replace(0, np.nan)).pow(1/9.0) - 1) * 100
+    base['momentum_cagr_10yr_pct'] = base['country'].map(momentum_cagr).round(2)
+    
+    # Target slope: required annual change to hit target from current year
     base['years_to_target'] = np.where(
         base['ndc_target_year'].notna(),
         base['ndc_target_year'] - base['year'],
         np.nan
     )
     
-    # Required annual reduction rate to hit target (simplified)
-    # Assumes linear reduction from 2015 baseline to target year
-    base['required_annual_reduction_pct'] = np.where(
-        (base['ndc_target_year'].notna()) & (base['ndc_target_year'] > 2015) & (base['year'] == 2015),
-        (base['emissions_change_from_2015_pct'] / (base['ndc_target_year'] - 2015)).round(2),
+    base['target_cagr_required_pct'] = np.where(
+        (base['implied_target_mtco2e'].notna()) & (base['years_to_target'] > 0) & (base['fossil_co2_mtCO2'] > 0),
+        ((base['implied_target_mtco2e'] / base['fossil_co2_mtCO2']).pow(1/base['years_to_target']) - 1) * 100,
         np.nan
-    )
-    # Forward-fill the required rate
-    base['required_annual_reduction_pct'] = base.groupby('country')['required_annual_reduction_pct'].ffill()
+    ).round(2)
     
-    # Gap: required vs actual annual change
-    base['gap_pct'] = np.where(
-        base['required_annual_reduction_pct'].notna(),
-        (base['required_annual_reduction_pct'] - base['yoy_change_pct']).round(2),
+    # Momentum vs Target slope divergence
+    # > 0 means emissions are growing faster than target allows
+    base['momentum_vs_target_divergence_pct'] = np.where(
+        base['target_cagr_required_pct'].notna() & base['momentum_cagr_10yr_pct'].notna(),
+        (base['momentum_cagr_10yr_pct'] - base['target_cagr_required_pct']).round(2),
         np.nan
     )
     
-    # On track flag (as string for Parquet compatibility)
     base['on_track'] = np.where(
-        base['gap_pct'].notna(),
-        np.where(base['gap_pct'] <= 0, 'true', 'false'),
+        base['momentum_vs_target_divergence_pct'].notna(),
+        np.where(base['momentum_vs_target_divergence_pct'] <= 0, 'true', 'false'),
         ''
     )
     
