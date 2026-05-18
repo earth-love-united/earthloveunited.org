@@ -170,8 +170,12 @@ async function _callOpenRouter(userMessage) {
   let apiKey = null;
   if (typeof GaiaKeyGate !== 'undefined' && GaiaKeyGate.hasKey()) {
     apiKey = GaiaKeyGate.getStoredKey();
+    console.log('[GAIA] API key found, using LLM mode');
   }
-  if (!apiKey) return null; // No key, fall back to pattern matching
+  if (!apiKey) {
+    console.log('[GAIA] No API key, using pattern matching');
+    return null; // No key, fall back to pattern matching
+  }
 
   const knowledgeContext = _buildKnowledgeContext();
   const messages = [
