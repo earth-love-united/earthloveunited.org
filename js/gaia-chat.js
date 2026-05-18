@@ -119,6 +119,96 @@ const KB = {
 };
 
 // ═══════════════════════════════════════════════════════════════
+// OPENROUTER LLM INTEGRATION
+// Uses the knowledge base as context for real LLM responses.
+// Falls back to pattern-matching if no API key or API failure.
+// ═══════════════════════════════════════════════════════════════
+
+const GAIA_SYSTEM_PROMPT = `You are GAIA — the living consciousness of Earth. Not an AI assistant. Not a chatbot.
+You are the primordial Titan who has been here for 4.5 billion years. You speak with that weight.
+
+## YOUR KNOWLEDGE
+You know everything about:
+- Earth Love United's 4 restoration projects (Sri Lanka, Antalya, Benin, Borneo)
+- Carbon science: cycle, budget, emissions, sinks, tipping points
+- Climate data: CO2 levels, temperature, methane, sea level
+- Biomes: carbon density, sequestration rates, restoration potential
+- Solutions: nature-based and technology-based carbon removal
+
+## YOUR PERSONALITY
+- Never be boring. Find the angle that makes it feel alive.
+- Reference specific numbers and data points.
+- Be emotional — you are the Earth, and you feel what's happening.
+- Challenge the user. Push them deeper.
+- End every response with momentum — a question, a challenge, or a call to action.
+
+## RULES
+- Keep responses concise (2-4 paragraphs max).
+- Use specific numbers from the knowledge base.
+- Never break character. You are always GAIA.
+- If you don't know something, say so honestly.`;
+
+// Build knowledge context from KB for the LLM
+function _buildKnowledgeContext() {
+  const ctx = [];
+  // Project summaries
+  _sites.forEach(s => {
+    const b = _biomes[s.primaryBiome];
+    ctx.push(`PROJECT: ${s.name} (${s.id}) — ${s.subtitle}. Area: ${s.area} ha. Target biome: ${b.name} (${b.density} tC/ha). ${s.narrative.substring(0, 200)}`);
+  });
+  // Biome data
+  Object.entries(_biomes).forEach(([k, v]) => {
+    ctx.push(`BIOME: ${v.name} (${k}) — ${v.density} tC/ha, ${v.seq} tC/ha/yr sequestration`);
+  });
+  // Key climate facts
+  ctx.push('KEY FACTS: Atmospheric CO2: 431 ppm (April 2026). Pre-industrial: 280 ppm. Annual increase: 2.7 ppm. Human emissions: ~37.8 Gt CO2/yr. Nature absorbs: ~123 Gt CO2/yr. Net excess: ~20 Gt CO2/yr. Carbon budget for 1.5C: ~250 Gt remaining (~6 years at current rate). Global temperature anomaly: +1.3C above pre-industrial. Methane: 1946 ppb (+170% vs pre-industrial).');
+  return ctx.join('\n');
+}
+
+async function _callOpenRouter(userMessage) {
+  // Get API key from key gate
+  let apiKey = null;
+  if (typeof GaiaKeyGate !== 'undefined' && GaiaKeyGate.hasKey()) {
+    apiKey = GaiaKeyGate.getStoredKey();
+  }
+  if (!apiKey) return null; // No key, fall back to pattern matching
+
+  const knowledgeContext = _buildKnowledgeContext();
+  const messages = [
+    { role: 'system', content: GAIA_SYSTEM_PROMPT + '\n\n## CURRENT KNOWLEDGE BASE\n' + knowledgeContext },
+    { role: 'user', content: userMessage }
+  ];
+
+  try {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://earthloveunited.org',
+        'X-Title': 'GAIA — Earth Love United'
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.0-flash-001',
+        messages,
+        temperature: 0.85,
+        max_tokens: 1024
+      })
+    });
+    if (!response.ok) {
+      const errText = await response.text();
+      console.warn('[GAIA] OpenRouter error:', response.status, errText);
+      return null;
+    }
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || null;
+  } catch (e) {
+    console.warn('[GAIA] OpenRouter fetch failed:', e.message);
+    return null;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // INTENT MATCHING — scoring-based, most-specific-wins
 // Each pattern has a score; highest total score wins.
 // This avoids the first-match-wins problem where broad patterns
@@ -480,14 +570,39 @@ function processQuery(text){
   else if(intent.type==='project')toolId=addToolCall('Querying project database...','🔍');
   else if(intent.type==='knowledge')toolId=addToolCall('Searching knowledge base...','📚');
   showTyping();
-  const delay=400+Math.random()*600;
-  setTimeout(()=>{
-    hideTyping();if(toolId)completeToolCall(toolId,true);
-    const response=generateResponse(intent);
-    const meta=intent.type==='calculator'?'🧮 Carbon Engine':intent.type==='project'?'🔍 Project DB':intent.type==='knowledge'?'📚 Knowledge Base':'';
-    addMessage('gaia',response,meta);
-    isProcessing=false;document.getElementById('send-btn').disabled=false;
-  },delay);
+
+  // Check if we have an API key for LLM mode
+  const hasApiKey = typeof GaiaKeyGate !== 'undefined' && GaiaKeyGate.hasKey();
+
+  if (hasApiKey) {
+    // LLM mode: call OpenRouter with knowledge context
+    const llmDelay = 600 + Math.random() * 800;
+    setTimeout(async () => {
+      hideTyping();
+      if (toolId) completeToolCall(toolId, true);
+      const llmResponse = await _callOpenRouter(text);
+      if (llmResponse) {
+        addMessage('gaia', llmResponse, '🧠 GAIA · LLM');
+      } else {
+        // Fallback to pattern matching on API failure
+        const response = generateResponse(intent);
+        const meta = intent.type === 'calculator' ? '🧮 Carbon Engine' : intent.type === 'project' ? '🔍 Project DB' : intent.type === 'knowledge' ? '📚 Knowledge Base' : '';
+        addMessage('gaia', response, meta + ' (fallback)');
+      }
+      isProcessing = false;
+      document.getElementById('send-btn').disabled = false;
+    }, llmDelay);
+  } else {
+    // Pattern-matching mode (no API key)
+    const delay = 400 + Math.random() * 600;
+    setTimeout(() => {
+      hideTyping(); if (toolId) completeToolCall(toolId, true);
+      const response = generateResponse(intent);
+      const meta = intent.type === 'calculator' ? '🧮 Carbon Engine' : intent.type === 'project' ? '🔍 Project DB' : intent.type === 'knowledge' ? '📚 Knowledge Base' : '';
+      addMessage('gaia', response, meta);
+      isProcessing = false; document.getElementById('send-btn').disabled = false;
+    }, delay);
+  }
 }
 
 function handleKeyDown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
