@@ -29,6 +29,28 @@
 | 05:10 | Consigliere | Fix build — module exposure bug | Changed `const X` → `window.X` in 8 files |
 | 05:15 | Consigliere | Fix syntax errors in 4 files | Removed stray `)();`, fixed try/catch orphans |
 | 05:20 | Consigliere | Verify build | All 35 JS files pass syntax check, 0 runtime errors |
+| 22:00 | Consigliere | Performance audit + fixes | Removed defer, rAF scroll throttle, kill ndvi polling |
+
+---
+
+## PERFORMANCE NOTES (2026-05-17)
+
+### Metrics (headless Chrome, not representative of real GPU)
+- DOM ready: 3000ms | Full load: 5800ms
+- JS heap: 73MB used / 124MB total
+- 26 scripts = 630KB total (481KB CDN globe.gl + 150KB local)
+- globe.gl CDN load: 2129ms (biggest single bottleneck)
+
+### Fixes Applied
+1. **Removed `defer` from quiz/cycle/biomes/counters** — restores baseline sync load order. Defer caused async race + 1.6s load times on each.
+2. **Scroll progress bar throttled with rAF** — was reading `offsetTop`/`offsetHeight` on every scroll event (60+ forced reflows/sec). Now batched to once per frame.
+3. **Killed ndvi-verifier 1s polling interval** — replaced with one-shot DOMContentLoaded listener. Data is always loaded by the time ndvi-verifier runs.
+
+### Known Inefficiencies (future work)
+- 26 separate script tags = 26 HTTP requests. Consider bundling for production.
+- globe.gl is 481KB from CDN — no local cache, loads every visit.
+- Scroll handler reads `offsetTop`/`offsetHeight` inside rAF — could cache these on resize events only.
+- COP31 deadline: November 2026. Performance budget should stay tight as globe features grow.
 
 ---
 
