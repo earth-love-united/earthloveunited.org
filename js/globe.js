@@ -78,6 +78,39 @@ const GlobeModule = {
 
     const m = this.world.globeMaterial();
     m.bumpScale = 8; m.emissive.setHex(0x061420); m.emissiveIntensity = 0.12; m.shininess = 5;
+
+    // Apply initial node visual states
+    this.updateNodeVisuals();
+  },
+
+  // ── Update node visual states based on engagement ──
+  updateNodeVisuals() {
+    const states = typeof GAIA_ENGAGEMENT !== 'undefined'
+      ? GAIA_ENGAGEMENT.getSiteStates()
+      : {};
+    const suggestedIds = typeof GAIA_NODES !== 'undefined'
+      ? GAIA_NODES.getSuggestedSiteIds('')
+      : [];
+
+    this.world.pointColor(site => {
+      if (suggestedIds.includes(site.id)) return '#ffd700'; // gold for suggested
+      const s = states[site.id];
+      if (!s || s.state === 'locked') return 'rgba(78,205,196,0.3)';
+      if (s.state === 'available') return 'rgba(78,205,196,0.6)';
+      if (s.state === 'explored') return 'rgba(123,232,208,0.9)';
+      if (s.state === 'mastered') return '#4ecdc4';
+      return 'rgba(78,205,196,0.6)';
+    });
+
+    this.world.pointRadius(site => {
+      if (suggestedIds.includes(site.id)) return 0.7;
+      const s = states[site.id];
+      if (!s || s.state === 'locked') return 0.3;
+      if (s.state === 'available') return 0.4;
+      if (s.state === 'explored') return 0.5;
+      if (s.state === 'mastered') return 0.6;
+      return 0.4;
+    });
   }
 };
 

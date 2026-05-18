@@ -68,6 +68,38 @@ const GAIA_NODES = (() => {
     turkey_share: 1.4,
   };
 
+  // ── Content type definitions for modular globe markers ──
+  const CONTENT_TYPES = {
+    site:   { marker: { color: '#4ecdc4', size: 0.4, pulse: true },  hasGAIA: true,  panelType: 'site' },
+    city:   { marker: { color: '#ffd700', size: 0.3, pulse: false }, hasGAIA: true,  panelType: 'city' },
+    event:  { marker: { color: '#ff6b6b', size: 0.5, pulse: true },  hasGAIA: true,  panelType: 'event' },
+    biome:  { marker: { color: '#2a8a3a', size: 0.6, pulse: false }, hasGAIA: false, panelType: 'biome' },
+    data:   { marker: { color: '#9b59b6', size: 0.2, pulse: false }, hasGAIA: false, panelType: 'data' },
+  };
+
+  // ── Generic content registration ──
+  function registerContent(config) {
+    const type = CONTENT_TYPES[config.type] || CONTENT_TYPES.site;
+    GLOBE_OVERLAY.registerSite({
+      ...config,
+      markerStyle: type.marker,
+      hasGAIA: type.hasGAIA,
+      panelType: type.panelType,
+    });
+  }
+
+  // ── Batch register from JSON URL ──
+  function registerFromJSON(url) {
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          data.forEach(config => registerContent(config));
+        }
+      })
+      .catch(err => console.warn('[GAIA_NODES] Failed to load content from', url, err));
+  }
+
   // ── Register all site content ──
   function registerAllSites() {
     GLOBE_OVERLAY.registerSite({
@@ -82,6 +114,7 @@ const GAIA_NODES = (() => {
         { id: 'climate',   label: 'Climate Data',  render: renderAntalyaClimate },
         { id: 'act',       label: 'Act',           render: renderAntalyaAct },
         { id: 'global',    label: '🌐 Global',     render: renderAntalyaGlobal },
+        { id: 'synthesis', label: '🧠 GAIA Synthesis', render: renderAntalyaSynthesis },
       ],
     });
 
@@ -96,6 +129,7 @@ const GAIA_NODES = (() => {
         { id: 'data',   label: 'Data',   render: renderSriLankaData },
         { id: 'impact', label: 'Impact', render: renderSriLankaImpact },
         { id: 'global', label: '🌐 Global', render: renderSriLankaGlobal },
+        { id: 'synthesis', label: '🧠 GAIA Synthesis', render: renderSriLankaSynthesis },
       ],
     });
 
@@ -110,6 +144,7 @@ const GAIA_NODES = (() => {
         { id: 'mangrove', label: 'Mangroves', render: renderBeninMangrove },
         { id: 'data',     label: 'Data',     render: renderBeninData },
         { id: 'global',   label: '🌐 Global', render: renderBeninGlobal },
+        { id: 'synthesis', label: '🧠 GAIA Synthesis', render: renderBeninSynthesis },
       ],
     });
 
@@ -124,6 +159,7 @@ const GAIA_NODES = (() => {
         { id: 'peat',   label: 'Peatlands',  render: renderBorneoPeat },
         { id: 'data',   label: 'Data',       render: renderBorneoData },
         { id: 'global', label: '🌐 Global',   render: renderBorneoGlobal },
+        { id: 'synthesis', label: '🧠 GAIA Synthesis', render: renderBorneoSynthesis },
       ],
     });
   }
@@ -155,6 +191,106 @@ const GAIA_NODES = (() => {
       if (line && typeof GAIA_BUBBLE !== 'undefined') GAIA_BUBBLE.speak(line.text, line.tone, 5000);
     }
     if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact();
+  }
+
+  // ── "What to Explore Next" suggestion engine ──
+  const SUGGESTION_REASONS = {
+    sri_lanka: {
+      analyst: 'The carbon density data is remarkable — from 10 to 180 tC/ha',
+      explorer: 'This is where restoration meets conflict recovery',
+      empath: 'The human story here is as powerful as the carbon data',
+      skeptic: 'The satellite verification is solid — see for yourself',
+      sharer: 'This is the most shareable restoration story we have',
+      default: 'From 10 to 180 tC/ha — an 18x carbon increase',
+    },
+    antalya: {
+      analyst: 'The 2021 wildfire NDVI crash is a textbook case',
+      explorer: 'COP31 host site — the fire year data is stark',
+      empath: '60,000 hectares burned in days. The recovery is slow.',
+      skeptic: 'Cross-reference the satellite data with registry records',
+      sharer: 'This is the climate story Turkey needs to tell',
+      default: 'A single fire dropped NDVI from 0.72 to 0.18',
+    },
+    benin: {
+      analyst: 'Mangrove carbon density is 950 tC/ha — highest of any biome',
+      explorer: "Jean's homeland. The mangrove story is personal.",
+      empath: 'When mangroves are destroyed, centuries of carbon go up in smoke',
+      skeptic: 'The NDVI drop matches the carbon loss — verify it',
+      sharer: "Jean's letter is the emotional anchor of this project",
+      default: 'Mangroves store 950 tC/ha — the most carbon-dense ecosystem',
+    },
+    borneo: {
+      analyst: 'NDVI 0.65 but only 50 tC/ha — the greenest lie on Earth',
+      explorer: 'Peat swamp vs oil palm — see the carbon difference',
+      empath: '1,400 tC/ha reduced to 50. That\'s a 96% loss.',
+      skeptic: 'The satellite sees through the green. Look at the data.',
+      sharer: 'This is the most important carbon story most people don\'t know',
+      default: 'Green ≠ carbon. The greenest place is the biggest carbon catastrophe',
+    },
+  };
+
+  const SITE_LABELS = {
+    sri_lanka: 'Sri Lanka',
+    antalya: 'Antalya',
+    benin: 'Benin',
+    borneo: 'Borneo',
+  };
+
+  function getNextSuggestions(currentSiteId) {
+    if (typeof GAIA_ENGAGEMENT === 'undefined') return [];
+    const siteStates = GAIA_ENGAGEMENT.getSiteStates();
+    const archetype = GAIA_ENGAGEMENT.getArchetype();
+    const allSites = ['sri_lanka', 'antalya', 'benin', 'borneo'];
+    const unvisited = allSites.filter(id => id !== currentSiteId && !siteStates[id]?.visited);
+    const visited = allSites.filter(id => id !== currentSiteId && siteStates[id]?.visited);
+    const suggestions = [];
+
+    // Priority 1: unvisited sites
+    for (const id of unvisited) {
+      const reasons = SUGGESTION_REASONS[id];
+      const reason = reasons?.[archetype] || reasons?.default || 'Worth exploring';
+      suggestions.push({
+        type: 'site',
+        id,
+        label: SITE_LABELS[id] || id,
+        reason,
+        action: `flyToSite('${id}')`,
+        priority: 'high',
+      });
+    }
+
+    // Priority 2: partially explored visited sites
+    for (const id of visited) {
+      const s = siteStates[id];
+      if (s && s.layersRevealed < 5) {
+        suggestions.push({
+          type: 'site',
+          id,
+          label: `Revisit ${SITE_LABELS[id] || id}`,
+          reason: 'You haven\'t seen all the data yet',
+          action: `flyToSite('${id}')`,
+          priority: 'medium',
+        });
+      }
+    }
+
+    // Priority 3: all explored — suggest GAIA chat
+    if (suggestions.length === 0) {
+      suggestions.push({
+        type: 'chat',
+        id: 'gaia',
+        label: 'Talk to GAIA',
+        reason: 'You\'ve seen the data. Now let\'s talk about what it means.',
+        action: 'GAIA_BUBBLE.openFullGAIA()',
+        priority: 'high',
+      });
+    }
+
+    return suggestions.slice(0, 3); // max 3 suggestions
+  }
+
+  function getSuggestedSiteIds(currentSiteId) {
+    return getNextSuggestions(currentSiteId).filter(s => s.type === 'site').map(s => s.id);
   }
 
   function addXP(siteId, amount) {
@@ -959,11 +1095,33 @@ const GAIA_NODES = (() => {
     `;
   }
 
+  // ═══════════════════════════════════════════
+  // GAIA SYNTHESIS TABS — AI-powered overviews
+  // ═══════════════════════════════════════════
+
+  function renderAntalyaSynthesis(container, site) {
+    container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('antalya', site);
+  }
+
+  function renderSriLankaSynthesis(container, site) {
+    container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('sri_lanka', site);
+  }
+
+  function renderBeninSynthesis(container, site) {
+    container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('benin', site);
+  }
+
+  function renderBorneoSynthesis(container, site) {
+    container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('borneo', site);
+  }
+
   // ── Init ──
   function init() { registerAllSites(); }
 
   return {
     init, populateSiteData, onNodeClick, onNodeHover,
     addXP, getNodeState, getAllNodeState,
+    getNextSuggestions, getSuggestedSiteIds,
+    registerContent, registerFromJSON, CONTENT_TYPES,
   };
 })();

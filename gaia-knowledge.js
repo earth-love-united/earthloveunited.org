@@ -241,6 +241,3 @@ const GaiaKnowledge = (() => {
     get chunkCount() { return _chunks.length; },
   };
 })();
-
-<longcat_arg_value>
-

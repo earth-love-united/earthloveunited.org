@@ -40,24 +40,102 @@ const GAIA_ENGAGEMENT = (() => {
     borneo: { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, visited: false },
   };
 
+  // ── Participant model ──
+  const participantModel = {
+    analytical: 0, intuitive: 0, emotional: 0, social: 0,
+    asksQuestions: 0, makesPredictions: 0, correctPredictions: 0,
+    exploresDeep: 0, sharesResults: 0, returnsVisit: 0,
+  };
+
+  // ── Knowledge model ──
+  const knowledgeModel = {
+    understandsCarbonCycle: 0,
+    understandsBiomes: 0,
+    understandsFire: 0,
+    understandsRestoration: 0,
+    understandsTippingPoints: 0,
+  };
+
   // ── Score ──
   function addSignal(signalName, siteId) {
     const weight = SIGNALS[signalName] || 0;
     score = Math.max(0, score + weight);
     velocityWindow.push({ ts: Date.now(), score });
-    // Keep only last 60 seconds for velocity
     const cutoff = Date.now() - 60000;
     velocityWindow = velocityWindow.filter(v => v.ts > cutoff);
     lastInteraction = Date.now();
-    // Reset idle nudge flags on interaction
     idleNudgeFired = { GENTLE: false, MEDIUM: false, STRONG: false };
     // Track per-site
     if (siteId && siteEngagement[siteId]) {
       siteEngagement[siteId].xp += weight;
       siteEngagement[siteId].visited = true;
+      if (signalName === 'data_reveal') siteEngagement[siteId].layersRevealed++;
+      if (signalName === 'scenario_run') siteEngagement[siteId].scenariosRun++;
     }
-    // Auto-persist on meaningful signals
+    // Update participant model
+    updateParticipantModel(signalName);
+    // Update knowledge model
+    updateKnowledgeModel(signalName, siteId);
     if (Math.abs(weight) >= 5) save();
+  }
+
+  function updateParticipantModel(signalName) {
+    const p = participantModel;
+    switch (signalName) {
+      case 'data_reveal': case 'ndvi_explore': case 'climate_view':
+        p.analytical += 2; p.asksQuestions++; break;
+      case 'prediction': p.makesPredictions++; p.intuitive += 2; break;
+      case 'correct_prediction': p.correctPredictions++; p.analytical += 1; break;
+      case 'insight': p.emotional += 2; p.exploresDeep++; break;
+      case 'share': p.social += 3; p.sharesResults++; break;
+      case 'return_visit': p.returnsVisit++; break;
+      case 'scenario_run': p.intuitive += 1; break;
+      case 'site_complete': p.exploresDeep += 2; break;
+    }
+  }
+
+  function updateKnowledgeModel(signalName, siteId) {
+    const k = knowledgeModel;
+    switch (signalName) {
+      case 'data_reveal':
+        if (siteId === 'borneo') k.understandsCarbonCycle += 2;
+        if (siteId === 'antalya') k.understandsFire += 2;
+        if (siteId === 'benin') k.understandsRestoration += 2;
+        if (siteId === 'sri_lanka') k.understandsRestoration += 2;
+        break;
+      case 'scenario_run': k.understandsTippingPoints += 1; break;
+      case 'insight':
+        k.understandsCarbonCycle += 1;
+        k.understandsBiomes += 1;
+        break;
+    }
+  }
+
+  function getArchetype() {
+    const p = participantModel;
+    const scores = {
+      analyst: p.analytical + p.asksQuestions * 2 + p.correctPredictions * 3,
+      explorer: p.intuitive + p.exploresDeep * 2 + p.makesPredictions,
+      empath: p.emotional * 2 + p.returnsVisit * 3,
+      skeptic: p.makesPredictions > 2 ? p.analytical + p.asksQuestions : 0,
+      sharer: p.social + p.sharesResults * 3,
+    };
+    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    return sorted[0][1] > 0 ? sorted[0][0] : 'explorer';
+  }
+
+  function getSiteStates() {
+    const states = {};
+    for (const [id, s] of Object.entries(siteEngagement)) {
+      states[id] = {
+        state: s.xp >= 100 ? 'mastered' : s.xp >= 50 ? 'explored' : s.xp >= 10 ? 'available' : 'locked',
+        xp: s.xp,
+        visited: s.visited,
+        layersRevealed: s.layersRevealed,
+        scenariosRun: s.scenariosRun,
+      };
+    }
+    return states;
   }
 
   function getTier() {
@@ -118,6 +196,7 @@ const GAIA_ENGAGEMENT = (() => {
     try {
       localStorage.setItem('gaia_engagement', JSON.stringify({
         score, moodSignals, lastInteraction, siteEngagement,
+        participantModel, knowledgeModel,
         savedAt: Date.now(),
       }));
     } catch { /* ignore */ }
@@ -130,9 +209,9 @@ const GAIA_ENGAGEMENT = (() => {
       const data = JSON.parse(raw);
       score = data.score || 0;
       moodSignals = data.moodSignals || moodSignals;
-      if (data.siteEngagement) {
-        Object.assign(siteEngagement, data.siteEngagement);
-      }
+      if (data.siteEngagement) Object.assign(siteEngagement, data.siteEngagement);
+      if (data.participantModel) Object.assign(participantModel, data.participantModel);
+      if (data.knowledgeModel) Object.assign(knowledgeModel, data.knowledgeModel);
     } catch { /* ignore */ }
   }
 
@@ -150,6 +229,10 @@ const GAIA_ENGAGEMENT = (() => {
     getMood, getMoodIntensity,
     getIdleLevel, shouldFireIdleNudge,
     getSiteEngagement: () => siteEngagement,
+    getSiteStates,
+    getArchetype,
+    getParticipantModel: () => ({ ...participantModel }),
+    getKnowledgeModel: () => ({ ...knowledgeModel }),
     interact: () => { lastInteraction = Date.now(); },
     save, load,
   };

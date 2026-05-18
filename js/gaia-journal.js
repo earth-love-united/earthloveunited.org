@@ -111,13 +111,36 @@ const GAIA_JOURNAL = (() => {
     };
   }
 
+  // ── Quest progress UI renderer ──
+  function renderQuestProgress(container) {
+    const quests = getQuests();
+    if (!container) return;
+    container.innerHTML = `
+      <div class="quest-progress-list">
+        ${quests.map(q => `
+          <div class="quest-item ${q.completed ? 'completed' : ''}">
+            <div class="quest-icon">${q.completed ? '✓' : '○'}</div>
+            <div class="quest-info">
+              <div class="quest-name">${q.title}</div>
+              <div class="quest-desc">${q.desc}</div>
+              <div class="quest-progress-bar">
+                <div class="quest-progress-fill" style="width:${Math.min((q.progress / q.target) * 100, 100)}%"></div>
+              </div>
+            </div>
+            <div class="quest-count">${q.progress}/${q.target}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
   // ── Init ──
   load();
 
   return {
     addEntry, getEntries, getEntryCount,
     checkQuestProgress, getQuests, getCompletedCount, getTotalCount,
-    generateShareCard,
+    generateShareCard, renderQuestProgress,
     save, load,
   };
 })();

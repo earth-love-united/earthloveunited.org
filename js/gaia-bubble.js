@@ -244,6 +244,11 @@ const GAIA_BUBBLE = (() => {
     if (indicator) {
       const siteNames = { sri_lanka: 'Sri Lanka', antalya: 'Antalya', benin: 'Benin', borneo: 'Borneo' };
       indicator.textContent = siteNames[siteId] || '';
+      if (siteId) {
+        indicator.classList.add('active');
+      } else {
+        indicator.classList.remove('active');
+      }
     }
   }
 
@@ -251,10 +256,23 @@ const GAIA_BUBBLE = (() => {
     return currentSite;
   }
 
+  // ── Open full GAIA chat with context ──
+  function openFullGAIA() {
+    if (currentSite) {
+      try {
+        sessionStorage.setItem('gaia_context', JSON.stringify({
+          siteId: currentSite,
+          timestamp: Date.now(),
+        }));
+      } catch { /* ignore */ }
+    }
+    window.open('gaia.html', '_blank');
+  }
+
   return {
     create, speak, showThinking, expand, collapse, toggleExpand,
     onSignal, idleNudge,
-    setCurrentSite, getCurrentSite,
+    setCurrentSite, getCurrentSite, openFullGAIA,
     isVisible, getBubble,
     colors: COLORS,
   };

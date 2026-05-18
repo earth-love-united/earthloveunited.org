@@ -12,9 +12,243 @@ const SITE_PANEL = (() => {
   let _lastVerification = null;
   let _lastTab = 'sat';
   let _lastRegCheck = null;
+  let _gaiaCollapsed = false;
 
   // ── Layer definitions ──
   const LAYERS = ['story', 'data', 'mystery', 'reveal', 'insight'];
+
+  // ── GAIA Context: per-site, per-layer guidance + suggestions ──
+  const GAIA_CONTEXT = {
+    sri_lanka: {
+      story: {
+        guidance: "This land was scarred by decades of conflict. The Northern Province saw displacement, loss, and ecological collapse. But someone saw potential here — not just to plant trees, but to rebuild an entire ecosystem.",
+        suggestions: [
+          { label: "Read the full story", action: "SITE_PANEL.scrollToLayer('story')" },
+          { label: "Why Sri Lanka?", action: "SITE_PANEL.speakGAIA('ENTRY_SRI_02')" },
+        ],
+      },
+      data: {
+        guidance: "Look at the NDVI sparkline. That flat line on the left? Decades of bare soil. Now look at the right edge — that's the restoration kicking in. From 10 tC/ha to 180. That's not just recovery. That's resurrection.",
+        suggestions: [
+          { label: "Show me the data", action: "SITE_PANEL.scrollToLayer('data')" },
+          { label: "Verify with satellite", action: "SITE_PANEL.verifyCurrentSite()" },
+        ],
+      },
+      mystery: {
+        guidance: "Before you see the answer — what do you think? This land was almost bare. Ten tons of carbon per hectare. What could it become?",
+        suggestions: [
+          { label: "I have a theory", action: "SITE_PANEL.scrollToLayer('mystery')" },
+        ],
+      },
+      reveal: {
+        guidance: "From 10 to 180 tC/ha. An 18x increase. This is what restoration looks like when you do it right — not just trees, but a multilayer forest that pays for itself.",
+        suggestions: [
+          { label: "Add to journal", action: "SITE_PANEL.scrollToLayer('insight')" },
+          { label: "Explore another site", action: "SITE_PANEL.close()" },
+        ],
+      },
+      insight: {
+        guidance: "Degraded land isn't dead. It's waiting. From 10 tC/ha to 180 — that's not just restoration. That's resurrection.",
+        suggestions: [
+          { label: "Add to journal", action: "SITE_PANEL.addInsightFromGAIA()" },
+          { label: "Explore another site", action: "SITE_PANEL.close()" },
+        ],
+      },
+    },
+    antalya: {
+      story: {
+        guidance: "Antalya. Mediterranean coast. Ancient pines, centuries old. Then July 2021 — the fire came. Sixty thousand hectares gone in days. I felt every hectare.",
+        suggestions: [
+          { label: "Read the full story", action: "SITE_PANEL.scrollToLayer('story')" },
+          { label: "What caused it?", action: "SITE_PANEL.speakGAIA('ENTRY_ANT_01')" },
+        ],
+      },
+      data: {
+        guidance: "The NDVI dropped from 0.72 to 0.18. That's not a number. That's a scream. Four years later, it's at 0.38 — scrub recovery. The pines need decades. Maybe a century.",
+        suggestions: [
+          { label: "Show me the data", action: "SITE_PANEL.scrollToLayer('data')" },
+          { label: "Verify with satellite", action: "SITE_PANEL.verifyCurrentSite()" },
+        ],
+      },
+      mystery: {
+        guidance: "The NDVI crashed from 0.72 to 0.18 in 2021. What could cause that kind of collapse in a Mediterranean forest?",
+        suggestions: [
+          { label: "I have a theory", action: "SITE_PANEL.scrollToLayer('mystery')" },
+        ],
+      },
+      reveal: {
+        guidance: "Wildfire. Sixty thousand hectares burned in days. The recovery to 0.38 took four years. Full forest recovery? Decades. Maybe a century. This is what climate change looks like on the ground.",
+        suggestions: [
+          { label: "Add to journal", action: "SITE_PANEL.scrollToLayer('insight')" },
+          { label: "Explore another site", action: "SITE_PANEL.close()" },
+        ],
+      },
+      insight: {
+        guidance: "A single fire dropped NDVI from 0.72 to 0.18. Recovery to 0.38 took four years. Full forest recovery? Decades. Maybe a century.",
+        suggestions: [
+          { label: "Add to journal", action: "SITE_PANEL.addInsightFromGAIA()" },
+          { label: "Explore another site", action: "SITE_PANEL.close()" },
+        ],
+      },
+    },
+    benin: {
+      story: {
+        guidance: "Ouidah, Benin. A man named Jean Missinhoun was from here. He carried this place in his heart. He wanted to bring the mangroves back — even after he was gone.",
+        suggestions: [
+          { label: "Read the full story", action: "SITE_PANEL.scrollToLayer('story')" },
+          { label: "Who was Jean?", action: "SITE_PANEL.speakGAIA('ENTRY_BEN_01')" },
+        ],
+      },
+      data: {
+        guidance: "Mangroves store 950 tC/ha — the most carbon-dense ecosystem on Earth. The NDVI here dropped from 0.68 to 0.45. The mangroves were being torn out. For firewood. For development. For short-term thinking.",
+        suggestions: [
+          { label: "Show me the data", action: "SITE_PANEL.scrollToLayer('data')" },
+          { label: "Verify with satellite", action: "SITE_PANEL.verifyCurrentSite()" },
+        ],
+      },
+      mystery: {
+        guidance: "Mangroves store 950 tC/ha when intact. The NDVI dropped from 0.68 to 0.45. What happened to all that carbon?",
+        suggestions: [
+          { label: "I have a theory", action: "SITE_PANEL.scrollToLayer('mystery')" },
+        ],
+      },
+      reveal: {
+        guidance: "When mangroves are destroyed, the carbon stored in their biomass and waterlogged soil is released. Every hectare lost is 950 tons of carbon going into the atmosphere. That's why restoring them is so urgent.",
+        suggestions: [
+          { label: "Add to journal", action: "SITE_PANEL.scrollToLayer('insight')" },
+          { label: "Explore another site", action: "SITE_PANEL.close()" },
+        ],
+      },
+      insight: {
+        guidance: "Mangroves don't just store carbon — they lock it away for millennia. Destroy them, and centuries of storage go up in smoke.",
+        suggestions: [
+          { label: "Add to journal", action: "SITE_PANEL.addInsightFromGAIA()" },
+          { label: "Explore another site", action: "SITE_PANEL.close()" },
+        ],
+      },
+    },
+    borneo: {
+      story: {
+        guidance: "West Kalimantan. Peat swamp forest. Fourteen hundred tons of carbon per hectare — stored over thousands of years. Then the grids came. Perfect squares. Nature doesn't make grids. Humans do.",
+        suggestions: [
+          { label: "Read the full story", action: "SITE_PANEL.scrollToLayer('story')" },
+          { label: "What's the lie?", action: "SITE_PANEL.speakGAIA('ENTRY_BOR_03')" },
+        ],
+      },
+      data: {
+        guidance: "The NDVI is 0.65. Pretty green, right? But the carbon density is only 50 tC/ha. The original peat swamp stored 1,400. That's a 96% carbon loss disguised as green. This is the greenest lie on Earth.",
+        suggestions: [
+          { label: "Show me the data", action: "SITE_PANEL.scrollToLayer('data')" },
+          { label: "Verify with satellite", action: "SITE_PANEL.verifyCurrentSite()" },
+        ],
+      },
+      mystery: {
+        guidance: "The NDVI here is 0.65 — pretty green. What do you think the carbon density is? This is a tropical region. It should be massive, right?",
+        suggestions: [
+          { label: "I have a theory", action: "SITE_PANEL.scrollToLayer('mystery')" },
+        ],
+      },
+      reveal: {
+        guidance: "Just 50 tC/ha. This is an oil palm plantation. The original peat swamp stored 1,400 tC/ha. The NDVI looks green and healthy, but 96% of the carbon is gone. Green does not mean healthy.",
+        suggestions: [
+          { label: "Add to journal", action: "SITE_PANEL.scrollToLayer('insight')" },
+          { label: "Explore another site", action: "SITE_PANEL.close()" },
+        ],
+      },
+      insight: {
+        guidance: "Green ≠ carbon. Oil palm (NDVI 0.65) stores 50 tC/ha. The peat swamp it replaced stored 1,400. That's a 96% carbon loss disguised as green.",
+        suggestions: [
+          { label: "Add to journal", action: "SITE_PANEL.addInsightFromGAIA()" },
+          { label: "Explore another site", action: "SITE_PANEL.close()" },
+        ],
+      },
+    },
+  };
+
+  // ── Get GAIA context for current state ──
+  function getGAIAContext(site, layer) {
+    const siteContext = GAIA_CONTEXT[site.id];
+    if (!siteContext) {
+      return {
+        guidance: `Exploring ${site.name}. ${site.narrative.substring(0, 120)}...`,
+        suggestions: [
+          { label: "What happened here?", action: "SITE_PANEL.nextLayer()" },
+        ],
+      };
+    }
+    const layerContext = siteContext[layer] || siteContext.story;
+    return layerContext;
+  }
+
+  // ── Render GAIA section ──
+  function renderGAIAsection(site, layer) {
+    const ctx = getGAIAContext(site, layer);
+    return `
+      <div class="site-panel-gaia" id="site-panel-gaia">
+        <div class="gaia-section-header" onclick="SITE_PANEL.toggleGAIA()">
+          <span class="gaia-section-icon">🌍</span>
+          <span class="gaia-section-title">GAIA</span>
+          <span class="gaia-section-toggle" id="gaia-toggle-icon">${_gaiaCollapsed ? '▶' : '▼'}</span>
+        </div>
+        <div class="gaia-section-body${_gaiaCollapsed ? ' collapsed' : ''}" id="gaia-section-body">
+          <div class="gaia-guidance">${ctx.guidance}</div>
+          <div class="gaia-suggestions">
+            ${ctx.suggestions.map(s => `
+              <button class="gaia-suggestion-chip" onclick="${s.action}">${s.label}</button>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // ── Toggle GAIA section collapse ──
+  function toggleGAIA() {
+    _gaiaCollapsed = !_gaiaCollapsed;
+    const body = document.getElementById('gaia-section-body');
+    const icon = document.getElementById('gaia-toggle-icon');
+    if (body) body.classList.toggle('collapsed', _gaiaCollapsed);
+    if (icon) icon.textContent = _gaiaCollapsed ? '▶' : '▼';
+  }
+
+  // ── Speak a specific GAIA line ──
+  function speakGAIA(lineId) {
+    if (typeof GAIA_VOICE === 'undefined') return;
+    const line = GAIA_VOICE.getLine(lineId);
+    if (line && typeof GAIA_BUBBLE !== 'undefined') {
+      GAIA_BUBBLE.show(line.text, line.tone, 8000);
+    }
+  }
+
+  // ── Add insight from GAIA section ──
+  function addInsightFromGAIA() {
+    if (!currentSite) return;
+    const layer = LAYERS[currentLayer];
+    const ctx = getGAIAContext(currentSite, layer);
+    // Find the insight text from the current layer
+    const pred = PREDICTIONS[currentSite.id];
+    if (pred) {
+      addInsight(pred.insight, currentSite.id);
+    }
+  }
+
+  // ── Scroll to a specific layer ──
+  function scrollToLayer(layer) {
+    const idx = LAYERS.indexOf(layer);
+    if (idx >= 0 && idx >= currentLayer) {
+      // Advance to that layer
+      while (currentLayer < idx) {
+        nextLayer();
+      }
+      // Scroll the panel to show the layer
+      if (panelEl) {
+        const layers = panelEl.querySelectorAll('.reveal-layer');
+        if (layers[idx]) {
+          layers[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }
+  }
 
   // ── Prediction questions per site ──
   const PREDICTIONS = {
@@ -117,6 +351,9 @@ const SITE_PANEL = (() => {
       <h2 style="font-family:var(--display);font-size:24px;font-weight:300;color:var(--mint);margin-bottom:4px">${site.subtitle}</h2>
       <div style="font-size:11px;color:var(--text3);margin-bottom:16px">${site.area.toLocaleString()} ha · Target: ${biome.name}</div>
     </div>`;
+
+    // GAIA section — context-aware guidance
+    html += renderGAIAsection(site, layer);
 
     // Story layer
     if (LAYERS.indexOf(layer) >= 0) {
@@ -403,5 +640,5 @@ const SITE_PANEL = (() => {
     GAIA_ENGAGEMENT.save();
   }
 
-  return { open, close, nextLayer, selectPrediction, addInsight, verifyCurrentSite, switchVerifyTab };
+  return { open, close, nextLayer, selectPrediction, addInsight, verifyCurrentSite, switchVerifyTab, toggleGAIA, speakGAIA, addInsightFromGAIA, scrollToLayer, getCurrentLayer: () => currentLayer, getCurrentSite: () => currentSite };
 })();

@@ -107,6 +107,54 @@ const GAIA_VOICE = (() => {
   let usedLines = {}; // lineId -> timestamp
   let idleTimer = null;
   let lastInteraction = Date.now();
+  let sessionCount = 1;
+
+  // ── Voice Modifiers per tone ──
+  const VOICE_MODIFIERS = {
+    grief:      { rate: -0.10, pitch: -0.05, volume: 0,    pauseBefore: 800 },
+    concerned:  { rate: -0.08, pitch: -0.03, volume: 0,    pauseBefore: 500 },
+    excited:    { rate: +0.05, pitch: 0,     volume: +0.1, pauseBefore: 0 },
+    proud:      { rate: +0.05, pitch: 0,     volume: +0.1, pauseBefore: 0 },
+    fierce:     { rate: +0.10, pitch: -0.08, volume: +0.15,pauseBefore: 0 },
+    warm:       { rate: -0.08, pitch: +0.03, volume: -0.05,pauseBefore: 500 },
+    mysterious: { rate: -0.12, pitch: -0.05, volume: -0.1, pauseBefore: 1200 },
+    nurturing:  { rate: -0.08, pitch: +0.03, volume: -0.05,pauseBefore: 500 },
+    urgent:     { rate: +0.08, pitch: -0.05, volume: +0.1, pauseBefore: 200 },
+    playful:    { rate: +0.03, pitch: +0.05, volume: 0,    pauseBefore: 300 },
+  };
+
+  // ── Silence rules: when GAIA should NOT speak ──
+  function shouldBeSilent(state, siteId, context) {
+    // Borneo carbon data — let the numbers speak
+    if (siteId === 'borneo' && state === 'DATA_REVEAL' && context?.layer === 'carbon') {
+      return { silent: true, reason: 'The carbon data speaks for itself' };
+    }
+    // Antalya fire year — silence for the burn scar
+    if (siteId === 'antalya' && state === 'DATA_REVEAL' && context?.year === 2021) {
+      return { silent: true, reason: 'The fire year needs silence' };
+    }
+    // Benin narrative — let Jean's story breathe
+    if (siteId === 'benin' && state === 'DATA_REVEAL' && context?.layer === 'narrative') {
+      return { silent: true, reason: "Let Jean's story breathe" };
+    }
+    // Check GAIA_MIND if available
+    if (typeof GAIA_MIND !== 'undefined') {
+      return GAIA_MIND.shouldGaiaSpeak({ state, siteId, ...context });
+    }
+    return { silent: false };
+  }
+
+  // ── Get voice modifiers for a tone ──
+  function getVoiceModifiers(tone) {
+    const m = VOICE_MODIFIERS[tone] || {};
+    // Session depth adjustment: GAIA gets slightly faster/more confident over time
+    if (sessionCount > 3) m.rate = (m.rate || 0) + 0.03;
+    if (sessionCount > 10) {
+      m.rate = (m.rate || 0) + 0.02;
+      m.pitch = (m.pitch || 0) + 0.02;
+    }
+    return m;
+  }
 
   // ── Helpers ──
   function getEligibleLines(state, site) {
@@ -142,11 +190,18 @@ const GAIA_VOICE = (() => {
   // ── Public API ──
   return {
     // Speak a line for a given state + context
-    speak(state, site, preferredTone) {
+    speak(state, site, preferredTone, context) {
+      // Check silence first
+      const silence = shouldBeSilent(state, site, context);
+      if (silence.silent) {
+        return { text: null, tone: null, silent: true, reason: silence.reason, voiceModifiers: {} };
+      }
       const line = selectLine(state, site, preferredTone);
       currentState = state;
       if (line) currentMood = line.tone;
-      return line;
+      if (!line) return null;
+      const voiceModifiers = getVoiceModifiers(line.tone);
+      return { ...line, voiceModifiers, silent: false };
     },
 
     // Get a specific line by ID
@@ -179,6 +234,12 @@ const GAIA_VOICE = (() => {
       if (!level) return null;
       return this.speak('IDLE', null, null);
     },
+
+    // Check if GAIA should be silent
+    shouldSilent: shouldBeSilent,
+    getVoiceModifiers,
+    getSessionCount: () => sessionCount,
+    setSessionCount: (n) => { sessionCount = n; },
 
     getState: () => currentState,
     getMood: () => currentMood,

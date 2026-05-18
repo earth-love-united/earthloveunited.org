@@ -303,3 +303,162 @@
     flex-direction: column;
   }
 }
+
+/* ═══════════════════════════════════════════ */
+/* GAIA KNOWLEDGE — Source Popovers & Synthesis */
+/* ═══════════════════════════════════════════ */
+
+/* ── ⓘ Source Button ── */
+.gaia-source-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(78, 205, 196, 0.2);
+  background: transparent;
+  color: rgba(78, 205, 196, 0.4);
+  font-size: 9px;
+  cursor: pointer;
+  margin-left: 4px;
+  vertical-align: middle;
+  transition: all 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+
+.gaia-source-btn:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: rgba(78, 205, 196, 0.08);
+}
+
+/* ── Source Popover ── */
+.gaia-source-popover {
+  width: 300px;
+  max-width: 90vw;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(8, 10, 18, 0.98), rgba(12, 15, 25, 0.97));
+  border: 1px solid rgba(78, 205, 196, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  animation: popover-in 0.15s ease-out;
+  z-index: 1000;
+}
+
+@keyframes popover-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.gaia-source-popover-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.gaia-source-confidence {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-family: var(--mono);
+}
+
+.gaia-source-confidence--very_high {
+  background: rgba(91, 191, 114, 0.15);
+  color: var(--leaf);
+}
+
+.gaia-source-confidence--high {
+  background: rgba(78, 205, 196, 0.12);
+  color: var(--teal);
+}
+
+.gaia-source-confidence--medium {
+  background: rgba(212, 165, 116, 0.12);
+  color: var(--amber);
+}
+
+.gaia-source-source {
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.gaia-source-popover-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.gaia-source-popover-text {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+
+.gaia-source-popover-link {
+  font-size: 10px;
+  color: var(--teal);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.gaia-source-popover-link:hover {
+  color: var(--mint);
+}
+
+/* ── Inline Citations ── */
+.gaia-inline-cite {
+  font-size: 10px;
+  color: var(--text3);
+  white-space: nowrap;
+}
+
+.gaia-inline-cite a {
+  color: rgba(78, 205, 196, 0.5);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.gaia-inline-cite a:hover {
+  color: var(--teal);
+}
+
+/* ── GAIA Synthesis ── */
+.gaia-synthesis-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.gaia-synthesis-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  font-size: 9px;
+}
+
+.gaia-synthesis-source a {
+  color: var(--text3);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.gaia-synthesis-source a:hover {
+  color: var(--teal);
+}
