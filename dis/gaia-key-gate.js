@@ -218,4 +218,8 @@ const GaiaKeyGate = (() => {
 })();
 
 if (typeof module !== 'undefined') module.exports = GaiaKeyGate;
-if (typeof window !== 'undefined') window.GaiaKeyGate = GaiaKeyGate;
+if (typeof window !== 'undefined') {
+  window.GaiaKeyGate = GaiaKeyGate;
+  // Auto-init: load key from storage on script load
+  init();
+}

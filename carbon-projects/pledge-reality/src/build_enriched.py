@@ -27,38 +27,13 @@ OUT_DIR = os.path.join(DATA_DIR, 'output')
 def load_climate_watch_ndc():
     """Load and parse Climate Watch NDC content data"""
     print("Loading Climate Watch NDC data...")
-    with open(os.path.join(RAW_DIR, 'cw_ndc_all.json')) as f:
-        raw = json.load(f)
-    
-    records = raw.get('data', [])
-    
-    # Group by country
-    country_data = {}
-    for r in records:
-        country = r.get('country', '')
-        indicator = r.get('indicator_id', '') or r.get('indicator_name', '')
-        value = r.get('value', '')
-        
-        if not country or not indicator:
-            continue
-        
-        if country not in country_data:
-            country_data[country] = {'country': country, 'iso_code': r.get('iso_code3', '')}
-        
-        key = indicator.lower().replace(' ', '_').replace('-', '_')[:64]
-        country_data[country][key] = value
-    
-    df = pd.DataFrame(list(country_data.values()))
-    print(f"  Climate Watch: {len(df)} countries, {len(df.columns)} indicators")
-    
-    # NOTE: The API only returned 1 country (Afghanistan) with 1000 records.
-    # For a full dataset, we'd need to paginate through all countries.
-    # For now, we'll use what we have and note the limitation.
-    if len(df) <= 1:
-        print("  WARNING: Climate Watch data only has 1 country. Skipping merge.")
-        return pd.DataFrame()  # Return empty to skip merge
-    
-    return df
+    try:
+        df = pd.read_csv(os.path.join(PROC_DIR, 'cw_ndc_parsed.csv'))
+        print(f"  Climate Watch: {len(df)} countries")
+        return df
+    except Exception as e:
+        print(f"  WARNING: Failed to load Climate Watch data: {e}")
+        return pd.DataFrame()
 
 def load_world_bank():
     """Load World Bank population and GDP data"""
@@ -179,6 +154,16 @@ def load_ndc_registry():
     print(f"  NDC: {len(df)} countries")
     return df
 
+def load_ndgain():
+    """Load processed ND-GAIN index data"""
+    print("Loading ND-GAIN data...")
+    path = os.path.join(PROC_DIR, 'ndgain_index.csv')
+    if os.path.exists(path):
+        df = pd.read_csv(path)
+        print(f"  ND-GAIN: {len(df)} records")
+        return df
+    return pd.DataFrame()
+
 def build_enriched_dataset():
     """Merge all sources into the enriched dataset"""
     
@@ -187,16 +172,38 @@ def build_enriched_dataset():
     ndc = load_ndc_registry()
     cw = load_climate_watch_ndc()
     wb = load_world_bank()
+    ndgain = load_ndgain()
     
     # Start with GCB as base
     print("\nBuilding enriched dataset...")
     base = gcb[['country', 'year', 'fossil_co2_mtC', 'fossil_co2_mtCO2']].copy()
     
+    # Add robust iso_code mapping
+    iso_map = pd.read_csv(os.path.join(PROC_DIR, 'country_iso_map.csv'))
+    base = base.merge(iso_map, on='country', how='left')
+    
+    # Merge World Bank data (using iso_code)
+    if not wb.empty and 'iso_code' in base.columns:
+        wb_merge = wb[['iso_code', 'year', 'population', 'gdp_usd']].copy()
+        # Drop duplicates just in case
+        wb_merge = wb_merge.drop_duplicates(subset=['iso_code', 'year'])
+        base = base.merge(wb_merge, on=['iso_code', 'year'], how='left')
+
     # Merge NDC data
     ndc_cols = ['country', 'target_year', 'ndc_version', 'submission_date', 'language']
     ndc_merge = ndc[[c for c in ndc_cols if c in ndc.columns]].copy()
     ndc_merge = ndc_merge.rename(columns={'target_year': 'ndc_target_year'})
     base = base.merge(ndc_merge, on='country', how='left')
+
+    # Merge Climate Watch data
+    if not cw.empty and 'iso_code' in base.columns:
+        cw_merge = cw.drop(columns=['country_cw'], errors='ignore')
+        base = base.merge(cw_merge, on='iso_code', how='left')
+        
+    # Merge ND-GAIN
+    if not ndgain.empty and 'iso_code' in base.columns:
+        ndgain_merge = ndgain.drop(columns=['country_ndgain'], errors='ignore')
+        base = base.merge(ndgain_merge, on=['iso_code', 'year'], how='left')
     
     # Merge CAT detailed data (static per country)
     cat_static_cols = [c for c in cat.columns if c not in ['cat_url']]
@@ -210,27 +217,10 @@ def build_enriched_dataset():
     cat_merge = cat_merge.rename(columns=cat_rename)
     
     base = base.merge(cat_merge, on='country', how='left')
-    
-    # Merge World Bank data (per country per year)
-    if not wb.empty:
-        # Normalize WB country names
-        wb_country_map = {
-            'United States': 'United States', 'Russia': 'Russia',
-            'South Korea': 'South Korea', 'United Kingdom': 'United Kingdom',
-            'Czech Republic': 'Czech Republic', 'Congo, Dem. Rep.': 'DR Congo',
-            'Congo, Rep.': 'Republic of the Congo', 'Egypt, Arab Rep.': 'Egypt',
-            'Iran, Islamic Rep.': 'Iran', 'Korea, Rep.': 'South Korea',
-            'Lao PDR': 'Laos', 'Syrian Arab Republic': 'Syria',
-            'Turkiye': 'Turkey', 'Venezuela, RB': 'Venezuela',
-            'Yemen, Rep.': 'Yemen', 'Gambia, The': 'Gambia',
-            'Cabo Verde': 'Cape Verde', "Cote d'Ivoire": "Cote d'Ivoire",
-            'Slovak Republic': 'Slovakia', 'Macedonia, FYR': 'North Macedonia',
-            'Kyrgyz Republic': 'Kyrgyzstan', 'Hong Kong SAR, China': 'Hong Kong',
-            'Macao SAR, China': 'Macau',
-        }
-        wb['country'] = wb['country'].map(wb_country_map).fillna(wb['country'])
-        base = base.merge(wb[['country', 'year', 'population', 'gdp_usd']], 
-                         on=['country', 'year'], how='left')
+
+    # Consolidate target year
+    if 'cw_target_year' in base.columns:
+        base['ndc_target_year'] = base['ndc_target_year'].fillna(base['cw_target_year'])
     
     # Compute derived metrics
     print("Computing derived metrics...")
@@ -327,6 +317,12 @@ def build_enriched_dataset():
     # Sort and clean
     base = base.sort_values(['country', 'year']).reset_index(drop=True)
     
+    # Cast bool columns to nullable boolean to prevent parquet conversion errors
+    bool_cols = [c for c in base.columns if base[c].dtype == bool or c.startswith('cw_has_') or c.startswith('cw_is_') or c.startswith('has_')]
+    for col in bool_cols:
+        if col in base.columns:
+            base[col] = base[col].astype('boolean')
+            
     # Fill NaN for consistent types (HF Parquet requirement)
     string_cols = base.select_dtypes(include=['object']).columns
     for col in string_cols:

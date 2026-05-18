@@ -193,7 +193,7 @@ async function _callOpenRouter(userMessage) {
         'X-Title': 'GAIA — Earth Love United'
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-001',
+        model: 'google/gemini-2.0-flash-001:free',
         messages,
         temperature: 0.85,
         max_tokens: 1024
