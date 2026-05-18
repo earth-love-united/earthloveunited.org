@@ -112,8 +112,11 @@ const GaiaKeyGate = (() => {
 
   function openModal() {
     _modalOpen = true;
-    // Show the modal
-    const modal = document.getElementById('gaia-key-modal');
+    // Create modal if it doesn't exist (DOM adapter may not have run)
+    let modal = document.getElementById('gaia-key-modal');
+    if (!modal) {
+      modal = _createModalElement();
+    }
     if (modal) {
       const score = typeof GaiaState !== 'undefined' ? (GaiaState.getScore?.()?.score || 0) : 0;
       const level = getTeaseLevel(score);
@@ -126,6 +129,36 @@ const GaiaKeyGate = (() => {
     }
     // Set up form submission (in case gaia-client.js isn't loaded)
     _setupFormHandler();
+  }
+
+  function _createModalElement() {
+    const modal = document.createElement('div');
+    modal.id = 'gaia-key-modal';
+    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1001;align-items:center;justify-content:center;background:rgba(3,3,7,0.9);backdrop-filter:blur(6px);';
+    modal.innerHTML = `
+      <div class="key-modal-inner" style="background:#080a10;border:1px solid rgba(78,205,196,.15);border-radius:14px;padding:32px 28px;max-width:420px;width:90%;text-align:center;animation:fadeUp .3s ease-out;position:relative;">
+        <button id="gaia-key-modal-close" onclick="GaiaKeyGate.closeModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;">✕</button>
+        <h2 class="key-modal-title" style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#7be8d0;margin-bottom:8px;letter-spacing:1px;"></h2>
+        <p class="key-modal-gaia-line" style="font-family:'Outfit',sans-serif;font-size:13px;color:#9a9590;margin-bottom:18px;line-height:1.6;font-style:italic;"></p>
+        <form id="gaia-key-form" style="display:flex;flex-direction:column;gap:8px;">
+          <input id="gaia-key-input" type="password" placeholder="sk-or-v1-..."
+            style="width:100%;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(78,205,196,.15);border-radius:8px;color:#e2dfd8;font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;box-sizing:border-box;"
+            onfocus="this.style.borderColor='rgba(78,205,196,.35)'"
+            onblur="this.style.borderColor='rgba(78,205,196,.15)'" />
+          <button type="submit" class="key-modal-submit" style="width:100%;padding:10px;background:rgba(78,205,196,.1);border:1px solid rgba(78,205,196,.2);border-radius:8px;color:#4ecdc4;font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s;">Unlock</button>
+        </form>
+        <div id="gaia-key-error" style="margin-top:8px;font-size:11px;color:#c45c4a;min-height:16px;"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    // Add CSS for open state if not already present
+    if (!document.getElementById('gaia-key-modal-css')) {
+      const style = document.createElement('style');
+      style.id = 'gaia-key-modal-css';
+      style.textContent = '#gaia-key-modal.open{display:flex!important;}';
+      document.head.appendChild(style);
+    }
+    return modal;
   }
 
   function _setupFormHandler() {
