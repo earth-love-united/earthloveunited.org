@@ -247,12 +247,12 @@ const GaiaState = (() => {
   // ─── PERSISTENCE ───
   function _persistState() {
     const data = { score:_score, mood:_mood, moodIntensity:_moodIntensity, siteAffinity:_siteAffinity, usedLines:_usedLines, lastVisit:new Date().toISOString() };
-    try { localStorage.setItem('gaia_state', JSON.stringify(data)); } catch (e) {}
+    try { Storage.safeSetItem('gaia_state', JSON.stringify(data)); } catch (e) {}
   }
 
   function restoreState() {
     try {
-      const saved = JSON.parse(localStorage.getItem('gaia_state'));
+      const saved = JSON.parse(Storage.safeGetItem('gaia_state'));
       if (saved) {
         _score = saved.score || 0; _mood = saved.mood || 'curious';
         _moodIntensity = saved.moodIntensity || 3;

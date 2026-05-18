@@ -38,16 +38,14 @@ const GAIA_JOURNAL = (() => {
 
   // ── Persistence ──
   function save() {
-    try {
-      localStorage.setItem('gaia_journal', JSON.stringify({
-        entries, questProgress, completedQuests, savedAt: Date.now(),
-      }));
-    } catch { /* ignore */ }
+    Storage.safeSetItem('gaia_journal', JSON.stringify({
+      entries, questProgress, completedQuests, savedAt: Date.now(),
+    }));
   }
 
   function load() {
     try {
-      const raw = localStorage.getItem('gaia_journal');
+      const raw = Storage.safeGetItem('gaia_journal');
       if (!raw) return;
       const data = JSON.parse(raw);
       entries = data.entries || [];

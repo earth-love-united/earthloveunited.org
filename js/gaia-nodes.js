@@ -13,6 +13,8 @@
  */
 
 const GAIA_NODES = (() => {
+  // Counter for unique chart IDs (avoids Date.now() collisions)
+  let _chartIdCounter = 0;
   // ── Per-site engagement state ──
   const nodeState = {
     sri_lanka:  { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, state: 'locked', visited: false },
@@ -425,7 +427,7 @@ const GAIA_NODES = (() => {
     const ndvi = d.ndvi || [];
     const climate = d.climate || [];
     const ndviChartData = ndvi.map(n => ({ label: n.year.toString(), value: n.value }));
-    const ndviId = 'chart-antalya-ndvi-' + Date.now();
+    const ndviId = 'chart-antalya-ndvi-' + (++_chartIdCounter);
     const ndvi2020 = ndvi.find(n => n.year === 2020);
     const ndvi2021 = ndvi.find(n => n.year === 2021);
     const ndvi2025 = ndvi.find(n => n.year === 2025);
@@ -485,7 +487,7 @@ const GAIA_NODES = (() => {
     const d = site || {};
     const climate = d.climate || [];
     const tempChartData = climate.map(c => ({ label: c.year.toString(), value: c.temp }));
-    const tempId = 'chart-antalya-temp-' + Date.now();
+    const tempId = 'chart-antalya-temp-' + (++_chartIdCounter);
     const t1980 = climate.find(c => c.year === 1980);
     const t2000 = climate.find(c => c.year === 2000);
     const t2025 = climate.find(c => c.year === 2025);
@@ -639,7 +641,7 @@ const GAIA_NODES = (() => {
     const ndvi = d.ndvi || [];
     const climate = d.climate || [];
     const ndviChartData = ndvi.map(n => ({ label: n.year.toString(), value: n.value }));
-    const ndviId = 'chart-sl-ndvi-' + Date.now();
+    const ndviId = 'chart-sl-ndvi-' + (++_chartIdCounter);
     const t1980 = climate.find(c => c.year === 1980);
     const t2025 = climate.find(c => c.year === 2025);
     const tempRise = t1980 && t2025 ? (t2025.temp - t1980.temp).toFixed(1) : '1.3';
@@ -747,7 +749,7 @@ const GAIA_NODES = (() => {
     const d = site || {};
     const ndvi = d.ndvi || [];
     const ndviChartData = ndvi.map(n => ({ label: n.year.toString(), value: n.value }));
-    const ndviId = 'chart-benin-ndvi-' + Date.now();
+    const ndviId = 'chart-benin-ndvi-' + (++_chartIdCounter);
 
     container.innerHTML = `
       <h3>The Mangrove Carbon Cycle</h3>
@@ -862,7 +864,7 @@ const GAIA_NODES = (() => {
     const d = site || {};
     const ndvi = d.ndvi || [];
     const ndviChartData = ndvi.map(n => ({ label: n.year.toString(), value: n.value }));
-    const ndviId = 'chart-borneo-ndvi-' + Date.now();
+    const ndviId = 'chart-borneo-ndvi-' + (++_chartIdCounter);
 
     container.innerHTML = `
       <h3>Peatlands: The Carbon Time Bomb</h3>

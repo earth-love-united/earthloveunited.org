@@ -76,6 +76,22 @@ const GAIA_ENGAGEMENT = (() => {
     updateParticipantModel(signalName);
     // Update knowledge model
     updateKnowledgeModel(signalName, siteId);
+    // Feed GaiaMind emotional events
+    if (typeof GaiaMind !== 'undefined') {
+      const emotionMap = {
+        site_tap: ['curious', 1, 'User explored a site'],
+        data_reveal: ['curious', 2, 'User revealed data'],
+        scenario_run: ['excited', 2, 'User ran a scenario'],
+        big_scenario: ['proud', 3, 'User made a big impact'],
+        negative_scenario: ['concerned', 2, 'User saw carbon release'],
+        insight: ['warm', 2, 'User collected an insight'],
+        correct_prediction: ['proud', 2, 'User predicted correctly'],
+        share: ['excited', 3, 'User shared'],
+        return_visit: ['warm', 2, 'User returned'],
+      };
+      const [emotion, intensity, cause] = emotionMap[signalName] || [];
+      if (emotion) GaiaMind.addEmotionalEvent(emotion, intensity, cause, siteId);
+    }
     if (Math.abs(weight) >= 5) save();
   }
 
@@ -193,18 +209,16 @@ const GAIA_ENGAGEMENT = (() => {
 
   // ── Persistence ──
   function save() {
-    try {
-      localStorage.setItem('gaia_engagement', JSON.stringify({
-        score, moodSignals, lastInteraction, siteEngagement,
-        participantModel, knowledgeModel,
-        savedAt: Date.now(),
-      }));
-    } catch { /* ignore */ }
+    Storage.safeSetItem('gaia_engagement', JSON.stringify({
+      score, moodSignals, lastInteraction, siteEngagement,
+      participantModel, knowledgeModel,
+      savedAt: Date.now(),
+    }));
   }
 
   function load() {
     try {
-      const raw = localStorage.getItem('gaia_engagement');
+      const raw = Storage.safeGetItem('gaia_engagement');
       if (!raw) return;
       const data = JSON.parse(raw);
       score = data.score || 0;
@@ -217,9 +231,41 @@ const GAIA_ENGAGEMENT = (() => {
 
   // ── Init ──
   load();
+  // Load GaiaMind state if available
+  if (typeof GaiaMind !== 'undefined') {
+    try {
+      const mindData = Storage.safeGetItem('gaia_mind');
+      if (mindData) GaiaMind.deserialize(mindData);
+    } catch { /* ignore */ }
+    // Decay emotions based on time since last visit
+    const lastVisit = GaiaMind.getTimeSinceLastVisit?.();
+    if (lastVisit && lastVisit > 0) {
+      const daysSince = lastVisit / (1000 * 60 * 60 * 24);
+      if (daysSince > 0.1) GaiaMind.decayEmotions(daysSince);
+    }
+    // Record this session
+    if (GaiaMind.recordSession) {
+      GaiaMind.recordSession({
+        sitesVisited: [],
+        dominantEmotion: GaiaMind.getDominantEmotion?.()?.emotion || 'curious',
+        keyInsight: null,
+        gaiaEmotion: 'curious',
+        leftOff: 'arrival',
+        duration: 0,
+        score: 0,
+      });
+    }
+  }
   // Periodic auto-save (every 30s) + save on page unload
   setInterval(save, 30000);
   try { window.addEventListener('beforeunload', save); } catch { /* ignore */ }
+  // Also save GaiaMind periodically
+  setInterval(() => {
+    if (typeof GaiaMind !== 'undefined') {
+      try { Storage.safeSetItem('gaia_mind', GaiaMind.serialize()); } catch { /* ignore */ }
+    }
+  }, 30000);
+  try { window.addEventListener('beforeunload', () => { if (typeof GaiaMind !== 'undefined') { try { Storage.safeSetItem('gaia_mind', GaiaMind.serialize()); } catch { /* ignore */ } } }); } catch { /* ignore */ }
 
   return {
     addSignal, addMoodSignal,

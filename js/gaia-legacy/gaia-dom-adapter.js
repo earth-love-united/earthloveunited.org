@@ -185,7 +185,8 @@ window.GaiaDOMAdapter = (() => {
     if (typeof window.addMessage === 'function') {
       // Use gaia.html's native addMessage to render in #messages
       // Add emotion tag as meta so styling can reflect mood
-      const meta = emotion ? `🌍 ${emotion}` : undefined;
+      const emotionStr = typeof emotion === 'string' ? emotion : (emotion?.emotion || '');
+      const meta = emotionStr ? `🌍 ${emotionStr}` : undefined;
       window.addMessage('gaia', text, meta);
     } else {
       warn('[GaiaDOMAdapter] addMessage() not available — gaia.html inline script may not have loaded');
@@ -717,18 +718,18 @@ window.GaiaDOMAdapter = (() => {
         const input = document.getElementById('chat-input');
         const text = input ? input.value.trim() : '';
         if (!text) return;
-        // Clear input
-        if (input) {
-          input.value = '';
-          if (typeof window.autoResize === 'function') window.autoResize(input);
-        }
         // Dispatch to state machine for engagement tracking
         _sm('chat_sent', { message: text, source: 'sendMessage-interceptor' });
         document.dispatchEvent(new CustomEvent('gaia:chat-sent', {
           detail: { message: text, source: 'sendMessage-interceptor' }
         }));
-        // Let original sendMessage run — it shows user message + KB response
+        // Call original sendMessage FIRST (it reads input.value to display user message)
         originalSendMessage();
+        // Then clear input after original has processed it
+        if (input) {
+          input.value = '';
+          if (typeof window.autoResize === 'function') window.autoResize(input);
+        }
       };
       log('[GaiaDOMAdapter] sendMessage() intercepted (dual mode).');
     }

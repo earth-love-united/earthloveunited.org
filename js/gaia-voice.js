@@ -138,8 +138,8 @@ const GAIA_VOICE = (() => {
       return { silent: true, reason: "Let Jean's story breathe" };
     }
     // Check GAIA_MIND if available
-    if (typeof GAIA_MIND !== 'undefined') {
-      return GAIA_MIND.shouldGaiaSpeak({ state, siteId, ...context });
+    if (typeof GaiaMind !== 'undefined') {
+      return GaiaMind.shouldGaiaSpeak({ state, siteId, ...context });
     }
     return { silent: false };
   }

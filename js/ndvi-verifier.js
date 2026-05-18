@@ -33,11 +33,11 @@ const NDVIVerifier = (() => {
 
   function _loadFromCache(siteId) {
     try {
-      const raw = localStorage.getItem(_getCacheKey(siteId));
+      const raw = Storage.safeGetItem(_getCacheKey(siteId));
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       if (Date.now() - parsed.cachedAt > SENTINEL_CONFIG.cacheTtlMs) {
-        localStorage.removeItem(_getCacheKey(siteId));
+        Storage.safeRemoveItem(_getCacheKey(siteId));
         return null;
       }
       return parsed;
@@ -45,12 +45,10 @@ const NDVIVerifier = (() => {
   }
 
   function _saveToCache(siteId, data) {
-    try {
-      localStorage.setItem(_getCacheKey(siteId), JSON.stringify({
-        ...data,
-        cachedAt: Date.now(),
-      }));
-    } catch { /* storage full or blocked */ }
+    Storage.safeSetItem(_getCacheKey(siteId), JSON.stringify({
+      ...data,
+      cachedAt: Date.now(),
+    }));
   }
 
   // ── NDVI Calculation from Sentinel-2 bands ──
@@ -62,19 +60,18 @@ const NDVIVerifier = (() => {
   }
 
   // ── Fetch NDVI from Sentinel Hub Statistical API ──
-  // Returns time-series NDVI values for the past 2 years
+  // NOTE: Requires a valid OAuth token in production. Without auth this
+  // falls through to the MODIS fallback, and if that also fails (CORS,
+  // network) we return UNAVAILABLE so the UI can show a demo-mode badge.
   async function _fetchSentinelNdvi(site) {
     const { lat, lng } = site;
-    const bboxSize = 0.01; // ~1km box around point
+    const bboxSize = 0.01;
 
-    // Sentinel Hub Statistical API request
     const payload = {
       input: {
         bounds: {
           bbox: [lng - bboxSize, lat - bboxSize, lng + bboxSize, lat + bboxSize],
-          properties: {
-            crs: 'http://www.opengis.net/def/crs/EPSG/4326'
-          }
+          properties: { crs: 'http://www.opengis.net/def/crs/EPSG/4326' }
         },
         data: [{
           type: 'S2L2A',
@@ -86,10 +83,7 @@ const NDVIVerifier = (() => {
             mosaickingOrder: 'leastCC',
             maxCloudCoverage: 30,
           },
-          processing: {
-            upsampling: 'BICUBIC',
-            downsampling: 'BICUBIC'
-          }
+          processing: { upsampling: 'BICUBIC', downsampling: 'BICUBIC' }
         }]
       },
       aggregation: {
@@ -100,7 +94,7 @@ const NDVIVerifier = (() => {
             return [(sample.B08 - sample.B04) / (sample.B08 + sample.B04)];
           }
         `,
-        aggregationInterval: { of: 'P1M' }, // monthly
+        aggregationInterval: { of: 'P1M' },
         resolution: { width: 10, height: 10 },
       },
       output: { responses: [{ identifier: 'ndvi', format: { type: 'application/json' } }] }
@@ -123,7 +117,6 @@ const NDVIVerifier = (() => {
         return _fetchFallbackNdvi(site);
       }
 
-      // Parse NDVI values — Sentinel returns values in range [-1, 1]
       const monthlyNdvi = data.ndvi.data.map(d => ({
         date: d.date,
         ndvi: Math.round(d.basicStatNumbers.mean * 1000) / 1000,
@@ -137,7 +130,7 @@ const NDVIVerifier = (() => {
         latest: monthlyNdvi[monthlyNdvi.length - 1],
       };
     } catch (err) {
-      console.warn('[NDVIVerifier] Fetch failed:', err.message);
+      console.warn('[NDVIVerifier] Sentinel fetch failed:', err.message);
       return _fetchFallbackNdvi(site);
     }
   }
@@ -230,16 +223,19 @@ const NDVIVerifier = (() => {
   }
 
   // ── Public: Verify a single site ──
+  // Wraps the entire fetch chain in a timeout so the UI never hangs.
+  // If both Sentinel and MODIS fail (auth, CORS, network), returns
+  // UNAVAILABLE with a demo-mode flag so the UI can show sample data.
   async function verifySite(siteId) {
     if (!Data) {
       console.warn('[NDVIVerifier] Data module not loaded yet');
-      return { status: STATUS.UNAVAILABLE };
+      return { status: STATUS.UNAVAILABLE, demo: true };
     }
 
     const site = Data.getSite(siteId);
     if (!site) {
       console.warn(`[NDVIVerifier] Unknown site: ${siteId}`);
-      return { status: STATUS.UNAVAILABLE };
+      return { status: STATUS.UNAVAILABLE, demo: true };
     }
 
     // Check cache first
@@ -249,10 +245,40 @@ const NDVIVerifier = (() => {
       return { ...cached, comparison };
     }
 
-    // Fetch from satellite
-    const satelliteData = await _fetchSentinelNdvi(site);
-    _saveToCache(siteId, satelliteData);
+    // Race the satellite fetch against a timeout (8 seconds)
+    const SATELLITE_TIMEOUT_MS = 8000;
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), SATELLITE_TIMEOUT_MS)
+    );
 
+    let satelliteData;
+    try {
+      satelliteData = await Promise.race([
+        _fetchSentinelNdvi(site),
+        timeoutPromise
+      ]);
+    } catch {
+      // Timeout or unhandled error — use fallback
+      try {
+        satelliteData = await _fetchFallbackNdvi(site);
+      } catch {
+        satelliteData = { source: 'none', status: STATUS.UNAVAILABLE, data: [], latest: null };
+      }
+    }
+
+    // If both APIs failed, return demo data so the UI still renders
+    if (satelliteData.status === STATUS.UNAVAILABLE) {
+      return {
+        source: 'demo',
+        status: STATUS.UNAVAILABLE,
+        data: [],
+        latest: null,
+        demo: true,
+        comparison: { match: 'demo', reason: 'Satellite APIs unavailable (auth/CORS/network). Showing demo data.' },
+      };
+    }
+
+    _saveToCache(siteId, satelliteData);
     const comparison = _compareWithLocal(site.ndvi, satelliteData);
     return { ...satelliteData, comparison };
   }
@@ -325,6 +351,7 @@ const NDVIVerifier = (() => {
   function renderVerificationCard(siteId, comparison) {
     const site = Data ? Data.getSite(siteId) : null;
     const badge = getBadgeData(comparison);
+    const isDemo = comparison?.demo || comparison?.source === 'demo';
 
     return `
       <div class="verification-card" id="verify-${siteId}">
@@ -332,6 +359,7 @@ const NDVIVerifier = (() => {
           <span class="verify-icon">${badge.icon}</span>
           <span class="verify-label" style="color:${badge.color}">${badge.label}</span>
           <span class="verify-year">${comparison?.year || '—'}</span>
+          ${isDemo ? '<span class="verify-demo-badge" style="font-size:8px;background:rgba(139,159,199,0.15);color:#8b9fc7;padding:1px 5px;border-radius:3px;margin-left:4px;">DEMO</span>' : ''}
         </div>
         <div class="verify-detail">
           ${comparison?.satelliteValue != null
@@ -347,11 +375,11 @@ const NDVIVerifier = (() => {
                 <span>Difference</span>
                 <span class="verify-val ${comparison.diff < 0.05 ? 'good' : comparison.diff < 0.10 ? 'ok' : 'bad'}">${comparison.diff?.toFixed(3) || '—'}</span>
               </div>`
-            : `<div class="verify-row"><span>${badge.tooltip}</span></div>`
+            : `<div class="verify-row"><span>${isDemo ? '🛰 Demo mode — satellite verification requires API access. ' + (comparison?.reason || '') : badge.tooltip}</span></div>`
           }
         </div>
         <div class="verify-footer">
-          <span class="verify-source">Source: ${comparison?.source === 'sentinel_hub' ? 'Sentinel-2 (ESA)' : comparison?.source === 'modis' ? 'MODIS (NASA)' : 'Pending satellite data'}</span>
+          <span class="verify-source">Source: ${comparison?.source === 'sentinel_hub' ? 'Sentinel-2 (ESA)' : comparison?.source === 'modis' ? 'MODIS (NASA)' : comparison?.source === 'demo' ? 'Demo data' : 'Pending satellite data'}</span>
           ${site ? `<span class="verify-coords">${site.lat.toFixed(3)}°, ${site.lng.toFixed(3)}°</span>` : ''}
         </div>
       </div>

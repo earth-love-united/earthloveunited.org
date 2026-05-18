@@ -24,17 +24,15 @@ const PLEDGE_WALL = (() => {
 
   // ── Persistence ──
   function save() {
-    try {
-      localStorage.setItem('gaia_pledges', JSON.stringify(pledges));
-      localStorage.setItem('gaia_has_pledged', hasPledged ? '1' : '0');
-    } catch { /* ignore */ }
+    Storage.safeSetItem('gaia_pledges', JSON.stringify(pledges));
+    Storage.safeSetItem('gaia_has_pledged', hasPledged ? '1' : '0');
   }
 
   function load() {
     try {
-      const raw = localStorage.getItem('gaia_pledges');
+      const raw = Storage.safeGetItem('gaia_pledges');
       if (raw) pledges = JSON.parse(raw);
-      hasPledged = localStorage.getItem('gaia_has_pledged') === '1';
+      hasPledged = Storage.safeGetItem('gaia_has_pledged') === '1';
     } catch { /* ignore */ }
   }
 
@@ -84,16 +82,10 @@ const PLEDGE_WALL = (() => {
   }
 
   // ── Trigger: On departure (if engaged but hasn't pledged) ──
+  // NOTE: This is now handled by app.js via visibilitychange + beforeunload.
+  // Kept as a no-op for backward compatibility in case other code calls it.
   function onDeparture() {
-    if (!shouldShowPrompt()) return;
-    const score = typeof GAIA_ENGAGEMENT !== 'undefined' ? GAIA_ENGAGEMENT.getScore() : 0;
-    if (score < 20) return;
-    
-    triggerSource = 'departure';
-    showSmallPrompt(
-      "You're leaving. But the carbon clock is still ticking. Before you go — what's your pledge?",
-      'urgent'
-    );
+    // Deprecated — departure logic moved to app.js
   }
 
   // ── Show small prompt (not full modal yet) ──

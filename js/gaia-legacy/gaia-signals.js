@@ -13,17 +13,17 @@ const GAIA_SIG = (() => {
   function emit(e, p) {
     _buf.push({ e, p: p || {}, t: Date.now() });
     if (_buf.length > 200) _buf = _buf.slice(-200);
-    try { localStorage.setItem(KEY, JSON.stringify(_buf)); } catch {}
+    Storage.safeSetItem(KEY, JSON.stringify(_buf));
   }
 
   function drain() {
     const out = _buf.splice(0);
-    try { localStorage.removeItem(KEY); } catch {}
+    Storage.safeRemoveItem(KEY);
     return out;
   }
 
   // Load existing signals on init
-  try { const r = localStorage.getItem(KEY); if (r) _buf = JSON.parse(r); } catch {}
+  try { const r = Storage.safeGetItem(KEY); if (r) _buf = JSON.parse(r); } catch {}
 
   return { emit, drain, peek: () => [..._buf] };
 })();

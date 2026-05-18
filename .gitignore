@@ -27,3 +27,8 @@ dis/dist/
 __pycache__/
 *.pyc
 *.pyo
+
+# Large data files (build artifacts / intermediate)
+carbon-projects/unified/carbon_projects_*.jsonl
+carbon-projects/unified/carbon_projects_v*.jsonl
+!carbon-projects/unified/carbon_projects_final.jsonl

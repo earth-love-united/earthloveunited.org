@@ -108,15 +108,36 @@ const GAIA_BUBBLE = (() => {
     bubbleEl.style.borderColor = color + '40';
     avatarEl.style.boxShadow = `0 0 16px ${color}30`;
 
+    // Get voice modifiers from GaiaMind if available
+    let voiceModifiers = {};
+    if (typeof GaiaMind !== 'undefined') {
+      voiceModifiers = GaiaMind.getVoiceModifiers?.({ tone }) || {};
+    } else {
+      // Fallback: basic modifiers per tone
+      const fallback = {
+        mysterious: { rate: -0.12, pitch: -0.05, volume: -0.1 },
+        warm: { rate: -0.08, pitch: 0.03, volume: -0.05 },
+        fierce: { rate: 0.10, pitch: -0.08, volume: 0.15 },
+        urgent: { rate: 0.08, pitch: -0.05, volume: 0.1 },
+        concerned: { rate: -0.08, pitch: -0.03, volume: 0 },
+        proud: { rate: 0.05, pitch: 0, volume: 0.1 },
+        playful: { rate: 0.03, pitch: 0.05, volume: 0 },
+        nurturing: { rate: -0.08, pitch: 0.03, volume: -0.05 },
+      };
+      voiceModifiers = fallback[tone] || {};
+    }
+
     // Start typing
     currentText = text;
     textEl.textContent = '';
     bubbleEl.classList.add('speaking');
     bubbleEl.classList.remove('thinking');
 
-    // Typing effect
+    // Typing effect — speed adjusted by voice modifier
     let i = 0;
-    const speed = Math.min(25, Math.max(12, 150 / text.length));
+    const baseSpeed = Math.min(25, Math.max(12, 150 / text.length));
+    const speedMultiplier = 1 + (voiceModifiers.rate || 0);
+    const speed = Math.max(8, Math.min(40, baseSpeed * speedMultiplier));
     function type() {
       if (currentText !== text) return;
       if (i < text.length) {
@@ -269,9 +290,20 @@ const GAIA_BUBBLE = (() => {
     window.open('gaia.html', '_blank');
   }
 
+  // ── Welcome back with emotional memory ──
+  function welcomeBack() {
+    if (typeof GaiaMind === 'undefined') return null;
+    const sessionCount = GaiaMind.getSessionCount?.() || 1;
+    const timeSince = GaiaMind.getTimeSinceLastVisit?.();
+    const dominant = GaiaMind.getDominantEmotion?.();
+    const texture = GaiaMind.getEmotionalTexture?.();
+    const unresolved = GaiaMind.getUnresolvedThread?.();
+    return { sessionCount, timeSince, dominant, texture, unresolved };
+  }
+
   return {
     create, speak, showThinking, expand, collapse, toggleExpand,
-    onSignal, idleNudge,
+    onSignal, idleNudge, welcomeBack,
     setCurrentSite, getCurrentSite, openFullGAIA,
     isVisible, getBubble,
     colors: COLORS,

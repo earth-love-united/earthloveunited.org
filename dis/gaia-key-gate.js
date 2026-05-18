@@ -18,14 +18,14 @@ const GaiaKeyGate = (() => {
 
   function _loadKey() {
     try {
-      const stored = localStorage.getItem('gaia_api_key_hash');
+      const stored = Storage.safeGetItem('gaia_api_key_hash');
       if (stored) { _keyHash = stored; _keyEntered = true; return true; }
     } catch (e) {}
     return false;
   }
 
   function _saveKeyHash(hash) {
-    try { localStorage.setItem('gaia_api_key_hash', hash); } catch (e) {}
+    try { Storage.safeSetItem('gaia_api_key_hash', hash); } catch (e) {}
   }
 
   function _hashKey(key) {
@@ -58,7 +58,7 @@ const GaiaKeyGate = (() => {
 
   function clearKey() {
     _keyEntered = false; _keyHash = null; _teaseLevel = 0; _previewShown = false;
-    localStorage.removeItem('gaia_api_key_hash');
+    Storage.safeRemoveItem('gaia_api_key_hash');
     sessionStorage.removeItem('gaia_api_key');
   }
 

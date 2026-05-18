@@ -304,6 +304,7 @@ const SITE_PANEL = (() => {
     document.body.appendChild(overlayEl);
 
     panelEl = document.createElement('div');
+    panelEl.id = 'site-panel';
     panelEl.className = 'site-panel';
     document.body.appendChild(panelEl);
   }

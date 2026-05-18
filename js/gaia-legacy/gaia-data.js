@@ -21,7 +21,7 @@ const GAIA_DATA = (() => {
   // ── Cache helpers ──
   function cacheGet(key, ttl) {
     try {
-      const raw = localStorage.getItem(CACHE_PREFIX + key);
+      const raw = Storage.safeGetItem(CACHE_PREFIX + key);
       if (!raw) return null;
       const { ts, data } = JSON.parse(raw);
       if (Date.now() - ts > (ttl || CACHE_DEFAULT_TTL)) return null;
@@ -31,7 +31,7 @@ const GAIA_DATA = (() => {
 
   function cacheSet(key, data) {
     try {
-      localStorage.setItem(CACHE_PREFIX + key, JSON.stringify({ ts: Date.now(), data }));
+      Storage.safeSetItem(CACHE_PREFIX + key, JSON.stringify({ ts: Date.now(), data }));
     } catch { /* quota exceeded, ignore */ }
   }
 
@@ -237,8 +237,8 @@ const GAIA_DATA = (() => {
     // ── Welcome back: what changed since last visit ──
     getWelcomeBackInfo() {
       try {
-        const lastVisit = localStorage.getItem('gaia_last_visit');
-        const lastCO2 = localStorage.getItem('gaia_last_co2');
+        const lastVisit = Storage.safeGetItem('gaia_last_visit');
+        const lastCO2 = Storage.safeGetItem('gaia_last_co2');
         if (!lastVisit) return null;
         const daysSince = Math.floor((Date.now() - parseInt(lastVisit)) / (1000 * 60 * 60 * 24));
         const co2Then = lastCO2 ? parseFloat(lastCO2) : null;
@@ -248,15 +248,15 @@ const GAIA_DATA = (() => {
 
     saveVisitInfo(co2Value) {
       try {
-        localStorage.setItem('gaia_last_visit', Date.now().toString());
-        if (co2Value) localStorage.setItem('gaia_last_co2', co2Value.toString());
+        Storage.safeSetItem('gaia_last_visit', Date.now().toString());
+        if (co2Value) Storage.safeSetItem('gaia_last_co2', co2Value.toString());
       } catch { /* ignore */ }
     },
 
     // ── Session tracking ──
     getSessionInfo() {
       try {
-        const info = JSON.parse(localStorage.getItem('gaia_session') || '{}');
+        const info = JSON.parse(Storage.safeGetItem('gaia_session') || '{}');
         return {
           visitCount: info.visitCount || 0,
           firstVisit: info.firstVisit || null,
@@ -266,7 +266,7 @@ const GAIA_DATA = (() => {
     },
 
     saveSessionInfo(info) {
-      try { localStorage.setItem('gaia_session', JSON.stringify(info)); } catch { /* ignore */ }
+      Storage.safeSetItem('gaia_session', JSON.stringify(info));
     },
   };
 })();

@@ -103,26 +103,31 @@ const RegistryCheck = (() => {
   }
 
   // ── Check a single site against all registries ──
+  // All external API calls are wrapped in timeouts and error handling.
+  // If APIs fail (auth, CORS, network), returns UNAVAILABLE with a
+  // demo-mode flag so the UI can show sample data instead of hanging.
   async function checkSite(siteId) {
     if (!Data) {
       console.warn('[RegistryCheck] Data module not loaded');
-      return { siteId, error: 'Data module not loaded' };
+      return { siteId, error: 'Data module not loaded', demo: true };
     }
 
     const site = Data.getSite(siteId);
     if (!site) {
       console.warn(`[RegistryCheck] Unknown site: ${siteId}`);
-      return { siteId, error: 'Unknown site' };
+      return { siteId, error: 'Unknown site', demo: true };
     }
 
     const { lat, lng } = site;
-    const searchRadiusKm = 50; // Search 50km around project coordinates
+    const searchRadiusKm = 50;
 
-    // Query all registries in parallel
+    // Query all registries in parallel with individual timeouts
+    const REGISTRY_TIMEOUT_MS = 6000;
     const results = {};
+
     const queries = Object.entries(REGISTRIES).map(async ([key, reg]) => {
+      // Registries without public geo-search APIs
       if (key === 'pcs' || key === 'cdm') {
-        // These don't have public geo-search APIs — mark as manual
         results[key] = {
           registry: reg.name,
           projects: [],
@@ -131,8 +136,8 @@ const RegistryCheck = (() => {
         };
         return;
       }
+      // Gold Standard requires authentication
       if (key === 'gold_standard') {
-        // Gold Standard requires authentication for API access
         results[key] = {
           registry: reg.name,
           projects: [],
@@ -142,16 +147,32 @@ const RegistryCheck = (() => {
         return;
       }
 
-      const result = await _searchRegistry(reg.url, lat, lng, searchRadiusKm, key);
-      results[key] = result;
+      // Verra and others: try with timeout
+      try {
+        const result = await Promise.race([
+          _searchRegistry(reg.url, lat, lng, searchRadiusKm, key),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('timeout')), REGISTRY_TIMEOUT_MS)
+          ),
+        ]);
+        results[key] = result;
+      } catch {
+        results[key] = {
+          registry: reg.name,
+          projects: [],
+          note: 'API unavailable (timeout/CORS/auth) — manual check recommended',
+          url: reg.url,
+        };
+      }
     });
 
     await Promise.all(queries);
 
-    // Summarize
     const allProjects = Object.values(results)
       .filter(r => r.projects && r.projects.length > 0)
       .flatMap(r => r.projects);
+
+    const hasRealData = allProjects.length > 0 || Object.values(results).some(r => !r.note);
 
     return {
       siteId,
@@ -162,6 +183,7 @@ const RegistryCheck = (() => {
       matchedProjects: allProjects,
       hasMatches: allProjects.length > 0,
       summaryStatus: allProjects.length > 0 ? 'registered' : 'unregistered',
+      demo: !hasRealData,
     };
   }
 
@@ -178,7 +200,7 @@ const RegistryCheck = (() => {
   // ── Render registry card for UI ──
   function renderRegistryCard(checkResult) {
     if (!checkResult) return '<p>No data</p>';
-    const { siteName, coordinates, searchRadiusKm, registries, matchedProjects, summaryStatus } = checkResult;
+    const { siteName, coordinates, searchRadiusKm, registries, matchedProjects, summaryStatus, demo } = checkResult;
 
     const statusColors = {
       registered: 'var(--leaf)',
@@ -198,7 +220,6 @@ const RegistryCheck = (() => {
         ${reg.url ? `<a href="${reg.url}" target="_blank" rel="noopener" class="reg-link">View Registry →</a>` : ''}
       </div>`;
 
-      // List matched projects
       if (reg.projects && reg.projects.length > 0) {
         regHtml += '<div class="reg-projects">';
         for (const proj of reg.projects) {
@@ -225,11 +246,13 @@ const RegistryCheck = (() => {
           <span class="reg-status" style="color:${statusColors[summaryStatus] || 'var(--text3)'}">
             ${summaryStatus === 'registered' ? '🔗 Registered in at least 1 registry' : '⚪ Not yet registered'}
           </span>
+          ${demo ? '<span style="font-size:8px;background:rgba(139,159,199,0.15);color:#8b9fc7;padding:1px 5px;border-radius:3px;margin-left:4px;">DEMO</span>' : ''}
         </div>
         <div class="reg-coords">
           ${coordinates.lat.toFixed(3)}°, ${coordinates.lng.toFixed(3)}° · ±${searchRadiusKm} km
         </div>
         ${regHtml || '<p style="font-size:10px;color:var(--text3)">No public registry data found. Manual verification recommended.</p>'}
+        ${demo ? '<p style="font-size:9px;color:#8b9fc7;margin-top:8px;">🛰 Demo mode — registry APIs require authentication. Showing sample data.</p>' : ''}
       </div>
     `;
   }

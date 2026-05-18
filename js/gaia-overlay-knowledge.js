@@ -18,6 +18,7 @@
 const GAIA_KNOWLEDGE = (() => {
   let _loadStarted = false;
   let _loadComplete = false;
+  let _pollAttempts = 0;
   let _sourceCache = {}; // { key: { value, source, title, text, url, confidence } }
   let _searchQueue = [];
   let _activePopover = null;
@@ -26,6 +27,7 @@ const GAIA_KNOWLEDGE = (() => {
   function init() {
     if (_loadStarted) return;
     _loadStarted = true;
+    _pollAttempts = 0;
 
     // Listen for overlay open to start loading
     document.addEventListener('overlay:open', onOverlayOpen);
@@ -49,6 +51,16 @@ const GAIA_KNOWLEDGE = (() => {
       document.dispatchEvent(new CustomEvent('gaia:knowledge-ready'));
       return;
     }
+    // Max 50 retries × 200ms = 10 seconds. After that, mark as failed
+    // so queued searches return null instead of polling forever.
+    if (_pollAttempts >= 50) {
+      console.warn('[GAIA Knowledge] Dataset load timed out after 10s. Synthesis tabs will show unavailable.');
+      _loadComplete = false;
+      _processQueue(); // will return null for all queued items
+      document.dispatchEvent(new CustomEvent('gaia:knowledge-timeout'));
+      return;
+    }
+    _pollAttempts++;
     setTimeout(_pollForReady, 200);
   }
 

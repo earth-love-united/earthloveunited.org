@@ -6,7 +6,25 @@
 const App = {
   async init() {
     // Load data first
-    await Data.init();
+    try {
+      await Data.init();
+    } catch (err) {
+      console.error('[App] Data.init() failed:', err);
+      // Show user-visible error so the page isn't silently broken
+      const hero = document.getElementById('hero');
+      if (hero) {
+        const existing = hero.querySelector('.data-error-banner');
+        if (!existing) {
+          const banner = document.createElement('div');
+          banner.className = 'data-error-banner';
+          banner.style.cssText = 'background:rgba(196,92,74,0.15);border:1px solid rgba(196,92,74,0.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:12px;color:var(--warn);line-height:1.6;';
+          banner.innerHTML = '⚠️ Could not load site data. Some features may be unavailable. <button onclick="location.reload()" style="background:rgba(196,92,74,0.2);border:1px solid rgba(196,92,74,0.3);border-radius:4px;color:var(--warn);padding:2px 8px;cursor:pointer;font-size:11px;margin-left:8px;">Retry</button>';
+          hero.querySelector('.hero-inner')?.insertBefore(banner, hero.querySelector('.hero-inner').firstChild)
+            || hero.insertBefore(banner, hero.firstChild);
+        }
+      }
+      // Continue init -- modules that depend on Data will handle undefined gracefully
+    }
 
     // ── GAIA Nodes — register site content + wire globe ──
     if (typeof GAIA_NODES !== 'undefined') {
@@ -68,6 +86,26 @@ const App = {
         }, 1500);
       }
     }
+
+    // ── Pending pledge from previous visit ──
+    // If user left without pledging (detected via visibilitychange/beforeunload),
+    // show a gentle reminder on their next visit.
+    try {
+      const pendingPledge = localStorage.getItem('gaia_pending_pledge');
+      if (pendingPledge && typeof PLEDGE_WALL !== 'undefined' && !PLEDGE_WALL.hasPledged()) {
+        const pending = JSON.parse(pendingPledge);
+        // Only show if they were engaged (score >= 20) and it's been at least 1 hour
+        if (pending.score >= 20 && Date.now() - pending.timestamp > 3600000) {
+          setTimeout(() => {
+            if (typeof GAIA_BUBBLE !== 'undefined') {
+              GAIA_BUBBLE.speak("You were exploring last time. The carbon clock is still ticking. Before you go again — what's your pledge?", 'warm', 8000);
+            }
+          }, 3000);
+        }
+        // Clear the pending flag
+        localStorage.removeItem('gaia_pending_pledge');
+      }
+    } catch { /* ignore */ }
 
     // Create GAIA bubble — always visible after entering
     if (typeof GAIA_BUBBLE !== 'undefined') {
@@ -195,9 +233,47 @@ function startApp() {
 }
 
 // Departure trigger — prompt pledge if user is leaving without pledging
+// Strategy: use visibilitychange (reliable, can show UI) as the primary
+// trigger, and beforeunload as a last-resort signal (can't show UI but
+// can persist a "returning user" flag for next visit).
+let _departurePrompted = false;
+
+// Primary: visibilitychange fires when user switches tabs, minimizes, or
+// navigates away. This is reliable and allows DOM manipulation.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden' && !_departurePrompted) {
+    _departurePrompted = true;
+    if (typeof PLEDGE_WALL !== 'undefined') {
+      const score = typeof GAIA_ENGAGEMENT !== 'undefined' ? GAIA_ENGAGEMENT.getScore() : 0;
+      if (score >= 20 && !PLEDGE_WALL.hasPledged()) {
+        // Persist a "pending pledge" flag so we can show a prompt on next visit
+        try {
+          localStorage.setItem('gaia_pending_pledge', JSON.stringify({
+            score,
+            timestamp: Date.now(),
+            source: 'departure',
+          }));
+        } catch { /* ignore */ }
+      }
+    }
+  }
+});
+
+// Last resort: beforeunload fires when the page is being unloaded.
+// Modern browsers restrict DOM manipulation here, so we only persist state.
 window.addEventListener('beforeunload', () => {
+  if (_departurePrompted) return; // already handled by visibilitychange
   if (typeof PLEDGE_WALL !== 'undefined') {
-    PLEDGE_WALL.onDeparture();
+    const score = typeof GAIA_ENGAGEMENT !== 'undefined' ? GAIA_ENGAGEMENT.getScore() : 0;
+    if (score >= 20 && !PLEDGE_WALL.hasPledged()) {
+      try {
+        localStorage.setItem('gaia_pending_pledge', JSON.stringify({
+          score,
+          timestamp: Date.now(),
+          source: 'beforeunload',
+        }));
+      } catch { /* ignore */ }
+    }
   }
 });
 

@@ -3,6 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--
+  Content Security Policy — restrictive but allows our CDN dependencies.
+  - Scripts: self + globe.gl CDN + jsdelivr (for three-globe)
+  - Styles: self + fonts.googleapis.com + inline (needed for dynamic styles)
+  - Connect: self + API endpoints (NOAA, Carbonmark, Sentinel Hub, registry APIs)
+  - Images: self + data: + CDN sources
+  - Fonts: self + fonts.gstatic.com
+-->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  connect-src 'self' https://gml.noaa.gov https://api.carbonmark.com https://services.sentinel-hub.com https://modis.ornl.gov https://registry.vcsprogram.com https://my.goldstandard.org https://cdm.unfccc.int https://production-api.globalforestwatch.org;
+  img-src 'self' data: https://cdn.jsdelivr.net https://unpkg.com https://*.tile.openstreetmap.org;
+  font-src 'self' https://fonts.gstatic.com;
+">
 <title>Earth Love United — One Earth</title>
 
 <!-- Fonts -->
@@ -257,10 +273,12 @@
 <script src="js/scenario.js"></script>
 <script src="js/globe.js"></script>
 <!-- GAIA Foundation Layer -->
-<script src="gaia-data.js"></script>
-<script src="gaia-signals.js"></script>
-<script src="gaia-charts.js"></script>
+<script src="js/gaia-legacy/gaia-data.js"></script>
+<script src="js/gaia-legacy/gaia-signals.js"></script>
+<script src="js/gaia-legacy/gaia-charts.js"></script>
 <script src="js/gaia-voice.js"></script>
+<!-- GAIA Mind — emotional consciousness + cross-session memory -->
+<script src="dis/gaia-mind.js"></script>
 <script src="js/gaia-engagement.js"></script>
 <script src="js/gaia-journal.js"></script>
 <script src="js/gaia-bubble.js"></script>
@@ -273,7 +291,7 @@
 <script src="js/globe-overlay.js"></script>
 <script src="js/gaia-nodes.js"></script>
 <!-- GAIA Knowledge Engine (loaded on demand) -->
-<script src="gaia-knowledge.js"></script>
+<script src="js/gaia-legacy/gaia-knowledge.js"></script>
 <script src="js/gaia-overlay-knowledge.js"></script>
 <!-- Impact Verification Engine -->
 <script src="js/ndvi-verifier.js"></script>

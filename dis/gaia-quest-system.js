@@ -34,13 +34,13 @@ const GaiaQuests = (() => {
 
   function _loadProgress() {
     try {
-      const raw = localStorage.getItem('gaia_quests');
+      const raw = Storage.safeGetItem('gaia_quests');
       if (raw) _progress = JSON.parse(raw);
     } catch (e) { _progress = {}; }
   }
 
   function _saveProgress() {
-    try { localStorage.setItem('gaia_quests', JSON.stringify(_progress)); } catch (e) {}
+    try { Storage.safeSetItem('gaia_quests', JSON.stringify(_progress)); } catch (e) {}
   }
 
   function getQuest(questId) { return QUESTS[questId] || null; }
@@ -108,7 +108,7 @@ const GaiaQuests = (() => {
 
   function resetAll() {
     _progress = {};
-    localStorage.removeItem('gaia_quests');
+    Storage.safeRemoveItem('gaia_quests');
   }
 
   function onQuestEvent(fn) { _listeners.push(fn); }

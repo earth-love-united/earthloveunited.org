@@ -1,8 +1,11 @@
 // ═══════════════════════════════════════════════════════════════
-// DATA — Projects, Biomes, Carbon Engine
+// DATA — Uses shared Data module (loaded via data.js) if available,
+// otherwise falls back to embedded data for standalone operation.
+// This eliminates duplication between index.html and gaia.html.
 // ═══════════════════════════════════════════════════════════════
 
-const BIOMES = {
+// Use shared Data module functions if available, otherwise define locally
+const _biomes = (typeof Data !== 'undefined' && Data.biomes) ? Data.biomes : {
   tropical_rainforest:{name:"Tropical Rainforest",density:350,seq:2.5,icon:"🌳"},
   tropical_dry_forest:{name:"Tropical Dry Forest",density:180,seq:1.2,icon:"🌴"},
   mangrove:{name:"Mangrove",density:950,seq:6.5,icon:"🌿"},
@@ -17,7 +20,7 @@ const BIOMES = {
   urban_built:{name:"Urban / Built",density:30,seq:0.0,icon:"🏙️"}
 };
 
-const SITES = [
+const _sites = (typeof Data !== 'undefined' && Data.sites) ? Data.sites : [
   {id:"sri_lanka",name:"Northern Province",subtitle:"Multilayer Afforestation · Sri Lanka",lat:9.666,lng:80.285,primaryBiome:"tropical_dry_forest",currentBiome:"degraded_bare_land",area:2428,
     narrative:"SPE has identified over 6,000 acres across five districts of Sri Lanka's Northern Province for multilayer afforestation — peanuts, Ceylon cinnamon, jackfruit, black pepper — creating self-sustaining plantations that build long-term carbon stocks.",
     ndvi:[{year:2000,value:0.45,label:"Post-conflict degraded land"},{year:2010,value:0.40,label:"Slow recovery"},{year:2015,value:0.42,label:"Restoration planning"},{year:2020,value:0.48,label:"SPE project initiation"},{year:2025,value:0.55,label:"Active planting"}],
@@ -40,8 +43,9 @@ const SITES = [
     connection:"Green ≠ carbon. Oil palm (NDVI 0.65) stores a fraction of the peat swamp it replaced (1,400 vs 50 tC/ha)."}
 ];
 
+// Use shared utility functions if available, otherwise local copies
 function transitionCarbon(from,to,ha,yrs){
-  const f=BIOMES[from],t=BIOMES[to];if(!f||!t)return null;
+  const f=_biomes[from],t=_biomes[to];if(!f||!t)return null;
   const sC=(t.density-f.density)*ha,fC=(t.seq-f.seq)*ha,cum=sC+fC*yrs;
   return{stock_co2:sC*3.67,flux_co2:fC*3.67,cumulative_co2:cum*3.67,years:yrs};
 }
@@ -56,6 +60,11 @@ function fmt(n){
   return n.toFixed(0);
 }
 
+// Accessors that prefer shared Data module
+function getBiome(key){ return _biomes[key]; }
+function getSite(id){ return _sites.find(s=>s.id===id); }
+function getAllSites(){ return _sites; }
+
 // ═══════════════════════════════════════════════════════════════
 // GAIA'S KNOWLEDGE BASE — From RESEARCH.md v1.0 (May 2026)
 // Sources: NOAA, NASA, Global Carbon Project, IPCC AR6, OWID, State of CDR
@@ -69,11 +78,11 @@ const KB = {
   ],
 
   projects:{
-    all:()=>{let h=`<p>We're restoring ecosystems across four critical sites. Each one tells a different story about what's broken — and what we're doing about it.</p>`;SITES.forEach(s=>{const b=BIOMES[s.primaryBiome];h+=`<div class="data-card" style="margin-top:7px"><div class="dc-header"><span class="dc-icon">${s.id==='sri_lanka'?'🌳':s.id==='antalya'?'🔥':s.id==='benin'?'🌿':'🌴'}</span><span class="dc-title">${s.name}</span></div><div class="dc-row"><span class="dc-label">What</span><span class="dc-value">${s.subtitle}</span></div><div class="dc-row"><span class="dc-label">Area</span><span class="dc-value">${s.area.toLocaleString()} ha</span></div><div class="dc-row"><span class="dc-label">Target</span><span class="dc-value leaf">${b.name} (${b.density} tC/ha)</span></div></div>`;});return h;},
-    sri_lanka:()=>{const s=SITES[0];return `<p>${s.narrative}</p><div class="data-card" style="margin-top:7px"><div class="dc-header"><span class="dc-icon">🌳</span><span class="dc-title">${s.name}</span></div><div class="dc-row"><span class="dc-label">Area</span><span class="dc-value">${s.area.toLocaleString()} ha</span></div><div class="dc-row"><span class="dc-label">Strategy</span><span class="dc-value leaf">Multilayer afforestation</span></div><div class="dc-row"><span class="dc-label">NDVI 2000→2025</span><span class="dc-value">0.45 → 0.55 (+22%)</span></div><div class="dc-row"><span class="dc-label">Temp</span><span class="dc-value warn">+1.3°C since 1980</span></div><div class="dc-row"><span class="dc-label">Rain</span><span class="dc-value warn">-11% since 1980</span></div></div><p style="margin-top:6px;font-size:11px;color:var(--text2)">${s.connection}</p>`;},
-    antalya:()=>{const s=SITES[1];return `<p>${s.narrative}</p><div class="data-card" style="margin-top:7px"><div class="dc-header"><span class="dc-icon">🔥</span><span class="dc-title">${s.name}</span></div><div class="dc-row"><span class="dc-label">Event</span><span class="dc-value warn">2021 catastrophic wildfire</span></div><div class="dc-row"><span class="dc-label">NDVI crash</span><span class="dc-value warn">0.70 → 0.18</span></div><div class="dc-row"><span class="dc-label">Recovery</span><span class="dc-value">0.38 (2025, scrub)</span></div><div class="dc-row"><span class="dc-label">Full recovery</span><span class="dc-value">Decades needed</span></div><div class="dc-row"><span class="dc-label">Temp</span><span class="dc-value warn">+1.7°C since 1980</span></div><div class="dc-row"><span class="dc-label">Rain</span><span class="dc-value warn">-22% since 1980</span></div></div><p style="margin-top:6px;font-size:11px;color:var(--text2)">${s.connection}</p><p style="margin-top:5px;font-size:11px;color:var(--teal)"><strong>COP31 is in Antalya, November 2026.</strong></p>`;},
-    benin:()=>{const s=SITES[2];return `<p>${s.narrative}</p><div class="data-card" style="margin-top:7px"><div class="dc-header"><span class="dc-icon">🌿</span><span class="dc-title">${s.name}</span></div><div class="dc-row"><span class="dc-label">Target</span><span class="dc-value leaf">Mangrove restoration</span></div><div class="dc-row"><span class="dc-label">Carbon density</span><span class="dc-value leaf">950 tC/ha (highest on Earth)</span></div><div class="dc-row"><span class="dc-label">NDVI 2000→2025</span><span class="dc-value">0.68 → 0.52</span></div><div class="dc-row"><span class="dc-label">Temp</span><span class="dc-value warn">+1.4°C since 1980</span></div></div><p style="margin-top:6px;font-size:11px;color:var(--text2)">${s.connection}</p>`;},
-    borneo:()=>{const s=SITES[3];return `<p>${s.narrative}</p><div class="data-card" style="margin-top:7px"><div class="dc-header"><span class="dc-icon">🌴</span><span class="dc-title">${s.name}</span></div><div class="dc-row"><span class="dc-label">Original</span><span class="dc-value leaf">Peat swamp (1,400 tC/ha)</span></div><div class="dc-row"><span class="dc-label">Current</span><span class="dc-value warn">Oil palm (50 tC/ha)</span></div><div class="dc-row"><span class="dc-label">Carbon loss</span><span class="dc-value warn">~96% of original</span></div><div class="dc-row"><span class="dc-label">NDVI</span><span class="dc-value">0.88 → 0.65</span></div></div><p style="margin-top:6px;font-size:11px;color:var(--text2)">${s.connection}</p>`;}
+    all:()=>{let h=`<p>We're restoring ecosystems across four critical sites. Each one tells a different story about what's broken — and what we're doing about it.</p>`;_sites.forEach(s=>{const b=_biomes[s.primaryBiome];h+=`<div class="data-card" style="margin-top:7px"><div class="dc-header"><span class="dc-icon">${s.id==='sri_lanka'?'🌳':s.id==='antalya'?'🔥':s.id==='benin'?'🌿':'🌴'}</span><span class="dc-title">${s.name}</span></div><div class="dc-row"><span class="dc-label">What</span><span class="dc-value">${s.subtitle}</span></div><div class="dc-row"><span class="dc-label">Area</span><span class="dc-value">${s.area.toLocaleString()} ha</span></div><div class="dc-row"><span class="dc-label">Target</span><span class="dc-value leaf">${b.name} (${b.density} tC/ha)</span></div></div>`;});return h;},
+    sri_lanka:()=>{const s=_sites[0];return `<p>${s.narrative}</p><div class="data-card" style="margin-top:7px"><div class="dc-header"><span class="dc-icon">🌳</span><span class="dc-title">${s.name}</span></div><div class="dc-row"><span class="dc-label">Area</span><span class="dc-value">${s.area.toLocaleString()} ha</span></div><div class="dc-row"><span class="dc-label">Strategy</span><span class="dc-value leaf">Multilayer afforestation</span></div><div class="dc-row"><span class="dc-label">NDVI 2000→2025</span><span class="dc-value">0.45 → 0.55 (+22%)</span></div><div class="dc-row"><span class="dc-label">Temp</span><span class="dc-value warn">+1.3°C since 1980</span></div><div class="dc-row"><span class="dc-label">Rain</span><span class="dc-value warn">-11% since 1980</span></div></div><p style="margin-top:6px;font-size:11px;color:var(--text2)">${s.connection}</p>`;},
+    antalya:()=>{const s=_sites[1];return `<p>${s.narrative}</p><div class="data-card" style="margin-top:7px"><div class="dc-header"><span class="dc-icon">🔥</span><span class="dc-title">${s.name}</span></div><div class="dc-row"><span class="dc-label">Event</span><span class="dc-value warn">2021 catastrophic wildfire</span></div><div class="dc-row"><span class="dc-label">NDVI crash</span><span class="dc-value warn">0.70 → 0.18</span></div><div class="dc-row"><span class="dc-label">Recovery</span><span class="dc-value">0.38 (2025, scrub)</span></div><div class="dc-row"><span class="dc-label">Full recovery</span><span class="dc-value">Decades needed</span></div><div class="dc-row"><span class="dc-label">Temp</span><span class="dc-value warn">+1.7°C since 1980</span></div><div class="dc-row"><span class="dc-label">Rain</span><span class="dc-value warn">-22% since 1980</span></div></div><p style="margin-top:6px;font-size:11px;color:var(--text2)">${s.connection}</p><p style="margin-top:5px;font-size:11px;color:var(--teal)"><strong>COP31 is in Antalya, November 2026.</strong></p>`;},
+    benin:()=>{const s=_sites[2];return `<p>${s.narrative}</p><div class="data-card" style="margin-top:7px"><div class="dc-header"><span class="dc-icon">🌿</span><span class="dc-title">${s.name}</span></div><div class="dc-row"><span class="dc-label">Target</span><span class="dc-value leaf">Mangrove restoration</span></div><div class="dc-row"><span class="dc-label">Carbon density</span><span class="dc-value leaf">950 tC/ha (highest on Earth)</span></div><div class="dc-row"><span class="dc-label">NDVI 2000→2025</span><span class="dc-value">0.68 → 0.52</span></div><div class="dc-row"><span class="dc-label">Temp</span><span class="dc-value warn">+1.4°C since 1980</span></div></div><p style="margin-top:6px;font-size:11px;color:var(--text2)">${s.connection}</p>`;},
+    borneo:()=>{const s=_sites[3];return `<p>${s.narrative}</p><div class="data-card" style="margin-top:7px"><div class="dc-header"><span class="dc-icon">🌴</span><span class="dc-title">${s.name}</span></div><div class="dc-row"><span class="dc-label">Original</span><span class="dc-value leaf">Peat swamp (1,400 tC/ha)</span></div><div class="dc-row"><span class="dc-label">Current</span><span class="dc-value warn">Oil palm (50 tC/ha)</span></div><div class="dc-row"><span class="dc-label">Carbon loss</span><span class="dc-value warn">~96% of original</span></div><div class="dc-row"><span class="dc-label">NDVI</span><span class="dc-value">0.88 → 0.65</span></div></div><p style="margin-top:6px;font-size:11px;color:var(--text2)">${s.connection}</p>`;}
   },
 
   carbon_cycle:()=>`<p>Carbon moves through Earth's systems in two cycles — fast (years to decades) and slow (millions of years).</p><p><strong>The Fast Carbon Cycle:</strong></p><div class="data-card" style="margin-top:6px"><div class="dc-row"><span class="dc-label">🌡️ Atmosphere</span><span class="dc-value">~870 GtC (+280 since pre-industrial)</span></div><div class="dc-row"><span class="dc-label">🌿 Vegetation</span><span class="dc-value">~460-650 GtC</span></div><div class="dc-row"><span class="dc-label">🪱 Soil</span><span class="dc-value">~1,500-2,400 GtC</span></div><div class="dc-row"><span class="dc-label">🌊 Ocean surface</span><span class="dc-value">~900 GtC</span></div><div class="dc-row"><span class="dc-label">🌊 Deep ocean</span><span class="dc-value">~37,100 GtC</span></div></div><p style="margin-top:6px">Pre-industrial: ~590 GtC in atmosphere. Natural sinks absorbed what natural sources emitted. Today, humans add ~10.4 GtC/yr. Natural sinks absorb ~5.9 GtC/yr. The rest (~4.5 GtC/yr) accumulates.</p><p style="margin-top:5px"><strong>The Slow Cycle:</strong> Rock weathering, volcanic outgassing, sedimentation — over thousands to millions of years. Humans are releasing in decades what took nature 300+ million years to bury.</p><p style="margin-top:5px;font-size:10px;color:var(--text3)">1 GtC = 3.67 Gt CO₂ · 1 ppm CO₂ ≈ 2.13 GtC</p>`,
@@ -100,7 +109,7 @@ const KB = {
 
   cop31:()=>`<p><strong>COP31 is in Antalya, Turkey — November 2026.</strong> Deeply connected to our work.</p><div class="data-card" style="margin-top:6px"><div class="dc-header"><span class="dc-icon">🔥</span><span class="dc-title">Antalya's Story</span></div><div class="dc-row"><span class="dc-label">July 2021</span><span class="dc-value warn">60,000+ ha burned</span></div><div class="dc-row"><span class="dc-label">NDVI crash</span><span class="dc-value warn">0.70 → 0.18</span></div><div class="dc-row"><span class="dc-label">Today</span><span class="dc-value">Scrub recovery, decades to mature forest</span></div><div class="dc-row"><span class="dc-label">Rainfall</span><span class="dc-value warn">-22% since 1980</span></div></div><p style="margin-top:6px">Earth Love United is at COP31 to show restoration isn't theoretical — it's happening on the ground, in the host region itself.</p><p style="margin-top:5px;color:var(--teal)"><strong>AI + Human + GAIA</strong> — AI handles data and scale. Humans handle community and action. GAIA bridges the two.</p>`,
 
-  jean:()=>{const s=SITES[2];return `<p>Jean Missinhoun (1972–2024) was from Benin. He went from oil to earth — dedicating his life to environmental restoration.</p><div class="data-card" style="margin-top:6px"><div class="dc-header"><span class="dc-icon">💚</span><span class="dc-title">Jean's Legacy</span></div><div class="dc-row"><span class="dc-label">Homeland</span><span class="dc-value">Ouidah, Benin</span></div><div class="dc-row"><span class="dc-label">Project</span><span class="dc-value leaf">Mangrove restoration</span></div><div class="dc-row"><span class="dc-label">Carbon density</span><span class="dc-value leaf">950 tC/ha</span></div><div class="dc-row"><span class="dc-label">Area</span><span class="dc-value">${s.area.toLocaleString()} ha</span></div></div><p style="margin-top:6px">Restoring mangroves in Ouidah isn't just climate action — it's a homecoming. Honoring Jean's vision of humans and nature reunited.</p><p style="margin-top:5px;font-style:italic;color:var(--text3)">"From oil to earth" — Jean's journey is our journey.</p>`;},
+  jean:()=>{const s=_sites[2];return `<p>Jean Missinhoun (1972–2024) was from Benin. He went from oil to earth — dedicating his life to environmental restoration.</p><div class="data-card" style="margin-top:6px"><div class="dc-header"><span class="dc-icon">💚</span><span class="dc-title">Jean's Legacy</span></div><div class="dc-row"><span class="dc-label">Homeland</span><span class="dc-value">Ouidah, Benin</span></div><div class="dc-row"><span class="dc-label">Project</span><span class="dc-value leaf">Mangrove restoration</span></div><div class="dc-row"><span class="dc-label">Carbon density</span><span class="dc-value leaf">950 tC/ha</span></div><div class="dc-row"><span class="dc-label">Area</span><span class="dc-value">${s.area.toLocaleString()} ha</span></div></div><p style="margin-top:6px">Restoring mangroves in Ouidah isn't just climate action — it's a homecoming. Honoring Jean's vision of humans and nature reunited.</p><p style="margin-top:5px;font-style:italic;color:var(--text3)">"From oil to earth" — Jean's journey is our journey.</p>`;},
 
   involved:()=>`<p>Three ways to be part of this:</p><div class="data-card" style="margin-top:6px"><div class="dc-row"><span class="dc-label">💚 Donate</span><span class="dc-value">Fund seedlings, land, local teams, stewardship</span></div><div class="dc-row"><span class="dc-label">🤝 Partner</span><span class="dc-value">Corporations, NGOs, governments — restore at scale</span></div><div class="dc-row"><span class="dc-label">📣 Spread</span><span class="dc-value">Share this. Talk about carbon. Awareness drives action.</span></div></div><p style="margin-top:6px">Every hectare restored is a step toward rebalancing the carbon cycle.</p><p style="margin-top:5px;color:var(--teal)">Contact: hello@earthloveunited.org</p>`,
 
@@ -110,40 +119,78 @@ const KB = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// INTENT MATCHING
+// INTENT MATCHING — scoring-based, most-specific-wins
+// Each pattern has a score; highest total score wins.
+// This avoids the first-match-wins problem where broad patterns
+// like /(project|site|location|where)/ catch everything.
 // ═══════════════════════════════════════════════════════════════
 
-function matchIntent(text){
-  const t=text.toLowerCase();
-  if(/(calculate|carbon impact|how much co2|what if|restore.*hectare|sequest|offset)/.test(t))return{type:'calculator',params:extractCalcParams(t)};
-  if(/(sri lanka|sri lankan|jaffna|vavuniya)/.test(t))return{type:'project',key:'sri_lanka'};
-  if(/(antalya|turkey|cop31|cop 31|wildfire|burn)/.test(t))return{type:'project',key:'antalya'};
-  if(/(benin|ouidah|mangrove.*benin|jean)/.test(t))return{type:'project',key:'benin'};
-  if(/(borneo|kalimantan|peat|palm oil|peat swamp)/.test(t))return{type:'project',key:'borneo'};
-  if(/(all project|every project|your project|restoration project|what.*doing)/.test(t))return{type:'project',key:'all'};
-  if(/(current co2|live co2|co2 level|co2 right now|mauna loa|keeling)/.test(t))return{type:'knowledge',key:'live_co2'};
-  if(/(temperature|how hot|warming|temp anomaly|degrees)/.test(t))return{type:'knowledge',key:'temperature'};
-  if(/(methane|ch4)/.test(t))return{type:'knowledge',key:'methane'};
-  if(/(carbon cycle|how.*carbon.*work|carbon.*move|carbon.*flow)/.test(t))return{type:'knowledge',key:'carbon_cycle'};
-  if(/(biome|which.*store.*most|carbon density|compare.*biome|forest.*store)/.test(t))return{type:'knowledge',key:'biomes'};
-  if(/(emission|how much.*emit|co2.*year|human.*emit|global.*emission)/.test(t))return{type:'knowledge',key:'emissions'};
-  if(/(top.*emit|which.*country.*emit|china.*emit|us.*emit|biggest.*polluter)/.test(t))return{type:'knowledge',key:'top_emitters'};
-  if(/(sink|absorb|where.*co2.*go|ocean.*absorb|land.*absorb)/.test(t))return{type:'knowledge',key:'sinks'};
-  if(/(tipping point|threshold|irreversible|point.*no.*return|feedback)/.test(t))return{type:'knowledge',key:'tipping_points'};
-  if(/(carbon budget|how much.*left|remaining.*budget|1\.5.*budget|2.*degree.*budget)/.test(t))return{type:'knowledge',key:'carbon_budget'};
-  if(/(solution|carbon removal|cdr|direct air capture|dac|reforestation|biochar|beccs|enhanced weather)/.test(t))return{type:'knowledge',key:'solutions'};
-  if(/(misconception|myth|wrong about|people say|climate.*hoax|fake|debunk)/.test(t))return{type:'knowledge',key:'misconceptions'};
-  if(/(cop31|cop 31|antalya.*cop|climate conference|turkey.*cop)/.test(t))return{type:'knowledge',key:'cop31'};
-  if(/(jean|missinhoun|legacy|from oil|benin.*story)/.test(t))return{type:'knowledge',key:'jean'};
-  if(/(get involved|donate|partner|volunteer|help|join|contact)/.test(t))return{type:'knowledge',key:'involved'};
-  if(/(who are you|what are you|about you|yourself|gaia.*what|tell me about you)/.test(t))return{type:'knowledge',key:'gaia_about'};
-  if(/(data source|where.*data|what.*source|api|database|noaa|nasa|owid)/.test(t))return{type:'knowledge',key:'data_sources'};
-  if(/(global outlook|cheat sheet|summary|overview|dashboard|what.*happening|state of|big picture)/.test(t))return{type:'knowledge',key:'global_outlook'};
-  if(/(carbon price|credit price|market price|offset price|carbon market|carbon trading)/.test(t))return{type:'knowledge',key:'carbon_market'};
-  if(/(^hi$|^hello$|^hey$|^yo$|^sup$|^greetings|good morning|good evening|good afternoon)/.test(t))return{type:'greeting'};
-  if(/(project|site|location|where)/.test(t))return{type:'project',key:'all'};
-  if(/(carbon|co2|greenhouse)/.test(t))return{type:'knowledge',key:'carbon_cycle'};
-  return{type:'fallback'};
+// Ordered from most specific to least specific within each group.
+// Higher score = more specific match.
+const _intentPatterns = [
+  // Calculator (highest priority — specific action words)
+  { patterns: [/(?:calculate|carbon impact|how much co2|what if|restore\s+\d+\s*(?:ha|hectare)|sequest|offset)/], type: 'calculator', score: 10, params: true },
+
+  // Projects — specific site names (high priority)
+  { patterns: [/(?:sri lanka|sri lankan|jaffna|vavuniya|mullaitivu|mannar|kilinochchi)/], type: 'project', key: 'sri_lanka', score: 9 },
+  { patterns: [/(?:antalya|manavgat|turkey.*(?:fire|burn|cop))/], type: 'project', key: 'antalya', score: 9 },
+  { patterns: [/(?:benin|ouidah|mangrove.*benin|jean|missinhoun)/], type: 'project', key: 'benin', score: 9 },
+  { patterns: [/(?:borneo|kalimantan|peat\s*(?:swamp|land)|palm\s*oil)/], type: 'project', key: 'borneo', score: 9 },
+
+  // Knowledge — specific topics (medium-high priority)
+  { patterns: [/(?:current\s+co2|live\s+co2|co2\s+level|co2\s+right\s+now|mauna\s+loa|keeling\s*curve)/], type: 'knowledge', key: 'live_co2', score: 8 },
+  { patterns: [/(?:temperature|how\s+hot|warming|temp\s+anomaly|degrees\s+(?:celsius|c|fahrenheit)?\s*(?:warmer|hotter|colder)?)/], type: 'knowledge', key: 'temperature', score: 8 },
+  { patterns: [/(?:methane|ch4|ch₄)/], type: 'knowledge', key: 'methane', score: 8 },
+  { patterns: [/(?:carbon\s+cycle|how.*carbon.*(?:work|move|flow)|carbon.*reservoir)/], type: 'knowledge', key: 'carbon_cycle', score: 8 },
+  { patterns: [/(?:biome|which.*store.*most|carbon\s+density|compare.*biome|forest.*store.*carbon|tropical\s+rainforest.*carbon)/], type: 'knowledge', key: 'biomes', score: 8 },
+  { patterns: [/(?:emission|how\s+much.*emit|co2.*year|human.*emit|global.*emission|annual.*emission)/], type: 'knowledge', key: 'emissions', score: 8 },
+  { patterns: [/(?:top.*emit|which.*country.*emit|china.*emit|us.*emit|biggest.*polluter|largest.*emitter)/], type: 'knowledge', key: 'top_emitters', score: 8 },
+  { patterns: [/(?:sink|absorb|where.*co2.*go|ocean.*absorb|land.*absorb|airborne\s+fraction)/], type: 'knowledge', key: 'sinks', score: 8 },
+  { patterns: [/(?:tipping\s+point|threshold|irreversible|point.*no.*return|feedback\s+loop|runaway)/], type: 'knowledge', key: 'tipping_points', score: 8 },
+  { patterns: [/(?:carbon\s+budget|how\s+much.*left|remaining.*budget|1\.5.*budget|2.*degree.*budget|carbon\s+debt)/], type: 'knowledge', key: 'carbon_budget', score: 8 },
+  { patterns: [/(?:solution|carbon\s+removal|cdr|direct\s+air\s+capture|dac|reforestation|biochar|beccs|enhanced\s+weather)/], type: 'knowledge', key: 'solutions', score: 8 },
+  { patterns: [/(?:misconception|myth|wrong\s+about|people\s+say|climate.*hoax|fake|debunk|climate.*deny)/], type: 'knowledge', key: 'misconceptions', score: 8 },
+  { patterns: [/(?:cop31|cop\s+31|antalya.*cop|climate\s+conference|turkey.*cop|unfccc)/], type: 'knowledge', key: 'cop31', score: 8 },
+  { patterns: [/(?:jean|missinhoun|legacy|from\s+oil|benin.*story|who\s+was\s+jean)/], type: 'knowledge', key: 'jean', score: 8 },
+  { patterns: [/(?:get\s+involved|donate|partner|volunteer|help|join|contact|how\s+can\s+i)/], type: 'knowledge', key: 'involved', score: 8 },
+  { patterns: [/(?:who\s+are\s+you|what\s+are\s+you|about\s+you|yourself|gaia.*what|tell\s+me\s+about\s+you)/], type: 'knowledge', key: 'gaia_about', score: 8 },
+  { patterns: [/(?:data\s+source|where.*data|what.*source|api|database|noaa|nasa|owid|where.*get.*data)/], type: 'knowledge', key: 'data_sources', score: 8 },
+  { patterns: [/(?:global\s+outlook|cheat\s+sheet|summary|overview|dashboard|what.*happening|state\s+of|big\s+picture)/], type: 'knowledge', key: 'global_outlook', score: 8 },
+  { patterns: [/(?:carbon\s+price|credit\s+price|market\s+price|offset\s+price|carbon\s+market|carbon\s+trading|vcs|vera|gold\s+standard)/], type: 'knowledge', key: 'carbon_market', score: 8 },
+
+  // Greetings (medium priority — only match if nothing else matched)
+  { patterns: [/^(?:hi|hello|hey|yo|sup|greetings|good\s+morning|good\s+evening|good\s+afternoon|howdy|hola)$/], type: 'greeting', score: 5 },
+
+  // Broad fallbacks (lowest priority — only match if nothing else scored)
+  { patterns: [/(?:all\s+project|every\s+project|your\s+project|restoration\s+project|what.*doing|what.*you.*do|tell\s+me.*project)/], type: 'project', key: 'all', score: 3 },
+  { patterns: [/(?:project|site|location|where\s+(?:is|are)|which\s+site)/], type: 'project', key: 'all', score: 2 },
+  { patterns: [/(?:carbon|co2|greenhouse|climate)/], type: 'knowledge', key: 'carbon_cycle', score: 1 },
+];
+
+function matchIntent(text) {
+  const t = text.toLowerCase().trim();
+  if (!t) return { type: 'fallback' };
+
+  let best = { type: 'fallback', score: 0 };
+
+  for (const rule of _intentPatterns) {
+    let score = 0;
+    for (const pattern of rule.patterns) {
+      const match = t.match(pattern);
+      if (match) {
+        // Bonus for longer matches (more specific)
+        score = rule.score + (match[0].length / t.length);
+        break;
+      }
+    }
+    if (score > best.score) {
+      best = { type: rule.type, score };
+      if (rule.key) best.key = rule.key;
+      if (rule.params) best.params = extractCalcParams(t);
+    }
+  }
+
+  return best;
 }
 
 function extractCalcParams(text){
@@ -181,7 +228,7 @@ function generateResponse(intent){
       if(!r)return `<p>I couldn't calculate that transition. Try specifying the biome more clearly.</p>`;
       const ctx=scaleContext(r.cumulative_co2);
       const pos=r.cumulative_co2>0;
-      const tB=BIOMES[p.to];const fB=BIOMES[p.from];
+      const tB=_biomes[p.to];const fB=_biomes[p.from];
       return `<p>Restoring <strong>${p.area} ha</strong> from ${fB.icon} ${fB.name} to ${tB.icon} ${tB.name} over 30 years:</p><div class="data-card" style="margin-top:7px"><div class="dc-row"><span class="dc-label">Total CO₂</span><span class="dc-value ${pos?'leaf':'warn'}">${pos?'+':''}${fmt(Math.abs(r.cumulative_co2))} t</span></div><div class="dc-row"><span class="dc-label">Stock change</span><span class="dc-value">${fmt(Math.abs(r.stock_co2))} t</span></div><div class="dc-row"><span class="dc-label">Annual flux</span><span class="dc-value">${r.flux_co2>0?'+':''}${fmt(Math.abs(r.flux_co2))} t/yr</span></div><div class="dc-row"><span class="dc-label">Equivalent</span><span class="dc-value">${ctx.cars.toFixed(0)} cars off road/yr</span></div><div class="dc-row"><span class="dc-label">Global share</span><span class="dc-value">${(ctx.fraction*100).toExponential(2)}%</span></div></div><p style="margin-top:5px;font-size:10px;color:var(--text3)">${ctx.summary}</p>`;
     }
     case'fallback':default:
@@ -455,7 +502,7 @@ function runSandboxCalc(){
   const ha=parseInt(document.getElementById('qb-area').value)||100;const yrs=parseInt(document.getElementById('qb-years').value)||30;
   const r=transitionCarbon(from,to,ha,yrs);if(!r)return;
   const ctx=scaleContext(r.cumulative_co2);const pos=r.cumulative_co2>0;
-  const tB=BIOMES[to];const fB=BIOMES[from];
+  const tB=_biomes[to];const fB=_biomes[from];
   document.getElementById('sandbox-result').classList.add('show');
   document.getElementById('sr-val').textContent=(pos?'+':'')+fmt(Math.abs(r.cumulative_co2))+' t CO₂';
   document.getElementById('sr-val').style.color=pos?'var(--leaf)':'var(--warn)';
@@ -466,8 +513,8 @@ ${(ctx.fraction*100).toExponential(2)}% of global annual net emissions`;
 }
 
 function lookupProject(){
-  const id=document.getElementById('qb-site').value;const site=SITES.find(s=>s.id===id);if(!site)return;
-  const biome=BIOMES[site.currentBiome];const stock=biome.density*site.area*3.67;
+  const id=document.getElementById('qb-site').value;const site=_sites.find(s=>s.id===id);if(!site)return;
+  const biome=_biomes[site.currentBiome];const stock=biome.density*site.area*3.67;
   const latest=site.ndvi[site.ndvi.length-1];
   const cF=site.climate[0],cL=site.climate[site.climate.length-1];
   const tD=(cL.temp-cF.temp).toFixed(1);const pD=((cL.precip-cF.precip)/cF.precip*100).toFixed(0);
@@ -534,8 +581,8 @@ function initGlobe(){
     .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg')
     .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
     .showAtmosphere(true).atmosphereColor('#4ecdc4').atmosphereAltitude(0.18)
-    .pointsData(SITES).pointLat('lat').pointLng('lng').pointAltitude(0.01).pointRadius(0.25).pointColor(()=>'#4ecdc4').pointResolution(8)
-    .ringsData(SITES).ringLat('lat').ringLng('lng').ringColor(()=>t=>`rgba(78,205,196,${0.5-t*0.4})`).ringMaxRadius(2).ringPropagationSpeed(1).ringRepeatPeriod(2000);
+    .pointsData(_sites).pointLat('lat').pointLng('lng').pointAltitude(0.01).pointRadius(0.25).pointColor(()=>'#4ecdc4').pointResolution(8)
+    .ringsData(_sites).ringLat('lat').ringLng('lng').ringColor(()=>t=>`rgba(78,205,196,${0.5-t*0.4})`).ringMaxRadius(2).ringPropagationSpeed(1).ringRepeatPeriod(2000);
   world.pointOfView({lat:20,lng:40,altitude:2.5});
   world.controls().autoRotate=true;world.controls().autoRotateSpeed=0.3;
 }
@@ -617,7 +664,7 @@ function updateSidebarStats(data) {
   }
 }
 
-window.__gaia = { startDemo: startDemoMode, stopDemo: stopDemoMode, KB, SITES, BIOMES, transitionCarbon, data: GAIA_DATA, charts: GAIA_CHARTS };
+window.__gaia = { startDemo: startDemoMode, stopDemo: stopDemoMode, KB, _sites, _biomes, transitionCarbon, data: GAIA_DATA, charts: GAIA_CHARTS };
 
 // ═══════════════════════════════════════════════════════════════
 // VOICE TOGGLE
