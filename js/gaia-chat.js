@@ -265,13 +265,19 @@ async function _callOpenRouter(userMessage) {
         max_tokens: 1024
       })
     });
+    console.log('[GAIA] OpenRouter response status:', response.status);
     if (!response.ok) {
       const errText = await response.text();
       console.warn('[GAIA] OpenRouter error:', response.status, errText);
       return null;
     }
     const data = await response.json();
-    return data.choices?.[0]?.message?.content || null;
+    console.log('[GAIA] OpenRouter response:', JSON.stringify(data).substring(0, 200));
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) {
+      console.warn('[GAIA] No content in response:', JSON.stringify(data).substring(0, 500));
+    }
+    return content || null;
   } catch (e) {
     console.warn('[GAIA] OpenRouter fetch failed:', e.message);
     return null;
