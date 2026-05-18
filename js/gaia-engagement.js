@@ -32,8 +32,16 @@ const GAIA_ENGAGEMENT = (() => {
   let lastInteraction = Date.now();
   let idleNudgeFired = { GENTLE: false, MEDIUM: false, STRONG: false };
 
+  // ── Per-site state ──
+  const siteEngagement = {
+    sri_lanka: { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, visited: false },
+    antalya: { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, visited: false },
+    benin: { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, visited: false },
+    borneo: { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, visited: false },
+  };
+
   // ── Score ──
-  function addSignal(signalName) {
+  function addSignal(signalName, siteId) {
     const weight = SIGNALS[signalName] || 0;
     score = Math.max(0, score + weight);
     velocityWindow.push({ ts: Date.now(), score });
@@ -43,6 +51,11 @@ const GAIA_ENGAGEMENT = (() => {
     lastInteraction = Date.now();
     // Reset idle nudge flags on interaction
     idleNudgeFired = { GENTLE: false, MEDIUM: false, STRONG: false };
+    // Track per-site
+    if (siteId && siteEngagement[siteId]) {
+      siteEngagement[siteId].xp += weight;
+      siteEngagement[siteId].visited = true;
+    }
     // Auto-persist on meaningful signals
     if (Math.abs(weight) >= 5) save();
   }
@@ -104,7 +117,7 @@ const GAIA_ENGAGEMENT = (() => {
   function save() {
     try {
       localStorage.setItem('gaia_engagement', JSON.stringify({
-        score, moodSignals, lastInteraction,
+        score, moodSignals, lastInteraction, siteEngagement,
         savedAt: Date.now(),
       }));
     } catch { /* ignore */ }
@@ -117,6 +130,9 @@ const GAIA_ENGAGEMENT = (() => {
       const data = JSON.parse(raw);
       score = data.score || 0;
       moodSignals = data.moodSignals || moodSignals;
+      if (data.siteEngagement) {
+        Object.assign(siteEngagement, data.siteEngagement);
+      }
     } catch { /* ignore */ }
   }
 
@@ -133,6 +149,7 @@ const GAIA_ENGAGEMENT = (() => {
     getVelocity,
     getMood, getMoodIntensity,
     getIdleLevel, shouldFireIdleNudge,
+    getSiteEngagement: () => siteEngagement,
     interact: () => { lastInteraction = Date.now(); },
     save, load,
   };

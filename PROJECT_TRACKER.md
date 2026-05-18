@@ -183,39 +183,54 @@ base.css, layout.css, components.css, widgets.css, responsive.css, carbon-clock.
 | 8 | Live data integration | ⏳ Pending |
 | 9 | Testing + polish | ⏳ Pending |
 
-## PHASE 4 — GAIA Nodes on Earth
+## PERFORMANCE OPTIMIZATIONS (May 16)
 
-**Full plan:** PHASE4_PLAN.md (27,000 lines — detailed implementation)
+**Problem:** Page felt sluggish, not snappy. Multiple continuous timers and DOM updates.
 
-**Vision:** The globe IS the interface. GAIA lives on it. Each of the 4 project sites becomes a living GAIA node — an interactive manifestation that participants explore, learn from, and build relationships with over multiple sessions.
+**Changes:**
+1. `js/carbon-clock.js` — setInterval 100ms→500ms, cached DOM refs (no getElementById every tick)
+2. `js/ndvi-verifier.js` — setInterval 200ms→1000ms
+3. `js/globe.js` — Restored to baseline (bump map + rings are fine, not the culprit)
 
-**New files (2):**
-- `js/gaia-nodes.js` — 4 interactive nodes on globe, click/hover handlers, per-site XP
-- `js/gaia-mind-main.js` — cross-session memory, emotional AI adapter
+**Continuous timers on main page:**
+- `carbon-clock.js`: 500ms (was 100ms) — clock display
+- `gaia-engagement.js`: 30000ms — auto-save
+- `app.js`: 5000ms — idle nudge
+- `ndvi-verifier.js`: 1000ms (was 200ms) — polls until Data loads, then clears itself
 
-**Upgraded files (6):**
-- `js/globe.js` — node position tracking, wire click/hover to nodes
-- `js/gaia-bubble.js` — node-aware, site indicator, "Open Full GAIA" button
-- `js/gaia-engagement.js` — per-site XP, participant model, knowledge model
-- `js/gaia-voice.js` — voice modifiers, silence engine, session-depth awareness
-- `js/gaia-journal.js` — quest progress UI, completion celebrations
-- `js/app.js` — wire everything, welcome back system
+**No continuous animation loops.** All requestAnimationFrame calls are one-shot.
 
-**DIS integration (1):**
-- `dis/gaia-mind.js` → `js/gaia-mind-main.js` (emotional AI, desires, silence, memory)
+**Full plan:** PHASE4_PLAN.md (16,000 lines — audit + implementation)
 
-**Key behaviors:**
-- Per-site XP (site_tap +10, data_reveal +5, scenario_run +15, etc.)
-- 6 levels: COLD → WARM → ENGAGED → HOOKED → INVESTED → COMMITTED
-- 16 quests across 4 tiers (SEED, GROW, FLOURISH, LEGACY)
-- Participant archetypes: analyst, explorer, empath, skeptic, sharer
-- Emotional voice modulation (grief = slower, urgent = faster, etc.)
-- Silence engine (Borneo carbon, Antalya fire year)
-- Cross-session memory (emotional residue, significant moments, welcome back)
-- Node visual states: locked → available → explored → mastered
+**Current state:** Significant code already exists from previous Devs:
+- `js/gaia-nodes.js` (967 lines) — node state, XP, render functions for all 4 sites
+- `js/globe-overlay.js` (214 lines) — tabbed content box
+- `js/gaia-bubble.js` (245 lines) — presence, speak, idle nudge
+- `js/gaia-engagement.js` (134 lines) — scoring, tiers, idle
+- `js/gaia-voice.js` (187 lines) — 60+ voice lines
+- `js/gaia-journal.js` (123 lines) — 16 quests, insights
+- `dis/gaia-mind.js` (784 lines) — emotional AI, desires, silence, memory
+- `dis/gaia-state-machine.js` (272 lines) — state machine
+- `dis/gaia-voice-data.js` (364 lines) — 108+ voice lines, 35 pools
+- Plus NDVI verifier, registry check, delegation, pledge wall
 
-**COP31 MVP:** 5-7 days
-**Full build:** 11-12 days
+**Gaps to fill (12 total):**
+1. Globe click not routed through GAIA_NODES
+2. No per-site engagement tracking
+3. No participant model (analyst, explorer, empath, skeptic, sharer)
+4. No knowledge model
+5. No emotional voice modulation (rate/pitch/volume)
+6. No silence engine (GAIA always speaks)
+7. No cross-session memory (GAIA_MIND not integrated)
+8. No node visual states on globe
+9. No quest progress UI
+10. No node-to-chat bridge
+11. GAIA_BUBBLE not node-aware
+12. Welcome back lacks emotional memory
+
+**Implementation:** 8 steps, ~500 lines added, 1 new file
+- COP31 MVP: 4-5 days
+- Full build: 8.5-10 days
 
 ---
 

@@ -1,0 +1,652 @@
+{
+  "market_overview": {
+    "total_projects": 8877,
+    "total_countries": 155,
+    "total_estimated_annual_reductions_tco2": 2912407740,
+    "cross_registered_projects": 173,
+    "cross_registration_rate": 0.019,
+    "verra_projects": 4965,
+    "gold_standard_projects": 4085
+  },
+  "top_countries": [
+    {
+      "country": "India",
+      "project_count": 1785,
+      "dominant_type": "renewable_energy",
+      "total_reductions_tco2": 353094582,
+      "cross_registered": 99
+    },
+    {
+      "country": "China",
+      "project_count": 1541,
+      "dominant_type": "renewable_energy",
+      "total_reductions_tco2": 218747657,
+      "cross_registered": 18
+    },
+    {
+      "country": "Turkey",
+      "project_count": 550,
+      "dominant_type": "other",
+      "total_reductions_tco2": 53949419,
+      "cross_registered": 7
+    },
+    {
+      "country": "Brazil",
+      "project_count": 364,
+      "dominant_type": "forestry",
+      "total_reductions_tco2": 127186694,
+      "cross_registered": 5
+    },
+    {
+      "country": "Kenya",
+      "project_count": 339,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 76537580,
+      "cross_registered": 4
+    },
+    {
+      "country": "Uganda",
+      "project_count": 290,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 24770598,
+      "cross_registered": 5
+    },
+    {
+      "country": "Rwanda",
+      "project_count": 220,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 15929936,
+      "cross_registered": 3
+    },
+    {
+      "country": "United States",
+      "project_count": 212,
+      "dominant_type": "forestry",
+      "total_reductions_tco2": 186741821,
+      "cross_registered": 0
+    },
+    {
+      "country": "Bangladesh",
+      "project_count": 177,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 43636666,
+      "cross_registered": 0
+    },
+    {
+      "country": "South Africa",
+      "project_count": 163,
+      "dominant_type": "renewable_energy",
+      "total_reductions_tco2": 31461513,
+      "cross_registered": 6
+    },
+    {
+      "country": "Malawi",
+      "project_count": 152,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 17913298,
+      "cross_registered": 5
+    },
+    {
+      "country": "Nepal",
+      "project_count": 145,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 5970439,
+      "cross_registered": 2
+    },
+    {
+      "country": "Viet Nam",
+      "project_count": 139,
+      "dominant_type": "other",
+      "total_reductions_tco2": 19200272,
+      "cross_registered": 3
+    },
+    {
+      "country": "Madagascar",
+      "project_count": 136,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 14246833,
+      "cross_registered": 1
+    },
+    {
+      "country": "Nigeria",
+      "project_count": 125,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 17894227,
+      "cross_registered": 1
+    },
+    {
+      "country": "Colombia",
+      "project_count": 123,
+      "dominant_type": "forestry",
+      "total_reductions_tco2": 45003250,
+      "cross_registered": 2
+    },
+    {
+      "country": "Burkina Faso",
+      "project_count": 101,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 1647085,
+      "cross_registered": 0
+    },
+    {
+      "country": "Indonesia",
+      "project_count": 99,
+      "dominant_type": "forestry",
+      "total_reductions_tco2": 61396217,
+      "cross_registered": 0
+    },
+    {
+      "country": "Thailand",
+      "project_count": 98,
+      "dominant_type": "renewable_energy",
+      "total_reductions_tco2": 9573943,
+      "cross_registered": 3
+    },
+    {
+      "country": "Mozambique",
+      "project_count": 95,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 7763519,
+      "cross_registered": 1
+    },
+    {
+      "country": "Zambia",
+      "project_count": 87,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 30533706,
+      "cross_registered": 1
+    },
+    {
+      "country": "Ethiopia",
+      "project_count": 87,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 6589603,
+      "cross_registered": 0
+    },
+    {
+      "country": "Peru",
+      "project_count": 72,
+      "dominant_type": "forestry",
+      "total_reductions_tco2": 23326566,
+      "cross_registered": 0
+    },
+    {
+      "country": "Ghana",
+      "project_count": 65,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 8617670,
+      "cross_registered": 1
+    },
+    {
+      "country": "Tanzania, United Republic of",
+      "project_count": 64,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 4796851,
+      "cross_registered": 0
+    },
+    {
+      "country": "Mexico",
+      "project_count": 56,
+      "dominant_type": "forestry",
+      "total_reductions_tco2": 18931737,
+      "cross_registered": 0
+    },
+    {
+      "country": "Argentina",
+      "project_count": 51,
+      "dominant_type": "forestry",
+      "total_reductions_tco2": 7106009,
+      "cross_registered": 0
+    },
+    {
+      "country": "Germany",
+      "project_count": 51,
+      "dominant_type": "industrial",
+      "total_reductions_tco2": 5711271,
+      "cross_registered": 0
+    },
+    {
+      "country": "Myanmar",
+      "project_count": 48,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 5676229,
+      "cross_registered": 0
+    },
+    {
+      "country": "Honduras",
+      "project_count": 46,
+      "dominant_type": "energy_efficiency",
+      "total_reductions_tco2": 8161763,
+      "cross_registered": 1
+    }
+  ],
+  "project_types": {
+    "energy_efficiency": {
+      "count": 2677,
+      "percentage": 30.2,
+      "countries_count": 80,
+      "total_reductions_tco2": 474811674,
+      "top_methodologies": [
+        [
+          "GS TPDDTEC v 1.",
+          266
+        ],
+        [
+          "VMR0006",
+          234
+        ],
+        [
+          "GS TPDDTEC v3.1",
+          211
+        ],
+        [
+          "AMS-II.G. Energy Efficiency Measures in Thermal Applications of Non-Renewable Biomass",
+          172
+        ],
+        [
+          "GS MS Simplified Methodology for Efficient Cookstoves v1.1",
+          159
+        ]
+      ]
+    },
+    "renewable_energy": {
+      "count": 2085,
+      "percentage": 23.5,
+      "countries_count": 94,
+      "total_reductions_tco2": 285211145,
+      "top_methodologies": [
+        [
+          "ACM0002",
+          819
+        ],
+        [
+          "AMS-I.D.",
+          468
+        ],
+        [
+          "ACM0001",
+          121
+        ],
+        [
+          "AMS-I.C.",
+          120
+        ],
+        [
+          "ACM0010",
+          70
+        ]
+      ]
+    },
+    "forestry": {
+      "count": 1961,
+      "percentage": 22.1,
+      "countries_count": 110,
+      "total_reductions_tco2": 1875185936,
+      "top_methodologies": [
+        [
+          "AMS-III.AU",
+          292
+        ],
+        [
+          "AR-ACM0003",
+          273
+        ],
+        [
+          "VM0042",
+          232
+        ],
+        [
+          "VM0047",
+          187
+        ],
+        [
+          "VM0007",
+          146
+        ]
+      ]
+    },
+    "other": {
+      "count": 1258,
+      "percentage": 14.2,
+      "countries_count": 93,
+      "total_reductions_tco2": 141718920,
+      "top_methodologies": [
+        [
+          "ACM0002 Grid-connected electricity generation from renewable sources",
+          363
+        ],
+        [
+          "AMS-I.D. Grid connected renewable electricity generation",
+          182
+        ],
+        [
+          "AMS-I.C. Thermal energy production with or without electricity",
+          46
+        ],
+        [
+          "Not provided",
+          28
+        ],
+        [
+          "ACM0001 Flaring or use of landfill gas",
+          27
+        ]
+      ]
+    },
+    "waste": {
+      "count": 259,
+      "percentage": 2.9,
+      "countries_count": 33,
+      "total_reductions_tco2": 34308734,
+      "top_methodologies": [
+        [
+          "ACM0001",
+          43
+        ],
+        [
+          "AMS-III.D.",
+          38
+        ],
+        [
+          "AM0073",
+          24
+        ],
+        [
+          "AMS-I.D.",
+          16
+        ],
+        [
+          "AMS-III.H.",
+          15
+        ]
+      ]
+    },
+    "methane": {
+      "count": 245,
+      "percentage": 2.8,
+      "countries_count": 24,
+      "total_reductions_tco2": 11443668,
+      "top_methodologies": [
+        [
+          "AMS-I.C. Thermal energy production with or without electricity",
+          56
+        ],
+        [
+          "AMS-I.E. Switch from Non-Renewable Biomass for Thermal Applications by the User",
+          41
+        ],
+        [
+          "AMS-I.I. Biogas/biomass thermal applications for households/small users",
+          13
+        ],
+        [
+          "GS TPDDTEC v 1.",
+          10
+        ],
+        [
+          "GS Baseline and Monitoring Methodology Biodigester v1.",
+          8
+        ]
+      ]
+    },
+    "industrial": {
+      "count": 165,
+      "percentage": 1.9,
+      "countries_count": 28,
+      "total_reductions_tco2": 56991825,
+      "top_methodologies": [
+        [
+          "ACM0008",
+          32
+        ],
+        [
+          "AMS-III.Z",
+          16
+        ],
+        [
+          "VM0043",
+          13
+        ],
+        [
+          "AMS-III.D.",
+          12
+        ],
+        [
+          "AM0023",
+          11
+        ]
+      ]
+    },
+    "agriculture": {
+      "count": 117,
+      "percentage": 1.3,
+      "countries_count": 23,
+      "total_reductions_tco2": 23494595,
+      "top_methodologies": [
+        [
+          "AMS-III.D.",
+          49
+        ],
+        [
+          "VM0041",
+          28
+        ],
+        [
+          "ACM0010",
+          17
+        ],
+        [
+          "AMS-III.Y",
+          10
+        ],
+        [
+          "AMS-III.F.",
+          8
+        ]
+      ]
+    },
+    "transport": {
+      "count": 110,
+      "percentage": 1.2,
+      "countries_count": 34,
+      "total_reductions_tco2": 9241243,
+      "top_methodologies": [
+        [
+          "AMS-III.C.",
+          24
+        ],
+        [
+          "VMR0014",
+          8
+        ],
+        [
+          "AMS-I.F.",
+          7
+        ],
+        [
+          "VM0038",
+          7
+        ],
+        [
+          "ACM0016",
+          6
+        ]
+      ]
+    }
+  },
+  "top_methodologies": [
+    {
+      "code": "ACM0002",
+      "count": 822,
+      "primary_type": "renewable_energy",
+      "countries_count": 54
+    },
+    {
+      "code": "AMS-I.D.",
+      "count": 488,
+      "primary_type": "renewable_energy",
+      "countries_count": 33
+    },
+    {
+      "code": "ACM0002 Grid-connected electricity generation from renewable sources",
+      "count": 377,
+      "primary_type": "other",
+      "countries_count": 33
+    },
+    {
+      "code": "AMS-III.AU",
+      "count": 292,
+      "primary_type": "forestry",
+      "countries_count": 3
+    },
+    {
+      "code": "GS TPDDTEC v 1.",
+      "count": 277,
+      "primary_type": "energy_efficiency",
+      "countries_count": 30
+    },
+    {
+      "code": "AR-ACM0003",
+      "count": 273,
+      "primary_type": "forestry",
+      "countries_count": 47
+    },
+    {
+      "code": "VMR0006",
+      "count": 237,
+      "primary_type": "energy_efficiency",
+      "countries_count": 39
+    },
+    {
+      "code": "VM0042",
+      "count": 232,
+      "primary_type": "forestry",
+      "countries_count": 49
+    },
+    {
+      "code": "GS TPDDTEC v3.1",
+      "count": 218,
+      "primary_type": "energy_efficiency",
+      "countries_count": 30
+    },
+    {
+      "code": "VM0047",
+      "count": 187,
+      "primary_type": "forestry",
+      "countries_count": 52
+    },
+    {
+      "code": "AMS-I.D. Grid connected renewable electricity generation",
+      "count": 182,
+      "primary_type": "other",
+      "countries_count": 23
+    },
+    {
+      "code": "AMS-II.G. Energy Efficiency Measures in Thermal Applications of Non-Renewable Biomass",
+      "count": 177,
+      "primary_type": "energy_efficiency",
+      "countries_count": 25
+    },
+    {
+      "code": "ACM0001",
+      "count": 165,
+      "primary_type": "renewable_energy",
+      "countries_count": 17
+    },
+    {
+      "code": "GS MS Simplified Methodology for Efficient Cookstoves v1.1",
+      "count": 160,
+      "primary_type": "energy_efficiency",
+      "countries_count": 7
+    },
+    {
+      "code": "AMS-II.G.",
+      "count": 154,
+      "primary_type": "energy_efficiency",
+      "countries_count": 19
+    },
+    {
+      "code": "VM0007",
+      "count": 146,
+      "primary_type": "forestry",
+      "countries_count": 30
+    },
+    {
+      "code": "AMS-I.C.",
+      "count": 124,
+      "primary_type": "renewable_energy",
+      "countries_count": 22
+    },
+    {
+      "code": "VM0015",
+      "count": 120,
+      "primary_type": "forestry",
+      "countries_count": 17
+    },
+    {
+      "code": "AMS-III.D.",
+      "count": 117,
+      "primary_type": "agriculture",
+      "countries_count": 12
+    },
+    {
+      "code": "GS Methodology for emission reductions from safe drinking water supply",
+      "count": 104,
+      "primary_type": "energy_efficiency",
+      "countries_count": 29
+    }
+  ],
+  "registration_by_year": {
+    "2009": 76,
+    "2010": 80,
+    "2011": 52,
+    "2012": 65,
+    "2013": 74,
+    "2014": 54,
+    "2015": 44,
+    "2016": 15,
+    "2017": 26,
+    "2018": 37,
+    "2019": 73,
+    "2020": 1078,
+    "2021": 104,
+    "2022": 190,
+    "2023": 207,
+    "2024": 304,
+    "2025": 240,
+    "2026": 88
+  },
+  "cross_registration": {
+    "total": 173,
+    "by_type": {
+      "renewable_energy": 89,
+      "energy_efficiency": 69,
+      "forestry": 6,
+      "transport": 4,
+      "waste": 3,
+      "industrial": 2
+    },
+    "by_country": {
+      "India": 99,
+      "China": 18,
+      "Turkey": 7,
+      "South Africa": 6,
+      "Uganda": 5,
+      "Malawi": 5,
+      "Brazil": 5,
+      "Kenya": 4,
+      "Viet Nam": 3,
+      "Rwanda": 3,
+      "Thailand": 3,
+      "Nepal": 2,
+      "Colombia": 2,
+      "Zambia": 1,
+      "Madagascar": 1,
+      "Mozambique": 1,
+      "Timor-Leste": 1,
+      "Togo": 1,
+      "Ghana": 1,
+      "Paraguay": 1
+    }
+  }
+}

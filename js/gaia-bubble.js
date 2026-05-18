@@ -17,6 +17,7 @@ const GAIA_BUBBLE = (() => {
   let currentText = '';
   let hideTimer = null;
   let isExpanded = false;
+  let currentSite = null;
 
   // ── Color palette — natural teal/mint/green ──
   const COLORS = {
@@ -38,6 +39,7 @@ const GAIA_BUBBLE = (() => {
     bubbleEl.id = 'gaia-bubble';
     bubbleEl.innerHTML = `
       <div class="gaia-bubble-avatar">🌍</div>
+      <div class="gaia-site-indicator"></div>
       <div class="gaia-bubble-text"></div>
       <div class="gaia-bubble-thinking">
         <span></span><span></span><span></span>
@@ -236,9 +238,23 @@ const GAIA_BUBBLE = (() => {
     return bubbleEl;
   }
 
+  function setCurrentSite(siteId) {
+    currentSite = siteId;
+    const indicator = bubbleEl?.querySelector('.gaia-site-indicator');
+    if (indicator) {
+      const siteNames = { sri_lanka: 'Sri Lanka', antalya: 'Antalya', benin: 'Benin', borneo: 'Borneo' };
+      indicator.textContent = siteNames[siteId] || '';
+    }
+  }
+
+  function getCurrentSite() {
+    return currentSite;
+  }
+
   return {
     create, speak, showThinking, expand, collapse, toggleExpand,
     onSignal, idleNudge,
+    setCurrentSite, getCurrentSite,
     isVisible, getBubble,
     colors: COLORS,
   };

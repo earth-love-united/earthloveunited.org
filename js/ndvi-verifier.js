@@ -374,14 +374,12 @@ const NDVIVerifier = (() => {
 })();
 
 // Auto-init when Data is ready
-if (typeof Data !== 'undefined') {
-  NDVIVerifier.init();
-} else {
-  // Retry after Data loads
-  const _checkData = setInterval(() => {
-    if (typeof Data !== 'undefined') {
-      NDVIVerifier.init();
-      clearInterval(_checkData);
-    }
-  }, 200);
+function _ndviInit() {
+  if (typeof Data !== 'undefined') {
+    NDVIVerifier.init();
+  } else {
+    // Data not loaded yet — wait once for DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => NDVIVerifier.init(), { once: true });
+  }
 }
+_ndviInit();

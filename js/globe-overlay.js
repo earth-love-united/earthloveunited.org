@@ -41,6 +41,7 @@ const GLOBE_OVERLAY = (() => {
     overlayEl = document.createElement('div');
     overlayEl.id = 'globe-overlay';
     overlayEl.innerHTML = `
+      <div class="globe-overlay-connector"></div>
       <div class="globe-overlay-bg"></div>
       <div class="globe-overlay-header">
         <div class="globe-overlay-header-left">
@@ -150,6 +151,11 @@ const GLOBE_OVERLAY = (() => {
 
     // Render content if not already rendered
     renderTabContent(tabId, site);
+
+    // Render any pending charts for this tab
+    if (typeof GAIA_CHARTS !== 'undefined') {
+      setTimeout(() => GAIA_CHARTS.renderPending(), 50);
+    }
 
     // Scroll content to top on tab switch
     overlayEl.querySelector('#globe-overlay-content').scrollTop = 0;

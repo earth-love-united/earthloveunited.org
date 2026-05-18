@@ -6,10 +6,10 @@
 <title>GAIA — Earth Love United</title>
 <script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
 <script src="gaia-data.js"></script>
-<script src="gaia-signals.js"></script>
 <script src="gaia-charts.js"></script>
+<script src="js/gaia-chat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<!-- DIS Integration — loaded before inline script -->
+<!-- DIS Integration — loaded after gaia-chat.js so interceptors can wrap its functions -->
 <script src="gaia-knowledge.js"></script>
 <script src="gaia-dom-adapter.js"></script>
 <script src="dis/gaia-voice-data.js"></script>
@@ -299,8 +299,99 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
   </div>
 </div>
 
+<script>
+// ═══════════════════════════════════════════════════════════════
+// VOICE TOGGLE
+// ═══════════════════════════════════════════════════════════════
+let _voiceEnabled = false;
+let _voiceInitialized = false;
 
-<script src="js/gaia-chat.js"></script>
+function toggleVoice() {
+  _voiceEnabled = !_voiceEnabled;
+  const btn = document.getElementById('voice-toggle-btn');
+  if (!btn) return;
+  if (_voiceEnabled) {
+    btn.textContent = '🔊 Voice';
+    btn.style.borderColor = 'rgba(78,205,196,.3)';
+    btn.style.color = 'var(--teal)';
+    if (typeof GaiaVoice !== 'undefined' && !_voiceInitialized) {
+      GaiaVoice.init();
+      _voiceInitialized = true;
+    }
+    if (typeof GaiaVoice !== 'undefined') GaiaVoice.setEnabled(true);
+  } else {
+    btn.textContent = '🔇 Voice';
+    btn.style.borderColor = 'rgba(255,255,255,.08)';
+    btn.style.color = 'var(--text2)';
+    if (typeof GaiaVoice !== 'undefined') { GaiaVoice.setEnabled(false); GaiaVoice.stop(); }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ENGAGEMENT SCORE DISPLAY
+// ═══════════════════════════════════════════════════════════════
+const TIER_ICONS = { COLD:'🌱', WARM:'🌿', ENGAGED:'🌳', HOOKED:'🔥', INVESTED:'💎', COMMITTED:'🌍' };
+const TIER_NAMES = { COLD:'SEED', WARM:'GROW', ENGAGED:'BLOOM', HOOKED:'FLAME', INVESTED:'GUARDIAN', COMMITTED:'LEGACY' };
+
+function updateEngagementDisplay() {
+  if (typeof GaiaState === 'undefined') return;
+  const score = GaiaState.getScore();
+  const tier = score.tier || 'COLD';
+  const icon = document.getElementById('engagement-icon');
+  const scoreEl = document.getElementById('engagement-score');
+  const tierEl = document.getElementById('engagement-tier');
+  if (icon) icon.textContent = TIER_ICONS[tier] || '🌱';
+  if (scoreEl) scoreEl.textContent = score.score || 0;
+  if (tierEl) tierEl.textContent = TIER_NAMES[tier] || 'SEED';
+}
+
+// Update on any GAIA speech
+if (typeof GaiaState !== 'undefined') {
+  setInterval(updateEngagementDisplay, 2000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// QUEST PANEL
+// ═══════════════════════════════════════════════════════════════
+function updateQuestPanel() {
+  if (typeof GaiaQuests === 'undefined') return;
+  const quests = GaiaQuests.getAllQuests();
+  const active = quests.filter(q => q.status !== 'completed');
+  const completed = quests.filter(q => q.status === 'completed');
+  const panel = document.getElementById('quest-panel');
+  const list = document.getElementById('quest-list');
+  if (!panel || !list) return;
+  if (active.length === 0 && completed.length === 0) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+  list.innerHTML = '';
+  active.slice(0, 5).forEach(q => {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:5px 7px;background:rgba(255,255,255,.02);border-radius:4px;font-size:9px;cursor:pointer;';
+    div.innerHTML = '<span style="margin-right:4px;">' + (q.icon || '🌱') + '</span><span style="color:var(--text2)">' + q.title + '</span>';
+    div.title = q.description;
+    list.appendChild(div);
+  });
+  if (completed.length > 0) {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:3px 7px;font-size:8px;color:var(--text3);text-align:center;';
+    div.textContent = '✓ ' + completed.length + ' completed';
+    list.appendChild(div);
+  }
+}
+setInterval(updateQuestPanel, 3000);
+document.addEventListener('click', () => setTimeout(updateQuestPanel, 500));
+
+// ═══════════════════════════════════════════════════════════════
+// JOURNAL TOGGLE
+// ═══════════════════════════════════════════════════════════════
+function toggleJournal() {
+  const journal = document.getElementById('gaia-journal');
+  if (!journal) return;
+  const isVisible = journal.style.display !== 'none';
+  journal.style.display = isVisible ? 'none' : 'block';
+  if (!isVisible && typeof GaiaQuests !== 'undefined') updateQuestPanel();
+}
+</script>
 
 </body>
 </html>

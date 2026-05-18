@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concept 2: The Legacy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Outfit:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #080a10; color: #e2dfd8; font-family: 'Outfit', sans-serif; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        
+        .container { max-width: 800px; padding: 40px; text-align: center; position: relative; z-index: 2; }
+        
+        .portrait-placeholder { width: 120px; height: 120px; border-radius: 50%; border: 1px solid rgba(78,205,196,0.3); margin: 0 auto 30px; background: linear-gradient(135deg, rgba(78,205,196,0.1), rgba(91,191,114,0.05)); display: flex; justify-content: center; align-items: center; font-size: 40px; color: rgba(78,205,196,0.5); font-family: 'Cormorant Garamond', serif; }
+        
+        h1 { font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 300; letter-spacing: -1px; margin-bottom: 20px; line-height: 1.1; }
+        .italic { font-style: italic; color: #7be8d0; }
+        
+        p { font-size: 20px; font-weight: 300; color: #9a9590; line-height: 1.6; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        
+        .memorial { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #5a5652; margin-bottom: 60px; font-weight: 400; }
+        
+        .actions { display: flex; justify-content: center; gap: 20px; opacity: 0; animation: fadeIn 2s ease forwards 1s; }
+        .btn { padding: 15px 36px; border-radius: 4px; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.4s ease; border: 1px solid rgba(78,205,196,0.3); color: #7be8d0; }
+        .btn:hover { background: rgba(78,205,196,0.1); border-color: #7be8d0; }
+        
+        .ambient-light { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 30%, rgba(42,143,163,0.08) 0%, rgba(8,10,16,1) 60%); z-index: 1; pointer-events: none; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="ambient-light"></div>
+    <div class="container">
+        <div class="portrait-placeholder">JM</div>
+        <div class="memorial">In memory of Jean Missinhoun (1972–2024)</div>
+        <h1>From oil to <span class="italic">earth.</span></h1>
+        <p>One man decided to spend the rest of his life restoring the ecosystems he once helped exploit. His mission became our mission.</p>
+        
+        <div class="actions">
+            <a href="../index.html" class="btn">Hear His Story</a>
+            <a href="../gaia.html" class="btn" style="border-color: rgba(226,223,216,0.2); color: #e2dfd8;">Meet GAIA</a>
+        </div>
+    </div>
+</body>
+</html>

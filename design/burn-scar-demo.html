@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE BURN SCAR — Earth Love United</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   THE BURN SCAR v4 — Zero-GPU-Strain Panel Experience
+   CSS-only ambiance · Single RAF at 15fps · Canvas only on demand
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --primary: #2dd4a8;
+  --primary-dim: #1a6b52;
+  --primary-container: rgba(45,212,168,0.12);
+  --on-primary: #002117;
+  --tertiary: #f5876a;
+  --tertiary-dim: #7f422a;
+  --error: #f5876a;
+  --error-container: rgba(245,135,106,0.10);
+  --surface: #0f1a15;
+  --surface-dim: #0a1410;
+  --surface-bright: #14201b;
+  --surface-container-lowest: #080e0b;
+  --surface-container-low: #0e1914;
+  --surface-container: #131f1a;
+  --surface-container-high: #1a2a22;
+  --surface-container-highest: #20312a;
+  --on-surface: #d8e6de;
+  --on-surface-variant: #9ca5a0;
+  --on-surface-dim: #6b8278;
+  --hover: rgba(45,212,168,0.08);
+  --pressed: rgba(45,212,168,0.16);
+  --radius-sm: 12px;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --font: 'Inter', system-ui, sans-serif;
+  --mono: 'Material Symbols Outlined';
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  width:100%; height:100%; overflow:hidden;
+  background: var(--surface-dim);
+  color: var(--on-surface);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* — Background: pure CSS, zero canvas, zero GPU loop — */
+#bg {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(15,40,30,0.6) 0%, transparent 60%),
+    radial-gradient(circle at 15% 20%, rgba(45,212,168,0.03) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(45,212,168,0.02) 0%, transparent 30%);
+}
+/* Static star field — no animation, no canvas */
+#bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(200,210,200,0.4), transparent),
+    radial-gradient(1px 1px at 20% 35%, rgba(200,210,200,0.3), transparent),
+    radial-gradient(1px 1px at 35% 10%, rgba(200,210,200,0.35), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(200,210,200,0.25), transparent),
+    radial-gradient(1px 1px at 65% 25%, rgba(200,210,200,0.3), transparent),
+    radial-gradient(1px 1px at 80% 40%, rgba(200,210,200,0.2), transparent),
+    radial-gradient(1px 1px at 90% 15%, rgba(200,210,200,0.3), transparent),
+    radial-gradient(1px 1px at 15% 65%, rgba(200,210,200,0.25), transparent),
+    radial-gradient(1px 1px at 25% 80%, rgba(200,210,200,0.2), transparent),
+    radial-gradient(1px 1px at 45% 70%, rgba(200,210,200,0.3), transparent),
+    radial-gradient(1px 1px at 70% 60%, rgba(200,210,200,0.25), transparent),
+    radial-gradient(1px 1px at 85% 80%, rgba(200,210,200,0.35), transparent),
+    radial-gradient(1px 1px at 5% 50%, rgba(200,210,200,0.2), transparent),
+    radial-gradient(1px 1px at 55% 5%, rgba(200,210,200,0.3), transparent),
+    radial-gradient(1px 1px at 95% 55%, rgba(200,210,200,0.25), transparent),
+    radial-gradient(1px 1px at 40% 90%, rgba(200,210,200,0.2), transparent);
+  background-size: 250px 200px;
+  opacity: 0.6;
+}
+/* Slow ambient glow — CSS only, very cheap */
+#bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(45,212,168,0.04) 0%, transparent 50%);
+  animation: ambient-pulse 8s ease-in-out infinite alternate;
+}
+@keyframes ambient-pulse {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* — Bottom Sheet — */
+#sheet {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 100;
+  background: var(--surface-container-low);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  min-height: 420px; max-height: 82vh;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.2,0,0,1);
+  outline: none;
+}
+#sheet.open { transform: translateY(0); }
+#sheet.closing { transform: translateY(100%); }
+
+.sheet-handle {
+  display: flex; justify-content: center;
+  padding: 12px 0 4px; flex-shrink: 0; cursor: grab; user-select: none;
+}
+.sheet-handle::after {
+  content: ''; width: 36px; height: 4px;
+  border-radius: 2px; background: var(--on-surface-variant); opacity: 0.4;
+  transition: opacity 0.2s;
+}
+.sheet-handle:hover::after { opacity: 0.7; }
+
+.sheet-header {
+  padding: 0 20px 8px; display: flex; align-items: flex-start;
+  justify-content: space-between; flex-shrink: 0;
+}
+.sheet-header-text { flex: 1; padding-right: 12px; }
+.sheet-step-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--primary);
+  padding: 3px 10px; border-radius: 12px;
+  background: var(--primary-container);
+  margin-bottom: 6px;
+}
+.sheet-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.3; }
+.sheet-sub { font-size: 13px; color: var(--on-surface-dim); margin-top: 4px; line-height: 1.4; }
+.sheet-close {
+  width: 36px; height: 36px; border-radius: 50%; border: none;
+  background: transparent; color: var(--on-surface-dim);
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: center; transition: all 0.2s; font-size: 20px;
+}
+.sheet-close:hover { background: var(--surface-container-high); color: var(--on-surface); }
+
+.sheet-progress { height: 2px; flex-shrink: 0; background: var(--surface-container-high); position: relative; }
+.sheet-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #1a6b52);
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  border-radius: 1px;
+}
+
+.sheet-body {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 16px 20px 20px; scroll-behavior: smooth;
+}
+.sheet-body::-webkit-scrollbar { width: 4px; }
+.sheet-body::-webkit-scrollbar-track { background: transparent; }
+.sheet-body::-webkit-scrollbar-thumb { background: var(--surface-container-high); border-radius: 2px; margin: 4px; }
+
+/* — Step wrapper — */
+.xp-step { animation: sheet-enter 0.4s ease; }
+@keyframes sheet-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* — Card system — */
+.card {
+  background: var(--surface-container); border-radius: var(--radius);
+  overflow: hidden; border: 1px solid rgba(255,255,255,0.04);
+}
+.card-body { padding: 16px; }
+
+/* Tonal card */
+.card-tonal {
+  background: var(--primary-container); border-radius: var(--radius);
+  padding: 16px 20px; border-left: 3px solid var(--primary);
+}
+.card-tonal .tonal-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--primary); margin-bottom: 6px;
+}
+.card-tonal .tonal-text {
+  font-size: 14px; line-height: 1.7; color: var(--on-surface-variant);
+}
+.card-tonal .tonal-text strong { color: var(--on-surface); }
+
+/* Data stats */
+.stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 16px 0; }
+.stat-block {
+  background: var(--surface-container-high); border-radius: var(--radius);
+  padding: 14px; text-align: center; border: 1px solid rgba(255,255,255,0.03);
+}
+.stat-block .stat-num {
+  font-size: 24px; font-weight: 800; font-family: var(--font);
+  letter-spacing: -0.5px; line-height: 1.2;
+}
+.stat-block .stat-label {
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; margin-top: 4px; color: var(--on-surface-dim);
+}
+.stat-block .stat-sub { font-size: 10px; color: var(--on-surface-dim); margin-top: 2px; }
+.stat-block.fire .stat-num { color: var(--error); }
+.stat-block.green .stat-num { color: var(--primary); }
+.stat-block.warn .stat-num { color: var(--tertiary); }
+
+.section-spacer { height: 20px; }
+.divider { height: 1px; background: var(--surface-container-high); margin: 16px 0; }
+
+/* GAIA voice */
+.gaia-block {
+  background: var(--surface-container-high); border-radius: var(--radius);
+  padding: 16px 18px; margin: 16px 0; border-left: 3px solid var(--primary);
+  position: relative;
+}
+.gaia-block::before {
+  content: '◇ GAIA'; position: absolute; top: -9px; left: 14px;
+  background: var(--surface-dim); padding: 0 8px;
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  color: var(--primary);
+}
+.gaia-block p { font-size: 14px; line-height: 1.75; color: var(--on-surface-dim); margin: 6px 0; }
+.gaia-block em { color: var(--on-surface); font-style: italic; }
+.gaia-block strong { color: var(--on-surface); }
+
+/* Slider */
+.slider-wrap {
+  background: var(--surface-container); border-radius: var(--radius);
+  padding: 16px; margin: 16px 0; border: 1px solid rgba(255,255,255,0.04);
+}
+.slider-header {
+  font-size: 11px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--on-surface-dim); margin-bottom: 10px;
+}
+input[type="range"].m3-slider {
+  -webkit-appearance: none; width: 100%; height: 4px;
+  background: var(--surface-container-high); border-radius: 2px; outline: none;
+}
+input[type="range"].m3-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px;
+  border-radius: 50%; background: var(--primary);
+  cursor: pointer; box-shadow: 0 0 8px rgba(45,212,168,0.3);
+}
+.slider-years {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--on-surface-dim);
+  font-family: var(--mono); margin-top: 6px;
+}
+
+/* Satellite comparison */
+.sat-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 16px 0; }
+.sat-card {
+  background: var(--surface-container-high); border-radius: var(--radius-sm);
+  overflow: hidden; border: 1px solid rgba(255,255,255,0.02);
+}
+.sat-card .sat-year {
+  font-size: 10px; padding: 6px 10px; background: rgba(0,0,0,0.3);
+  color: var(--primary); font-family: var(--mono); letter-spacing: 1px;
+}
+.sat-card .sat-vis { height: 60px; position: relative; overflow: hidden; }
+.sat-card .sat-vis-inner {
+  width: 100%; height: 100%; transition: background 0.3s ease;
+}
+.sat-card .sat-caption {
+  padding: 6px 10px; font-size: 11px; color: var(--on-surface-dim);
+  font-family: var(--mono);
+}
+
+/* Chart — drawn once, static after */
+.chart-wrap {
+  background: var(--surface-container); border-radius: var(--radius);
+  padding: 12px; margin: 16px 0; border: 1px solid rgba(255,255,255,0.03);
+}
+.chart-wrap .chart-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--on-surface-dim); margin-bottom: 8px;
+}
+canvas.chart { width: 100%; display: block; }
+
+/* Prediction */
+.predict-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 16px 0; }
+.predict-card {
+  background: var(--surface-container-high); border: 2px solid var(--surface-container-highest);
+  border-radius: var(--radius); padding: 16px; cursor: pointer;
+  transition: all 0.25s ease; text-align: center;
+}
+.predict-card:hover { background: var(--hover); }
+.predict-card.sel { border-color: var(--primary); background: var(--primary-container); }
+.predict-card.ok { border-color: var(--primary); background: rgba(34,197,94,0.08); }
+.predict-card.no { border-color: var(--error); background: var(--error-container); }
+.predict-card .pc-emoji { font-size: 36px; margin-bottom: 8px; }
+.predict-card .pc-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.predict-card .pc-desc { font-size: 12px; color: var(--on-surface-dim); line-height: 1.5; }
+
+/* Feedback */
+.feedback-block {
+  padding: 14px 16px; border-radius: var(--radius); margin: 12px 0;
+  font-size: 14px; line-height: 1.7; display: none;
+}
+.feedback-block.show { display: block; animation: sheet-enter 0.4s ease; }
+.feedback-block.ok { background: rgba(34,197,94,0.08); border-left: 3px solid var(--primary); }
+.feedback-block.no { background: rgba(245,135,106,0.08); border-left: 3px solid var(--error); }
+
+/* Fire list */
+.fire-list { display: flex; flex-direction: column; gap: 6px; margin: 16px 0; }
+.fire-item {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+  background: var(--surface-container-high); border-radius: var(--radius);
+  cursor: pointer; transition: background 0.2s; border: 1px solid rgba(255,255,255,0.02);
+}
+.fire-item:hover { background: var(--hover); }
+.fire-item .fi-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.fire-item .fi-info { flex: 1; min-width: 0; }
+.fire-item .fi-name { font-size: 14px; font-weight: 600; }
+.fire-item .fi-meta { font-size: 11px; color: var(--on-surface-dim); font-family: var(--mono); }
+.fire-item .fi-icon { font-size: 20px; flex-shrink: 0; }
+
+/* Loop */
+.loop-card {
+  background: var(--surface-container-high); border: 1px solid rgba(245,135,106,0.2);
+  border-radius: var(--radius); padding: 16px; margin: 16px 0; text-align: center;
+}
+.loop-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--tertiary); margin-bottom: 12px;
+}
+.loop-chain { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+.loop-node {
+  padding: 5px 9px; border-radius: 8px; font-size: 11px; font-weight: 600;
+  font-family: var(--mono); text-align: center; line-height: 1.4;
+}
+.loop-n1 { background: rgba(239,68,68,0.15); color: var(--error); }
+.loop-n2 { background: rgba(245,158,11,0.15); color: var(--tertiary); }
+.loop-n3 { background: rgba(239,68,68,0.2); color: var(--error); }
+.loop-n4 { background: rgba(168,85,247,0.15); color: var(--tertiary); }
+.loop-n5 { background: rgba(239,68,68,0.15); color: #fca5a5; }
+.loop-arrow { color: var(--on-surface-dim); font-size: 16px; }
+
+/* Map SVG */
+.map-mini { width: 100%; aspect-ratio: 16/8; border-radius: var(--radius); overflow: hidden; margin: 16px 0; background: #0d2a20; position: relative; }
+.map-mini-label {
+  position: absolute; top: 8px; left: 10px;
+  font-size: 9px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; color: rgba(45,212,168,0.7);
+  background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 6px;
+}
+
+/* Scenario */
+.scenario-card {
+  background: var(--surface-container); border: 2px solid rgba(255,255,255,0.04);
+  border-radius: var(--radius); padding: 16px; margin: 8px 0; cursor: pointer;
+  transition: all 0.2s;
+}
+.scenario-card:hover { background: var(--surface-container-high); }
+.scenario-card.sel { border-color: var(--primary); background: var(--primary-container); }
+.scenario-card .sc-head { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.scenario-card .sc-speed { margin-left: auto; font-size: 10px; color: var(--on-surface-dim); background: var(--surface-container-high); padding: 2px 8px; border-radius: 8px; }
+.scenario-card .sc-body { font-size: 13px; color: var(--on-surface-dim); line-height: 1.5; }
+.sc-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-top: 12px; }
+.sc-metric { background: rgba(0,0,0,0.15); padding: 8px; border-radius: var(--radius-sm); text-align: center; }
+.sc-metric .scm-val { font-size: 13px; font-weight: 700; color: var(--primary); font-family: var(--mono); }
+.sc-metric .scm-label { font-size: 8px; color: var(--on-surface-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+/* Impact */
+.impact-card {
+  background: var(--primary-container); border: 1px solid rgba(45,212,168,0.2);
+  border-radius: var(--radius); padding: 18px; margin: 16px 0; text-align: center;
+}
+.impact-card .ic-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--primary); margin-bottom: 4px;
+}
+.impact-card .ic-num { font-size: 28px; font-weight: 800; color: var(--error); font-family: var(--font); letter-spacing: -0.5px; }
+.impact-card .ic-context { font-size: 12px; color: var(--on-surface-dim); margin-top: 8px; line-height: 1.5; }
+
+/* Reward */
+.reward-block { text-align: center; padding: 24px; background: var(--primary-container); border: 1px solid rgba(45,212,168,0.15); border-radius: var(--radius); margin: 16px 0; }
+.reward-badge { display: inline-flex; flex-direction: column; align-items: center; width: 72px; height: 72px; border-radius: 50%; background: var(--surface-container-high); border: 2px solid rgba(251,191,36,0.5); justify-content: center; gap: 1px; margin-bottom: 12px; }
+.reward-badge .rb-icon { font-size: 28px; }
+.reward-badge .rb-name { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--secondary); }
+.reward-xp { font-size: 18px; font-weight: 700; color: var(--primary); font-family: var(--mono); }
+
+/* Reflect grid */
+.reflect-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+.reflect-card { background: var(--surface-container-high); border: 1px solid rgba(255,255,255,0.03); border-radius: var(--radius); padding: 14px; }
+.reflect-card .rc-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 4px; }
+.reflect-card .rc-content { font-size: 13px; line-height: 1.7; color: var(--on-surface-dim); }
+.highlight { color: var(--primary); font-weight: 600; }
+
+/* Journal */
+.journal-field { width: 100%; min-height: 80px; background: transparent; border: 1px solid var(--surface-container-highest); border-radius: var(--radius); padding: 12px; color: var(--on-surface); font-size: 14px; line-height: 1.7; resize: vertical; margin-top: 8px; font-family: var(--font); }
+.journal-field:focus { outline: none; border-color: var(--primary); }
+.journal-field::placeholder { color: var(--on-surface-dim); }
+
+/* Share card */
+.share-card { background: var(--surface-container-high); border: 1px solid rgba(255,255,255,0.04); border-radius: var(--radius); padding: 18px; margin: 16px 0; text-align: center; }
+.share-card .sc-poem { font-size: 13px; line-height: 1.8; color: var(--on-surface-dim); font-style: italic; margin: 12px 0; }
+.share-card .sc-footer { font-size: 11px; color: var(--on-surface-dim); }
+.share-card .sc-footer .brand { color: var(--primary); font-weight: 600; }
+
+/* Buttons M3 */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 40px; padding: 0 24px; background: var(--primary); color: var(--on-primary);
+  border: none; border-radius: 16px; font-size: 14px; font-weight: 500;
+  font-family: var(--font); cursor: pointer; transition: all 0.2s; letter-spacing: 0.25px;
+}
+.btn:hover { box-shadow: 0 2px 8px rgba(45,212,168,0.3); }
+.btn:active { background: var(--primary-dim); }
+.btn-outline { background: transparent; border: 1px solid var(--surface-container-highest); color: var(--on-surface); }
+.btn-outline:hover { background: var(--surface-container-high); }
+.btn-group { display: flex; gap: 10px; margin-top: 16px; justify-content: center; flex-wrap: wrap; flex-direction: column; align-items: stretch; }
+
+@media (min-width: 900px) { #sheet { max-width: 520px; margin: 0 auto; } }
+@media (max-width: 400px) { .sheet-body { padding: 12px 14px 16px; } .stat-row { gap: 6px; } }
+</style>
+</head>
+<body>
+
+<!-- Pure CSS background — zero GPU, zero canvas, zero JS -->
+<div id="bg"></div>
+
+<!-- BOTTOM SHEET -->
+<div id="sheet">
+  <div class="sheet-handle" id="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-header-text">
+      <div class="sheet-step-label"><span class="material-symbols-outlined" style="font-size:14px;">lens</span> Step <span class="step-num" id="step-num">1</span> of 7</div>
+      <div class="sheet-title" id="sheet-title">What Happened Here?</div>
+      <div class="sheet-sub" id="sheet-sub">Manavgat, Antalya — July 2021</div>
+    </div>
+    <button class="sheet-close" id="sheet-close">✕</button>
+  </div>
+  <div class="sheet-progress"><div class="sheet-progress-fill" id="sheet-progress" style="width:14%"></div></div>
+  <div class="sheet-body" id="sheet-body"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  THE BURN SCAR v4 — ZERO-GPU-STRAIN
+//  No animation loops. No canvas background.
+//  Canvas drawings happen ONCE, only when needed.
+//  One single RAF used only for lazy chart redraws.
+// ═══════════════════════════════════════════════════
+
+let step = 0, xp = 0, currentScenario = null, predictionMade = false;
+const sheet = $('sheet'), body = $('sheet-body');
+function $(id) { return document.getElementById(id); }
+const TAU = Math.PI * 2;
+
+function openSheet() { sheet.classList.remove('closing'); sheet.classList.add('open'); showStep(0); }
+function closeSheet() { sheet.classList.remove('open'); sheet.classList.add('closing'); setTimeout(()=>sheet.classList.remove('closing'),400); }
+$('sheet-close').onclick = closeSheet;
+$('sheet-handle').onclick = () => sheet.classList.contains('open') ? closeSheet() : openSheet();
+
+function showStep(n) {
+  step = n;
+  $('step-num').textContent = n+1;
+  ['HOOK','EXPLORE','PREDICT','REVEAL','CONNECT','ACT','REFLECT'].forEach((name,i)=>{
+    // step label updated inline
+  });
+  $('sheet-title').textContent = steps[n].title;
+  $('sheet-sub').textContent = steps[n].sub;
+  $('sheet-progress').style.width = ((n+1)/7*100)+'%';
+  body.innerHTML = '';
+  steps[n].build(body);
+  body.scrollTop = 0;
+}
+function nextStep() { if(step<6) showStep(step+1); }
+function xpPlus(n) { xp += n; }
+
+const steps = [
+  { title:'What Happened Here?', sub:'Manavgat, Antalya — July 2021', build: buildHook },
+  { title:'Play With Time', sub:'Watch the forest disappear and struggle to return', build: buildExplore },
+  { title:'Test Your Instinct', sub:'Predict recovery before seeing the data', build: buildPredict },
+  { title:'The Data Speaks', sub:'Satellite measurements of what fire leaves behind', build: buildReveal },
+  { title:'This Is Not Just Turkey', sub:'Fire speaks the same language everywhere', build: buildConnect },
+  { title:'You\'re In Charge', sub:'Three paths. Real numbers. Real consequences', build: buildAct },
+  { title:'What Did You Learn?', sub:'Reflect, journal, and carry this forward', build: buildReflect }
+];
+
+// ═══════════ STEP 1: HOOK ═══════════
+function buildHook(el) {
+  el.innerHTML = `
+    <div class="map-mini">
+      <div class="map-mini-label">🔥 Active Event · Manavgat, Turkey</div>
+      <svg viewBox="0 0 400 200" style="width:100%;height:100%;">
+        <rect width="400" height="200" fill="#0d2028"/>
+        <path d="M40,40 Q60,30 80,45 Q100,55 90,75 Q70,85 50,75 Q30,65 40,40Z" fill="#1a4a2e" opacity="0.7"/>
+        <path d="M120,50 Q160,35 200,50 Q220,48 210,70 Q190,85 170,80 Q140,75 120,50Z" fill="#1a4a2e" opacity="0.6"/>
+        <path d="M240,50 Q280,40 310,55 Q320,65 300,80 Q270,90 250,80 Q235,68 240,50Z" fill="#1a4a2e" opacity="0.5"/>
+        <path d="M320,90 Q360,80 390,95 Q395,110 380,120 Q350,130 330,115 Q318,102 320,90Z" fill="#1a4a2e" opacity="0.4"/>
+        <path d="M80,120 Q120,110 160,125 Q170,140 155,160 Q130,170 110,155 Q90,138 80,120Z" fill="#1a4a2e" opacity="0.5"/>
+        <path d="M180,130 Q220,120 260,140 Q270,160 250,175 Q220,185 190,178 Q178,158 180,130Z" fill="#1a4a2e" opacity="0.6"/>
+        <circle cx="255" cy="95" r="14" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.8">
+          <animate attributeName="r" values="8;16;8" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="255" cy="95" r="5" fill="#ef4444"/>
+        <circle cx="130" cy="100" r="4" fill="#2dd4a8" opacity="0.7"/>
+        <circle cx="200" cy="130" r="4" fill="#3b82f6" opacity="0.7"/>
+        <circle cx="80" cy="145" r="4" fill="#7c3aed" opacity="0.7"/>
+        <circle cx="350" cy="110" r="4" fill="#a78bfa" opacity="0.7"/>
+      </svg>
+    </div>
+    <div class="stat-row">
+      <div class="stat-block fire"><div class="stat-num">60,000</div><div class="stat-label">Hectares</div><div class="stat-sub">burned in 4 days</div></div>
+      <div class="stat-block fire"><div class="stat-num">&gt;99%</div><div class="stat-label">Mortality</div><div class="stat-sub">tree kill rate</div></div>
+      <div class="stat-block warn"><div class="stat-num">45°C</div><div class="stat-label">Peak temp</div><div class="stat-sub">during fire</div></div>
+    </div>
+    <div class="gaia-block">
+      <p><em>In July 2021, this forest was green — dense Mediterranean pine for centuries. Then 45°C heat and a lightning strike turned 60,000 hectares to ash in four days.</em></p>
+      <p><em>The satellite watched it happen from 700 km up. The scar is still there. <strong>Click the arrow when you're ready.</strong></em></p>
+    </div>
+    <div style="text-align:center;margin-top:8px;">
+      <button class="btn" onclick="nextStep()"><span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span> Explore the Timeline</button>
+    </div>`;
+}
+
+// ═══════════ STEP 2: EXPLORE ═══════════
+function buildExplore(el) {
+  el.innerHTML = `
+    <div class="gaia-block">
+      <p><em>Drag the slider. Watch the green vanish. Count the years to see how little comes back. The satellite doesn't blink.</em></p>
+    </div>
+    <div class="slider-wrap">
+      <div class="slider-header">Satellite Timeline · Sentinel-2 · 2000–2026</div>
+      <input type="range" min="2000" max="2026" value="2000" class="m3-slider" oninput="updateTimeline(this.value)">
+      <div class="slider-years"><span>2000</span><span>2005</span><span>2010</span><span>2015</span><span>2020</span><span style="color:var(--error);font-weight:700">2021</span><span>2025</span></div>
+    </div>
+    <div class="sat-grid">
+      <div class="sat-card">
+        <div class="sat-year">Year: <strong id="ts-label">2000</strong></div>
+        <div class="sat-vis"><div class="sat-vis-inner" id="ts-vis" style="background:radial-gradient(ellipse at 50% 50%,rgba(34,197,94,0.7) 0%,rgba(34,197,94,0.3) 40%,rgba(13,42,32,0.8) 70%,#0d2a20 100%);display:flex;align-items:center;justify-content:center;"><span style="opacity:0.5">NDVI 0.70</span></div></div>
+        <div class="sat-caption">Dense mature pine · <span style="color:var(--primary);font-weight:700;">NDVI 0.72</span></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+      <div class="card" style="border-left:3px solid var(--primary)"><div class="card-body" style="padding:10px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--primary);margin-bottom:6px;">Before Fire</div>
+        <div style="height:40px;background:radial-gradient(ellipse at 50% 50%,rgba(34,197,94,0.8) 0%,rgba(34,197,94,0.3) 50%,rgba(13,42,32,0.9) 100%);border-radius:var(--radius-sm);"></div>
+        <div style="font-size:10px;color:var(--on-surface-dim);margin-top:4px;font-family:var(--mono)">NDVI: <span style="color:var(--primary);font-weight:700">0.72</span></div>
+      </div></div>
+      <div class="card" style="border-left:3px solid var(--error)"><div class="card-body" style="padding:10px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--error);margin-bottom:6px;">After Fire</div>
+        <div style="height:40px;background:radial-gradient(ellipse at 50% 50%,rgba(239,68,68,0.8) 0%,rgba(180,50,50,0.4) 50%,rgba(13,42,32,0.95) 100%);border-radius:var(--radius-sm);"></div>
+        <div style="font-size:10px;color:var(--on-surface-dim);margin-top:4px;font-family:var(--mono)">NDVI: <span style="color:var(--error);font-weight:700">0.18</span></div>
+      </div></div>
+    </div>
+    <div class="chart-wrap"><div class="chart-title">Vegetation Recovery (NDVI) 2000–2025</div><canvas id="ndvi-chart" class="chart" height="110"></canvas></div>
+    <div style="text-align:center;margin-top:8px;">
+      <button class="btn" onclick="nextStep()"><span class="material-symbols-outlined" style="font-size:18px;">psychology</span> Test Your Instinct</button>
+    </div>`;
+  setTimeout(()=>{const c=$('ndvi-chart');if(c){c.width=c.offsetWidth*2;c.height=220;drawNDVI(c.getContext('2d'),c.width,c.height);}},60);
+}
+
+function updateTimeline(y) {
+  const label=$('ts-label'); if(label) label.textContent=y;
+  const vis=$('ts-vis'); if(!vis)return;
+  y=parseInt(y);
+  if(y<=2020){vis.style.background='radial-gradient(ellipse at 50% 50%,rgba(34,197,94,0.7) 0%,rgba(34,197,94,0.3) 40%,rgba(13,42,32,0.8) 70%,#0d2a20 100%)';const s=vis.querySelector('span');if(s){s.textContent='NDVI ~0.7'+Math.max(0,2020-y);s.style.opacity='0.5';}}
+  else if(y===2021){vis.style.background='radial-gradient(ellipse at 50% 50%,rgba(239,68,68,0.8) 0%,rgba(180,50,50,0.5) 30%,rgba(13,42,32,0.95) 80%,#060a0d 100%)';const s=vis.querySelector('span');if(s){s.textContent='NDVI 0.18 ▼';s.style.color='#ef4444';s.style.opacity='1';}}
+  else{const r=(y-2021)/4;const g=Math.round(40+r*80);vis.style.background=`radial-gradient(ellipse at 50% 50%,rgba(${g},${Math.round(g*.6)},30,0.6) 0%,rgba(${Math.round(g*.4)},${Math.round(g*.3)},20,0.4) 40%,rgba(13,42,32,0.9) 70%,#0d2a20 100%)`;const s=vis.querySelector('span');const n=(.18+r*.2).toFixed(2);if(s){s.textContent='NDVI '+n;s.style.color='';s.style.opacity='0.7';}}
+}
+
+// Draw NDVI chart — called once, draws once, done
+function drawNDVI(ctx,w,h) {
+  const p={l:36,r:16,t:14,b:22};
+  const cw=w-p.l-p.r, ch=h-p.t-p.b;
+  // Data
+  const d=[];for(let y=2000;y<=2020;y++)d.push({y,v:.70+(Math.random()-.5)*.02});
+  d.push({y:2021,v:.18});d.push({y:2022,v:.25});d.push({y:2023,v:.29});d.push({y:2024,v:.34});d.push({y:2025,v:.38});
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;
+  for(let v=0;v<=.8;v+=.2){const y=p.t+ch-(v/.8)*ch;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.l+cw,y);ctx.stroke();ctx.font='14px var(--font)';ctx.fillStyle='rgba(255,255,255,0.25)';ctx.textAlign='right';ctx.fillText(v.toFixed(1),p.l-5,y+4);}
+  // X labels
+  ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,0.25)';
+  [2000,2005,2010,2015,2020,2025].forEach(yr=>{ctx.font='12px var(--font)';ctx.fillText(yr,p.l+((yr-2000)/25)*cw,p.t+ch+16);});
+  // Fill
+  ctx.beginPath();d.forEach((pt,i)=>{const x=p.l+((pt.y-2000)/25)*cw;const y=p.t+ch-(pt.v/.8)*ch;if(i===0)ctx.moveTo(x,p.t+ch);ctx.lineTo(x,y);});ctx.lineTo(p.l+((d[d.length-1].y-2000)/25)*cw,p.t+ch);ctx.closePath();ctx.fillStyle='rgba(45,212,168,0.1)';ctx.fill();
+  // Line
+  ctx.beginPath();d.forEach((pt,i)=>{const x=p.l+((pt.y-2000)/25)*cw;const y=p.t+ch-(pt.v/.8)*ch;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.strokeStyle='#2dd4a8';ctx.lineWidth=2.5;ctx.stroke();
+  // Fire dot
+  const fd=d.find(pt=>pt.y===2021);if(fd){const fx=p.l+((fd.y-2000)/25)*cw;const fy=p.t+ch-(fd.v/.8)*ch;ctx.beginPath();ctx.arc(fx,fy,6,0,TAU);ctx.fillStyle='#ef4444';ctx.fill();ctx.beginPath();ctx.arc(fx,fy,12,0,TAU);ctx.strokeStyle='rgba(239,68,68,0.4)';ctx.lineWidth=2;ctx.stroke();ctx.font='bold 11px var(--font)';ctx.fillStyle='#ef4444';ctx.textAlign='center';ctx.fillText('↓ Fire',fx,fy-16);}
+  // Baseline
+  ctx.setLineDash([5,4]);ctx.beginPath();const by=p.t+ch-(.7/.8)*ch;ctx.moveTo(p.l,by);ctx.lineTo(p.l+cw,by);ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);ctx.font='10px var(--font)';ctx.fillStyle='rgba(251,191,36,0.6)';ctx.textAlign='right';ctx.fillText('Pre-fire →',p.l+cw,by-4);
+}
+
+// ═══════════ STEP 3: PREDICT ═══════════
+function buildPredict(el) {
+  predictionMade=false;
+  el.innerHTML = `
+    <div class="gaia-block"><p><em>Before I show you the data — how good is your gut? Four years after 60,000 hectares burned, how much has the forest recovered? <strong>Answer honestly. Being wrong is where learning starts.</strong></em></p></div>
+    <div class="predict-grid">
+      <div class="predict-card" id="pred-a" onclick="doPredict('a')"><div class="pc-emoji">🌲🌲🌲</div><div class="pc-title">Mostly recovered</div><div class="pc-desc">Young pines fill the gaps. Nature is resilient.</div></div>
+      <div class="predict-card" id="pred-b" onclick="doPredict('b')"><div class="pc-emoji">🌿🌿</div><div class="pc-title">Partially recovered</div><div class="pc-desc">Some green, mostly scrub and grass.</div></div>
+      <div class="predict-card" id="pred-c" onclick="doPredict('c')"><div class="pc-emoji">🪨</div><div class="pc-title">Still devastated</div><div class="pc-desc">Bare soil. Maybe faint grass.</div></div>
+    </div>
+    <div id="pred-feedback"></div>
+    <div id="pred-next" style="display:none;text-align:center;"><button class="btn" onclick="nextStep()"><span class="material-symbols-outlined" style="font-size:18px;">bar_chart</span> See the Data</button></div>`;
+}
+function doPredict(choice) {
+  if(predictionMade)return; predictionMade=true;
+  ['a','b','c'].forEach(id=>$('pred-'+id).classList.remove('sel'));
+  document.getElementById('pred-'+choice).classList.add('sel');
+  const correct=choice==='c';
+  document.getElementById('pred-'+choice).classList.add(correct?'ok':'no');
+  const fb=$('pred-feedback');
+  if(correct){fb.className='feedback-block show ok';fb.innerHTML='<strong>✓ Sharp instincts.</strong> The forest hasn\'t bounced back. NDVI sits at 0.38 — bare soil punctuated by patchy grass. Mediterranean pine needs 30–60 years. Most people choose "mostly recovered" because we <em>want</em> nature to heal faster than evidence shows.';}
+  else if(choice==='b'){fb.className='feedback-block show no';fb.innerHTML='<strong>Close — but overly generous.</strong> At NDVI 0.38, this isn\'t partial recovery. Healthy forest reads 0.60+. What you see is invasive grass and bare patches.';}
+  else{fb.className='feedback-block show no';fb.innerHTML='<strong>Hopeful — but wrong.</strong> Forests don\'t heal that fast. The soil is degraded, seed sources destroyed, and the climate hasn\'t cooled. Without intervention, some land transitions to permanent shrubland.';}
+  $('pred-next').style.display='block'; xpPlus(15);
+}
+
+// ═══════════ STEP 4: REVEAL ═══════════
+function buildReveal(el) {
+  el.innerHTML = `
+    <div class="gaia-block"><p><em>The satellite recorded everything. No opinions — just reflected light and math.</em></p></div>
+    <div class="stat-row">
+      <div class="stat-block green"><div class="stat-num">0.72</div><div class="stat-label">Pre-Fire NDVI</div><div class="stat-sub">Dense mature pine</div></div>
+      <div class="stat-block fire"><div class="stat-num">0.18</div><div class="stat-label">Post-Fire NDVI</div><div class="stat-sub">75% destroyed</div></div>
+      <div class="stat-block warn"><div class="stat-num">0.38</div><div class="stat-label">2025 NDVI</div><div class="stat-sub">53% recovered</div></div>
+    </div>
+    <div class="impact-card"><div class="ic-label">Carbon Released</div><div class="ic-num">17.1 MtCO₂</div><div class="ic-context">~300 tC/ha stored × 60,000 ha ≈ 17.1 million tonnes CO₂. Equivalent to <strong>3.7 million cars</strong> driven one year. Released in 4 days.</div></div>
+    <div class="impact-card" style="border-color:rgba(251,191,36,0.25);background:rgba(245,158,11,0.05)"><div class="ic-label">Recovery Timeline (No Intervention)</div><div class="ic-num" style="font-size:20px;color:var(--tertiary)">30–60 Years</div><div class="ic-context">Conifers grow slowly. Climate warms during the wait. Active intervention cuts this dramatically.</div></div>
+    <div class="chart-wrap"><div class="chart-title">NDVI Recovery 2020–2025</div><canvas id="reveal-chart" class="chart" height="100"></canvas></div>
+    <div class="gaia-block"><p><em>This is a <strong>carbon feedback loop</strong> made visible. Fire releases stored carbon. That carbon warms the atmosphere. Warming breeds more fire. Each cycle accelerates. You watched one turn — measured, verified, repeatable.</em></p></div>
+    <div style="text-align:center;margin-top:8px;"><button class="btn" onclick="nextStep()"><span class="material-symbols-outlined" style="font-size:18px;">public</span> See the Global Pattern</button></div>`;
+  setTimeout(()=>{const c=$('reveal-chart');if(c){c.width=c.offsetWidth*2;c.height=200;drawMiniChart(c.getContext('2d'),c.width,c.height,[0.72,0.18,0.25,0.30,0.35,0.38]);}},60);
+}
+
+// Quick mini chart — drawn once, static
+function drawMiniChart(ctx,w,h,vals) {
+  const p={l:30,r:12,t:12,b:20},cw=w-p.l-p.r,ch=h-p.t-p.b;
+  ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;
+  for(let v=0;v<=.8;v+=.2){const y=p.t+ch-(v/.8)*ch;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.l+cw,y);ctx.stroke();}
+  ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='10px var(--font)';ctx.textAlign='right';
+  [0,.2,.4,.6,.8].forEach(v=>{const y=p.t+ch-(v/.8)*ch;ctx.fillText(v.toFixed(1),p.l-4,y+3);});
+  ctx.beginPath();
+  vals.forEach((v,i)=>{const x=p.l+(i/(vals.length-1))*cw;const y=p.t+ch-(v/.8)*ch;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.strokeStyle='#2dd4a8';ctx.lineWidth=2;ctx.stroke();
+  // Fire point
+  const fx=p.l+(1/5)*cw,fy=p.t+ch-(0.18/.8)*ch;
+  ctx.beginPath();ctx.arc(fx,fy,5,0,TAU);ctx.fillStyle='#ef4444';ctx.fill();
+}
+
+// ═══════════ STEP 5: CONNECT ═══════════
+const fires=[
+  {name:'Siberia, Russia',year:'2021',ha:'18.8M ha',co2:'1,100 Mt',color:'#ef4444',icon:'🔥'},
+  {name:'California, USA',year:'2020',ha:'1.7M ha',co2:'112 Mt',color:'#f97316',icon:'🔥'},
+  {name:'Amazon, Brazil',year:'2019–21',ha:'2.1M ha',co2:'250 Mt',color:'#dc2626',icon:'🔥'},
+  {name:'Greece, EU',year:'2023',ha:'1.5M ha',co2:'90 Mt',color:'#ea580c',icon:'🔥'},
+  {name:'Australia',year:'2019–20',ha:'18.6M ha',co2:'900 Mt',color:'#b91c1c',icon:'🔥'},
+];
+
+function buildConnect(el) {
+  el.innerHTML = `
+    <div class="gaia-block"><p><em>Antalya is one sentence in a global story. In 2021, fires burned across every inhabited continent. Heat → drought → ignition → devastation. The only variable is scale.</em></p></div>
+    <div class="loop-card"><div class="loop-label">⚠ The Climate Feedback Loop</div><div class="loop-chain">
+      <div class="loop-node loop-n1">🌡️<br>Warming</div><span class="loop-arrow">→</span>
+      <div class="loop-node loop-n2">☀️<br>Drought</div><span class="loop-arrow">→</span>
+      <div class="loop-node loop-n1">🔥<br>Fire</div><span class="loop-arrow">→</span>
+      <div class="loop-node loop-n2">💨<br>CO₂</div><span class="loop-arrow">→</span>
+      <div class="loop-node loop-n3">🌡️<br>Repeat</div>
+    </div></div>
+    <div style="font-size:12px;color:var(--on-surface-dim);text-align:center;margin:8px 0 14px;">Each fire feeds the loop. Every loop makes the next fire worse.</div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--on-surface-dim);margin-bottom:6px;">Global Fire Events</div>
+    <div class="fire-list">${fires.map(f=>`<div class="fire-item"><div class="fi-dot" style="background:${f.color};box-shadow:0 0 8px ${f.color}"></div><div class="fi-info"><div class="fi-name">${f.name}</div><div class="fi-meta">${f.year} · ${f.ha} · ${f.co2}</div></div><div class="fi-icon">${f.icon}</div></div>`).join('')}</div>
+    <div class="gaia-block"><p><em>Australia burned 18.6M hectares in 2020. Siberia burned 18.8M in 2021. Australia's emissions matched its entire fossil fuel output for a year. Siberia's fires reached into <strong>permafrost</strong> — carbon locked for millennia, released in days. Not a cycle. A one-way door.</em></p></div>
+    <div style="text-align:center;margin-top:8px;"><button class="btn" onclick="nextStep()"><span class="material-symbols-outlined" style="font-size:18px;">engineering</span> Take Action</button></div>`;
+}
+
+// ═══════════ STEP 6: ACT ═══════════
+const scenarios=[
+  {id:'active',emoji:'🌲',title:'Active Reforestation',speed:'Fast: 5–7 yr',cost:'$5K/ha',total:'$12.5M',ndvi:0.55,desc:'Plant pine & cypress seedlings with drip irrigation and soil stabilization.'},
+  {id:'natural',emoji:'🌿',title:'Natural Regeneration',speed:'Slow: 15–25 yr',cost:'$500/ha',total:'$1.25M',ndvi:0.45,desc:'Fence the perimeter. Prevent grazing. Let the ecosystem heal itself.'},
+  {id:'mixed',emoji:'🔀',title:'Hybrid Approach',speed:'Medium: 7–12 yr',cost:'$2,500/ha',total:'$6.25M',ndvi:0.50,desc:'Reforest core zones intensively. Let edges regenerate naturally. Build firebreaks.'}
+];
+
+function buildAct(el) {
+  currentScenario=null;
+  el.innerHTML = `
+    <div class="gaia-block"><p><em>The forest won't heal on its own — not fast enough. You're the restoration lead. 2,500 hectares. Three strategies. Real tradeoffs. <strong>Choose.</strong></em></p></div>
+    <div>${scenarios.map(s=>`<div class="scenario-card" id="sc-${s.id}" onclick="selectScenario('${s.id}')"><div class="sc-head">${s.emoji} ${s.title}<span class="sc-speed">${s.speed}</span></div><div class="sc-body">${s.desc}</div><div class="sc-metrics"><div class="sc-metric"><div class="scm-val">${s.cost}</div><div class="scm-label">Cost/Ha</div></div><div class="sc-metric"><div class="scm-val">${s.speed.split(': ')[1]}</div><div class="scm-label">To Canopy</div></div><div class="sc-metric"><div class="scm-val">${s.risk}</div><div class="scm-label">Main Risk</div></div></div></div>`).join('')}</div>
+    <div class="chart-wrap" id="proj-wrap" style="display:none"><div class="chart-title">▲ 10-Year Carbon Projection</div><canvas id="proj-canvas" class="chart" height="110"></canvas><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px" id="proj-stats"></div></div>
+    <div style="text-align:center;margin-top:8px;"><button class="btn" id="act-next" onclick="nextStep()" style="display:none"><span class="material-symbols-outlined" style="font-size:18px;">emoji_events</span> Reflect & Record</button></div>`;
+}
+function selectScenario(id) {
+  if(currentScenario===id)return; currentScenario=id;
+  scenarios.forEach(s=>{const el=$('sc-'+s.id);if(el)el.classList.toggle('sel',s.id===id)});
+  const sc=scenarios.find(s=>s.id===id);
+  const carbon=Math.round(sc.ndvi*2500*1.5*10);
+  $('proj-wrap').style.display='block'; $('act-next').style.display='inline-flex';
+  setTimeout(()=>{const c=$('proj-canvas');if(!c)return;c.width=c.offsetWidth*2;c.height=220;const ctx=c.getContext('2d'),w=c.width,h=c.height,p={l:30,r:12,t:12,b:20},cw=w-p.l-p.r,ch=h-p.t-p.b;ctx.fillStyle='rgba(239,68,68,0.06)';ctx.fillRect(p.l,p.t,cw,ch);const curve=[.05,.10,.18,.28,.40,.55];const tot=curve.reduce((a,b)=>a+b,0);ctx.beginPath();ctx.moveTo(p.l,p.t+ch);curve.forEach((v,i)=>{const x=p.l+((i+1)/6)*cw,y=p.t+ch-(v*tot*8/300)*h;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.lineTo(p.l+cw,p.t+ch);ctx.closePath();ctx.fillStyle=sc.color+'25';ctx.fill();ctx.beginPath();ctx.moveTo(p.l,p.t+ch);curve.forEach((v,i)=>{const x=p.l+((i+1)/6)*cw,y=p.t+ch-(v*tot*8/300)*h;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.strokeStyle=sc.color;ctx.lineWidth=2.5;ctx.stroke();ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=0.5;for(let v=0;v<=300;v+=100){const y=p.t+ch-(v/300)*ch;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.l+cw,y);ctx.stroke();}$('proj-stats').innerHTML=`<div class="stat-block green" style="margin:0"><div class="stat-num" style="font-size:16px">+${carbon.toLocaleString()}</div><div class="stat-label">tCO₂ recovered</div></div><div class="stat-block neutral" style="margin:0"><div class="stat-num" style="font-size:16px">$${sc.total}</div><div class="stat-label">Project cost</div></div>`;},100);
+  xpPlus(30);
+}
+
+// ═══════════ STEP 7: REFLECT ═══════════
+function buildReflect(el) {
+  const sc=currentScenario?scenarios.find(s=>s.id===currentScenario):null;
+  const dt=sc?`You chose <span class="highlight">${sc.title.toLowerCase()}</span> — projected <span class="highlight">+${Math.round(sc.ndvi*2500*1.5*10).toLocaleString()} tCO₂</span> over 10 years at <span class="highlight">$${sc.total}</span>.`:'<em style="color:var(--on-surface-dim)">Choose a strategy in Step 6.</em>';
+  el.innerHTML = `
+    <div class="reward-block"><div class="reward-badge"><div class="rb-icon">🔥</div><div class="rb-name">Fire Investigator</div></div><div class="reward-xp">+${xp} XP</div><div style="font-size:10px;color:var(--on-surface-dim);margin-top:2px;">Crisis Investigation Complete</div></div>
+    <div class="reflect-grid">
+      <div class="reflect-card"><div class="rc-label">📋 What Happened</div><div class="rc-content"><span class="highlight">60,000 ha</span> burned in <span class="highlight">4 days</span>. NDVI fell <span class="highlight">0.72→0.18</span>. <span class="highlight">17.1 Mt</span> CO₂ released. Four years later: only <span class="highlight">0.38 NDVI</span>.</div></div>
+      <div class="reflect-card"><div class="rc-label">🔗 System View</div><div class="rc-content">Fire → CO₂ → warming → drought → fire. Globally: <span class="highlight">18.8M ha</span> (Siberia) + <span class="highlight">18.6M ha</span> (Australia). Symptoms, not exceptions.</div></div>
+      <div class="reflect-card"><div class="rc-label">🎯 Your Decision</div><div class="rc-content">${dt}</div></div>
+      <div class="reflect-card"><div class="rc-label">💡 Key Insight</div><div class="rc-content">Satellites show <span class="highlight">what is</span>, not what we hope. NDVI 0.38 ≠ recovery. Scars need intervention. The tech that revealed damage can guide the repair.</div></div>
+    </div>
+    <div class="gaia-block"><p><em>You traced one turn of the carbon feedback loop — from satellite data to restoration decision. At our <strong>Benin</strong> and <strong>Sri Lanka</strong> sites, different stories unfold. Not of fire — of people putting carbon back, hectare by hectare.</em></p></div>
+    <div class="share-card"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--on-surface-dim);margin-bottom:4px;">Share your investigation</div><div style="font-size:15px;font-weight:700;margin-bottom:2px">I investigated the Antalya wildfire.</div><div class="sc-poem">"60,000 hectares in 4 days.<br>The satellite saw what politics ignored.<br>I tracked 17.1 million tonnes of CO₂.<br>I chose to rebuild."</div><div class="sc-footer">— <span class="brand">Earth Love United Explorer</span> · CC-BY-4.0</div></div>
+    <div class="btn-group"><button class="btn" onclick="window.location.reload()"><span class="material-symbols-outlined" style="font-size:18px;">restart_alt</span> Restart</button><button class="btn" onclick="alert('🌱 Next: Sri Lanka Restoration Lab — coming in the next build.')"><span class="material-symbols-outlined" style="font-size:18px;">grass</span> Next Investigation</button></div>`;
+  xpPlus(30);
+}
+
+// Auto-open
+setTimeout(openSheet, 300);
+</script>
+</body>
+</html>

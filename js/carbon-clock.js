@@ -105,31 +105,29 @@ const CARBON_CLOCK = (() => {
     const elapsed = Date.now() - startTime;
     totalTons = elapsed * TONS_PER_MS;
 
-    // Update hero
-    const heroValue = document.getElementById('cc-hero-value');
-    if (heroValue) {
-      heroValue.textContent = formatTons(totalTons);
-    }
-
-    // Update hero bar (fills up over 60 seconds, then resets visually)
-    const heroBar = document.getElementById('cc-hero-bar');
-    if (heroBar) {
+    // Update hero (cache DOM refs)
+    if (_heroValue) _heroValue.textContent = formatTons(totalTons);
+    if (_heroBar) {
       const pct = Math.min((elapsed / 60000) * 100, 100);
-      heroBar.style.width = pct + '%';
+      _heroBar.style.width = pct + '%';
     }
+    if (_topbarValue) _topbarValue.textContent = formatTons(totalTons);
+  }
 
-    // Update topbar
-    const topbarValue = document.getElementById('cc-topbar-value');
-    if (topbarValue) {
-      topbarValue.textContent = formatTons(totalTons);
-    }
+  // ── Cache DOM refs ──
+  let _heroValue = null, _heroBar = null, _topbarValue = null;
+  function _cacheRefs() {
+    _heroValue = document.getElementById('cc-hero-value');
+    _heroBar = document.getElementById('cc-hero-bar');
+    _topbarValue = document.getElementById('cc-topbar-value');
   }
 
   // ── Start ──
   function start() {
     if (timer) return;
     startTime = Date.now();
-    timer = setInterval(update, 100); // Update every 100ms for smooth ticking
+    _cacheRefs();
+    timer = setInterval(update, 500); // Update every 500ms — smooth enough for a clock
     visible = true;
   }
 

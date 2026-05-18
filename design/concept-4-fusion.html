@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concept 4: The Fusion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #030305; color: #e2dfd8; font-family: 'Outfit', sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        
+        /* Ambient Background */
+        .background-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vw; height: 80vw; border-radius: 50%; background: radial-gradient(circle, rgba(196,92,74,0.08) 0%, rgba(3,3,5,0) 70%); z-index: 1; pointer-events: none; transition: background 3s ease; }
+        body.act-2 .background-glow { background: radial-gradient(circle, rgba(42,143,163,0.08) 0%, rgba(3,3,5,0) 70%); }
+
+        /* Act 1: The Weight */
+        .act-1-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; transition: all 1.5s cubic-bezier(0.77, 0, 0.175, 1); }
+        
+        .pre-title { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #c45c4a; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; transition: opacity 1s; animation: pulse 2s infinite; }
+        
+        .huge-number { font-family: 'JetBrains Mono', monospace; font-size: 12vw; font-weight: 700; color: #fff; line-height: 1; letter-spacing: -2px; transition: all 1.5s cubic-bezier(0.77, 0, 0.175, 1); text-align: center; }
+        .unit { font-size: 24px; color: #c45c4a; margin-left: 10px; font-weight: 300; transition: all 1.5s; }
+        
+        .subtitle { font-size: 22px; font-weight: 300; color: #9a9590; max-width: 600px; margin: 40px auto 0; line-height: 1.5; text-align: center; transition: opacity 1s; }
+        .highlight { color: #fff; }
+
+        /* Transition to Act 2 */
+        body.act-2 .act-1-container { top: 30px; left: auto; right: 40px; width: auto; height: auto; transform: scale(0.3); transform-origin: top right; }
+        body.act-2 .pre-title, body.act-2 .subtitle { opacity: 0; pointer-events: none; }
+        body.act-2 .huge-number { color: #7be8d0; }
+        body.act-2 .unit { color: #7be8d0; }
+
+        /* Act 2: The Legacy */
+        .act-2-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -40%); width: 100%; max-width: 800px; text-align: center; z-index: 5; opacity: 0; pointer-events: none; transition: all 2s ease 0.5s; }
+        body.act-2 .act-2-container { transform: translate(-50%, -50%); opacity: 1; pointer-events: all; }
+        
+        .portrait-placeholder { width: 100px; height: 100px; border-radius: 50%; border: 1px solid rgba(78,205,196,0.3); margin: 0 auto 24px; background: linear-gradient(135deg, rgba(78,205,196,0.1), rgba(91,191,114,0.05)); display: flex; justify-content: center; align-items: center; font-size: 32px; color: rgba(78,205,196,0.5); font-family: 'Cormorant Garamond', serif; }
+        
+        .memorial { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #5a5652; margin-bottom: 24px; font-weight: 500; font-family: 'JetBrains Mono', monospace; }
+        
+        h1 { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; letter-spacing: -1px; margin-bottom: 24px; line-height: 1.1; }
+        .italic { font-style: italic; color: #7be8d0; }
+        
+        p { font-size: 19px; font-weight: 300; color: #9a9590; line-height: 1.6; margin-bottom: 50px; max-width: 500px; margin-left: auto; margin-right: auto; }
+        
+        .actions { display: flex; justify-content: center; gap: 20px; opacity: 0; transform: translateY(10px); transition: all 1s ease 2s; }
+        body.act-2 .actions { opacity: 1; transform: translateY(0); }
+
+        .btn { padding: 16px 40px; border-radius: 30px; font-size: 13px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.3s ease; }
+        .btn-primary { background: #4ecdc4; color: #030305; border: none; }
+        .btn-primary:hover { background: #7be8d0; box-shadow: 0 0 20px rgba(123,232,208,0.4); transform: translateY(-2px); }
+
+        /* Act 1.5: Delegation Hook */
+        .delegation-hook { position: absolute; bottom: 25%; left: 50%; transform: translateX(-50%); font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #c45c4a; opacity: 0; transition: opacity 0.5s; letter-spacing: 1px; }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    </style>
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <!-- Act 1 -->
+    <div class="act-1-container">
+        <div class="pre-title" id="preTitle">Global Excess CO₂ Since You Arrived</div>
+        <div class="huge-number" id="ticker">0<span class="unit">tons</span></div>
+        <div class="subtitle" id="subtitle">Nature absorbs <span class="highlight">123 Gt</span>. Humanity emits <span class="highlight">143 Gt</span>.<br>This is the gap.</div>
+        
+        <div class="delegation-hook" id="delegationHook">Detecting delegation...</div>
+    </div>
+
+    <!-- Act 2 -->
+    <div class="act-2-container">
+        <div class="portrait-placeholder">JM</div>
+        <div class="memorial">In memory of Jean Missinhoun (1972–2024)</div>
+        <h1>From oil to <span class="italic">earth.</span></h1>
+        <p>One man decided to spend the rest of his life restoring the ecosystems he once helped exploit. His mission became our mission.</p>
+        
+        <div class="actions">
+            <a href="../index.html" class="btn btn-primary">Continue His Work</a>
+        </div>
+    </div>
+
+    <script src="../js/country-data.js"></script>
+    <script>
+        // 1. Start the clock
+        let tons = 0;
+        const ticker = document.getElementById('ticker');
+        
+        const tickInterval = setInterval(() => {
+            tons += 63.4; // 20 Gt/yr = ~634 tons/sec, updating every 100ms
+            ticker.innerHTML = tons.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '<span class="unit">tons</span>';
+        }, 100);
+
+        // 2. The Sequence
+        // Step 1: Detect delegation and show the personal hook
+        setTimeout(() => {
+            if (typeof COUNTRY_DATA !== 'undefined') {
+                const detected = COUNTRY_DATA.detectCountry();
+                if (detected && detected.code) {
+                    const country = COUNTRY_DATA.getComparison(detected.code);
+                    if (country) {
+                        const hook = document.getElementById('delegationHook');
+                        hook.textContent = `Including ${Math.round((country.emissions * 1e6) / (365*24*60*60))} tons/sec from ${country.name}`;
+                        hook.style.opacity = 1;
+                    }
+                }
+            }
+        }, 3000);
+
+        // Step 2: Transition to Act 2 (The Legacy)
+        setTimeout(() => {
+            const hook = document.getElementById('delegationHook');
+            hook.style.opacity = 0; // Fade out hook
+            
+            // Trigger the massive layout shift
+            document.body.classList.add('act-2');
+            
+            // Update the pre-title just for semantic sake even if hidden
+            document.getElementById('preTitle').textContent = "Live CO₂ Tracker";
+        }, 6500);
+
+    </script>
+</body>
+</html>

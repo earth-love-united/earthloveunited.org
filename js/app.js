@@ -121,14 +121,19 @@ const App = {
     const progressBar = document.getElementById('scroll-progress');
     const sectionsEl = document.querySelector('.sections');
     const footerEl = document.querySelector('.footer');
+    let _scrollRAF = null;
     const updateProgress = () => {
-      if (!sectionsEl || !footerEl) { if(progressBar) progressBar.style.width = '0'; return; }
-      const start = sectionsEl.offsetTop;
-      const end = footerEl.offsetTop + footerEl.offsetHeight - window.innerHeight;
-      const current = window.scrollY;
-      if (current <= start) { progressBar.style.width = '0'; return; }
-      if (current >= end) { progressBar.style.width = '100%'; return; }
-      progressBar.style.width = ((current - start) / (end - start) * 100) + '%';
+      if (_scrollRAF) return;
+      _scrollRAF = requestAnimationFrame(() => {
+        _scrollRAF = null;
+        if (!sectionsEl || !footerEl || !progressBar) { progressBar && (progressBar.style.width = '0'); return; }
+        const start = sectionsEl.offsetTop;
+        const end = footerEl.offsetTop + footerEl.offsetHeight - window.innerHeight;
+        const current = window.scrollY;
+        if (current <= start) { progressBar.style.width = '0'; return; }
+        if (current >= end) { progressBar.style.width = '100%'; return; }
+        progressBar.style.width = ((current - start) / (end - start) * 100) + '%';
+      });
     };
     window.addEventListener('scroll', updateProgress, { passive: true });
     updateProgress();

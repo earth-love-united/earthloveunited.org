@@ -1,0 +1,48 @@
+# ═══════════════════════════════════════════════════════
+#   CARBON REGISTRY SCRAPER — Configuration
+#   Forked from Afrika/scrapers for carbon project data
+# ═══════════════════════════════════════════════════════
+
+browser:
+  headless: true
+  timeout_ms: 15000
+  viewport:
+    width: 1920
+    height: 1080
+
+rate_limiting:
+  min_delay_sec: 1.5
+  max_delay_sec: 4.0
+  jitter: true
+  max_retries: 3
+  backoff_factor: 2.0
+
+batch:
+  concurrency: 5
+  checkpoint_dir: "./data/checkpoints"
+  output_dir: "./data/scraped"
+
+proxy:
+  enabled: false
+  # Scaffolded for CDM/UNFCCC phase (Incapsula protected)
+  # provider: "brightdata"
+  # credentials:
+  #   host: ""
+  #   port: 0
+  #   username: ""
+  #   password: ""
+
+# ─── Registry-specific paths ───────────────────────────
+
+paths:
+  # Hermes's raw data (read-only — we don't modify these)
+  verra_raw: "../../carbon-projects/raw/verra_projects.jsonl"
+  gs_raw: "../../carbon-projects/raw/gold_standard_projects.jsonl"
+  
+  # Our output (Hermes reads these)
+  verra_details_output: "./data/scraped/verra_details.jsonl"
+  gs_enrichment_output: "./data/scraped/gs_methodology_enrichment.jsonl"
+  
+  # Checkpoints
+  verra_checkpoint: "./data/checkpoints/verra_details.json"
+  gs_checkpoint: "./data/checkpoints/gs_enrichment.json"

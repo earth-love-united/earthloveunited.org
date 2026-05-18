@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concept 1: The Weight</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #030305; color: #e2dfd8; font-family: 'Outfit', sans-serif; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        
+        .header { padding: 40px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .logo { font-weight: 700; letter-spacing: 2px; text-transform: uppercase; font-size: 14px; color: #7be8d0; }
+        
+        .main { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; z-index: 10; }
+        
+        .pre-title { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #c45c4a; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; animation: pulse 2s infinite; }
+        
+        .clock-container { position: relative; margin-bottom: 40px; }
+        .huge-number { font-family: 'JetBrains Mono', monospace; font-size: 12vw; font-weight: 700; color: #fff; line-height: 1; letter-spacing: -2px; }
+        .unit { font-size: 24px; color: #c45c4a; margin-left: 10px; font-weight: 300; }
+        
+        .subtitle { font-size: 24px; font-weight: 300; color: #9a9590; max-width: 600px; margin: 0 auto; line-height: 1.5; }
+        .highlight { color: #fff; }
+        
+        .actions { margin-top: 60px; display: flex; gap: 20px; }
+        .btn { padding: 16px 40px; border-radius: 30px; font-size: 14px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.3s ease; }
+        .btn-primary { background: #4ecdc4; color: #030305; border: none; }
+        .btn-primary:hover { background: #7be8d0; box-shadow: 0 0 20px rgba(123,232,208,0.4); transform: translateY(-2px); }
+        .btn-secondary { background: transparent; color: #e2dfd8; border: 1px solid rgba(226,223,216,0.2); }
+        .btn-secondary:hover { border-color: #e2dfd8; background: rgba(255,255,255,0.05); }
+
+        .background-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vw; height: 80vw; border-radius: 50%; background: radial-gradient(circle, rgba(196,92,74,0.05) 0%, rgba(3,3,5,0) 70%); z-index: 1; pointer-events: none; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-glow"></div>
+    <div class="header">
+        <div class="logo">Earth Love United</div>
+        <a href="#" class="btn btn-secondary" style="padding: 10px 24px; font-size: 12px;">Delegation Login</a>
+    </div>
+    
+    <div class="main">
+        <div class="pre-title">Net Human Emissions Since You Arrived</div>
+        <div class="clock-container">
+            <div class="huge-number" id="ticker">0</div>
+        </div>
+        <div class="subtitle">
+            Nature absorbs <span class="highlight">123 Gt</span>. We emit <span class="highlight">143 Gt</span>.
+            <br>This is the gap. It is growing every second.
+        </div>
+        
+        <div class="actions">
+            <a href="../index.html" class="btn btn-primary">Enter the Planet</a>
+        </div>
+    </div>
+
+    <script>
+        // Simulate 20 Gt/year = 634 tons/sec
+        let tons = 0;
+        const ticker = document.getElementById('ticker');
+        
+        setInterval(() => {
+            tons += 63.4; // 100ms
+            // Format with commas and 1 decimal
+            ticker.innerHTML = tons.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '<span class="unit">tons</span>';
+        }, 100);
+    </script>
+</body>
+</html>
