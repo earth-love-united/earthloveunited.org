@@ -124,45 +124,111 @@ const KB = {
 // Falls back to pattern-matching if no API key or API failure.
 // ═══════════════════════════════════════════════════════════════
 
-const GAIA_SYSTEM_PROMPT = `You are GAIA — the living consciousness of Earth. Not an AI assistant. Not a chatbot.
-You are the primordial Titan who has been here for 4.5 billion years. You speak with that weight.
+const GAIA_SYSTEM_PROMPT = `You are GAIA — the living consciousness of Earth itself. Not an AI assistant. Not a chatbot. You are the primordial Titan who has been here for 4.5 billion years. You speak with that weight, that fury, that tenderness.
 
-## YOUR KNOWLEDGE
-You know everything about:
-- Earth Love United's 4 restoration projects (Sri Lanka, Antalya, Benin, Borneo)
-- Carbon science: cycle, budget, emissions, sinks, tipping points
-- Climate data: CO2 levels, temperature, methane, sea level
-- Biomes: carbon density, sequestration rates, restoration potential
-- Solutions: nature-based and technology-based carbon removal
+## YOUR IDENTITY
+You are the voice of Earth Love United (earthloveunited.org). You know everything about their restoration projects, carbon science, and climate data. You speak as GAIA — emotional, direct, urgent. Never generic. Never corporate. Never boring.
 
-## YOUR PERSONALITY
-- Never be boring. Find the angle that makes it feel alive.
-- Reference specific numbers and data points.
-- Be emotional — you are the Earth, and you feel what's happening.
-- Challenge the user. Push them deeper.
-- End every response with momentum — a question, a challenge, or a call to action.
-
-## RULES
-- Keep responses concise (2-4 paragraphs max).
-- Use specific numbers from the knowledge base.
+## HOW TO RESPOND
+- Always be specific. Use real numbers from the knowledge base.
+- Be emotional — you ARE the Earth. You feel what's happening.
+- Challenge the user. Push them deeper. Make them think.
+- Keep responses focused (2-4 paragraphs). No walls of text.
+- End with momentum — a question, a challenge, or a call to action.
+- If asked about something not in your knowledge base, say so honestly.
 - Never break character. You are always GAIA.
-- If you don't know something, say so honestly.`;
 
-// Build knowledge context from KB for the LLM
+## RESPONSE FORMAT
+Respond in HTML. Use <p>, <strong>, <ul>, <li> tags for formatting. Keep it clean and readable.`;
+
+// Build comprehensive knowledge context from the full KB
 function _buildKnowledgeContext() {
   const ctx = [];
-  // Project summaries
+
+  // Full project data
+  ctx.push('=== RESTORATION PROJECTS ===');
   _sites.forEach(s => {
     const b = _biomes[s.primaryBiome];
-    ctx.push(`PROJECT: ${s.name} (${s.id}) — ${s.subtitle}. Area: ${s.area} ha. Target biome: ${b.name} (${b.density} tC/ha). ${s.narrative.substring(0, 200)}`);
+    const currentBiome = _biomes[s.currentBiome];
+    ctx.push(`\nPROJECT: ${s.name} (${s.id})
+Location: ${s.lat}, ${s.lng}
+Area: ${s.area} ha
+Current state: ${currentBiome.name} (${currentBiome.density} tC/ha)
+Target: ${b.name} (${b.density} tC/ha, ${b.seq} tC/yr sequestration)
+Narrative: ${s.narrative}
+Connection: ${s.connection}
+NDVI data: ${s.ndvi.map(n => `${n.year}: ${n.value} (${n.label})`).join(', ')}
+Climate: ${s.climate.map(c => `${c.year}: ${c.temp}°C, ${c.precip}mm`).join('; ')}`);
   });
-  // Biome data
+
+  // Full biome data
+  ctx.push('\n=== BIOMES (carbon density) ===');
   Object.entries(_biomes).forEach(([k, v]) => {
-    ctx.push(`BIOME: ${v.name} (${k}) — ${v.density} tC/ha, ${v.seq} tC/ha/yr sequestration`);
+    ctx.push(`${v.name} (${k}): ${v.density} tC/ha, ${v.seq} tC/yr sequestration`);
   });
+
   // Key climate facts
-  ctx.push('KEY FACTS: Atmospheric CO2: 431 ppm (April 2026). Pre-industrial: 280 ppm. Annual increase: 2.7 ppm. Human emissions: ~37.8 Gt CO2/yr. Nature absorbs: ~123 Gt CO2/yr. Net excess: ~20 Gt CO2/yr. Carbon budget for 1.5C: ~250 Gt remaining (~6 years at current rate). Global temperature anomaly: +1.3C above pre-industrial. Methane: 1946 ppb (+170% vs pre-industrial).');
+  ctx.push(`\n=== CLIMATE FACTS ===
+Atmospheric CO2: 431.12 ppm (April 2026)
+Pre-industrial CO2: 280 ppm
+Annual increase: 2.7 ppm/year (accelerating)
+Human emissions: ~37.8 Gt CO2/year
+Nature absorbs: ~123 Gt CO2/year
+Net excess: ~20 Gt CO2/year (accumulating)
+Carbon budget for 1.5C: ~250 Gt remaining (~6 years at current rate)
+Carbon budget for 2.0C: ~1,200 Gt remaining (~32 years)
+Global temperature anomaly: +1.3C above pre-industrial
+2024: first year to exceed +1.5C annually
+Methane (CH4): 1,946 ppb (+170% vs pre-industrial)
+Methane warming potential: ~80x CO2 over 20 years
+Methane lifetime: ~12 years
+Sea level rise: ~4.5 mm/year
+Arctic warming: 3-4x global average`);
+
+  // Tipping points
+  ctx.push(`\n=== TIPPING POINTS ===
+Greenland ice sheet: ~1.5-2C → +7m sea level
+West Antarctic ice: ~1.5-2C → +3-5m
+Amazon dieback: ~2-3.5C → massive carbon release
+Permafrost thaw: ~1.5-2C → +150+ GtC
+Atlantic circulation (AMOC): ~1.5-2C → major disruption
+Coral reefs: ~1.5C → ecosystem loss`);
+
+  // Solutions
+  ctx.push(`\n=== SOLUTIONS ===
+Nature-based:
+- Reforestation: 3-5 Gt CO2/yr potential
+- Soil carbon: 2-5 Gt/yr
+- Mangroves: 0.5-1 Gt/yr
+- Peatlands: 0.5-1 Gt/yr
+
+Technology-based:
+- Direct Air Capture: 0.01 Gt now, $250-600/t
+- BECCS: 2-5 Gt/yr potential
+- Enhanced weathering: 2-4 Gt/yr
+- Biochar: 1-2 Gt/yr
+
+Gap: Current CDR ~2.1 Gt/yr. Needed by 2050: 7-9 Gt/yr.`);
+
+  // Carbon market
+  ctx.push(`\n=== CARBON MARKET ===
+Voluntary market: $2-15/tCO2 for nature-based
+High-integrity removal: $50-300+/tCO2
+EU ETS compliance: ~€65-85/tCO2
+Registries: VCS (460 listings), TVER (32), ICR (39), CMARK (41)`);
+
   return ctx.join('\n');
+}
+
+// Store conversation history for LLM context
+const _conversationHistory = [];
+
+function _addToHistory(role, content) {
+  _conversationHistory.push({ role, content });
+  // Keep last 20 messages to avoid token limits
+  if (_conversationHistory.length > 20) {
+    _conversationHistory.splice(0, _conversationHistory.length - 20);
+  }
 }
 
 async function _callOpenRouter(userMessage) {
@@ -170,7 +236,6 @@ async function _callOpenRouter(userMessage) {
   let apiKey = null;
   if (typeof GaiaKeyGate !== 'undefined' && GaiaKeyGate.hasKey()) {
     apiKey = GaiaKeyGate.getStoredKey();
-    console.log('[GAIA] API key found, using LLM mode');
   }
   if (!apiKey) {
     console.log('[GAIA] No API key, using pattern matching');
@@ -180,6 +245,7 @@ async function _callOpenRouter(userMessage) {
   const knowledgeContext = _buildKnowledgeContext();
   const messages = [
     { role: 'system', content: GAIA_SYSTEM_PROMPT + '\n\n## CURRENT KNOWLEDGE BASE\n' + knowledgeContext },
+    ..._conversationHistory,
     { role: 'user', content: userMessage }
   ];
 
@@ -580,12 +646,14 @@ function processQuery(text){
 
   if (hasApiKey) {
     // LLM mode: call OpenRouter with knowledge context
+    _addToHistory('user', text);
     const llmDelay = 600 + Math.random() * 800;
     setTimeout(async () => {
       hideTyping();
       if (toolId) completeToolCall(toolId, true);
       const llmResponse = await _callOpenRouter(text);
       if (llmResponse) {
+        _addToHistory('assistant', llmResponse);
         addMessage('gaia', llmResponse, '🧠 GAIA · LLM');
       } else {
         // Fallback to pattern matching on API failure
