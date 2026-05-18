@@ -75,6 +75,40 @@
   flex-shrink: 0;
 }
 
+/* ── GAIA Guidance Section ── */
+.globe-overlay-gaia {
+  padding: 10px 18px 8px;
+  border-bottom: 1px solid rgba(78, 205, 196, 0.04);
+  flex-shrink: 0;
+  background: rgba(78, 205, 196, 0.02);
+}
+.globe-gaia-guidance {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+.globe-gaia-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.globe-gaia-chip {
+  padding: 3px 10px;
+  border: 1px solid rgba(78, 205, 196, 0.12);
+  border-radius: 10px;
+  background: rgba(78, 205, 196, 0.03);
+  color: var(--teal);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--body);
+}
+.globe-gaia-chip:hover {
+  background: rgba(78, 205, 196, 0.08);
+  border-color: rgba(78, 205, 196, 0.25);
+}
+
 .globe-overlay-header-left {
   display: flex;
   align-items: center;

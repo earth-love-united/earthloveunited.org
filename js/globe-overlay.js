@@ -53,6 +53,7 @@ const GLOBE_OVERLAY = (() => {
         </div>
         <button class="globe-overlay-close" id="globe-overlay-close" aria-label="Close">✕</button>
       </div>
+      <div class="globe-overlay-gaia" id="globe-overlay-gaia"></div>
       <div class="globe-overlay-tabs" id="globe-overlay-tabs"></div>
       <div class="globe-overlay-content" id="globe-overlay-content"></div>
     `;
@@ -90,6 +91,25 @@ const GLOBE_OVERLAY = (() => {
     overlayEl.querySelector('#globe-overlay-icon').textContent = site.icon || '🌍';
     overlayEl.querySelector('#globe-overlay-title').textContent = site.title || siteId;
     overlayEl.querySelector('#globe-overlay-subtitle').textContent = site.subtitle || '';
+
+    // Update GAIA guidance section
+    const gaiaSection = overlayEl.querySelector('#globe-overlay-gaia');
+    if (gaiaSection) {
+      const gaiaContext = typeof GAIA_NODES !== 'undefined' ? GAIA_NODES.getGAIAContext(siteId) : null;
+      if (gaiaContext) {
+        gaiaSection.innerHTML = `
+          <div class="globe-gaia-guidance">${gaiaContext.guidance}</div>
+          <div class="globe-gaia-suggestions">
+            ${gaiaContext.suggestions.map(s => `
+              <button class="globe-gaia-chip" onclick="${s.action}">${s.label}</button>
+            `).join('')}
+          </div>
+        `;
+        gaiaSection.style.display = '';
+      } else {
+        gaiaSection.style.display = 'none';
+      }
+    }
 
     // Build tabs
     const tabsEl = overlayEl.querySelector('#globe-overlay-tabs');

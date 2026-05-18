@@ -236,6 +236,51 @@ const GAIA_NODES = (() => {
     borneo: 'Borneo',
   };
 
+  // ── GAIA context for globe overlay ──
+  const OVERLAY_GAIA_CONTEXT = {
+    sri_lanka: {
+      guidance: "This land was scarred by decades of conflict. The Northern Province saw displacement and ecological collapse. But someone saw potential here — not just to plant trees, but to rebuild an entire ecosystem.",
+      suggestions: [
+        { label: "Explore the story", action: "GLOBE_OVERLAY.switchTab('story')" },
+        { label: "See the data", action: "GLOBE_OVERLAY.switchTab('data')" },
+        { label: "Verify with satellite", action: "GLOBE_OVERLAY.switchTab('verification')" },
+      ],
+    },
+    antalya: {
+      guidance: "July 2021. The Mediterranean pines here were centuries old. Then the fire came. Sixty thousand hectares gone in days. I felt every hectare. Four years later, recovery is slow.",
+      suggestions: [
+        { label: "Explore the story", action: "GLOBE_OVERLAY.switchTab('story')" },
+        { label: "See the data", action: "GLOBE_OVERLAY.switchTab('climate')" },
+        { label: "About COP31", action: "GLOBE_OVERLAY.switchTab('cop31')" },
+      ],
+    },
+    benin: {
+      guidance: "Ouidah. Jean Missinhoun carried this place in his heart. He was from here. And he wanted to bring the mangroves back — even after he was gone. Mangroves store 950 tC/ha.",
+      suggestions: [
+        { label: "Explore the story", action: "GLOBE_OVERLAY.switchTab('story')" },
+        { label: "See the data", action: "GLOBE_OVERLAY.switchTab('data')" },
+        { label: "About mangroves", action: "GLOBE_OVERLAY.switchTab('mangrove')" },
+      ],
+    },
+    borneo: {
+      guidance: "West Kalimantan. The NDVI is 0.65 — pretty green. But the carbon density is only 50 tC/ha. The original peat swamp stored 1,400. That's a 96% carbon loss disguised as green.",
+      suggestions: [
+        { label: "Explore the story", action: "GLOBE_OVERLAY.switchTab('story')" },
+        { label: "See the data", action: "GLOBE_OVERLAY.switchTab('data')" },
+        { label: "About peatlands", action: "GLOBE_OVERLAY.switchTab('peat')" },
+      ],
+    },
+  };
+
+  function getGAIAContext(siteId) {
+    return OVERLAY_GAIA_CONTEXT[siteId] || {
+      guidance: "Explore this site to learn about restoration, carbon science, and climate impact.",
+      suggestions: [
+        { label: "Explore", action: "GLOBE_OVERLAY.switchTab('story')" },
+      ],
+    };
+  }
+
   function getNextSuggestions(currentSiteId) {
     if (typeof GAIA_ENGAGEMENT === 'undefined') return [];
     const siteStates = GAIA_ENGAGEMENT.getSiteStates();
@@ -1139,7 +1184,7 @@ const GAIA_NODES = (() => {
   return {
     init, populateSiteData, onNodeClick, onNodeHover,
     addXP, getNodeState, getAllNodeState,
-    getNextSuggestions, getSuggestedSiteIds,
+    getNextSuggestions, getSuggestedSiteIds, getGAIAContext,
     registerContent, registerFromJSON, CONTENT_TYPES,
   };
 })();
