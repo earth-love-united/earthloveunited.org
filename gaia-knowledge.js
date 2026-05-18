@@ -242,11 +242,5 @@ const GaiaKnowledge = (() => {
   };
 })();
 
-// Auto-init when loaded
-if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => GaiaKnowledge.init());
-  } else {
-    GaiaKnowledge.init();
-  }
-}
+<longcat_arg_value>
+

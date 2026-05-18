@@ -205,25 +205,39 @@ base.css, layout.css, components.css, widgets.css, responsive.css, carbon-clock.
 | 8 | Live data integration | ⏳ Pending (post-MVP) |
 | 9 | Testing + polish | ⏳ Pending (Phase 4 Step 8) |
 
-## PHASE 4 EXECUTION ORDER
+## PHASE 4 EXECUTION ORDER (v4.0)
 
-**COP31 MVP (4-5 days):**
-1. Wire GAIA_NODES to globe (Step 1) — 1 day
-2. Per-site engagement + participant model (Step 2) — 1 day
-3. Emotional voice + silence engine (Step 3) — 1 day
-4. Node visual states (Step 5) — 1 day
-5. Testing + polish (Step 8) — 1-2 days
+**Key architectural decision:** GAIA section goes INSIDE the existing SITE_PANEL (left popup), not in a separate overlay. This keeps the current interaction pattern intact and adds GAIA guidance where users already are.
 
-**Post-MVP (3.5-5 days):**
-6. GAIA mind integration (Step 4) — 2 days
-7. Quest progress UI + bridge (Step 6) — 1 day
-8. Bubble node awareness (Step 7) — 0.5 day
+**COP31 MVP (5.5-7 days):**
+1. GAIA section in SITE_PANEL (Step 1) — 1.5 days
+2. "What to Explore Next" suggestions (Step 2) — 1 day
+3. Per-site engagement + participant model (Step 3) — 1 day
+4. Emotional voice + silence engine (Step 4) — 1 day
+5. Node visual states on globe (Step 6) — 1 day
+6. Testing + polish (Step 10) — 1-2 days
+
+**Post-MVP (4-5 days):**
+7. GAIA mind integration (Step 5) — 2 days
+8. Quest progress UI + globe-to-chat bridge (Step 7) — 1 day
+9. Bubble node awareness (Step 8) — 0.5 day
+10. Modular content registry (Step 9) — 0.5 day
 
 **Marketing Queue (~9.5 days):**
 - Share Your Impact, Antalya Connection, GAIA's Field Notes, Green Lie Detector, Partner With GAIA, 170-Day Countdown, Jean's Letter
 
 **Production Hardening (~5 days):**
-- Bundle scripts, cache globe.gl, Cloudflare Worker, voice engine, service worker, performance audit
+- Bundle scripts, cache globe.gl, Cloudflare Worker, voice engine, service worker
+
+### Modular Content Types (future-proofing)
+The registry supports 5 content types beyond project sites:
+1. **Project Sites** (4 existing) — Sri Lanka, Antalya, Benin, Borneo
+2. **Cities** (future) — COP31 venues, partner cities
+3. **Events** (future) — COP31, summits, milestones
+4. **Biomes** (future) — Interactive biome regions
+5. **Data Points** (future) — Live sensors, satellite passes
+
+Each type has its own marker style, panel type, and GAIA context flag.
 
 ## PERFORMANCE OPTIMIZATIONS (May 16)
 

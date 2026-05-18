@@ -1,6 +1,48 @@
 # PHASE 4 — GAIA NODES ON EARTH
-## Complete Implementation Plan v3.0
+## Complete Implementation Plan v4.0
 ## Updated: 2026-05-18
+
+---
+
+## ARCHITECTURE OVERVIEW
+
+### The Two Panel Systems
+
+**SITE_PANEL** (js/site-panel.js, css/site-panel.css):
+- Left popup panel with layered reveal: Story → Data → Mystery → Reveal → Insight
+- Opens when clicking globe markers (via GAIA_NODES fallback)
+- Has verification section (satellite NDVI + registry check)
+- Has prediction questions and journal integration
+- This is the PRIMARY interaction panel — keep it
+
+**GLOBE_OVERLAY** (js/globe-overlay.js, css/globe-overlay.css):
+- Left-anchored tabbed content box
+- Registered by gaia-nodes.js with per-site tabs
+- Opens via GAIA_NODES.onNodeClick() → GLOBE_OVERLAY.open()
+- This is the SECONDARY overlay — used for richer tabbed content
+
+### The GAIA Section (NEW)
+
+A dedicated GAIA section within SITE_PANEL that:
+- Shows GAIA's context-aware guidance for the current site
+- Provides suggestions for what to explore next (on the globe and within the site)
+- Adapts based on user's engagement state and participant model
+- Speaks with emotional voice modulation
+- Can be collapsed/expanded to not overwhelm the user
+
+### Modular Globe Content Types
+
+The globe will have many types of markers beyond the 4 project sites. Each type gets:
+- Its own marker style (color, size, icon)
+- Its own GAIA guidance context
+- Its own panel content (registered via GLOBE_OVERLAY or SITE_PANEL)
+
+Content types:
+1. **Project Sites** (4 existing) — Sri Lanka, Antalya, Benin, Borneo
+2. **Cities** (future) — COP31 venues, partner cities, impact cities
+3. **Events** (future) — COP31, regional summits, restoration milestones
+4. **Biomes** (future) — Interactive biome regions on the globe
+5. **Data Points** (future) — Live sensor data, satellite passes, verification points
 
 ---
 
@@ -29,9 +71,9 @@
 - ✅ Delegation — country-specific personalized entry
 - ✅ Pledge Wall v2 — public commitments after meaningful moments
 
-### What Exists But Isn't Wired
+### What Exists But Isn't Fully Wired
 - `js/gaia-nodes.js` (967 lines) — node state, XP, render functions for all 4 sites
-- `js/globe-overlay.js` (214 lines) — tabbed content box
+- `js/globe-overlay.js` (214 lines) — tabbed content box, registry pattern
 - `js/gaia-bubble.js` (245 lines) — presence, speak, idle nudge
 - `js/gaia-engagement.js` (134 lines) — scoring, tiers, idle
 - `js/gaia-voice.js` (187 lines) — 60+ voice lines
@@ -42,115 +84,391 @@
 
 ---
 
-## 1. GAPS TO FILL (12 Total)
+## 1. GAPS TO FILL (14 Total)
 
-### Gap 1: Globe Click Not Routed Through GAIA_NODES
-**Current:** globe.js line 28-31 opens Panel directly
-**Needed:** Route through GAIA_NODES.onNodeClick() first
-**Impact:** HIGH — this is the main user flow from globe to site content
+### Gap 1: No GAIA Section in SITE_PANEL
+**Current:** SITE_PANEL has story/data/mystery/reveal/insight layers but no GAIA guidance
+**Needed:** A collapsible GAIA section that provides context-aware suggestions
+**Impact:** HIGH — this is the main way users interact with GAIA on the globe
 
-### Gap 2: No Per-Site Engagement Tracking
+### Gap 2: No "What to Explore Next" Suggestions
+**Current:** After completing a site, user has no guidance on where to go
+**Needed:** GAIA suggests next sites/events based on engagement state and participant model
+**Impact:** HIGH — drives exploration of the full globe
+
+### Gap 3: No Per-Site Engagement Tracking
 **Current:** gaia-engagement.js only has global score
 **Needed:** siteEngagement object with per-site XP, layers, scenarios, time
 **Impact:** HIGH — required for node visual states, quest progress, personalization
 
-### Gap 3: No Participant Model
+### Gap 4: No Participant Model
 **Current:** No archetype detection
 **Needed:** Track analytical/intuitive/emotional/social scores, detect archetype
 **Impact:** MEDIUM — enables GAIA to adapt tone and content to user type
 
-### Gap 4: No Knowledge Model
+### Gap 5: No Knowledge Model
 **Current:** No tracking of what user understands
 **Needed:** Track understanding of carbon cycle, biomes, fire, restoration, tipping points
 **Impact:** MEDIUM — enables GAIA to avoid repeating known concepts
 
-### Gap 5: No Emotional Voice Modulation
+### Gap 6: No Emotional Voice Modulation
 **Current:** All voice lines spoken the same way
 **Needed:** rate/pitch/volume adjustments per tone (grief, excited, fierce, warm, etc.)
 **Impact:** HIGH — GAIA feels dramatically more alive
 
-### Gap 6: No Silence Engine
+### Gap 7: No Silence Engine
 **Current:** GAIA speaks on every event
 **Needed:** Context-aware silence rules (fire year, Jean's story, carbon data)
 **Impact:** HIGH — silence is powerful, makes speech more meaningful
 
-### Gap 7: No Cross-Session Memory
+### Gap 8: No Cross-Session Memory
 **Current:** GAIA_MIND exists in dis/ but not loaded on main site
 **Needed:** gaia-mind-main.js wrapper, load dis/gaia-mind.js on main site
 **Impact:** HIGH — GAIA remembers who you are across visits
 
-### Gap 8: No Node Visual States on Globe
+### Gap 9: No Node Visual States on Globe
 **Current:** Globe markers are static
 **Needed:** locked → available → explored → mastered visual states
 **Impact:** MEDIUM — visual feedback for engagement progression
 
-### Gap 9: No Quest Progress UI
+### Gap 10: No Quest Progress UI
 **Current:** Quests track internally but no visual progress
 **Needed:** renderQuestProgress() function in gaia-journal.js
 **Impact:** LOW — quests work, just no visual indicator
 
-### Gap 10: No Globe-to-Chat Bridge
+### Gap 11: No Globe-to-Chat Bridge
 **Current:** No way to go from globe exploration to full GAIA chat with context
 **Needed:** "Open Full GAIA" button in bubble that passes site context to gaia.html
 **Impact:** MEDIUM — connects the two pages
 
-### Gap 11: GAIA_BUBBLE Not Node-Aware
+### Gap 12: GAIA_BUBBLE Not Node-Aware
 **Current:** Bubble doesn't track which site user is interacting with
 **Needed:** setCurrentSite(siteId) + visual indicator
 **Impact:** LOW — nice for context awareness
 
-### Gap 12: Welcome Back Lacks Emotional Memory
+### Gap 13: Welcome Back Lacks Emotional Memory
 **Current:** Shows CO2 delta only
 **Needed:** Integrate GAIA_MIND for emotional memory, significant moments, unresolved threads
 **Impact:** MEDIUM — makes return visits feel personal
+
+### Gap 14: No Modular Content Registry for Future Globe Types
+**Current:** Only 4 project sites registered
+**Needed:** Extensible registry pattern for cities, events, biomes, data points
+**Impact:** MEDIUM — future-proofs the globe for COP31 content
 
 ---
 
 ## 2. IMPLEMENTATION PLAN
 
-### STEP 1: Wire GAIA_NODES to Globe (1 day)
-**Priority:** CRITICAL — unblocks everything else
+### STEP 1: GAIA Section in SITE_PANEL (1.5 days)
+**Priority:** CRITICAL — this is the core user-facing feature
 
-**Files:** `js/globe.js` (lines 28-31, 37-44, 46-53, 54-60)
+**Files:** `js/site-panel.js` (+60 lines), `css/site-panel.css` (+40 lines), `js/gaia-voice.js` (+20 lines)
 
-**Changes:**
-```javascript
-// Replace all .onPointClick / .onLabelClick handlers:
-.onPointClick(site => {
-  if (typeof GAIA_NODES !== 'undefined') {
-    GAIA_NODES.onNodeClick(site.id);
-  } else if (typeof SITE_PANEL !== 'undefined') {
-    SITE_PANEL.open(site);
-  } else {
-    Panel.open(site);
-  }
-})
-// Same pattern for .onLabelClick
+**Design:**
+The GAIA section is a collapsible panel at the top of SITE_PANEL that:
+- Shows GAIA's current context (which site, what layer user is on)
+- Provides 1-2 suggestion chips for what to do next
+- Has a compact voice line display (text only, no bubble)
+- Collapses to a thin bar when not actively guiding
 
-// Replace hover handlers:
-.onPointHover(site => {
-  if (site && typeof GAIA_NODES !== 'undefined') {
-    GAIA_NODES.onNodeHover(site.id);
-  } else if (site && typeof GAIA_PRESENCE !== 'undefined') {
-    GAIA_PRESENCE.speak('SITE_TEASER', site.id);
-    GAIA_ENGAGEMENT.interact();
-  }
-})
-// Same pattern for .onLabelHover
+**Layout within SITE_PANEL:**
+```
+┌─────────────────────────────────┐
+│ ✕  Site Name                    │  ← existing header
+├─────────────────────────────────┤
+│ 🌍 GAIA                         │  ← NEW: GAIA section (collapsible)
+│ "This land was degraded for     │
+│  decades. Look at the NDVI      │
+│  data — what do you see?"       │
+│ [Explore Data] [Why this site?] │  ← suggestion chips
+├─────────────────────────────────┤
+│ Story layer...                  │  ← existing layers
+│ Data layer...                   │
+│ ...                             │
+└─────────────────────────────────┘
 ```
 
-**Test:** Click globe marker → GAIA speaks entry line → GAIA_NODES tracks XP → overlay opens
+**Code changes:**
+
+In `js/site-panel.js`, add to renderLayer():
+```javascript
+// Add GAIA section after header, before layers:
+function renderGAIAsection(site, layer) {
+  const gaiaContext = getGAIAContext(site, layer);
+  return `
+    <div class="site-panel-gaia" id="site-panel-gaia">
+      <div class="gaia-section-header" onclick="SITE_PANEL.toggleGAIA()">
+        <span class="gaia-section-icon">🌍</span>
+        <span class="gaia-section-title">GAIA</span>
+        <span class="gaia-section-toggle" id="gaia-toggle-icon">▼</span>
+      </div>
+      <div class="gaia-section-body" id="gaia-section-body">
+        <div class="gaia-guidance">${gaiaContext.guidance}</div>
+        <div class="gaia-suggestions">
+          ${gaiaContext.suggestions.map(s => `
+            <button class="gaia-suggestion-chip" onclick="${s.action}">${s.label}</button>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getGAIAContext(site, layer) {
+  // Return context-aware guidance based on:
+  // - current site
+  // - current layer (story/data/mystery/reveal/insight)
+  // - user's engagement state (from GAIA_ENGAGEMENT)
+  // - user's participant model (analyst/explorer/empath/etc.)
+  // - what the user has already seen
+  
+  const contexts = {
+    sri_lanka: {
+      story: {
+        guidance: "This land was degraded for decades. The Northern Province saw conflict, displacement, and ecological collapse. But restoration is possible — and it's happening.",
+        suggestions: [
+          { label: "Read the full story", action: "SITE_PANEL.scrollToLayer('story')" },
+          { label: "Why Sri Lanka?", action: "GAIA_VOICE.speak('SRI_LANKA_WHY')" },
+        ],
+      },
+      data: {
+        guidance: "Look at the NDVI sparkline. See that flat line? That's decades of bare soil. Now look at the right edge — that's the restoration kicking in.",
+        suggestions: [
+          { label: "Show me the data", action: "SITE_PANEL.scrollToLayer('data')" },
+          { label: "Verify with satellite", action: "SITE_PANEL.verifyCurrentSite()" },
+        ],
+      },
+      // ... more layers
+    },
+    // ... more sites
+  };
+  
+  return contexts[site.id]?.[layer] || {
+    guidance: `Exploring ${site.name}. ${site.narrative.substring(0, 100)}...`,
+    suggestions: [
+      { label: "What happened here?", action: "SITE_PANEL.nextLayer()" },
+    ],
+  };
+}
+
+function toggleGAIA() {
+  const body = document.getElementById('gaia-section-body');
+  const icon = document.getElementById('gaia-toggle-icon');
+  if (body) body.classList.toggle('collapsed');
+  if (icon) icon.textContent = body?.classList.contains('collapsed') ? '▶' : '▼';
+}
+```
+
+In `css/site-panel.css`:
+```css
+/* GAIA Section in Site Panel */
+.site-panel-gaia {
+  margin: 8px 0 12px 0;
+  background: rgba(78, 205, 196, 0.03);
+  border: 1px solid rgba(78, 205, 196, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gaia-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.gaia-section-header:hover {
+  background: rgba(78, 205, 196, 0.05);
+}
+
+.gaia-section-icon { font-size: 14px; }
+.gaia-section-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--teal);
+  flex: 1;
+}
+.gaia-section-toggle {
+  font-size: 8px;
+  color: var(--text3);
+  transition: transform 0.2s;
+}
+
+.gaia-section-body {
+  padding: 0 12px 12px 12px;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  max-height: 200px;
+  overflow: hidden;
+}
+.gaia-section-body.collapsed {
+  max-height: 0;
+  padding: 0 12px;
+}
+
+.gaia-guidance {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+
+.gaia-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.gaia-suggestion-chip {
+  padding: 4px 10px;
+  border: 1px solid rgba(78, 205, 196, 0.15);
+  border-radius: 12px;
+  background: rgba(78, 205, 196, 0.04);
+  color: var(--teal);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gaia-suggestion-chip:hover {
+  background: rgba(78, 205, 196, 0.1);
+  border-color: rgba(78, 205, 196, 0.3);
+}
+```
+
+**Test:** Open a site panel → GAIA section appears with context → suggestion chips work → collapse/expand works
 
 ---
 
-### STEP 2: Per-Site Engagement + Participant Model + Knowledge Model (1 day)
+### STEP 2: "What to Explore Next" Suggestions (1 day)
+**Priority:** HIGH — drives globe exploration
+
+**Files:** `js/gaia-nodes.js` (+80 lines), `js/gaia-engagement.js` (+20 lines)
+
+**Design:**
+After completing a site (all layers revealed), GAIA suggests what to explore next.
+Suggestions appear in:
+1. The GAIA section of the completed site's panel
+2. The GAIA bubble (as a persistent suggestion)
+3. The globe itself (highlighted markers for suggested next sites)
+
+**Logic:**
+```javascript
+function getNextSuggestions(siteId, engagementState) {
+  const allSites = ['sri_lanka', 'antalya', 'benin', 'borneo'];
+  const visited = Object.keys(engagementState.siteEngagement)
+    .filter(id => engagementState.siteEngagement[id].visited);
+  const unvisited = allSites.filter(id => !visited.includes(id));
+  
+  // Priority: unvisited sites first
+  if (unvisited.length > 0) {
+    return unvisited.map(id => ({
+      type: 'site',
+      id,
+      label: getSiteLabel(id),
+      reason: getSuggestionReason(id, engagementState),
+      action: `flyToSite('${id}')`,
+      priority: 'high',
+    }));
+  }
+  
+  // All visited: suggest deeper exploration
+  const partiallyExplored = allSites.filter(id => {
+    const s = engagementState.siteEngagement[id];
+    return s && s.layersRevealed < 5;
+  });
+  
+  if (partiallyExplored.length > 0) {
+    return partiallyExplored.map(id => ({
+      type: 'site',
+      id,
+      label: `Revisit ${getSiteLabel(id)}`,
+      reason: 'You haven\'t seen all the data yet',
+      action: `flyToSite('${id}')`,
+      priority: 'medium',
+    }));
+  }
+  
+  // All fully explored: suggest GAIA chat
+  return [{
+    type: 'chat',
+    id: 'gaia',
+    label: 'Talk to GAIA',
+    reason: 'You\'ve seen the data. Now let\'s talk about what it means.',
+    action: 'openFullGAIA()',
+    priority: 'high',
+  }];
+}
+
+function getSuggestionReason(siteId, engagementState) {
+  const archetype = engagementState.archetype;
+  const reasons = {
+    sri_lanka: {
+      analyst: 'The carbon density data is remarkable — from 10 to 180 tC/ha',
+      explorer: 'This is where restoration meets conflict recovery',
+      empath: 'The human story here is as powerful as the carbon data',
+      skeptic: 'The satellite verification is solid — see for yourself',
+      sharer: 'This is the most shareable restoration story we have',
+    },
+    antalya: {
+      analyst: 'The 2021 wildfire NDVI crash is a textbook case',
+      explorer: 'COP31 host site — the fire year data is stark',
+      empath: '60,000 hectares burned in days. The recovery is slow.',
+      skeptic: 'Cross-reference the satellite data with registry records',
+      sharer: 'This is the climate story Turkey needs to tell',
+    },
+    benin: {
+      analyst: 'Mangrove carbon density is 950 tC/ha — highest of any biome',
+      explorer: "Jean's homeland. The mangrove story is personal.",
+      empath: 'When mangroves are destroyed, centuries of carbon go up in smoke',
+      skeptic: 'The NDVI drop matches the carbon loss — verify it',
+      sharer: "Jean's letter is the emotional anchor of this project",
+    },
+    borneo: {
+      analyst: 'NDVI 0.65 but only 50 tC/ha — the greenest lie on Earth',
+      explorer: 'Peat swamp vs oil palm — see the carbon difference',
+      empath: '1,400 tC/ha reduced to 50. That\'s a 96% loss.',
+      skeptic: 'The satellite sees through the green. Look at the data.',
+      sharer: 'This is the most important carbon story most people don\'t know',
+    },
+  };
+  return reasons[siteId]?.[archetype] || reasons[siteId]?.explorer || 'Worth exploring';
+}
+```
+
+**Globe marker highlighting for suggestions:**
+```javascript
+// In globe.js, add suggestion highlighting:
+function highlightSuggestedMarkers(suggestionIds) {
+  GlobeModule.world.pointColor(site => {
+    if (suggestionIds.includes(site.id)) return '#ffd700'; // gold for suggested
+    const state = typeof GAIA_NODES !== 'undefined' 
+      ? GAIA_NODES.getNodeState(site.id) 
+      : null;
+    if (!state || state.state === 'locked') return 'rgba(78,205,196,0.3)';
+    if (state.state === 'available') return 'rgba(78,205,196,0.6)';
+    if (state.state === 'explored') return 'rgba(123,232,208,0.9)';
+    if (state.state === 'mastered') return '#4ecdc4';
+    return 'rgba(78,205,196,0.6)';
+  });
+}
+```
+
+**Test:** Complete a site → GAIA suggests next site → suggestion chip flies to site → globe markers highlight suggested sites
+
+---
+
+### STEP 3: Per-Site Engagement + Participant Model + Knowledge Model (1 day)
 **Priority:** HIGH — required for personalization
 
-**Files:** `js/gaia-engagement.js` (+60 lines)
+**Files:** `js/gaia-engagement.js` (+80 lines)
 
 **Changes:**
 ```javascript
-// Add after existing state:
+// Add to existing state:
 const siteEngagement = {
   sri_lanka: { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, visited: false },
   antalya:   { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, visited: false },
@@ -173,7 +491,7 @@ const knowledgeModel = {
   understandsTippingPoints: 0,
 };
 
-// Add functions:
+// Functions:
 function addSignal(signalType, siteId, context) {
   // Update global score (existing)
   // Update siteEngagement[siteId]
@@ -182,8 +500,27 @@ function addSignal(signalType, siteId, context) {
 }
 
 function getArchetype() {
-  // Return dominant archetype from participantModel
-  // analyst | explorer | empath | skeptic | sharer
+  // Return dominant archetype: analyst | explorer | empath | skeptic | sharer
+  const p = participantModel;
+  const scores = {
+    analyst: p.analytical + p.asksQuestions + p.makesPredictions,
+    explorer: p.intuitive + p.isExplorer + p.isDeepDiver,
+    empath: p.emotional,
+    social: p.social + p.isSharer,
+    skeptic: p.isSkeptic + (p.makesPredictions > 0 ? p.correctPredictions / p.makesPredictions : 0),
+  };
+  return Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+}
+
+function getSiteStates() {
+  // Return site states for globe marker rendering
+  return Object.fromEntries(
+    Object.entries(siteEngagement).map(([id, s]) => [id, {
+      state: s.xp >= 100 ? 'mastered' : s.xp >= 50 ? 'explored' : s.xp >= 10 ? 'available' : 'locked',
+      xp: s.xp,
+      visited: s.visited,
+    }])
+  );
 }
 
 // Upgrade save()/load() to include new state
@@ -193,14 +530,13 @@ function getArchetype() {
 
 ---
 
-### STEP 3: Emotional Voice + Silence Engine (1 day)
+### STEP 4: Emotional Voice + Silence Engine (1 day)
 **Priority:** HIGH — GAIA feels alive
 
 **Files:** `js/gaia-voice.js` (+80 lines)
 
 **Changes:**
 ```javascript
-// Add voice modifiers per tone:
 const VOICE_MODIFIERS = {
   grief:      { rate: -0.10, pitch: -0.05, volume: 0,    pauseBefore: 800 },
   concerned:  { rate: -0.08, pitch: -0.03, volume: 0,    pauseBefore: 500 },
@@ -214,7 +550,6 @@ const VOICE_MODIFIERS = {
   playful:    { rate: +0.03, pitch: +0.05, volume: 0,    pauseBefore: 300 },
 };
 
-// Add silence rules:
 function shouldBeSilent(state, siteId, context) {
   if (siteId === 'borneo' && state === 'DATA_REVEAL' && context?.layer === 'carbon') {
     return { silent: true, reason: 'The carbon data speaks for itself' };
@@ -231,16 +566,14 @@ function shouldBeSilent(state, siteId, context) {
   return { silent: false };
 }
 
-// Upgrade speak() to:
-// 1. Check shouldBeSilent() first
-// 2. Return voice modifiers alongside text/tone
+// Upgrade speak() to check silence first and return voice modifiers
 ```
 
 **Test:** GAIA's voice changes with emotion, GAIA stays silent at powerful moments
 
 ---
 
-### STEP 4: GAIA Mind Integration (2 days)
+### STEP 5: GAIA Mind Integration (2 days)
 **Priority:** HIGH — cross-session memory
 
 **New file:** `js/gaia-mind-main.js` (~200 lines)
@@ -257,69 +590,48 @@ function shouldBeSilent(state, siteId, context) {
 `js/gaia-mind-main.js`:
 ```javascript
 const GAIA_MIND_MAIN = (() => {
-  // Wrap GAIA_MIND for main site context
-  // Handle emotional decay across sessions
-  // Manage participant model updates
-  // Provide desire calculation
-  // Manage cross-session memory
-  
   function init() {
     if (typeof GAIA_MIND === 'undefined') return;
     // Load persisted mind state
     // Apply emotional decay based on time since last visit
   }
   
-  function onSiteVisit(siteId) {
-    // Update mind state for site visit
+  function onSiteVisit(siteId) { /* Update mind state */ }
+  function onInteraction(signalType, context) { /* Update models */ }
+  function getWelcomeBackMessage() { /* Return emotional memory message */ }
+  function getGAIAContext(siteId, layer, engagementState) {
+    // Return context-aware guidance based on:
+    // - site and layer
+    // - user's history with this site
+    // - participant model
+    // - knowledge model
+    // - emotional memory
   }
   
-  function onInteraction(signalType, context) {
-    // Update participant model, knowledge model
-  }
-  
-  function getWelcomeBackMessage() {
-    // Return emotional memory message for returning users
-  }
-  
-  return { init, onSiteVisit, onInteraction, getWelcomeBackMessage };
+  return { init, onSiteVisit, onInteraction, getWelcomeBackMessage, getGAIAContext };
 })();
-```
-
-`js/app.js` — upgrade welcome back (lines 54-69):
-```javascript
-// Replace CO2-only welcome with:
-if (typeof GAIA_MIND_MAIN !== 'undefined') {
-  const msg = GAIA_MIND_MAIN.getWelcomeBackMessage();
-  if (msg) {
-    setTimeout(() => {
-      if (typeof GAIA_BUBBLE !== 'undefined') {
-        GAIA_BUBBLE.speak(msg.text, msg.tone, 8000);
-      }
-    }, 1500);
-  }
-}
 ```
 
 **Test:** GAIA remembers across sessions, emotional residue decays over time
 
 ---
 
-### STEP 5: Node Visual States on Globe (1 day)
+### STEP 6: Node Visual States on Globe (1 day)
 **Priority:** MEDIUM — visual feedback for engagement
 
 **Files:** `js/globe.js` (+40 lines), `css/globe-overlay.css` (+30 lines)
 
 **Changes:**
 
-In `js/globe.js`, upgrade point rendering:
+In `js/globe.js`:
 ```javascript
-// Add function to update point appearance based on engagement:
 function updateNodeVisuals() {
   const states = typeof GAIA_ENGAGEMENT !== 'undefined' 
     ? GAIA_ENGAGEMENT.getSiteStates() 
     : {};
   
   this.world.pointColor(site => {
+    if (states[site.id]?.suggested) return '#ffd700'; // gold for suggested next
     const s = states[site.id];
     if (!s || s.state === 'locked') return 'rgba(78,205,196,0.3)';
     if (s.state === 'available') return 'rgba(78,205,196,0.6)';
@@ -329,6 +641,7 @@ function updateNodeVisuals() {
   });
   
   this.world.pointRadius(site => {
+    if (states[site.id]?.suggested) return 0.7; // larger for suggested
     const s = states[site.id];
     if (!s || s.state === 'locked') return 0.3;
     if (s.state === 'available') return 0.4;
@@ -337,28 +650,13 @@ function updateNodeVisuals() {
     return 0.4;
   });
 }
-
-// Call after globe init and on engagement changes
 ```
 
-In `css/globe-overlay.css`:
-```css
-/* Node state animations */
-@keyframes node-pulse-locked {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.5; }
-}
-@keyframes node-pulse-mastered {
-  0%, 100% { box-shadow: 0 0 8px rgba(78,205,196,0.4); }
-  50% { box-shadow: 0 0 20px rgba(78,205,196,0.8); }
-}
-```
-
-**Test:** Node appearance changes as user engages (locked → available → explored → mastered)
+**Test:** Node appearance changes with engagement, suggested nodes glow gold
 
 ---
 
-### STEP 6: Quest Progress UI + Globe-to-Chat Bridge (1 day)
+### STEP 7: Quest Progress UI + Globe-to-Chat Bridge (1 day)
 **Priority:** MEDIUM
 
 **Files:** `js/gaia-journal.js` (+40 lines), `js/gaia-bubble.js` (+30 lines), `css/gaia-bubble.css` (+20 lines)
@@ -368,7 +666,7 @@ In `css/globe-overlay.css`:
 `js/gaia-journal.js`:
 ```javascript
 function renderQuestProgress(container) {
-  const quests = getQuests(); // existing function
+  const quests = getQuests();
   container.innerHTML = quests.map(q => `
     <div class="quest-item ${q.completed ? 'completed' : ''}">
       <div class="quest-icon">${q.icon}</div>
@@ -387,7 +685,6 @@ function renderQuestProgress(container) {
 `js/gaia-bubble.js`:
 ```javascript
 function openFullGAIA(siteId) {
-  // Pass context to gaia.html via URL params or localStorage
   if (siteId) {
     sessionStorage.setItem('gaia_context', JSON.stringify({
       siteId,
@@ -396,15 +693,13 @@ function openFullGAIA(siteId) {
   }
   window.open('gaia.html', '_blank');
 }
-
-// Add "Open Full GAIA" button to bubble expanded view
 ```
 
-**Test:** Quest progress visible in journal tab, bridge to chat passes context
+**Test:** Quest progress visible, bridge to chat passes context
 
 ---
 
-### STEP 7: Bubble Node Awareness (0.5 day)
+### STEP 8: Bubble Node Awareness (0.5 day)
 **Priority:** LOW
 
 **Files:** `js/gaia-bubble.js` (+20 lines)
@@ -415,7 +710,6 @@ let _currentSiteId = null;
 
 function setCurrentSite(siteId) {
   _currentSiteId = siteId;
-  // Update bubble visual to show current site
   const indicator = document.getElementById('bubble-site-indicator');
   if (indicator && siteId) {
     indicator.textContent = siteId.replace('_', ' ').toUpperCase();
@@ -423,16 +717,72 @@ function setCurrentSite(siteId) {
   }
 }
 
-function getCurrentSite() {
-  return _currentSiteId;
-}
+function getCurrentSite() { return _currentSiteId; }
 ```
 
 **Test:** Bubble shows which site user is currently exploring
 
 ---
 
-### STEP 8: Testing + Polish (1-2 days)
+### STEP 9: Modular Content Registry (0.5 day)
+**Priority:** MEDIUM — future-proofs for COP31
+
+**Files:** `js/gaia-nodes.js` (+60 lines)
+
+**Design:**
+```javascript
+// Content type definitions for future globe markers:
+const CONTENT_TYPES = {
+  site: {
+    marker: { color: '#4ecdc4', size: 0.4, pulse: true },
+    panel: 'site-panel',
+    gaiaContext: true,
+  },
+  city: {
+    marker: { color: '#ffd700', size: 0.3, pulse: false },
+    panel: 'city-panel',  // future
+    gaiaContext: true,
+  },
+  event: {
+    marker: { color: '#ff6b6b', size: 0.5, pulse: true },
+    panel: 'event-panel',  // future
+    gaiaContext: true,
+  },
+  biome: {
+    marker: { color: '#2a8a3a', size: 0.6, pulse: false },
+    panel: 'biome-panel',  // future
+    gaiaContext: false,
+  },
+  data: {
+    marker: { color: '#9b59b6', size: 0.2, pulse: false },
+    panel: 'data-panel',  // future
+    gaiaContext: false,
+  },
+};
+
+// Generic register function:
+function registerContent(config) {
+  const type = CONTENT_TYPES[config.type] || CONTENT_TYPES.site;
+  GLOBE_OVERLAY.registerSite({
+    ...config,
+    markerStyle: type.marker,
+    hasGAIA: type.gaiaContext,
+  });
+}
+
+// Future: batch register from JSON:
+function registerFromJSON(url) {
+  fetch(url)
+    .then(r => r.json())
+    .then(data => data.forEach(config => registerContent(config)));
+}
+```
+
+**Test:** New content types can be registered without modifying core code
+
+---
+
+### STEP 10: Testing + Polish (1-2 days)
 **Priority:** REQUIRED
 
 **Test Protocol:**
@@ -440,9 +790,10 @@ function getCurrentSite() {
 2. **Deep Diver test** — Spend 5+ min on one site. GAIA should go deeper, not repeat.
 3. **Sharer test** — Complete a site, check share card, check social preview.
 4. **Return visit test** — Close tab, reopen. GAIA should remember.
-5. **Mobile test** — All interactions work on phone viewport.
-6. **Performance test** — JS heap < 100MB, no continuous timers, scroll is smooth.
-7. **Cross-browser test** — Safari, Chrome, Firefox.
+5. **Suggestion flow test** — Complete a site → get suggestion → fly to next site → repeat.
+6. **Mobile test** — All interactions work on phone viewport.
+7. **Performance test** — JS heap < 100MB, no continuous timers, scroll is smooth.
+8. **Cross-browser test** — Safari, Chrome, Firefox.
 
 ---
 
@@ -450,42 +801,43 @@ function getCurrentSite() {
 
 | Step | Task | Days | Priority |
 |------|------|------|----------|
-| 1 | Wire GAIA_NODES to globe | 1 | CRITICAL |
-| 2 | Per-site engagement + participant + knowledge model | 1 | HIGH |
-| 3 | Emotional voice + silence engine | 1 | HIGH |
-| 4 | GAIA mind integration | 2 | HIGH |
-| 5 | Node visual states on globe | 1 | MEDIUM |
-| 6 | Quest progress UI + globe-to-chat bridge | 1 | MEDIUM |
-| 7 | Bubble node awareness | 0.5 | LOW |
-| 8 | Testing + polish | 1-2 | REQUIRED |
-| **TOTAL** | | **8.5-10 days** | |
+| 1 | GAIA section in SITE_PANEL | 1.5 | CRITICAL |
+| 2 | "What to Explore Next" suggestions | 1 | HIGH |
+| 3 | Per-site engagement + participant + knowledge model | 1 | HIGH |
+| 4 | Emotional voice + silence engine | 1 | HIGH |
+| 5 | GAIA mind integration | 2 | HIGH |
+| 6 | Node visual states on globe | 1 | MEDIUM |
+| 7 | Quest progress UI + globe-to-chat bridge | 1 | MEDIUM |
+| 8 | Bubble node awareness | 0.5 | LOW |
+| 9 | Modular content registry | 0.5 | MEDIUM |
+| 10 | Testing + polish | 1-2 | REQUIRED |
+| **TOTAL** | | **10.5-12 days** | |
 
 ---
 
-## 4. COP31 MVP (4-5 days)
+## 4. COP31 MVP (5-6 days)
 
 Minimum viable for COP31 booth:
 
 | Step | Task | Days |
 |------|------|------|
-| 1 | Wire GAIA_NODES to globe | 1 |
-| 2 | Per-site engagement + participant model | 1 |
-| 3 | Emotional voice + silence engine | 1 |
-| 5 | Node visual states | 1 |
-| 8 | Testing + polish | 1-2 |
-| **TOTAL** | | **4-5 days** |
+| 1 | GAIA section in SITE_PANEL | 1.5 |
+| 2 | "What to Explore Next" suggestions | 1 |
+| 3 | Per-site engagement + participant model | 1 |
+| 4 | Emotional voice + silence engine | 1 |
+| 6 | Node visual states | 1 |
+| 10 | Testing + polish | 1-2 |
+| **TOTAL** | | **5.5-7 days** |
 
 **Skip for MVP (add post-COP31):**
 - GAIA mind integration (complex, can be added later)
 - Quest progress UI (quests work, just no visual)
 - Bubble node awareness (nice to have)
-- Globe-to-chat bridge (separate feature)
+- Modular content registry (not needed until new content types)
 
 ---
 
 ## 5. MARKETING QUEUE (Post-MVP)
-
-From PROJECT_TRACKER.md — these are designed and queued:
 
 | # | Feature | Description | Est. Days |
 |---|---------|-------------|-----------|
@@ -522,12 +874,15 @@ From PROJECT_TRACKER.md — these are designed and queued:
 
 | File | Change | Lines Added |
 |------|--------|-------------|
-| `js/globe.js` | Route clicks through GAIA_NODES, add node visual states | ~70 |
+| `js/site-panel.js` | GAIA section, suggestion rendering | ~80 |
+| `js/gaia-nodes.js` | Next-suggestion logic, modular registry | ~100 |
 | `js/gaia-engagement.js` | Per-site engagement, participant model, knowledge model | ~80 |
 | `js/gaia-voice.js` | Voice modifiers, silence engine | ~80 |
+| `js/globe.js` | Node visual states, suggestion highlighting | ~50 |
 | `js/gaia-journal.js` | Quest progress UI | ~40 |
 | `js/gaia-bubble.js` | Node awareness, globe-to-chat bridge | ~50 |
 | `js/app.js` | Welcome back with GAIA_MIND | ~20 |
+| `css/site-panel.css` | GAIA section styles, suggestion chips | ~50 |
 | `css/globe-overlay.css` | Node visual state styles | ~30 |
 | `css/gaia-bubble.css` | Quest progress, expanded bubble styles | ~20 |
 | `index.html` | Add gaia-mind.js + gaia-mind-main.js script tags | ~2 |
@@ -538,27 +893,29 @@ From PROJECT_TRACKER.md — these are designed and queued:
 |------|---------|-------|
 | `js/gaia-mind-main.js` | GAIA_MIND wrapper for main site | ~200 |
 
-### Total New Code: ~600 lines
+### Total New Code: ~800 lines
 
 ---
 
 ## 8. DEPENDENCY GRAPH
 
 ```
-Step 1 (Wire GAIA_NODES) ──→ Step 5 (Node visual states)
-                           ──→ Step 6 (Quest UI)
-                           ──→ Step 7 (Bubble awareness)
+Step 3 (Engagement model) ──→ Step 2 (Suggestions need engagement state)
+                           ──→ Step 6 (Node visual states)
+                           ──→ Step 5 (GAIA mind needs participant model)
 
-Step 2 (Engagement model) ──→ Step 5 (Node visual states)
-                           ──→ Step 4 (GAIA mind needs participant model)
+Step 1 (GAIA section) ──→ Step 2 (Suggestions appear in GAIA section)
 
-Step 3 (Voice + Silence) ──→ Step 4 (GAIA mind uses silence engine)
+Step 4 (Voice + Silence) ──→ Step 5 (GAIA mind uses silence engine)
 
-Step 4 (GAIA mind) ──→ Step 6 (Welcome back with memory)
+Step 5 (GAIA mind) ──→ Step 1 (GAIA section uses mind for context)
 
-Steps 1-4 can be done in parallel by different agents
-Steps 5-7 depend on Steps 1-4
-Step 8 (Testing) depends on all
+Steps 1, 3, 4 can be done in parallel
+Step 2 depends on Steps 1, 3
+Step 5 depends on Step 3
+Step 6 depends on Step 3
+Steps 7-9 are independent
+Step 10 (Testing) depends on all
 ```
 
 ---
@@ -567,25 +924,27 @@ Step 8 (Testing) depends on all
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| GAIA_MIND too heavy for main site | High memory on 8MB Mac | Lazy-load only after first interaction |
+| GAIA_MIND too heavy for main site | High memory on 8GB Mac | Lazy-load only after first interaction |
 | globe.gl performance with visual states | Frame drops on low-end | Use CSS transforms, not JS animation |
 | Cross-session memory bloat | localStorage quota | Cap at 50 entries, LRU eviction |
 | Voice modulation not supported on all browsers | Silent fallback | Check SpeechSynthesis API support |
 | Too many new globals | Namespace pollution | Keep IIFE pattern, single global per module |
+| Suggestion system feels pushy | User annoyance | Max 2 suggestions, dismissible, respect silence |
 
 ---
 
 ## 10. SUCCESS CRITERIA
 
 **COP31 MVP is ready when:**
-- [ ] Clicking globe markers opens GAIA overlay with tabs
+- [ ] GAIA section appears in site panel with context-aware guidance
+- [ ] Suggestion chips guide users to next sites/events
 - [ ] Per-site XP tracks and persists
 - [ ] GAIA's voice modulates with emotion (rate/pitch/volume)
 - [ ] GAIA stays silent at powerful moments
 - [ ] Node markers change appearance with engagement
+- [ ] Suggested next sites glow gold on the globe
 - [ ] No console errors
 - [ ] Scroll is smooth (no jank)
-- [ ] Page loads in < 3s on 3G
 - [ ] Works on Safari, Chrome, Firefox
 - [ ] Works on phone viewport
 - [ ] JS heap < 100MB
