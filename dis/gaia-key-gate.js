@@ -15,6 +15,7 @@ const GaiaKeyGate = (() => {
   let _teaseLevel = 0;
   let _previewShown = false;
   let _modalOpen = false;
+  let _formHandlerSetup = false;
 
   function _loadKey() {
     try {
@@ -109,8 +110,54 @@ const GaiaKeyGate = (() => {
   function showPreview() { _previewShown = true; }
   function hasPreviewBeenShown() { return _previewShown; }
 
-  function openModal() { _modalOpen = true; }
-  function closeModal() { _modalOpen = false; }
+  function openModal() {
+    _modalOpen = true;
+    // Show the modal
+    const modal = document.getElementById('gaia-key-modal');
+    if (modal) {
+      const score = typeof GaiaState !== 'undefined' ? (GaiaState.getScore?.()?.score || 0) : 0;
+      const level = getTeaseLevel(score);
+      const content = getModalContent(level);
+      const titleEl = modal.querySelector('.key-modal-title');
+      const gaiaLineEl = modal.querySelector('.key-modal-gaia-line');
+      if (titleEl) titleEl.textContent = content.title;
+      if (gaiaLineEl) gaiaLineEl.textContent = content.gaiaLine;
+      modal.classList.add('open');
+    }
+    // Set up form submission (in case gaia-client.js isn't loaded)
+    _setupFormHandler();
+  }
+
+  function _setupFormHandler() {
+    if (_formHandlerSetup) return;
+    const form = document.getElementById('gaia-key-form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('gaia-key-input');
+        if (input) {
+          const result = submitKey(input.value);
+          if (result.valid) {
+            closeModal();
+            // Trigger unlock response
+            const unlock = getUnlockResponse();
+            if (typeof GaiaState !== 'undefined') {
+              GaiaState.addScore('api_key_entered', {});
+            }
+          } else {
+            const errorEl = document.getElementById('gaia-key-error');
+            if (errorEl) errorEl.textContent = result.error;
+          }
+        }
+      });
+      _formHandlerSetup = true;
+    }
+  }
+  function closeModal() {
+    _modalOpen = false;
+    const modal = document.getElementById('gaia-key-modal');
+    if (modal) modal.classList.remove('open');
+  }
   function isModalOpen() { return _modalOpen; }
 
   function getModalContent(teaseLevel) {
