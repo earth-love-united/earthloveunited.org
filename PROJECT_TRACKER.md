@@ -198,12 +198,32 @@ base.css, layout.css, components.css, widgets.css, responsive.css, carbon-clock.
 | 1 | DOM adapter (bridge IDs, add elements) | ✅ Complete |
 | 2 | Event bridge (interactions → DIS) | ✅ Complete |
 | 3 | State machine activation | ✅ Complete |
-| 4 | GAIA Nodes on Earth (main site integration) | 📋 Planned — PHASE4_PLAN.md |
+| 4 | GAIA Nodes on Earth (main site integration) | 📋 Planned — PHASE4_PLAN.md v3.0 |
 | 5 | Key gate UI + modal | ⏳ Pending |
-| 6 | Voice engine integration | ⏳ Pending |
-| 7 | Cloudflare Worker deployment | ⏳ Pending |
-| 8 | Live data integration | ⏳ Pending |
-| 9 | Testing + polish | ⏳ Pending |
+| 6 | Voice engine integration | ⏳ Pending (in Phase 4 Step 3) |
+| 7 | Cloudflare Worker deployment | ⏳ Pending (post-MVP) |
+| 8 | Live data integration | ⏳ Pending (post-MVP) |
+| 9 | Testing + polish | ⏳ Pending (Phase 4 Step 8) |
+
+## PHASE 4 EXECUTION ORDER
+
+**COP31 MVP (4-5 days):**
+1. Wire GAIA_NODES to globe (Step 1) — 1 day
+2. Per-site engagement + participant model (Step 2) — 1 day
+3. Emotional voice + silence engine (Step 3) — 1 day
+4. Node visual states (Step 5) — 1 day
+5. Testing + polish (Step 8) — 1-2 days
+
+**Post-MVP (3.5-5 days):**
+6. GAIA mind integration (Step 4) — 2 days
+7. Quest progress UI + bridge (Step 6) — 1 day
+8. Bubble node awareness (Step 7) — 0.5 day
+
+**Marketing Queue (~9.5 days):**
+- Share Your Impact, Antalya Connection, GAIA's Field Notes, Green Lie Detector, Partner With GAIA, 170-Day Countdown, Jean's Letter
+
+**Production Hardening (~5 days):**
+- Bundle scripts, cache globe.gl, Cloudflare Worker, voice engine, service worker, performance audit
 
 ## PERFORMANCE OPTIMIZATIONS (May 16)
 
