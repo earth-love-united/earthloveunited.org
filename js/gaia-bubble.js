@@ -108,23 +108,12 @@ const GAIA_BUBBLE = (() => {
     bubbleEl.style.borderColor = color + '40';
     avatarEl.style.boxShadow = `0 0 16px ${color}30`;
 
-    // Get voice modifiers from GaiaMind if available
+    // Get voice modifiers from GaiaMind if available, else use central config
     let voiceModifiers = {};
     if (typeof GaiaMind !== 'undefined') {
       voiceModifiers = GaiaMind.getVoiceModifiers?.({ tone }) || {};
     } else {
-      // Fallback: basic modifiers per tone
-      const fallback = {
-        mysterious: { rate: -0.12, pitch: -0.05, volume: -0.1 },
-        warm: { rate: -0.08, pitch: 0.03, volume: -0.05 },
-        fierce: { rate: 0.10, pitch: -0.08, volume: 0.15 },
-        urgent: { rate: 0.08, pitch: -0.05, volume: 0.1 },
-        concerned: { rate: -0.08, pitch: -0.03, volume: 0 },
-        proud: { rate: 0.05, pitch: 0, volume: 0.1 },
-        playful: { rate: 0.03, pitch: 0.05, volume: 0 },
-        nurturing: { rate: -0.08, pitch: 0.03, volume: -0.05 },
-      };
-      voiceModifiers = fallback[tone] || {};
+      voiceModifiers = GAIA_VOICE_CONFIG.get(tone);
     }
 
     // Start typing
@@ -188,22 +177,23 @@ const GAIA_BUBBLE = (() => {
 
   // ── React to engagement events ──
   function onSignal(signalName, siteId) {
-    GAIA_ENGAGEMENT.addSignal(signalName);
+    safeCall('GAIA_ENGAGEMENT', 'addSignal', signalName);
 
     // Check for quest completions
-    const completed = GAIA_JOURNAL.checkQuestProgress(signalName, siteId);
-    for (const quest of completed) {
-      showQuestNotification(quest);
+    const completed = safeCall('GAIA_JOURNAL', 'checkQuestProgress', signalName, siteId);
+    if (completed) {
+      for (const quest of completed) {
+        showQuestNotification(quest);
+      }
     }
 
     // Check for pledge prompt
-    if (typeof PLEDGE_WALL !== 'undefined' && typeof GAIA_ENGAGEMENT !== 'undefined') {
-      const score = GAIA_ENGAGEMENT.getScore();
-      if (score >= 30 && !PLEDGE_WALL.hasPledged()) {
+    if (hasModule('PLEDGE_WALL') && hasModule('GAIA_ENGAGEMENT')) {
+      const score = safeGet('GAIA_ENGAGEMENT', 'getScore', 0);
+      if (score >= 30 && !safeGet('PLEDGE_WALL', 'hasPledged', true)) {
         // Don't show immediately — let the moment breathe
         setTimeout(() => {
-          if (typeof PLEDGE_WALL !== 'undefined') {
-            // Speak the prompt via GAIA bubble, then offer the modal
+          if (hasModule('PLEDGE_WALL')) {
             speak("You've been exploring. You've seen the data. What will you do with this?", 'warm', 8000);
           }
         }, 2000);
@@ -222,7 +212,7 @@ const GAIA_BUBBLE = (() => {
 
   // ── Idle nudge ──
   function idleNudge() {
-    const level = GAIA_ENGAGEMENT.getIdleLevel();
+    const level = safeGet('GAIA_ENGAGEMENT', 'getIdleLevel', null);
     if (!level) return;
 
     const nudges = {

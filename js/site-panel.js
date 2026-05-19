@@ -481,7 +481,7 @@ const SITE_PANEL = (() => {
     const id = 'ndvi-spark-' + site.id;
     setTimeout(() => {
       const canvas = document.getElementById(id);
-      if (canvas) GAIA_CHARTS._drawSparkline(canvas, chartData, { color: '#4ecdc4', showLabels: true, padMin: 0.05, padMax: 0.05 });
+      if (canvas && typeof GAIA_CHARTS !== 'undefined') GAIA_CHARTS._drawSparkline(canvas, chartData, { color: '#4ecdc4', showLabels: true, padMin: 0.05, padMax: 0.05 });
     }, 100);
     return `<canvas id="${id}" width="400" height="80" style="width:100%;height:80px;display:block;"></canvas>
       <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--text3)">
@@ -496,7 +496,7 @@ const SITE_PANEL = (() => {
     if (!climate || climate.length < 2) return '';
     const first = climate[0], last = climate[climate.length - 1];
     const tempDelta = (last.temp - first.temp).toFixed(1);
-    const precipDelta = ((last.precip - first.precip) / first.precip * 100).toFixed(0);
+    const precipDelta = first.precip ? ((last.precip - first.precip) / first.precip * 100).toFixed(0) : '0';
     return `
       <div style="padding:10px;background:rgba(255,255,255,0.02);border-radius:6px;">
         <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Temperature</div>

@@ -389,8 +389,18 @@ const PLEDGE_WALL = (() => {
   // ── Helper: flag emoji ──
   function getFlagEmoji(code) {
     if (!code) return '';
-    const codePoints = code.toUpperCase().split('').map(c => 0x1F1E6 + c.charCodeAt(0) - 65);
-    return String.fromCodePoint(...codePoints);
+    // Country codes are ISO alpha-3 (3 chars). Flag emoji math only works with alpha-2.
+    // Use COUNTRY_DATA's pre-baked flag if available, otherwise skip.
+    if (typeof COUNTRY_DATA !== 'undefined') {
+      const comparison = COUNTRY_DATA.getComparison(code);
+      if (comparison && comparison.flag) return comparison.flag;
+    }
+    // Fallback: if code happens to be 2-letter alpha-2, compute it
+    if (code.length === 2) {
+      const codePoints = code.toUpperCase().split('').map(c => 0x1F1E6 + c.charCodeAt(0) - 65);
+      return String.fromCodePoint(...codePoints);
+    }
+    return '';
   }
 
   // ── Helper: escape HTML ──

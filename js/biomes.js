@@ -57,12 +57,15 @@ const Biomes = {
 
   showDetail(key, card) {
     const b = Data.getBiome(key);
+    if (!b) return;
     document.querySelectorAll('.biome-card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     const d = document.getElementById('biome-detail');
+    if (!d) return;
     d.className = 'biome-detail show';
     d.innerHTML = `<h4>${b.icon} ${b.name}</h4><p>${b.desc}</p><div class="bd-numbers"><div class="bd-num">📦 ${b.density} tC/ha stock</div><div class="bd-num">📈 ${b.seq} tC/ha/yr sequestration</div></div>`;
-    setTimeout(() => { card.querySelector('.bc-bar-fill').style.width = card.querySelector('.bc-bar-fill').dataset.width; }, 50);
+    const barFill = card.querySelector('.bc-bar-fill');
+    if (barFill) setTimeout(() => { barFill.style.width = barFill.dataset.width; }, 50);
   },
 
   animateBars() {

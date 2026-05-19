@@ -81,6 +81,7 @@ const GAIA_NODES = (() => {
 
   // ── Generic content registration ──
   function registerContent(config) {
+    if (typeof GLOBE_OVERLAY === 'undefined') return;
     const type = CONTENT_TYPES[config.type] || CONTENT_TYPES.site;
     GLOBE_OVERLAY.registerSite({
       ...config,
@@ -104,6 +105,10 @@ const GAIA_NODES = (() => {
 
   // ── Register all site content ──
   function registerAllSites() {
+    if (typeof GLOBE_OVERLAY === 'undefined') {
+      console.warn('[GAIA_NODES] GLOBE_OVERLAY not available, skipping site registration');
+      return;
+    }
     GLOBE_OVERLAY.registerSite({
       siteId: 'antalya',
       icon: '🔥',
@@ -168,6 +173,7 @@ const GAIA_NODES = (() => {
 
   function populateSiteData() {
     if (typeof Data === 'undefined' || !Data.sites) return;
+    if (typeof GLOBE_OVERLAY === 'undefined') return;
     Data.sites.forEach(site => {
       const registered = GLOBE_OVERLAY.getSite(site.id);
       if (registered) registered.siteData = site;
@@ -175,9 +181,9 @@ const GAIA_NODES = (() => {
   }
 
   function onNodeClick(siteId) {
-    GLOBE_OVERLAY.open(siteId);
+    if (typeof GLOBE_OVERLAY !== 'undefined') GLOBE_OVERLAY.open(siteId);
     addXP(siteId, 10);
-    nodeState[siteId].visited = true;
+    if (nodeState[siteId]) nodeState[siteId].visited = true;
     // Set site context in GAIA bubble
     if (typeof GAIA_BUBBLE !== 'undefined') GAIA_BUBBLE.setCurrentSite(siteId);
     if (typeof GAIA_VOICE !== 'undefined') {

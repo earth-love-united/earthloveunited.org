@@ -230,8 +230,15 @@ function flyToSite(id) { App.flyToSite(id); }
 function showCycle(key) { Cycle.show(key); }
 
 // Start — handle both async and already-loaded DOM
+let _startRetries = 0;
 function startApp() {
   if (typeof GlobeModule === 'undefined' || typeof Data === 'undefined') {
+    if (++_startRetries > 30) {
+      console.error('[App] GlobeModule or Data not available after 3s — starting without globe');
+      // Start without globe — Data.init() will still work, globe just won't render
+      if (typeof Data !== 'undefined') App.init();
+      return;
+    }
     setTimeout(startApp, 100);
     return;
   }

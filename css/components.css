@@ -54,11 +54,11 @@
 
 /* ═══ SITE PANEL ═══ */
 #site-panel{
-  position:fixed;top:0;right:0;width:440px;height:100%;z-index:90;
+  position:fixed;top:200px;right:0;width:440px;height:calc(100% - 200px);z-index:90;
   background:linear-gradient(135deg,rgba(8,10,18,.98),rgba(12,15,25,.98));
   border-left:1px solid rgba(78,205,196,.08);
   transform:translateX(100%);transition:transform .25s cubic-bezier(.22,1,.36,1);
-  overflow-y:auto;overflow-x:hidden;padding:56px 28px 28px;
+  overflow-y:auto;overflow-x:hidden;padding:16px 28px 28px;
   will-change:transform;
   -webkit-overflow-scrolling:touch;
 }

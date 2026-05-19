@@ -2,54 +2,93 @@
 if (typeof window === 'undefined' && typeof global !== 'undefined') { global.window = global; }
 
 // ═══════════════════════════════════════════════════════
-// GAIA QUEST SYSTEM v1.0
-// Progression layer — gives structure without feeling like school
-// Quests are GAIA's way of saying "there's more to see"
+// GAIA QUEST SYSTEM v2.0 — Adapter Layer
+// Delegates to GAIA_JOURNAL as the canonical quest engine.
+// Preserves the GaiaQuests API surface for gaia-client.js compatibility.
+//
+// Previously: independent quest system with its own storage.
+// Now: thin adapter that translates API calls to GAIA_JOURNAL.
 // ═══════════════════════════════════════════════════════
 
 const GaiaQuests = (() => {
 
-
-  const QUESTS = {
-    first_steps: { tier: 'SEED', title: 'First Steps', description: 'Explore your first restoration site.', icon: '🌱', objectives: [{ type: 'site_tap', target: 1 }] },
-    carbon_curious: { tier: 'SEED', title: 'Carbon Curious', description: 'Run your first carbon scenario.', icon: '🔬', objectives: [{ type: 'scenario_run', target: 1 }] },
-    hello_world: { tier: 'SEED', title: 'Hello, World', description: 'Have 5 exchanges with GAIA.', icon: '💬', objectives: [{ type: 'chat_sent', target: 5 }] },
-    four_corners: { tier: 'GROW', title: 'Four Corners', description: 'Explore all four restoration sites.', icon: '🌍', objectives: [{ type: 'site_tap', target: 4 }] },
-    detective: { tier: 'GROW', title: 'Detective', description: 'Discover 3 hidden data layers.', icon: '🔍', objectives: [{ type: 'data_reveal', target: 3 }] },
-    restorer: { tier: 'GROW', title: 'Restorer', description: 'Build a scenario that sequesters over 1M tons of CO₂.', icon: '🌳', objectives: [{ type: 'big_scenario', target: 1 }] },
-    skeptic: { tier: 'GROW', title: 'Skeptic', description: 'Challenge GAIA on something.', icon: '🤔', objectives: [{ type: 'chat_sent_contains', target: 1, keywords: ['but','why','really','disagree','wrong'] }] },
-    name_yourself: { tier: 'FLOURISH', title: 'Name Yourself', description: 'Create a profile and save your progress.', icon: '👤', objectives: [{ type: 'profile_created', target: 1 }] },
-    field_journal: { tier: 'FLOURISH', title: 'Field Journal', description: 'Collect 10 insights in your journal.', icon: '📓', objectives: [{ type: 'insight', target: 10 }] },
-    share_the_world: { tier: 'FLOURISH', title: 'Share the World', description: 'Share your journal or an insight.', icon: '📣', objectives: [{ type: 'share', target: 1 }] },
-    green_lie: { tier: 'GROW', title: 'The Green Lie', description: 'Discover why Borneo\'s green appearance is deceiving.', icon: '🕵️', hidden: true, objectives: [{ type: 'site_tap', target: 1, site_id: 'borneo' }, { type: 'data_reveal', target: 1, site_id: 'borneo', layer: 'carbon' }] },
-    jeans_legacy: { tier: 'GROW', title: "Jean's Legacy", description: 'Learn about Jean Missinhoun and the Benin restoration.', icon: '💚', hidden: true, objectives: [{ type: 'site_tap', target: 1, site_id: 'benin' }, { type: 'data_reveal', target: 1, site_id: 'benin', layer: 'narrative' }] },
-    fire_and_time: { tier: 'GROW', title: 'Fire and Time', description: 'Understand why Antalya\'s recovery takes decades.', icon: '⏳', hidden: true, objectives: [{ type: 'site_tap', target: 1, site_id: 'antalya' }, { type: 'ndvi_scrolled', target: 1, site_id: 'antalya' }] },
-    perfect_economy: { tier: 'GROW', title: 'Perfect Economy', description: 'Discover how Sri Lanka\'s restoration pays for itself.', icon: '🌿', hidden: true, objectives: [{ type: 'site_tap', target: 1, site_id: 'sri_lanka' }, { type: 'scenario_run', target: 1, site_id: 'sri_lanka' }] },
-  };
-
-  let _progress = {};
   let _listeners = [];
+  let _migrated = false;
 
-  function init() { _loadProgress(); }
+  function init() {
+    // Migrate any legacy gaia_quests progress into GAIA_JOURNAL
+    if (!_migrated) {
+      _migrateLegacyProgress();
+      _migrated = true;
+    }
+  }
 
-  function _loadProgress() {
+  /**
+   * One-time migration: if user has progress in old 'gaia_quests' key,
+   * merge it into GAIA_JOURNAL's storage by firing equivalent signals.
+   */
+  function _migrateLegacyProgress() {
+    if (typeof Storage === 'undefined') return;
     try {
       const raw = Storage.safeGetItem('gaia_quests');
-      if (raw) _progress = JSON.parse(raw);
-    } catch (e) { _progress = {}; }
+      if (!raw) return;
+      const oldProgress = JSON.parse(raw);
+      if (!oldProgress || typeof oldProgress !== 'object') return;
+
+      console.log('[GaiaQuests] Migrating legacy quest progress to GAIA_JOURNAL...');
+      let migrated = 0;
+
+      for (const [questId, data] of Object.entries(oldProgress)) {
+        if (!data || typeof data !== 'object') continue;
+        if (data.status === 'completed' && typeof GAIA_JOURNAL !== 'undefined') {
+          // Fire the signal enough times to complete the quest
+          // This works because checkQuestProgress is idempotent for completed quests
+          const progress = data.progress || {};
+          for (const [key, count] of Object.entries(progress)) {
+            // key format: "signal_type" or "signal_type_siteId"
+            const parts = key.split('_');
+            const signal = parts.slice(0, -1).join('_') || key;
+            for (let i = 0; i < count; i++) {
+              GAIA_JOURNAL.checkQuestProgress(signal, null);
+            }
+          }
+          migrated++;
+        }
+      }
+
+      if (migrated > 0) {
+        console.log(`[GaiaQuests] Migrated ${migrated} completed quests.`);
+        GAIA_JOURNAL.save();
+      }
+
+      // Clean up legacy key (keep a backup just in case)
+      Storage.safeSetItem('gaia_quests_v1_backup', raw);
+      Storage.safeRemoveItem('gaia_quests');
+    } catch (e) {
+      console.warn('[GaiaQuests] Migration failed:', e.message);
+    }
   }
 
-  function _saveProgress() {
-    try { Storage.safeSetItem('gaia_quests', JSON.stringify(_progress)); } catch (e) {}
-  }
+  // ── Adapter methods — delegate to GAIA_JOURNAL ──
 
-  function getQuest(questId) { return QUESTS[questId] || null; }
+  function getQuest(questId) {
+    if (typeof GAIA_JOURNAL === 'undefined') return null;
+    const quests = GAIA_JOURNAL.getQuests();
+    return quests.find(q => q.id === questId) || null;
+  }
 
   function getAllQuests() {
-    return Object.entries(QUESTS).map(([id, q]) => ({
-      id, ...q,
-      status: _progress[id]?.status || 'locked',
-      currentProgress: _progress[id]?.progress || {}
+    if (typeof GAIA_JOURNAL === 'undefined') return [];
+    return GAIA_JOURNAL.getQuests().map(q => ({
+      id: q.id,
+      tier: _tierName(q.tier),
+      title: q.title,
+      description: q.desc,
+      icon: q.icon || '🌱',
+      hidden: q.hidden || false,
+      status: q.completed ? 'completed' : q.progress > 0 ? 'in_progress' : 'available',
+      currentProgress: { [q.signal]: q.progress },
+      objectives: [{ type: q.signal, target: q.target, site_id: q.site }],
     }));
   }
 
@@ -62,58 +101,44 @@ const GaiaQuests = (() => {
   }
 
   function updateProgress(questId, eventType, context = {}) {
-    const quest = QUESTS[questId];
-    if (!quest) return { updated: false };
-    if (!_progress[questId]) _progress[questId] = { status: 'in_progress', progress: {}, startedAt: Date.now() };
-    const qp = _progress[questId];
-    for (const obj of quest.objectives) {
-      if (obj.type !== eventType) continue;
-      if (obj.site_id && context.siteId !== obj.site_id) continue;
-      if (obj.layer && context.layer !== obj.layer) continue;
-      if (obj.keywords && context.message) {
-        if (!obj.keywords.some(k => context.message.toLowerCase().includes(k.toLowerCase()))) continue;
-      }
-      const key = obj.site_id ? `${obj.type}_${obj.site_id}` : obj.type;
-      qp.progress[key] = (qp.progress[key] || 0) + 1;
+    if (typeof GAIA_JOURNAL === 'undefined') return { updated: false };
+    const results = GAIA_JOURNAL.checkQuestProgress(eventType, context.siteId);
+    const wasUpdated = results.some(q => q.id === questId);
+    if (wasUpdated) {
+      _listeners.forEach(fn => fn({ type: 'quest_complete', questId }));
     }
-    const allComplete = quest.objectives.every(obj => {
-      const key = obj.site_id ? `${obj.type}_${obj.site_id}` : obj.type;
-      return (qp.progress[key] || 0) >= obj.target;
-    });
-    if (allComplete && qp.status !== 'completed') {
-      qp.status = 'completed';
-      qp.completedAt = Date.now();
-      _listeners.forEach(fn => fn({ type: 'quest_complete', questId, quest }));
-    }
-    _saveProgress();
-    _notifyListeners();
-    return { updated: true, questId, status: qp.status, isComplete: allComplete };
+    return { updated: true, questId, status: wasUpdated ? 'completed' : 'in_progress', isComplete: wasUpdated };
   }
 
   function checkAllQuests(eventType, context) {
-    const results = [];
-    for (const questId of Object.keys(QUESTS)) {
-      if (_progress[questId]?.status === 'completed') continue;
-      const result = updateProgress(questId, eventType, context);
-      if (result.updated) results.push(result);
+    if (typeof GAIA_JOURNAL === 'undefined') return [];
+    const results = GAIA_JOURNAL.checkQuestProgress(eventType, context?.siteId);
+    if (results.length > 0) {
+      _listeners.forEach(fn => fn({ type: 'quest_update' }));
     }
-    return results;
+    return results.map(q => ({ updated: true, questId: q.id, status: 'completed', isComplete: true }));
   }
 
   function getStats() {
-    const all = getAllQuests();
-    const completed = all.filter(q => q.status === 'completed');
-    return { total: all.length, completed: completed.length };
+    if (typeof GAIA_JOURNAL === 'undefined') return { total: 0, completed: 0 };
+    return { total: GAIA_JOURNAL.getTotalCount(), completed: GAIA_JOURNAL.getCompletedCount() };
   }
 
   function resetAll() {
-    _progress = {};
+    if (typeof GAIA_JOURNAL !== 'undefined') {
+      // Reset journal quest progress (preserves journal entries)
+      // GAIA_JOURNAL doesn't expose a reset — this is intentional (progress is precious)
+    }
     Storage.safeRemoveItem('gaia_quests');
+    Storage.safeRemoveItem('gaia_quests_v1_backup');
   }
 
   function onQuestEvent(fn) { _listeners.push(fn); }
 
-  function _notifyListeners() { _listeners.forEach(fn => fn({ type: 'quest_update' })); }
+  function _tierName(tier) {
+    const names = { 1: 'SEED', 2: 'GROW', 3: 'FLOURISH', 4: 'GUARDIAN' };
+    return names[tier] || 'SEED';
+  }
 
   return {
     init, getQuest, getAllQuests, getActiveQuests, getCompletedQuests,

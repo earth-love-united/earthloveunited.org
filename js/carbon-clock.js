@@ -58,12 +58,12 @@ const CARBON_CLOCK = (() => {
     `;
 
     // Inject into the hero container
-    const container = document.getElementById('hero-carbon-clock');
+    const container = $('hero-carbon-clock');
     if (container) {
       container.appendChild(heroEl);
     } else {
       // Fallback: insert into hero directly
-      const hero = document.getElementById('hero');
+      const hero = $('hero');
       if (hero) {
         const inner = hero.querySelector('.hero-inner');
         if (inner) {
@@ -89,7 +89,7 @@ const CARBON_CLOCK = (() => {
     `;
 
     // Insert into topbar stats
-    const topbar = document.getElementById('topbar');
+    const topbar = $('topbar');
     if (topbar) {
       const stats = topbar.querySelector('.stats');
       if (stats) {
@@ -117,9 +117,9 @@ const CARBON_CLOCK = (() => {
   // ── Cache DOM refs ──
   let _heroValue = null, _heroBar = null, _topbarValue = null;
   function _cacheRefs() {
-    _heroValue = document.getElementById('cc-hero-value');
-    _heroBar = document.getElementById('cc-hero-bar');
-    _topbarValue = document.getElementById('cc-topbar-value');
+    _heroValue = $('cc-hero-value');
+    _heroBar = $('cc-hero-bar');
+    _topbarValue = $('cc-topbar-value');
   }
 
   // ── Start ──

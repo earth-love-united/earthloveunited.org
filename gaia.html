@@ -13,6 +13,7 @@
 ">
 <title>GAIA — Earth Love United</title>
 <script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
+<script src="js/gaia-utils.js"></script>
 <script src="js/data.js"></script>
 <script src="js/gaia-legacy/gaia-data.js"></script>
 <script src="js/gaia-legacy/gaia-charts.js"></script>
@@ -30,6 +31,7 @@
 <script src="dis/gaia-voice-data.js"></script>
 <script src="dis/gaia-state-machine.js"></script>
 <script src="dis/gaia-voice-engine.js"></script>
+<script src="js/gaia-journal.js"></script>
 <script src="dis/gaia-quest-system.js"></script>
 <script src="dis/gaia-key-gate.js"></script>
 <script src="dis/gaia-mind.js"></script>
@@ -60,11 +62,12 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
 
 #main{display:flex;flex:1;overflow:hidden;position:relative}
 
-#sidebar{width:240px;background:var(--bg2);border-right:1px solid rgba(78,205,196,.06);display:flex;flex-direction:column;flex-shrink:0;transition:width .3s;overflow-y:auto}
+#sidebar{width:240px;background:var(--bg2);border-right:1px solid rgba(78,205,196,.06);display:flex;flex-direction:column;flex-shrink:0;transition:width .3s;overflow-y:auto;position:relative}
 #sidebar.collapsed{width:0;overflow:hidden}
 #sidebar::-webkit-scrollbar{width:3px}
 #sidebar::-webkit-scrollbar-track{background:transparent}
 #sidebar::-webkit-scrollbar-thumb{background:rgba(78,205,196,.1);border-radius:2px}
+#sidebar .sidebar-section:first-child{padding-top:74px}
 .sidebar-section{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.03)}
 .sidebar-label{font-size:8px;text-transform:uppercase;letter-spacing:2px;color:var(--text3);margin-bottom:6px;font-family:var(--mono)}
 .topic-btn{display:flex;align-items:center;gap:6px;width:100%;padding:8px 10px;border:1px solid transparent;border-radius:5px;background:none;color:var(--text2);font-family:var(--body);font-size:12px;cursor:pointer;transition:all .2s;text-align:left;margin-bottom:2px;min-height:36px}
@@ -209,6 +212,7 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
 
 <div id="main">
   <div id="sidebar">
+    <button onclick="toggleSidebar()" style="position:absolute;top:70px;right:8px;z-index:5;background:rgba(8,10,18,.8);border:1px solid rgba(255,255,255,.1);border-radius:50%;width:28px;height:28px;color:var(--text3);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
     <div class="sidebar-section">
       <div class="sidebar-label">Projects</div>
       <button class="topic-btn" onclick="askGaia('Tell me about all your restoration projects')"><span class="t-icon">🌍</span><span>All Projects</span></button>

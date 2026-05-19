@@ -67,7 +67,8 @@ const GlobeModule = {
           .hexPolygonsData(countries.features.filter(d => d.properties.ISO_A2 !== 'AQ'))
           .hexPolygonResolution(3).hexPolygonMargin(0.4)
           .hexPolygonUseDots(true).hexPolygonDotResolution(12);
-      });
+      })
+      .catch(e => console.warn('[Globe] Country borders fetch failed:', e.message));
 
     this.world.pointOfView({ lat: 20, lng: 40, altitude: 2.2 });
     this.world.controls().autoRotate = true;

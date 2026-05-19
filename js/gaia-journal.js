@@ -7,28 +7,32 @@ const GAIA_JOURNAL = (() => {
   // ── Quest definitions ──
   const QUESTS = [
     // Tier 1: Explorer (0-30)
-    { id: 'visit_all_sites', title: 'See All Wounds', desc: 'Visit all 4 project sites', tier: 1, target: 4, signal: 'site_tap' },
-    { id: 'first_scenario', title: 'First Decision', desc: 'Run your first restoration scenario', tier: 1, target: 1, signal: 'scenario_run' },
-    { id: 'first_prediction', title: 'Trust Your Gut', desc: 'Make a prediction before seeing data', tier: 1, target: 1, signal: 'prediction' },
-    { id: 'collect_3_insights', title: 'Curious Mind', desc: 'Collect 3 insights in your journal', tier: 1, target: 3, signal: 'insight' },
+    { id: 'visit_all_sites', title: 'See All Wounds', desc: 'Visit all 4 project sites', icon: '🌍', tier: 1, target: 4, signal: 'site_tap' },
+    { id: 'first_scenario', title: 'First Decision', desc: 'Run your first restoration scenario', icon: '🔬', tier: 1, target: 1, signal: 'scenario_run' },
+    { id: 'first_prediction', title: 'Trust Your Gut', desc: 'Make a prediction before seeing data', icon: '🎯', tier: 1, target: 1, signal: 'prediction' },
+    { id: 'collect_3_insights', title: 'Curious Mind', desc: 'Collect 3 insights in your journal', icon: '💡', tier: 1, target: 3, signal: 'insight' },
+    { id: 'hello_world', title: 'Hello, World', desc: 'Have 5 exchanges with GAIA', icon: '💬', tier: 1, target: 5, signal: 'chat_sent' },
 
     // Tier 2: Investigator (30-60)
-    { id: 'explore_all_layers', title: 'Dig Deeper', desc: 'Reveal all data layers at any site', tier: 2, target: 5, signal: 'data_reveal' },
-    { id: 'run_3_scenarios', title: 'What If...', desc: 'Run 3 different restoration scenarios', tier: 2, target: 3, signal: 'scenario_run' },
-    { id: 'correct_prediction', title: 'Sharp Eye', desc: 'Make a correct prediction', tier: 2, target: 1, signal: 'correct_prediction' },
-    { id: 'big_scenario', title: 'Think Big', desc: 'Run a scenario that sequesters >1M tCO₂', tier: 2, target: 1, signal: 'big_scenario' },
+    { id: 'explore_all_layers', title: 'Dig Deeper', desc: 'Reveal all data layers at any site', icon: '🔍', tier: 2, target: 5, signal: 'data_reveal' },
+    { id: 'run_3_scenarios', title: 'What If...', desc: 'Run 3 different restoration scenarios', icon: '🧪', tier: 2, target: 3, signal: 'scenario_run' },
+    { id: 'correct_prediction', title: 'Sharp Eye', desc: 'Make a correct prediction', icon: '✨', tier: 2, target: 1, signal: 'correct_prediction' },
+    { id: 'big_scenario', title: 'Think Big', desc: 'Run a scenario that sequesters >1M tCO₂', icon: '🌳', tier: 2, target: 1, signal: 'big_scenario' },
+    { id: 'skeptic', title: 'Skeptic', desc: 'Challenge GAIA on something', icon: '🤔', tier: 2, target: 1, signal: 'chat_challenge' },
 
     // Tier 3: Scientist (60-100)
-    { id: 'visit_borneo', title: 'The Green Lie', desc: 'Discover Borneo\'s secret', tier: 3, target: 1, signal: 'site_tap', site: 'borneo' },
-    { id: 'visit_benin', title: 'Homecoming', desc: 'Learn about Jean\'s legacy', tier: 3, target: 1, signal: 'site_tap', site: 'benin' },
-    { id: 'negative_scenario', title: 'Feel the Weight', desc: 'Run a scenario that releases carbon', tier: 3, target: 1, signal: 'negative_scenario' },
-    { id: 'collect_8_insights', title: 'Field Journal', desc: 'Collect 8 insights', tier: 3, target: 8, signal: 'insight' },
+    { id: 'green_lie', title: 'The Green Lie', desc: 'Discover why Borneo\'s green appearance is deceiving', icon: '🕵️', tier: 3, target: 1, signal: 'site_tap', site: 'borneo', hidden: true },
+    { id: 'jeans_legacy', title: 'Jean\'s Legacy', desc: 'Learn about Jean Missinhoun and the Benin restoration', icon: '💚', tier: 3, target: 1, signal: 'site_tap', site: 'benin', hidden: true },
+    { id: 'fire_and_time', title: 'Fire and Time', desc: 'Understand why Antalya\'s recovery takes decades', icon: '⏳', tier: 3, target: 1, signal: 'site_tap', site: 'antalya', hidden: true },
+    { id: 'negative_scenario', title: 'Feel the Weight', desc: 'Run a scenario that releases carbon', icon: '⚖️', tier: 3, target: 1, signal: 'negative_scenario' },
+    { id: 'collect_8_insights', title: 'Field Journal', desc: 'Collect 8 insights', icon: '📓', tier: 3, target: 8, signal: 'insight' },
 
     // Tier 4: Guardian (100+)
-    { id: 'complete_all_sites', title: 'Witness', desc: 'Fully explore all 4 sites', tier: 4, target: 4, signal: 'site_complete' },
-    { id: 'run_10_scenarios', title: 'Restoration Master', desc: 'Run 10 scenarios', tier: 4, target: 10, signal: 'scenario_run' },
-    { id: 'collect_12_insights', title: 'Deep Knowledge', desc: 'Collect 12 insights', tier: 4, target: 12, signal: 'insight' },
-    { id: 'share_journal', title: 'Spread the Word', desc: 'Share your journal', tier: 4, target: 1, signal: 'share' },
+    { id: 'complete_all_sites', title: 'Witness', desc: 'Fully explore all 4 sites', icon: '🌏', tier: 4, target: 4, signal: 'site_complete' },
+    { id: 'run_10_scenarios', title: 'Restoration Master', desc: 'Run 10 scenarios', icon: '🏆', tier: 4, target: 10, signal: 'scenario_run' },
+    { id: 'collect_12_insights', title: 'Deep Knowledge', desc: 'Collect 12 insights', icon: '📚', tier: 4, target: 12, signal: 'insight' },
+    { id: 'share_journal', title: 'Spread the Word', desc: 'Share your journal', icon: '📣', tier: 4, target: 1, signal: 'share' },
+    { id: 'name_yourself', title: 'Name Yourself', desc: 'Create a profile and save your progress', icon: '👤', tier: 4, target: 1, signal: 'profile_created' },
   ];
 
   // ── State ──
@@ -140,5 +144,7 @@ const GAIA_JOURNAL = (() => {
     checkQuestProgress, getQuests, getCompletedCount, getTotalCount,
     generateShareCard, renderQuestProgress,
     save, load,
+    // Compat API for GaiaQuests adapter
+    getAllQuests: getQuests,
   };
 })();

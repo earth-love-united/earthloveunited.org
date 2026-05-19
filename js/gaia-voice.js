@@ -109,20 +109,6 @@ const GAIA_VOICE = (() => {
   let lastInteraction = Date.now();
   let sessionCount = 1;
 
-  // ── Voice Modifiers per tone ──
-  const VOICE_MODIFIERS = {
-    grief:      { rate: -0.10, pitch: -0.05, volume: 0,    pauseBefore: 800 },
-    concerned:  { rate: -0.08, pitch: -0.03, volume: 0,    pauseBefore: 500 },
-    excited:    { rate: +0.05, pitch: 0,     volume: +0.1, pauseBefore: 0 },
-    proud:      { rate: +0.05, pitch: 0,     volume: +0.1, pauseBefore: 0 },
-    fierce:     { rate: +0.10, pitch: -0.08, volume: +0.15,pauseBefore: 0 },
-    warm:       { rate: -0.08, pitch: +0.03, volume: -0.05,pauseBefore: 500 },
-    mysterious: { rate: -0.12, pitch: -0.05, volume: -0.1, pauseBefore: 1200 },
-    nurturing:  { rate: -0.08, pitch: +0.03, volume: -0.05,pauseBefore: 500 },
-    urgent:     { rate: +0.08, pitch: -0.05, volume: +0.1, pauseBefore: 200 },
-    playful:    { rate: +0.03, pitch: +0.05, volume: 0,    pauseBefore: 300 },
-  };
-
   // ── Silence rules: when GAIA should NOT speak ──
   function shouldBeSilent(state, siteId, context) {
     // Borneo carbon data — let the numbers speak
@@ -139,14 +125,18 @@ const GAIA_VOICE = (() => {
     }
     // Check GAIA_MIND if available
     if (typeof GaiaMind !== 'undefined') {
-      return GaiaMind.shouldGaiaSpeak({ state, siteId, ...context });
+      const result = GaiaMind.shouldGaiaSpeak({ state, siteId, ...context });
+      // GaiaMind returns { speak: bool }, we need { silent: bool }
+      return { silent: !result.speak, reason: result.reason };
     }
     return { silent: false };
   }
 
   // ── Get voice modifiers for a tone ──
+  // Uses GAIA_VOICE_CONFIG as the single source of truth.
+  // Session depth adjustments are layered on top.
   function getVoiceModifiers(tone) {
-    const m = VOICE_MODIFIERS[tone] || {};
+    const m = GAIA_VOICE_CONFIG.get(tone);
     // Session depth adjustment: GAIA gets slightly faster/more confident over time
     if (sessionCount > 3) m.rate = (m.rate || 0) + 0.03;
     if (sessionCount > 10) {

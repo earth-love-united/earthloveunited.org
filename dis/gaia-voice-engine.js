@@ -106,6 +106,16 @@ const GaiaVoice = (() => {
   }
 
   function _applyEmotion(utterance, emotion) {
+    // Use central voice config if available (loaded from gaia-utils.js)
+    if (typeof GAIA_VOICE_CONFIG !== 'undefined') {
+      const mod = GAIA_VOICE_CONFIG.get(emotion);
+      const mult = GAIA_VOICE_CONFIG.toMultiplier(mod);
+      utterance.rate  *= mult.rate;
+      utterance.pitch *= mult.pitch;
+      utterance.volume = Math.min(1, utterance.volume * mult.volume);
+      return;
+    }
+    // Fallback for environments where gaia-utils.js isn't loaded
     switch (emotion) {
       case 'curious':     utterance.rate *= 0.95; utterance.pitch *= 1.05; break;
       case 'excited':     utterance.rate *= 1.1;  utterance.pitch *= 1.1;  utterance.volume = Math.min(1, utterance.volume * 1.1); break;

@@ -147,12 +147,13 @@ const GaiaMind = (() => {
   };
 
   function updateParticipantModel(event, context) {
+    const ctx = context || {};
     switch (event) {
       case 'ndvi_scrolled':
         _participantModel.analytical += 0.5;
         break;
       case 'site_tap':
-        if (context.quick) _participantModel.intuitive += 0.3;
+        if (ctx.quick) _participantModel.intuitive += 0.3;
         break;
       case 'narrative_read':
         _participantModel.emotional += 0.5;
@@ -163,17 +164,17 @@ const GaiaMind = (() => {
         break;
       case 'chat_sent':
         _participantModel.chatMessages++;
-        if (context.message && context.message.includes('?')) {
+        if (ctx.message && ctx.message.includes('?')) {
           _participantModel.asksQuestions++;
         }
-        if (context.isChallenge) _participantModel.isSkeptic = true;
+        if (ctx.isChallenge) _participantModel.isSkeptic = true;
         break;
       case 'prediction_made':
         _participantModel.makesPredictions++;
-        if (context.isCorrect) _participantModel.correctPredictions++;
+        if (ctx.isCorrect) _participantModel.correctPredictions++;
         break;
       case 'site_complete':
-        if (context.timeSpent > 300) _participantModel.isDeepDiver = true;
+        if (ctx.timeSpent > 300) _participantModel.isDeepDiver = true;
         break;
       case 'all_sites_visited':
         _participantModel.isExplorer = true;
@@ -182,13 +183,13 @@ const GaiaMind = (() => {
         _participantModel.isReturner = true;
         break;
       case 'scenario_run':
-        if (context.result > 0) {
+        if (ctx.result > 0) {
           _participantModel.understandsRestoration += 0.1;
         }
         break;
       case 'data_revealed':
-        if (context.layer === 'carbon') _participantModel.understandsCarbonCycle += 0.1;
-        if (context.layer === 'ndvi' && context.siteId === 'borneo') {
+        if (ctx.layer === 'carbon') _participantModel.understandsCarbonCycle += 0.1;
+        if (ctx.layer === 'ndvi' && ctx.siteId === 'borneo') {
           _participantModel.understandsBiomes += 0.15;
         }
         break;
@@ -522,46 +523,20 @@ const GaiaMind = (() => {
   // ═══════════════════════════════════════
 
   function getVoiceModifiers(context) {
-    const modifiers = {
-      rate: 0,        // adjustment to base rate (-0.2 to +0.2)
-      pitch: 0,       // adjustment to base pitch (-0.15 to +0.15)
-      volume: 0,      // adjustment to base volume (-0.3 to +0.3)
-      pauseBefore: 0, // ms to wait before speaking
-      pauseAfter: 0,  // ms to wait after speaking
-    };
-
-    // Use provided emotion context, or fall back to internal dominant emotion
+    // Start from the central voice config if available
     const emotion = context?.dominantEmotion
       ? { emotion: context.dominantEmotion, intensity: 5 }
       : getDominantEmotion();
     const archetype = getParticipantArchetype();
     const sessionCount = getSessionCount();
 
-    // Emotion-based voice shifts
-    if (emotion.emotion === 'grief' || emotion.emotion === 'concerned') {
-      modifiers.rate -= 0.1;
-      modifiers.pitch -= 0.05;
-      modifiers.pauseBefore += 800;
-    }
-    if (emotion.emotion === 'excited' || emotion.emotion === 'proud') {
-      modifiers.rate += 0.05;
-      modifiers.volume += 0.1;
-    }
-    if (emotion.emotion === 'fierce' || emotion.emotion === 'urgent') {
-      modifiers.rate += 0.1;
-      modifiers.pitch -= 0.08;
-      modifiers.volume += 0.15;
-    }
-    if (emotion.emotion === 'warm' || emotion.emotion === 'nurturing') {
-      modifiers.rate -= 0.08;
-      modifiers.pitch += 0.03;
-      modifiers.pauseBefore += 500;
-    }
-    if (emotion.emotion === 'mysterious') {
-      modifiers.rate -= 0.12;
-      modifiers.pauseBefore += 1200;
-      modifiers.volume -= 0.1;
-    }
+    // Base modifiers from central config (always a fresh copy, safe to mutate)
+    const modifiers = (typeof GAIA_VOICE_CONFIG !== 'undefined')
+      ? GAIA_VOICE_CONFIG.get(emotion.emotion)
+      : { rate: 0, pitch: 0, volume: 0, pauseBefore: 0 };
+
+    // Ensure pauseAfter exists
+    modifiers.pauseAfter = modifiers.pauseAfter || 0;
 
     // Session-depth voice shifts
     if (sessionCount > 3) {
@@ -774,11 +749,6 @@ const GaiaMind = (() => {
   };
 })();
 
-if (typeof module !== 'undefined') module.exports = GaiaMind;
-if (typeof window !== 'undefined') window.GaiaMind = GaiaMind;
 
-
-// Export
 if (typeof module !== 'undefined') module.exports = GaiaMind;
-// Browser global
 if (typeof window !== 'undefined') window.GaiaMind = GaiaMind;

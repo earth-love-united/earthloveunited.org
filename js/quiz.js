@@ -39,13 +39,14 @@ const Quiz = {
 
   render() {
     const q = this.questions[this.idx];
-    document.getElementById('q-text').textContent = `${this.idx + 1}. ${q.q}`;
-    document.getElementById('q-options').innerHTML = q.options.map((o, i) =>
+    if (!$('q-text') || !$('q-options')) return; // quiz DOM not present
+    $text('q-text', `${this.idx + 1}. ${q.q}`);
+    $html('q-options', q.options.map((o, i) =>
       `<div class="quiz-option" onclick="Quiz.answer(${i})">${o}</div>`
-    ).join('');
-    document.getElementById('q-feedback').className = 'quiz-feedback';
-    document.getElementById('q-feedback').innerHTML = '';
-    document.getElementById('q-score').textContent = `Question ${this.idx + 1} of ${this.questions.length}`;
+    ).join(''));
+    const fb = $('q-feedback');
+    if (fb) { fb.className = 'quiz-feedback'; fb.innerHTML = ''; }
+    $text('q-score', `Question ${this.idx + 1} of ${this.questions.length}`);
   },
 
   answer(i) {
@@ -57,18 +58,20 @@ const Quiz = {
       if (j === i && j !== q.correct) o.classList.add('wrong');
     });
     if (i === q.correct) this.score++;
-    const fb = document.getElementById('q-feedback');
-    fb.className = 'quiz-feedback show ' + (i === q.correct ? 'correct' : 'wrong');
-    fb.innerHTML = (i === q.correct ? '✅ Correct! ' : '❌ Not quite. ') + q.explain;
-    document.getElementById('q-score').textContent = `${this.score}/${this.idx + 1} correct`;
+    const fb = $('q-feedback');
+    if (fb) {
+      fb.className = 'quiz-feedback show ' + (i === q.correct ? 'correct' : 'wrong');
+      fb.innerHTML = (i === q.correct ? '✅ Correct! ' : '❌ Not quite. ') + q.explain;
+    }
+    $text('q-score', `${this.score}/${this.idx + 1} correct`);
 
     setTimeout(() => {
       this.idx++;
       if (this.idx < this.questions.length) this.render();
       else {
-        document.getElementById('q-text').textContent = "Great job! You've got the basics.";
-        document.getElementById('q-options').innerHTML = `<div class="quiz-option correct" style="text-align:center">Score: ${this.score}/${this.questions.length} — ${this.score === this.questions.length ? 'Perfect! 🎉' : this.score >= 2 ? 'Solid understanding! 💪' : 'Keep learning! 📚'}</div>`;
-        document.getElementById('q-score').textContent = '';
+        $text('q-text', "Great job! You've got the basics.");
+        $html('q-options', `<div class="quiz-option correct" style="text-align:center">Score: ${this.score}/${this.questions.length} — ${this.score === this.questions.length ? 'Perfect! 🎉' : this.score >= 2 ? 'Solid understanding! 💪' : 'Keep learning! 📚'}</div>`);
+        $text('q-score', '');
       }
     }, 3000);
   }

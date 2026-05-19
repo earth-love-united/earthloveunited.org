@@ -13,22 +13,22 @@ const Scenario = {
       return;
     }
     const sites = Data.sites;
-    document.getElementById('sb-sites').innerHTML = sites.map(s =>
+    $html('sb-sites', sites.map(s =>
       `<div class="sb-option" onclick="Scenario.pickSite('${s.id}',this)">${s.name}</div>`
-    ).join('');
+    ).join(''));
 
     const fromOpts = ['degraded_bare_land', 'agricultural_cropland', 'grassland_savanna', 'urban_built'];
-    document.getElementById('sb-from').innerHTML = fromOpts.map(k =>
+    $html('sb-from', fromOpts.map(k =>
       `<div class="sb-option" onclick="Scenario.pickFrom('${k}',this)">${Data.getBiome(k).icon} ${Data.getBiome(k).name}</div>`
-    ).join('');
+    ).join(''));
 
     const toOpts = ['tropical_rainforest', 'mangrove', 'wetland_peatland', 'temperate_coniferous', 'temperate_deciduous', 'tropical_dry_forest', 'seagrass_meadow'];
-    document.getElementById('sb-to').innerHTML = toOpts.map(k =>
+    $html('sb-to', toOpts.map(k =>
       `<div class="sb-option" onclick="Scenario.pickTo('${k}',this)">${Data.getBiome(k).icon} ${Data.getBiome(k).name}</div>`
-    ).join('');
+    ).join(''));
 
-    document.getElementById('sb-area').addEventListener('input', function() {
-      document.getElementById('sb-area-val').textContent = this.value;
+    $on('sb-area', 'input', function() {
+      $text('sb-area-val', this.value);
       Scenario.calc();
     });
   },
@@ -56,33 +56,29 @@ const Scenario = {
 
   calc() {
     if (!this.from || !this.to) return;
-    const ha = parseInt(document.getElementById('sb-area').value) || 100;
+    const ha = parseInt($('sb-area')?.value) || 100;
     const r = Data.transitionCarbon(this.from, this.to, ha, 30);
     if (!r) return;
     const ctx = Data.scaleContext(r.cumulative_co2);
     const pos = r.cumulative_co2 > 0;
-    const el = document.getElementById('sb-result');
-    el.className = 'sb-result show';
-    document.getElementById('sb-result-num').textContent = (pos ? '+' : '') + Data.fmt(Math.abs(r.cumulative_co2)) + ' t CO₂';
-    document.getElementById('sb-result-num').className = 'sr-big ' + (pos ? '' : 'negative');
-    document.getElementById('sb-result-label').textContent = `${pos ? 'sequestered' : 'released'} over 30 years · ${ha} ha`;
-    document.getElementById('sb-result-context').textContent = ctx.summary + ' — ' + (ctx.fraction * 100).toExponential(2) + '% of global annual net emissions';
+    const el = $class('sb-result', 'sb-result show');
+    if (!el) return;
+    $text('sb-result-num', (pos ? '+' : '') + Data.fmt(Math.abs(r.cumulative_co2)) + ' t CO₂');
+    $class('sb-result-num', 'sr-big ' + (pos ? '' : 'negative'));
+    $text('sb-result-label', `${pos ? 'sequestered' : 'released'} over 30 years · ${ha} ha`);
+    $text('sb-result-context', ctx.summary + ' — ' + (ctx.fraction * 100).toExponential(2) + '% of global annual net emissions');
 
     // Track engagement
-    if (typeof GAIA_ENGAGEMENT !== 'undefined') {
-      GAIA_ENGAGEMENT.addSignal('scenario_run');
-      if (Math.abs(r.cumulative_co2) >= 1e6) {
-        GAIA_ENGAGEMENT.addSignal('big_scenario');
-      }
-      if (r.cumulative_co2 < 0) {
-        GAIA_ENGAGEMENT.addSignal('negative_scenario');
-      }
+    safeCall('GAIA_ENGAGEMENT', 'addSignal', 'scenario_run');
+    if (Math.abs(r.cumulative_co2) >= 1e6) {
+      safeCall('GAIA_ENGAGEMENT', 'addSignal', 'big_scenario');
     }
-    if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('scenario_run', { siteId: this.site?.id, result: r.cumulative_co2 });
+    if (r.cumulative_co2 < 0) {
+      safeCall('GAIA_ENGAGEMENT', 'addSignal', 'negative_scenario');
+    }
+    safeCall('GAIA_SIG', 'emit', 'scenario_run', { siteId: this.site?.id, result: r.cumulative_co2 });
 
     // Trigger pledge prompt after running a scenario
-    if (typeof PLEDGE_WALL !== 'undefined') {
-      PLEDGE_WALL.onScenarioRun(r);
-    }
+    safeCall('PLEDGE_WALL', 'onScenarioRun', r);
   }
 };
