@@ -5,6 +5,7 @@
 const GlobeModule = {
   world: null,
   userTotal: 0,
+  currentLens: 'gap', // 'gap' | 'forest' | 'cat'
 
   init() {
     const el = document.getElementById('globeViz');
@@ -26,39 +27,38 @@ const GlobeModule = {
       .ringColor(() => t => `rgba(78,205,196,${1 - t})`)
       .ringMaxRadius(3).ringPropagationSpeed(1.5).ringRepeatPeriod(1400)
       .onPointClick(site => {
-        if (typeof GAIA_NODES !== 'undefined') {
-          GAIA_NODES.onNodeClick(site.id);
-        } else if (typeof SITE_PANEL !== 'undefined') {
-          SITE_PANEL.open(site);
-        } else {
-          Panel.open(site);
+        if (window.GAIA_NODES) {
+          window.GAIA_NODES.onNodeClick(site.id);
+        } else if (window.SITE_PANEL) {
+          window.SITE_PANEL.open(site);
         }
       })
       .onLabelClick(site => {
-        if (typeof GAIA_NODES !== 'undefined') {
-          GAIA_NODES.onNodeClick(site.id);
-        } else if (typeof SITE_PANEL !== 'undefined') {
-          SITE_PANEL.open(site);
-        } else {
-          Panel.open(site);
+        if (window.GAIA_NODES) {
+          window.GAIA_NODES.onNodeClick(site.id);
+        } else if (window.SITE_PANEL) {
+          window.SITE_PANEL.open(site);
         }
       })
       .onPointHover(site => {
-        if (site && typeof GAIA_NODES !== 'undefined') {
-          GAIA_NODES.onNodeHover(site.id);
-        } else if (site && typeof GAIA_PRESENCE !== 'undefined') {
-          GAIA_PRESENCE.speak('SITE_TEASER', site.id);
-          GAIA_ENGAGEMENT.interact();
+        if (site && window.GAIA_NODES) {
+          window.GAIA_NODES.onNodeHover(site.id);
+        } else if (site && window.GAIA_PRESENCE) {
+          window.GAIA_PRESENCE.speak('SITE_TEASER', site.id);
+          if (window.GAIA_ENGAGEMENT) window.GAIA_ENGAGEMENT.interact();
         }
       })
       .onLabelHover(site => {
-        if (site && typeof GAIA_NODES !== 'undefined') {
-          GAIA_NODES.onNodeHover(site.id);
-        } else if (site && typeof GAIA_PRESENCE !== 'undefined') {
-          GAIA_PRESENCE.speak('SITE_TEASER', site.id);
-          GAIA_ENGAGEMENT.interact();
+        if (site && window.GAIA_NODES) {
+          window.GAIA_NODES.onNodeHover(site.id);
+        } else if (site && window.GAIA_PRESENCE) {
+          window.GAIA_PRESENCE.speak('SITE_TEASER', site.id);
+          if (window.GAIA_ENGAGEMENT) window.GAIA_ENGAGEMENT.interact();
         }
       });
+
+    // ── Pledge vs Reality country nodes ──
+    this.initPledgeNodes();
 
     fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
       .then(r => r.json())
@@ -66,8 +66,7 @@ const GlobeModule = {
         this.world
           .hexPolygonsData(countries.features.filter(d => d.properties.ISO_A2 !== 'AQ'))
           .hexPolygonResolution(3).hexPolygonMargin(0.4)
-          .hexPolygonUseDots(true).hexPolygonColor(() => 'rgba(42,143,163,0.28)')
-          .hexPolygonDotResolution(12);
+          .hexPolygonUseDots(true).hexPolygonDotResolution(12);
       });
 
     this.world.pointOfView({ lat: 20, lng: 40, altitude: 2.2 });
@@ -81,6 +80,140 @@ const GlobeModule = {
 
     // Apply initial node visual states
     this.updateNodeVisuals();
+
+    // Initialize pledge tooltip
+    this._initPledgeTooltip();
+  },
+
+  // ── Pledge nodes layer ──
+  initPledgeNodes() {
+    if (!Data.pledgeNodes || !Data.pledgeNodes.length) return;
+    const pledgeNodes = Data.pledgeNodes;
+
+    // Combine site points + pledge nodes into a single pointsData call
+    // Sites get type='site', pledge nodes get type='pledge'
+    const allPoints = [
+      ...(Data.sites || []).map(s => ({ ...s, _type: 'site' })),
+      ...pledgeNodes.map(n => ({ ...n, _type: 'pledge' })),
+    ];
+
+    this.world
+      .pointsData(allPoints)
+      .pointLat('lat')
+      .pointLng('lng')
+      .pointAltitude(p => p._type === 'pledge' ? this.pledgePointAltitude(p) : 0.01)
+      .pointRadius(p => p._type === 'pledge' ? this.pledgePointRadius(p) : 0.4)
+      .pointColor(p => {
+        if (p._type === 'pledge') return this.pledgePointColor(p);
+        // Site color logic
+        const suggestedIds = typeof GAIA_NODES !== 'undefined' ? GAIA_NODES.getSuggestedSiteIds('') : [];
+        if (suggestedIds.includes(p.id)) return '#ffd700';
+        return 'rgba(78,205,196,0.6)';
+      })
+      .pointResolution(12)
+      .onPointClick(p => {
+        if (p._type === 'pledge') {
+          if (typeof PLEDGE_PANEL !== 'undefined') {
+            PLEDGE_PANEL.open(p);
+          }
+        } else {
+          // Site click
+          if (typeof GAIA_NODES !== 'undefined') {
+            GAIA_NODES.onNodeClick(p.id);
+          } else if (typeof SITE_PANEL !== 'undefined') {
+            SITE_PANEL.open(p);
+          } else {
+            Panel.open(p);
+          }
+        }
+      })
+      .onPointHover(p => {
+        if (!p) {
+          // Not hovering anything — hide tooltip
+          window.dispatchEvent(new CustomEvent('pledgeHover', { detail: null }));
+          return;
+        }
+        if (p._type === 'pledge') {
+          const gap = p.reality_gap_mt;
+          const status = gap === null ? 'No data' : (gap > 0 ? 'OVERSHOOTING' : 'On Track');
+          window.dispatchEvent(new CustomEvent('pledgeHover', {
+            detail: { node: p, tooltip: p.country + ' | ' + p.fossil_co2_mt + ' MtCO2 | ' + status }
+          }));
+        } else {
+          // Site hover
+          if (typeof GAIA_NODES !== 'undefined') {
+            GAIA_NODES.onNodeHover(p.id);
+          } else if (typeof GAIA_PRESENCE !== 'undefined') {
+            GAIA_PRESENCE.speak('SITE_TEASER', p.id);
+            GAIA_ENGAGEMENT.interact();
+          }
+          // Hide pledge tooltip when hovering sites
+          window.dispatchEvent(new CustomEvent('pledgeHover', { detail: null }));
+        }
+      });
+  },
+
+  pledgePointColor(n) {
+    const gap = n.reality_gap_mt;
+    if (gap === null || gap === undefined) return '#95a5a6';
+    if (gap > 0) return '#e74c3c';
+    return '#2ecc71';
+  },
+
+  pledgePointAltitude(n) {
+    const co2 = n.fossil_co2_mt || 0;
+    return 0.01 + Math.min(co2 / 50000, 0.15);
+  },
+
+  pledgePointRadius(n) {
+    const co2 = n.fossil_co2_mt || 0;
+    return 0.3 + Math.min(co2 / 20000, 0.8);
+  },
+
+  // ── Lens switching ──
+  setLens(lens) {
+    this.currentLens = lens;
+    this.updatePledgeVisuals();
+  },
+
+  updatePledgeVisuals() {
+    if (!Data.pledgeNodes) return;
+    const nodes = Data.pledgeNodes;
+
+    switch (this.currentLens) {
+      case 'gap':
+        // Reality Gap: color by gap, height by emissions
+        this.world.pointColor(n => {
+          const gap = n.reality_gap_mt;
+          if (gap === null || gap === undefined) return '#95a5a6';
+          if (gap > 0) return '#e74c3c';
+          return '#2ecc71';
+        });
+        this.world.pointAltitude(n => 0.01 + Math.min((n.fossil_co2_mt || 0) / 50000, 0.15));
+        break;
+
+      case 'forest':
+        // Forestry Loophole: height includes LULUCF
+        this.world.pointColor(n => {
+          const lulucf = n.lulucf_co2_mt || 0;
+          const fossil = n.fossil_co2_mt || 1;
+          const ratio = Math.abs(lulucf) / fossil;
+          if (ratio > 0.5) return '#e67e22'; // High LULUCF = orange
+          if (ratio > 0.2) return '#f39c12';
+          return '#27ae60';
+        });
+        this.world.pointAltitude(n => {
+          const total = (n.fossil_co2_mt || 0) + Math.abs(n.lulucf_co2_mt || 0);
+          return 0.01 + Math.min(total / 50000, 0.2);
+        });
+        break;
+
+      case 'cat':
+        // CAT Rating: use globe_color hex
+        this.world.pointColor(n => n.globe_color || '#95a5a6');
+        this.world.pointAltitude(n => 0.01 + Math.min((n.fossil_co2_mt || 0) / 50000, 0.15));
+        break;
+    }
   },
 
   // ── Update node visual states based on engagement ──
@@ -92,9 +225,17 @@ const GlobeModule = {
       ? GAIA_NODES.getSuggestedSiteIds('')
       : [];
 
-    this.world.pointColor(site => {
-      if (suggestedIds.includes(site.id)) return '#ffd700'; // gold for suggested
-      const s = states[site.id];
+    this.world.pointColor(p => {
+      // Pledge nodes: use gap color
+      if (p._type === 'pledge') {
+        const gap = p.reality_gap_mt;
+        if (gap === null || gap === undefined) return '#95a5a6';
+        if (gap > 0) return '#e74c3c';
+        return '#2ecc71';
+      }
+      // Site nodes: use engagement state color
+      if (suggestedIds.includes(p.id)) return '#ffd700';
+      const s = states[p.id];
       if (!s || s.state === 'locked') return 'rgba(78,205,196,0.3)';
       if (s.state === 'available') return 'rgba(78,205,196,0.6)';
       if (s.state === 'explored') return 'rgba(123,232,208,0.9)';
@@ -102,14 +243,56 @@ const GlobeModule = {
       return 'rgba(78,205,196,0.6)';
     });
 
-    this.world.pointRadius(site => {
-      if (suggestedIds.includes(site.id)) return 0.7;
-      const s = states[site.id];
+    this.world.pointRadius(p => {
+      if (p._type === 'pledge') {
+        const co2 = p.fossil_co2_mt || 0;
+        return 0.3 + Math.min(co2 / 20000, 0.8);
+      }
+      if (suggestedIds.includes(p.id)) return 0.7;
+      const s = states[p.id];
       if (!s || s.state === 'locked') return 0.3;
       if (s.state === 'available') return 0.4;
       if (s.state === 'explored') return 0.5;
       if (s.state === 'mastered') return 0.6;
       return 0.4;
+    });
+  },
+
+  // ── Pledge tooltip (was incorrectly on PanelSlider) ──
+  _initPledgeTooltip() {
+    let tooltip = document.getElementById('pledge-tooltip');
+    if (!tooltip) {
+      tooltip = document.createElement('div');
+      tooltip.id = 'pledge-tooltip';
+      document.body.appendChild(tooltip);
+    }
+
+    window.addEventListener('pledgeHover', (e) => {
+      const detail = e.detail;
+      if (!detail || !detail.node) {
+        tooltip.classList.remove('visible');
+        return;
+      }
+      const n = detail.node;
+      const gap = n.reality_gap_mt;
+      const statusClass = gap === null ? '' : (gap > 0 ? 'tt-status-red' : 'tt-status-green');
+      const statusText = gap === null ? 'No target data' : (gap > 0 ? 'OVERSHOOTING' : 'ON TRACK');
+      const target = n.reduction_pct > 0 ? n.reduction_pct + '% by ' + Math.round(n.target_year) : 'No target';
+      const cat = n.cat_rating ? ' · ' + n.cat_rating : '';
+      tooltip.innerHTML = '<div class="tt-country">' + n.country + cat + '</div>'
+        + '<div class="tt-detail">' + (n.fossil_co2_mt ? n.fossil_co2_mt.toFixed(1) : '—') + ' MtCO₂ · ' + target + '</div>'
+        + '<div class="' + statusClass + '">' + statusText + '</div>';
+      tooltip.classList.add('visible');
+    });
+
+    // Position tooltip near cursor
+    document.addEventListener('mousemove', (e) => {
+      if (tooltip.classList.contains('visible')) {
+        const x = Math.min(e.clientX + 16, window.innerWidth - 320);
+        const y = Math.min(e.clientY - 12, window.innerHeight - 80);
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+      }
     });
   }
 };
@@ -247,5 +430,7 @@ const PanelSlider = {
     Panel.calcResult();
   },
 
-  reset() { Panel.selectedArea = 100; Panel.selectedAction = null; }
+  reset() { Panel.selectedArea = 100; Panel.selectedAction = null; },
+
+  // (initPledgeTooltip moved to GlobeModule._initPledgeTooltip)
 };

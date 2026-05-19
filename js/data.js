@@ -63,19 +63,24 @@ const Storage = {
 const Data = {
   biomes: null,
   sites: null,
+  pledgeNodes: null,
 
   async init() {
-    const [biomesRes, sitesRes] = await Promise.all([
+    const [biomesRes, sitesRes, pledgeNodesRes] = await Promise.all([
       fetch('data/biomes.json'),
-      fetch('data/sites.json')
+      fetch('data/sites.json'),
+      fetch('data/pledge-nodes.json')
     ]);
     this.biomes = await biomesRes.json();
     this.sites = await sitesRes.json();
+    this.pledgeNodes = await pledgeNodesRes.json();
+    console.log('[Data] Loaded:', this.biomes.length, 'biomes,', this.sites.length, 'sites,', this.pledgeNodes.length, 'pledge nodes');
     return this;
   },
 
   getBiome(key) { return this.biomes[key]; },
   getSite(id) { return this.sites.find(s => s.id === id); },
+  getPledgeNode(iso) { return this.pledgeNodes.find(n => n.iso === iso); },
   getAllBiomes() { return Object.entries(this.biomes).map(([k, v]) => ({ key: k, ...v })); },
 
   // Carbon calculation engine

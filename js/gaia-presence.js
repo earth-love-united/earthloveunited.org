@@ -76,3 +76,4 @@ const GAIA_PRESENCE = (() => {
     pickLine
   };
 })();
+window.GAIA_PRESENCE = GAIA_PRESENCE;

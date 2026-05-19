@@ -16,8 +16,14 @@
 <script src="js/data.js"></script>
 <script src="js/gaia-legacy/gaia-data.js"></script>
 <script src="js/gaia-legacy/gaia-charts.js"></script>
+<!-- Grounded retrieval over the curated climate knowledge base (BM25 over 2,840 chunks)
+     and structured pledge/project/paleo lookups. Loaded before gaia-chat so window.GaiaRetrieval
+     and window.GaiaStructured exist when the chat dispatches its first turn. -->
+<script src="js/gaia-retrieval.js"></script>
+<script src="js/gaia-structured.js"></script>
 <script src="js/gaia-chat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/gaia-sources.css">
 <!-- DIS Integration — loaded after gaia-chat.js so interceptors can wrap its functions -->
 <script src="js/gaia-legacy/gaia-knowledge.js"></script>
 <script src="js/gaia-legacy/gaia-dom-adapter.js"></script>

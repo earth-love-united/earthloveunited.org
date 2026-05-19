@@ -644,3 +644,154 @@ const SITE_PANEL = (() => {
   return { open, close, nextLayer, selectPrediction, addInsight, verifyCurrentSite, switchVerifyTab, toggleGAIA, speakGAIA, addInsightFromGAIA, scrollToLayer, getCurrentLayer: () => currentLayer, getCurrentSite: () => currentSite };
 })();
 window.SITE_PANEL = SITE_PANEL;
+
+
+// ═══════════════════════════════════════════════
+// PLEDGE PANEL — Country Interrogation Terminal
+// Left-side overlay via GLOBE_OVERLAY (same as site panels)
+// ═══════════════════════════════════════════════
+
+const PLEDGE_PANEL = (() => {
+  let currentNode = null;
+
+  function fmt(n) {
+    if (n === null || n === undefined) return '—';
+    if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+    if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+    return typeof n === 'number' ? n.toFixed(1) : String(n);
+  }
+
+  function open(node) {
+    currentNode = node;
+
+    // Fly to country
+    if (typeof GlobeModule !== 'undefined' && GlobeModule.world) {
+      GlobeModule.world.pointOfView({ lat: node.lat, lng: node.lng, altitude: 0.8 }, 600);
+      GlobeModule.world.controls().autoRotate = false;
+    }
+
+    // Use GLOBE_OVERLAY for the left-side panel
+    if (typeof GLOBE_OVERLAY !== 'undefined') {
+      GLOBE_OVERLAY.registerSite({
+        siteId: 'pledge_' + node.iso,
+        icon: '🌐',
+        title: node.country,
+        subtitle: (node.reduction_pct > 0 ? node.reduction_pct + '% by ' + Math.round(node.target_year) : 'No target') + (node.cat_rating ? ' · ' + node.cat_rating : ''),
+        siteData: node,
+        tabs: [
+          { id: 'dashboard', label: 'Dashboard', render: renderDashboard },
+        ],
+      });
+      GLOBE_OVERLAY.open('pledge_' + node.iso);
+    }
+  }
+
+  function renderDashboard(el, node) {
+    if (!node) return;
+    const gap = node.reality_gap_mt;
+    const gapClass = gap === null ? '' : (gap > 0 ? 'red' : 'green');
+    const gapSign = gap !== null && gap > 0 ? '+' : '';
+    const onTrack = node.on_track || '';
+    const mom = node.momentum_cagr;
+    const momClass = mom > 0 ? 'red' : 'green';
+
+    let html = '';
+
+    // CAT rating badge
+    if (node.cat_rating) {
+      html += '<div class="pledge-cat-badge" style="background:' + (node.globe_color || '#95a5a6') + '22;border-color:' + (node.globe_color || '#95a5a6') + '">';
+      html += '<span class="pledge-cat-dot" style="background:' + (node.globe_color || '#95a5a6') + '"></span>';
+      html += node.cat_rating;
+      html += '</div>';
+    }
+
+    // Reality Gap card — BIG
+    html += '<div class="pledge-gap-card">';
+    html += '<div class="pledge-big-number">' + fmt(node.fossil_co2_mt) + ' <span class="pledge-unit">MtCO₂</span></div>';
+    html += '<div class="pledge-label">Current Fossil Emissions</div>';
+    if (gap !== null) {
+      html += '<div class="pledge-gap-metric ' + gapClass + '">Gap to Target: ' + gapSign + fmt(gap) + ' MtCO₂</div>';
+    } else {
+      html += '<div class="pledge-gap-metric">No target data available</div>';
+    }
+    html += '</div>';
+
+    // Emissions breakdown
+    html += '<div class="pledge-emit-grid">';
+    html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + fmt(node.fossil_co2_mt) + '</div><div class="pledge-emit-label">Fossil CO₂ (Mt)</div></div>';
+    html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + fmt(node.lulucf_co2_mt) + '</div><div class="pledge-emit-label">LULUCF CO₂ (Mt)</div></div>';
+    html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + fmt(node.total_co2_mt) + '</div><div class="pledge-emit-label">Total CO₂ (Mt)</div></div>';
+    html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + (node.co2_per_capita > 0 ? node.co2_per_capita.toFixed(2) : '—') + '</div><div class="pledge-emit-label">Per Capita (t)</div></div>';
+    html += '</div>';
+
+    // Momentum
+    html += '<div class="pledge-momentum">';
+    html += '<div class="pledge-momentum-actual ' + momClass + '">';
+    html += '<div class="pledge-momentum-label">Actual Velocity</div>';
+    html += '<div class="pledge-momentum-val">' + (mom > 0 ? '+' : '') + mom.toFixed(2) + '%/yr</div>';
+    html += '</div>';
+    if (node.required_cagr > 0) {
+      html += '<div class="pledge-momentum-vs">vs</div>';
+      html += '<div class="pledge-momentum-required">';
+      html += '<div class="pledge-momentum-label">Required Velocity</div>';
+      html += '<div class="pledge-momentum-val">-' + node.required_cagr.toFixed(2) + '%/yr</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+    if (node.divergence !== null && node.divergence !== undefined && node.divergence !== 0) {
+      const divClass = node.divergence > 0 ? 'red' : 'green';
+      html += '<div class="pledge-divergence ' + divClass + '">Divergence: ' + (node.divergence > 0 ? '+' : '') + node.divergence.toFixed(2) + '%/yr</div>';
+    }
+
+    // Change since 2015
+    if (node.change_since_2015 !== null) {
+      const chg = node.change_since_2015;
+      const chgClass = chg > 0 ? 'red' : 'green';
+      html += '<div class="pledge-change ' + chgClass + '">Since 2015: ' + (chg > 0 ? '+' : '') + chg.toFixed(1) + '%</div>';
+    }
+
+    // On track
+    if (onTrack === 'true') {
+      html += '<div class="pledge-on-track green">✓ On Track</div>';
+    } else if (onTrack === 'false') {
+      html += '<div class="pledge-on-track red">✗ Off Track</div>';
+    }
+
+    // Finance
+    if (node.finance_total_bn > 0) {
+      html += '<div class="pledge-section">';
+      html += '<div class="pledge-section-title">Climate Finance</div>';
+      html += '<div class="pledge-finance-total">$' + fmt(node.finance_total_bn) + 'B</div>';
+      html += '<div class="pledge-finance-label">Target Conditional on International Finance</div>';
+      if (node.finance_mitigation_bn > 0) {
+        html += '<div class="pledge-finance-breakdown">Mitigation: $' + fmt(node.finance_mitigation_bn) + 'B · Adaptation: $' + fmt(node.finance_adaptation_bn) + 'B</div>';
+      }
+      html += '</div>';
+    }
+
+    // NDC Summary
+    if (node.ndc_summary) {
+      html += '<div class="pledge-section">';
+      html += '<div class="pledge-section-title">NDC Summary</div>';
+      html += '<div class="pledge-ndc-text">' + node.ndc_summary + '</div>';
+      html += '</div>';
+    }
+
+    el.innerHTML = html;
+  }
+
+  function close() {
+    currentNode = null;
+    if (typeof GLOBE_OVERLAY !== 'undefined') {
+      GLOBE_OVERLAY.close();
+    }
+    if (typeof GlobeModule !== 'undefined' && GlobeModule.world) {
+      GlobeModule.world.controls().autoRotate = true;
+      GlobeModule.world.pointOfView({ lat: 20, lng: 40, altitude: 2.2 }, 400);
+    }
+  }
+
+  return { open, close };
+})();
+window.PLEDGE_PANEL = PLEDGE_PANEL;

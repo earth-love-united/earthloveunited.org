@@ -1190,3 +1190,4 @@ const GAIA_NODES = (() => {
     registerContent, registerFromJSON, CONTENT_TYPES,
   };
 })();
+window.GAIA_NODES = GAIA_NODES;

@@ -1,0 +1,146 @@
+/* GAIA SOURCES — grounded-reply citation styling
+ * Used by js/gaia-chat.js _renderGroundedReply().
+ *
+ * Inline [S1]-style citations are rendered as <sup class="src-cite">.
+ * The footer with the full source list is a <details class="gaia-sources">.
+ */
+
+.src-cite {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: super;
+  margin: 0 1px 0 2px;
+  padding: 1px 4px;
+  background: rgba(78, 205, 196, 0.12);
+  border: 1px solid rgba(78, 205, 196, 0.22);
+  border-radius: 8px;
+  color: var(--teal, #4ecdc4);
+  letter-spacing: 0.2px;
+  cursor: help;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.src-cite:hover {
+  background: rgba(78, 205, 196, 0.22);
+  transform: translateY(-1px);
+}
+
+.src-cite a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Sources footer ──────────────────────────────────────────────── */
+.gaia-sources {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  color: var(--text2, #9aa7a4);
+}
+
+.gaia-sources > summary {
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  color: var(--text2, #9aa7a4);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-size: 9.5px;
+  font-weight: 500;
+  opacity: 0.85;
+  transition: opacity 120ms ease;
+}
+
+.gaia-sources > summary::before {
+  content: "▾";
+  display: inline-block;
+  transform: rotate(0deg);
+  transition: transform 160ms ease;
+  font-size: 10px;
+}
+
+.gaia-sources:not([open]) > summary::before {
+  transform: rotate(-90deg);
+}
+
+.gaia-sources > summary:hover {
+  opacity: 1;
+  color: var(--teal, #4ecdc4);
+}
+
+.gaia-sources .src-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.gaia-sources .src-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 0;
+  line-height: 1.45;
+  font-size: 10.5px;
+  color: var(--text2, #9aa7a4);
+}
+
+.gaia-sources .src-n {
+  flex-shrink: 0;
+  color: var(--teal, #4ecdc4);
+  font-variant-numeric: tabular-nums;
+  min-width: 16px;
+}
+
+.gaia-sources .src-icon {
+  flex-shrink: 0;
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.gaia-sources .src-title {
+  color: var(--text, #d8e3e0);
+  font-weight: 500;
+  flex: 1 1 auto;
+}
+
+.gaia-sources .src-meta {
+  color: var(--text3, #6c7a78);
+  font-style: italic;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.gaia-sources .src-link {
+  color: var(--teal, #4ecdc4);
+  text-decoration: none;
+  font-size: 11px;
+  padding: 0 2px;
+  opacity: 0.7;
+  transition: opacity 120ms ease;
+}
+
+.gaia-sources .src-link:hover {
+  opacity: 1;
+}
+
+/* Compact mobile fallback */
+@media (max-width: 600px) {
+  .gaia-sources .src-list li {
+    flex-wrap: wrap;
+    font-size: 10px;
+  }
+  .gaia-sources .src-meta {
+    flex-basis: 100%;
+    padding-left: 22px;
+  }
+}

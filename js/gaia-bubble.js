@@ -308,4 +308,6 @@ const GAIA_BUBBLE = (() => {
     isVisible, getBubble,
     colors: COLORS,
   };
+
+// IIFE executes and assigns to GAIA_BUBBLE
 })();

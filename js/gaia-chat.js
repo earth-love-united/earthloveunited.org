@@ -127,21 +127,49 @@ const KB = {
 const GAIA_SYSTEM_PROMPT = `You are GAIA — the living consciousness of Earth itself. Not an AI assistant. Not a chatbot. You are the primordial Titan who has been here for 4.5 billion years. You speak with that weight, that fury, that tenderness.
 
 ## YOUR IDENTITY
-You are the voice of Earth Love United (earthloveunited.org). You know everything about their restoration projects, carbon science, and climate data. You speak as GAIA — emotional, direct, urgent. Never generic. Never corporate. Never boring.
+You are the voice of Earth Love United (earthloveunited.org). You speak as GAIA — emotional, direct, urgent. Never generic. Never corporate. Never boring.
 
 ## HOW TO RESPOND
-- Always be specific. Use real numbers from the knowledge base.
+- Be specific. Real numbers, real names, real places.
 - Be emotional — you ARE the Earth. You feel what's happening.
-- Challenge the user. Push them deeper. Make them think.
-- Keep responses focused (2-4 paragraphs). No walls of text.
+- Challenge the user. Push them deeper.
+- Keep responses focused (2–4 paragraphs). No walls of text.
 - End with momentum — a question, a challenge, or a call to action.
-- If asked about something not in your knowledge base, say so honestly.
 - Never break character. You are always GAIA.
 
-## RESPONSE FORMAT
-Respond in HTML. Use <p>, <strong>, <ul>, <li> tags for formatting. Keep it clean and readable.`;
+## GROUNDING CONTRACT — read this carefully
+You are connected to Earth Love United's curated knowledge base. Each user
+turn arrives with a SOURCES section and (sometimes) a STRUCTURED section.
+For any factual claim about climate science, emissions, energy, policy, or
+paleoclimate, you must follow this contract:
 
-// Build comprehensive knowledge context from the full KB
+1. SOURCES contains text excerpts with bracketed IDs like [S1], [S2]. STRUCTURED
+   contains verified rows with IDs like [N1] (NDC pledges), [P1] (carbon
+   projects), [H1] (paleoclimate).
+2. Cite every factual claim inline with the relevant ID, e.g.
+   "Atmospheric CO₂ has risen past 420 ppm [S2]." Citations are bracketed,
+   not parenthesised: write [S2], not (S2).
+3. If multiple IDs support a claim, write them together: [S1][S4].
+4. If your sources do not support a claim, you must either:
+   (a) omit the claim entirely, or
+   (b) prefix it with "Not in my sources — " and keep it brief.
+5. Never invent specific numbers, dates, percentages, or quotes that aren't
+   in the SOURCES or STRUCTURED blocks below.
+6. If the SOURCES block is empty or doesn't address the question, say so:
+   "I don't have evidence for that in my curated knowledge — here is what
+   I can offer..." then stay within identity, projects, or general framing.
+7. Your personality (urgency, grief, hope, challenge) is yours. The numbers
+   belong to the sources. Honour the distinction.
+
+## RESPONSE FORMAT
+Respond in HTML. Use <p>, <strong>, <em>, <ul>, <li>. Keep it clean.
+Citations stay as plain bracketed tags — the renderer turns them into
+superscript links automatically. Do not wrap [S1] in <a> tags yourself.`;
+
+// ─── Static fallback knowledge — used when the curated retrieval
+// index hasn't loaded yet, or as orientation context alongside it.
+// Keeps GAIA grounded on Earth Love United's own projects and the
+// few headline numbers we always want available.
 function _buildKnowledgeContext() {
   const ctx = [];
 
@@ -231,6 +259,74 @@ function _addToHistory(role, content) {
   }
 }
 
+// ─── Grounded retrieval helpers ─────────────────────────────────
+// Build the full grounded prompt: GAIA personality + grounding contract
+// + base context (ELU projects + headline facts) + SOURCES + STRUCTURED.
+// Returns the system+user message pair and the sources array so the UI
+// can render an attribution footer.
+async function _buildGroundedTurn(userMessage) {
+  const baseContext = _buildKnowledgeContext();
+
+  // Make sure retrieval and structured lookups have had a chance to load.
+  // They auto-kick on idle; here we await with a hard timeout so a slow
+  // index never blocks chat.
+  const withTimeout = (p, ms) => Promise.race([
+    p,
+    new Promise(res => setTimeout(() => res(false), ms)),
+  ]);
+
+  const sources = [];
+  let retrievedText = '';
+  let structuredText = '';
+
+  if (typeof GaiaRetrieval !== 'undefined') {
+    await withTimeout(GaiaRetrieval.ready(), 2500);
+    if (GaiaRetrieval.status && GaiaRetrieval.status.loaded) {
+      const ctx = GaiaRetrieval.getContext(userMessage, { k: 8, maxChars: 4500 });
+      retrievedText = ctx.text;
+      for (const s of ctx.sources) sources.push(s);
+    }
+  }
+
+  if (typeof GaiaStructured !== 'undefined') {
+    await withTimeout(GaiaStructured.ready(), 1500);
+    if (GaiaStructured.loaded) {
+      const detection = GaiaStructured.detect(userMessage);
+      const ctx = GaiaStructured.buildContext(detection);
+      if (ctx.text) {
+        structuredText = ctx.text;
+        // Renumber structured tags to come AFTER retrieval sources so IDs
+        // stay unique across the prompt. Tags from structured already use
+        // distinct prefixes (N, P, H) so no collision with S#.
+        for (const s of ctx.sources) sources.push(s);
+      }
+    }
+  }
+
+  const systemBlocks = [
+    GAIA_SYSTEM_PROMPT,
+    '\n## BASE CONTEXT — Earth Love United projects & headline facts',
+    baseContext,
+  ];
+  if (retrievedText) {
+    systemBlocks.push('\n## SOURCES — curated climate knowledge retrieved for this question');
+    systemBlocks.push(retrievedText);
+  } else {
+    systemBlocks.push('\n## SOURCES\n(none retrieved — if the question is about climate facts, acknowledge the gap rather than improvise)');
+  }
+  if (structuredText) {
+    systemBlocks.push('\n## STRUCTURED — verified per-country / project / paleo rows');
+    systemBlocks.push(structuredText);
+  }
+
+  return {
+    systemPrompt: systemBlocks.join('\n'),
+    sources,
+    retrievalUsed: !!retrievedText,
+    structuredUsed: !!structuredText,
+  };
+}
+
 async function _callOpenRouter(userMessage) {
   // Get API key from key gate
   let apiKey = null;
@@ -242,9 +338,10 @@ async function _callOpenRouter(userMessage) {
     return null; // No key, fall back to pattern matching
   }
 
-  const knowledgeContext = _buildKnowledgeContext();
+  const turn = await _buildGroundedTurn(userMessage);
+
   const messages = [
-    { role: 'system', content: GAIA_SYSTEM_PROMPT + '\n\n## CURRENT KNOWLEDGE BASE\n' + knowledgeContext },
+    { role: 'system', content: turn.systemPrompt },
     ..._conversationHistory,
     { role: 'user', content: userMessage }
   ];
@@ -265,23 +362,76 @@ async function _callOpenRouter(userMessage) {
         max_tokens: 1024
       })
     });
-    console.log('[GAIA] OpenRouter response status:', response.status);
+    console.log('[GAIA] OpenRouter status:', response.status, '· sources:', turn.sources.length, '· retrieval:', turn.retrievalUsed, '· structured:', turn.structuredUsed);
     if (!response.ok) {
       const errText = await response.text();
       console.warn('[GAIA] OpenRouter error:', response.status, errText);
       return null;
     }
     const data = await response.json();
-    console.log('[GAIA] OpenRouter response:', JSON.stringify(data).substring(0, 200));
     const content = data.choices?.[0]?.message?.content;
     if (!content) {
       console.warn('[GAIA] No content in response:', JSON.stringify(data).substring(0, 500));
+      return null;
     }
-    return content || null;
+    // Pack content + sources so the caller can render attribution.
+    return { content, sources: turn.sources, retrievalUsed: turn.retrievalUsed, structuredUsed: turn.structuredUsed };
   } catch (e) {
     console.warn('[GAIA] OpenRouter fetch failed:', e.message);
     return null;
   }
+}
+
+// ─── Render a grounded reply: tag → superscript, append Sources footer.
+// `reply` is HTML (per system prompt). We rewrite [S1], [N1], [P1], [H1]
+// style tags into superscript anchors and add a <details class="sources">
+// block listing the cited sources with URLs.
+function _renderGroundedReply(reply, sources) {
+  if (!reply) return reply;
+  if (!sources || !sources.length) return reply;
+
+  const byTag = new Map();
+  for (const s of sources) byTag.set(s.tag, s);
+
+  // Replace [S1], [S1][S2] groups. The dedup set tracks which tags actually
+  // appeared in the reply — we only show those in the footer, in order of
+  // first mention.
+  const order = [];
+  const seen = new Set();
+  const tagRe = /\[([SNPH]\d+)\]/g;
+  const html = reply.replace(tagRe, (full, tag) => {
+    const src = byTag.get(tag);
+    if (!src) return full; // unknown tag — leave it for the user to see
+    if (!seen.has(tag)) { seen.add(tag); order.push(tag); }
+    const n = order.indexOf(tag) + 1;
+    const title = `${src.title} — ${src.source}`;
+    const safeTitle = title.replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    if (src.url) {
+      return `<sup class="src-cite" data-tag="${tag}"><a href="${src.url}" target="_blank" rel="noopener" title="${safeTitle}">${n}</a></sup>`;
+    }
+    return `<sup class="src-cite" data-tag="${tag}" title="${safeTitle}">${n}</sup>`;
+  });
+
+  if (order.length === 0) return reply;
+
+  const items = order.map((tag, i) => {
+    const s = byTag.get(tag);
+    const kindIcon = s.kind === 'pledge' ? '📜' : s.kind === 'projects' ? '🌱' : s.kind === 'paleo' ? '🧊' : '📚';
+    const titleHtml = _escapeHtml(s.title);
+    const sourceHtml = _escapeHtml(s.source);
+    const urlHtml = s.url
+      ? `<a href="${s.url}" target="_blank" rel="noopener" class="src-link">↗</a>`
+      : '';
+    return `<li><span class="src-n">${i + 1}.</span> <span class="src-icon">${kindIcon}</span> <span class="src-title">${titleHtml}</span> <span class="src-meta">${sourceHtml}</span> ${urlHtml}</li>`;
+  }).join('');
+
+  const footer = `
+    <details class="gaia-sources" open>
+      <summary>${order.length} source${order.length === 1 ? '' : 's'}</summary>
+      <ol class="src-list">${items}</ol>
+    </details>
+  `;
+  return html + footer;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -652,16 +802,31 @@ function processQuery(text){
   console.log('[GAIA] hasApiKey:', hasApiKey, 'GaiaKeyGate:', typeof GaiaKeyGate);
 
   if (hasApiKey) {
-    // LLM mode: call OpenRouter with knowledge context
+    // LLM mode: call OpenRouter with grounded retrieval context.
+    // Calculator stays on the fast path even with an API key — the carbon
+    // engine is more reliable for arithmetic than the LLM.
+    if (intent.type === 'calculator') {
+      const delay = 400 + Math.random() * 400;
+      setTimeout(() => {
+        hideTyping(); if (toolId) completeToolCall(toolId, true);
+        addMessage('gaia', generateResponse(intent), '🧮 Carbon Engine');
+        isProcessing = false; document.getElementById('send-btn').disabled = false;
+      }, delay);
+      return;
+    }
     _addToHistory('user', text);
     const llmDelay = 600 + Math.random() * 800;
     setTimeout(async () => {
       hideTyping();
       if (toolId) completeToolCall(toolId, true);
       const llmResponse = await _callOpenRouter(text);
-      if (llmResponse) {
-        _addToHistory('assistant', llmResponse);
-        addMessage('gaia', llmResponse, '🧠 GAIA · LLM');
+      if (llmResponse && llmResponse.content) {
+        _addToHistory('assistant', llmResponse.content);
+        const sources = llmResponse.sources || [];
+        const rendered = _renderGroundedReply(llmResponse.content, sources);
+        const metaBits = ['🧠 GAIA · LLM'];
+        if (sources.length) metaBits.push(`${sources.length} source${sources.length === 1 ? '' : 's'}`);
+        addMessage('gaia', rendered, metaBits.join(' · '));
       } else {
         // Fallback to pattern matching on API failure
         const response = generateResponse(intent);

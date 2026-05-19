@@ -75,11 +75,11 @@ def extract_baseline_year(text):
 
     text = clean_html(text)
 
-    # "below YEAR levels" or "compared to YEAR" or "relative to YEAR" or "vs YEAR"
+    # "below YEAR levels" or "compared to FY 2005"
     patterns = [
-        r'(?:below|compared\s+to|relative\s+to|vs\.?|against|from|based\s+on)\s+(\d{4})',
-        r'(\d{4})\s+(?:levels?|baseline|base\s*year|emissions?)',
-        r'base\s*(?:line\s+)?year[:\s]+(\d{4})',
+        r'(?:below|compared\s+to|relative\s+to|vs\.?|against|from|based\s+on)\s+(?:FY\s*)?(\d{4})',
+        r'(?:FY\s*)?(\d{4})\s+(?:levels?|baseline|base\s*year|emissions?)',
+        r'base\s*(?:line\s+)?year[:\s]+(?:FY\s*)?(\d{4})',
     ]
     for pat in patterns:
         m = re.search(pat, text, re.IGNORECASE)
@@ -119,21 +119,27 @@ def extract_target_mtco2e(text):
     if not text:
         return None
 
-    text = clean_html(text)
+    text = clean_html(text).replace('₂', '2')
 
-    # "X MtCO2e" or "X Mt CO2-eq" or "X million tonnes"
-    patterns = [
-        r'(\d+(?:[.,]\d+)?)\s*(?:Mt\s*CO2(?:e|eq|-eq)?|MtCO2(?:e|eq)?)',
-        r'(\d+(?:[.,]\d+)?)\s*(?:million\s+t(?:onn?es?)?\s+(?:of\s+)?CO2)',
-        r'(\d+(?:[.,]\d+)?)\s*(?:Gt\s*CO2)',
-    ]
-    for pat in patterns:
-        m = re.search(pat, text, re.IGNORECASE)
-        if m:
-            val = float(m.group(1).replace(',', ''))
-            if 'Gt' in pat:
-                val *= 1000  # Convert Gt to Mt
-            return val
+    # 1. Billion (Gt) e.g. "1.042 billion t-CO2eq"
+    m = re.search(r'(\d+(?:[.,]\d+)?)\s*(?:billion\s+t(?:onn?es?)?[- ]*CO2|Gt[- ]*CO2)', text, re.IGNORECASE)
+    if m: return float(m.group(1).replace(',', '')) * 1000
+    
+    # 2. Million (Mt) e.g. "45 MtCO2e", "45 million tonnes of CO2"
+    m = re.search(r'(\d+(?:[.,]\d+)?)\s*(?:million\s+t(?:onn?es?)?(?:\s+of)?\s*CO2|Mt[- ]*CO2)', text, re.IGNORECASE)
+    if m: return float(m.group(1).replace(',', ''))
+    
+    # 3. Kilo (kt) e.g. "640 ktCO2e"
+    m = re.search(r'(\d+(?:[.,]\d+)?)\s*(?:kt[- ]*CO2)', text, re.IGNORECASE)
+    if m: return float(m.group(1).replace(',', '')) / 1000
+    
+    # 4. Raw tonnes (with comma) e.g. "1,700,000 tCO2e"
+    m = re.search(r'(\d{1,3}(?:,\d{3})+)\s*(?:t[- ]*CO2)', text, re.IGNORECASE)
+    if m: return float(m.group(1).replace(',', '')) / 1000000
+    
+    # 5. Raw tonnes (no comma) e.g. "1700000 tCO2e"
+    m = re.search(r'(\d{5,})\s*(?:t[- ]*CO2)', text, re.IGNORECASE)
+    if m: return float(m.group(1)) / 1000000
 
     return None
 

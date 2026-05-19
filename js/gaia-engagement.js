@@ -283,3 +283,4 @@ const GAIA_ENGAGEMENT = (() => {
     save, load,
   };
 })();
+window.GAIA_ENGAGEMENT = GAIA_ENGAGEMENT;

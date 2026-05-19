@@ -47,11 +47,16 @@ const App = {
       PLEDGE_WALL.init();
     }
 
-    // Init all existing modules
-    GlobeModule.init();
-    Quiz.init();
-    Biomes.init();
-    Scenario.init();
+    // Init all existing modules — each wrapped to prevent cascade failure
+    const modules = [
+      ['GlobeModule', () => GlobeModule.init()],
+      ['Quiz',        () => Quiz.init()],
+      ['Biomes',      () => Biomes.init()],
+      ['Scenario',    () => Scenario.init()],
+    ];
+    for (const [name, initFn] of modules) {
+      try { initFn(); } catch (err) { console.error(`[App] ${name}.init() failed:`, err); }
+    }
 
     // ── GAIA Foundation Layer ──
     // Fetch live data in background
