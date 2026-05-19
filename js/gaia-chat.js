@@ -328,15 +328,20 @@ async function _buildGroundedTurn(userMessage) {
 }
 
 async function _callOpenRouter(userMessage) {
-  // Get API key from key gate
+  // Get API key — check key gate first, then sessionStorage as fallback
   let apiKey = null;
   if (typeof GaiaKeyGate !== 'undefined' && GaiaKeyGate.hasKey()) {
     apiKey = GaiaKeyGate.getStoredKey();
   }
+  // Fallback: check sessionStorage directly
   if (!apiKey) {
-    console.log('[GAIA] No API key, using pattern matching');
-    return null; // No key, fall back to pattern matching
+    try { apiKey = sessionStorage.getItem('gaia_api_key') || null; } catch (e) {}
   }
+  if (!apiKey) {
+    console.log('[GAIA] No API key found. GaiaKeyGate:', typeof GaiaKeyGate, 'sessionStorage keys:', Object.keys(sessionStorage));
+    return null;
+  }
+  console.log('[GAIA] Using LLM mode, key:', apiKey.substring(0, 8) + '...');
 
   const turn = await _buildGroundedTurn(userMessage);
 
