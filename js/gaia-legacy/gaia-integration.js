@@ -36,7 +36,8 @@ window.GaiaIntegration = (() => {
     // 0. Load voice library into state machine
     if (typeof GaiaVoiceLibrary !== 'undefined') {
       GaiaState.setVoiceLibrary(GaiaVoiceLibrary);
-      console.log('[GaiaIntegration] Voice library loaded:', VoiceLibraryMeta.totalLines, 'lines');
+      const meta = typeof VoiceLibraryMeta !== 'undefined' ? VoiceLibraryMeta : null;
+      console.log('[GaiaIntegration] Voice library loaded:', meta?.totalLines || 'unknown', 'lines');
     } else {
       console.warn('[GaiaIntegration] GaiaVoiceLibrary not found');
     }
@@ -65,8 +66,8 @@ window.GaiaIntegration = (() => {
 
     // 4. Set up periodic engagement save
     setInterval(() => {
-      if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.save();
-      if (typeof GAIA_JOURNAL !== 'undefined') GAIA_JOURNAL.save();
+      safeCall('GAIA_ENGAGEMENT', 'save');
+      safeCall('GAIA_JOURNAL', 'save');
     }, 30000);
 
     _initialized = true;
@@ -501,11 +502,11 @@ window.GaiaIntegration = (() => {
 
     // Allow inline script to get engagement info
     getEngagement: () => {
-      if (typeof GAIA_ENGAGEMENT !== 'undefined') {
+      if (hasModule('GAIA_ENGAGEMENT')) {
         return {
-          score: GAIA_ENGAGEMENT.getScore(),
-          tier: GAIA_ENGAGEMENT.getTier(),
-          mood: GAIA_ENGAGEMENT.getMood(),
+          score: safeGet('GAIA_ENGAGEMENT', 'getScore', 0),
+          tier: safeGet('GAIA_ENGAGEMENT', 'getTier', 'explorer'),
+          mood: safeGet('GAIA_ENGAGEMENT', 'getMood', 'neutral'),
         };
       }
       return null;

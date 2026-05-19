@@ -185,20 +185,16 @@ const GAIA_NODES = (() => {
     addXP(siteId, 10);
     if (nodeState[siteId]) nodeState[siteId].visited = true;
     // Set site context in GAIA bubble
-    if (typeof GAIA_BUBBLE !== 'undefined') GAIA_BUBBLE.setCurrentSite(siteId);
-    if (typeof GAIA_VOICE !== 'undefined') {
-      const line = GAIA_VOICE.speak('SITE_ENTRY', siteId);
-      if (line && typeof GAIA_BUBBLE !== 'undefined') GAIA_BUBBLE.speak(line.text, line.tone, 8000);
-    }
-    if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.addSignal('site_tap', siteId);
+    safeCall('GAIA_BUBBLE', 'setCurrentSite', siteId);
+    const line = safeCall('GAIA_VOICE', 'speak', 'SITE_ENTRY', siteId);
+    if (line) safeCall('GAIA_BUBBLE', 'speak', line.text, line.tone, 8000);
+    safeCall('GAIA_ENGAGEMENT', 'addSignal', 'site_tap', siteId);
   }
 
   function onNodeHover(siteId) {
-    if (typeof GAIA_VOICE !== 'undefined') {
-      const line = GAIA_VOICE.speak('SITE_TEASER', siteId);
-      if (line && typeof GAIA_BUBBLE !== 'undefined') GAIA_BUBBLE.speak(line.text, line.tone, 5000);
-    }
-    if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact();
+    const line = safeCall('GAIA_VOICE', 'speak', 'SITE_TEASER', siteId);
+    if (line) safeCall('GAIA_BUBBLE', 'speak', line.text, line.tone, 5000);
+    safeCall('GAIA_ENGAGEMENT', 'interact');
   }
 
   // ── "What to Explore Next" suggestion engine ──
@@ -290,9 +286,9 @@ const GAIA_NODES = (() => {
   }
 
   function getNextSuggestions(currentSiteId) {
-    if (typeof GAIA_ENGAGEMENT === 'undefined') return [];
-    const siteStates = GAIA_ENGAGEMENT.getSiteStates();
-    const archetype = GAIA_ENGAGEMENT.getArchetype();
+    if (!hasModule('GAIA_ENGAGEMENT')) return [];
+    const siteStates = safeGet('GAIA_ENGAGEMENT', 'getSiteStates', {});
+    const archetype = safeGet('GAIA_ENGAGEMENT', 'getArchetype', 'explorer');
     const allSites = ['sri_lanka', 'antalya', 'benin', 'borneo'];
     const unvisited = allSites.filter(id => id !== currentSiteId && !siteStates[id]?.visited);
     const visited = allSites.filter(id => id !== currentSiteId && siteStates[id]?.visited);

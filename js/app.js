@@ -60,35 +60,35 @@ const App = {
 
     // ── GAIA Foundation Layer ──
     // Fetch live data in background
-    GAIA_DATA.refreshAll().then(liveData => {
-      GAIA_DATA.saveSnapshot(liveData);
-      if (liveData.co2.latest) {
-        GAIA_DATA.saveVisitInfo(liveData.co2.latest);
-      }
-    });
+    if (hasModule('GAIA_DATA')) {
+      GAIA_DATA.refreshAll().then(liveData => {
+        GAIA_DATA.saveSnapshot(liveData);
+        if (liveData.co2.latest) {
+          GAIA_DATA.saveVisitInfo(liveData.co2.latest);
+        }
+      });
 
-    // Session tracking
-    const sess = GAIA_DATA.getSessionInfo();
-    const now = Date.now();
-    if (!sess.firstVisit) {
-      GAIA_DATA.saveSessionInfo({ visitCount: 1, firstVisit: now, totalTimeSeconds: 0 });
-    } else {
-      GAIA_DATA.saveSessionInfo({ ...sess, visitCount: sess.visitCount + 1 });
-      // Welcome back
-      const wb = GAIA_DATA.getWelcomeBackInfo();
-      if (wb && wb.daysSince > 0) {
-        const days = wb.daysSince;
-        const _snap = GAIA_DATA.getCachedSnapshot();
-        const co2Now = (_snap && _snap.co2 && _snap.co2.latest) ? _snap.co2.latest : (wb.co2Then ? (wb.co2Then + 2.7 * (days / 365)) : 431.12);
-        const co2Then = wb.co2Then;
-        const co2Diff = co2Then ? +(co2Now - co2Then).toFixed(2) : null;
-        let msg = days === 1 ? 'Welcome back. One day.' : `Welcome back. ${days} days.`;
-        if (co2Diff && co2Diff > 0) msg += ` CO₂: ${co2Then.toFixed(1)} → ${co2Now.toFixed(1)} ppm. +${co2Diff}. Not a pause. Accumulation.`;
-        setTimeout(() => {
-          if (typeof GAIA_BUBBLE !== 'undefined') {
-            GAIA_BUBBLE.speak(msg, 'warm', 6000);
-          }
-        }, 1500);
+      // Session tracking
+      const sess = GAIA_DATA.getSessionInfo();
+      const now = Date.now();
+      if (!sess.firstVisit) {
+        GAIA_DATA.saveSessionInfo({ visitCount: 1, firstVisit: now, totalTimeSeconds: 0 });
+      } else {
+        GAIA_DATA.saveSessionInfo({ ...sess, visitCount: sess.visitCount + 1 });
+        // Welcome back
+        const wb = GAIA_DATA.getWelcomeBackInfo();
+        if (wb && wb.daysSince > 0) {
+          const days = wb.daysSince;
+          const _snap = GAIA_DATA.getCachedSnapshot();
+          const co2Now = (_snap && _snap.co2 && _snap.co2.latest) ? _snap.co2.latest : (wb.co2Then ? (wb.co2Then + 2.7 * (days / 365)) : 431.12);
+          const co2Then = wb.co2Then;
+          const co2Diff = co2Then ? +(co2Now - co2Then).toFixed(2) : null;
+          let msg = days === 1 ? 'Welcome back. One day.' : `Welcome back. ${days} days.`;
+          if (co2Diff && co2Diff > 0) msg += ` CO₂: ${co2Then.toFixed(1)} → ${co2Now.toFixed(1)} ppm. +${co2Diff}. Not a pause. Accumulation.`;
+          setTimeout(() => {
+            safeCall('GAIA_BUBBLE', 'speak', msg, 'warm', 6000);
+          }, 1500);
+        }
       }
     }
 
@@ -97,41 +97,30 @@ const App = {
     // show a gentle reminder on their next visit.
     try {
       const pendingPledge = localStorage.getItem('gaia_pending_pledge');
-      if (pendingPledge && typeof PLEDGE_WALL !== 'undefined' && !PLEDGE_WALL.hasPledged()) {
+      if (pendingPledge && hasModule('PLEDGE_WALL') && !PLEDGE_WALL.hasPledged()) {
         const pending = JSON.parse(pendingPledge);
-        // Only show if they were engaged (score >= 20) and it's been at least 1 hour
         if (pending.score >= 20 && Date.now() - pending.timestamp > 3600000) {
           setTimeout(() => {
-            if (typeof GAIA_BUBBLE !== 'undefined') {
-              GAIA_BUBBLE.speak("You were exploring last time. The carbon clock is still ticking. Before you go again — what's your pledge?", 'warm', 8000);
-            }
+            safeCall('GAIA_BUBBLE', 'speak', "You were exploring last time. The carbon clock is still ticking. Before you go again — what's your pledge?", 'warm', 8000);
           }, 3000);
         }
-        // Clear the pending flag
         localStorage.removeItem('gaia_pending_pledge');
       }
     } catch { /* ignore */ }
 
     // Create GAIA bubble — always visible after entering
-    if (typeof GAIA_BUBBLE !== 'undefined') {
-      GAIA_BUBBLE.create();
-    }
+    safeCall('GAIA_BUBBLE', 'create');
 
     // Speak greeting after hero
     setTimeout(() => {
-      if (typeof GAIA_VOICE !== 'undefined' && typeof GAIA_BUBBLE !== 'undefined') {
-        const line = GAIA_VOICE.speak('GREETING', null, 'mysterious');
-        if (line) GAIA_BUBBLE.speak(line.text, line.tone, 8000);
-      }
+      const line = safeCall('GAIA_VOICE', 'speak', 'GREETING', null, 'mysterious');
+      if (line) safeCall('GAIA_BUBBLE', 'speak', line.text, line.tone, 8000);
     }, 2000);
 
     // Idle nudge loop
     setInterval(() => {
-      if (typeof GAIA_ENGAGEMENT === 'undefined') return;
-      const nudge = GAIA_ENGAGEMENT.shouldFireIdleNudge();
-      if (nudge && typeof GAIA_BUBBLE !== 'undefined') {
-        GAIA_BUBBLE.idleNudge();
-      }
+      const nudge = safeGet('GAIA_ENGAGEMENT', 'shouldFireIdleNudge', false);
+      if (nudge) safeCall('GAIA_BUBBLE', 'idleNudge');
     }, 5000);
 
     // ── Render site cards ──
@@ -197,16 +186,17 @@ const App = {
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') Panel.close(); });
 
     // ── Track all interactions for engagement ──
-    document.addEventListener('click', () => { if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact(); });
-    document.addEventListener('scroll', () => { if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact(); }, { passive: true });
-    document.addEventListener('keydown', () => { if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact(); });
+    const _interact = () => safeCall('GAIA_ENGAGEMENT', 'interact');
+    document.addEventListener('click', _interact);
+    document.addEventListener('scroll', _interact, { passive: true });
+    document.addEventListener('keydown', _interact);
   },
 
   enterSite() {
-    document.getElementById('hero').classList.add('hidden');
-    document.getElementById('topbar').classList.add('visible');
-    setTimeout(() => { document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' }); }, 300);
-    if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact();
+    $('hero')?.classList.add('hidden');
+    $('topbar')?.classList.add('visible');
+    setTimeout(() => { $('quiz')?.scrollIntoView({ behavior: 'smooth' }); }, 300);
+    safeCall('GAIA_ENGAGEMENT', 'interact');
   },
 
   flyToSite(id) {
@@ -256,10 +246,9 @@ let _departurePrompted = false;
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden' && !_departurePrompted) {
     _departurePrompted = true;
-    if (typeof PLEDGE_WALL !== 'undefined') {
-      const score = typeof GAIA_ENGAGEMENT !== 'undefined' ? GAIA_ENGAGEMENT.getScore() : 0;
+    if (hasModule('PLEDGE_WALL')) {
+      const score = safeGet('GAIA_ENGAGEMENT', 'getScore', 0);
       if (score >= 20 && !PLEDGE_WALL.hasPledged()) {
-        // Persist a "pending pledge" flag so we can show a prompt on next visit
         try {
           localStorage.setItem('gaia_pending_pledge', JSON.stringify({
             score,
@@ -275,9 +264,9 @@ document.addEventListener('visibilitychange', () => {
 // Last resort: beforeunload fires when the page is being unloaded.
 // Modern browsers restrict DOM manipulation here, so we only persist state.
 window.addEventListener('beforeunload', () => {
-  if (_departurePrompted) return; // already handled by visibilitychange
-  if (typeof PLEDGE_WALL !== 'undefined') {
-    const score = typeof GAIA_ENGAGEMENT !== 'undefined' ? GAIA_ENGAGEMENT.getScore() : 0;
+  if (_departurePrompted) return;
+  if (hasModule('PLEDGE_WALL')) {
+    const score = safeGet('GAIA_ENGAGEMENT', 'getScore', 0);
     if (score >= 20 && !PLEDGE_WALL.hasPledged()) {
       try {
         localStorage.setItem('gaia_pending_pledge', JSON.stringify({

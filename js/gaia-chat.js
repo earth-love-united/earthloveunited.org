@@ -1,69 +1,32 @@
 // ═══════════════════════════════════════════════════════════════
-// DATA — Uses shared Data module (loaded via data.js) if available,
-// otherwise falls back to embedded data for standalone operation.
-// This eliminates duplication between index.html and gaia.html.
+// DATA — Delegates to shared Data module (loaded via data.js).
+// All biome/site data lives in data.js + data/*.json files.
+// These thin wrappers preserve the API used by the 1100 lines below.
 // ═══════════════════════════════════════════════════════════════
 
-// Use shared Data module functions if available, otherwise define locally
-const _biomes = (typeof Data !== 'undefined' && Data.biomes) ? Data.biomes : {
-  tropical_rainforest:{name:"Tropical Rainforest",density:350,seq:2.5,icon:"🌳"},
-  tropical_dry_forest:{name:"Tropical Dry Forest",density:180,seq:1.2,icon:"🌴"},
-  mangrove:{name:"Mangrove",density:950,seq:6.5,icon:"🌿"},
-  temperate_deciduous:{name:"Temperate Deciduous",density:220,seq:1.8,icon:"🍂"},
-  temperate_coniferous:{name:"Temperate Coniferous",density:300,seq:1.5,icon:"🌲"},
-  boreal_forest:{name:"Boreal Forest",density:160,seq:0.6,icon:"🌲"},
-  grassland_savanna:{name:"Grassland / Savanna",density:90,seq:0.3,icon:"🌾"},
-  wetland_peatland:{name:"Wetland / Peatland",density:1400,seq:0.8,icon:"💧"},
-  seagrass_meadow:{name:"Seagrass Meadow",density:500,seq:2.0,icon:"🌊"},
-  agricultural_cropland:{name:"Agricultural Cropland",density:50,seq:0.0,icon:"🌾"},
-  degraded_bare_land:{name:"Degraded / Bare Land",density:10,seq:0.0,icon:"🏜️"},
-  urban_built:{name:"Urban / Built",density:30,seq:0.0,icon:"🏙️"}
-};
+function getBiome(key) { return (typeof Data !== 'undefined') ? Data.getBiome(key) : null; }
+function getSite(id) { return (typeof Data !== 'undefined') ? Data.getSite(id) : null; }
+function getAllSites() { return (typeof Data !== 'undefined' && Data.sites) ? Data.sites : []; }
 
-const _sites = (typeof Data !== 'undefined' && Data.sites) ? Data.sites : [
-  {id:"sri_lanka",name:"Northern Province",subtitle:"Multilayer Afforestation · Sri Lanka",lat:9.666,lng:80.285,primaryBiome:"tropical_dry_forest",currentBiome:"degraded_bare_land",area:2428,
-    narrative:"SPE has identified over 6,000 acres across five districts of Sri Lanka's Northern Province for multilayer afforestation — peanuts, Ceylon cinnamon, jackfruit, black pepper — creating self-sustaining plantations that build long-term carbon stocks.",
-    ndvi:[{year:2000,value:0.45,label:"Post-conflict degraded land"},{year:2010,value:0.40,label:"Slow recovery"},{year:2015,value:0.42,label:"Restoration planning"},{year:2020,value:0.48,label:"SPE project initiation"},{year:2025,value:0.55,label:"Active planting"}],
-    climate:[{year:1980,temp:27.8,precip:1420},{year:2000,temp:28.3,precip:1350},{year:2025,temp:29.1,precip:1260}],
-    connection:"SPE's flagship — approved by the Governor of Northern Province, land confirmed across Jaffna, Vavuniya, Mullaitivu, Mannar, and Kilinochchi."},
-  {id:"antalya",name:"Manavgat, Antalya",subtitle:"Wildfire & Recovery · Turkey",lat:36.85,lng:31.25,primaryBiome:"temperate_coniferous",currentBiome:"grassland_savanna",area:2500,
-    narrative:"July 2021: catastrophic wildfires burned 60,000+ hectares of Mediterranean pine. COP31 takes place here, November 2026. Four years on, early scrub recovery — but full restoration needs decades.",
-    ndvi:[{year:2000,value:0.72,label:"Mature Pine"},{year:2010,value:0.73,label:"Mature Pine"},{year:2020,value:0.70,label:"Drought-Stressed"},{year:2021,value:0.18,label:"Burn Scar"},{year:2025,value:0.38,label:"Scrub Recovery"}],
-    climate:[{year:1980,temp:16.54,precip:985},{year:2000,temp:17.20,precip:915},{year:2025,temp:18.20,precip:765}],
-    connection:"COP31 is in Antalya. This is what happened to the host region's forests."},
-  {id:"benin",name:"Ouidah Wetlands",subtitle:"Mangrove Degradation · Benin",lat:6.35,lng:2.10,primaryBiome:"mangrove",currentBiome:"degraded_bare_land",area:2500,
-    narrative:"Jean Missinhoun was from Benin. The Ouidah lagoons once held dense mangroves — the most carbon-dense ecosystems on Earth. Restoring them here is climate action and a homecoming.",
-    ndvi:[{year:2000,value:0.68,label:"Intact Mangroves"},{year:2010,value:0.45,label:"Degraded"},{year:2025,value:0.52,label:"Early Recovery"}],
-    climate:[{year:1980,temp:27.2,precip:1280},{year:2000,temp:27.7,precip:1220},{year:2025,temp:28.6,precip:1130}],
-    connection:"Jean's homeland. Mangroves store 950 tC/ha — restoring them honors his legacy."},
-  {id:"borneo",name:"West Kalimantan",subtitle:"Peat Swamp Deforestation · Borneo",lat:1.15,lng:110.35,primaryBiome:"wetland_peatland",currentBiome:"agricultural_cropland",area:2500,
-    narrative:"Borneo's peat swamps stored 1,400 tC/ha. Grid-like clearing for oil palm released centuries of carbon in two decades. The plantation looks green. But green is not carbon.",
-    ndvi:[{year:2000,value:0.88,label:"Intact Peat Swamp"},{year:2005,value:0.85,label:"Intact"},{year:2010,value:0.35,label:"Active Clearing"},{year:2015,value:0.55,label:"Palm Canopy"},{year:2025,value:0.65,label:"Mature Plantation"}],
-    climate:[{year:1980,temp:26.8,precip:3200},{year:2000,temp:27.1,precip:3100},{year:2025,temp:27.9,precip:2850}],
-    connection:"Green ≠ carbon. Oil palm (NDVI 0.65) stores a fraction of the peat swamp it replaced (1,400 vs 50 tC/ha)."}
-];
-
-// Use shared utility functions if available, otherwise local copies
-function transitionCarbon(from,to,ha,yrs){
-  const f=_biomes[from],t=_biomes[to];if(!f||!t)return null;
-  const sC=(t.density-f.density)*ha,fC=(t.seq-f.seq)*ha,cum=sC+fC*yrs;
-  return{stock_co2:sC*3.67,flux_co2:fC*3.67,cumulative_co2:cum*3.67,years:yrs};
-}
-function scaleContext(co2){
-  const a=Math.abs(co2);
-  return{fraction:a/20e9,cars:a/4.6,flights:a/1.0,summary:a>=1e6?`${(a/1e6).toFixed(1)}M t CO₂ = ${(a/4.6).toFixed(0)} cars/yr`:`${a.toFixed(0)} t CO₂ = ${(a/4.6).toFixed(1)} cars/yr`};
-}
-function fmt(n){
-  if(n>=1e9)return(n/1e9).toFixed(1)+'B';
-  if(n>=1e6)return(n/1e6).toFixed(1)+'M';
-  if(n>=1e3)return(n/1e3).toFixed(1)+'K';
-  return n.toFixed(0);
+function transitionCarbon(from, to, ha, yrs) {
+  if (typeof Data !== 'undefined') return Data.transitionCarbon(from, to, ha, yrs || 30);
+  // Minimal fallback if Data not loaded
+  const f = getBiome(from), t = getBiome(to);
+  if (!f || !t) return null;
+  const sC = (t.density - f.density) * ha, fC = (t.seq - f.seq) * ha, cum = sC + fC * (yrs || 30);
+  return { stock_co2: sC * 3.67, flux_co2: fC * 3.67, cumulative_co2: cum * 3.67, years: yrs || 30 };
 }
 
-// Accessors that prefer shared Data module
-function getBiome(key){ return _biomes[key]; }
-function getSite(id){ return _sites.find(s=>s.id===id); }
-function getAllSites(){ return _sites; }
+function scaleContext(co2) {
+  if (typeof Data !== 'undefined') return Data.scaleContext(co2);
+  const a = Math.abs(co2);
+  return { fraction: a / 20e9, cars: a / 4.6, flights: a / 1.0, summary: a >= 1e6 ? `${(a/1e6).toFixed(1)}M t CO₂` : `${a.toFixed(0)} t CO₂` };
+}
+
+function fmt(n) {
+  if (typeof Data !== 'undefined') return Data.fmt(n);
+  return n >= 1e9 ? (n/1e9).toFixed(1)+'B' : n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'K' : n.toFixed(0);
+}
 
 // ═══════════════════════════════════════════════════════════════
 // GAIA'S KNOWLEDGE BASE — From RESEARCH.md v1.0 (May 2026)
@@ -352,14 +315,15 @@ async function _callOpenRouter(userMessage) {
   ];
 
   try {
+    const headers = new Headers();
+    headers.set('Authorization', 'Bearer ' + apiKey);
+    headers.set('Content-Type', 'application/json');
+    headers.set('HTTP-Referer', 'https://earthloveunited.org');
+    headers.set('X-Title', 'GAIA');
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://earthloveunited.org',
-        'X-Title': 'GAIA — Earth Love United'
-      },
+      headers: headers,
       body: JSON.stringify({
         model: 'google/gemini-2.0-flash-001:free',
         messages,
@@ -1071,8 +1035,7 @@ function toggleVoice() {
 // ENGAGEMENT SCORE DISPLAY
 // ═══════════════════════════════════════════════════════════════
 
-const TIER_ICONS = { COLD:'🌱', WARM:'🌿', ENGAGED:'🌳', HOOKED:'🔥', INVESTED:'💎', COMMITTED:'🌍' };
-const TIER_NAMES = { COLD:'SEED', WARM:'GROW', ENGAGED:'BLOOM', HOOKED:'FLAME', INVESTED:'GUARDIAN', COMMITTED:'LEGACY' };
+// TIER_ICONS and TIER_NAMES are declared in gaia.html inline script
 
 function updateEngagementDisplay() {
   if (typeof GaiaState === 'undefined') return;

@@ -66,16 +66,43 @@ const Data = {
   pledgeNodes: null,
 
   async init() {
-    const [biomesRes, sitesRes, pledgeNodesRes] = await Promise.all([
+    // Fetch all data files in parallel — each individually guarded
+    const [biomesRes, sitesRes, pledgeNodesRes] = await Promise.allSettled([
       fetch('data/biomes.json'),
       fetch('data/sites.json'),
       fetch('data/pledge-nodes.json')
     ]);
-    this.biomes = await biomesRes.json();
-    this.sites = await sitesRes.json();
-    this.pledgeNodes = await pledgeNodesRes.json();
-    console.log('[Data] Loaded:', Object.keys(this.biomes).length, 'biomes,', this.sites.length, 'sites,', this.pledgeNodes.length, 'pledge nodes');
+
+    // Parse each response individually — a 404 on one shouldn't kill the others
+    this.biomes = await this._parseResponse(biomesRes, 'biomes');
+    this.sites = await this._parseResponse(sitesRes, 'sites');
+    this.pledgeNodes = await this._parseResponse(pledgeNodesRes, 'pledge-nodes');
+
+    if (this.biomes && this.sites) {
+      console.log('[Data] Loaded:', Object.keys(this.biomes).length, 'biomes,', this.sites.length, 'sites,', this.pledgeNodes?.length || 0, 'pledge nodes');
+    } else {
+      console.error('[Data] CRITICAL: Some data files failed to load. biomes:', !!this.biomes, 'sites:', !!this.sites);
+    }
     return this;
+  },
+
+  /** Parse a settled fetch promise — guards against HTTP errors and bad JSON */
+  async _parseResponse(settledResult, name) {
+    try {
+      if (settledResult.status === 'rejected') {
+        console.error(`[Data] Fetch failed for ${name}:`, settledResult.reason?.message || 'network error');
+        return null;
+      }
+      const resp = settledResult.value;
+      if (!resp.ok) {
+        console.error(`[Data] HTTP ${resp.status} for ${name}.json`);
+        return null;
+      }
+      return await resp.json();
+    } catch (e) {
+      console.error(`[Data] Parse error for ${name}:`, e.message);
+      return null;
+    }
   },
 
   getBiome(key) { return this.biomes ? this.biomes[key] : null; },

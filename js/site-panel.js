@@ -461,9 +461,7 @@ const SITE_PANEL = (() => {
     }
 
     // Trigger quest check on data reveal
-    if (typeof GAIA_JOURNAL !== 'undefined') {
-      GAIA_JOURNAL.checkQuestProgress('data_reveal', site.id);
-    }
+    safeCall('GAIA_JOURNAL', 'checkQuestProgress', 'data_reveal', site.id);
 
     // Animate layers in
     requestAnimationFrame(() => {
@@ -566,12 +564,10 @@ const SITE_PANEL = (() => {
 
   // ── Add insight to journal ──
   function addInsight(text, siteId) {
-    if (typeof GAIA_JOURNAL !== 'undefined') GAIA_JOURNAL.addEntry(text, siteId);
-    if (typeof GAIA_ENGAGEMENT !== 'undefined') {
-      GAIA_ENGAGEMENT.addSignal('insight');
-      GAIA_ENGAGEMENT.addMoodSignal('pride');
-    }
-    if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('narrative_read', { siteId });
+    safeCall('GAIA_JOURNAL', 'addEntry', text, siteId);
+    safeCall('GAIA_ENGAGEMENT', 'addSignal', 'insight');
+    safeCall('GAIA_ENGAGEMENT', 'addMoodSignal', 'pride');
+    safeCall('GAIA_SIG', 'emit', 'narrative_read', { siteId });
 
     // Update button
     const btn = panelEl.querySelector('.insight-journal-btn');
@@ -582,23 +578,19 @@ const SITE_PANEL = (() => {
     }
 
     // Speak
-    if (typeof GAIA_VOICE !== 'undefined' && typeof GAIA_BUBBLE !== 'undefined') {
-      const line = GAIA_VOICE.speak('INSIGHT', siteId);
-      if (line && line.text) GAIA_BUBBLE.speak(line.text, line.tone, 5000);
-    }
+    const line = safeCall('GAIA_VOICE', 'speak', 'INSIGHT', siteId);
+    if (line && line.text) safeCall('GAIA_BUBBLE', 'speak', line.text, line.tone, 5000);
 
     // Check quests
-    if (typeof GAIA_JOURNAL !== 'undefined') {
-      const completed = GAIA_JOURNAL.checkQuestProgress('insight', siteId);
+    const completed = safeCall('GAIA_JOURNAL', 'checkQuestProgress', 'insight', siteId);
+    if (completed) {
       for (const q of completed) {
         showQuestNotification(q);
       }
     }
 
     // Trigger pledge prompt after completing a site investigation
-    if (typeof PLEDGE_WALL !== 'undefined') {
-      PLEDGE_WALL.onSiteComplete(siteId);
-    }
+    safeCall('PLEDGE_WALL', 'onSiteComplete', siteId);
   }
 
   // ── Quest notification ──
@@ -674,10 +666,8 @@ const PLEDGE_PANEL = (() => {
 
   function fmt(n) {
     if (n === null || n === undefined) return '—';
-    if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
-    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
-    if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
-    return typeof n === 'number' ? n.toFixed(1) : String(n);
+    if (typeof Data !== 'undefined') return Data.fmt(n);
+    return n >= 1e9 ? (n/1e9).toFixed(1)+'B' : n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'K' : typeof n === 'number' ? n.toFixed(1) : String(n);
   }
 
   function open(node) {

@@ -59,6 +59,7 @@ const GAIA_DATA = (() => {
     try {
       const resp = await fetch(url, { signal: ctrl.signal });
       clearTimeout(timer);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       return await resp.text();
     } catch (e) {
       clearTimeout(timer);
@@ -72,6 +73,7 @@ const GAIA_DATA = (() => {
     try {
       const resp = await fetch(url, { signal: ctrl.signal });
       clearTimeout(timer);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       return await resp.json();
     } catch (e) {
       clearTimeout(timer);
