@@ -167,12 +167,14 @@ const GAIA_VOICE = (() => {
     });
   }
 
-  function selectLine(state, site, preferredTone) {
+  function selectLine(state, site, preferredTone, _retry) {
     const eligible = getEligibleLines(state, site);
     if (eligible.length === 0) {
-      // Reset pool if exhausted
+      // If we already retried, there are genuinely no lines for this state — bail out
+      if (_retry) return null;
+      // Reset pool if exhausted and try once more
       usedLines = {};
-      return selectLine(state, site, preferredTone);
+      return selectLine(state, site, preferredTone, true);
     }
 
     // Prefer matching tone

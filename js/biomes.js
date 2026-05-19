@@ -20,6 +20,10 @@ const Biomes = {
   ],
 
   init() {
+    if (!Data || !Data.biomes) {
+      console.warn('[Biomes] Data not loaded yet, deferring init');
+      return;
+    }
     this.renderCards();
     this.renderCompare();
   },

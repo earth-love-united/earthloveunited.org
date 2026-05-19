@@ -1029,9 +1029,7 @@ window.__gaia = { startDemo: startDemoMode, stopDemo: stopDemoMode, KB, _sites, 
 // ═══════════════════════════════════════════════════════════════
 // VOICE TOGGLE
 // ═══════════════════════════════════════════════════════════════
-
-let _voiceEnabled = false;
-let _voiceInitialized = false;
+// Note: _voiceEnabled and _voiceInitialized are declared in gaia.html inline script
 
 function toggleVoice() {
   _voiceEnabled = !_voiceEnabled;

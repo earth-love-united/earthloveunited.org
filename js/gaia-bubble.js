@@ -197,16 +197,14 @@ const GAIA_BUBBLE = (() => {
     }
 
     // Check for pledge prompt
-    if (typeof PLEDGE_WALL !== 'undefined') {
+    if (typeof PLEDGE_WALL !== 'undefined' && typeof GAIA_ENGAGEMENT !== 'undefined') {
       const score = GAIA_ENGAGEMENT.getScore();
       if (score >= 30 && !PLEDGE_WALL.hasPledged()) {
         // Don't show immediately — let the moment breathe
         setTimeout(() => {
           if (typeof PLEDGE_WALL !== 'undefined') {
-            PLEDGE_WALL.showSmallPrompt(
-              "You've been exploring. You've seen the data. What will you do with this?",
-              'warm'
-            );
+            // Speak the prompt via GAIA bubble, then offer the modal
+            speak("You've been exploring. You've seen the data. What will you do with this?", 'warm', 8000);
           }
         }, 2000);
       }

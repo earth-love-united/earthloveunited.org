@@ -13,7 +13,9 @@ const Cycle = {
 
   show(key) {
     const d = this.data[key];
+    if (!d) return;
     const el = document.getElementById('cycle-detail');
+    if (!el) return;
     el.className = 'cycle-detail show';
     el.innerHTML = `<h4>${d.title}</h4><p>${d.body}</p><div class="cd-stat">${d.stat}</div>`;
   }

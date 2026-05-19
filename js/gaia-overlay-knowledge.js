@@ -35,6 +35,7 @@ const GAIA_KNOWLEDGE = (() => {
 
   function onOverlayOpen() {
     // Always try to init the core engine if not loaded
+    if (typeof GaiaKnowledge === 'undefined') return;
     if (!GaiaKnowledge.isLoaded) {
       console.log('[GAIA Knowledge] Starting cascading dataset load...');
       GaiaKnowledge.init();
@@ -43,6 +44,7 @@ const GAIA_KNOWLEDGE = (() => {
   }
 
   function _pollForReady() {
+    if (typeof GaiaKnowledge === 'undefined') return;
     if (GaiaKnowledge.isLoaded) {
       _loadComplete = true;
       console.log('[GAIA Knowledge] Dataset ready:', GaiaKnowledge.getStats());
@@ -71,6 +73,7 @@ const GAIA_KNOWLEDGE = (() => {
       _searchQueue.push({ key, query, options });
       return null;
     }
+    if (typeof GaiaKnowledge === 'undefined') return null;
     const results = GaiaKnowledge.search(query, { topK: 3, ...options });
     if (results.length > 0) {
       const best = results[0];

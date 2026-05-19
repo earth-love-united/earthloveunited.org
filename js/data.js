@@ -74,17 +74,18 @@ const Data = {
     this.biomes = await biomesRes.json();
     this.sites = await sitesRes.json();
     this.pledgeNodes = await pledgeNodesRes.json();
-    console.log('[Data] Loaded:', this.biomes.length, 'biomes,', this.sites.length, 'sites,', this.pledgeNodes.length, 'pledge nodes');
+    console.log('[Data] Loaded:', Object.keys(this.biomes).length, 'biomes,', this.sites.length, 'sites,', this.pledgeNodes.length, 'pledge nodes');
     return this;
   },
 
-  getBiome(key) { return this.biomes[key]; },
-  getSite(id) { return this.sites.find(s => s.id === id); },
-  getPledgeNode(iso) { return this.pledgeNodes.find(n => n.iso === iso); },
-  getAllBiomes() { return Object.entries(this.biomes).map(([k, v]) => ({ key: k, ...v })); },
+  getBiome(key) { return this.biomes ? this.biomes[key] : null; },
+  getSite(id) { return this.sites ? this.sites.find(s => s.id === id) : null; },
+  getPledgeNode(iso) { return this.pledgeNodes ? this.pledgeNodes.find(n => n.iso === iso) : null; },
+  getAllBiomes() { return this.biomes ? Object.entries(this.biomes).map(([k, v]) => ({ key: k, ...v })) : []; },
 
   // Carbon calculation engine
   transitionCarbon(from, to, ha, yrs = 30) {
+    if (!this.biomes) return null;
     const f = this.biomes[from], t = this.biomes[to];
     if (!f || !t) return null;
     const sC = (t.density - f.density) * ha;

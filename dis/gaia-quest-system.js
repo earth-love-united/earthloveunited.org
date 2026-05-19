@@ -48,8 +48,8 @@ const GaiaQuests = (() => {
   function getAllQuests() {
     return Object.entries(QUESTS).map(([id, q]) => ({
       id, ...q,
-      status: _progress[questId]?.status || 'locked',
-      currentProgress: _progress[questId]?.progress || {}
+      status: _progress[id]?.status || 'locked',
+      currentProgress: _progress[id]?.progress || {}
     }));
   }
 

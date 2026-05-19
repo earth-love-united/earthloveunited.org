@@ -216,7 +216,7 @@ const SITE_PANEL = (() => {
     if (typeof GAIA_VOICE === 'undefined') return;
     const line = GAIA_VOICE.getLine(lineId);
     if (line && typeof GAIA_BUBBLE !== 'undefined') {
-      GAIA_BUBBLE.show(line.text, line.tone, 8000);
+      GAIA_BUBBLE.speak(line.text, line.tone, 8000);
     }
   }
 
@@ -316,9 +316,14 @@ const SITE_PANEL = (() => {
     currentLayer = 0;
 
     // Speak entry line
-    GAIA_BUBBLE.speak('SITE_ENTRY', site.id);
-    GAIA_ENGAGEMENT.addSignal('site_tap');
-    GAIA_ENGAGEMENT.addMoodSignal('curiosity');
+    if (typeof GAIA_VOICE !== 'undefined' && typeof GAIA_BUBBLE !== 'undefined') {
+      const line = GAIA_VOICE.speak('SITE_ENTRY', site.id);
+      if (line && line.text) GAIA_BUBBLE.speak(line.text, line.tone, 8000);
+    }
+    if (typeof GAIA_ENGAGEMENT !== 'undefined') {
+      GAIA_ENGAGEMENT.addSignal('site_tap');
+      GAIA_ENGAGEMENT.addMoodSignal('curiosity');
+    }
     if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('site_entered', { siteId: site.id });
 
     // Build panel content
@@ -511,11 +516,11 @@ const SITE_PANEL = (() => {
     currentLayer++;
     if (currentLayer < LAYERS.length) {
       renderLayer(LAYERS[currentLayer]);
-      if (LAYERS[currentLayer] === 'data') {
+      if (LAYERS[currentLayer] === 'data' && typeof GAIA_ENGAGEMENT !== 'undefined') {
         GAIA_ENGAGEMENT.addSignal('data_reveal');
         if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('data_revealed', { siteId: currentSite?.id, layer: 'data' });
       }
-      if (LAYERS[currentLayer] === 'mystery') GAIA_ENGAGEMENT.addMoodSignal('mystery');
+      if (LAYERS[currentLayer] === 'mystery' && typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.addMoodSignal('mystery');
     }
   }
 
@@ -539,15 +544,20 @@ const SITE_PANEL = (() => {
     feedback.innerHTML = (isCorrect ? '✅ ' : '❌ ') + pred.explanation;
 
     // Signals
-    GAIA_ENGAGEMENT.addSignal('prediction');
+    if (typeof GAIA_ENGAGEMENT !== 'undefined') {
+      GAIA_ENGAGEMENT.addSignal('prediction');
+      if (isCorrect) {
+        GAIA_ENGAGEMENT.addSignal('correct_prediction');
+        GAIA_ENGAGEMENT.addMoodSignal('pride');
+      } else {
+        GAIA_ENGAGEMENT.addMoodSignal('concern');
+      }
+    }
     if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('prediction_made', { siteId: currentSite?.id, isCorrect });
-    if (isCorrect) {
-      GAIA_ENGAGEMENT.addSignal('correct_prediction');
-      GAIA_ENGAGEMENT.addMoodSignal('pride');
-      GAIA_BUBBLE.speak('RESULT', currentSite.id, 'proud');
-    } else {
-      GAIA_ENGAGEMENT.addMoodSignal('concern');
-      GAIA_BUBBLE.speak('RESULT', currentSite.id, 'nurturing');
+    if (typeof GAIA_VOICE !== 'undefined' && typeof GAIA_BUBBLE !== 'undefined') {
+      const tone = isCorrect ? 'proud' : 'nurturing';
+      const line = GAIA_VOICE.speak('RESULT', currentSite?.id, tone);
+      if (line && line.text) GAIA_BUBBLE.speak(line.text, line.tone, 5000);
     }
 
     // Auto-advance to reveal after 2s
@@ -556,9 +566,11 @@ const SITE_PANEL = (() => {
 
   // ── Add insight to journal ──
   function addInsight(text, siteId) {
-    GAIA_JOURNAL.addEntry(text, siteId);
-    GAIA_ENGAGEMENT.addSignal('insight');
-    GAIA_ENGAGEMENT.addMoodSignal('pride');
+    if (typeof GAIA_JOURNAL !== 'undefined') GAIA_JOURNAL.addEntry(text, siteId);
+    if (typeof GAIA_ENGAGEMENT !== 'undefined') {
+      GAIA_ENGAGEMENT.addSignal('insight');
+      GAIA_ENGAGEMENT.addMoodSignal('pride');
+    }
     if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('narrative_read', { siteId });
 
     // Update button
@@ -570,13 +582,17 @@ const SITE_PANEL = (() => {
     }
 
     // Speak
-    const line = GAIA_VOICE.speak('INSIGHT', siteId);
-    if (line) GAIA_BUBBLE.show(line.text, line.tone, 5000);
+    if (typeof GAIA_VOICE !== 'undefined' && typeof GAIA_BUBBLE !== 'undefined') {
+      const line = GAIA_VOICE.speak('INSIGHT', siteId);
+      if (line && line.text) GAIA_BUBBLE.speak(line.text, line.tone, 5000);
+    }
 
     // Check quests
-    const completed = GAIA_JOURNAL.checkQuestProgress('insight', siteId);
-    for (const q of completed) {
-      showQuestNotification(q);
+    if (typeof GAIA_JOURNAL !== 'undefined') {
+      const completed = GAIA_JOURNAL.checkQuestProgress('insight', siteId);
+      for (const q of completed) {
+        showQuestNotification(q);
+      }
     }
 
     // Trigger pledge prompt after completing a site investigation
@@ -635,10 +651,12 @@ const SITE_PANEL = (() => {
     currentSite = null;
 
     // Speak departure
-    const line = GAIA_VOICE.speak('DEPARTURE', null, null);
-    if (line) GAIA_BUBBLE.show(line.text, line.tone, 5000);
+    if (typeof GAIA_VOICE !== 'undefined' && typeof GAIA_BUBBLE !== 'undefined') {
+      const line = GAIA_VOICE.speak('DEPARTURE', null, null);
+      if (line && line.text) GAIA_BUBBLE.speak(line.text, line.tone, 5000);
+    }
 
-    GAIA_ENGAGEMENT.save();
+    if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.save();
   }
 
   return { open, close, nextLayer, selectPrediction, addInsight, verifyCurrentSite, switchVerifyTab, toggleGAIA, speakGAIA, addInsightFromGAIA, scrollToLayer, getCurrentLayer: () => currentLayer, getCurrentSite: () => currentSite };

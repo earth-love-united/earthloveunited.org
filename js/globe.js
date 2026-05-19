@@ -44,7 +44,7 @@ const GlobeModule = {
         if (site && window.GAIA_NODES) {
           window.GAIA_NODES.onNodeHover(site.id);
         } else if (site && window.GAIA_PRESENCE) {
-          window.GAIA_PRESENCE.speak('SITE_TEASER', site.id);
+          window.GAIA_PRESENCE.speakTeaser(site.id);
           if (window.GAIA_ENGAGEMENT) window.GAIA_ENGAGEMENT.interact();
         }
       })
@@ -52,7 +52,7 @@ const GlobeModule = {
         if (site && window.GAIA_NODES) {
           window.GAIA_NODES.onNodeHover(site.id);
         } else if (site && window.GAIA_PRESENCE) {
-          window.GAIA_PRESENCE.speak('SITE_TEASER', site.id);
+          window.GAIA_PRESENCE.speakTeaser(site.id);
           if (window.GAIA_ENGAGEMENT) window.GAIA_ENGAGEMENT.interact();
         }
       });
@@ -144,8 +144,8 @@ const GlobeModule = {
           if (typeof GAIA_NODES !== 'undefined') {
             GAIA_NODES.onNodeHover(p.id);
           } else if (typeof GAIA_PRESENCE !== 'undefined') {
-            GAIA_PRESENCE.speak('SITE_TEASER', p.id);
-            GAIA_ENGAGEMENT.interact();
+            GAIA_PRESENCE.speakTeaser(p.id);
+            if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact();
           }
           // Hide pledge tooltip when hovering sites
           window.dispatchEvent(new CustomEvent('pledgeHover', { detail: null }));
@@ -314,12 +314,13 @@ const Panel = {
     GlobeModule.world.pointOfView({ lat: site.lat, lng: site.lng, altitude: 0.8 }, 600);
     GlobeModule.world.controls().autoRotate = false;
 
-    const biome = Data.getBiome(site.currentBiome);
-    const stock = biome.density * site.area * 3.67;
-    const latest = site.ndvi[site.ndvi.length - 1];
-    const cFirst = site.climate[0], cLast = site.climate[site.climate.length - 1];
+    const biome = Data.getBiome(site.currentBiome) || { density: 0, name: 'Unknown' };
+    const stock = biome.density * (site.area || 0) * 3.67;
+    const latest = (site.ndvi && site.ndvi.length) ? site.ndvi[site.ndvi.length - 1] : { year: '—', value: 0, label: 'No data' };
+    const cFirst = (site.climate && site.climate.length) ? site.climate[0] : { temp: 0, precip: 1, year: '—' };
+    const cLast = (site.climate && site.climate.length) ? site.climate[site.climate.length - 1] : cFirst;
     const tD = (cLast.temp - cFirst.temp).toFixed(1);
-    const pD = ((cLast.precip - cFirst.precip) / cFirst.precip * 100).toFixed(0);
+    const pD = cFirst.precip ? ((cLast.precip - cFirst.precip) / cFirst.precip * 100).toFixed(0) : '0';
 
     document.getElementById('panel-content').innerHTML = `
       <div class="site-title">${site.name}</div>

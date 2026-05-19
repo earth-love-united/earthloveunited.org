@@ -45,52 +45,53 @@ const COUNTRY_DATA = (() => {
   };
 
   // ── Browser language → country code mapping (top 50) ──
+  // NOTE: Must use ISO 3166-1 alpha-3 codes to match COUNTRIES dictionary
   const LANG_MAP = {
-    zh: "CN", "zh-CN": "CN", "zh-TW": "CN", "zh-HK": "CN",
-    en: "US", "en-US": "US", "en-GB": "GB", "en-AU": "AU", "en-CA": "CA", "en-IN": "IN", "en-NG": "NG", "en-ZA": "ZA",
-    hi: "IN",
-    es: "MX", "es-ES": "ES", "es-AR": "AR", "es-MX": "MX",
-    fr: "FR", "fr-FR": "FR", "fr-CA": "CA",
-    de: "DE", "de-DE": "DE",
-    ja: "JP",
-    ko: "KR",
-    pt: "BR", "pt-BR": "BR",
-    ru: "RU",
-    ar: "SA", "ar-SA": "SA", "ar-EG": "EG", "ar-AE": "AE",
-    tr: "TR",
-    it: "IT",
-    pl: "PL",
-    nl: "NL",
-    th: "TH",
-    vi: "VN",
-    id: "ID",
-    ms: "MY",
-    fa: "IR",
-    ur: "PK",
-    bn: "BD",
-    ta: "IN",
-    te: "IN",
-    mr: "IN",
-    gu: "IN",
-    kn: "IN",
-    ml: "IN",
-    pa: "IN",
-    or: "IN",
-    as: "IN",
-    ne: "NP",
-    si: "LK",
-    my: "MM",
-    km: "KH",
-    lo: "LA",
-    tl: "PH",
-    sw: "KE",
-    am: "ET",
-    yo: "NG",
-    ig: "NG",
-    ha: "NG",
-    zu: "ZA",
-    xh: "ZA",
-    af: "ZA",
+    zh: "CHN", "zh-cn": "CHN", "zh-tw": "CHN", "zh-hk": "CHN",
+    en: "USA", "en-us": "USA", "en-gb": "GBR", "en-au": "AUS", "en-ca": "CAN", "en-in": "IND", "en-ng": "NGA", "en-za": "ZAF",
+    hi: "IND",
+    es: "MEX", "es-es": "ESP", "es-ar": "ARG", "es-mx": "MEX",
+    fr: "FRA", "fr-fr": "FRA", "fr-ca": "CAN",
+    de: "DEU", "de-de": "DEU",
+    ja: "JPN",
+    ko: "KOR",
+    pt: "BRA", "pt-br": "BRA",
+    ru: "RUS",
+    ar: "SAU", "ar-sa": "SAU", "ar-eg": "EGY", "ar-ae": "ARE",
+    tr: "TUR",
+    it: "ITA",
+    pl: "POL",
+    nl: "NLD",
+    th: "THA",
+    vi: "VNM",
+    id: "IDN",
+    ms: "IDN",  // Malaysia → closest available
+    fa: "IRN",
+    ur: "PAK",
+    bn: "BGD",
+    ta: "IND",
+    te: "IND",
+    mr: "IND",
+    gu: "IND",
+    kn: "IND",
+    ml: "IND",
+    pa: "IND",
+    or: "IND",
+    as: "IND",
+    ne: "IND",  // Nepal → closest available
+    si: "IND",  // Sri Lanka → closest available
+    my: "IND",  // Myanmar → closest available
+    km: "THA",  // Cambodia → closest available
+    lo: "THA",  // Laos → closest available
+    tl: "IDN",  // Philippines → closest available
+    sw: "NGA",  // Swahili → closest available
+    am: "NGA",  // Amharic → closest available
+    yo: "NGA",
+    ig: "NGA",
+    ha: "NGA",
+    zu: "ZAF",
+    xh: "ZAF",
+    af: "ZAF",
   };
 
   // ── Detect country from browser ──
@@ -123,11 +124,11 @@ const COUNTRY_DATA = (() => {
         "Asia/Riyadh": "SAU", "Asia/Dubai": "ARE", "Asia/Kuwait": "SAU",
         "Australia/Sydney": "AUS", "Australia/Melbourne": "AUS",
         "America/Sao_Paulo": "BRA", "America/Buenos_Aires": "ARG",
-        "America/Mexico_City": "MEX", "America/Bogota": "BRA",
+        "America/Mexico_City": "MEX", "America/Bogota": "MEX",  // Colombia → closest available
         "Africa/Cairo": "EGY", "Africa/Lagos": "NGA", "Africa/Johannesburg": "ZAF",
-        "Africa/Nairobi": "NGA", "Africa/Addis_Ababa": "ETH",
-        "Asia/Manila": "IDN", "Asia/Kuala_Lumpur": "IDN",
-        "Pacific/Auckland": "AUS",
+        "Africa/Nairobi": "NGA",  // Kenya → closest available
+        "Asia/Manila": "IDN",  // Philippines → closest available
+        "Asia/Kuala_Lumpur": "IDN",  // Malaysia → closest available
         "Europe/Istanbul": "TUR",
       };
       const tzCode = tzCountryMap[tz];

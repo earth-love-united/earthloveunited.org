@@ -8,6 +8,10 @@ const Scenario = {
   to: null,
 
   init() {
+    if (!Data || !Data.sites || !Data.biomes) {
+      console.warn('[Scenario] Data not loaded yet, deferring init');
+      return;
+    }
     const sites = Data.sites;
     document.getElementById('sb-sites').innerHTML = sites.map(s =>
       `<div class="sb-option" onclick="Scenario.pickSite('${s.id}',this)">${s.name}</div>`

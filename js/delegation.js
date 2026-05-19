@@ -13,6 +13,7 @@ const DELEGATION = (() => {
   function createGreeting() {
     if (greetingEl) return;
 
+    if (typeof COUNTRY_DATA === 'undefined') return;
     detected = COUNTRY_DATA.detectCountry();
     countryData = detected.code ? COUNTRY_DATA.getComparison(detected.code) : null;
 
@@ -155,14 +156,11 @@ const DELEGATION = (() => {
 
     // Show GAIA speaking about the country
     if (typeof GAIA_BUBBLE !== 'undefined') {
-      const line = GAIA_VOICE.speak('FACT', null, 'urgent');
-      if (line) {
-        GAIA_BUBBLE.speak(
-          `${countryData.flag} ${countryData.name}: ${countryData.formattedEmissions} in 2023. ${getComparisonContext(countryData)}`,
-          'urgent',
-          8000
-        );
-      }
+      GAIA_BUBBLE.speak(
+        `${countryData.flag} ${countryData.name}: ${countryData.formattedEmissions} in 2023. ${getComparisonContext(countryData)}`,
+        'urgent',
+        8000
+      );
     }
 
     // Dismiss the greeting

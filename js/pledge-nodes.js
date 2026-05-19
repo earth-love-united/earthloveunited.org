@@ -23,6 +23,10 @@ const PLEDGE_NODES = (() => {
 
   // ── Register all countries into GLOBE_OVERLAY ──
   function registerAll() {
+    if (typeof GLOBE_OVERLAY === 'undefined') {
+      console.warn('[PLEDGE_NODES] GLOBE_OVERLAY not available, skipping registration');
+      return;
+    }
     _nodes.forEach(node => {
       GLOBE_OVERLAY.registerSite({
         siteId: 'pledge_' + node.iso,
@@ -204,6 +208,7 @@ const PLEDGE_NODES = (() => {
 
   // ── Open overlay for a country ──
   function openCountry(iso) {
+    if (typeof GLOBE_OVERLAY === 'undefined') return;
     const siteId = 'pledge_' + iso;
     if (GLOBE_OVERLAY.getSite(siteId)) {
       GLOBE_OVERLAY.open(siteId);

@@ -119,7 +119,7 @@ const App = {
 
     // Speak greeting after hero
     setTimeout(() => {
-      if (typeof GAIA_BUBBLE !== 'undefined') {
+      if (typeof GAIA_VOICE !== 'undefined' && typeof GAIA_BUBBLE !== 'undefined') {
         const line = GAIA_VOICE.speak('GREETING', null, 'mysterious');
         if (line) GAIA_BUBBLE.speak(line.text, line.tone, 8000);
       }
@@ -127,6 +127,7 @@ const App = {
 
     // Idle nudge loop
     setInterval(() => {
+      if (typeof GAIA_ENGAGEMENT === 'undefined') return;
       const nudge = GAIA_ENGAGEMENT.shouldFireIdleNudge();
       if (nudge && typeof GAIA_BUBBLE !== 'undefined') {
         GAIA_BUBBLE.idleNudge();
@@ -196,16 +197,16 @@ const App = {
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') Panel.close(); });
 
     // ── Track all interactions for engagement ──
-    document.addEventListener('click', () => GAIA_ENGAGEMENT.interact());
-    document.addEventListener('scroll', () => GAIA_ENGAGEMENT.interact(), { passive: true });
-    document.addEventListener('keydown', () => GAIA_ENGAGEMENT.interact());
+    document.addEventListener('click', () => { if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact(); });
+    document.addEventListener('scroll', () => { if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact(); }, { passive: true });
+    document.addEventListener('keydown', () => { if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact(); });
   },
 
   enterSite() {
     document.getElementById('hero').classList.add('hidden');
     document.getElementById('topbar').classList.add('visible');
-    setTimeout(() => { document.getElementById('quiz').scrollIntoView({ behavior: 'smooth' }); }, 300);
-    GAIA_ENGAGEMENT.interact();
+    setTimeout(() => { document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth' }); }, 300);
+    if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact();
   },
 
   flyToSite(id) {

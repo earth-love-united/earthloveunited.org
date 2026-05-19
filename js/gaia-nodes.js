@@ -1147,26 +1147,31 @@ const GAIA_NODES = (() => {
   // ═══════════════════════════════════════════
 
   function renderAntalyaSynthesis(container, site) {
+    if (typeof GAIA_KNOWLEDGE === 'undefined') { container.innerHTML = '<p style="color:var(--text3);font-style:italic">Knowledge synthesis loading...</p>'; return; }
     container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('antalya', site);
     _setupSynthesisRefresh(container, 'antalya', site);
   }
 
   function renderSriLankaSynthesis(container, site) {
+    if (typeof GAIA_KNOWLEDGE === 'undefined') { container.innerHTML = '<p style="color:var(--text3);font-style:italic">Knowledge synthesis loading...</p>'; return; }
     container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('sri_lanka', site);
     _setupSynthesisRefresh(container, 'sri_lanka', site);
   }
 
   function renderBeninSynthesis(container, site) {
+    if (typeof GAIA_KNOWLEDGE === 'undefined') { container.innerHTML = '<p style="color:var(--text3);font-style:italic">Knowledge synthesis loading...</p>'; return; }
     container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('benin', site);
     _setupSynthesisRefresh(container, 'benin', site);
   }
 
   function renderBorneoSynthesis(container, site) {
+    if (typeof GAIA_KNOWLEDGE === 'undefined') { container.innerHTML = '<p style="color:var(--text3);font-style:italic">Knowledge synthesis loading...</p>'; return; }
     container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis('borneo', site);
     _setupSynthesisRefresh(container, 'borneo', site);
   }
 
   function _setupSynthesisRefresh(container, siteId, site) {
+    if (typeof GAIA_KNOWLEDGE === 'undefined') return;
     // If already loaded, render immediately
     if (GAIA_KNOWLEDGE.isReady()) {
       container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis(siteId, site);
@@ -1174,7 +1179,9 @@ const GAIA_NODES = (() => {
     }
     // Otherwise, listen for the knowledge-ready event
     const handler = () => {
-      container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis(siteId, site);
+      if (typeof GAIA_KNOWLEDGE !== 'undefined') {
+        container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis(siteId, site);
+      }
       document.removeEventListener('gaia:knowledge-ready', handler);
     };
     document.addEventListener('gaia:knowledge-ready', handler);
