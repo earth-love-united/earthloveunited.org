@@ -42,6 +42,7 @@ const GaiaKeyGate = (() => {
   function hasKey() { return _keyEntered; }
 
   function submitKey(apiKey) {
+    console.log('[GaiaKeyGate] submitKey called, key length:', apiKey?.length);
     if (!apiKey || apiKey.trim().length < 10) {
       return { valid: false, error: 'That doesn\'t look like a valid key.' };
     }
@@ -50,6 +51,7 @@ const GaiaKeyGate = (() => {
     _keyEntered = true;
     _saveKeyHash(hash);
     try { sessionStorage.setItem('gaia_api_key', apiKey.trim()); } catch (e) {}
+    console.log('[GaiaKeyGate] Key saved, hash:', hash, 'keyEntered:', _keyEntered);
     return { valid: true, hash };
   }
 
@@ -165,14 +167,15 @@ const GaiaKeyGate = (() => {
     if (_formHandlerSetup) return;
     const form = document.getElementById('gaia-key-form');
     if (form) {
+      console.log('[GaiaKeyGate] Setting up form handler');
       form.addEventListener('submit', (e) => {
         e.preventDefault();
+        console.log('[GaiaKeyGate] Form submitted');
         const input = document.getElementById('gaia-key-input');
         if (input) {
           const result = submitKey(input.value);
           if (result.valid) {
             closeModal();
-            // Trigger unlock response
             const unlock = getUnlockResponse();
             if (typeof GaiaState !== 'undefined') {
               GaiaState.addScore('api_key_entered', {});
@@ -184,6 +187,8 @@ const GaiaKeyGate = (() => {
         }
       });
       _formHandlerSetup = true;
+    } else {
+      console.warn('[GaiaKeyGate] Form not found');
     }
   }
   function closeModal() {
