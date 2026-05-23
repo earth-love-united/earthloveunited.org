@@ -252,6 +252,7 @@ const GLOBE_EVENTS = (() => {
         const color = TYPE_COLORS[p._eventType]?.point || '#ffffff';
         return p._severity === 'extreme' ? color : color + 'E6'; 
       })
+      .pointLabel(() => '')
       .pointResolution(32);
 
     GlobeModule.world.labelsData([]);
@@ -267,7 +268,8 @@ const GLOBE_EVENTS = (() => {
       })
       .ringMaxRadius(p => p._eventType === 'cop' ? 4 : (SEVERITY_RADIUS[p._severity] || 3))
       .ringPropagationSpeed(p => p._severity === 'extreme' ? 3 : 1)
-      .ringRepeatPeriod(p => p._severity === 'extreme' ? 800 : 2500);
+      .ringRepeatPeriod(p => p._severity === 'extreme' ? 800 : 2500)
+      .ringLabel(() => '');
 
     // Click handler
     GlobeModule.world.onPointClick(p => {
