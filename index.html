@@ -15,7 +15,7 @@
   default-src 'self';
   script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  connect-src 'self' https://gml.noaa.gov https://api.carbonmark.com https://services.sentinel-hub.com https://modis.ornl.gov https://registry.vcsprogram.com https://my.goldstandard.org https://cdm.unfccc.int https://production-api.globalforestwatch.org;
+  connect-src 'self' https://gml.noaa.gov https://api.carbonmark.com https://services.sentinel-hub.com https://modis.ornl.gov https://registry.vcsprogram.com https://my.goldstandard.org https://cdm.unfccc.int https://production-api.globalforestwatch.org https://cdn.jsdelivr.net https://raw.githubusercontent.com https://eonet.gsfc.nasa.gov;
   img-src 'self' data: https://cdn.jsdelivr.net https://unpkg.com https://*.tile.openstreetmap.org;
   font-src 'self' https://fonts.gstatic.com;
 ">
@@ -39,8 +39,8 @@
 <link rel="stylesheet" href="css/ndvi-verifier.css">
 <link rel="stylesheet" href="css/registry-check.css">
 
-<!-- Globe.gl (CDN) -->
-<script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
+<!-- Globe.gl (Local) -->
+<script src="js/vendor/globe.gl.js"></script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
 </head>
 <body>
@@ -94,8 +94,36 @@
 <!-- ═══ SCROLL PROGRESS ═══ -->
 <div id="scroll-progress"></div>
 
+<!-- ═══ GLOBE MODE SWITCHER ═══ -->
+<div id="globe-modes" class="globe-modes">
+  <button class="gm-btn active" data-mode="countries" aria-label="Countries mode">
+    <span class="gm-icon">🌍</span><span class="gm-label">Countries</span>
+  </button>
+  <button class="gm-btn" data-mode="ndvi" aria-label="Earth in Time mode">
+    <span class="gm-icon">🌿</span><span class="gm-label">Earth in Time</span>
+  </button>
+  <button class="gm-btn" data-mode="events" aria-label="Events mode">
+    <span class="gm-icon">📍</span><span class="gm-label">Events</span>
+  </button>
+</div>
+
+<!-- ═══ NDVI PROMPT ═══ -->
+<div id="ndvi-prompt" class="ndvi-prompt">
+  <span style="font-size:18px">🖌️</span>
+  Click anywhere on the globe to start restoring land
+</div>
+
 <!-- ═══ GLOBE ═══ -->
 <div id="globeViz"></div>
+
+<!-- ═══ NDVI TIMELINE (shown in Earth in Time mode only) ═══ -->
+<div id="ndvi-timeline" class="ndvi-timeline" style="display:none">
+  <span class="nt-label">2000</span>
+  <input type="range" id="ndvi-slider" min="2000" max="2024" step="1" value="2020" aria-label="Year selector">
+  <span class="nt-year" id="ndvi-year">2020</span>
+  <button id="ndvi-play" class="nt-play" aria-label="Play timeline">▶</button>
+  <span class="nt-attribution">Vegetation data: NASA MODIS · Public Domain</span>
+</div>
 
 <!-- ═══ SECTIONS ═══ -->
 <div class="sections">
@@ -266,6 +294,7 @@
 
 <!-- JS Foundation (must load first) -->
 <script src="js/gaia-utils.js"></script>
+<script src="js/module-contracts.js"></script>
 <script src="js/data.js"></script>
 <script src="js/quiz.js"></script>
 <script src="js/cycle.js"></script>
@@ -273,6 +302,11 @@
 <script src="js/counters.js"></script>
 <script src="js/scenario.js"></script>
 <script src="js/globe.js"></script>
+<!-- Globe Mode System -->
+<script src="js/globe-modes.js"></script>
+<script src="js/globe-restore.js?v=1779401429"></script>
+<script src="js/globe-ndvi.js?v=1779401429"></script>
+<script src="js/globe-events.js"></script>
 <!-- GAIA Foundation Layer -->
 <script src="js/gaia-legacy/gaia-data.js"></script>
 <script src="js/gaia-legacy/gaia-signals.js"></script>
@@ -298,9 +332,18 @@
 <script src="js/ndvi-verifier.js"></script>
 <script src="js/gaia-presence.js"></script>
 <script src="js/registry-check.js"></script>
+<script src="js/module-validator.js"></script>
 <script src="js/app.js"></script>
 
-
-
+<!-- Dev Tools — remove for production -->
+<script src="tools/smoke-test.js"></script>
+<script src="tools/stack-lint.js"></script>
+<script src="tools/event-tracer.js"></script>
+<script src="tools/page-state.js"></script>
+<script src="tools/impact-analyzer.js"></script>
+<script src="tools/design-tokens.js"></script>
+<script src="tools/state-snapshot.js"></script>
+<script src="tools/diff-guard.js"></script>
+<script src="tools/dep-graph.js"></script>
 </body>
 </html>

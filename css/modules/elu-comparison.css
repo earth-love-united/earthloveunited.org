@@ -1,0 +1,139 @@
+/* ── Comparison ─────────────────────────────────── */
+
+.elu-stage-comparison { animation: stageFadeIn 0.5s ease; }
+
+.elu-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.elu-comp-row {
+  display: flex;
+  border-bottom: 1px solid rgba(226,223,216,0.08);
+}
+
+.elu-comp-header {
+  background: var(--elu-surface-raised);
+  font-weight: 600;
+  color: var(--elu-accent);
+}
+
+.elu-comp-cat {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.elu-comp-col {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+
+.elu-comp-row:not(.elu-comp-header) { transition: background var(--elu-transition); }
+.elu-comp-row:not(.elu-comp-header):hover { background: var(--elu-accent-dim); }
+
+/* ── Calculator ─────────────────────────────────── */
+
+.elu-stage-calculator { animation: stageFadeIn 0.5s ease; }
+
+.elu-calculator-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.elu-calculator-group {
+  background: var(--elu-surface-raised);
+  padding: 1rem;
+  border-radius: var(--elu-radius-sm);
+}
+
+.elu-calculator-input {
+  width: 100%;
+  padding: 0.5rem;
+  background: var(--elu-surface);
+  border: 1px solid rgba(226,223,216,0.2);
+  border-radius: var(--elu-radius-sm);
+  color: var(--elu-text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.elu-calculator-input:focus {
+  outline: none;
+  border-color: var(--elu-accent);
+}
+
+.elu-calculator-result {
+  padding: 1.5rem;
+  background: var(--elu-surface-raised);
+  border-radius: var(--elu-radius-sm);
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--elu-text);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Globe ──────────────────────────────────────── */
+
+.elu-stage-globe { animation: stageFadeIn 0.5s ease; text-align: center; }
+
+.elu-globe-container canvas {
+  border-radius: var(--elu-radius);
+  display: block;
+  margin: 0 auto;
+}
+
+.elu-globe-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.elu-globe-marker-desc {
+  padding: 0.5rem 1rem;
+  background: var(--elu-surface-raised);
+  border: 1px solid rgba(226,223,216,0.1);
+  border-radius: var(--elu-radius-sm);
+  font-size: 0.9rem;
+  color: var(--elu-text-muted);
+}
+
+/* ── Completion ─────────────────────────────────── */
+
+.elu-journey-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.elu-journey-card {
+  background: var(--elu-surface-raised);
+  border: 1px solid rgba(226,223,216,0.1);
+  border-radius: var(--elu-radius);
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.elu-journey-card .elu-jc-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--elu-accent);
+  margin-bottom: 0.25rem;
+}
+
+.elu-journey-card .elu-jc-label {
+  font-size: 0.85rem;
+  color: var(--elu-text-muted);
+}

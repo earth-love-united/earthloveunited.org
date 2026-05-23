@@ -3,7 +3,7 @@
 // Must load BEFORE all other scripts.
 //
 // Two systems:
-// 1. Safe DOM:    $(), $html(), $text(), $on()
+// 1. Safe DOM:    $(), $html(), $text(), $class(), $on(), $show(), $hide()
 // 2. Safe Call:   safeCall(), safeGet()
 // ═══════════════════════════════════════════════════════════
 
@@ -66,6 +66,100 @@ function $on(id, event, handler) {
 }
 
 /**
+ * Safe show — sets display to '' (default flow).
+ * @param {string} id - DOM element ID
+ * @returns {HTMLElement|null}
+ */
+function $show(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = '';
+  return el;
+}
+
+/**
+ * Safe hide — sets display to 'none'.
+ * @param {string} id - DOM element ID
+ * @returns {HTMLElement|null}
+ */
+function $hide(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+  return el;
+}
+
+// ═══════════════════════════════════════════════════════════
+// ERROR BOUNDARY — visible error reporting for dev mode
+// Shows a non-blocking banner at the bottom of the page
+// when running on localhost. Production is unaffected.
+// ═══════════════════════════════════════════════════════════
+
+const _DEV = typeof location !== 'undefined' &&
+  (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+const _devErrors = [];
+
+/**
+ * Report an error visibly (dev) or silently (prod).
+ * @param {string} source - Where the error came from (e.g. 'GlobeModule.init()')
+ * @param {Error|string} err - The error object or message
+ */
+function reportError(source, err) {
+  const msg = `[${source}] ${err.message || err}`;
+  console.error(msg, err);
+  if (_DEV) {
+    _devErrors.push(msg);
+    _renderErrorBanner();
+  }
+}
+
+function _renderErrorBanner() {
+  let banner = document.getElementById('dev-error-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'dev-error-banner';
+    banner.style.cssText =
+      'position:fixed;bottom:0;left:0;right:0;z-index:99999;' +
+      'background:#1a0000;border-top:2px solid #e74c3c;padding:8px 16px;' +
+      'font:12px/1.6 monospace;color:#ff6b6b;max-height:200px;overflow-y:auto;' +
+      'pointer-events:auto';
+    const close = document.createElement('button');
+    close.textContent = '✕';
+    close.style.cssText =
+      'position:absolute;top:4px;right:8px;background:none;border:none;' +
+      'color:#ff6b6b;font-size:16px;cursor:pointer';
+    close.onclick = () => banner.remove();
+    banner.appendChild(close);
+    document.body.appendChild(banner);
+  }
+  const lines = _devErrors.map(e => `<div>🔴 ${e}</div>`).join('');
+  banner.innerHTML = lines + banner.querySelector('button')?.outerHTML || lines;
+  // Re-attach close button
+  const closeBtn = banner.querySelector('button');
+  if (!closeBtn) {
+    const btn = document.createElement('button');
+    btn.textContent = '✕';
+    btn.style.cssText =
+      'position:absolute;top:4px;right:8px;background:none;border:none;' +
+      'color:#ff6b6b;font-size:16px;cursor:pointer';
+    btn.onclick = () => banner.remove();
+    banner.appendChild(btn);
+  }
+}
+
+/**
+ * Report a dev-mode warning (not an error — just a heads-up).
+ * Shows in console only, not in the error banner.
+ * @param {string} source
+ * @param {string} msg
+ */
+function reportWarn(source, msg) {
+  if (_DEV) console.warn(`[${source}] ${msg}`);
+}
+
+// ═══════════════════════════════════════════════════════════
+// SAFE CROSS-MODULE CALLS
+// ═══════════════════════════════════════════════════════════
+
+/**
  * Safe cross-module method call.
  * Replaces the pattern:
  *   if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.addSignal('x');
@@ -83,7 +177,7 @@ function safeCall(globalName, methodName, ...args) {
     try {
       return obj[methodName](...args);
     } catch (err) {
-      console.warn(`[safeCall] ${globalName}.${methodName}() threw:`, err.message);
+      reportError(`${globalName}.${methodName}()`, err);
       return undefined;
     }
   }
@@ -109,7 +203,10 @@ function safeGet(globalName, propOrMethod, fallback) {
   if (obj == null) return fallback;
   const val = obj[propOrMethod];
   if (typeof val === 'function') {
-    try { return val.call(obj); } catch { return fallback; }
+    try { return val.call(obj); } catch (err) {
+      reportError(`${globalName}.${propOrMethod}()`, err);
+      return fallback;
+    }
   }
   return val !== undefined ? val : fallback;
 }
@@ -121,6 +218,58 @@ function safeGet(globalName, propOrMethod, fallback) {
  */
 function hasModule(globalName) {
   return typeof window[globalName] !== 'undefined' && window[globalName] != null;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SAFE CHAIN — crash-proof fluent API wrapper
+// Wraps any object so that missing methods are skipped
+// instead of breaking the entire chain.
+//
+// Usage:
+//   safeChain(globe).specularImageUrl('...').unknownMethod().pointsData(data);
+//   // If .specularImageUrl doesn't exist → skipped, chain continues
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Wrap an object to make fluent method chains crash-safe.
+ * If a method doesn't exist, it's skipped and the chain continues.
+ * If a method throws, the error is reported and the chain continues.
+ *
+ * @param {Object} obj - The object to wrap (e.g. a Globe instance)
+ * @param {string} [label] - Optional label for error reporting
+ * @returns {Proxy} - A proxy that safely delegates method calls
+ */
+function safeChain(obj, label) {
+  const _label = label || obj?.constructor?.name || 'Object';
+  return new Proxy(obj, {
+    get(target, prop) {
+      // Pass through non-function properties directly
+      if (typeof prop === 'symbol') return target[prop];
+
+      const val = target[prop];
+
+      // Property exists and is a function — wrap it
+      if (typeof val === 'function') {
+        return (...args) => {
+          try {
+            const result = val.apply(target, args);
+            // If method returns the object itself (fluent pattern), keep wrapping
+            return result === target ? safeChain(target, _label) : result;
+          } catch (e) {
+            reportError(`safeChain(${_label}).${prop}()`, e);
+            return safeChain(target, _label); // continue chain on error
+          }
+        };
+      }
+
+      // Property exists but isn't a function — return it
+      if (val !== undefined) return val;
+
+      // Property doesn't exist — return a no-op function that continues the chain
+      reportWarn('safeChain', `${_label}.${prop}() does not exist — skipping`);
+      return (..._args) => safeChain(target, _label);
+    }
+  });
 }
 
 // ═══════════════════════════════════════════════════════════

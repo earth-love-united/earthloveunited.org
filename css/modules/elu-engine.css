@@ -1,0 +1,719 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MODULE ENGINE — Base Styles
+   Shared across all 7 learning modules
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --elu-bg: #030305;
+  --elu-surface: #0a0e14;
+  --elu-surface-raised: #111820;
+  --elu-text: #e2dfd8;
+  --elu-text-muted: #9a9590;
+  --elu-accent: #4ecdc4;
+  --elu-accent-dim: rgba(78, 205, 196, 0.15);
+  --elu-warn: #c45c4a;
+  --elu-warn-dim: rgba(196, 92, 74, 0.15);
+  --elu-success: #5bbf72;
+  --elu-success-dim: rgba(91, 191, 114, 0.15);
+  --elu-radius: 12px;
+  --elu-radius-sm: 8px;
+  --elu-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --elu-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Per-module accent overrides */
+[data-module="01-carbon-atom"] { --elu-accent: #7be8d0; --elu-accent-dim: rgba(123,232,208,0.15); }
+[data-module="02-keeling-curve"] { --elu-accent: #42a5f5; --elu-accent-dim: rgba(66,165,245,0.15); }
+[data-module="03-carbon-budget"] { --elu-accent: #f5876a; --elu-accent-dim: rgba(245,135,106,0.15); }
+[data-module="04-restoration-projects"] { --elu-accent: #66bb6a; --elu-accent-dim: rgba(102,187,106,0.15); }
+[data-module="05-carbon-market"] { --elu-accent: #ab47bc; --elu-accent-dim: rgba(171,71,188,0.15); }
+[data-module="06-drawdown-solutions"] { --elu-accent: #ffa726; --elu-accent-dim: rgba(255,167,38,0.15); }
+[data-module="07-carbon-footprint"] { --elu-accent: #26c6da; --elu-accent-dim: rgba(38,198,218,0.15); }
+
+/* ── Module Shell ──────────────────────────────── */
+
+.elu-module {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  min-height: 60vh;
+  position: relative;
+}
+
+.elu-module-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.elu-module-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--elu-text);
+  flex: 1;
+  min-width: 200px;
+}
+
+.elu-stage-indicator {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--elu-text-muted);
+  white-space: nowrap;
+}
+
+.elu-progress-bar {
+  flex: 1;
+  min-width: 120px;
+  height: 4px;
+  background: var(--elu-surface-raised);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.elu-progress-fill {
+  height: 100%;
+  background: var(--elu-accent);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+/* ── Buttons ───────────────────────────────────── */
+
+.elu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--elu-radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all var(--elu-transition);
+  text-decoration: none;
+}
+
+.elu-btn-primary {
+  background: var(--elu-accent);
+  color: var(--elu-bg);
+}
+.elu-btn-primary:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.elu-btn-secondary {
+  background: transparent;
+  color: var(--elu-text);
+  border: 1px solid rgba(226,223,216,0.2);
+}
+.elu-btn-secondary:hover {
+  border-color: var(--elu-accent);
+  background: var(--elu-accent-dim);
+}
+
+.elu-btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+.elu-btn-icon {
+  font-size: 1rem;
+}
+
+.elu-btn-back {
+  margin-right: auto;
+}
+
+/* ── Stage Body ─────────────────────────────────── */
+
+.elu-module-body {
+  min-height: 300px;
+  position: relative;
+}
+
+.elu-stage-text { animation: stageFadeIn 0.5s ease; }
+
+.elu-stage-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--elu-text);
+  margin-bottom: 0.5rem;
+}
+
+.elu-stage-content {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--elu-text-muted);
+  max-width: 700px;
+}
+
+.elu-stage-media {
+  margin: 1.5rem 0;
+  border-radius: var(--elu-radius);
+  overflow: hidden;
+  background: var(--elu-surface);
+}
+
+.elu-stage-media img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  display: block;
+}
+
+.elu-stage-media video {
+  width: 100%;
+  max-height: 400px;
+  display: block;
+}
+
+.elu-callouts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.elu-callout {
+  background: var(--elu-surface-raised);
+  border-left: 3px solid var(--elu-accent);
+  padding: 0.75rem 1rem;
+  border-radius: 0 var(--elu-radius-sm) var(--elu-radius-sm) 0;
+  font-size: 0.95rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.elu-callout strong {
+  color: var(--elu-accent);
+}
+
+/* ── Quiz ───────────────────────────────────────── */
+
+.elu-stage-quiz { animation: stageFadeIn 0.5s ease; }
+
+.elu-question {
+  margin-bottom: 1.5rem;
+}
+
+.elu-question-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--elu-text);
+  margin-bottom: 0.75rem;
+}
+
+.elu-quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.elu-quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--elu-surface-raised);
+  border: 1px solid rgba(226,223,216,0.1);
+  border-radius: var(--elu-radius-sm);
+  color: var(--elu-text);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--elu-transition);
+  text-align: left;
+  width: 100%;
+  max-width: 500px;
+}
+
+.elu-quiz-option:hover:not(:disabled) {
+  border-color: var(--elu-accent);
+  background: var(--elu-accent-dim);
+}
+
+.elu-quiz-option.elu-selected {
+  border-color: var(--elu-accent);
+  background: var(--elu-accent-dim);
+}
+
+.elu-quiz-option.elu-correct-answer {
+  border-color: var(--elu-success);
+  background: var(--elu-success-dim);
+}
+
+.elu-quiz-option:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.elu-option-letter {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--elu-accent);
+  min-width: 24px;
+}
+
+.elu-quiz-input {
+  padding: 0.6rem 0.8rem;
+  background: var(--elu-surface-raised);
+  border: 1px solid rgba(226,223,216,0.2);
+  border-radius: var(--elu-radius-sm);
+  color: var(--elu-text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  width: 250px;
+  max-width: 100%;
+}
+
+.elu-quiz-input:focus {
+  outline: none;
+  border-color: var(--elu-accent);
+}
+
+.elu-question-feedback {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  min-height: 1.4em;
+}
+
+.elu-feedback-correct { color: var(--elu-success); }
+.elu-feedback-wrong   { color: var(--elu-warn); }
+.elu-feedback-warn    { color: var(--elu-text-muted); }
+
+.elu-quiz-submit {
+  margin-top: 1rem;
+}
+
+/* ── Slider ─────────────────────────────────────── */
+
+.elu-stage-slider { animation: stageFadeIn 0.5s ease; }
+
+.elu-stage-desc {
+  font-size: 1rem;
+  color: var(--elu-text-muted);
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+}
+
+.elu-slider-group {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--elu-surface-raised);
+  border-radius: var(--elu-radius-sm);
+}
+
+.elu-slider-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.elu-slider-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--elu-text);
+  min-width: 120px;
+}
+
+.elu-slider-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--elu-accent);
+  min-width: 60px;
+  text-align: right;
+}
+
+.elu-slider-unit {
+  color: var(--elu-text-muted);
+  font-size: 0.85rem;
+}
+
+.elu-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--elu-surface);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.elu-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--elu-accent);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.elu-slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--elu-text-muted);
+  margin-top: 0.25rem;
+}
+
+.elu-slider-result {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--elu-surface-raised);
+  border-radius: var(--elu-radius-sm);
+  font-size: 1.1rem;
+  text-align: center;
+  color: var(--elu-text);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Branch ─────────────────────────────────────── */
+
+.elu-stage-branch { animation: stageFadeIn 0.5s ease; }
+
+.elu-branch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.elu-branch-card {
+  background: var(--elu-surface-raised);
+  border: 2px solid rgba(226,223,216,0.1);
+  border-radius: var(--elu-radius);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all var(--elu-transition);
+  text-align: center;
+}
+
+.elu-branch-card:hover:not(.elu-branch-selected) {
+  border-color: rgba(78,205,196,0.3);
+  transform: translateY(-2px);
+}
+
+.elu-branch-card.elu-branch-selected {
+  border-color: var(--elu-accent);
+  background: var(--elu-accent-dim);
+  box-shadow: 0 0 20px rgba(78,205,196,0.2);
+}
+
+.elu-branch-card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.elu-branch-card-label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--elu-text);
+  margin-bottom: 0.4rem;
+}
+
+.elu-branch-card-desc {
+  font-size: 0.85rem;
+  color: var(--elu-text-muted);
+  line-height: 1.5;
+}
+
+.elu-branch-card-timescale {
+  margin-top: 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--elu-accent);
+  opacity: 0.8;
+}
+
+/* ── Gauge ──────────────────────────────────────── */
+
+.elu-stage-gauge { animation: stageFadeIn 0.5s ease; text-align: center; }
+
+.elu-gauge-container {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+
+.elu-gauge-ring {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--elu-accent) calc(var(--pct, 50) * 1%),
+    var(--elu-surface-raised) 0
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.elu-gauge-fill {
+  /* Rendered via inline style width */
+}
+
+.elu-gauge-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.5rem;
+  font-weight: 700;
+  position: absolute;
+}
+
+.elu-gauge-label {
+  font-size: 1rem;
+  color: var(--elu-text-muted);
+  margin-top: 0.5rem;
+}
+
+/* ── Card Stack (Filters + Grid) ───────────────── */
+
+.elu-stage-cards { animation: stageFadeIn 0.5s ease; }
+
+.elu-card-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.elu-filter-chip {
+  padding: 0.4rem 0.9rem;
+  background: var(--elu-surface-raised);
+  border: 1px solid rgba(226,223,216,0.15);
+  border-radius: 20px;
+  color: var(--elu-text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--elu-transition);
+}
+
+.elu-filter-chip:hover, .elu-filter-chip.active {
+  background: var(--elu-accent-dim);
+  border-color: var(--elu-accent);
+  color: var(--elu-accent);
+}
+
+.elu-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.elu-card-item {
+  background: var(--elu-surface-raised);
+  border: 1px solid rgba(226,223,216,0.1);
+  border-radius: var(--elu-radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--elu-transition);
+  perspective: 1000px;
+}
+
+.elu-card-item:hover {
+  border-color: var(--elu-accent);
+  transform: translateY(-2px);
+}
+
+.elu-card-item.flipped .elu-card-front { transform: rotateY(180deg); }
+.elu-card-item.flipped .elu-card-back  { transform: rotateY(0deg); }
+
+.elu-card-front, .elu-card-back {
+  padding: 1.25rem;
+  backface-visibility: hidden;
+  transition: transform 0.5s ease;
+}
+
+.elu-card-back {
+  transform: rotateY(180deg);
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--elu-surface);
+  border-top: 1px solid rgba(226,223,216,0.1);
+  overflow-y: auto;
+}
+
+.elu-card-item { position: relative; }
+
+.elu-card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.elu-card-item h4 {
+  font-size: 1rem;
+  color: var(--elu-text);
+  margin-bottom: 0.3rem;
+}
+
+.elu-card-subtitle {
+  font-size: 0.85rem;
+  color: var(--elu-text-muted);
+}
+
+.elu-card-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  background: var(--elu-accent-dim);
+  color: var(--elu-accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.elu-card-detail {
+  font-size: 0.9rem;
+  color: var(--elu-text-muted);
+  line-height: 1.6;
+}
+
+.elu-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.elu-card-stats span {
+  font-size: 0.8rem;
+  color: var(--elu-accent);
+  background: var(--elu-accent-dim);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* ── Timeline ───────────────────────────────────── */
+
+.elu-stage-timeline { animation: stageFadeIn 0.5s ease; }
+
+.elu-timeline-canvas {
+  width: 100%;
+  max-width: 800px;
+  border-radius: var(--elu-radius-sm);
+  background: var(--elu-surface);
+  display: block;
+  margin: 0 auto;
+}
+
+.elu-timeline-scrubber {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.elu-timeline-range {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: var(--elu-surface-raised);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.elu-timeline-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--elu-accent);
+  cursor: pointer;
+}
+
+.elu-timeline-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--elu-text);
+  white-space: nowrap;
+}
+
+.elu-timeline-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--elu-accent);
+  white-space: nowrap;
+}
+
+.elu-module-footer {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(226,223,216,0.1);
+}
+
+/* ── Completion ─────────────────────────────────── */
+
+.elu-completion {
+  text-align: center;
+  padding: 3rem 1rem;
+  animation: stageFadeIn 0.8s ease;
+}
+
+.elu-completion-badge {
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  border-radius: 50%;
+  background: var(--elu-success-dim);
+  color: var(--elu-success);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 auto 1.5rem;
+}
+
+.elu-completion h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  color: var(--elu-text);
+  margin-bottom: 0.5rem;
+}
+
+.elu-completion p {
+  color: var(--elu-text-muted);
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+/* ── Animations ──────────────────────────────────── */
+
+@keyframes stageFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ──────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .elu-module { padding: 1rem; }
+  .elu-module-title { font-size: 1.3rem; }
+  .elu-branch-grid { grid-template-columns: 1fr; }
+  .elu-card-grid { grid-template-columns: 1fr; }
+  .elu-timeline-canvas { height: 150px; }
+  .elu-gauge-ring { width: 140px; height: 140px; }
+  .elu-gauge-value { font-size: 1.8rem; }
+  .elu-slider-group { padding: 0.75rem; }
+}

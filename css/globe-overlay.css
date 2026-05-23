@@ -5,7 +5,7 @@
 
 #globe-overlay {
   position: fixed;
-  top: 10px;
+  top: 56px;   /* Clear the topbar (z-index 100, ~50px tall) */
   left: 10px;
   bottom: 10px;
   height: auto;
