@@ -268,3 +268,8 @@ const GaiaState = (() => {
 
 if (typeof module !== 'undefined') module.exports = GaiaState;
 if (typeof window !== 'undefined') window.GaiaState = GaiaState;
+
+  MODULE_CONTRACTS.register('GaiaState', {
+    provides: ['init', 'getState', 'setState', 'getMood', 'setMood', 'registerCallbacks', 'process'],
+    requires: [],
+  });

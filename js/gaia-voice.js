@@ -239,3 +239,8 @@ const GAIA_VOICE = (() => {
   };
 })();
 window.GAIA_VOICE = GAIA_VOICE;
+
+  MODULE_CONTRACTS.register('GAIA_VOICE', {
+    provides: ['init', 'speak', 'silent', 'setVoice', 'getVoice'],
+    requires: [],
+  });

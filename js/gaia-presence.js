@@ -76,4 +76,9 @@ const GAIA_PRESENCE = (() => {
     pickLine
   };
 })();
-window.GAIA_PRESENCE = GAIA_PRESENCE;
+window.GAIA_PRESENCE = GAIA_PRESENCE
+
+  MODULE_CONTRACTS.register('GAIA_PRESENCE', {
+    provides: ['init', 'show', 'hide', 'tease', 'destroy'],
+    requires: ['GAIA_BUBBLE'],
+  });;

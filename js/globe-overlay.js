@@ -56,6 +56,9 @@ const GLOBE_OVERLAY = (() => {
       <div class="globe-overlay-gaia" id="globe-overlay-gaia"></div>
       <div class="globe-overlay-tabs" id="globe-overlay-tabs"></div>
       <div class="globe-overlay-content" id="globe-overlay-content"></div>
+      <button class="globe-overlay-toggle" id="globe-overlay-toggle" aria-label="Toggle Panel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
     `;
 
     // Insert into body — NOT into globeViz, which has z-index:1 and would
@@ -64,6 +67,23 @@ const GLOBE_OVERLAY = (() => {
 
     // Close button
     overlayEl.querySelector('#globe-overlay-close').addEventListener('click', close);
+    
+    // Toggle Slider
+    overlayEl.querySelector('#globe-overlay-toggle').addEventListener('click', () => {
+      if (isOpen) {
+        close();
+      } else {
+        if (!currentSiteId) {
+          // If no site is loaded yet, just grab the first one from registry
+          const keys = Object.keys(registry);
+          if (keys.length > 0) open(keys[0]);
+        } else {
+          // Re-open current site
+          overlayEl.classList.add('open');
+          isOpen = true;
+        }
+      }
+    });
   }
 
   // ── Open overlay for a site ──
@@ -255,3 +275,8 @@ const GLOBE_OVERLAY = (() => {
   };
 })();
 window.GLOBE_OVERLAY = GLOBE_OVERLAY;
+
+  MODULE_CONTRACTS.register('GLOBE_OVERLAY', {
+    provides: ['isOpen', 'getCurrentSite'],
+    requires: [],
+  });

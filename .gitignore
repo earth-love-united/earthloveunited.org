@@ -1,48 +1,86 @@
-# OS
+# ═══════════════════════════════════════════════════════════════
+# Earth Love United — .gitignore
+# ═══════════════════════════════════════════════════════════════
+# Large datasets live on Hugging Face. Local copies are gitignored.
+# See tools/fetch-data.sh for download instructions.
+
+# ─── OS ─────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 
-# Dependencies
-node_modules/
-
-# Large files (should be in KV/R2, not served to browser)
-dis/knowledge-index.json
-dis/knowledge-index.json.gz
-
-# Build artifacts
-dis/dist/
-dist/
-
-# Binary / large asset files
-textures/ndvi/
-
-# Vendored third-party scripts
-js/vendor/
-
-# Backup files
-*.bak*
-*.bak.*/
-
-# Design module artifacts
-design/modules/serve.py
-
-# Environment
-.env
-.env.local
-
-# Editor
+# ─── Editor / IDE ───────────────────────────────────────────────
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# Python
+# ─── Dependencies (we are BARE METAL — should never appear) ────
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ─── Environment & secrets ─────────────────────────────────────
+.env
+.env.*
+*.pem
+*.key
+secrets/
+.wrangler/
+
+# ─── Python ─────────────────────────────────────────────────────
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.venv/
+venv/
+.python-version
 
-# Large data files (build artifacts / intermediate)
-carbon-projects/unified/carbon_projects_*.jsonl
-carbon-projects/unified/carbon_projects_v*.jsonl
-!carbon-projects/unified/carbon_projects_final.jsonl
+# ─── Agent tooling artifacts (local context, not for repo) ─────
+agents-insights/
+.hermes-skills.yaml
+.cursor/
+.continue/
+
+# ─── Build / dist artifacts ─────────────────────────────────────
+dist/
+dis/dist/
+build/
+
+# ─── Vendored third-party scripts (re-fetch from upstream CDN) ─
+js/vendor/
+
+# ─── Large data files (live on Hugging Face Datasets) ──────────
+# Climate knowledge corpus
+climate-dataset/data/raw/
+climate-dataset/data/processed/
+dis/knowledge-index.json
+dis/knowledge-index.json.gz
+dis/geological-memory.json
+dis/climate-facts.json
+dis/climate-bifurcation-points.json
+
+# Carbon projects — all heavy data lives on Hugging Face (see tools/fetch-data.sh)
+carbon-projects/unified/*.jsonl
+carbon-projects/unified/*.parquet
+carbon-projects/data/
+carbon-projects/pledge-reality/data/
+
+# Scraper outputs (re-scrape or fetch from HF)
+tools/scraper/data/external/
+tools/scraper/data/scraped/
+
+# Large binary assets
+textures/ndvi/
+
+# ─── Backup files ───────────────────────────────────────────────
+*.bak
+*.bak.*
+*.bak*/
+*.orig
+
+# ─── Local-only design / scratch files ─────────────────────────
+design/modules/serve.py
+_dead/

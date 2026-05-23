@@ -752,3 +752,8 @@ const GaiaMind = (() => {
 
 if (typeof module !== 'undefined') module.exports = GaiaMind;
 if (typeof window !== 'undefined') window.GaiaMind = GaiaMind;
+
+  MODULE_CONTRACTS.register('GaiaMind', {
+    provides: ['init', 'serialize', 'deserialize', 'process', 'getMood', 'setContext', 'getContext'],
+    requires: [],
+  });

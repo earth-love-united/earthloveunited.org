@@ -10,7 +10,10 @@
 
 window.GaiaDOMAdapter = (() => {
 
-  // ─── CONFIG ───
+  MODULE_CONTRACTS.register('GaiaDOMAdapter', {
+    provides: ['init', 'destroy'],
+    requires: ['GaiaState', 'GaiaMind'],
+  });
   const CONFIG = {
     DEBUG: false
   };

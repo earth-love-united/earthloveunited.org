@@ -148,3 +148,8 @@ const GaiaQuests = (() => {
 
 if (typeof module !== 'undefined') module.exports = GaiaQuests;
 if (typeof window !== 'undefined') window.GaiaQuests = GaiaQuests;
+
+  MODULE_CONTRACTS.register('GaiaQuests', {
+    provides: ['init', 'getQuests', 'completeQuest', 'getProgress'],
+    requires: [],
+  });

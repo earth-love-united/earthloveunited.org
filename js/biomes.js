@@ -82,3 +82,8 @@ const Biomes = {
 };
 
 window.Biomes = Biomes;
+
+  MODULE_CONTRACTS.register('Biomes', {
+    provides: ['init', 'getBiome', 'getAllBiomes', 'classify'],
+    requires: [],
+  });

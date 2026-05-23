@@ -22,6 +22,11 @@
  */
 
 window.GaiaEmbeddings = (function () {
+
+  MODULE_CONTRACTS.register('GaiaEmbeddings', {
+    provides: ['load', 'search', 'getStatus'],
+    requires: [],
+  });
   let _loaded = false;
   let _loading = null;
 

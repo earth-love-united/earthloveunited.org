@@ -273,4 +273,9 @@ const GaiaKeyGate = (() => {
 if (typeof module !== 'undefined') module.exports = GaiaKeyGate;
 if (typeof window !== 'undefined') {
   window.GaiaKeyGate = GaiaKeyGate;
+
+  MODULE_CONTRACTS.register('GaiaKeyGate', {
+    provides: ['init', 'check', 'unlock', 'isUnlocked'],
+    requires: [],
+  });
 }

@@ -290,3 +290,8 @@ if (hasModule('Data')) {
   console.log('[RegistryCheck] Module ready — call RegistryCheck.checkSite(id) to verify');
 }
 window.RegistryCheck = RegistryCheck;
+
+  MODULE_CONTRACTS.register('RegistryCheck', {
+    provides: ['init', 'check', 'getRegistry', 'getProject'],
+    requires: [],
+  });

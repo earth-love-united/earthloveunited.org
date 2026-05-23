@@ -305,3 +305,8 @@ if (document.readyState === 'loading') {
 }
 
 window.App = App;
+
+  MODULE_CONTRACTS.register('App', {
+    provides: ['init'],
+    requires: ['MODULE_CONTRACTS', 'SITE_PANEL', 'PLEDGE_WALL', 'GAIA_BUBBLE', 'CARBON_CLOCK', 'DELEGATION', 'GAIA_VOICE', 'GAIA_DATA'],
+  });

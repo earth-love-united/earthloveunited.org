@@ -161,6 +161,11 @@ const GaiaVoice = (() => {
 if (typeof module !== 'undefined') module.exports = GaiaVoice;
 if (typeof window !== 'undefined') {
   window.GaiaVoice = GaiaVoice;
+
+  MODULE_CONTRACTS.register('GaiaVoice', {
+    provides: ['init', 'speak', 'setLibrary', 'getLibrary', 'destroy'],
+    requires: [],
+  });
   // Auto-init on load so voices are ready when user enables
   // (speechSynthesis.getVoices() is async in Chrome — needs early init)
   GaiaVoice.init();

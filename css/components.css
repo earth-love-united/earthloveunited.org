@@ -313,6 +313,46 @@
 .gm-icon{ font-size:14px; line-height:1; }
 .gm-label{ white-space:nowrap; }
 
+/* ═══ EVENTS FILTER ═══ */
+.events-filter{
+  position:fixed; top:124px; left:50%; transform:translateX(-50%);
+  z-index:95; pointer-events:auto;
+  display:flex; flex-wrap:nowrap; align-items:center; gap:12px;
+  background:rgba(8,10,18,0.4); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  border:1px solid rgba(78,205,196,0.08); border-radius:12px;
+  padding:6px 16px; box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  width:max-content; max-width:95vw; overflow-x:auto; scrollbar-width:none;
+}
+.ef-group { display:flex; gap:8px; align-items:center; }
+.ef-divider { width:1px; height:24px; background:rgba(255,255,255,0.1); }
+.ef-btn{
+  padding:6px 12px; border:1px solid rgba(255,255,255,0.1); border-radius:20px;
+  background:rgba(255,255,255,0.02); color:rgba(255,255,255,0.4);
+  font-family:var(--font); font-size:11px; font-weight:500;
+  cursor:pointer; transition:all 0.2s; white-space:nowrap;
+  letter-spacing:0.5px;
+}
+.ef-btn:hover{ color:rgba(255,255,255,0.7); background:rgba(255,255,255,0.05); }
+.ef-btn.active{
+  color:var(--mint); background:rgba(78,205,196,0.1);
+  border-color:rgba(78,205,196,0.3);
+  box-shadow:0 0 8px rgba(78,205,196,0.1);
+}
+
+/* ═══ EVENT HOVER TOOLTIP ═══ */
+#event-hover-tooltip {
+  position:fixed; z-index:110; pointer-events:none;
+  font-family:var(--body); font-size:12px;
+  background:rgba(8,10,18,0.92); color:var(--mint);
+  border:1px solid rgba(78,205,196,0.15); border-radius:6px;
+  padding:6px 12px; backdrop-filter:blur(8px);
+  transform:translate(-50%, -120%); opacity:0; transition:opacity 0.15s;
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+#event-hover-tooltip.visible { opacity:1; }
+#event-hover-tooltip .tt-type { font-size:9px; text-transform:uppercase; letter-spacing:1px; color:var(--teal); margin-bottom:2px; }
+#event-hover-tooltip .tt-name { font-weight:500; color:#fff; }
+
 /* ═══ NDVI TIMELINE SLIDER ═══ */
 .ndvi-timeline{
   position:fixed; bottom:40px; left:50%; transform:translateX(-50%);

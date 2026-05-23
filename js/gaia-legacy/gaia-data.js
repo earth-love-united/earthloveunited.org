@@ -273,3 +273,8 @@ const GAIA_DATA = (() => {
   };
 })();
 window.GAIA_DATA = GAIA_DATA;
+
+  MODULE_CONTRACTS.register('GAIA_DATA', {
+    provides: ['init', 'getVisitCount', 'getFirstVisit', 'getTotalTime'],
+    requires: [],
+  });

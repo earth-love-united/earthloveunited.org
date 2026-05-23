@@ -149,3 +149,8 @@ const GAIA_JOURNAL = (() => {
   };
 })();
 window.GAIA_JOURNAL = GAIA_JOURNAL;
+
+  MODULE_CONTRACTS.register('GAIA_JOURNAL', {
+    provides: ['init', 'addEntry', 'getEntries', 'getAllQuests', 'save', 'load', 'clear'],
+    requires: [],
+  });

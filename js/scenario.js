@@ -84,3 +84,8 @@ const Scenario = {
 };
 
 window.Scenario = Scenario;
+
+  MODULE_CONTRACTS.register('Scenario', {
+    provides: ['init', 'load', 'play', 'pause', 'reset'],
+    requires: [],
+  });

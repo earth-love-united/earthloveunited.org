@@ -190,3 +190,8 @@ const COUNTRY_DATA = (() => {
   };
 })();
 window.COUNTRY_DATA = COUNTRY_DATA;
+
+  MODULE_CONTRACTS.register('COUNTRY_DATA', {
+    provides: ['init', 'getCountry', 'getCountries', 'lookup', 'getByCode', 'search'],
+    requires: [],
+  });

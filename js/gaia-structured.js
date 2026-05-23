@@ -18,6 +18,11 @@
  */
 
 window.GaiaStructured = (function () {
+
+  MODULE_CONTRACTS.register('GaiaStructured', {
+    provides: ['load', 'query', 'getStatus'],
+    requires: [],
+  });
   let _pledges = null;
   let _projects = null;
   let _paleo = null;

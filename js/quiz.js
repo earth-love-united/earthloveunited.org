@@ -78,3 +78,8 @@ const Quiz = {
 };
 
 window.Quiz = Quiz;
+
+  MODULE_CONTRACTS.register('Quiz', {
+    provides: ['init', 'start', 'next', 'answer', 'getResult', 'reset'],
+    requires: [],
+  });

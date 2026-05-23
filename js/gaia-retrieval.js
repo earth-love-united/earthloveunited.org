@@ -18,6 +18,11 @@
  */
 
 window.GaiaRetrieval = (function () {
+
+  MODULE_CONTRACTS.register('GaiaRetrieval', {
+    provides: ['search', 'getStatus'],
+    requires: ['GaiaEmbeddings', 'GaiaReranker'],
+  });
   // ─── State ───────────────────────────────────────────────────────
   let _index = null;          // { v, n, avgdl, src, chunks, df, post }
   let _loading = null;        // in-flight promise

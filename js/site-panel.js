@@ -664,6 +664,11 @@ const SITE_PANEL = (() => {
 })();
 window.SITE_PANEL = SITE_PANEL;
 
+  MODULE_CONTRACTS.register('SITE_PANEL', {
+    provides: ['open', 'close', 'nextLayer', 'selectPrediction', 'addInsight', 'verifyCurrentSite', 'switchVerifyTab', 'toggleGAIA', 'speakGAIA', 'addInsightFromGAIA', 'scrollToLayer'],
+    requires: ['GLOBE_OVERLAY'],
+  });
+
 
 // ═══════════════════════════════════════════════
 // PLEDGE PANEL — Country Interrogation Terminal
@@ -810,3 +815,8 @@ const PLEDGE_PANEL = (() => {
   return { open, close };
 })();
 window.PLEDGE_PANEL = PLEDGE_PANEL;
+
+MODULE_CONTRACTS.register('PLEDGE_PANEL', {
+  provides: ['open', 'close'],
+  requires: [],
+});

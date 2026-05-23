@@ -22,3 +22,8 @@ const Cycle = {
 };
 
 window.Cycle = Cycle;
+
+  MODULE_CONTRACTS.register('Cycle', {
+    provides: ['init', 'update', 'getCurrentPhase', 'setPhase'],
+    requires: [],
+  });

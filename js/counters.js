@@ -28,3 +28,8 @@ const Counters = {
 };
 
 window.Counters = Counters;
+
+  MODULE_CONTRACTS.register('Counters', {
+    provides: ['init', 'increment', 'getCount', 'reset'],
+    requires: [],
+  });

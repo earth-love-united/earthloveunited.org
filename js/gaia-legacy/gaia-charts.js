@@ -220,3 +220,8 @@ const GAIA_CHARTS = (() => {
   };
 })();
 window.GAIA_CHARTS = GAIA_CHARTS;
+
+  MODULE_CONTRACTS.register('GAIA_CHARTS', {
+    provides: ['init', 'render', 'update', 'destroy'],
+    requires: [],
+  });

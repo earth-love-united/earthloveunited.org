@@ -430,3 +430,8 @@ const PLEDGE_WALL = (() => {
   };
 })();
 window.PLEDGE_WALL = PLEDGE_WALL;
+
+  MODULE_CONTRACTS.register('PLEDGE_WALL', {
+    provides: ['init', 'open', 'close', 'submit', 'renderPledges', 'getPledges', 'getPledgeCount', 'hasPledged', 'destroy'],
+    requires: ['COUNTRY_DATA', 'DELEGATION', 'GAIA_BUBBLE', 'GAIA_JOURNAL'],
+  });

@@ -302,3 +302,8 @@ setTimeout(() => {
   }
 }, 2000); // Start 2s after page load, after critical UI is ready
 window.GAIA_KNOWLEDGE = GAIA_KNOWLEDGE;
+
+  MODULE_CONTRACTS.register('GAIA_KNOWLEDGE', {
+    provides: ['init', 'query', 'search', 'getContext', 'destroy'],
+    requires: [],
+  });

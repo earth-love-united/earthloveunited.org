@@ -193,3 +193,8 @@ const DELEGATION = (() => {
   };
 })();
 window.DELEGATION = DELEGATION;
+
+  MODULE_CONTRACTS.register('DELEGATION', {
+    provides: ['init', 'getDetected', 'getCountryData', 'destroy'],
+    requires: ['GAIA_BUBBLE'],
+  });

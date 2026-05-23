@@ -412,3 +412,8 @@ function _ndviInit() {
 }
 _ndviInit();
 window.NDVIVerifier = NDVIVerifier;
+
+  MODULE_CONTRACTS.register('NDVIVerifier', {
+    provides: ['init', 'activate', 'deactivate', 'verify', 'getStatus'],
+    requires: [],
+  });

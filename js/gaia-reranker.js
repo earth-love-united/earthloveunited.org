@@ -21,6 +21,11 @@
  */
 
 window.GaiaReranker = (function () {
+
+  MODULE_CONTRACTS.register('GaiaReranker', {
+    provides: ['load', 'rerank', 'getStatus'],
+    requires: [],
+  });
   let _model = null;
   let _loaded = false;
   let _loading = null;

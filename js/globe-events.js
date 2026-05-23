@@ -7,34 +7,57 @@
 const GLOBE_EVENTS = (() => {
   let _events = null;
   let _eonetEvents = [];
-  let _gdacsEvents = [];
+  let _usgsEvents = [];
   let _active = false;
   let _initialized = false;
   let _previousPointsData = null;
   let _previousLabelsData = null;
   let _previousRingsData = null;
 
+  let _mouseX = 0;
+  let _mouseY = 0;
+
+  // State for the events filter panel
+  let _activeFilters = {
+    live: true,
+    historic: true,
+    fire: true,
+    earthquake: false, // OFF by default to reduce visual bloat
+    volcano: true,
+    storm: true,
+    flood: true,
+    drought: true,
+    elu: true
+  };
+
   // ── Event type → visual config ──
   const TYPE_COLORS = {
-    fire:       { point: '#ff6b35', ring: 'rgba(255,107,53,', label: '#ff8c5a' },
-    flood:      { point: '#3d9be9', ring: 'rgba(61,155,233,', label: '#6bb3f0' },
-    drought:    { point: '#e6a817', ring: 'rgba(230,168,23,', label: '#f0c040' },
-    storm:      { point: '#b088f9', ring: 'rgba(176,136,249,', label: '#cbb3fc' },
-    volcano:    { point: '#e63946', ring: 'rgba(230,57,70,',   label: '#f07178' },
-    earthquake: { point: '#f4a261', ring: 'rgba(244,162,97,', label: '#f8c49c' },
-    cop:        { point: '#ffd700', ring: 'rgba(255,215,0,',  label: '#ffe44d' },
-    elu_site:   { point: '#4ecdc4', ring: 'rgba(78,205,196,', label: '#7be8d0' },
+    fire:       { point: '#ff6b35', ring: 'rgba(255,107,53,', label: '#ff8c5a', text: '🔥 Wildfire' },
+    flood:      { point: '#3d9be9', ring: 'rgba(61,155,233,', label: '#6bb3f0', text: '🌊 Flood' },
+    drought:    { point: '#e6a817', ring: 'rgba(230,168,23,', label: '#f0c040', text: '☀️ Drought' },
+    storm:      { point: '#b088f9', ring: 'rgba(176,136,249,', label: '#cbb3fc', text: '🌩️ Severe Storm' },
+    volcano:    { point: '#e63946', ring: 'rgba(230,57,70,',   label: '#f07178', text: '🌋 Volcano' },
+    earthquake: { point: '#f4a261', ring: 'rgba(244,162,97,', label: '#f8c49c', text: '💥 Earthquake' },
+    cop:        { point: '#ffd700', ring: 'rgba(255,215,0,',  label: '#ffe44d', text: '🌍 COP Summit' },
+    elu_site:   { point: '#4ecdc4', ring: 'rgba(78,205,196,', label: '#7be8d0', text: '🌿 ELU Project' },
   };
 
   const SEVERITY_RADIUS = {
-    moderate: 3,
-    severe:   5,
-    extreme:  7,
+    severe:   3,   // Small, subtle rings
+    extreme:  14,  // MASSIVE rings for catastrophic events
   };
 
   async function init() {
     if (_initialized) return;
     _initialized = true;
+
+    _initFilterUI();
+    
+    window.addEventListener('mousemove', e => {
+      _mouseX = e.clientX;
+      _mouseY = e.clientY;
+      _updateHoverTooltipPos();
+    });
 
     try {
       const res = await fetch('data/climate-events.json');
@@ -58,22 +81,40 @@ const GLOBE_EVENTS = (() => {
         reportWarn('GLOBE_EVENTS', 'Failed to fetch NASA EONET data: ' + e.message);
       }
 
-      // UN GDACS
+      // USGS Earthquakes
       try {
-        const gdacsRes = await fetch('https://www.gdacs.org/xml/rss.xml');
-        if (gdacsRes.ok) {
-          const gdacsText = await gdacsRes.text();
-          _gdacsEvents = _parseGdacsData(gdacsText);
-          console.log(`[GLOBE_EVENTS] loaded live UN GDACS data — ${_gdacsEvents.length} active events`);
+        const usgsRes = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson');
+        if (usgsRes.ok) {
+          const usgsData = await usgsRes.json();
+          _usgsEvents = _parseUsgsData(usgsData.features || []);
+          console.log(`[GLOBE_EVENTS] loaded live USGS data — ${_usgsEvents.length} active events`);
           if (_active) activate();
         }
       } catch (e) {
-        reportWarn('GLOBE_EVENTS', 'Failed to fetch UN GDACS data: ' + e.message);
+        reportWarn('GLOBE_EVENTS', 'Failed to fetch USGS data: ' + e.message);
       }
 
     } catch (err) {
       reportError('GLOBE_EVENTS.init()', err);
     }
+  }
+
+  function _initFilterUI() {
+    const btns = document.querySelectorAll('.ef-btn');
+    btns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const filterStr = e.target.getAttribute('data-filter');
+        if (filterStr) {
+          _activeFilters[filterStr] = !_activeFilters[filterStr];
+          if (_activeFilters[filterStr]) {
+            e.target.classList.add('active');
+          } else {
+            e.target.classList.remove('active');
+          }
+          if (_active) activate();
+        }
+      });
+    });
   }
 
   function _parseEonetData(rawEvents) {
@@ -94,7 +135,7 @@ const GLOBE_EVENTS = (() => {
          else if (catId === 'volcanoes') type = 'volcano';
       }
 
-      // Limit wildfires to reduce bloat
+      // Limit minor wildfires to reduce bloat
       if (type === 'fire') {
         if (wildfireCount >= 30) continue;
         wildfireCount++;
@@ -106,70 +147,47 @@ const GLOBE_EVENTS = (() => {
         lng: coords[0],
         name: e.title,
         type: type,
-        severity: (type === 'volcano' || type === 'storm') ? 'severe' : 'moderate', // Leaner rings
+        severity: (type === 'volcano') ? 'extreme' : ((type === 'storm') ? 'severe' : 'moderate'),
         year: date.getFullYear(),
         impact: 'LIVE EVENT — Data from NASA EONET',
-        desc: e.description || \`Active \${type} event tracked by NASA. Data updated in real-time.\`,
+        desc: e.description || `Active ${type} event tracked by NASA. Data updated in real-time.`,
         link: e.sources && e.sources.length > 0 ? e.sources[0].url : e.link,
         _isLive: true,
-        _isGdacs: false
+        _source: 'NASA'
       });
     }
     return parsed;
   }
 
-  function _parseGdacsData(xmlString) {
+  function _parseUsgsData(features) {
     const parsed = [];
-    try {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(xmlString, "text/xml");
-      const items = doc.querySelectorAll('item');
+    
+    for (const f of features) {
+      const coords = f.geometry.coordinates;
+      const mag = f.properties.mag;
+      const title = f.properties.title;
       
-      items.forEach(item => {
-        const title = item.querySelector('title')?.textContent || 'Global Event';
-        const desc = item.querySelector('description')?.textContent || '';
-        const link = item.querySelector('link')?.textContent || '';
-        const latNode = item.getElementsByTagName('geo:lat')[0] || item.getElementsByTagNameNS('*', 'lat')[0];
-        const lngNode = item.getElementsByTagName('geo:long')[0] || item.getElementsByTagNameNS('*', 'long')[0] || item.getElementsByTagName('geo:lon')[0];
-        const iconNode = item.getElementsByTagName('gdacs:icon')[0] || item.getElementsByTagNameNS('*', 'icon')[0];
-        
-        const latStr = latNode ? latNode.textContent : null;
-        const lngStr = lngNode ? lngNode.textContent : null;
-        const iconUrl = iconNode ? iconNode.textContent : '';
+      if (!coords || coords.length < 2) continue;
 
-        if (!latStr || !lngStr) return;
+      let severity = 'moderate';
+      if (mag >= 7.0) severity = 'extreme';
+      else if (mag >= 5.5) severity = 'severe';
 
-        let type = 'storm';
-        if (iconUrl.includes('/EQ.')) type = 'earthquake';
-        else if (iconUrl.includes('/VO.')) type = 'volcano';
-        else if (iconUrl.includes('/TC.')) type = 'storm';
-        else if (iconUrl.includes('/FL.')) type = 'flood';
-        else if (iconUrl.includes('/DR.')) type = 'drought';
-
-        let severity = 'severe';
-        if (iconUrl.includes('/Red/')) severity = 'extreme';
-        else if (iconUrl.includes('/Orange/')) severity = 'severe';
-        else if (iconUrl.includes('/Green/')) severity = 'moderate';
-
-        const dateNode = item.querySelector('pubDate')?.textContent;
-        const year = dateNode ? new Date(dateNode).getFullYear() : new Date().getFullYear();
-
-        parsed.push({
-          lat: parseFloat(latStr),
-          lng: parseFloat(lngStr),
-          name: title.split(' (')[0] || title,
-          type: type,
-          severity: severity,
-          year: year,
-          impact: 'LIVE EVENT — Data from UN GDACS',
-          desc: desc,
-          link: link,
-          _isLive: true,
-          _isGdacs: true
-        });
+      const date = new Date(f.properties.time);
+      
+      parsed.push({
+        lat: coords[1],
+        lng: coords[0],
+        name: title,
+        type: 'earthquake',
+        severity: severity,
+        year: date.getFullYear(),
+        impact: 'LIVE EVENT — Data from USGS',
+        desc: `Magnitude ${mag} earthquake recorded by the United States Geological Survey.`,
+        link: f.properties.url,
+        _isLive: true,
+        _source: 'USGS'
       });
-    } catch (e) {
-      console.warn('Error parsing GDACS XML', e);
     }
     return parsed;
   }
@@ -178,12 +196,31 @@ const GLOBE_EVENTS = (() => {
     if (!_events || !hasModule('GlobeModule') || !GlobeModule.world) return;
     _active = true;
 
+    const filterPanel = $('events-filter');
+    if (filterPanel) filterPanel.style.display = 'flex';
+
     _previousPointsData = GlobeModule.world.pointsData();
     _previousLabelsData = GlobeModule.world.labelsData();
     _previousRingsData = GlobeModule.world.ringsData();
 
     // Merge all events
-    const allEvents = [...(_events || []), ..._eonetEvents, ..._gdacsEvents];
+    let allEvents = [...(_events || []), ..._eonetEvents, ..._usgsEvents];
+    
+    // Apply Filters
+    allEvents = allEvents.filter(e => {
+      // 1. Time Filter (Live)
+      if (e._isLive && !_activeFilters['live']) return false;
+
+      // 2. Separate ELU/COP from historic
+      const t = e.type;
+      if (t === 'elu_site' || t === 'cop') return _activeFilters['elu'];
+
+      // 3. Historic Filter (only applies to non-live, non-COP natural events)
+      if (!e._isLive && !_activeFilters['historic']) return false;
+
+      return _activeFilters[t];
+    });
+
     const eventPoints = allEvents.map(e => ({
       lat: e.lat,
       lng: e.lng,
@@ -197,48 +234,42 @@ const GLOBE_EVENTS = (() => {
       _link: e.link,
       _eluSite: e.elu_site,
       _isLive: e._isLive,
-      _isGdacs: e._isGdacs,
-      id: e.name.toLowerCase().replace(/\\s+/g, '_'),
+      _source: e._source,
+      id: e.name.toLowerCase().replace(/\s+/g, '_'),
     }));
 
     GlobeModule.world
       .pointsData(eventPoints)
       .pointLat('lat').pointLng('lng')
-      .pointAltitude(p => p._eventType === 'cop' ? 0.04 : 0.02)
+      .pointAltitude(0.002) // Flattened cylinders
       .pointRadius(p => {
+        if (p._severity === 'extreme') return 1.2;
         if (p._eventType === 'cop') return 0.8;
         if (p._eventType === 'elu_site') return 0.7;
-        return 0.5;
+        return 0.4;
       })
-      .pointColor(p => TYPE_COLORS[p._eventType]?.point || '#ffffff')
-      .pointResolution(16);
-
-    GlobeModule.world
-      .labelsData(eventPoints.filter(p => !p._isLive))
-      .labelLat('lat').labelLng('lng')
-      .labelText(p => {
-        const year = p._year ? \` '\${String(p._year).slice(-2)}\` : '';
-        return \`\${p.name}\${year}\`;
+      .pointColor(p => {
+        const color = TYPE_COLORS[p._eventType]?.point || '#ffffff';
+        return p._severity === 'extreme' ? color : color + 'E6'; 
       })
-      .labelSize(p => p._eventType === 'cop' ? 1.6 : 1.2)
-      .labelDotRadius(0.3)
-      .labelDotOrientation(() => 'bottom')
-      .labelColor(p => TYPE_COLORS[p._eventType]?.label || 'rgba(255,255,255,0.8)')
-      .labelResolution(3)
-      .labelAltitude(p => p._eventType === 'cop' ? 0.05 : 0.03);
+      .pointResolution(32);
 
+    GlobeModule.world.labelsData([]);
+
+    // RINGS OVERHAUL
     GlobeModule.world
-      .ringsData(eventPoints.filter(p => p._severity === 'extreme' || p._eventType === 'cop' || p._isLive))
+      .ringsData(eventPoints.filter(p => p._severity === 'extreme' || p._severity === 'severe' || p._eventType === 'cop'))
       .ringLat('lat').ringLng('lng')
       .ringColor(p => {
         const base = TYPE_COLORS[p._eventType]?.ring || 'rgba(255,255,255,';
-        const opacity = p._isLive ? 0.4 : 1.0; // Lower base opacity for live events
-        return t => \`\${base}\${opacity * (1 - t)})\`;
+        const opacity = p._severity === 'extreme' ? 1.0 : 0.5;
+        return t => `${base}${opacity * (1 - t)})`;
       })
-      .ringMaxRadius(p => SEVERITY_RADIUS[p._severity] || 4)
-      .ringPropagationSpeed(p => p._eventType === 'cop' ? 2 : 1.5)
-      .ringRepeatPeriod(p => p._eventType === 'cop' ? 1500 : (p._isLive ? 2000 : 1000));
+      .ringMaxRadius(p => p._eventType === 'cop' ? 4 : (SEVERITY_RADIUS[p._severity] || 3))
+      .ringPropagationSpeed(p => p._severity === 'extreme' ? 3 : 1)
+      .ringRepeatPeriod(p => p._severity === 'extreme' ? 800 : 2500);
 
+    // Click handler
     GlobeModule.world.onPointClick(p => {
       if (typeof _globeClickHandler !== 'undefined' && _globeClickHandler && p) {
         _globeClickHandler(p.lat, p.lng);
@@ -246,6 +277,15 @@ const GLOBE_EVENTS = (() => {
       }
       if (p._type === 'event') {
         _showEventInfo(p);
+      }
+    });
+
+    // Hover handler
+    GlobeModule.world.onPointHover(p => {
+      if (p && p._type === 'event') {
+        _showEventHover(p);
+      } else {
+        _hideEventHover();
       }
     });
 
@@ -261,11 +301,15 @@ const GLOBE_EVENTS = (() => {
     if (!hasModule('GlobeModule') || !GlobeModule.world) return;
     _active = false;
 
+    const filterPanel = $('events-filter');
+    if (filterPanel) filterPanel.style.display = 'none';
+
     if (_previousPointsData) GlobeModule.world.pointsData(_previousPointsData);
     if (_previousLabelsData) GlobeModule.world.labelsData(_previousLabelsData);
     if (_previousRingsData) GlobeModule.world.ringsData(_previousRingsData);
 
     _hideEventInfo();
+    _hideEventHover();
 
     GlobeModule.world.onPointClick(site => {
       if (typeof _globeClickHandler !== 'undefined' && _globeClickHandler && site) {
@@ -275,6 +319,40 @@ const GLOBE_EVENTS = (() => {
       if (hasModule('GAIA_NODES')) GAIA_NODES.onNodeClick(site.id);
       else if (hasModule('SITE_PANEL')) SITE_PANEL.open(site);
     });
+
+    GlobeModule.world.onPointHover(null);
+  }
+
+  function _showEventHover(p) {
+    let tooltip = $('event-hover-tooltip');
+    if (!tooltip) {
+      tooltip = document.createElement('div');
+      tooltip.id = 'event-hover-tooltip';
+      document.body.appendChild(tooltip);
+    }
+    
+    const typeLabel = TYPE_COLORS[p._eventType]?.text || 'Event';
+    const yearStr = p._year ? ` (${p._year})` : '';
+
+    tooltip.innerHTML = `
+      <div class="tt-type" style="color:${TYPE_COLORS[p._eventType]?.point || '#fff'}">${typeLabel}</div>
+      <div class="tt-name">${p.name}${yearStr}</div>
+    `;
+    tooltip.classList.add('visible');
+    _updateHoverTooltipPos();
+  }
+
+  function _hideEventHover() {
+    const tooltip = $('event-hover-tooltip');
+    if (tooltip) tooltip.classList.remove('visible');
+  }
+
+  function _updateHoverTooltipPos() {
+    const tooltip = $('event-hover-tooltip');
+    if (tooltip && tooltip.classList.contains('visible')) {
+      tooltip.style.left = _mouseX + 'px';
+      tooltip.style.top = _mouseY + 'px';
+    }
   }
 
   function _showEventInfo(p) {
@@ -286,29 +364,28 @@ const GLOBE_EVENTS = (() => {
       document.body.appendChild(panel);
     }
 
-    const typeLabel = {
-      fire: '🔥 Wildfire', flood: '🌊 Flood', drought: '☀️ Drought',
-      storm: '🌩️ Severe Storm', volcano: '🌋 Volcano', earthquake: '💥 Earthquake',
-      cop: '🌍 COP Summit', elu_site: '🌿 ELU Project',
-    };
+    const typeLabel = TYPE_COLORS[p._eventType]?.text || 'Event';
 
     let liveBadge = '';
     if (p._isLive) {
-      if (p._isGdacs) liveBadge = '<div style="background:rgba(78,205,196,0.15);color:#4ecdc4;font-size:10px;font-weight:700;padding:4px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;letter-spacing:1px;border:1px solid rgba(78,205,196,0.3);">🌍 LIVE UN DATA (GDACS)</div>';
-      else liveBadge = '<div style="background:rgba(230,57,70,0.15);color:#ff6b6b;font-size:10px;font-weight:700;padding:4px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;letter-spacing:1px;border:1px solid rgba(230,57,70,0.3);">🔴 LIVE NASA DATA (EONET)</div>';
+      if (p._source === 'USGS') {
+        liveBadge = '<div style="background:rgba(244,162,97,0.15);color:#f4a261;font-size:10px;font-weight:700;padding:4px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;letter-spacing:1px;border:1px solid rgba(244,162,97,0.3);">🌍 LIVE USGS DATA</div>';
+      } else {
+        liveBadge = '<div style="background:rgba(230,57,70,0.15);color:#ff6b6b;font-size:10px;font-weight:700;padding:4px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;letter-spacing:1px;border:1px solid rgba(230,57,70,0.3);">🔴 LIVE NASA DATA</div>';
+      }
     }
 
-    panel.innerHTML = \`
+    panel.innerHTML = `
       <button class="eip-close" onclick="this.parentElement.classList.remove('open')" aria-label="Close">×</button>
-      <div class="eip-type" style="color:\${TYPE_COLORS[p._eventType]?.point || '#fff'}">\${typeLabel[p._eventType] || 'Event'}</div>
-      \${liveBadge}
-      <h3 class="eip-title">\${p.name}</h3>
-      <div class="eip-year">\${p._year}</div>
-      <div class="eip-impact">\${p._impact}</div>
-      <p class="eip-desc">\${p._desc}</p>
-      \${p._link ? \`<a class="eip-link" href="\${p._link}" target="_blank" rel="noopener">Learn more →</a>\` : ''}
-      \${p._eluSite ? \`<button class="eip-explore" onclick="if(hasModule('GAIA_NODES'))GAIA_NODES.onNodeClick('\${p._eluSite}')">Explore this site →</button>\` : ''}
-    \`;
+      <div class="eip-type" style="color:${TYPE_COLORS[p._eventType]?.point || '#fff'}">${typeLabel}</div>
+      ${liveBadge}
+      <h3 class="eip-title">${p.name}</h3>
+      <div class="eip-year">${p._year}</div>
+      <div class="eip-impact">${p._impact}</div>
+      <p class="eip-desc">${p._desc}</p>
+      ${p._link ? `<a class="eip-link" href="${p._link}" target="_blank" rel="noopener">Learn more →</a>` : ''}
+      ${p._eluSite ? `<button class="eip-explore" onclick="if(hasModule('GAIA_NODES'))GAIA_NODES.onNodeClick('${p._eluSite}')">Explore this site →</button>` : ''}
+    `;
     panel.classList.add('open');
 
     safeCall('GAIA_ENGAGEMENT', 'addSignal', 'climate_view');
@@ -324,11 +401,16 @@ const GLOBE_EVENTS = (() => {
     activate,
     deactivate,
     getEvents: () => {
-      const arr = [];
-      if (_events) arr.push(..._events);
-      if (_eonetEvents) arr.push(..._eonetEvents);
-      if (_gdacsEvents) arr.push(..._gdacsEvents);
-      return arr;
+      let arr = [...(_events || []), ..._eonetEvents, ..._usgsEvents];
+      return arr.filter(e => {
+        if (e._isLive && !_activeFilters['live']) return false;
+        
+        const t = e.type;
+        if (t === 'elu_site' || t === 'cop') return _activeFilters['elu'];
+        
+        if (!e._isLive && !_activeFilters['historic']) return false;
+        return _activeFilters[t];
+      });
     },
     isActive: () => _active,
   };
@@ -337,7 +419,7 @@ window.GLOBE_EVENTS = GLOBE_EVENTS;
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GLOBE_EVENTS', {
-    provides: ['init', 'activate', 'deactivate'],
+    provides: ['init', 'activate', 'deactivate', 'getEvents', 'isActive'],
     requires: ['GlobeModule'],
   });
 }

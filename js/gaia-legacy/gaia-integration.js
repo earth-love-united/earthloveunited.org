@@ -15,7 +15,10 @@
 
 window.GaiaIntegration = (() => {
 
-  let _initialized = false;
+  MODULE_CONTRACTS.register('GaiaIntegration', {
+    provides: ['init', 'getScore', 'getTier', 'getMood', 'destroy'],
+    requires: ['GAIA_JOURNAL'],
+  });
 
   // ═══════════════════════════════════════
   // INIT

@@ -172,3 +172,8 @@ const CARBON_CLOCK = (() => {
   };
 })();
 window.CARBON_CLOCK = CARBON_CLOCK;
+
+  MODULE_CONTRACTS.register('CARBON_CLOCK', {
+    provides: ['init', 'start', 'stop', 'update'],
+    requires: [],
+  });

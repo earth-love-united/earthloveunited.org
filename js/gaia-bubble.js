@@ -300,3 +300,8 @@ const GAIA_BUBBLE = (() => {
 // IIFE executes and assigns to GAIA_BUBBLE
 })();
 window.GAIA_BUBBLE = GAIA_BUBBLE;
+
+  MODULE_CONTRACTS.register('GAIA_BUBBLE', {
+    provides: ['speak', 'show', 'hide', 'setMood', 'setPosition', 'fadeIn', 'fadeOut', 'isVisible', 'setInteractive', 'setPhase', 'handleScroll', 'handleResize', 'on', 'off', 'destroy'],
+    requires: ['GAIA_JOURNAL'],
+  });

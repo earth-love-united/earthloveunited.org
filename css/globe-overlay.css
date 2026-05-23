@@ -15,10 +15,10 @@
   display: flex;
   flex-direction: column;
   border-radius: 14px;
-  transform: translateX(-110%);
+  transform: translateX(calc(-100% - 10px));
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
-  overflow: hidden;
+  overflow: visible; /* so toggle handle shows */
 }
 
 #globe-overlay.open {
@@ -63,6 +63,44 @@
   background: rgba(78, 205, 196, 0.15);
   border-radius: 50%;
   box-shadow: 0 0 8px rgba(78, 205, 196, 0.2);
+}
+
+/* ── Toggle Handle ── */
+#globe-overlay .globe-overlay-toggle {
+  position: absolute;
+  top: 50%;
+  right: -32px;
+  width: 32px;
+  height: 64px;
+  background: rgba(8, 10, 18, 0.95);
+  border: 1px solid rgba(78, 205, 196, 0.2);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--teal);
+  transform: translateY(-50%);
+  pointer-events: auto;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  transition: background 0.2s;
+}
+
+#globe-overlay .globe-overlay-toggle:hover {
+  background: rgba(8, 10, 18, 1);
+  color: var(--mint);
+}
+
+#globe-overlay .globe-overlay-toggle svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#globe-overlay.open .globe-overlay-toggle svg {
+  transform: rotate(180deg);
 }
 
 /* ── Header ── */
