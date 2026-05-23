@@ -1,0 +1,76 @@
+{
+  "modules": [
+    {
+      "id": "01-carbon-atom",
+      "title": "The Carbon Atom's Journey",
+      "description": "Follow a single carbon atom through Earth's interconnected cycle — from air to life to rock and back again.",
+      "difficulty": "beginner",
+      "estimated_minutes": 5,
+      "prerequisites": [],
+      "next_module": "02-keeling-curve"
+    },
+    {
+      "id": "02-keeling-curve",
+      "title": "The Keeling Curve",
+      "description": "Explore the iconic CO₂ measurement record from Mauna Loa — the most important dataset in climate science.",
+      "difficulty": "beginner",
+      "estimated_minutes": 6,
+      "prerequisites": ["01-carbon-atom"],
+      "next_module": "03-carbon-budget"
+    },
+    {
+      "id": "03-carbon-budget",
+      "title": "The Carbon Budget Game",
+      "description": "Earth has a limited carbon budget to stay below 1.5°C. Spend wisely — or watch it run out.",
+      "difficulty": "intermediate",
+      "estimated_minutes": 7,
+      "prerequisites": ["01-carbon-atom", "02-keeling-curve"],
+      "next_module": "04-restoration-projects"
+    },
+    {
+      "id": "04-restoration-projects",
+      "title": "Restoration Projects Explorer",
+      "description": "Discover nature-based carbon removal projects worldwide — from mangrove restoration to reforestation.",
+      "difficulty": "intermediate",
+      "estimated_minutes": 7,
+      "prerequisites": ["01-carbon-atom", "02-keeling-curve", "03-carbon-budget"],
+      "next_module": "05-carbon-market"
+    },
+    {
+      "id": "05-carbon-market",
+      "title": "The Carbon Market Explorer",
+      "description": "How is carbon priced, traded, and sold? Explore the voluntary and compliance markets.",
+      "difficulty": "intermediate",
+      "estimated_minutes": 8,
+      "prerequisites": ["03-carbon-budget", "04-restoration-projects"],
+      "next_module": "06-drawdown-solutions"
+    },
+    {
+      "id": "06-drawdown-solutions",
+      "title": "Drawdown Solutions Explorer",
+      "description": "The 100 most substantive solutions to reverse global warming — ranked, compared, and scored.",
+      "difficulty": "intermediate",
+      "estimated_minutes": 8,
+      "prerequisites": ["03-carbon-budget", "05-carbon-market"],
+      "next_module": "07-carbon-footprint"
+    },
+    {
+      "id": "07-carbon-footprint",
+      "title": "Your Carbon Footprint",
+      "description": "Calculate your personal carbon footprint and discover exactly where to cut emissions.",
+      "difficulty": "intermediate",
+      "estimated_minutes": 7,
+      "prerequisites": ["01-carbon-atom", "03-carbon-budget", "06-drawdown-solutions"],
+      "next_module": "08-climate-justice"
+    },
+    {
+      "id": "08-climate-justice",
+      "title": "Climate Justice & Equity",
+      "description": "Who bears the burden of a warming planet? Explore the intersection of climate change and inequality.",
+      "difficulty": "advanced",
+      "estimated_minutes": 8,
+      "prerequisites": ["01-carbon-atom", "02-keeling-curve", "03-carbon-budget", "06-drawdown-solutions"],
+      "next_module": null
+    }
+  ]
+}

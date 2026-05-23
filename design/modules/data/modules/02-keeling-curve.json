@@ -1,0 +1,103 @@
+{
+  "id": "02-keeling-curve",
+  "title": "The Keeling Curve",
+  "description": "Explore the iconic CO₂ measurement record from Mauna Loa — the most important dataset in climate science.",
+  "estimated_minutes": 6,
+  "difficulty": "beginner",
+  "prerequisites": ["01-carbon-atom"],
+  "next_module": "03-carbon-budget",
+  "stages": [
+    {
+      "id": "hook",
+      "type": "text",
+      "title": "The Most Important Curve in Climate Science",
+      "body": "In 1958, a young geochemist named <strong>Charles David Keeling</strong> began measuring CO₂ at the Mauna Loa Observatory in Hawaii, 3,400m above the Pacific Ocean.<br><br>His first reading: <strong>315.97 ppm</strong>.<br>Today's reading: <strong>~431 ppm</strong>.<br><br>That single dataset — the <strong>Keeling Curve</strong> — became the definitive proof that human activity is changing Earth's atmosphere. Every upward wobble tells a story of seasons, volcanoes, and our relentless burning of fossil fuels.",
+      "callouts": [
+        { "label": "Keeling's first reading (1958)", "value": "315.97 ppm" },
+        { "label": "Today (2026)", "value": "~431 ppm" },
+        { "label": "Increase since 1958", "value": "+115 ppm (+36%)" }
+      ],
+      "gaia": "This is the most important graph in human history. Not because it's complex — because it's simple. One line. One direction. Up.",
+      "actions": [{ "id": "explore", "label": "Explore the Data →", "type": "next", "style": "primary" }]
+    },
+    {
+      "id": "timeline",
+      "type": "timeline",
+      "title": "Scrub Through Time",
+      "description": "Drag the slider to see atmospheric CO₂ at key moments in history. Watch the curve accelerate.",
+      "data": [
+        { "label": "1958", "value": 315.97, "display": "315.97 ppm", "context": "Keeling begins measurements. Post-war boom begins." },
+        { "label": "1965", "value": 320.04, "display": "320.04 ppm", "context": "+4 ppm in 7 years. The curve begins its climb." },
+        { "label": "1975", "value": 330.75, "display": "330.75 ppm", "context": "Oil crisis. Even energy shocks don't slow the rise." },
+        { "label": "1988", "value": 351.48, "display": "351.48 ppm", "context": "Hansen testifies to Congress. Climate change enters public discourse." },
+        { "label": "1997", "value": 363.52, "display": "363.52 ppm", "context": "Kyoto Protocol signed. CO₂ doesn't sign treaties." },
+        { "label": "2005", "value": 379.76, "display": "379.76 ppm", "context": "An Inconvenient Truth. Awareness rises faster than CO₂. Almost." },
+        { "label": "2013", "value": 396.48, "display": "396.48 ppm", "context": "400 ppm imminent. A psychological threshold." },
+        { "label": "2016", "value": 404.24, "display": "404.24 ppm", "context": "Paris Agreement. The world agrees to act. CO₂ hits 400+." },
+        { "label": "2020", "value": 414.24, "display": "414.24 ppm", "context": "Pandemic lockdowns. Emissions dip 5%. Curve doesn't bend." },
+        { "label": "2023", "value": 421.08, "display": "421.08 ppm", "context": "Hottest year on record. The curve accelerates." },
+        { "label": "2026", "value": 431.12, "display": "431.12 ppm", "context": "Now. +115 ppm since Keeling began. 36% increase." }
+      ],
+      "gaia": "Notice the spacing between the dots. They're getting closer together — not because time is speeding up, but because the rate of increase is accelerating. Each decade adds more CO₂ than the last.",
+      "actions": [{ "id": "continue", "label": "What does this mean? →", "type": "next", "style": "primary" }]
+    },
+    {
+      "id": "patterns",
+      "type": "discover",
+      "title": "What the Curve Tells Us",
+      "body": "The Keeling Curve has three stories embedded in its shape:<br><br><strong>1. The Annual Sawtooth</strong> — CO₂ drops each spring (Northern Hemisphere plants absorb it) and rises each winter. This seasonal cycle has amplitude of ~6 ppm and is growing larger as vegetation patterns shift.<br><br><strong>2. The Steady Rise</strong> — The underlying trend is relentlessly upward. From 1958 to 2026: <strong>+115 ppm</strong>, an increase of 36%. Rate of increase: ~2.5 ppm/year (and accelerating).<br><br><strong>3. No Plateaus</strong> — Despite every climate agreement, every renewable energy milestone, every pledge — the curve has never bent downward. Not once. Not for a single year.<br><br>The pre-industrial CO₂ level was <strong>~280 ppm</strong>. We've added 151 ppm — roughly <strong>54% more CO₂</strong> than existed naturally.",
+      "callouts": [
+        { "label": "Pre-industrial CO₂", "value": "~280 ppm (800,000 year average)" },
+        { "label": "Today", "value": "431 ppm" },
+        { "label": "Rate of change", "value": "~2.5 ppm/year (20x faster than any natural change)" }
+      ],
+      "gaia": "The curve doesn't care about our intentions. It only measures our actions. And so far, our actions say one thing: more.",
+      "actions": [{ "id": "quiz", "label": "Test Yourself →", "type": "next", "style": "primary" }]
+    },
+    {
+      "id": "quiz",
+      "type": "quiz",
+      "title": "Did You Read the Curve?",
+      "questions": [
+        {
+          "question": "When did Charles Keeling begin his CO₂ measurements?",
+          "options": ["1948", "1958", "1968", "1978"],
+          "correct": 1,
+          "explanation": "Keeling began continuous CO₂ measurements at Mauna Loa in March 1958."
+        },
+        {
+          "question": "What causes the annual sawtooth pattern in the Keeling Curve?",
+          "options": ["Ocean currents", "Seasonal plant growth/decay cycles", "Volcanic activity", "Solar cycles"],
+          "correct": 1,
+          "explanation": "Plants absorb CO₂ during spring/summer growing seasons (Northern Hemisphere dominates due to more landmass), reducing atmospheric CO₂. In winter, decomposition and reduced photosynthesis cause CO₂ to rise."
+        },
+        {
+          "question": "What was the pre-industrial atmospheric CO₂ concentration?",
+          "options": ["240 ppm", "280 ppm", "320 ppm", "350 ppm"],
+          "correct": 1,
+          "explanation": "Ice core records show CO₂ was ~280 ppm for the past 10,000 years before industrialization."
+        },
+        {
+          "question": "By how much has CO₂ increased since 1958?",
+          "inputType": "number",
+          "correct": 115,
+          "tolerance": 5,
+          "unit": "ppm",
+          "hint": "First reading: 316 ppm. Today: ~431 ppm. What's the difference?"
+        }
+      ],
+      "completionText": "You can now read the most important graph in climate science. The evidence is clear: CO₂ is rising faster than ever recorded, and it's driven by human activity."
+    },
+    {
+      "id": "connect",
+      "type": "text",
+      "title": "You Now Understand the Keeling Curve!",
+      "body": "You've traced the most important measurement in climate science. The evidence is clear: <strong>CO₂ is rising faster than ever recorded</strong>, and it's driven by human activity.<br><br>But there's a budget for this — a limit on how much more we can emit before we cross dangerous thresholds. That's the <strong>Carbon Budget</strong>.",
+      "callouts": [
+        { "label": "CO₂ increase since 1958", "value": "+115 ppm in 68 years" },
+        { "label": "Remaining carbon budget (1.5°C)", "value": "~200 GtCO₂ (at 2023 rates, ~5 years)" }
+      ],
+      "actions": [{ "id": "next_module", "label": "Explore the Carbon Budget →", "type": "next", "style": "primary" }]
+    }
+  ]
+}

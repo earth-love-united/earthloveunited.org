@@ -1,0 +1,94 @@
+{
+  "id": "07-carbon-footprint",
+  "title": "Your Carbon Footprint",
+  "description": "Calculate your personal carbon footprint across energy, transport, food, and consumption — then discover exactly where to cut.",
+  "estimated_minutes": 7,
+  "difficulty": "intermediate",
+  "prerequisites": ["01-carbon-atom", "03-carbon-budget", "06-drawdown-solutions"],
+  "next_module": "08-climate-justice",
+  "stages": [
+    {
+      "id": "hook",
+      "type": "text",
+      "title": "Your Lifestyle Has a Carbon Price Tag",
+      "body": "Every choice you make — what you eat, how you travel, what you buy — has a carbon cost. The average American generates <strong>~16 tons of CO₂ per year</strong>. The global target to stay below 1.5°C? <strong>~2 tons per person by 2030</strong>.<br><br>That's an <strong>87% reduction</strong> needed. Scary? Or empowering — because once you know where your emissions come from, you can act precisely.<br><br>Let's calculate your footprint right now.",
+      "callouts": [
+        { "label": "Average American footprint", "value": "~16 tons CO₂/year" },
+        { "label": "Global average", "value": "~4.7 tons CO₂/year" },
+        { "label": "Target for 1.5°C", "value": "~2 tons CO₂/year by 2030" }
+      ],
+      "gaia": "You can't manage what you don't measure. Let's measure. No judgment — just data. The goal isn't perfection. It's awareness.",
+      "actions": [{ "id": "calculate", "label": "Calculate My Footprint →", "type": "next", "style": "primary" }]
+    },
+    {
+      "id": "slider_inputs",
+      "type": "slider",
+      "title": "Your Carbon Inputs",
+      "description": "Adjust your lifestyle factors to calculate your personal carbon footprint. Be honest — this is for you.",
+      "sliders": [
+        { "label": "Monthly electricity bill ($)", "min": 0, "max": 500, "step": 10, "default": 120, "unit": "$/month" },
+        { "label": "Car commute (miles/day round trip)", "min": 0, "max": 150, "step": 5, "default": 30, "unit": "miles/day" },
+        { "label": "Flights per year (long-haul)", "min": 0, "max": 20, "step": 1, "default": 2, "unit": "flights/yr" },
+        { "label": "Meat-based meals per week", "min": 0, "max": 21, "step": 1, "default": 10, "unit": "meals/wk" }
+      ],
+      "gaia": "Most people underestimate their footprint by 2-3x. Don't worry about being exact — the point is to see which levers matter most.",
+      "actions": [{ "id": "results", "label": "See My Results →", "type": "next", "style": "primary" }]
+    },
+    {
+      "id": "gauge_results",
+      "type": "gauge",
+      "title": "Your Footprint vs. Targets",
+      "description": "See how your calculated footprint compares to global averages and climate targets.",
+      "min": 0,
+      "max": 30,
+      "unit": "tons CO₂/yr",
+      "value": 12,
+      "thresholds": [[2, "#5bbf72"], ["#ffa726"], [16, "#f5876a"], [30, "#e53935"]],
+      "gaugeContext": "Green = within 1.5°C target. Yellow = needs reduction. Orange = above global average. Red = above US average. Most people land in the yellow or orange zone.",
+      "actions": [{ "id": "quiz", "label": "Knowledge Check →", "type": "next", "style": "primary" }]
+    },
+    {
+      "id": "quiz",
+      "type": "quiz",
+      "title": "Knowledge Check: Your Impact",
+      "questions": [
+        {
+          "question": "What's the carbon footprint of a round-trip transatlantic flight?",
+          "options": ["0.3 tons", "1.6 tons", "4.5 tons", "10 tons"],
+          "correct": 1,
+          "explanation": "A round-trip economy transatlantic flight generates approximately 1.6 tons CO₂ per passenger."
+        },
+        {
+          "question": "Which food has the highest carbon footprint per kg?",
+          "options": ["Chicken", "Cheese", "Beef", "Rice"],
+          "correct": 2,
+          "explanation": "Beef produces ~27 kg CO₂-eq per kg of food — roughly 10x chicken and 50x vegetables."
+        },
+        {
+          "question": "What single home change saves the most CO₂?",
+          "options": ["LED bulbs", "Smart thermostat", "Solar panels", "Better insulation"],
+          "correct": 2,
+          "explanation": "Rooftop solar can offset 3-8 tons CO₂/year depending on location and system size."
+        },
+        {
+          "question": "How much could plant-rich diets reduce food emissions?",
+          "options": ["10%", "25%", "50%", "70%"],
+          "correct": 2,
+          "explanation": "Shifting toward plant-rich diets could reduce food system emissions by up to 50%."
+        }
+      ],
+      "completionText": "You now understand your personal carbon footprint and where the biggest opportunities for reduction lie."
+    },
+    {
+      "id": "connect",
+      "type": "text",
+      "title": "Your Journey Through Climate Knowledge",
+      "body": "You've journeyed from a single carbon atom through the Keeling Curve, carbon budgets, restoration projects, carbon markets, drawdown solutions, and your own footprint.<br><br><strong>What you now know:</strong><br>✓ The science behind atmospheric CO₂ rise<br>✓ Earth's carbon budget and how close we are to exhausting it<br>✓ Real solutions that exist right now<br>✓ How markets can (and can't) help<br>✓ Your personal impact and where to focus<br><br>But there's one more dimension — the human one. Who suffers most from a crisis they did least to cause?",
+      "callouts": [
+        { "label": "Modules completed", "value": "7 / 8" },
+        { "label": "Next", "value": "Climate Justice & Equity" }
+      ],
+      "actions": [{ "id": "next_module", "label": "Explore Climate Justice →", "type": "next", "style": "primary" }]
+    }
+  ]
+}
