@@ -1,0 +1,236 @@
+{
+  "id": "08-climate-justice",
+  "title": "Climate Justice & Equity",
+  "description": "Who bears the burden of a warming planet? Explore the intersection of climate change, inequality, and human rights — from sinking islands to climate refugees.",
+  "estimated_minutes": 8,
+  "difficulty": "advanced",
+  "prerequisites": ["01-carbon-atom", "02-keeling-curve", "03-carbon-budget", "06-drawdown-solutions"],
+  "next_module": null,
+  "data_sources": [
+    "data/pledge-nodes.json",
+    "data/climate-bifurcation-points.json",
+    "docs/RESEARCH.md",
+    "docs/PLEDGE_INTEGRATION_GUIDE.md"
+  ],
+  "tags": ["climate justice", "equity", "vulnerability", "refugees", "inequality", "human rights", "COP31"],
+  "theme": {
+    "accent": "#ef5350",
+    "bg": "#030305"
+  },
+  "stages": [
+    {
+      "id": "hook",
+      "type": "text",
+      "template": "hook",
+      "title": "The Injustice of Climate Change",
+      "body": "The countries most devastated by climate change contributed the least to causing it.\n\n**The math is devastating:**\n- The **richest 10%** of humanity produces **50%** of all emissions\n- The **poorest 50%** produces just **12%**\n- Small Island Developing States emit **<1%** of global CO₂ — yet face total extinction from sea-level rise\n- Sub-Saharan Africa contributes **~3%** of emissions but bears **75%** of climate-related deaths\n\nClimate change isn't just an environmental crisis. It's a **justice crisis**. It amplifies every existing inequality — poverty, gender, race, geography — and threatens to undo decades of human progress.\n\n*\"The people who have contributed the least to climate change are the ones suffering the most.\"* — Mary Robinson",
+      "callouts": [
+        {
+          "label": "Rich 10% share of emissions",
+          "value": "50% of all CO₂"
+        },
+        {
+          "label": "Poorest 50% share",
+          "value": "12% of all CO₂"
+        },
+        {
+          "label": "Climate refugees (projected 2050)",
+          "value": "200+ million people"
+        }
+      ]
+    },
+    {
+      "id": "cardstack_vulnerability",
+      "type": "cardstack",
+      "title": "Voices from the Frontlines",
+      "description": "Meet the communities already living through the climate crisis. Click each card to learn their story.",
+      "filters": ["All", "Sea Level", "Drought", "Extreme Heat", "Flooding"],
+      "cards": [
+        {
+          "title": "Tuvalu — Sinking Nation",
+          "subtitle": "Pacific Ocean · 12,000 people",
+          "icon": "🏝️",
+          "badge": "Existential threat",
+          "category": "Sea Level",
+          "detail": "Tuvalu's highest point is just 4.6 meters above sea level. Rising seas threaten to make the nation uninhabitable within decades. In 2023, Tuvalu signed a landmark deal with Australia offering climate migration pathways.",
+          "stats": ["4.6m max elevation", "1.2°C above pre-industrial", "~50% GDP at risk by 2060"]
+        },
+        {
+          "title": "Sahel Region — Desertification",
+          "subtitle": "Sub-Saharan Africa · 100M+ people",
+          "icon": "🏜️",
+          "badge": "Food crisis",
+          "category": "Drought",
+          "detail": "The Sahel is warming 1.5x faster than the global average. Lake Chad has shrunk by 90% since the 1960s, displacing millions and fueling conflict.",
+          "stats": ["90% Lake Chad shrinkage", "100M+ affected", "1.5x global avg warming rate"]
+        },
+        {
+          "title": "South Asia — Extreme Heat",
+          "subtitle": "India & Pakistan · 1.8 billion people",
+          "icon": "🌡️",
+          "badge": "Deadly heatwaves",
+          "category": "Extreme Heat",
+          "detail": "2025 saw wet-bulb temperatures exceeding human survivability limits in parts of South Asia. Outdoor laborers, farmers, and the urban poor are most exposed.",
+          "stats": ["51°C recorded (2025)", "600M+ exposed annually", "Wet-bulb limits breached"]
+        },
+        {
+          "title": "Bangladesh — Flooding",
+          "subtitle": "Ganges Delta · 170 million people",
+          "icon": "🌊",
+          "badge": "Climate displacement",
+          "category": "Flooding",
+          "detail": "One-third of Bangladesh sits less than 5 meters above sea level. By 2050, an estimated 13 million people could be displaced by rising waters and saltwater intrusion.",
+          "stats": ["170M population at risk", "13M projected climate migrants", "1/3 country below 5m elevation"]
+        },
+        {
+          "title": "Amazon Indigenous Communities",
+          "subtitle": "Brazil, Peru, Colombia · 1M+ indigenous people",
+          "icon": "🪶",
+          "badge": "Cultural extinction",
+          "category": "Flooding",
+          "detail": "Indigenous peoples protect 80% of world biodiversity. Deforestation, fires, and mining threaten their lands, knowledge systems, and ways of life that span millennia.",
+          "stats": ["80% of biodiversity on indigenous land", "1M+ people affected", "17% forest already lost"]
+        },
+        {
+          "title": "Arctic Indigenous Peoples",
+          "subtitle": "Alaska, Canada, Siberia · 400,000 people",
+          "icon": "❄️",
+          "badge": "Melting homeland",
+          "category": "Sea Level",
+          "detail": "Arctic warming is 3-4x the global average. Permafrost thaw destroys infrastructure, sea ice loss threatens traditional hunting, and coastal erosion forces community relocations.",
+          "stats": ["3-4x global avg warming", "1.5M km² sea ice lost/decade", "31 villages relocating"]
+        }
+      ]
+    },
+    {
+      "id": "branch_stories",
+      "type": "branch",
+      "title": "What Kind of Justice?",
+      "description": "Climate justice means different things to different people. Which dimension matters most to you?",
+      "paths": [
+        {
+          "label": "Intergenerational Justice",
+          "description": "We're borrowing Earth from future generations. What debt are we leaving?",
+          "timescale": "Decades → Centuries",
+          "icon": "⏳"
+        },
+        {
+          "label": "Climate Reparations",
+          "description": "Should wealthy, high-emitting nations pay for damages in vulnerable countries?",
+          "timescale": "Now → Permanent",
+          "icon": "💰"
+        },
+        {
+          "label": "Energy Justice",
+          "description": "1.2 billion people lack electricity. Can we decarbonize while lifting people out of poverty?",
+          "timescale": "Now → 2030",
+          "icon": "⚡"
+        },
+        {
+          "label": "Environmental Racism",
+          "description": "Pollution and climate impacts disproportionately affect communities of color worldwide.",
+          "timescale": "Generational",
+          "icon": "✊"
+        }
+      ]
+    },
+    {
+      "id": "discover_data",
+      "type": "text",
+      "template": "discover",
+      "title": "The Pledge vs. Reality Gap",
+      "body": "In 2015, nearly every nation signed the **Paris Agreement**, pledging to limit warming to 1.5-2°C. But pledges are not policies, and policies are not action.\n\n**Current reality:**\n- National pledges put us on track for **~2.5-2.8°C** of warming — far above safe limits\n- The **emissions gap** between pledges and 1.5°C targets: **~22 GtCO₂/year**\n- Adaptation finance for developing countries: **~$21B delivered** vs. **$387B needed**\n\n**The Loss and Damage Fund**, established at COP27 (2022) and operationalized at COP28 (2023), was a breakthrough — but contributions total only **~$700M** against estimated needs of **$400B/year by 2030**.\n\nJustice isn't charity. It's about **acknowledging who caused the problem** and **who has the resources to fix it**.",
+      "callouts": [
+        {
+          "label": "Pledged warming (current NDCs)",
+          "value": "~2.7°C by 2100"
+        },
+        {
+          "label": "Paris target",
+          "value": "1.5°C"
+        },
+        {
+          "label": "Emissions gap",
+          "value": "~22 GtCO₂/year by 2030"
+        },
+        {
+          "label": "Loss & Damage Fund",
+          "value": "~$700M (need: $400B/yr)"
+        }
+      ]
+    },
+    {
+      "id": "quiz_justice",
+      "type": "quiz",
+      "title": "Climate Justice Literacy",
+      "questions": [
+        {
+          "question": "Which group produces 50% of global emissions?",
+          "options": ["The poorest 50%", "The richest 10%", "China alone", "The US military"],
+          "correct": 1,
+          "explanation": "The richest 10% of humanity produces approximately 50% of all consumption-based CO₂ emissions (Oxfam/IPCC)."
+        },
+        {
+          "question": "What is a 'Loss and Damage' fund?",
+          "options": ["A fund for future space colonization", "Compensation for climate damages in vulnerable nations", "Insurance for fossil fuel companies", "A savings account for future generations"],
+          "correct": 1,
+          "explanation": "Loss and Damage refers to the financial mechanism compensating developing nations for climate impacts they did not cause."
+        },
+        {
+          "question": "How many climate refugees are projected by 2050?",
+          "options": ["10 million", "100 million", "200+ million", "1 billion"],
+          "correct": 2,
+          "explanation": "The World Bank estimates 216 million people could be internally displaced by climate impacts by 2050."
+        },
+        {
+          "question": "Arctic regions are warming how fast compared to the global average?",
+          "options": ["Same rate", "2x faster", "3-4x faster", "10x faster"],
+          "correct": 2,
+          "explanation": "Arctic amplification causes warming 3-4 times faster than the global average."
+        },
+        {
+          "question": "What is the pledge vs. reality gap?",
+          "inputType": "number",
+          "correct": 3,
+          "hint": "It's measured in degrees Celsius. Current pledges ≈ 2.7°C. Target = 1.5°C."
+        }
+      ]
+    },
+    {
+      "id": "connect_final",
+      "type": "text",
+      "template": "connect",
+      "title": "Your Journey is Complete",
+      "body": "You now understand climate change at every level:\n\n🔬 **The Science** — Carbon atoms, the Keeling Curve, Earth's budget\n💰 **The Economics** — Carbon markets, drawdown solutions, the cost of inaction\n🌍 **The Justice** — Who suffers, who's responsible, and what fairness demands\n\nThis is the foundation for **COP31 in Antalya** and everything that follows. Knowledge without action is incomplete — but action without knowledge is dangerous.\n\n**Earth doesn't need saving. It needs us to stop breaking it.**",
+      "callouts": [
+        {
+          "label": "Modules completed",
+          "value": "8 / 8"
+        },
+        {
+          "label": "Your total score",
+          "value": "Congratulations, Earth Scholar!"
+        },
+        {
+          "label": "COP31 Antalya",
+          "value": "November 2026"
+        }
+      ],
+      "actions": [
+        {
+          "id": "complete_journey",
+          "label": "🎓 Complete All 8 Modules",
+          "type": "complete",
+          "style": "primary"
+        },
+        {
+          "id": "restart_all",
+          "label": "Restart Journey",
+          "type": "custom",
+          "handler": "reset",
+          "style": "secondary"
+        }
+      ]
+    }
+  ]
+}

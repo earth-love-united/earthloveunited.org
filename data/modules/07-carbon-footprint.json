@@ -1,0 +1,161 @@
+{
+  "id": "07-carbon-footprint",
+  "title": "Your Carbon Footprint Calculator",
+  "description": "Calculate your personal carbon footprint across energy, transport, food, and consumption — then discover exactly where to cut.",
+  "estimated_minutes": 7,
+  "difficulty": "intermediate",
+  "prerequisites": ["01-carbon-atom", "03-carbon-budget", "06-drawdown-solutions"],
+  "next_module": null,
+  "data_sources": [
+    "data/climate-facts.json",
+    "docs/RESEARCH.md"
+  ],
+  "tags": ["carbon footprint", "calculator", "personal", "lifestyle", "emissions"],
+  "theme": {
+    "accent": "#26c6da",
+    "bg": "#030305"
+  },
+  "stages": [
+    {
+      "id": "hook",
+      "type": "text",
+      "template": "hook",
+      "title": "Your Lifestyle Has a Carbon Price Tag",
+      "body": "Every choice you make — what you eat, how you travel, what you buy — has a carbon cost. The average American generates **~16 tons of CO₂ per year**. The global target to stay below 1.5°C? **~2 tons per person by 2030**.\n\nThat's an **87% reduction** needed. Scary? Or empowering — because once you know where your emissions come from, you can act precisely.\n\nLet's calculate your footprint right now.",
+      "callouts": [
+        {
+          "label": "Average American footprint",
+          "value": "~16 tons CO₂/year"
+        },
+        {
+          "label": "Global average",
+          "value": "~4.7 tons CO₂/year"
+        },
+        {
+          "label": "Target for 1.5°C",
+          "value": "~2 tons CO₂/year by 2030"
+        }
+      ]
+    },
+    {
+      "id": "slider_inputs",
+      "type": "slider",
+      "title": "Your Carbon Inputs",
+      "description": "Adjust your lifestyle factors to calculate your personal carbon footprint.",
+      "sliders": [
+        {
+          "label": "Monthly electricity bill ($)",
+          "min": 0,
+          "max": 500,
+          "step": 10,
+          "default": 120,
+          "unit": "$/month"
+        },
+        {
+          "label": "Car commute (miles/day round trip)",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "default": 30,
+          "unit": "miles/day"
+        },
+        {
+          "label": "Flights per year (long-haul)",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "default": 2,
+          "unit": "flights/year"
+        },
+        {
+          "label": "Meat-based meals per week",
+          "min": 0,
+          "max": 21,
+          "step": 1,
+          "default": 10,
+          "unit": "meals/week"
+        }
+      ],
+      "resultTemplate": "Estimated annual footprint: <strong>{{result}} tons CO₂/year</strong><br><small>US avg: 16 tons · Global avg: 4.7 tons · Target: 2 tons</small>",
+      "calculate": "custom.calculateFootprint"
+    },
+    {
+      "id": "gauge_results",
+      "type": "gauge",
+      "title": "Your Footprint vs. Targets",
+      "min": 0,
+      "max": 30,
+      "unit": "tons CO₂/yr",
+      "getValue": "custom.getFootprintResult",
+      "thresholds": [
+        [2, "#5bbf72"],
+        [8, "#ffa726"],
+        [16, "#f5876a"],
+        [30, "#e53935"]
+      ]
+    },
+    {
+      "id": "quiz_challenge",
+      "type": "quiz",
+      "title": "Knowledge Check: Your Impact",
+      "questions": [
+        {
+          "question": "What's the carbon footprint of a round-trip transatlantic flight?",
+          "options": ["0.3 tons", "1.6 tons", "4.5 tons", "10 tons"],
+          "correct": 1,
+          "explanation": "A round-trip economy transatlantic flight generates approximately 1.6 tons CO₂ per passenger."
+        },
+        {
+          "question": "Which food has the highest carbon footprint per kg?",
+          "options": ["Chicken", "Cheese", "Beef", "Rice"],
+          "correct": 2,
+          "explanation": "Beef produces ~27 kg CO₂-eq per kg of food — roughly 10x chicken and 50x vegetables."
+        },
+        {
+          "question": "What single home change saves the most CO₂?",
+          "options": ["LED bulbs", "Smart thermostat", "Solar panels", "Better insulation"],
+          "correct": 2,
+          "explanation": "Rooftop solar can offset 3-8 tons CO₂/year depending on location and system size."
+        },
+        {
+          "question": "How much could plant-rich diets reduce food emissions?",
+          "options": ["10%", "25%", "50%", "70%"],
+          "correct": 2,
+          "explanation": "Shifting toward plant-rich diets could reduce food system emissions by up to 50%."
+        }
+      ]
+    },
+    {
+      "id": "connect_complete",
+      "type": "text",
+      "template": "connect",
+      "title": "Your Journey Through Climate Knowledge is Complete",
+      "body": "You've journeyed from a single carbon atom through the Keeling Curve, carbon budgets, restoration projects, carbon markets, drawdown solutions, and your own footprint.\n\n**What you now know:**\n- The science behind atmospheric CO₂ rise\n- Earth's carbon budget and how close we are to exhausting it\n- Real solutions that exist right now\n- How markets can (and can't) help solve this crisis\n- Your personal impact and where to focus\n\n**What you can do next:**\n- Share this knowledge — understanding is the first step\n- Visit your **Pledge vs. Reality globe** to see your country's commitments\n- Support verified carbon projects\n- Advocate for systemic change in your community\n\n*The Earth doesn't need saving. It will persist. What needs saving is the climate that civilization depends on.*",
+      "callouts": [
+        {
+          "label": "Modules completed",
+          "value": "7 / 7"
+        },
+        {
+          "label": "Total score",
+          "value": "Congratulations!"
+        }
+      ],
+      "actions": [
+        {
+          "id": "complete_all",
+          "label": "🎉 Complete Learning Journey",
+          "type": "complete",
+          "style": "primary"
+        },
+        {
+          "id": "restart_all",
+          "label": "Restart All Modules",
+          "type": "custom",
+          "handler": "reset",
+          "style": "secondary"
+        }
+      ]
+    }
+  ]
+}

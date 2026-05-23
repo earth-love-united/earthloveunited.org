@@ -1,0 +1,171 @@
+{
+  "id": "05-carbon-market",
+  "title": "The Carbon Market Explorer",
+  "description": "How is carbon priced, traded, and sold? Explore the voluntary and compliance markets — and the controversies that surround them.",
+  "estimated_minutes": 8,
+  "difficulty": "intermediate",
+  "prerequisites": ["03-carbon-budget", "04-restoration-projects"],
+  "next_module": "06-drawdown-solutions",
+  "data_sources": [
+    "data/carbon-projects_final.jsonl",
+    "docs/RESEARCH.md",
+    "docs/DATA_SOURCES.md"
+  ],
+  "tags": ["carbon market", "trading", "compliance", "voluntary", "pricing"],
+  "theme": {
+    "accent": "#ab47bc",
+    "bg": "#030305"
+  },
+  "stages": [
+    {
+      "id": "hook",
+      "type": "text",
+      "template": "hook",
+      "title": "Can You Put a Price on the Planet?",
+      "body": "Carbon markets are supposed to be simple: **make polluters pay, fund those who remove carbon.** In practice, they're one of the most complex and controversial tools in the climate fight.\n\nTwo markets exist:\n1. **Compliance markets** (like the EU ETS) — legally mandated, covering ~23% of global emissions\n2. **Voluntary markets** — companies buy credits to offset their footprint\n\nIn 2025, the **voluntary market was worth $2.2 billion** and the **EU ETS alone hit $909 billion**.\n\nBut 30-40% of voluntary credits may not represent real reductions. The system is broken — but is the concept itself flawed?",
+      "callouts": [
+        {
+          "label": "EU ETS market value (2025)",
+          "value": "$909 billion"
+        },
+        {
+          "label": "Voluntary market value (2025)",
+          "value": "$2.2 billion"
+        },
+        {
+          "label": "Estimated junk credits",
+          "value": "30-40% of voluntary market"
+        }
+      ]
+    },
+    {
+      "id": "comparison_table",
+      "type": "comparison",
+      "title": "Markets Compared",
+      "description": "How do the two major carbon market types actually differ?",
+      "comparisonData": [
+        {
+          "category": "Governance",
+          "compliance": "Government-regulated (EU, California, RGGI)",
+          "voluntary": "Self-regulated by registries (Verra, Gold Standard)"
+        },
+        {
+          "category": "Participants",
+          "compliance": "Mandatory for covered industries",
+          "voluntary": "Companies, individuals (anyone can buy)"
+        },
+        {
+          "category": "Price range",
+          "compliance": "$50-100+/ton (EU ETS reached €100 in 2023)",
+          "voluntary": "$3-50/ton (highly variable)"
+        },
+        {
+          "category": "Verification",
+          "compliance": "Rigorous government monitoring",
+          "voluntary": "Third-party audits (quality varies)"
+        },
+        {
+          "category": "Market size",
+          "compliance": "$909B (2025)",
+          "voluntary": "$2.2B (2025)"
+        },
+        {
+          "category": "Integrity concerns",
+          "compliance": "Political lobbying, allowance oversupply",
+          "voluntary": "Additionality questions, overcrediting"
+        }
+      ]
+    },
+    {
+      "id": "timeline_prices",
+      "type": "timeline",
+      "title": "EU Carbon Price History",
+      "description": "Trace the EU ETS price from launch to today — it tells the story of climate policy ambition.",
+      "data": [
+        {"label": "2005", "value": 8.05, "display": "€8.05"},
+        {"label": "2006", "value": 18.00, "display": "€18.00"},
+        {"label": "2007", "value": 22.50, "display": "€22.50"},
+        {"label": "2008", "value": 22.50, "display": "€22.50"},
+        {"label": "2009", "value": 12.50, "display": "€12.50 (Financial crisis)"},
+        {"label": "2010", "value": 14.00, "display": "€14.00"},
+        {"label": "2012", "value": 6.50, "display": "€6.50 (Oversupply crash)"},
+        {"label": "2013", "value": 4.50, "display": "€4.50"},
+        {"label": "2015", "value": 6.00, "display": "€6.00"},
+        {"label": "2018", "value": 16.00, "display": "€16.00"},
+        {"label": "2020", "value": 23.00, "display": "€23.00"},
+        {"label": "2021", "value": 55.00, "display": "€55.00"},
+        {"label": "2022", "value": 80.00, "display": "€80.00 (Energy crisis)"},
+        {"label": "2023", "value": 100.00, "display": "€100.00 — Historic high"},
+        {"label": "2024", "value": 55.00, "display": "€55.00"},
+        {"label": "2025", "value": 65.00, "display": "€65.00"},
+        {"label": "2026", "value": 72.00, "display": "€72.00 — Current"}
+      ],
+      "showValue": true
+    },
+    {
+      "id": "verify_quiz",
+      "type": "quiz",
+      "title": "Carbon Market Literacy",
+      "questions": [
+        {
+          "question": "What was the EU ETS carbon price at its 2023 peak?",
+          "options": ["€50", "€75", "€100", "€150"],
+          "correct": 2,
+          "explanation": "The EU ETS price hit €100 in February 2023, a historic milestone."
+        },
+        {
+          "question": "Which is larger: the compliance or voluntary carbon market?",
+          "options": ["Voluntary", "They're equal", "Compliance", "Neither exists"],
+          "correct": 2,
+          "explanation": "The compliance market ($909B) is ~400x larger than the voluntary market ($2.2B)."
+        },
+        {
+          "question": "What percentage of voluntary credits may not represent real reductions?",
+          "options": ["5-10%", "15-20%", "30-40%", "60-70%"],
+          "correct": 2,
+          "explanation": "Studies suggest 30-40% of voluntary carbon credits don't deliver promised reductions."
+        },
+        {
+          "question": "Why did carbon prices crash in 2012?",
+          "options": ["Financial crisis", "Oversupply of allowances", "No demand", "Policy was banned"],
+          "correct": 1,
+          "explanation": "A massive oversupply of free allowances caused the EU ETS price to collapse to under €5."
+        }
+      ]
+    },
+    {
+      "id": "connect_next",
+      "type": "text",
+      "template": "connect",
+      "title": "Markets Are Tools — Not Solutions",
+      "body": "Carbon markets are powerful but imperfect. The price signal matters — **$100/ton changes behavior**. But markets alone won't solve this crisis.\n\nReal solutions require **systemic transformation**: switching energy systems, protecting forests, redesigning cities, and rethinking how we produce and consume.\n\nLet's explore what those solutions actually look like.",
+      "callouts": [
+        {
+          "label": "Needed carbon price for 1.5°C",
+          "value": "$50-100+/ton by 2030"
+        },
+        {
+          "label": "Top drawdown solutions potential",
+          "value": "~1,000 GtCO₂ by 2050"
+        }
+      ],
+      "actions": [
+        {
+          "id": "go_to_solutions",
+          "label": "Discover Drawdown Solutions →",
+          "type": "jump",
+          "targetStage": 0,
+          "targetModule": "06-drawdown-solutions",
+          "style": "primary"
+        },
+        {
+          "id": "restart",
+          "label": "Restart",
+          "type": "custom",
+          "handler": "reset",
+          "style": "secondary"
+        }
+      ]
+    }
+  ]
+}

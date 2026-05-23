@@ -1,0 +1,184 @@
+{
+  "id": "03-carbon-budget",
+  "title": "The Carbon Budget Game",
+  "description": "Earth has a limited carbon budget to stay below 1.5°C. Spend wisely — or watch your budget run out.",
+  "estimated_minutes": 7,
+  "difficulty": "intermediate",
+  "prerequisites": ["01-carbon-atom", "02-keeling-curve"],
+  "next_module": "04-restoration-projects",
+  "data_sources": [
+    "docs/RESEARCH.md",
+    "climate-dataset/data/processed/earth_love_united_climate_knowledge.jsonl"
+  ],
+  "tags": ["carbon budget", "1.5°C", "IPCC", "emissions", "game"],
+  "theme": {
+    "accent": "#f5876a",
+    "bg": "#030305"
+  },
+  "stages": [
+    {
+      "id": "hook",
+      "type": "text",
+      "template": "hook",
+      "title": "You Have a Budget. It's Running Out.",
+      "body": "Imagine Earth's atmosphere like a bathtub. The drain (natural carbon sinks — oceans, forests) removes ~5.9 GtC/year. But we're pouring in **10.4 GtC/year** from fossil fuels and land use.\n\nThe **carbon budget** is how much more CO₂ we can emit while keeping warming below 1.5°C. According to the IPCC AR6 (2021-2023):\n\n🔴 **Remaining budget from 2023: ~200 GtCO₂**\n\nAt current rates, we'll exhaust this in roughly **5 years**. After that, we are almost certainly locked into warming above 1.5°C.",
+      "media": "",
+      "callouts": [
+        {
+          "label": "Total carbon budget (1.5°C)",
+          "value": "500 GtCO₂ from 2020"
+        },
+        {
+          "label": "Already emitted",
+          "value": "~300 GtCO₂ (60% used)"
+        },
+        {
+          "label": "Remaining budget",
+          "value": "~200 GtCO₂"
+        },
+        {
+          "label": "Current annual emissions",
+          "value": "~40 GtCO₂/year"
+        }
+      ],
+      "actions": [
+        {
+          "id": "play_budget",
+          "label": "Play the Budget Game →",
+          "type": "next",
+          "style": "primary"
+        }
+      ]
+    },
+    {
+      "id": "slider_budget",
+      "type": "slider",
+      "title": "Allocate the Carbon Budget",
+      "description": "You control how the remaining 200 GtCO₂ budget is spent across sectors. Every choice has consequences.",
+      "sliders": [
+        {
+          "label": "Fossil Fuel Emissions",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 45,
+          "unit": "GtCO₂"
+        },
+        {
+          "label": "Deforestation & Land Use",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 12,
+          "unit": "GtCO₂"
+        },
+        {
+          "label": "Industrial Processes",
+          "min": 0,
+          "max": 30,
+          "step": 1,
+          "default": 8,
+          "unit": "GtCO₂"
+        },
+        {
+          "label": "Agriculture (CH₄ + N₂O)",
+          "min": 0,
+          "max": 35,
+          "step": 1,
+          "default": 15,
+          "unit": "GtCO₂-eq"
+        }
+      ],
+      "resultTemplate": "Total: <strong>{{slider_0}} + {{slider_1}} + {{slider_2}} + {{slider_3}} = {{result}} GtCO₂</strong> per 5-year period",
+      "calculate": "custom.calculateBudget"
+    },
+    {
+      "id": "gauge_budget",
+      "type": "gauge",
+      "title": "How Does Your Budget Look?",
+      "min": 0,
+      "max": 250,
+      "unit": "GtCO₂",
+      "getValue": "custom.getBudgetTotal",
+      "thresholds": [
+        [30, "#5bbf72"],
+        [80, "#ffa726"],
+        [150, "#c45c4a"],
+        [250, "#e53935"]
+      ],
+      "actions": [
+        {
+          "id": "check_budget",
+          "label": "See if we're on track →",
+          "type": "next",
+          "style": "primary"
+        }
+      ]
+    },
+    {
+      "id": "verify_quiz",
+      "type": "quiz",
+      "title": "Budget Check",
+      "questions": [
+        {
+          "question": "What is the remaining carbon budget for 1.5°C (from 2023)?",
+          "options": ["~100 GtCO₂", "~200 GtCO₂", "~500 GtCO₂", "~1000 GtCO₂"],
+          "correct": 1,
+          "explanation": "The IPCC AR6 assessed ~200 GtCO₂ remaining for a 50% chance of limiting warming to 1.5°C."
+        },
+        {
+          "question": "At 2023 emission rates, how many years until the 1.5°C budget is exhausted?",
+          "options": ["~2 years", "~5 years", "~10 years", "~20 years"],
+          "correct": 1,
+          "explanation": "200 GtCO₂ ÷ ~40 GtCO₂/year ≈ 5 years."
+        },
+        {
+          "question": "Which sector contributes the most to annual emissions?",
+          "options": ["Agriculture", "Deforestation", "Fossil fuel combustion", "Industrial processes"],
+          "correct": 2,
+          "explanation": "Fossil fuel combustion accounts for ~37 of the ~40 GtCO₂/year total."
+        },
+        {
+          "question": "What is the pre-industrial CO₂ level used as baseline?",
+          "options": ["260 ppm", "280 ppm", "300 ppm", "350 ppm"],
+          "correct": 1,
+          "explanation": "280 ppm is the agreed pre-industrial baseline (circa 1750)."
+        }
+      ]
+    },
+    {
+      "id": "connect_next",
+      "type": "text",
+      "template": "connect",
+      "title": "Budget Understood. Now Let's Fix It.",
+      "body": "You now understand the brutal math: **we're spending carbon 3-4x faster than we should be**. The remaining budget is tiny, and every fraction of a degree matters.\n\nBut here's the hope — **nature-based solutions and restoration projects** are already removing carbon from the atmosphere at scale. Let's see what's happening on the ground.",
+      "callouts": [
+        {
+          "label": "Carbon removal needed by 2050",
+          "value": "~5-16 GtCO₂/year"
+        },
+        {
+          "label": "Nature-based solutions potential",
+          "value": "~11 GtCO₂/year"
+        }
+      ],
+      "actions": [
+        {
+          "id": "go_to_restoration",
+          "label": "Explore Restoration Projects →",
+          "type": "jump",
+          "targetStage": 0,
+          "targetModule": "04-restoration-projects",
+          "style": "primary"
+        },
+        {
+          "id": "restart",
+          "label": "Restart",
+          "type": "custom",
+          "handler": "reset",
+          "style": "secondary"
+        }
+      ]
+    }
+  ]
+}
