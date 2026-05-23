@@ -76,3 +76,5 @@ const Quiz = {
     }, 3000);
   }
 };
+
+window.Quiz = Quiz;

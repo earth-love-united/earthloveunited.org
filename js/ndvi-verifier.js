@@ -403,7 +403,7 @@ const NDVIVerifier = (() => {
 
 // Auto-init when Data is ready
 function _ndviInit() {
-  if (typeof Data !== 'undefined') {
+  if (hasModule('Data')) {
     NDVIVerifier.init();
   } else {
     // Data not loaded yet — wait once for DOMContentLoaded
@@ -411,3 +411,4 @@ function _ndviInit() {
   }
 }
 _ndviInit();
+window.NDVIVerifier = NDVIVerifier;

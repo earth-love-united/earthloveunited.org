@@ -137,3 +137,12 @@ const Data = {
            n >= 1e3 ? (n / 1e3).toFixed(1) + 'K' : n.toFixed(0);
   }
 };
+
+window.Data = Data;
+
+if (typeof MODULE_CONTRACTS !== 'undefined') {
+  MODULE_CONTRACTS.register('Data', {
+    provides: ['init', 'fmt'],
+    requires: [],
+  });
+}

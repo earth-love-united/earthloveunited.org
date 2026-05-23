@@ -11,7 +11,7 @@ const App = {
     } catch (err) {
       console.error('[App] Data.init() failed:', err);
       // Show user-visible error so the page isn't silently broken
-      const hero = document.getElementById('hero');
+      const hero = $('hero');
       if (hero) {
         const existing = hero.querySelector('.data-error-banner');
         if (!existing) {
@@ -27,36 +27,54 @@ const App = {
     }
 
     // ── GAIA Nodes — register site content + wire globe ──
-    if (typeof GAIA_NODES !== 'undefined') {
+    if (hasModule('GAIA_NODES')) {
       GAIA_NODES.init();
       GAIA_NODES.populateSiteData();
     }
 
     // ── Carbon Clock — starts ticking immediately ──
-    if (typeof CARBON_CLOCK !== 'undefined') {
+    if (hasModule('CARBON_CLOCK')) {
       CARBON_CLOCK.init();
     }
 
     // ── Delegation Greeting — personalized country entry ──
-    if (typeof DELEGATION !== 'undefined') {
+    if (hasModule('DELEGATION')) {
       DELEGATION.init();
     }
 
     // ── Pledge Wall — public commitments ──
-    if (typeof PLEDGE_WALL !== 'undefined') {
+    if (hasModule('PLEDGE_WALL')) {
       PLEDGE_WALL.init();
     }
 
-    // Init all existing modules — each wrapped to prevent cascade failure
+    // ── Pre-flight: validate module contracts ──
+    if (hasModule('MODULE_CONTRACTS')) {
+      const result = MODULE_CONTRACTS.validate();
+      if (!result.ok) {
+        result.errors.forEach(e => reportError('PRE-FLIGHT', e));
+      }
+      result.warnings.forEach(w => reportWarn('PRE-FLIGHT', w));
+      if (result.ok) {
+        console.log('%c✅ [PRE-FLIGHT] All module contracts valid', 'color: #4ecdc4; font-weight: bold');
+      }
+    }
+
+    // Init all existing modules — errors are now VISIBLE via reportError
     const modules = [
       ['GlobeModule', () => GlobeModule.init()],
       ['Quiz',        () => Quiz.init()],
       ['Biomes',      () => Biomes.init()],
       ['Scenario',    () => Scenario.init()],
+      ['GLOBE_MODES', () => { if (hasModule('GLOBE_MODES')) GLOBE_MODES.init(); }],
     ];
     for (const [name, initFn] of modules) {
-      try { initFn(); } catch (err) { console.error(`[App] ${name}.init() failed:`, err); }
+      try { initFn(); } catch (err) { reportError(`${name}.init()`, err); }
     }
+
+    // Async module inits (data fetching — fire and forget, they handle errors internally)
+    if (hasModule('GLOBE_NDVI'))    GLOBE_NDVI.init();
+    if (hasModule('GLOBE_EVENTS'))  GLOBE_EVENTS.init();
+    if (hasModule('GLOBE_RESTORE')) GLOBE_RESTORE.init();
 
     // ── GAIA Foundation Layer ──
     // Fetch live data in background
@@ -124,7 +142,7 @@ const App = {
     }, 5000);
 
     // ── Render site cards ──
-    const sitesGrid = document.getElementById('sites-grid');
+    const sitesGrid = $('sites-grid');
     if (sitesGrid) {
       sitesGrid.innerHTML = Data.sites.map(s => `
         <div class="site-card" onclick="flyToSite('${s.id}')">
@@ -151,7 +169,7 @@ const App = {
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
     // ── Scroll progress ──
-    const progressBar = document.getElementById('scroll-progress');
+    const progressBar = $('scroll-progress');
     const sectionsEl = document.querySelector('.sections');
     const footerEl = document.querySelector('.footer');
     let _scrollRAF = null;
@@ -159,6 +177,7 @@ const App = {
       if (_scrollRAF) return;
       _scrollRAF = requestAnimationFrame(() => {
         _scrollRAF = null;
+
         if (!sectionsEl || !footerEl || !progressBar) { progressBar && (progressBar.style.width = '0'); return; }
         const start = sectionsEl.offsetTop;
         const end = footerEl.offsetTop + footerEl.offsetHeight - window.innerHeight;
@@ -172,8 +191,8 @@ const App = {
     updateProgress();
 
     // ── Panel close ──
-    const closeBtn = document.getElementById('panel-close-btn');
-    const backdrop = document.getElementById('panel-backdrop');
+    const closeBtn = $('panel-close-btn');
+    const backdrop = $('panel-backdrop');
     const onClose = (e) => { if (e.type === 'touchstart') e.preventDefault(); e.stopPropagation(); Panel.close(); };
     if (closeBtn) {
       closeBtn.addEventListener('click', onClose, true);
@@ -203,9 +222,9 @@ const App = {
     const site = Data.getSite(id);
     if (site) {
       // Use GAIA Nodes (globe overlay) if available
-      if (typeof GAIA_NODES !== 'undefined') {
+      if (hasModule('GAIA_NODES')) {
         GAIA_NODES.onNodeClick(id);
-      } else if (typeof SITE_PANEL !== 'undefined') {
+      } else if (hasModule('SITE_PANEL')) {
         SITE_PANEL.open(site);
       } else {
         Panel.open(site);
@@ -226,7 +245,7 @@ function startApp() {
     if (++_startRetries > 30) {
       console.error('[App] GlobeModule or Data not available after 3s — starting without globe');
       // Start without globe — Data.init() will still work, globe just won't render
-      if (typeof Data !== 'undefined') App.init();
+      if (hasModule('Data')) App.init();
       return;
     }
     setTimeout(startApp, 100);
@@ -284,3 +303,5 @@ if (document.readyState === 'loading') {
 } else {
   startApp();
 }
+
+window.App = App;

@@ -205,19 +205,17 @@ const SITE_PANEL = (() => {
   // ── Toggle GAIA section collapse ──
   function toggleGAIA() {
     _gaiaCollapsed = !_gaiaCollapsed;
-    const body = document.getElementById('gaia-section-body');
-    const icon = document.getElementById('gaia-toggle-icon');
+    const body = $('gaia-section-body');
+    const icon = $('gaia-toggle-icon');
     if (body) body.classList.toggle('collapsed', _gaiaCollapsed);
     if (icon) icon.textContent = _gaiaCollapsed ? '▶' : '▼';
   }
 
   // ── Speak a specific GAIA line ──
   function speakGAIA(lineId) {
-    if (typeof GAIA_VOICE === 'undefined') return;
+    if (!hasModule('GAIA_VOICE')) return;
     const line = GAIA_VOICE.getLine(lineId);
-    if (line && typeof GAIA_BUBBLE !== 'undefined') {
-      GAIA_BUBBLE.speak(line.text, line.tone, 8000);
-    }
+    if (line) safeCall('GAIA_BUBBLE', 'speak', line.text, line.tone, 8000);
   }
 
   // ── Add insight from GAIA section ──
@@ -298,15 +296,22 @@ const SITE_PANEL = (() => {
   function createElements() {
     if (panelEl) return;
 
+    // Create overlay (separate from #panel-backdrop which uses different class)
     overlayEl = document.createElement('div');
     overlayEl.className = 'site-panel-overlay';
     overlayEl.addEventListener('click', close);
     document.body.appendChild(overlayEl);
 
-    panelEl = document.createElement('div');
-    panelEl.id = 'site-panel';
+    // Reuse existing HTML #site-panel if present to prevent duplicates
+    const existing = document.getElementById('site-panel');
+    if (existing) {
+      panelEl = existing;
+    } else {
+      panelEl = document.createElement('div');
+      panelEl.id = 'site-panel';
+      document.body.appendChild(panelEl);
+    }
     panelEl.className = 'site-panel';
-    document.body.appendChild(panelEl);
   }
 
   // ── Open panel for a site ──
@@ -316,15 +321,15 @@ const SITE_PANEL = (() => {
     currentLayer = 0;
 
     // Speak entry line
-    if (typeof GAIA_VOICE !== 'undefined' && typeof GAIA_BUBBLE !== 'undefined') {
+    if (hasModule('GAIA_VOICE') && hasModule('GAIA_BUBBLE')) {
       const line = GAIA_VOICE.speak('SITE_ENTRY', site.id);
       if (line && line.text) GAIA_BUBBLE.speak(line.text, line.tone, 8000);
     }
-    if (typeof GAIA_ENGAGEMENT !== 'undefined') {
+    if (hasModule('GAIA_ENGAGEMENT')) {
       GAIA_ENGAGEMENT.addSignal('site_tap');
       GAIA_ENGAGEMENT.addMoodSignal('curiosity');
     }
-    if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('site_entered', { siteId: site.id });
+    safeCall('GAIA_SIG', 'emit', 'site_entered', { siteId: site.id });
 
     // Build panel content
     renderLayer('story');
@@ -437,7 +442,7 @@ const SITE_PANEL = (() => {
     }
 
     // Verification section (Impact Verification Engine)
-    if (typeof NDVIVerifier !== 'undefined' || typeof RegistryCheck !== 'undefined') {
+    if (hasModule('NDVIVerifier') || hasModule('RegistryCheck')) {
       html += `<div class="site-verify-section">
         <h4>🛰 Impact Verification</h4>
         <div class="verify-tabs">
@@ -452,10 +457,10 @@ const SITE_PANEL = (() => {
     panelEl.innerHTML = html;
 
     // Trigger live verification
-    if (typeof NDVIVerifier !== 'undefined') {
+    if (hasModule('NDVIVerifier')) {
       NDVIVerifier.verifySite(site.id).then(result => {
         _lastVerification = result.comparison || result;
-        const content = document.getElementById('site-verify-content');
+        const content = $('site-verify-content');
         if (content) content.innerHTML = NDVIVerifier.renderVerificationCard(site.id, _lastVerification);
       });
     }
@@ -478,8 +483,8 @@ const SITE_PANEL = (() => {
     const chartData = points.map(p => ({ label: p.year.toString(), value: p.value }));
     const id = 'ndvi-spark-' + site.id;
     setTimeout(() => {
-      const canvas = document.getElementById(id);
-      if (canvas && typeof GAIA_CHARTS !== 'undefined') GAIA_CHARTS._drawSparkline(canvas, chartData, { color: '#4ecdc4', showLabels: true, padMin: 0.05, padMax: 0.05 });
+      const canvas = $(id);
+      if (canvas) safeCall('GAIA_CHARTS', '_drawSparkline', canvas, chartData, { color: '#4ecdc4', showLabels: true, padMin: 0.05, padMax: 0.05 });
     }, 100);
     return `<canvas id="${id}" width="400" height="80" style="width:100%;height:80px;display:block;"></canvas>
       <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--text3)">
@@ -514,11 +519,11 @@ const SITE_PANEL = (() => {
     currentLayer++;
     if (currentLayer < LAYERS.length) {
       renderLayer(LAYERS[currentLayer]);
-      if (LAYERS[currentLayer] === 'data' && typeof GAIA_ENGAGEMENT !== 'undefined') {
-        GAIA_ENGAGEMENT.addSignal('data_reveal');
-        if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('data_revealed', { siteId: currentSite?.id, layer: 'data' });
+      if (LAYERS[currentLayer] === 'data') {
+        safeCall('GAIA_ENGAGEMENT', 'addMoodSignal', 'data_deep');
+        safeCall('GAIA_SIG', 'emit', 'data_revealed', { siteId: currentSite?.id, layer: 'data' });
       }
-      if (LAYERS[currentLayer] === 'mystery' && typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.addMoodSignal('mystery');
+      if (LAYERS[currentLayer] === 'mystery') safeCall('GAIA_ENGAGEMENT', 'addMoodSignal', 'mystery');
     }
   }
 
@@ -542,7 +547,7 @@ const SITE_PANEL = (() => {
     feedback.innerHTML = (isCorrect ? '✅ ' : '❌ ') + pred.explanation;
 
     // Signals
-    if (typeof GAIA_ENGAGEMENT !== 'undefined') {
+    if (hasModule('GAIA_ENGAGEMENT')) {
       GAIA_ENGAGEMENT.addSignal('prediction');
       if (isCorrect) {
         GAIA_ENGAGEMENT.addSignal('correct_prediction');
@@ -551,8 +556,8 @@ const SITE_PANEL = (() => {
         GAIA_ENGAGEMENT.addMoodSignal('concern');
       }
     }
-    if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('prediction_made', { siteId: currentSite?.id, isCorrect });
-    if (typeof GAIA_VOICE !== 'undefined' && typeof GAIA_BUBBLE !== 'undefined') {
+    safeCall('GAIA_SIG', 'emit', 'prediction_made', { siteId: currentSite?.id, isCorrect });
+    if (hasModule('GAIA_VOICE') && hasModule('GAIA_BUBBLE')) {
       const tone = isCorrect ? 'proud' : 'nurturing';
       const line = GAIA_VOICE.speak('RESULT', currentSite?.id, tone);
       if (line && line.text) GAIA_BUBBLE.speak(line.text, line.tone, 5000);
@@ -609,7 +614,7 @@ const SITE_PANEL = (() => {
     if (btn) { btn.textContent = '↻ Loading...'; btn.disabled = true; }
     NDVIVerifier.verifySite(currentSite.id).then(result => {
       _lastVerification = result.comparison || result;
-      const content = document.getElementById('site-verify-content');
+      const content = $('site-verify-content');
       if (content) content.innerHTML = NDVIVerifier.renderVerificationCard(currentSite.id, _lastVerification);
       if (btn) { btn.textContent = '↻ Refresh from Satellite'; btn.disabled = false; }
     }).catch(err => {
@@ -625,7 +630,7 @@ const SITE_PANEL = (() => {
     if (tabs) tabs.forEach(t => t.classList.remove('active'));
     if (btn) btn.classList.add('active');
     // Re-render content
-    const content = document.getElementById('site-verify-content');
+    const content = $('site-verify-content');
     if (!content) return;
     if (tab === 'sat') {
       if (_lastVerification) content.innerHTML = NDVIVerifier.renderVerificationCard(currentSite.id, _lastVerification);
@@ -642,13 +647,17 @@ const SITE_PANEL = (() => {
     if (panelEl) panelEl.classList.remove('open');
     currentSite = null;
 
+    // Clean up any stale globe transform from legacy Panel.open()
+    const globeEl = document.getElementById('globeViz');
+    if (globeEl) globeEl.style.transform = '';
+
     // Speak departure
-    if (typeof GAIA_VOICE !== 'undefined' && typeof GAIA_BUBBLE !== 'undefined') {
+    if (hasModule('GAIA_VOICE') && hasModule('GAIA_BUBBLE')) {
       const line = GAIA_VOICE.speak('DEPARTURE', null, null);
       if (line && line.text) GAIA_BUBBLE.speak(line.text, line.tone, 5000);
     }
 
-    if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.save();
+    safeCall('GAIA_ENGAGEMENT', 'save');
   }
 
   return { open, close, nextLayer, selectPrediction, addInsight, verifyCurrentSite, switchVerifyTab, toggleGAIA, speakGAIA, addInsightFromGAIA, scrollToLayer, getCurrentLayer: () => currentLayer, getCurrentSite: () => currentSite };
@@ -666,7 +675,7 @@ const PLEDGE_PANEL = (() => {
 
   function fmt(n) {
     if (n === null || n === undefined) return '—';
-    if (typeof Data !== 'undefined') return Data.fmt(n);
+    if (hasModule('Data')) return Data.fmt(n);
     return n >= 1e9 ? (n/1e9).toFixed(1)+'B' : n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'K' : typeof n === 'number' ? n.toFixed(1) : String(n);
   }
 
@@ -674,13 +683,13 @@ const PLEDGE_PANEL = (() => {
     currentNode = node;
 
     // Fly to country
-    if (typeof GlobeModule !== 'undefined' && GlobeModule.world) {
+    if (hasModule('GlobeModule') && GlobeModule.world) {
       GlobeModule.world.pointOfView({ lat: node.lat, lng: node.lng, altitude: 0.8 }, 600);
       GlobeModule.world.controls().autoRotate = false;
     }
 
     // Use GLOBE_OVERLAY for the left-side panel
-    if (typeof GLOBE_OVERLAY !== 'undefined') {
+    if (hasModule('GLOBE_OVERLAY')) {
       GLOBE_OVERLAY.registerSite({
         siteId: 'pledge_' + node.iso,
         icon: '🌐',
@@ -791,10 +800,8 @@ const PLEDGE_PANEL = (() => {
 
   function close() {
     currentNode = null;
-    if (typeof GLOBE_OVERLAY !== 'undefined') {
-      GLOBE_OVERLAY.close();
-    }
-    if (typeof GlobeModule !== 'undefined' && GlobeModule.world) {
+    safeCall('GLOBE_OVERLAY', 'close');
+    if (hasModule('GlobeModule') && GlobeModule.world) {
       GlobeModule.world.controls().autoRotate = true;
       GlobeModule.world.pointOfView({ lat: 20, lng: 40, altitude: 2.2 }, 400);
     }

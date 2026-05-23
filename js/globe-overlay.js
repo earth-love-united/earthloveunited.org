@@ -58,13 +58,9 @@ const GLOBE_OVERLAY = (() => {
       <div class="globe-overlay-content" id="globe-overlay-content"></div>
     `;
 
-    // Insert into globeViz so it's positioned relative to the globe canvas
-    const globeViz = document.getElementById('globeViz');
-    if (globeViz) {
-      globeViz.appendChild(overlayEl);
-    } else {
-      document.body.appendChild(overlayEl);
-    }
+    // Insert into body — NOT into globeViz, which has z-index:1 and would
+    // trap the overlay inside that stacking context (below .sections z-index:10)
+    document.body.appendChild(overlayEl);
 
     // Close button
     overlayEl.querySelector('#globe-overlay-close').addEventListener('click', close);
@@ -95,7 +91,7 @@ const GLOBE_OVERLAY = (() => {
     // Update GAIA guidance section
     const gaiaSection = overlayEl.querySelector('#globe-overlay-gaia');
     if (gaiaSection) {
-      const gaiaContext = typeof GAIA_NODES !== 'undefined' ? GAIA_NODES.getGAIAContext(siteId) : null;
+      const gaiaContext = hasModule('GAIA_NODES') ? GAIA_NODES.getGAIAContext(siteId) : null;
       if (gaiaContext) {
         gaiaSection.innerHTML = `
           <div class="globe-gaia-guidance">${gaiaContext.guidance}</div>
@@ -173,7 +169,7 @@ const GLOBE_OVERLAY = (() => {
     renderTabContent(tabId, site);
 
     // Render any pending charts for this tab
-    if (typeof GAIA_CHARTS !== 'undefined') {
+    if (hasModule('GAIA_CHARTS')) {
       setTimeout(() => GAIA_CHARTS.renderPending(), 50);
     }
 
@@ -213,12 +209,37 @@ const GLOBE_OVERLAY = (() => {
     currentSiteId = null;
     currentTabId = null;
 
+    // Clean up any stale globe transform from legacy Panel.open()
+    const globeEl = document.getElementById('globeViz');
+    if (globeEl) globeEl.style.transform = '';
+
+    // Resume globe auto-rotation (paused in site-panel.js open())
+    if (hasModule('GlobeModule') && GlobeModule.world && GlobeModule.world.controls()) {
+      GlobeModule.world.controls().autoRotate = true;
+    }
+
     dispatchEvent('overlay:close', {});
   }
 
   // ── Simple event dispatcher ──
   function dispatchEvent(name, detail) {
     document.dispatchEvent(new CustomEvent(name, { detail }));
+  }
+
+  /**
+   * Re-render the currently active tab (clears cached render and re-runs).
+   * Used by interactive content that needs to update in-place.
+   */
+  function refreshTab() {
+    if (!currentSiteId || !currentTabId) return;
+    const site = registry[currentSiteId];
+    if (!site) return;
+
+    const panelEl = overlayEl?.querySelector(`.globe-overlay-tab-panel[data-tab-id="${currentTabId}"]`);
+    if (panelEl) {
+      delete panelEl.dataset.rendered;
+      renderTabContent(currentTabId, site);
+    }
   }
 
   // ── Public API ──
@@ -228,7 +249,9 @@ const GLOBE_OVERLAY = (() => {
     open,
     close,
     switchTab,
+    refreshTab,
     isOpen: () => isOpen,
     getCurrentSite: () => currentSiteId,
   };
 })();
+window.GLOBE_OVERLAY = GLOBE_OVERLAY;

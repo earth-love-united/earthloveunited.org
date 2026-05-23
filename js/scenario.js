@@ -82,3 +82,5 @@ const Scenario = {
     safeCall('PLEDGE_WALL', 'onScenarioRun', r);
   }
 };
+
+window.Scenario = Scenario;

@@ -189,3 +189,4 @@ const COUNTRY_DATA = (() => {
     COUNTRIES,
   };
 })();
+window.COUNTRY_DATA = COUNTRY_DATA;

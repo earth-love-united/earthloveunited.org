@@ -2,71 +2,118 @@
 // GLOBE — Globe.gl init, panel open/close
 // ═══════════════════════════════════════════════
 
+// Module-level closure: mode click handler lives OUTSIDE GlobeModule
+// because safeChain wraps `this` in a Proxy — `this._handler` won't work
+// inside chained arrow functions. This variable is shared between
+// the onPointClick/onLabelClick/onGlobeClick callbacks and setOnGlobeClick.
+let _globeClickHandler = null;
+
 const GlobeModule = {
   world: null,
   userTotal: 0,
   currentLens: 'gap', // 'gap' | 'forest' | 'cat'
+  isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  ) || (window.innerWidth < 768),
 
   init() {
-    const el = document.getElementById('globeViz');
+    const el = $('globeViz');
+    if (!el) { reportError('GlobeModule', 'globeViz element not found'); return; }
 
-    this.world = new Globe(el, { animateIn: true, waitForGlobeReady: true })
+    // safeChain: if any method doesn't exist (e.g. specularImageUrl), it's
+    // skipped with a dev warning instead of crashing the entire init.
+    this.world = safeChain(new Globe(el, { animateIn: true, waitForGlobeReady: true }), 'Globe')
       .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg')
       .bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
+      .specularImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-water.png')
       .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
-      .showAtmosphere(true).atmosphereColor('#4ecdc4').atmosphereAltitude(0.18)
+      .showAtmosphere(!this.isMobile).atmosphereColor('#4ecdc4').atmosphereAltitude(0.25)
       .pointsData(Data.sites)
-      .pointLat('lat').pointLng('lng').pointAltitude(0.01).pointRadius(0.4)
-      .pointColor(() => '#4ecdc4').pointResolution(12)
+      .pointLat('lat').pointLng('lng').pointAltitude(0.01).pointRadius(0.6)
+      .pointColor(() => '#4ecdc4').pointResolution(this.isMobile ? 8 : 16)
       .labelsData(Data.sites)
-      .labelLat('lat').labelLng('lng').labelText('name').labelSize(1.2)
-      .labelDotRadius(0.3).labelDotOrientation(() => 'bottom')
-      .labelColor(() => 'rgba(123,232,208,0.85)').labelResolution(2).labelAltitude(0.015)
+      .labelLat('lat').labelLng('lng').labelText('name').labelSize(1.4)
+      .labelDotRadius(0.4).labelDotOrientation(() => 'bottom')
+      .labelColor(() => 'rgba(123,232,208,0.9)').labelResolution(3).labelAltitude(0.02)
       .ringsData(Data.sites)
       .ringLat('lat').ringLng('lng')
       .ringColor(() => t => `rgba(78,205,196,${1 - t})`)
-      .ringMaxRadius(3).ringPropagationSpeed(1.5).ringRepeatPeriod(1400)
-      .onPointClick(site => {
-        if (window.GAIA_NODES) {
-          window.GAIA_NODES.onNodeClick(site.id);
-        } else if (window.SITE_PANEL) {
-          window.SITE_PANEL.open(site);
-        }
-      })
-      .onLabelClick(site => {
-        if (window.GAIA_NODES) {
-          window.GAIA_NODES.onNodeClick(site.id);
-        } else if (window.SITE_PANEL) {
-          window.SITE_PANEL.open(site);
-        }
-      })
+      .ringMaxRadius(4).ringPropagationSpeed(1.5).ringRepeatPeriod(1200)
       .onPointHover(site => {
-        if (site && window.GAIA_NODES) {
-          window.GAIA_NODES.onNodeHover(site.id);
-        } else if (site && window.GAIA_PRESENCE) {
-          window.GAIA_PRESENCE.speakTeaser(site.id);
-          if (window.GAIA_ENGAGEMENT) window.GAIA_ENGAGEMENT.interact();
+        if (site && hasModule('GAIA_NODES')) {
+          GAIA_NODES.onNodeHover(site.id);
+        } else if (site && hasModule('GAIA_PRESENCE')) {
+          GAIA_PRESENCE.speakTeaser(site.id);
+          if (hasModule('GAIA_ENGAGEMENT')) GAIA_ENGAGEMENT.interact();
         }
       })
       .onLabelHover(site => {
-        if (site && window.GAIA_NODES) {
-          window.GAIA_NODES.onNodeHover(site.id);
-        } else if (site && window.GAIA_PRESENCE) {
-          window.GAIA_PRESENCE.speakTeaser(site.id);
-          if (window.GAIA_ENGAGEMENT) window.GAIA_ENGAGEMENT.interact();
+        if (site && hasModule('GAIA_NODES')) {
+          GAIA_NODES.onNodeHover(site.id);
+        } else if (site && hasModule('GAIA_PRESENCE')) {
+          GAIA_PRESENCE.speakTeaser(site.id);
+          if (hasModule('GAIA_ENGAGEMENT')) GAIA_ENGAGEMENT.interact();
+        }
+      })
+      .onPointClick(site => {
+        // Mode handler intercepts ALL clicks when active
+        if (_globeClickHandler && site) {
+          _globeClickHandler(site.lat, site.lng);
+          return;
+        }
+        if (hasModule('GAIA_NODES')) {
+          GAIA_NODES.onNodeClick(site.id);
+        } else if (hasModule('SITE_PANEL')) {
+          SITE_PANEL.open(site);
+        }
+      })
+      .onLabelClick(site => {
+        if (_globeClickHandler && site) {
+          _globeClickHandler(site.lat, site.lng);
+          return;
+        }
+        if (hasModule('GAIA_NODES')) {
+          GAIA_NODES.onNodeClick(site.id);
+        } else if (hasModule('SITE_PANEL')) {
+          SITE_PANEL.open(site);
         }
       });
+
+    // onGlobeClick MUST be set AFTER safeChain, directly on the world object
+    // (safeChain Proxy can silently swallow unknown methods)
+    if (typeof this.world.onGlobeClick === 'function') {
+      this.world.onGlobeClick(({ lat, lng }) => {
+        if (_globeClickHandler) {
+          _globeClickHandler(lat, lng);
+        }
+      });
+    }
+
+    // safeChain returns a Proxy — unwrap to get the real Globe instance
+    // (the Proxy target IS the Globe, so direct property access still works)
+    console.log('[Globe] init — ' + (this.world.pointsData()?.length || 0) + ' points loaded');
 
     // ── Pledge vs Reality country nodes ──
     this.initPledgeNodes();
 
+    // ── Country hex polygons — shared between modes ──
+    // Default: empty wireframe grid (visible edges, transparent fill)
+    this._countryFeatures = null;
     fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
       .then(r => r.json())
       .then(countries => {
+        this._countryFeatures = countries.features.filter(d => d.properties.ISO_A2 !== 'AQ');
+        const hexRes = this.isMobile ? 2 : 3;
+        const hexMargin = this.isMobile ? 0.7 : 0.62;
         this.world
-          .hexPolygonsData(countries.features.filter(d => d.properties.ISO_A2 !== 'AQ'))
-          .hexPolygonResolution(3).hexPolygonMargin(0.4)
-          .hexPolygonUseDots(true).hexPolygonDotResolution(12);
+          .hexPolygonsData(this._countryFeatures)
+          .hexPolygonResolution(hexRes).hexPolygonMargin(hexMargin)
+          .hexPolygonUseDots(false)
+          .hexPolygonColor(() => 'rgba(78,205,196,0.08)')
+          .hexPolygonAltitude(() => 0.003)
+          .hexPolygonCurvatureResolution(0);
+        // Notify mode modules that country data is ready
+        safeCall('GLOBE_MODES', 'onCountryDataReady');
       })
       .catch(e => console.warn('[Globe] Country borders fetch failed:', e.message));
 
@@ -77,7 +124,7 @@ const GlobeModule = {
     this.world.controls().dampingFactor = 0.1;
 
     const m = this.world.globeMaterial();
-    m.bumpScale = 8; m.emissive.setHex(0x061420); m.emissiveIntensity = 0.12; m.shininess = 5;
+    m.bumpScale = 12; m.emissive.setHex(0x040810); m.emissiveIntensity = 0.05; m.shininess = 30;
 
     // Apply initial node visual states
     this.updateNodeVisuals();
@@ -103,25 +150,40 @@ const GlobeModule = {
       .pointLat('lat')
       .pointLng('lng')
       .pointAltitude(p => p._type === 'pledge' ? this.pledgePointAltitude(p) : 0.01)
-      .pointRadius(p => p._type === 'pledge' ? this.pledgePointRadius(p) : 0.4)
+      .pointRadius(p => p._type === 'pledge' ? this.pledgePointRadius(p) : 0.6)
       .pointColor(p => {
         if (p._type === 'pledge') return this.pledgePointColor(p);
         // Site color logic
-        const suggestedIds = typeof GAIA_NODES !== 'undefined' ? GAIA_NODES.getSuggestedSiteIds('') : [];
+        const suggestedIds = hasModule('GAIA_NODES') ? GAIA_NODES.getSuggestedSiteIds('') : [];
         if (suggestedIds.includes(p.id)) return '#ffd700';
         return 'rgba(78,205,196,0.6)';
       })
       .pointResolution(12)
+      .onGlobeClick(({ lat, lng }) => {
+        // Mode handler intercepts globe surface clicks
+        if (_globeClickHandler) {
+          _globeClickHandler(lat, lng);
+          return;
+        }
+      })
       .onPointClick(p => {
+        // Mode handler intercepts ALL clicks when active
+        if (_globeClickHandler && p) {
+          _globeClickHandler(p.lat, p.lng);
+          return;
+        }
         if (p._type === 'pledge') {
-          if (typeof PLEDGE_PANEL !== 'undefined') {
+          if (hasModule('PLEDGE_PANEL')) {
             PLEDGE_PANEL.open(p);
+          } else {
+            console.warn('[Globe] PLEDGE_PANEL not available — falling back to Panel.open');
+            Panel.open({ ...p, name: p.country, subtitle: 'Pledge vs Reality', narrative: p.country + ' — ' + (p.fossil_co2_mt || 0) + ' MtCO₂' });
           }
         } else {
           // Site click
-          if (typeof GAIA_NODES !== 'undefined') {
+          if (hasModule('GAIA_NODES')) {
             GAIA_NODES.onNodeClick(p.id);
-          } else if (typeof SITE_PANEL !== 'undefined') {
+          } else if (hasModule('SITE_PANEL')) {
             SITE_PANEL.open(p);
           } else {
             Panel.open(p);
@@ -130,7 +192,6 @@ const GlobeModule = {
       })
       .onPointHover(p => {
         if (!p) {
-          // Not hovering anything — hide tooltip
           window.dispatchEvent(new CustomEvent('pledgeHover', { detail: null }));
           return;
         }
@@ -142,13 +203,12 @@ const GlobeModule = {
           }));
         } else {
           // Site hover
-          if (typeof GAIA_NODES !== 'undefined') {
+          if (hasModule('GAIA_NODES')) {
             GAIA_NODES.onNodeHover(p.id);
-          } else if (typeof GAIA_PRESENCE !== 'undefined') {
+          } else if (hasModule('GAIA_PRESENCE')) {
             GAIA_PRESENCE.speakTeaser(p.id);
-            if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.interact();
+            safeCall('GAIA_ENGAGEMENT', 'interact');
           }
-          // Hide pledge tooltip when hovering sites
           window.dispatchEvent(new CustomEvent('pledgeHover', { detail: null }));
         }
       });
@@ -169,6 +229,79 @@ const GlobeModule = {
   pledgePointRadius(n) {
     const co2 = n.fossil_co2_mt || 0;
     return 0.3 + Math.min(co2 / 20000, 0.8);
+  },
+
+  // ── Mode API — used by GLOBE_MODES orchestrator ──
+  setHexMode(colorFn, altFn) {
+    if (!this.world) return;
+    this.world.hexPolygonColor(colorFn);
+    if (altFn) this.world.hexPolygonAltitude(altFn);
+  },
+
+  /**
+   * Swap the globe's surface texture.
+   * @param {string} imageUrl — equirectangular image URL (or path)
+   * @param {Function} [onLoad] — called when texture is loaded
+   */
+  setGlobeTexture(imageUrl, onLoad) {
+    if (!this.world) return;
+
+    // Access Three.js globe mesh via the scene
+    const scene = this.world.scene();
+    const globeMesh = scene.children.find(c =>
+      c.type === 'Mesh' && c.geometry?.type === 'SphereGeometry'
+    ) || scene.children.find(c =>
+      c.__globeObjType === 'globe' || (c.children && c.children.find(cc => cc.type === 'Mesh'))
+    );
+
+    // globe.gl wraps the actual globe — use globeImageUrl for safe swap
+    this.world.globeImageUrl(imageUrl);
+
+    if (onLoad) {
+      // Give the texture a moment to load
+      setTimeout(onLoad, 500);
+    }
+  },
+
+  /**
+   * Restore the default night earth texture.
+   */
+  restoreDefaultTexture() {
+    if (!this.world) return;
+    this.world.globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg');
+  },
+
+  /**
+   * Set globe texture from an offscreen canvas.
+   * Uses toDataURL (data: scheme) — CSP allows data: but blocks blob:.
+   * @param {HTMLCanvasElement} canvas
+   */
+  setGlobeTextureFromCanvas(canvas) {
+    if (!this.world || !canvas) return;
+    // data: URLs are allowed by CSP and work synchronously
+    const dataUrl = canvas.toDataURL('image/png');
+    this.world.globeImageUrl(dataUrl);
+  },
+
+  /**
+   * Set a handler for globe surface clicks (lat/lng).
+   * Only one handler at a time — modes swap it.
+   */
+  setOnGlobeClick(fn) {
+    _globeClickHandler = fn;
+    console.log('[Globe] Click handler', fn ? 'SET' : 'CLEARED');
+  },
+
+  /**
+   * Clear the globe click handler.
+   */
+  clearOnGlobeClick() {
+    _globeClickHandler = null;
+    console.log('[Globe] Click handler CLEARED');
+  },
+
+  getCountryFeatures() {
+    return this._countryFeatures || [];
   },
 
   // ── Lens switching ──
@@ -219,10 +352,10 @@ const GlobeModule = {
 
   // ── Update node visual states based on engagement ──
   updateNodeVisuals() {
-    const states = typeof GAIA_ENGAGEMENT !== 'undefined'
+    const states = hasModule('GAIA_ENGAGEMENT')
       ? GAIA_ENGAGEMENT.getSiteStates()
       : {};
-    const suggestedIds = typeof GAIA_NODES !== 'undefined'
+    const suggestedIds = hasModule('GAIA_NODES')
       ? GAIA_NODES.getSuggestedSiteIds('')
       : [];
 
@@ -249,19 +382,31 @@ const GlobeModule = {
         const co2 = p.fossil_co2_mt || 0;
         return 0.3 + Math.min(co2 / 20000, 0.8);
       }
-      if (suggestedIds.includes(p.id)) return 0.7;
+      if (suggestedIds.includes(p.id)) return 0.9;
       const s = states[p.id];
-      if (!s || s.state === 'locked') return 0.3;
-      if (s.state === 'available') return 0.4;
-      if (s.state === 'explored') return 0.5;
-      if (s.state === 'mastered') return 0.6;
-      return 0.4;
+      if (!s || s.state === 'locked') return 0.4;
+      if (s.state === 'available') return 0.6;
+      if (s.state === 'explored') return 0.7;
+      if (s.state === 'mastered') return 0.8;
+      return 0.6;
     });
+  },
+
+  clearNodeVisuals() {
+    if (!this.world) return;
+    this.world.pointsData([]).labelsData([]).ringsData([]);
+  },
+
+  restoreNodeVisuals() {
+    if (!this.world) return;
+    this.initPledgeNodes();
+    this.world.labelsData(Data.sites).ringsData(Data.sites);
+    this.updateNodeVisuals();
   },
 
   // ── Pledge tooltip (was incorrectly on PanelSlider) ──
   _initPledgeTooltip() {
-    let tooltip = document.getElementById('pledge-tooltip');
+    let tooltip = $('pledge-tooltip');
     if (!tooltip) {
       tooltip = document.createElement('div');
       tooltip.id = 'pledge-tooltip';
@@ -323,7 +468,7 @@ const Panel = {
     const tD = (cLast.temp - cFirst.temp).toFixed(1);
     const pD = cFirst.precip ? ((cLast.precip - cFirst.precip) / cFirst.precip * 100).toFixed(0) : '0';
 
-    document.getElementById('panel-content').innerHTML = `
+    $('panel-content').innerHTML = `
       <div class="site-title">${site.name}</div>
       <div class="site-subtitle">${site.subtitle}</div>
       <div class="site-narrative">${site.narrative}</div>
@@ -370,15 +515,15 @@ const Panel = {
       </div>
     `;
 
-    document.getElementById('site-panel').classList.add('open');
-    document.getElementById('panel-backdrop').classList.add('show');
-    document.getElementById('globeViz').style.transform = 'translateX(-100vw)';
+    $('site-panel').classList.add('open');
+    $('panel-backdrop').classList.add('show');
+    $('globeViz').style.transform = 'translateX(-100vw)';
   },
 
   close() {
-    document.getElementById('site-panel').classList.remove('open');
-    document.getElementById('panel-backdrop').classList.remove('show');
-    document.getElementById('globeViz').style.transform = '';
+    $('site-panel').classList.remove('open');
+    $('panel-backdrop').classList.remove('show');
+    $('globeViz').style.transform = '';
     this.currentSite = null;
     GlobeModule.world.controls().autoRotate = true;
     GlobeModule.world.pointOfView({ lat: 20, lng: 40, altitude: 2.2 }, 400);
@@ -399,8 +544,8 @@ const Panel = {
     const ctx = Data.scaleContext(r.cumulative_co2);
     const pos = r.cumulative_co2 > 0;
     GlobeModule.userTotal = Math.abs(r.cumulative_co2);
-    document.getElementById('user-total').textContent = Data.fmt(GlobeModule.userTotal) + ' t CO₂';
-    document.getElementById('sandbox-result').innerHTML = `
+    $text('user-total', Data.fmt(GlobeModule.userTotal) + ' t CO₂');
+    $('sandbox-result').innerHTML = `
       <div class="result-card">
         <div class="big-number" style="color:${pos ? 'var(--leaf)' : 'var(--warn)'}">${pos ? '+' : ''}${Data.fmt(Math.abs(r.cumulative_co2))} t CO₂</div>
         <div class="big-label">${pos ? 'sequestered' : 'released'} over ${r.years} years · ${this.selectedArea} ha</div>
@@ -420,15 +565,15 @@ const PanelSlider = {
   update(i) {
     if (!Panel.currentSite) return;
     const n = Panel.currentSite.ndvi[i];
-    document.getElementById('year-disp').textContent = n.year;
-    document.getElementById('ndvi-bar').style.width = n.value * 100 + '%';
-    document.getElementById('ndvi-bar').style.background = this.ndviCol(n.value);
-    document.getElementById('ndvi-lbl').textContent = `${n.label} · NDVI ${n.value.toFixed(2)}`;
+    $text('year-disp', n.year);
+    const bar = $('ndvi-bar');
+    if (bar) { bar.style.width = n.value * 100 + '%'; bar.style.background = this.ndviCol(n.value); }
+    $text('ndvi-lbl', `${n.label} · NDVI ${n.value.toFixed(2)}`);
   },
 
   setArea(v) {
     Panel.selectedArea = parseInt(v);
-    document.getElementById('area-val').textContent = v + ' hectares';
+    $text('area-val', v + ' hectares');
     Panel.calcResult();
   },
 
@@ -436,3 +581,14 @@ const PanelSlider = {
 
   // (initPledgeTooltip moved to GlobeModule._initPledgeTooltip)
 };
+
+window.GlobeModule = GlobeModule;
+window.Panel = Panel;
+window.PanelSlider = PanelSlider;
+
+if (hasModule('MODULE_CONTRACTS')) {
+  MODULE_CONTRACTS.register('GlobeModule', {
+    provides: ['init', 'initPledgeNodes', 'updateNodeVisuals', 'setLens', 'setHexMode', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals'],
+    requires: ['Data'],
+  });
+}

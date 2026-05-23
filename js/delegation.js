@@ -25,12 +25,12 @@ const DELEGATION = (() => {
     greetingEl.innerHTML = buildGreetingHTML();
 
     // Inject into the hero container
-    const container = document.getElementById('hero-delegation');
+    const container = $('hero-delegation');
     if (container) {
       container.appendChild(greetingEl);
     } else {
       // Fallback: insert at top of hero
-      const hero = document.getElementById('hero');
+      const hero = $('hero');
       if (hero) {
         hero.insertBefore(greetingEl, hero.firstChild);
       }
@@ -42,7 +42,7 @@ const DELEGATION = (() => {
     });
 
     // Track engagement
-    if (typeof GAIA_ENGAGEMENT !== 'undefined') {
+    if (hasModule('GAIA_ENGAGEMENT')) {
       GAIA_ENGAGEMENT.addSignal('site_tap');
       GAIA_ENGAGEMENT.addMoodSignal('urgency');
     }
@@ -149,13 +149,13 @@ const DELEGATION = (() => {
     if (!countryData) return;
 
     // Scroll to the globe section
-    const globe = document.getElementById('globeViz');
+    const globe = $('globeViz');
     if (globe) {
       globe.scrollIntoView({ behavior: 'smooth' });
     }
 
     // Show GAIA speaking about the country
-    if (typeof GAIA_BUBBLE !== 'undefined') {
+    if (hasModule('GAIA_BUBBLE')) {
       GAIA_BUBBLE.speak(
         `${countryData.flag} ${countryData.name}: ${countryData.formattedEmissions} in 2023. ${getComparisonContext(countryData)}`,
         'urgent',
@@ -192,3 +192,4 @@ const DELEGATION = (() => {
     getCountryData: () => countryData,
   };
 })();
+window.DELEGATION = DELEGATION;

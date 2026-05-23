@@ -14,7 +14,7 @@ const Counters = {
   },
 
   animateNum(id, from, to, duration, suffix) {
-    const el = document.getElementById(id);
+    const el = $(id);
     if (!el) return;
     const start = performance.now();
     const tick = (now) => {
@@ -26,3 +26,5 @@ const Counters = {
     requestAnimationFrame(tick);
   }
 };
+
+window.Counters = Counters;

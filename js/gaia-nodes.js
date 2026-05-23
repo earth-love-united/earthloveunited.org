@@ -181,7 +181,7 @@ const GAIA_NODES = (() => {
   }
 
   function onNodeClick(siteId) {
-    if (typeof GLOBE_OVERLAY !== 'undefined') GLOBE_OVERLAY.open(siteId);
+    safeCall('GLOBE_OVERLAY', 'open', siteId);
     addXP(siteId, 10);
     if (nodeState[siteId]) nodeState[siteId].visited = true;
     // Set site context in GAIA bubble
@@ -374,8 +374,8 @@ const GAIA_NODES = (() => {
   // ── Helper: render chart after DOM insertion ──
   function renderChart(id, data, options, delay) {
     setTimeout(() => {
-      const el = document.getElementById(id);
-      if (el && typeof GAIA_CHARTS !== 'undefined') {
+      const el = $(id);
+      if (el && hasModule('GAIA_CHARTS')) {
         el.innerHTML = GAIA_CHARTS.sparklineHTML(data, options.w || 460, options.h || 100, {
           color: options.color || '#4ecdc4',
           showLabels: true,
@@ -538,8 +538,8 @@ const GAIA_NODES = (() => {
 
   function renderAntalyaAct(container, site) {
     const d = site || {};
-    const biome = (typeof Data !== 'undefined' && Data.getBiome) ? Data.getBiome(d.primaryBiome || 'temperate_coniferous') : { name: 'Mediterranean Pine Forest' };
-    const currentBiome = (typeof Data !== 'undefined' && Data.getBiome) ? Data.getBiome(d.currentBiome || 'grassland_savanna') : { name: 'Grassland / Scrub' };
+    const biome = (hasModule('Data') && Data.getBiome) ? Data.getBiome(d.primaryBiome || 'temperate_coniferous') : { name: 'Mediterranean Pine Forest' };
+    const currentBiome = (hasModule('Data') && Data.getBiome) ? Data.getBiome(d.currentBiome || 'grassland_savanna') : { name: 'Grassland / Scrub' };
     const area = d.area || 2500;
 
     container.innerHTML = `
@@ -578,7 +578,7 @@ const GAIA_NODES = (() => {
       container.querySelectorAll('.scenario-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const action = this.dataset.action;
-          const resultEl = document.getElementById('antalya-scenario-result');
+          const resultEl = $('antalya-scenario-result');
           if (!resultEl) return;
           let html = '';
           if (action === 'pine') {
@@ -592,7 +592,7 @@ const GAIA_NODES = (() => {
             html = `<div style="padding:16px;background:rgba(212,165,116,0.06);border:1px solid rgba(212,165,116,0.15);border-radius:8px;animation:overlay-fadein 0.3s ease-out;"><div style="font-family:var(--mono);font-size:24px;font-weight:600;color:var(--amber);">+${(c/1e6).toFixed(1)}M t CO₂</div><div style="font-size:12px;color:var(--text2);margin-top:4px;">sequestered over 30 years · natural succession</div><div style="font-size:11px;color:var(--text3);margin-top:8px;">Lowest intervention. Slowest results. But nature knows what it's doing.</div></div>`;
           }
           resultEl.innerHTML = html;
-          if (typeof GAIA_ENGAGEMENT !== 'undefined') GAIA_ENGAGEMENT.addSignal('scenario_run');
+          safeCall('GAIA_ENGAGEMENT', 'addSignal', 'scenario_run');
         });
       });
     }, 150);
@@ -944,7 +944,7 @@ const GAIA_NODES = (() => {
   function renderAntalyaGlobal(container, site) {
     const d = site || {};
     const area = d.area || 2500;
-    const biome = (typeof Data !== 'undefined' && Data.getBiome) ? Data.getBiome(d.primaryBiome || 'temperate_coniferous') : { name: 'Mediterranean Forest' };
+    const biome = (hasModule('Data') && Data.getBiome) ? Data.getBiome(d.primaryBiome || 'temperate_coniferous') : { name: 'Mediterranean Forest' };
     const biomeArea = 1800; // million ha (approx global Mediterranean forest area)
 
     container.innerHTML = `
@@ -1181,7 +1181,7 @@ const GAIA_NODES = (() => {
     }
     // Otherwise, listen for the knowledge-ready event
     const handler = () => {
-      if (typeof GAIA_KNOWLEDGE !== 'undefined') {
+      if (hasModule('GAIA_KNOWLEDGE')) {
         container.innerHTML = GAIA_KNOWLEDGE.generateSynthesis(siteId, site);
       }
       document.removeEventListener('gaia:knowledge-ready', handler);
@@ -1200,3 +1200,10 @@ const GAIA_NODES = (() => {
   };
 })();
 window.GAIA_NODES = GAIA_NODES;
+
+if (typeof MODULE_CONTRACTS !== 'undefined') {
+  MODULE_CONTRACTS.register('GAIA_NODES', {
+    provides: ['init', 'onNodeClick', 'onNodeHover', 'getSuggestedSiteIds', 'populateSiteData'],
+    requires: ['Data', 'GlobeModule', 'GLOBE_OVERLAY'],
+  });
+}

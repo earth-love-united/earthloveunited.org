@@ -286,6 +286,7 @@ const RegistryCheck = (() => {
 })();
 
 // Auto-init check if Data is ready
-if (typeof Data !== 'undefined') {
+if (hasModule('Data')) {
   console.log('[RegistryCheck] Module ready — call RegistryCheck.checkSite(id) to verify');
 }
+window.RegistryCheck = RegistryCheck;

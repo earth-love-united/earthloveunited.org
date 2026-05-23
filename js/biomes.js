@@ -29,7 +29,7 @@ const Biomes = {
   },
 
   renderCards() {
-    const el = document.getElementById('biome-cards');
+    const el = $('biome-cards');
     if (!el) return;
     el.innerHTML = this.order.map(k => {
       const b = Data.getBiome(k);
@@ -43,7 +43,7 @@ const Biomes = {
   },
 
   renderCompare() {
-    const el = document.getElementById('compare-bars');
+    const el = $('compare-bars');
     if (!el) return;
     el.innerHTML = this.compareOrder.map(d => {
       const b = Data.getBiome(d.key);
@@ -60,7 +60,7 @@ const Biomes = {
     if (!b) return;
     document.querySelectorAll('.biome-card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
-    const d = document.getElementById('biome-detail');
+    const d = $('biome-detail');
     if (!d) return;
     d.className = 'biome-detail show';
     d.innerHTML = `<h4>${b.icon} ${b.name}</h4><p>${b.desc}</p><div class="bd-numbers"><div class="bd-num">📦 ${b.density} tC/ha stock</div><div class="bd-num">📈 ${b.seq} tC/ha/yr sequestration</div></div>`;
@@ -80,3 +80,5 @@ const Biomes = {
     });
   }
 };
+
+window.Biomes = Biomes;

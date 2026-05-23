@@ -93,7 +93,7 @@ const PLEDGE_WALL = (() => {
     promptShown = true;
 
     // GAIA speaks
-    if (typeof GAIA_BUBBLE !== 'undefined') {
+    if (hasModule('GAIA_BUBBLE')) {
       GAIA_BUBBLE.speak(message, tone, 8000);
     }
 
@@ -194,8 +194,8 @@ const PLEDGE_WALL = (() => {
     });
 
     // Character counter
-    const textarea = document.getElementById('pledge-text');
-    const counter = document.getElementById('pledge-char-count');
+    const textarea = $('pledge-text');
+    const counter = $('pledge-char-count');
     if (textarea && counter) {
       textarea.addEventListener('input', () => {
         counter.textContent = textarea.value.length;
@@ -203,16 +203,16 @@ const PLEDGE_WALL = (() => {
     }
 
     // Track engagement
-    if (typeof GAIA_ENGAGEMENT !== 'undefined') {
+    if (hasModule('GAIA_ENGAGEMENT')) {
       GAIA_ENGAGEMENT.addSignal('site_tap');
     }
   }
 
   // ── Submit pledge ──
   function submitPledge() {
-    const text = document.getElementById('pledge-text')?.value.trim();
-    if (!text || text.length < 5) {
-      const ta = document.getElementById('pledge-text');
+    const text = $('pledge-text')?.value.trim();
+    if (!text) {
+      const ta = $('pledge-text');
       if (ta) {
         ta.style.animation = 'none';
         ta.offsetHeight;
@@ -221,8 +221,8 @@ const PLEDGE_WALL = (() => {
       return;
     }
 
-    const name = document.getElementById('pledge-name')?.value.trim() || 'Anonymous';
-    const type = document.getElementById('pledge-type')?.value || 'personal';
+    const name = $('pledge-name')?.value.trim() || 'Anonymous';
+    const type = $('pledge-type')?.value || 'personal';
 
     const pledge = {
       id: Date.now().toString(36),
@@ -242,7 +242,7 @@ const PLEDGE_WALL = (() => {
     showWall();
 
     // GAIA reacts
-    if (typeof GAIA_BUBBLE !== 'undefined') {
+    if (hasModule('GAIA_BUBBLE')) {
       const reactions = [
         "That's a start. The wall grows. Every pledge matters.",
         "Good. Now do it. The planet is watching.",
@@ -252,20 +252,18 @@ const PLEDGE_WALL = (() => {
       GAIA_BUBBLE.speak(reactions[Math.floor(Math.random() * reactions.length)], 'proud', 5000);
     }
 
-    if (typeof GAIA_ENGAGEMENT !== 'undefined') {
-      GAIA_ENGAGEMENT.addSignal('share');
-      GAIA_ENGAGEMENT.addMoodSignal('pride');
-    }
-    if (typeof GAIA_SIG !== 'undefined') GAIA_SIG.emit('share', { type: 'pledge' });
+    safeCall('GAIA_ENGAGEMENT', 'addSignal', 'pledge');
+    safeCall('GAIA_ENGAGEMENT', 'save');
+    safeCall('GAIA_SIG', 'emit', 'share', { type: 'pledge' });
 
-    if (typeof GAIA_JOURNAL !== 'undefined') {
+    if (hasModule('GAIA_JOURNAL')) {
       GAIA_JOURNAL.checkQuestProgress('share', null);
     }
   }
 
   // ── Get detected country ──
   function getDetectedCountry() {
-    if (typeof DELEGATION !== 'undefined' && DELEGATION.getDetected()) {
+    if (hasModule('DELEGATION') && DELEGATION.getDetected()) {
       return DELEGATION.getDetected().code;
     }
     return null;
@@ -330,7 +328,7 @@ const PLEDGE_WALL = (() => {
 
   // ── Render wall entries ──
   function renderWall() {
-    const container = document.getElementById('pledge-wall-entries');
+    const container = $('pledge-wall-entries');
     if (!container) return;
 
     if (pledges.length === 0) {
@@ -391,7 +389,7 @@ const PLEDGE_WALL = (() => {
     if (!code) return '';
     // Country codes are ISO alpha-3 (3 chars). Flag emoji math only works with alpha-2.
     // Use COUNTRY_DATA's pre-baked flag if available, otherwise skip.
-    if (typeof COUNTRY_DATA !== 'undefined') {
+    if (hasModule('COUNTRY_DATA')) {
       const comparison = COUNTRY_DATA.getComparison(code);
       if (comparison && comparison.flag) return comparison.flag;
     }
@@ -431,3 +429,4 @@ const PLEDGE_WALL = (() => {
     generateShareText,
   };
 })();
+window.PLEDGE_WALL = PLEDGE_WALL;

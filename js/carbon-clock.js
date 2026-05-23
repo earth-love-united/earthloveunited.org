@@ -171,3 +171,4 @@ const CARBON_CLOCK = (() => {
     TONS_PER_SECOND, ANNUAL_EXCESS_GT,
   };
 })();
+window.CARBON_CLOCK = CARBON_CLOCK;
