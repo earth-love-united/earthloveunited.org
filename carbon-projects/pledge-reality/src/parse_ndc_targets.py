@@ -46,17 +46,28 @@ def extract_reduction_pct(text):
 
     text = clean_html(text)
 
-    # Range: "26-28%" or "26% to 28%"
-    m = re.search(r'(\d+(?:\.\d+)?)\s*[-–to]+\s*(\d+(?:\.\d+)?)\s*%', text)
-    if m:
-        return float(m.group(1)), float(m.group(2))
+    # Range: "61-66 percent" or "26% to 28%" or "59 to 67 percent" or "66.25-72.5%"
+    range_patterns = [
+        # "61-66 percent" or "61–66 percent" or "61-66%"
+        r'(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)\s*(?:%|per\s*cent)',
+        # "59 to 67 percent" or "26% to 28%"
+        r'(\d+(?:\.\d+)?)\s*(?:%|per\s*cent)?\s+to\s+(\d+(?:\.\d+)?)\s*(?:%|per\s*cent)',
+        # "between 66.25-72.5% by"
+        r'between\s+(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)\s*(?:%|per\s*cent)',
+    ]
+    for pat in range_patterns:
+        m = re.search(pat, text, re.IGNORECASE)
+        if m:
+            lo, hi = float(m.group(1)), float(m.group(2))
+            if 0 < lo < 100 and 0 < hi < 100:
+                return lo, hi
 
-    # Single: "reduce by X%" or "X% reduction" or "X% below"
+    # Single: "reduce by X%" or "X% reduction" or "X% below" or "X percent"
     patterns = [
-        r'(\d+(?:\.\d+)?)\s*%\s*(?:reduction|below|decrease|cut|less|lower|beneath)',
-        r'(?:reduce|cut|decrease|lower)\s+(?:by\s+)?(\d+(?:\.\d+)?)\s*%',
-        r'(\d+(?:\.\d+)?)\s*%\s*(?:of\s+)?(?:BAU|baseline|base\s*year|business)',
-        r'(\d+(?:\.\d+)?)\s*%',  # fallback: any percentage
+        r'(\d+(?:\.\d+)?)\s*(?:%|per\s*cent)\s*(?:reduction|below|decrease|cut|less|lower|beneath)',
+        r'(?:reduce|cut|decrease|lower)[\w\s]*?(?:by\s+)?(\d+(?:\.\d+)?)\s*(?:%|per\s*cent)',
+        r'(\d+(?:\.\d+)?)\s*(?:%|per\s*cent)\s*(?:of\s+)?(?:BAU|baseline|base\s*year|business)',
+        r'(\d+(?:\.\d+)?)\s*(?:%|per\s*cent)',  # fallback: any percentage
     ]
     for pat in patterns:
         m = re.search(pat, text, re.IGNORECASE)

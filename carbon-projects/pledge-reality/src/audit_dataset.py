@@ -144,7 +144,7 @@ print("═" * 60)
 
 # Check for countries that appear with multiple names
 country_counts = df.groupby('country')['year'].count()
-overcounted = country_counts[country_counts > 13]  # max 13 years (1990,2000,2005,2015-2024)
+overcounted = country_counts[country_counts > 19]  # max 19 years (1990,2000,2005,2006,2008,2010,2012,2013,2014,2015-2024)
 if len(overcounted) > 0:
     check("No country has more rows than expected years", False,
           f"{len(overcounted)} countries overcounted: {overcounted.index.tolist()[:5]}")
@@ -175,7 +175,7 @@ print("5. JOIN INTEGRITY")
 print("═" * 60)
 
 # Check that CW merge didn't explode rows
-check("CW merge preserved row count (2749)", len(df) == 2749, f"got {len(df)}")
+check("CW merge preserved row count (4021)", len(df) == 4021, f"got {len(df)}")
 
 # Check ISO coverage
 iso_coverage = df[df['year']==2024]['iso_code'].notna().sum()

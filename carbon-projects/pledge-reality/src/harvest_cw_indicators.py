@@ -161,23 +161,12 @@ def harvest_all():
             if ind_id not in TARGET_INDICATORS:
                 continue
 
-            # Key by indicator_id, prefer Climate Watch source over WB/UNICEF
+            # CRITICAL: CW API returns NDC records in chronological order.
+            # The LAST record for each indicator is the LATEST NDC submission.
+            # Always overwrite with the newest value.
             key = ind_id
-            if source and source != 'Climate Watch':
-                alt_key = f"{ind_id}__{source.lower().replace(' ', '_')}"
-                # Only store non-CW version if CW version doesn't exist
-                if key in cd:
-                    key = alt_key
-                # Skip if already have CW version
-                if key in cd:
-                    continue
-
-            # Prefer non-empty, non-"Not Specified" values
-            existing = cd.get(key, '')
-            if not existing or existing == 'Not Specified':
+            if value and value != 'Not Specified':
                 cd[key] = value
-            elif value and value != 'Not Specified' and len(value) > len(existing):
-                cd[key] = value  # Prefer longer (more detailed) value
 
         country_indicators[iso3] = cd
         total_records += len(records)

@@ -278,7 +278,7 @@ def process():
             if pd.isna(year) or pd.isna(emissions[i]):
                 continue
             year = int(year)
-            if year < 2015 and year not in [1990, 2000, 2005]:
+            if year < 2015 and year not in [1990, 2000, 2005, 2006, 2008, 2010, 2012, 2013, 2014]:
                 continue
             if year > 2024:
                 continue
