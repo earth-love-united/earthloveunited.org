@@ -11,6 +11,20 @@ dis/knowledge-index.json.gz
 
 # Build artifacts
 dis/dist/
+dist/
+
+# Binary / large asset files
+textures/ndvi/
+
+# Vendored third-party scripts
+js/vendor/
+
+# Backup files
+*.bak*
+*.bak.*/
+
+# Design module artifacts
+design/modules/serve.py
 
 # Environment
 .env
