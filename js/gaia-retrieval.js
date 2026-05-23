@@ -242,6 +242,148 @@ window.GaiaRetrieval = (function () {
     return false;
   }
 
+  // ─── Hybrid search: BM25 + LSA dense via Reciprocal Rank Fusion ──
+  // RRF score(doc) = Σ_method 1 / (k + rank_method(doc))
+  // Standard k=60 — robustly fuses heterogeneous rankings without
+  // requiring score normalisation. If embeddings haven't loaded yet,
+  // returns plain BM25 results.
+  const RRF_K = 60;
+
+  function searchHybrid(query, k = 8) {
+    const bmHits = search(query, Math.max(k * 2, 16));
+    const dense = (typeof window !== "undefined"
+      && window.GaiaEmbeddings
+      && window.GaiaEmbeddings.status.loaded)
+      ? window.GaiaEmbeddings.searchDense(query, Math.max(k * 2, 16))
+      : [];
+
+    if (dense.length === 0) {
+      // Fall back to BM25-only, trim to k.
+      return bmHits.slice(0, k).map(h => ({ ...h, dense: false }));
+    }
+
+    // Reciprocal Rank Fusion
+    const fused = new Map();   // id → { rrf, bmRank, denseRank, bmScore, denseScore, chunk }
+    bmHits.forEach((h, rank) => {
+      fused.set(h.id, {
+        rrf: 1 / (RRF_K + rank + 1),
+        bmRank: rank + 1,
+        denseRank: null,
+        bmScore: h.score,
+        denseScore: 0,
+        hit: h,
+      });
+    });
+    dense.forEach((d, rank) => {
+      const cur = fused.get(d.id);
+      if (cur) {
+        cur.rrf += 1 / (RRF_K + rank + 1);
+        cur.denseRank = rank + 1;
+        cur.denseScore = d.score;
+      } else {
+        // Build a hit object from the index for dense-only matches.
+        const c = _index.chunks[d.id];
+        fused.set(d.id, {
+          rrf: 1 / (RRF_K + rank + 1),
+          bmRank: null,
+          denseRank: rank + 1,
+          bmScore: 0,
+          denseScore: d.score,
+          hit: {
+            id: d.id,
+            score: 0,
+            title: c.t,
+            source: _index.src[c.s] || c.s,
+            sourceCode: c.s,
+            url: c.u || null,
+            text: c.x,
+            topics: c.p || [],
+          },
+        });
+      }
+    });
+
+    const ranked = Array.from(fused.values()).sort((a, b) => b.rrf - a.rrf);
+    // Take a wider candidate pool than k so the reranker has room to
+    // promote results that BM25+LSA buried in the middle.
+    const poolSize = Math.max(k * 3, 20);
+    let candidates = ranked.slice(0, poolSize).map(r => ({
+      ...r.hit,
+      score: r.rrf,
+      bm25Score: r.bmScore,
+      denseScore: r.denseScore,
+      bmRank: r.bmRank,
+      denseRank: r.denseRank,
+      dense: true,
+    }));
+
+    // ─── Learning-to-rank reranking ─────────────────────────────
+    // If the gradient-boosted reranker is loaded, it reorders the
+    // candidate pool using a model trained on labeled relevance.
+    // If not loaded yet, candidates stay in RRF order — graceful
+    // fallback.
+    if (typeof window !== "undefined"
+        && window.GaiaReranker
+        && window.GaiaReranker.status.loaded) {
+      candidates = window.GaiaReranker.rerank(query, candidates);
+    }
+
+    // ─── MMR diversification ────────────────────────────────────
+    // After the reranker scores all candidates, apply Maximal Marginal
+    // Relevance to spread the top-k across distinct source articles.
+    // λ=0.7 trades off relevance (reranker score) against novelty
+    // (Jaccard distance from already-picked titles).
+    const LAMBDA = 0.7;
+    const titleTokenSets = candidates.map(c => {
+      const tokens = tokenize(c.title || "");
+      return { set: new Set(tokens), tokens };
+    });
+
+    // Jaccard similarity between two title token sets.
+    function jaccard(a, b) {
+      if (a.size === 0 && b.size === 0) return 0;
+      let inter = 0;
+      const [small, big] = a.size <= b.size ? [a, b] : [b, a];
+      for (const t of small) if (big.has(t)) inter++;
+      const union = a.size + b.size - inter;
+      return union > 0 ? inter / union : 0;
+    }
+
+    // Normalize reranker scores to [0, 1] for stable MMR arithmetic.
+    let maxScore = -Infinity, minScore = Infinity;
+    for (const c of candidates) {
+      const s = c.rerankerScore != null ? c.rerankerScore : c.score;
+      if (s > maxScore) maxScore = s;
+      if (s < minScore) minScore = s;
+    }
+    const scoreRange = maxScore - minScore || 1;
+    function normScore(c) {
+      const s = c.rerankerScore != null ? c.rerankerScore : c.score;
+      return (s - minScore) / scoreRange;
+    }
+
+    const picked = [];
+    const pickedIdx = new Set();
+    for (let step = 0; step < Math.min(k, candidates.length); step++) {
+      let bestIdx = -1;
+      let bestMMR = -Infinity;
+      for (let i = 0; i < candidates.length; i++) {
+        if (pickedIdx.has(i)) continue;
+        const rel = normScore(candidates[i]);
+        let maxSim = 0;
+        for (const pi of pickedIdx) {
+          const sim = jaccard(titleTokenSets[i].set, titleTokenSets[pi].set);
+          if (sim > maxSim) maxSim = sim;
+        }
+        const mmr = LAMBDA * rel - (1 - LAMBDA) * maxSim;
+        if (mmr > bestMMR) { bestMMR = mmr; bestIdx = i; }
+      }
+      picked.push(candidates[bestIdx]);
+      pickedIdx.add(bestIdx);
+    }
+    return picked;
+  }
+
   // ─── Context builder for the prompt ──────────────────────────────
   // Returns a SOURCES block plus the parallel sources array (so the UI
   // can render an attribution footer once GAIA's reply comes back).
@@ -250,16 +392,17 @@ window.GaiaRetrieval = (function () {
     const k = opts.k || 8;
     const maxChars = opts.maxChars || 4500;     // budget for the SOURCES block
     const snippetChars = opts.snippetChars || 480;
+    const useHybrid = opts.hybrid !== false;    // default: hybrid on
 
-    const hits = search(query, k);
+    const hits = useHybrid ? searchHybrid(query, k) : search(query, k);
     if (hits.length === 0) {
       return { text: "", sources: [], n: 0, inDomain: false };
     }
 
-    // Out-of-domain queries: even if BM25 found something, refuse to
+    // Out-of-domain queries: even if retrieval found something, refuse to
     // pass it as evidence — the GROUNDING CONTRACT in the system prompt
     // will then trigger the refusal posture.
-    if (!isInDomain(query, hits)) {
+    if (!isInDomain(query)) {
       return { text: "", sources: [], n: 0, inDomain: false };
     }
 
@@ -299,16 +442,25 @@ window.GaiaRetrieval = (function () {
   return {
     load,
     ready,
-    search,
+    search,                 // BM25 only
+    searchHybrid,           // BM25 + LSA fused via RRF
     getContext,
     sourceLabel,
     tokenize,
     get status() {
+      const denseStatus = (typeof window !== "undefined" && window.GaiaEmbeddings)
+        ? window.GaiaEmbeddings.status
+        : { loaded: false };
+      const rerankerStatus = (typeof window !== "undefined" && window.GaiaReranker)
+        ? window.GaiaReranker.status
+        : { loaded: false };
       return {
         loaded: _loaded,
         n: _index ? _index.n : 0,
         terms: _index ? Object.keys(_index.post).length : 0,
         sources: _index ? _index.src : {},
+        dense: denseStatus,
+        reranker: rerankerStatus,
       };
     },
   };

@@ -238,3 +238,4 @@ const GAIA_VOICE = (() => {
     getAllLines: () => LINES,
   };
 })();
+window.GAIA_VOICE = GAIA_VOICE;

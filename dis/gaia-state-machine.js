@@ -194,18 +194,10 @@ const GaiaState = (() => {
   }
 
   // ─── IDLE ───
+  // Disabled: GAIA speaks when spoken to, not on idle timers.
+  // The tick loop still runs for state persistence but no longer fires speech.
   function _checkIdle() {
-    if (_idleSince === null) return;
-    const idle = Date.now() - _idleSince;
-    let level = null;
-    if (idle >= IDLE_STRONG) level = 'STRONG';
-    else if (idle >= IDLE_MEDIUM) level = 'MEDIUM';
-    else if (idle >= IDLE_GENTLE) level = 'GENTLE';
-    if (level && level !== _lastNudgeLevel) {
-      _lastNudgeLevel = level;
-      _pickAndSpeak('IDLE_' + level, _currentSite);
-      addScore('idle_penalty');
-    }
+    // No-op: idle nudges disabled
   }
 
   // ─── KEY TEASE ───

@@ -105,7 +105,7 @@ const GAIA_KNOWLEDGE = (() => {
 
   function isReady() {
     // Check core engine directly — it may have been loaded proactively
-    if (typeof GaiaKnowledge !== 'undefined' && GaiaKnowledge.isLoaded) {
+    if (hasModule('GaiaKnowledge') && GaiaKnowledge.isLoaded) {
       _loadComplete = true;
     }
     return _loadComplete;
@@ -206,7 +206,7 @@ const GAIA_KNOWLEDGE = (() => {
   // ── GAIA Synthesis Generator ──
   function generateSynthesis(siteId, siteData) {
     // Check core engine directly
-    const ready = (typeof GaiaKnowledge !== 'undefined' && GaiaKnowledge.isLoaded) || _loadComplete;
+    const ready = (hasModule('GaiaKnowledge') && GaiaKnowledge.isLoaded) || _loadComplete;
     if (!ready) {
       return '<p style="color:var(--text3);font-style:italic">Loading knowledge synthesis...</p>';
     }
@@ -297,7 +297,8 @@ GAIA_KNOWLEDGE.init();
 // Also init the core knowledge engine proactively so it's ready when needed
 // The dataset is large (~17MB) — start loading early so synthesis is ready on first overlay open
 setTimeout(() => {
-  if (typeof GaiaKnowledge !== 'undefined' && !GaiaKnowledge.isLoaded) {
+  if (hasModule('GaiaKnowledge') && !GaiaKnowledge.isLoaded) {
     GaiaKnowledge.init();
   }
 }, 2000); // Start 2s after page load, after critical UI is ready
+window.GAIA_KNOWLEDGE = GAIA_KNOWLEDGE;

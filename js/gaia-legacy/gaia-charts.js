@@ -219,3 +219,4 @@ const GAIA_CHARTS = (() => {
     _drawSparkline: drawSparkline, _drawBarChart: drawBarChart, _drawCountdownBar: drawCountdownBar, _drawDonut: drawDonut,
   };
 })();
+window.GAIA_CHARTS = GAIA_CHARTS;

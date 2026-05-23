@@ -181,16 +181,9 @@ window.GaiaDOMAdapter = (() => {
   // ═══════════════════════════════════════
 
   function _onGaiaSpeak(text, emotion) {
-    log('[GaiaDOMAdapter] GAIA speaks:', text.substring(0, 60) + '...', 'emotion:', emotion);
-    if (typeof window.addMessage === 'function') {
-      // Use gaia.html's native addMessage to render in #messages
-      // Add emotion tag as meta so styling can reflect mood
-      const emotionStr = typeof emotion === 'string' ? emotion : (emotion?.emotion || '');
-      const meta = emotionStr ? `🌍 ${emotionStr}` : undefined;
-      window.addMessage('gaia', text, meta);
-    } else {
-      warn('[GaiaDOMAdapter] addMessage() not available — gaia.html inline script may not have loaded');
-    }
+    // State machine voice lines are logged but NOT rendered into the LLM chat.
+    // The chat is exclusively for user ↔ GAIA LLM conversation.
+    log('[GaiaDOMAdapter] GAIA voice (suppressed from chat):', text.substring(0, 60) + '...');
   }
 
   function _onGaiaReact(emotion, intensity) {
@@ -355,35 +348,9 @@ window.GaiaDOMAdapter = (() => {
   // ═══════════════════════════════════════
 
   function _injectKeyButton() {
-    if (document.getElementById('gaia-key-btn')) return;
-
-    const headerActions = document.querySelector('#header .header-actions');
-    if (!headerActions) {
-      warn('[GaiaDOMAdapter] #header .header-actions not found, deferring key button injection');
-      return;
-    }
-
-    const btn = document.createElement('button');
-    btn.id = 'gaia-key-btn';
-    btn.className = 'hdr-btn';
-    btn.textContent = '🔓 API Key';
-    btn.style.opacity = '0.5';
-    btn.style.fontSize = '10px';
-    btn.addEventListener('click', () => {
-      if (typeof GaiaKeyGate !== 'undefined') {
-        GaiaKeyGate.openModal();
-      }
-    });
-
-    // Insert before the "Site" link
-    const siteLink = headerActions.querySelector('a');
-    if (siteLink) {
-      headerActions.insertBefore(btn, siteLink);
-    } else {
-      headerActions.appendChild(btn);
-    }
-
-    log('[GaiaDOMAdapter] Key button injected.');
+    // Disabled: #api-key-btn already exists in gaia.html header.
+    // No dynamic injection needed.
+    log('[GaiaDOMAdapter] Key button injection skipped (already in HTML).');
   }
 
   // ═══════════════════════════════════════

@@ -64,7 +64,7 @@ const GAIA_JOURNAL = (() => {
     save();
 
     // Trigger pledge prompt after collecting 3+ insights
-    if (typeof PLEDGE_WALL !== 'undefined') {
+    if (hasModule('PLEDGE_WALL')) {
       PLEDGE_WALL.onInsightsCollected(entries.length);
     }
   }
@@ -148,3 +148,4 @@ const GAIA_JOURNAL = (() => {
     getAllQuests: getQuests,
   };
 })();
+window.GAIA_JOURNAL = GAIA_JOURNAL;

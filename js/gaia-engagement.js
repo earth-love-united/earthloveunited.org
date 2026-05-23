@@ -77,7 +77,7 @@ const GAIA_ENGAGEMENT = (() => {
     // Update knowledge model
     updateKnowledgeModel(signalName, siteId);
     // Feed GaiaMind emotional events
-    if (typeof GaiaMind !== 'undefined') {
+    if (hasModule('GaiaMind')) {
       const emotionMap = {
         site_tap: ['curious', 1, 'User explored a site'],
         data_reveal: ['curious', 2, 'User revealed data'],
@@ -232,7 +232,7 @@ const GAIA_ENGAGEMENT = (() => {
   // ── Init ──
   load();
   // Load GaiaMind state if available
-  if (typeof GaiaMind !== 'undefined') {
+  if (hasModule('GaiaMind')) {
     try {
       const mindData = Storage.safeGetItem('gaia_mind');
       if (mindData) GaiaMind.deserialize(mindData);
@@ -261,11 +261,11 @@ const GAIA_ENGAGEMENT = (() => {
   try { window.addEventListener('beforeunload', save); } catch { /* ignore */ }
   // Also save GaiaMind periodically
   setInterval(() => {
-    if (typeof GaiaMind !== 'undefined') {
+    if (hasModule('GaiaMind')) {
       try { Storage.safeSetItem('gaia_mind', GaiaMind.serialize()); } catch { /* ignore */ }
     }
   }, 30000);
-  try { window.addEventListener('beforeunload', () => { if (typeof GaiaMind !== 'undefined') { try { Storage.safeSetItem('gaia_mind', GaiaMind.serialize()); } catch { /* ignore */ } } }); } catch { /* ignore */ }
+  try { window.addEventListener('beforeunload', () => { if (hasModule('GaiaMind')) { try { Storage.safeSetItem('gaia_mind', GaiaMind.serialize()); } catch { /* ignore */ } } }); } catch { /* ignore */ }
 
   return {
     addSignal, addMoodSignal,
@@ -284,3 +284,10 @@ const GAIA_ENGAGEMENT = (() => {
   };
 })();
 window.GAIA_ENGAGEMENT = GAIA_ENGAGEMENT;
+
+if (typeof MODULE_CONTRACTS !== 'undefined') {
+  MODULE_CONTRACTS.register('GAIA_ENGAGEMENT', {
+    provides: ['addSignal', 'getScore', 'getSiteStates', 'interact', 'save', 'load'],
+    requires: [],
+  });
+}

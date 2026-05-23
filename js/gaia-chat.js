@@ -1,12 +1,54 @@
 // ═══════════════════════════════════════════════════════════════
 // DATA — Delegates to shared Data module (loaded via data.js).
 // All biome/site data lives in data.js + data/*.json files.
-// These thin wrappers preserve the API used by the 1100 lines below.
+// _biomes and _sites are live proxies (used by 1100 lines below).
 // ═══════════════════════════════════════════════════════════════
 
-function getBiome(key) { return (typeof Data !== 'undefined') ? Data.getBiome(key) : null; }
-function getSite(id) { return (typeof Data !== 'undefined') ? Data.getSite(id) : null; }
-function getAllSites() { return (typeof Data !== 'undefined' && Data.sites) ? Data.sites : []; }
+// Minimal fallback data — used only if Data module fails to load (e.g. file:// CORS)
+const _FALLBACK_BIOMES = {
+  tropical_rainforest:{name:"Tropical Rainforest",density:350,seq:2.5,icon:"🌳"},
+  tropical_dry_forest:{name:"Tropical Dry Forest",density:180,seq:1.2,icon:"🌴"},
+  mangrove:{name:"Mangrove",density:950,seq:6.5,icon:"🌿"},
+  temperate_deciduous:{name:"Temperate Deciduous",density:220,seq:1.8,icon:"🍂"},
+  temperate_coniferous:{name:"Temperate Coniferous",density:300,seq:1.5,icon:"🌲"},
+  boreal_forest:{name:"Boreal Forest",density:160,seq:0.6,icon:"🌲"},
+  grassland_savanna:{name:"Grassland / Savanna",density:90,seq:0.3,icon:"🌾"},
+  wetland_peatland:{name:"Wetland / Peatland",density:1400,seq:0.8,icon:"💧"},
+  seagrass_meadow:{name:"Seagrass Meadow",density:500,seq:2.0,icon:"🌊"},
+  agricultural_cropland:{name:"Agricultural Cropland",density:50,seq:0.0,icon:"🌾"},
+  degraded_bare_land:{name:"Degraded / Bare Land",density:10,seq:0.0,icon:"🏜️"},
+  urban_built:{name:"Urban / Built",density:30,seq:0.0,icon:"🏙️"}
+};
+const _FALLBACK_SITES = [
+  {id:"sri_lanka",name:"Northern Province",subtitle:"Multilayer Afforestation · Sri Lanka",lat:9.666,lng:80.285,primaryBiome:"tropical_dry_forest",currentBiome:"degraded_bare_land",area:2428,
+    narrative:"SPE has identified over 6,000 acres across five districts of Sri Lanka's Northern Province for multilayer afforestation — peanuts, Ceylon cinnamon, jackfruit, black pepper — creating self-sustaining plantations that build long-term carbon stocks.",
+    ndvi:[{year:2000,value:0.45,label:"Post-conflict degraded land"},{year:2010,value:0.40,label:"Slow recovery"},{year:2015,value:0.42,label:"Restoration planning"},{year:2020,value:0.48,label:"SPE project initiation"},{year:2025,value:0.55,label:"Active planting"}],
+    climate:[{year:1980,temp:27.8,precip:1420},{year:2000,temp:28.3,precip:1350},{year:2025,temp:29.1,precip:1260}],
+    connection:"SPE's flagship — approved by the Governor of Northern Province, land confirmed across Jaffna, Vavuniya, Mullaitivu, Mannar, and Kilinochchi."},
+  {id:"antalya",name:"Manavgat, Antalya",subtitle:"Wildfire & Recovery · Turkey",lat:36.85,lng:31.25,primaryBiome:"temperate_coniferous",currentBiome:"grassland_savanna",area:2500,
+    narrative:"July 2021: catastrophic wildfires burned 60,000+ hectares of Mediterranean pine. COP31 takes place here, November 2026. Four years on, early scrub recovery — but full restoration needs decades.",
+    ndvi:[{year:2000,value:0.72,label:"Mature Pine"},{year:2010,value:0.73,label:"Mature Pine"},{year:2020,value:0.70,label:"Drought-Stressed"},{year:2021,value:0.18,label:"Burn Scar"},{year:2025,value:0.38,label:"Scrub Recovery"}],
+    climate:[{year:1980,temp:16.54,precip:985},{year:2000,temp:17.20,precip:915},{year:2025,temp:18.20,precip:765}],
+    connection:"COP31 is in Antalya. This is what happened to the host region's forests."},
+  {id:"benin",name:"Ouidah Wetlands",subtitle:"Mangrove Degradation · Benin",lat:6.35,lng:2.10,primaryBiome:"mangrove",currentBiome:"degraded_bare_land",area:2500,
+    narrative:"Jean Missinhoun was from Benin. The Ouidah lagoons once held dense mangroves — the most carbon-dense ecosystems on Earth. Restoring them here is climate action and a homecoming.",
+    ndvi:[{year:2000,value:0.68,label:"Intact Mangroves"},{year:2010,value:0.45,label:"Degraded"},{year:2025,value:0.52,label:"Early Recovery"}],
+    climate:[{year:1980,temp:27.2,precip:1280},{year:2000,temp:27.7,precip:1220},{year:2025,temp:28.6,precip:1130}],
+    connection:"Jean's homeland. Mangroves store 950 tC/ha — restoring them honors his legacy."},
+  {id:"borneo",name:"West Kalimantan",subtitle:"Peat Swamp Deforestation · Borneo",lat:1.15,lng:110.35,primaryBiome:"wetland_peatland",currentBiome:"agricultural_cropland",area:2500,
+    narrative:"Borneo's peat swamps stored 1,400 tC/ha. Grid-like clearing for oil palm released centuries of carbon in two decades. The plantation looks green. But green is not carbon.",
+    ndvi:[{year:2000,value:0.88,label:"Intact Peat Swamp"},{year:2005,value:0.85,label:"Intact"},{year:2010,value:0.35,label:"Active Clearing"},{year:2015,value:0.55,label:"Palm Canopy"},{year:2025,value:0.65,label:"Mature Plantation"}],
+    climate:[{year:1980,temp:26.8,precip:3200},{year:2000,temp:27.1,precip:3100},{year:2025,temp:27.9,precip:2850}],
+    connection:"Green ≠ carbon. Oil palm (NDVI 0.65) stores a fraction of the peat swamp it replaced (1,400 vs 50 tC/ha)."}
+];
+
+// Live getters — always return freshest Data module state, fall back to embedded data
+Object.defineProperty(window, '_biomes', { get: () => (typeof Data !== 'undefined' && Data.biomes) ? Data.biomes : _FALLBACK_BIOMES });
+Object.defineProperty(window, '_sites', { get: () => (typeof Data !== 'undefined' && Data.sites) ? Data.sites : _FALLBACK_SITES });
+
+function getBiome(key) { return _biomes[key] || null; }
+function getSite(id) { return (_sites || []).find(s => s.id === id) || null; }
+function getAllSites() { return _sites || []; }
 
 function transitionCarbon(from, to, ha, yrs) {
   if (typeof Data !== 'undefined') return Data.transitionCarbon(from, to, ha, yrs || 30);
@@ -301,12 +343,19 @@ async function _callOpenRouter(userMessage) {
     try { apiKey = sessionStorage.getItem('gaia_api_key') || null; } catch (e) {}
   }
   if (!apiKey) {
-    console.log('[GAIA] No API key found. GaiaKeyGate:', typeof GaiaKeyGate, 'sessionStorage keys:', Object.keys(sessionStorage));
-    return null;
+    console.warn('[GAIA] No API key found');
+    return { error: 'No API key found. Click 🔑 API Key to enter your OpenRouter key.' };
   }
-  console.log('[GAIA] Using LLM mode, key:', apiKey.substring(0, 8) + '...');
+  console.log('[GAIA] Using LLM mode, key:', apiKey.substring(0, 12) + '...');
 
-  const turn = await _buildGroundedTurn(userMessage);
+  let turn;
+  try {
+    turn = await _buildGroundedTurn(userMessage);
+  } catch (e) {
+    console.warn('[GAIA] Grounding failed:', e.message);
+    // Proceed without grounding
+    turn = { systemPrompt: _SYSTEM_PROMPT, sources: [], retrievalUsed: false, structuredUsed: false };
+  }
 
   const messages = [
     { role: 'system', content: turn.systemPrompt },
@@ -319,35 +368,37 @@ async function _callOpenRouter(userMessage) {
     headers.set('Authorization', 'Bearer ' + apiKey);
     headers.set('Content-Type', 'application/json');
     headers.set('HTTP-Referer', 'https://earthloveunited.org');
-    headers.set('X-Title', 'GAIA');
+    headers.set('X-Title', 'GAIA - Earth Love United');
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-001:free',
+        model: 'openrouter/owl-alpha',
         messages,
         temperature: 0.85,
         max_tokens: 1024
       })
     });
-    console.log('[GAIA] OpenRouter status:', response.status, '· sources:', turn.sources.length, '· retrieval:', turn.retrievalUsed, '· structured:', turn.structuredUsed);
+    console.log('[GAIA] OpenRouter status:', response.status);
     if (!response.ok) {
       const errText = await response.text();
       console.warn('[GAIA] OpenRouter error:', response.status, errText);
-      return null;
+      return { error: `OpenRouter ${response.status}: ${errText.substring(0, 200)}` };
     }
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
     if (!content) {
       console.warn('[GAIA] No content in response:', JSON.stringify(data).substring(0, 500));
-      return null;
+      return { error: 'OpenRouter returned empty response. Model may be unavailable.' };
     }
-    // Pack content + sources so the caller can render attribution.
     return { content, sources: turn.sources, retrievalUsed: turn.retrievalUsed, structuredUsed: turn.structuredUsed };
   } catch (e) {
-    console.warn('[GAIA] OpenRouter fetch failed:', e.message);
-    return null;
+    console.warn('[GAIA] OpenRouter fetch failed:', e.name, e.message);
+    if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError') || e.name === 'TypeError') {
+      return { error: 'Network blocked. If running from file://, try a local server: python3 -m http.server 8080' };
+    }
+    return { error: `Fetch error: ${e.message}` };
   }
 }
 
@@ -357,6 +408,8 @@ async function _callOpenRouter(userMessage) {
 // block listing the cited sources with URLs.
 function _renderGroundedReply(reply, sources) {
   if (!reply) return reply;
+  // Strip non-standard citation tags the LLM may invent (e.g. [BASE], [CLIMATE FACTS])
+  reply = reply.replace(/\[(?:BASE|CLIMATE FACTS|CARBON MARKET|BIOMES|SOLUTIONS|PROJECT[^\]]*|GENERAL)\]/gi, '');
   if (!sources || !sources.length) return reply;
 
   const byTag = new Map();
@@ -786,24 +839,33 @@ function processQuery(text){
     _addToHistory('user', text);
     const llmDelay = 600 + Math.random() * 800;
     setTimeout(async () => {
-      hideTyping();
-      if (toolId) completeToolCall(toolId, true);
-      const llmResponse = await _callOpenRouter(text);
-      if (llmResponse && llmResponse.content) {
-        _addToHistory('assistant', llmResponse.content);
-        const sources = llmResponse.sources || [];
-        const rendered = _renderGroundedReply(llmResponse.content, sources);
-        const metaBits = ['🧠 GAIA · LLM'];
-        if (sources.length) metaBits.push(`${sources.length} source${sources.length === 1 ? '' : 's'}`);
-        addMessage('gaia', rendered, metaBits.join(' · '));
-      } else {
-        // Fallback to pattern matching on API failure
-        const response = generateResponse(intent);
-        const meta = intent.type === 'calculator' ? '🧮 Carbon Engine' : intent.type === 'project' ? '🔍 Project DB' : intent.type === 'knowledge' ? '📚 Knowledge Base' : '';
-        addMessage('gaia', response, meta + ' (fallback)');
+      try {
+        hideTyping();
+        if (toolId) completeToolCall(toolId, true);
+        const llmResponse = await _callOpenRouter(text);
+        if (llmResponse && llmResponse.content) {
+          _addToHistory('assistant', llmResponse.content);
+          const sources = llmResponse.sources || [];
+          const rendered = _renderGroundedReply(llmResponse.content, sources);
+          const metaBits = ['🧠 GAIA · LLM'];
+          if (sources.length) metaBits.push(`${sources.length} source${sources.length === 1 ? '' : 's'}`);
+          addMessage('gaia', rendered, metaBits.join(' · '));
+        } else if (llmResponse && llmResponse.error) {
+          const errorHtml = `<div style="color:#c45c4a;font-size:12px;padding:8px 12px;border:1px solid rgba(196,92,74,.2);border-radius:8px;background:rgba(196,92,74,.05);margin-bottom:8px;">⚠️ LLM Error: ${llmResponse.error}</div>`;
+          const response = generateResponse(intent);
+          addMessage('gaia', errorHtml + response, '⚠️ fallback — see error above');
+        } else {
+          const response = generateResponse(intent);
+          addMessage('gaia', response, '(fallback — unknown error)');
+        }
+      } catch (e) {
+        console.error('[GAIA] LLM handler crashed:', e);
+        try { addMessage('gaia', 'Something went wrong. Try again.', '⚠️ error'); } catch (_) {}
+      } finally {
+        isProcessing = false;
+        const sendBtn = document.getElementById('send-btn');
+        if (sendBtn) sendBtn.disabled = false;
       }
-      isProcessing = false;
-      document.getElementById('send-btn').disabled = false;
     }, llmDelay);
   } else {
     // Pattern-matching mode (no API key)

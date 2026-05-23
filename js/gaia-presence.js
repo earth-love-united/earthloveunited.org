@@ -64,7 +64,7 @@ const GAIA_PRESENCE = (() => {
   function speakTeaser(siteId) {
     const line = pickLine(siteId);
     if (!line) return;
-    if (typeof GAIA_BUBBLE !== 'undefined') {
+    if (hasModule('GAIA_BUBBLE')) {
       GAIA_BUBBLE.speak(line, 'mysterious', 5000);
     }
   }

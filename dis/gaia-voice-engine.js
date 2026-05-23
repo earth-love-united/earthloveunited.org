@@ -11,7 +11,7 @@ const GaiaVoice = (() => {
   let _ready = false;
   let _queue = [];
   let _speaking = false;
-  let _enabled = true;
+  let _enabled = false;  // Start disabled — matches UI default (🔇)
   let _rate = 0.85;
   let _pitch = 0.88;
   let _volume = 1.0;
@@ -41,6 +41,8 @@ const GaiaVoice = (() => {
       _selectBestVoice();
       _ready = true;
       _callbacks.onReady();
+      // Drain any queued utterances now that voices are available
+      _processQueue();
     }
   }
 
@@ -157,4 +159,9 @@ const GaiaVoice = (() => {
 })();
 
 if (typeof module !== 'undefined') module.exports = GaiaVoice;
-if (typeof window !== 'undefined') window.GaiaVoice = GaiaVoice;
+if (typeof window !== 'undefined') {
+  window.GaiaVoice = GaiaVoice;
+  // Auto-init on load so voices are ready when user enables
+  // (speechSynthesis.getVoices() is async in Chrome — needs early init)
+  GaiaVoice.init();
+}

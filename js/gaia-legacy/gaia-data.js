@@ -272,3 +272,4 @@ const GAIA_DATA = (() => {
     },
   };
 })();
+window.GAIA_DATA = GAIA_DATA;

@@ -110,7 +110,7 @@ const GAIA_BUBBLE = (() => {
 
     // Get voice modifiers from GaiaMind if available, else use central config
     let voiceModifiers = {};
-    if (typeof GaiaMind !== 'undefined') {
+    if (hasModule('GaiaMind')) {
       voiceModifiers = GaiaMind.getVoiceModifiers?.({ tone }) || {};
     } else {
       voiceModifiers = GAIA_VOICE_CONFIG.get(tone);
@@ -299,3 +299,4 @@ const GAIA_BUBBLE = (() => {
 
 // IIFE executes and assigns to GAIA_BUBBLE
 })();
+window.GAIA_BUBBLE = GAIA_BUBBLE;

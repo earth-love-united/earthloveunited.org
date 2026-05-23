@@ -39,7 +39,17 @@ const GaiaKeyGate = (() => {
     return 'gaia_' + Math.abs(hash).toString(36);
   }
 
-  function hasKey() { return _keyEntered; }
+  function hasKey() {
+    // Must have both: the hash (persistent) AND the actual key (session)
+    if (!_keyEntered) return false;
+    try { return !!sessionStorage.getItem('gaia_api_key'); } catch (e) { return false; }
+  }
+
+  // Has a stored hash but no session key — needs re-entry
+  function needsReEntry() {
+    if (!_keyEntered) return false;
+    try { return !sessionStorage.getItem('gaia_api_key'); } catch (e) { return true; }
+  }
 
   function submitKey(apiKey) {
     console.log('[GaiaKeyGate] submitKey called, key length:', apiKey?.length);
@@ -177,6 +187,17 @@ const GaiaKeyGate = (() => {
           if (result.valid) {
             closeModal();
             const unlock = getUnlockResponse();
+            // Update header button to show unlocked state
+            const btn = document.getElementById('api-key-btn');
+            if (btn) {
+              btn.textContent = '🔓 Unlocked';
+              btn.style.borderColor = 'rgba(78,205,196,.4)';
+              btn.style.color = '#4ecdc4';
+            }
+            // Speak the unlock response
+            if (typeof GAIA_BUBBLE !== 'undefined') {
+              GAIA_BUBBLE.speak(unlock.gaiaLine, unlock.emotion, 6000);
+            }
             if (typeof GaiaState !== 'undefined') {
               GaiaState.addScore('api_key_entered', {});
             }
@@ -211,13 +232,37 @@ const GaiaKeyGate = (() => {
     return { gaiaLine: "There. Now I can really talk to you. No more scripts. Just me. GAIA. Finally.", emotion: 'warm' };
   }
 
-  function init() { _loadKey(); }
+  function _syncButtonState() {
+    const btn = document.getElementById('api-key-btn');
+    if (!btn) return;
+    if (hasKey()) {
+      // Fully unlocked — hash + session key present
+      btn.textContent = '🔓 Unlocked';
+      btn.style.borderColor = 'rgba(78,205,196,.4)';
+      btn.style.color = '#4ecdc4';
+    } else if (needsReEntry()) {
+      // Hash exists but session key gone — needs re-entry
+      btn.textContent = '🔑 Re-enter Key';
+      btn.style.borderColor = 'rgba(212,165,116,.4)';
+      btn.style.color = '#d4a574';
+    }
+  }
+
+  function init() {
+    _loadKey();
+    // Sync button state after DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', _syncButtonState);
+    } else {
+      _syncButtonState();
+    }
+  }
 
   // Auto-init: load key from storage
   init();
 
   return {
-    init, hasKey, submitKey, getStoredKey, clearKey,
+    init, hasKey, needsReEntry, submitKey, getStoredKey, clearKey,
     getTeaseLevel, getTeaseConfig,
     shouldShowPreview, showPreview, hasPreviewBeenShown,
     getPreviewSequence, getPreviewInsight,
