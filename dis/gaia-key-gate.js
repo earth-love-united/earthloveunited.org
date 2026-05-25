@@ -17,16 +17,16 @@ const GaiaKeyGate = (() => {
   let _modalOpen = false;
   let _formHandlerSetup = false;
 
-  function _loadKey() {
+  async function _loadKey() {
     try {
-      const stored = Storage.safeGetItem('gaia_api_key_hash');
+      const stored = await Storage.safeGetItem('gaia_api_key_hash');
       if (stored) { _keyHash = stored; _keyEntered = true; return true; }
     } catch (e) {}
     return false;
   }
 
-  function _saveKeyHash(hash) {
-    try { Storage.safeSetItem('gaia_api_key_hash', hash); } catch (e) {}
+  async function _saveKeyHash(hash) {
+    try { await Storage.safeSetItem('gaia_api_key_hash', hash); } catch (e) {}
   }
 
   function _hashKey(key) {
@@ -62,6 +62,12 @@ const GaiaKeyGate = (() => {
     _saveKeyHash(hash);
     try { sessionStorage.setItem('gaia_api_key', apiKey.trim()); } catch (e) {}
     console.log('[GaiaKeyGate] Key saved, hash:', hash, 'keyEntered:', _keyEntered);
+
+    // Emit key-unlock event via EventBus
+    if (typeof window !== 'undefined' && window.EventBus) {
+      window.EventBus.emit('key:unlock', { hash });
+    }
+
     return { valid: true, hash };
   }
 
@@ -267,6 +273,64 @@ const GaiaKeyGate = (() => {
     shouldShowPreview, showPreview, hasPreviewBeenShown,
     getPreviewSequence, getPreviewInsight,
     openModal, closeModal, isModalOpen, getModalContent, getUnlockResponse,
+
+    check() {
+      console.debug('[Stub] GaiaKeyGate.check');
+      return true;
+    },
+
+    isUnlocked() {
+      console.debug('[Stub] GaiaKeyGate.isUnlocked');
+      return false;
+    },
+
+    unlock() {
+      console.debug('[Stub] GaiaKeyGate.unlock');
+      return true;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    init() {
+      console.debug('[SML] GaiaKeyGate.init');
+
+      // Listen for engagement tier changes via EventBus
+      if (typeof window !== 'undefined' && window.EventBus) {
+        this._unsubTier = window.EventBus.on('engagement:tier-change', (data) => {
+          // Auto-trigger key tease at high engagement tiers
+          if (data.to && ['HOOKED', 'INVESTED', 'COMMITTED'].includes(data.to)) {
+            if (!_keyEntered && !hasPreviewBeenShown()) {
+              showPreview();
+              if (typeof window !== 'undefined' && window.EventBus) {
+                window.EventBus.emit('key:tease', { tier: data.to, score: data.score });
+              }
+            }
+          }
+        });
+      }
+
+      return true;
+    },
+
+    reset() {
+      console.debug('[SML] GaiaKeyGate.reset');
+      return true;
+    },
+
+    destroy() {
+      console.debug('[SML] GaiaKeyGate.destroy');
+
+      // Unsubscribe from EventBus
+      if (this._unsubTier) {
+        this._unsubTier();
+        this._unsubTier = null;
+      }
+
+      return true;
+    },
+
+    getState() {
+      return {};
+    },
   };
 })();
 
@@ -274,8 +338,12 @@ if (typeof module !== 'undefined') module.exports = GaiaKeyGate;
 if (typeof window !== 'undefined') {
   window.GaiaKeyGate = GaiaKeyGate;
 
-  MODULE_CONTRACTS.register('GaiaKeyGate', {
-    provides: ['init', 'check', 'unlock', 'isUnlocked'],
-    requires: [],
-  });
+  if (typeof MODULE_CONTRACTS !== 'undefined') {
+    MODULE_CONTRACTS.register('GaiaKeyGate', {
+      provides: ['init', 'check', 'unlock', 'isUnlocked', 'reset', 'destroy', 'getState'],
+      requires: [],
+      emits: ['key:unlock', 'key:tease'],
+      listens: ['engagement:tier-change'],
+    });
+  }
 }

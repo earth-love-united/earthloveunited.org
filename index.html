@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="css/delegation.css">
 <link rel="stylesheet" href="css/pledge-wall.css">
 <link rel="stylesheet" href="css/gaia-bubble.css">
-<link rel="stylesheet" href="css/globe-overlay.css">
+<link rel="stylesheet" href="css/globe-overlay.css?v=4">
 <link rel="stylesheet" href="css/gaia-presence.css">
 <link rel="stylesheet" href="css/ndvi-verifier.css">
 <link rel="stylesheet" href="css/registry-check.css">
@@ -141,6 +141,15 @@
   <span class="nt-year" id="ndvi-year">2020</span>
   <button id="ndvi-play" class="nt-play" aria-label="Play timeline">▶</button>
   <span class="nt-attribution">Vegetation data: NASA MODIS · Public Domain</span>
+</div>
+
+<!-- ═══ EVENTS TIMELINE (shown in Events mode only) ═══ -->
+<div id="events-timeline" class="events-timeline" style="display:none">
+  <select id="events-year-select" class="et-year" aria-label="Select Year"></select>
+  <input type="range" id="events-slider" min="1" max="365" step="1" value="1" aria-label="Day of year selector">
+  <span class="et-date" id="events-date">Jan 1</span>
+  <button id="events-play" class="et-play" aria-label="Play timeline">▶</button>
+  <span class="et-attribution">Historical Events: 30-Year Dataset</span>
 </div>
 
 <!-- ═══ SECTIONS ═══ -->
@@ -313,6 +322,9 @@
 <!-- JS Foundation (must load first) -->
 <script src="js/gaia-utils.js"></script>
 <script src="js/module-contracts.js"></script>
+<script src="js/event-bus.js"></script>
+<script src="js/storage-adapter.js"></script>
+<script src="js/storage.js"></script>
 <script src="js/data.js"></script>
 <script src="js/quiz.js"></script>
 <script src="js/cycle.js"></script>
@@ -324,19 +336,18 @@
 <script src="js/globe-modes.js"></script>
 <script src="js/globe-restore.js?v=1779401429"></script>
 <script src="js/globe-ndvi.js?v=1779401429"></script>
+<script src="js/climate-data-loader.js"></script>
 <script src="js/globe-events.js"></script>
 <!-- GAIA Foundation Layer -->
 <script src="js/gaia-legacy/gaia-data.js"></script>
 <script src="js/gaia-legacy/gaia-signals.js"></script>
 <script src="js/gaia-legacy/gaia-charts.js"></script>
 <script src="js/gaia-voice.js"></script>
-<!-- GAIA Mind — emotional consciousness + cross-session memory -->
-<script src="dis/gaia-mind.js"></script>
 <script src="js/gaia-engagement.js"></script>
 <script src="js/gaia-journal.js"></script>
 <script src="js/gaia-bubble.js"></script>
 <!-- Globe Overlay System — Phase 4 -->
-<script src="js/globe-overlay.js"></script>
+<script src="js/globe-overlay.js?v=5"></script>
 <script src="js/site-panel.js"></script>
 <script src="js/carbon-clock.js"></script>
 <script src="js/country-data.js"></script>
@@ -351,17 +362,32 @@
 <script src="js/gaia-presence.js"></script>
 <script src="js/registry-check.js"></script>
 <script src="js/module-validator.js"></script>
+<script src="js/bridge-client.js"></script>
 <script src="js/app.js"></script>
 
-<!-- Dev Tools — remove for production -->
-<script src="tools/smoke-test.js"></script>
-<script src="tools/stack-lint.js"></script>
-<script src="tools/event-tracer.js"></script>
-<script src="tools/page-state.js"></script>
-<script src="tools/impact-analyzer.js"></script>
-<script src="tools/design-tokens.js"></script>
-<script src="tools/state-snapshot.js"></script>
-<script src="tools/diff-guard.js"></script>
-<script src="tools/dep-graph.js"></script>
-</body>
-</html>
+<!-- Dev Tools — loaded only on localhost -->
+<script>
+// Only load dev tools on localhost. Production gets zero tool overhead.
+(function() {
+  var h = location.hostname;
+  if (h !== 'localhost' && h !== '127.0.0.1' && h !== '::1') return;
+  var tools = [
+    'tools/smoke-test.js',
+    'tools/stack-lint.js',
+    'tools/event-tracer.js',
+    'tools/page-state.js',
+    'tools/impact-analyzer.js',
+    'tools/design-tokens.js',
+    'tools/state-snapshot.js',
+    'tools/diff-guard.js',
+    'tools/dep-graph.js'
+  ];
+  tools.forEach(function(src) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.async = false;
+    document.body.appendChild(s);
+  });
+})();
+</script>
+</body></html>

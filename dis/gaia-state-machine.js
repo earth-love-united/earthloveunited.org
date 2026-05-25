@@ -71,7 +71,7 @@ const GaiaState = (() => {
   function getTier() { for (const t of TIERS) if (_score >= t.min && _score < t.max) return t.name; return 'COMMITTED'; }
 
   // ─── STATE ───
-  function transition(newState, ctx = {}) {
+  async function transition(newState, ctx = {}) {
     if (newState === _state) return;
     const old = _state; _state = newState; _stateEnteredAt = Date.now();
     _callbacks.onStateChange(old, newState);
@@ -86,7 +86,12 @@ const GaiaState = (() => {
       case STATES.DEPARTURE: _handleDeparture(); break;
       case STATES.POST_UNLOCK: _handlePostUnlock(); break;
     }
-    _persistState();
+    await _persistState();
+
+    // Emit state-change event via EventBus
+    if (typeof window !== 'undefined' && window.EventBus) {
+      window.EventBus.emit('state:change', { from: old, to: newState, ctx });
+    }
   }
 
   function _handleGreeting() { _pickAndSpeak('GREETING', null); }
@@ -147,16 +152,16 @@ const GaiaState = (() => {
   }
 
   // ─── EVENTS ───
-  function handleEvent(eventType, payload = {}) {
+  async function handleEvent(eventType, payload = {}) {
     _lastInteraction = Date.now();
     _idleSince = null; _lastNudgeLevel = null;
     _resetContextFlags();
     switch (eventType) {
-      case 'session_start': transition(STATES.GREETING); break;
-      case 'site_entered': addScore('site_tap', payload); transition(STATES.SITE_ENTRY, payload); break;
-      case 'data_revealed': addScore('data_reveal', payload); _setContextFlag('layer', payload.layer); transition(STATES.DATA_REVEAL, payload); break;
+      case 'session_start': await transition(STATES.GREETING); break;
+      case 'site_entered': addScore('site_tap', payload); await transition(STATES.SITE_ENTRY, payload); break;
+      case 'data_revealed': addScore('data_reveal', payload); _setContextFlag('layer', payload.layer); await transition(STATES.DATA_REVEAL, payload); break;
       case 'ndvi_scrolled': addScore('ndvi_explore', payload); _updateNdviContext(payload); break;
-      case 'sandbox_opened': addScore('sandbox_open', payload); transition(STATES.SANDBOX, payload); break;
+      case 'sandbox_opened': addScore('sandbox_open', payload); await transition(STATES.SANDBOX, payload); break;
       case 'scenario_run':
         addScore('scenario_run', payload);
         if (Math.abs(payload.result?.cumulative_co2 || 0) > 1000000) addScore('big_scenario', payload);
@@ -165,13 +170,13 @@ const GaiaState = (() => {
         _handleScenarioResult(payload);
         _resetContextFlags();
         break;
-      case 'quest_completed': addScore('quest_done', payload); _setContextFlag('justCompletedQuest', true); transition(STATES.QUEST, payload); _resetContextFlags(); break;
+      case 'quest_completed': addScore('quest_done', payload); _setContextFlag('justCompletedQuest', true); await transition(STATES.QUEST, payload); _resetContextFlags(); break;
       case 'share_action': addScore('share', payload); break;
-      case 'api_key_entered': addScore('api_key', payload); transition(STATES.POST_UNLOCK, payload); break;
+      case 'api_key_entered': addScore('api_key', payload); await transition(STATES.POST_UNLOCK, payload); break;
       case 'return_visit': addScore('return_visit', payload); break;
-      case 'session_end': transition(STATES.DEPARTURE); _persistState(); break;
+      case 'session_end': await transition(STATES.DEPARTURE); await _persistState(); break;
     }
-    _checkKeyTease();
+    await _checkKeyTease();
   }
 
   function _handleScenarioResult(payload) {
@@ -201,14 +206,14 @@ const GaiaState = (() => {
   }
 
   // ─── KEY TEASE ───
-  function _checkKeyTease() {
+  async function _checkKeyTease() {
     const tier = getTier();
     if (tier !== _lastKeyTeaseTier) {
       _lastKeyTeaseTier = tier;
       if (tier === 'WARM' || tier === 'ENGAGED' || tier === 'HOOKED' || tier === 'INVESTED') {
         if (_state === STATES.EXPLORING || _state === STATES.IDLE) {
           _setContextFlag('shouldTeaseKey', true);
-          transition(STATES.KEY_TEASE);
+          await transition(STATES.KEY_TEASE);
           _resetContextFlags();
         }
       }
@@ -237,14 +242,16 @@ const GaiaState = (() => {
   function stop() { if (_tickInterval) { clearInterval(_tickInterval); _tickInterval = null; } }
 
   // ─── PERSISTENCE ───
-  function _persistState() {
+  async function _persistState() {
     const data = { score:_score, mood:_mood, moodIntensity:_moodIntensity, siteAffinity:_siteAffinity, usedLines:_usedLines, lastVisit:new Date().toISOString() };
-    try { Storage.safeSetItem('gaia_state', JSON.stringify(data)); } catch (e) {}
+    try { await Storage.safeSetItem('gaia_state', JSON.stringify(data)); } catch (e) {}
   }
 
-  function restoreState() {
+  async function restoreState() {
     try {
-      const saved = JSON.parse(Storage.safeGetItem('gaia_state'));
+      const raw = await Storage.safeGetItem('gaia_state');
+      if (!raw) return {};
+      const saved = JSON.parse(raw);
       if (saved) {
         _score = saved.score || 0; _mood = saved.mood || 'curious';
         _moodIntensity = saved.moodIntensity || 3;
@@ -263,13 +270,101 @@ const GaiaState = (() => {
     setVoiceLibrary: (lib) => { _voiceLibrary = lib; },
     restoreState, _persistState,
     STATES, MOODS: ['curious','excited','concerned','proud','mysterious','urgent','warm','fierce','playful','nurturing','disappointed'],
+
+    init() {
+      console.debug('[Stub] GaiaState.init');
+      return true;
+    },
+
+    getState() {
+      return { state:_state, mood:_mood, moodIntensity:_moodIntensity, currentSite:_currentSite };
+    },
+
+    setState(newState) {
+      _state = newState;
+    },
+
+    getMood() {
+      return _mood;
+    },
+
+    setMood(mood) {
+      _mood = mood;
+    },
+
+    registerCallbacks(cb) {
+      Object.assign(_callbacks, cb);
+    },
+
+    process(input) {
+      console.debug('[Stub] GaiaState.process');
+      return input;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    init() {
+      console.debug('[SML] GaiaState.init');
+
+      // Listen for mind mood changes via EventBus
+      if (typeof window !== 'undefined' && window.EventBus) {
+        this._unsubMood = window.EventBus.on('mind:mood-change', (data) => {
+          // Adjust state machine mood to match the mind's emotional state
+          if (data.to && data.to !== _mood) {
+            _mood = data.to;
+            _moodIntensity = Math.min(10, _moodIntensity + 1);
+          }
+        });
+      }
+
+      return true;
+    },
+
+    reset() {
+      console.debug('[SML] GaiaState.reset');
+      _state = 'idle';
+      _mood = 'curious';
+      _moodIntensity = 3;
+      _currentSite = null;
+      return true;
+    },
+
+    destroy() {
+      console.debug('[SML] GaiaState.destroy');
+
+      // Unsubscribe from EventBus
+      if (this._unsubMood) {
+        this._unsubMood();
+        this._unsubMood = null;
+      }
+
+      // Clear tick interval
+      if (_tickInterval) {
+        clearInterval(_tickInterval);
+        _tickInterval = null;
+      }
+
+      // Nullify callbacks (prevents zombie event handlers)
+      _callbacks = {};
+
+      // Reset state
+      _state = 'idle';
+      _mood = 'curious';
+      _moodIntensity = 3;
+      _currentSite = null;
+
+      return true;
+    },
   };
 })();
 
 if (typeof module !== 'undefined') module.exports = GaiaState;
 if (typeof window !== 'undefined') window.GaiaState = GaiaState;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GaiaState', {
-    provides: ['init', 'getState', 'setState', 'getMood', 'setMood', 'registerCallbacks', 'process'],
+    provides: ['init', 'getState', 'setState', 'getMood', 'setMood', 'registerCallbacks', 'process', 'reset', 'destroy'],
     requires: [],
+    emits: ['state:change'],
+    listens: ['mind:mood-change'],
   });
+}

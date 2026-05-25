@@ -31,6 +31,7 @@ const GAIA_ENGAGEMENT = (() => {
   let moodSignals = { curiosity: 0, excitement: 0, concern: 0, pride: 0, mystery: 0, warmth: 0, urgency: 0, fierceness: 0 };
   let lastInteraction = Date.now();
   let idleNudgeFired = { GENTLE: false, MEDIUM: false, STRONG: false };
+  let _lastTier = 'COLD';  // track for tier-change events
 
   // ── Per-site state ──
   const siteEngagement = {
@@ -93,6 +94,28 @@ const GAIA_ENGAGEMENT = (() => {
       if (emotion) GaiaMind.addEmotionalEvent(emotion, intensity, cause, siteId);
     }
     if (Math.abs(weight) >= 5) save();
+
+    // Emit event for other modules to react to
+    if (hasModule('EventBus')) {
+      const currentTier = getTier().name;
+      window.EventBus.emit('engagement:signal', {
+        signal: signalName,
+        weight,
+        siteId,
+        score,
+        tier: currentTier,
+      });
+      // Emit tier-change event when crossing a threshold
+      if (currentTier !== _lastTier) {
+        const previousTier = _lastTier;
+        _lastTier = currentTier;
+        window.EventBus.emit('engagement:tier-change', {
+          from: previousTier,
+          to: currentTier,
+          score,
+        });
+      }
+    }
   }
 
   function updateParticipantModel(signalName) {
@@ -208,17 +231,17 @@ const GAIA_ENGAGEMENT = (() => {
   }
 
   // ── Persistence ──
-  function save() {
-    Storage.safeSetItem('gaia_engagement', JSON.stringify({
+  async function save() {
+    await Storage.safeSetItem('gaia_engagement', JSON.stringify({
       score, moodSignals, lastInteraction, siteEngagement,
       participantModel, knowledgeModel,
       savedAt: Date.now(),
     }));
   }
 
-  function load() {
+  async function load() {
     try {
-      const raw = Storage.safeGetItem('gaia_engagement');
+      const raw = await Storage.safeGetItem('gaia_engagement');
       if (!raw) return;
       const data = JSON.parse(raw);
       score = data.score || 0;
@@ -230,42 +253,52 @@ const GAIA_ENGAGEMENT = (() => {
   }
 
   // ── Init ──
-  load();
-  // Load GaiaMind state if available
-  if (hasModule('GaiaMind')) {
-    try {
-      const mindData = Storage.safeGetItem('gaia_mind');
-      if (mindData) GaiaMind.deserialize(mindData);
-    } catch { /* ignore */ }
-    // Decay emotions based on time since last visit
-    const lastVisit = GaiaMind.getTimeSinceLastVisit?.();
-    if (lastVisit && lastVisit > 0) {
-      const daysSince = lastVisit / (1000 * 60 * 60 * 24);
-      if (daysSince > 0.1) GaiaMind.decayEmotions(daysSince);
+  // Wrap in async IIFE so we can await the async load() before module init continues
+  (async () => {
+    await load();
+    // Load GaiaMind state if available
+    if (hasModule('GaiaMind')) {
+      try {
+        const mindData = await Storage.safeGetItem('gaia_mind');
+        if (mindData) GaiaMind.deserialize(mindData);
+      } catch { /* ignore */ }
+      // Decay emotions based on time since last visit
+      const lastVisit = GaiaMind.getTimeSinceLastVisit?.();
+      if (lastVisit && lastVisit > 0) {
+        const daysSince = lastVisit / (1000 * 60 * 60 * 24);
+        if (daysSince > 0.1) GaiaMind.decayEmotions(daysSince);
+      }
+      // Record this session
+      if (GaiaMind.recordSession) {
+        GaiaMind.recordSession({
+          sitesVisited: [],
+          dominantEmotion: GaiaMind.getDominantEmotion?.()?.emotion || 'curious',
+          keyInsight: null,
+          gaiaEmotion: 'curious',
+          leftOff: 'arrival',
+          duration: 0,
+          score: 0,
+        });
+      }
     }
-    // Record this session
-    if (GaiaMind.recordSession) {
-      GaiaMind.recordSession({
-        sitesVisited: [],
-        dominantEmotion: GaiaMind.getDominantEmotion?.()?.emotion || 'curious',
-        keyInsight: null,
-        gaiaEmotion: 'curious',
-        leftOff: 'arrival',
-        duration: 0,
-        score: 0,
-      });
-    }
-  }
+  })().catch(() => {});
   // Periodic auto-save (every 30s) + save on page unload
-  setInterval(save, 30000);
-  try { window.addEventListener('beforeunload', save); } catch { /* ignore */ }
+  this._saveInterval = setInterval(save, 30000);
+  this._onUnloadSave = () => save();
+  try { window.addEventListener('beforeunload', this._onUnloadSave); } catch { /* ignore */ }
+
   // Also save GaiaMind periodically
-  setInterval(() => {
+  this._mindSaveInterval = setInterval(() => {
     if (hasModule('GaiaMind')) {
       try { Storage.safeSetItem('gaia_mind', GaiaMind.serialize()); } catch { /* ignore */ }
     }
   }, 30000);
-  try { window.addEventListener('beforeunload', () => { if (hasModule('GaiaMind')) { try { Storage.safeSetItem('gaia_mind', GaiaMind.serialize()); } catch { /* ignore */ } } }); } catch { /* ignore */ }
+  this._onUnloadMindSave = () => {
+    if (hasModule('GaiaMind')) {
+      try { Storage.safeSetItem('gaia_mind', GaiaMind.serialize()); } catch { /* ignore */ }
+    }
+  };
+  try { window.addEventListener('beforeunload', this._onUnloadMindSave); } catch { /* ignore */ }
 
   return {
     addSignal, addMoodSignal,
@@ -281,13 +314,61 @@ const GAIA_ENGAGEMENT = (() => {
     getKnowledgeModel: () => ({ ...knowledgeModel }),
     interact: () => { lastInteraction = Date.now(); },
     save, load,
+
+    init() {
+      console.debug('[Stub] GAIA_ENGAGEMENT.init');
+      return true;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] GAIA_ENGAGEMENT.reset');
+      score = 0;
+      velocityWindow = [];
+      moodSignals = { curiosity: 0, excitement: 0, concern: 0, pride: 0, mystery: 0, warmth: 0, urgency: 0, fierceness: 0 };
+      lastInteraction = Date.now();
+      siteEngagement = { sri_lanka: { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, visited: false }, antalya: { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, visited: false }, benin: { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, visited: false }, borneo: { xp: 0, layersRevealed: 0, scenariosRun: 0, timeSpent: 0, visited: false } };
+      participantModel = { analytical: 0, intuitive: 0, emotional: 0, social: 0, asksQuestions: 0, makesPredictions: 0, correctPredictions: 0, exploresDeep: 0, sharesResults: 0, returnsVisit: 0 };
+      knowledgeModel = { understandsCarbonCycle: 0, understandsBiomes: 0, understandsFire: 0, understandsRestoration: 0, understandsTippingPoints: 0 };
+      return true;
+    },
+
+    destroy() {
+      console.debug('[SML] GAIA_ENGAGEMENT.destroy');
+
+      // Clear auto-save intervals (two separate setInterval calls)
+      clearInterval(this._saveInterval);
+      clearInterval(this._mindSaveInterval);
+      this._saveInterval = null;
+      this._mindSaveInterval = null;
+
+      // Remove beforeunload listeners (named references required)
+      window.removeEventListener('beforeunload', this._onUnloadSave);
+      window.removeEventListener('beforeunload', this._onUnloadMindSave);
+
+      // Nullify state
+      score = 0;
+      velocityWindow = [];
+      moodSignals = {};
+      siteEngagement = {};
+      participantModel = {};
+      knowledgeModel = {};
+
+      return true;
+    },
+
+    getState() {
+      return {};
+    },
   };
 })();
 window.GAIA_ENGAGEMENT = GAIA_ENGAGEMENT;
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GAIA_ENGAGEMENT', {
-    provides: ['addSignal', 'getScore', 'getSiteStates', 'interact', 'save', 'load'],
+    provides: ['addSignal', 'getScore', 'getSiteStates', 'interact', 'save', 'load', 'init', 'reset', 'destroy', 'getState'],
     requires: [],
+    emits: ['engagement:signal', 'engagement:tier-change'],
+    listens: [],
   });
 }

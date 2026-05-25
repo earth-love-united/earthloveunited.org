@@ -41,15 +41,15 @@ const GAIA_JOURNAL = (() => {
   let completedQuests = [];
 
   // ── Persistence ──
-  function save() {
-    Storage.safeSetItem('gaia_journal', JSON.stringify({
+  async function save() {
+    await Storage.safeSetItem('gaia_journal', JSON.stringify({
       entries, questProgress, completedQuests, savedAt: Date.now(),
     }));
   }
 
-  function load() {
+  async function load() {
     try {
-      const raw = Storage.safeGetItem('gaia_journal');
+      const raw = await Storage.safeGetItem('gaia_journal');
       if (!raw) return;
       const data = JSON.parse(raw);
       entries = data.entries || [];
@@ -137,7 +137,7 @@ const GAIA_JOURNAL = (() => {
   }
 
   // ── Init ──
-  load();
+  (async () => { await load(); })().catch(() => {});
 
   return {
     addEntry, getEntries, getEntryCount,
@@ -146,11 +146,53 @@ const GAIA_JOURNAL = (() => {
     save, load,
     // Compat API for GaiaQuests adapter
     getAllQuests: getQuests,
+
+    init() {
+      console.debug('[Stub] GAIA_JOURNAL.init');
+
+      // Listen for pledge submissions via EventBus
+      if (hasModule('EventBus')) {
+        this._unsubPledge = window.EventBus.on('pledge:submit', () => {
+          checkQuestProgress('share', null);
+        });
+      }
+
+      return true;
+    },
+
+    clear() {
+      console.debug('[Stub] GAIA_JOURNAL.clear');
+      return true;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] GAIA_JOURNAL.reset');
+      return true;
+    },
+    destroy() {
+      console.debug('[SML] GAIA_JOURNAL.destroy');
+
+      // Unsubscribe from EventBus
+      if (this._unsubPledge) {
+        this._unsubPledge();
+        this._unsubPledge = null;
+      }
+
+      return true;
+    },
+    getState() {
+      return {};
+    },
   };
 })();
 window.GAIA_JOURNAL = GAIA_JOURNAL;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GAIA_JOURNAL', {
-    provides: ['init', 'addEntry', 'getEntries', 'getAllQuests', 'save', 'load', 'clear'],
+    provides: ['init', 'addEntry', 'getEntries', 'getAllQuests', 'save', 'load', 'clear', 'reset', 'destroy', 'getState'],
     requires: [],
+    emits: [],
+    listens: ['pledge:submit'],
   });
+}

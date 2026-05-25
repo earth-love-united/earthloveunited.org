@@ -1,63 +1,7 @@
 // ═══════════════════════════════════════════════
-// SAFE LOCALSTORAGE — quota-aware writes
-// ═══════════════════════════════════════════════
-const Storage = {
-  MAX_ITEM_SIZE: 500000, // 500KB per item (well under 5MB browser limit)
-
-  safeSetItem(key, value) {
-    try {
-      const serialized = typeof value === 'string' ? value : JSON.stringify(value);
-      if (serialized.length > this.MAX_ITEM_SIZE) {
-        console.warn(`[Storage] Item "${key}" too large (${serialized.length} bytes), skipping`);
-        return false;
-      }
-      localStorage.setItem(key, serialized);
-      return true;
-    } catch (e) {
-      // QuotaExceededError or private browsing — try to free space
-      console.warn(`[Storage] Write failed for "${key}":`, e.name);
-      this._evictOldest();
-      try {
-        localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
-        return true;
-      } catch {
-        return false;
-      }
-    }
-  },
-
-  safeGetItem(key) {
-    try {
-      return localStorage.getItem(key);
-    } catch { return null; }
-  },
-
-  safeRemoveItem(key) {
-    try { localStorage.removeItem(key); } catch { /* ignore */ }
-  },
-
-  // Evict oldest gaia_* items to free space
-  _evictOldest() {
-    const gaiaKeys = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith('gaia_')) {
-        try {
-          const item = JSON.parse(localStorage.getItem(k) || '{}');
-          gaiaKeys.push({ k, ts: item.savedAt || item.cachedAt || item.timestamp || 0 });
-        } catch { gaiaKeys.push({ k, ts: 0 }); }
-      }
-    }
-    gaiaKeys.sort((a, b) => a.ts - b.ts);
-    // Remove oldest 3 items
-    for (let i = 0; i < Math.min(3, gaiaKeys.length); i++) {
-      try { localStorage.removeItem(gaiaKeys[i].k); } catch { /* ignore */ }
-    }
-  },
-};
-
-// ═══════════════════════════════════════════════
 // DATA — Loads JSON, provides shared state
+//
+// Must load AFTER storage.js (depends on window.Storage).
 // ═══════════════════════════════════════════════
 
 const Data = {
@@ -135,6 +79,19 @@ const Data = {
     return n >= 1e9 ? (n / 1e9).toFixed(1) + 'B' :
            n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' :
            n >= 1e3 ? (n / 1e3).toFixed(1) + 'K' : n.toFixed(0);
+  },
+
+  // ── Standard Module Lifecycle (SML) ──
+  reset() {
+    console.debug('[SML] Data.reset');
+    return true;
+  },
+  destroy() {
+    console.debug('[SML] Data.destroy');
+    return true;
+  },
+  getState() {
+    return {};
   }
 };
 
@@ -142,7 +99,7 @@ window.Data = Data;
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('Data', {
-    provides: ['init', 'fmt'],
-    requires: [],
+    provides: ['init', 'fmt', 'reset', 'destroy', 'getState'],
+    requires: ['STORAGE_ADAPTER'],
   });
 }

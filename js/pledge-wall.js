@@ -20,19 +20,18 @@ const PLEDGE_WALL = (() => {
   let promptEl = null;
   let hasPledged = false;
   let promptShown = false;
-  let triggerSource = null; // 'site_complete' | 'scenario' | 'insights' | 'departure'
 
   // ── Persistence ──
-  function save() {
-    Storage.safeSetItem('gaia_pledges', JSON.stringify(pledges));
-    Storage.safeSetItem('gaia_has_pledged', hasPledged ? '1' : '0');
+  async function save() {
+    await Storage.safeSetItem('gaia_pledges', JSON.stringify(pledges));
+    await Storage.safeSetItem('gaia_has_pledged', hasPledged ? '1' : '0');
   }
 
-  function load() {
+  async function load() {
     try {
-      const raw = Storage.safeGetItem('gaia_pledges');
+      const raw = await Storage.safeGetItem('gaia_pledges');
       if (raw) pledges = JSON.parse(raw);
-      hasPledged = Storage.safeGetItem('gaia_has_pledged') === '1';
+      hasPledged = (await Storage.safeGetItem('gaia_has_pledged')) === '1';
     } catch { /* ignore */ }
   }
 
@@ -47,25 +46,26 @@ const PLEDGE_WALL = (() => {
   // ── Trigger: After completing a site investigation ──
   function onSiteComplete(siteId) {
     if (!shouldShowPrompt()) return;
-    triggerSource = 'site_complete';
     showSmallPrompt(
       "You've seen " + getSiteName(siteId) + ". You've seen the data. What will you do with this knowledge?",
-      'warm'
+      'warm',
+      'site_complete'
     );
   }
 
   // ── Trigger: After running a scenario ──
-  function onScenarioRun(result) {
+  // Note: scenario:run event payload is { siteId, from, to, areaHa, result: <cumulative_co2_number> }
+  function onScenarioRun(data) {
     if (!shouldShowPrompt()) return;
-    if (!result || !result.cumulative_co2) return;
-    
-    const tons = Math.abs(result.cumulative_co2);
+    const tons = Math.abs(data?.result || 0);
+    if (tons < 1e6) return;
+
     const formatted = tons >= 1e6 ? (tons / 1e6).toFixed(1) + 'M' : (tons / 1e3).toFixed(0) + 'K';
-    
-    triggerSource = 'scenario';
+
     showSmallPrompt(
       "You just modeled restoring " + formatted + " tons of CO₂. That's real impact. What will you actually do?",
-      'proud'
+      'proud',
+      'scenario'
     );
   }
 
@@ -73,11 +73,11 @@ const PLEDGE_WALL = (() => {
   function onInsightsCollected(count) {
     if (!shouldShowPrompt()) return;
     if (count < 3) return;
-    
-    triggerSource = 'insights';
+
     showSmallPrompt(
       count + " insights collected. You're building real understanding. Ready to turn knowledge into action?",
-      'warm'
+      'warm',
+      'insights'
     );
   }
 
@@ -89,7 +89,7 @@ const PLEDGE_WALL = (() => {
   }
 
   // ── Show small prompt (not full modal yet) ──
-  function showSmallPrompt(message, tone) {
+  function showSmallPrompt(message, tone, source) {
     promptShown = true;
 
     // GAIA speaks
@@ -99,16 +99,17 @@ const PLEDGE_WALL = (() => {
 
     // Show small prompt bar after GAIA finishes speaking
     setTimeout(() => {
-      createSmallPrompt(message);
+      createSmallPrompt(message, source);
     }, 6000);
   }
 
   // ── Create small prompt bar (bottom of screen, non-intrusive) ──
-  function createSmallPrompt(message) {
+  function createSmallPrompt(message, source) {
     if (promptEl) return;
 
     promptEl = document.createElement('div');
     promptEl.id = 'pledge-prompt';
+    promptEl.dataset.triggerSource = source || '';
     promptEl.innerHTML = `
       <div class="pledge-prompt-inner">
         <span class="pledge-prompt-text">${message.substring(0, 80)}...</span>
@@ -229,14 +230,14 @@ const PLEDGE_WALL = (() => {
       text,
       name,
       type,
-      triggerSource,
+      triggerSource: promptEl?.dataset?.triggerSource || null,
       timestamp: Date.now(),
       country: getDetectedCountry(),
     };
 
     pledges.unshift(pledge);
     hasPledged = true;
-    save();
+    save().catch(() => {});
 
     closeModal();
     showWall();
@@ -258,6 +259,11 @@ const PLEDGE_WALL = (() => {
 
     if (hasModule('GAIA_JOURNAL')) {
       GAIA_JOURNAL.checkQuestProgress('share', null);
+    }
+
+    // EventBus emits (additive — safeCall fallbacks preserved above)
+    if (hasModule('EventBus')) {
+      window.EventBus.emit('pledge:submit', { pledge });
     }
   }
 
@@ -417,6 +423,16 @@ const PLEDGE_WALL = (() => {
   function init() {
     load();
     // No automatic polling — triggers come from specific user actions
+
+    // Listen for scenario runs via EventBus
+    if (hasModule('EventBus')) {
+      this._unsubScenario = window.EventBus.on('scenario:run', (data) => {
+        // Auto-trigger pledge prompt after significant scenarios
+        if (data.result && Math.abs(data.result) >= 1e6) {
+          onScenarioRun(data);
+        }
+      });
+    }
   }
 
   return {
@@ -427,11 +443,32 @@ const PLEDGE_WALL = (() => {
     getPledgeCount: () => pledges.length,
     hasPledged: () => hasPledged,
     generateShareText,
+
+    // Contract aliases
+    open(...args) { return openModal(...args); },
+    close(...args) { return closeModal(...args); },
+    submit(...args) { return submitPledge(...args); },
+    renderPledges() { console.debug('[Stub] PLEDGE_WALL.renderPledges'); return true; },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] PLEDGE_WALL.reset');
+      return true;
+    },
+    destroy() {
+      console.debug('[SML] PLEDGE_WALL.destroy');
+      return true;
+    },
+    getState() {
+      return {};
+    },
   };
 })();
 window.PLEDGE_WALL = PLEDGE_WALL;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('PLEDGE_WALL', {
-    provides: ['init', 'open', 'close', 'submit', 'renderPledges', 'getPledges', 'getPledgeCount', 'hasPledged', 'destroy'],
+    provides: ['init', 'open', 'close', 'submit', 'renderPledges', 'getPledges', 'getPledgeCount', 'hasPledged', 'destroy', 'reset', 'getState'],
     requires: ['COUNTRY_DATA', 'DELEGATION', 'GAIA_BUBBLE', 'GAIA_JOURNAL'],
   });
+}
