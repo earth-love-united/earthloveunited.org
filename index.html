@@ -2,7 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<!-- ─── Identity & social preview ─────────────────────────────── -->
+<meta name="description" content="An interactive, audit-friendly platform for global climate action. Explore the planet's living systems, see real carbon-project data, and pledge your action to a transparent foundation.">
+<meta name="theme-color" content="#0a1628">
+<meta name="author" content="Earth Love United Foundation">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Earth Love United — One Earth">
+<meta property="og:description" content="A global foundation for climate action — open, auditable, and built bare-metal. Explore the planet's living systems and pledge your action.">
+<meta property="og:url" content="https://earthloveunited.org">
+<meta property="og:site_name" content="Earth Love United">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Earth Love United — One Earth">
+<meta name="twitter:description" content="A global foundation for climate action — open, auditable, and built bare-metal.">
+
+<!-- ─── Favicon (inline SVG — no extra HTTP request) ──────────── -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27%230a1628%27%2F%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%234ecdc4%27%20stroke-width%3D%271.5%27%2F%3E%3Cellipse%20cx%3D%2716%27%20cy%3D%2716%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3Cpath%20d%3D%27M2%2016%20Q8%2012%2016%2016%20T30%2016%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3C%2Fsvg%3E">
+
 <!--
   Content Security Policy — restrictive but allows our CDN dependencies.
   - Scripts: self + globe.gl CDN + jsdelivr (for three-globe)
@@ -21,29 +40,59 @@
 ">
 <title>Earth Love United — One Earth</title>
 
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ELU">
+
+<!-- SEO + Social -->
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- CSS Modules -->
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/layout.css">
-<link rel="stylesheet" href="css/components.css">
-<link rel="stylesheet" href="css/widgets.css">
-<link rel="stylesheet" href="css/responsive.css">
-<link rel="stylesheet" href="css/carbon-clock.css">
-<link rel="stylesheet" href="css/delegation.css">
-<link rel="stylesheet" href="css/pledge-wall.css">
-<link rel="stylesheet" href="css/gaia-bubble.css">
-<link rel="stylesheet" href="css/globe-overlay.css?v=4">
-<link rel="stylesheet" href="css/gaia-presence.css">
-<link rel="stylesheet" href="css/ndvi-verifier.css">
-<link rel="stylesheet" href="css/registry-check.css">
+<!-- Critical above-fold: preload -->
+<link rel="preload" href="css/base.css" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="css/layout.css" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="css/components.css" as="style" onload="this.rel='stylesheet'">
+<noscript>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</noscript>
 
-<!-- Globe.gl (Local) -->
-<script src="js/vendor/globe.gl.js"></script>
+<!-- Non-critical: deferred with media=print trick -->
+<link rel="stylesheet" href="css/widgets.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/responsive.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/carbon-clock.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/delegation.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/pledge-wall.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/gaia-bubble.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/globe-overlay.css?v=4" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/gaia-presence.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/ndvi-verifier.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/registry-check.css" media="print" onload="this.media='all'">
+<noscript>
+  <link rel="stylesheet" href="css/widgets.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/carbon-clock.css">
+  <link rel="stylesheet" href="css/delegation.css">
+  <link rel="stylesheet" href="css/pledge-wall.css">
+  <link rel="stylesheet" href="css/gaia-bubble.css">
+  <link rel="stylesheet" href="css/globe-overlay.css?v=4">
+  <link rel="stylesheet" href="css/gaia-presence.css">
+  <link rel="stylesheet" href="css/ndvi-verifier.css">
+  <link rel="stylesheet" href="css/registry-check.css">
+</noscript>
+
+<!-- Print stylesheet -->
+<link rel="stylesheet" href="css/print.css" media="print">
+
+<!-- Globe.gl (Local) — lazy-loaded on enterSite() to avoid blocking first paint -->
+<!-- <script src="js/vendor/globe.gl.js"></script> removed — loaded dynamically -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
 </head>
-<body>
+<body><a href="#main-content" class="skip-nav">Skip to main content</a>
 
 <!-- ═══ HERO ═══ -->
 <div id="hero">
@@ -58,15 +107,23 @@
     <div id="hero-carbon-clock"></div>
 
     <!-- Single CTA -->
-    <button class="enter-btn" onclick="enterSite()">Explore the Planet</button>
+    <button class="enter-btn" data-action="enterSite">Explore the Planet</button>
   </div>
 
   <!-- Memorial — subtle, at the very bottom -->
   <div class="memorial">In memory of Jean Missinhoun (1972–2024) · From oil to earth</div>
 </div>
 
+<!-- ═══ HAMBURGER (mobile GLOBE_OVERLAY trigger) ═══ -->
+<button id="hamburger-btn" class="hamburger-btn" aria-label="Open menu" data-action="toggleGlobeOverlay">
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+</button>
+
 <!-- ═══ TOP BAR ═══ -->
 <div id="topbar">
+  <div class="hamburger-spacer"></div>
   <div class="logo">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       <circle cx="13" cy="12" r="9" stroke="url(#lg)" stroke-width="1.2"/>
@@ -84,7 +141,7 @@
       <div class="stat-label">Your Restoration</div>
       <div class="stat-value positive" id="user-total">0 t CO₂</div>
     </div>
-    <a href="gaia.html" style="display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.15);border-radius:6px;text-decoration:none;transition:all .2s;margin-left:8px" onmouseover="this.style.background='rgba(78,205,196,.15)'" onmouseout="this.style.background='rgba(78,205,196,.08)'">
+    <a href="gaia.html" class="gaia-link" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;text-decoration:none;transition:all .2s;margin-left:8px">
       <span style="font-size:14px">🌍</span>
       <span style="font-size:12px;color:var(--teal);letter-spacing:.5px">Talk to GAIA</span>
     </a>
@@ -153,7 +210,7 @@
 </div>
 
 <!-- ═══ SECTIONS ═══ -->
-<div class="sections">
+<div class="sections" id="main-content">
 
   <!-- QUIZ -->
   <div class="section" id="quiz">
@@ -179,16 +236,16 @@
       <div class="cycle-widget">
         <div class="cycle-title">The Carbon Cycle — Tap to explore</div>
         <div class="cycle-flow">
-          <div class="cycle-node atmosphere" onclick="showCycle('atmosphere')">🌡️ Atmosphere</div>
+          <div class="cycle-node atmosphere" data-action="showCycle" data-action-args='["atmosphere"]'>🌡️ Atmosphere</div>
           <span class="cycle-arrow">⇄</span>
-          <div class="cycle-node vegetation" onclick="showCycle('vegetation')">🌿 Vegetation</div>
+          <div class="cycle-node vegetation" data-action="showCycle" data-action-args='["vegetation"]'>🌿 Vegetation</div>
           <span class="cycle-arrow">⇄</span>
-          <div class="cycle-node ocean" onclick="showCycle('ocean')">🌊 Ocean</div>
+          <div class="cycle-node ocean" data-action="showCycle" data-action-args='["ocean"]'>🌊 Ocean</div>
           <span class="cycle-arrow">⇄</span>
-          <div class="cycle-node soil" onclick="showCycle('soil')">🪱 Soil</div>
+          <div class="cycle-node soil" data-action="showCycle" data-action-args='["soil"]'>🪱 Soil</div>
         </div>
         <div style="text-align:center;margin-bottom:12px"><span class="cycle-arrow" style="font-size:24px">⇅</span></div>
-        <div style="text-align:center"><div class="cycle-node human" onclick="showCycle('human')">🏭 Human Activity</div></div>
+        <div style="text-align:center"><div class="cycle-node human" data-action="showCycle" data-action-args='["human"]'>🏭 Human Activity</div></div>
         <div class="cycle-detail" id="cycle-detail"></div>
       </div>
     </div>
@@ -325,6 +382,7 @@
 <script src="js/event-bus.js"></script>
 <script src="js/storage-adapter.js"></script>
 <script src="js/storage.js"></script>
+<script src="js/data-schema.js"></script>
 <script src="js/data.js"></script>
 <script src="js/quiz.js"></script>
 <script src="js/cycle.js"></script>
@@ -389,5 +447,14 @@
     document.body.appendChild(s);
   });
 })();
+</script>
+
+<!-- Service Worker registration -->
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(function() {
+    // SW registration failed — site still works without it
+  });
+}
 </script>
 </body></html>

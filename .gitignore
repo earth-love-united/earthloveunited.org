@@ -84,3 +84,7 @@ textures/ndvi/
 # ─── Local-only design / scratch files ─────────────────────────
 design/modules/serve.py
 _dead/
+
+# Generated / deployment artefacts (not for git)
+_deploy/
+manifest.json
