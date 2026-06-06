@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Final merge: incorporate Verra descriptions + GS enrichments into v2 dataset.
 Run this after the scrapers finish.
@@ -7,10 +13,10 @@ import uuid
 from pathlib import Path
 from datetime import datetime, timezone
 
-V2_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_v2.jsonl"
-VERRA_DETAILS = "/Users/ekmelozdemir/earthloveunited.org/tools/scraper/data/scraped/verra_details.jsonl"
-GS_ENRICH = "/Users/ekmelozdemir/earthloveunited.org/tools/scraper/data/scraped/gs_methodology_enrichment.jsonl"
-OUTPUT = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_v2_final.jsonl"
+V2_FILE = "carbon-projects/unified/carbon_projects_v2.jsonl"
+VERRA_DETAILS = "tools/scraper/data/scraped/verra_details.jsonl"
+GS_ENRICH = "tools/scraper/data/scraped/gs_methodology_enrichment.jsonl"
+OUTPUT = "carbon-projects/unified/carbon_projects_v2_final.jsonl"
 
 def main():
     print("=" * 60)

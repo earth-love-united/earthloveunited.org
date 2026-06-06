@@ -1,6 +1,12 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 import pandas as pd
 
-df = pd.read_parquet('/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/output/pledge_vs_reality_v3.parquet')
+df = pd.read_parquet('carbon-projects/pledge-reality/data/output/pledge_vs_reality_v3.parquet')
 
 print('=== FINAL DATASET: pledge_vs_reality_v3.parquet ===')
 print('Records:', len(df))

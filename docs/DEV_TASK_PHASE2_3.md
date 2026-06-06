@@ -28,11 +28,11 @@ The adapter already creates the DOM elements and injects the key button. Now mak
 6. Idle detection works (GAIA nudges after 10s/20s/40s/60s)
 
 ## Key Files
-- `/Users/ekmelozdemir/earthloveunited.org/gaia-dom-adapter.js` — The adapter (read it, understand the current event bridging)
-- `/Users/ekmelozdemir/earthloveunited.org/dis/gaia-state-machine.js` — State machine (read it, understand states/moods/scoring)
-- `/Users/ekmelozdemir/earthloveunited.org/dis/gaia-client.js` — Orchestrator (already modified for CSS)
-- `/Users/ekmelozdemir/earthloveunited.org/dis/gaia-voice-data.js` — Voice line pools
-- `/Users/ekmelozdemir/earthloveunited.org/gaia.html` — The target (additive-only changes)
+- `./gaia-dom-adapter.js` — The adapter (read it, understand the current event bridging)
+- `./dis/gaia-state-machine.js` — State machine (read it, understand states/moods/scoring)
+- `./dis/gaia-client.js` — Orchestrator (already modified for CSS)
+- `./dis/gaia-voice-data.js` — Voice line pools
+- `./gaia.html` — The target (additive-only changes)
 
 ## Constraints
 - Don't modify index.html (READ-ONLY)
@@ -50,4 +50,4 @@ The adapter already creates the DOM elements and injects the key button. Now mak
 7. All existing gaia.html functionality still works
 
 ## Report Back
-Write status to `/Users/ekmelozdemir/earthloveunited.org/DEV_STATUS.md` (overwrite previous).
+Write status to `./DEV_STATUS.md` (overwrite previous).

@@ -1,6 +1,12 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 import pandas as pd
 
-df = pd.read_parquet('/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet')
+df = pd.read_parquet('carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet')
 
 print('=== NDC TARGET COVERAGE ===')
 for col in ['cw_ghg_target', 'cw_target_type', 'cw_conditionality', 'cw_summary', 'cw_submission_type']:

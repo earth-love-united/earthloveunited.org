@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """Smoke test for the Agent-Browser Bridge."""
 
 import asyncio
 import json
 import sys
 
-sys.path.insert(0, "/Users/ekmelozdemir/earthloveunited.org/infra")
+sys.path.insert(0, "infra")
 
 import websockets
 

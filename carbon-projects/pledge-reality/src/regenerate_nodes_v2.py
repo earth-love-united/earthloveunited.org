@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Regenerate pledge-nodes.json from the enriched parquet with maximum gap coverage.
 Uses cw_baseline_year + GCB historical data to compute implied targets.
@@ -10,7 +16,7 @@ import json
 import os
 import re
 
-DATA_DIR = '/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data'
+DATA_DIR = 'carbon-projects/pledge-reality/data'
 PROC_DIR = os.path.join(DATA_DIR, 'processed')
 OUT_DIR = os.path.join(DATA_DIR, 'output')
 
@@ -23,7 +29,7 @@ gcb = pd.read_csv(os.path.join(PROC_DIR, 'gcb_emissions.csv'))
 gcb_map = gcb.set_index(['country', 'year'])['fossil_co2_mtCO2'].to_dict()
 
 # Country centroids for lat/lng (from the existing pledge-nodes.json)
-with open('/Users/ekmelozdemir/earthloveunited.org/data/pledge-nodes.json') as f:
+with open('data/pledge-nodes.json') as f:
     existing = json.load(f)
 coord_map = {n['iso']: (n['lat'], n['lng']) for n in existing if n.get('lat') and n.get('lng')}
 
@@ -167,7 +173,7 @@ for _, row in df_2024.iterrows():
     results.append(node)
 
 # Save
-output_path = '/Users/ekmelozdemir/earthloveunited.org/data/pledge-nodes.json'
+output_path = 'data/pledge-nodes.json'
 with open(output_path, 'w') as f:
     json.dump(results, f, indent=2, ensure_ascii=False)
 

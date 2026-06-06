@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Normalization pipeline: Verra + Gold Standard → Unified Schema
 """
@@ -6,10 +12,10 @@ import hashlib
 import uuid
 from datetime import datetime
 
-VERRA_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/raw/verra_projects.jsonl"
-GS_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/raw/gold_standard_projects.jsonl"
-OUTPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_unified.jsonl"
-STATS_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/normalization_stats.json"
+VERRA_FILE = "carbon-projects/raw/verra_projects.jsonl"
+GS_FILE = "carbon-projects/raw/gold_standard_projects.jsonl"
+OUTPUT_FILE = "carbon-projects/unified/carbon_projects_unified.jsonl"
+STATS_FILE = "carbon-projects/unified/normalization_stats.json"
 
 # Country name → ISO 3166-1 alpha-3 mapping (common ones)
 COUNTRY_TO_ISO3 = {

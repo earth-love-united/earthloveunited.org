@@ -1,13 +1,19 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Final merge v4: deduped Verra descriptions + GS enrichments → v3 dataset.
 """
 import json
 from pathlib import Path
 
-VERRA_DEDUPED = Path("/Users/ekmelozdemir/earthloveunited.org/carbon-projects/data/verra_details_deduped.jsonl")
-GS_ENRICH = Path("/Users/ekmelozdemir/earthloveunited.org/tools/scraper/data/scraped/gs_methodology_enrichment.jsonl")
-V3 = Path("/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_v3.jsonl")
-OUTPUT = Path("/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_v4.jsonl")
+VERRA_DEDUPED = Path("carbon-projects/data/verra_details_deduped.jsonl")
+GS_ENRICH = Path("tools/scraper/data/scraped/gs_methodology_enrichment.jsonl")
+V3 = Path("carbon-projects/unified/carbon_projects_v3.jsonl")
+OUTPUT = Path("carbon-projects/unified/carbon_projects_v4.jsonl")
 
 # Load Verra details
 verra_details = {}

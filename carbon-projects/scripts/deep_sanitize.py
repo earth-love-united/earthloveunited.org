@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Arrow-safe sanitizer v2: handles nested raw_data subfields.
 The HF viewer error "Couldn't cast array of type string to null" comes from
@@ -7,8 +13,8 @@ import json
 from pathlib import Path
 from collections import defaultdict
 
-INPUT = Path("/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_v4.jsonl")
-OUTPUT = Path("/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_v5.jsonl")
+INPUT = Path("carbon-projects/unified/carbon_projects_v4.jsonl")
+OUTPUT = Path("carbon-projects/unified/carbon_projects_v5.jsonl")
 
 
 def collect_all_types(obj, prefix="", types=None):

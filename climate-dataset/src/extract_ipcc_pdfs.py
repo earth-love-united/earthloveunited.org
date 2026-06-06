@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """Extract IPCC PDFs and update ipcc_reports.json"""
 import fitz, json
 from pathlib import Path
 
-RAW_DIR = Path("/Users/ekmelozdemir/earthloveunited.org/climate-dataset/data/raw")
+RAW_DIR = Path("climate-dataset/data/raw")
 
 ipcc_files = [
     ("ar6_wgii_spm", "AR6 WGII Summary for Policymakers",

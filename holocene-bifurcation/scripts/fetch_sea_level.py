@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Phase 1: Fetch Global Sea Level Data (Spratt & Lisiecki 2016)
 Downloads raw global sea level stack from NOAA NCEI and outputs a clean CSV 
@@ -8,7 +14,7 @@ import os
 import pandas as pd
 import requests
 
-RAW_DIR = "/Users/ekmelozdemir/earthloveunited.org/holocene-bifurcation/data/raw"
+RAW_DIR = "holocene-bifurcation/data/raw"
 os.makedirs(RAW_DIR, exist_ok=True)
 
 # Spratt & Lisiecki 2016 Global Sea Level Stack

@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Optimized enrichment pipeline.
 1. Geocode unique country/region combinations (not every project)
@@ -10,8 +16,8 @@ import time
 import requests
 import re
 
-INPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_deduped.jsonl"
-OUTPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_enriched.jsonl"
+INPUT_FILE = "carbon-projects/unified/carbon_projects_deduped.jsonl"
+OUTPUT_FILE = "carbon-projects/unified/carbon_projects_enriched.jsonl"
 
 from methodology_names import get_methodology_name
 

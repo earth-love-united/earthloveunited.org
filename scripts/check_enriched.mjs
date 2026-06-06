@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-const df = JSON.parse(readFileSync('/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet', 'utf8'));
+const df = JSON.parse(readFileSync(new URL('../carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet', import.meta.url), 'utf8'));
 
 // Check what fields are available in the enriched data
 console.log('Enriched parquet columns:', Object.keys(df[0] || {}));

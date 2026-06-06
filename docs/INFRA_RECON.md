@@ -57,7 +57,7 @@ These are currently **tracked** even though `.gitignore` lists them. The rules c
 ## Hygiene
 
 - **Secrets:** no `sk-`/`ghp_`/`hf_`/`AKIA`/private-key patterns found in tracked source. ✓
-- **Personal paths:** **64 source files** hardcode `/Users/ekmelozdemir/...` (mostly `carbon-projects/pledge-reality/src/*.py`, plus `_dead/`). These break portability and would trip the documented pre-commit tripwire.
+- **Personal paths:** **64 source files** hardcode `/Users/<user>/...` (mostly `carbon-projects/pledge-reality/src/*.py`, plus `_dead/`). These break portability and would trip the documented pre-commit tripwire.
 - **`.DS_Store`:** present on disk, not tracked, and ignored. ✓
 - **Pre-commit hook mismatch:** `.git/hooks/pre-commit` is a *script-load-order* checker, **not** the `tools/agent-precommit` secrets/path tripwire described in `AGENTS.md`. `tools/install-hooks.sh` exists but is untracked, so the documented protection is effectively off.
 

@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Gold Standard Registry Scraper
 GET API: https://public-api.goldstandard.org/projects
@@ -15,7 +21,7 @@ HEADERS = {
     "Referer": "https://registry.goldstandard.org/",
 }
 PAGE_SIZE = 100
-OUTPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/raw/gold_standard_projects.jsonl"
+OUTPUT_FILE = "carbon-projects/raw/gold_standard_projects.jsonl"
 
 
 def scrape_gold_standard():

@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 ADVERSARIAL AUDIT — COP31 Defense Check
 =========================================
@@ -10,7 +16,7 @@ import pandas as pd
 import numpy as np
 import json, os
 
-OUT = '/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet'
+OUT = 'carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet'
 df = pd.read_parquet(OUT)
 df24 = df[df['year'] == 2024].copy()
 

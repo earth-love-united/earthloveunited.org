@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Wikipedia Climate Article Extractor v3 — Comprehensive
 Extracts 500+ climate-related articles covering all major domains:
@@ -20,7 +26,7 @@ from pathlib import Path
 import wikipediaapi
 from tqdm import tqdm
 
-RAW_DIR = Path("/Users/ekmelozdemir/earthloveunited.org/climate-dataset/data/raw")
+RAW_DIR = Path("climate-dataset/data/raw")
 
 # ─── Comprehensive article list (500+ articles) ───
 ARTICLES = [

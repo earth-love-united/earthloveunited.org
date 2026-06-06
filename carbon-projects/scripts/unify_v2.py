@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Full unification pipeline: 8 registries → 1 dataset.
 Merges Verra, Gold Standard, CDM, CAR, ACR, CERCARBONO, Isometric, ART.
@@ -7,8 +13,8 @@ import uuid
 import os
 from datetime import datetime, timezone
 
-DATA_DIR = "/Users/ekmelozdemir/earthloveunited.org/tools/scraper/data/scraped"
-OUTPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_v2.jsonl"
+DATA_DIR = "tools/scraper/data/scraped"
+OUTPUT_FILE = "carbon-projects/unified/carbon_projects_v2.jsonl"
 
 # Country centroids for geocoding
 COUNTRY_CENTROIDS = {
@@ -228,7 +234,7 @@ def main():
     # ========================================
     print("\n[1/8] Loading Verra...")
     verra = {}
-    with open("/Users/ekmelozdemir/earthloveunited.org/carbon-projects/raw/verra_projects.jsonl") as f:
+    with open("carbon-projects/raw/verra_projects.jsonl") as f:
         for line in f:
             p = json.loads(line)
             vid = p.get("resourceIdentifier", "")
@@ -294,7 +300,7 @@ def main():
             gs_enrich[e.get("id", "")] = e
 
     gs = {}
-    with open("/Users/ekmelozdemir/earthloveunited.org/carbon-projects/raw/gold_standard_projects.jsonl") as f:
+    with open("carbon-projects/raw/gold_standard_projects.jsonl") as f:
         for line in f:
             p = json.loads(line)
             gs[p.get("id", "")] = p

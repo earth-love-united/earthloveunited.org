@@ -154,7 +154,7 @@ The hook prints the exact line that tripped it. Read the output. Common culprits
 
 - Accidentally pasted an API key into a comment → remove it
 - A large file got staged → add to `.gitignore`, `git rm --cached <file>`
-- Personal path like `/Users/yourname/...` in a script → use repo-relative path
+- Personal path like `/Users/<name>/...` in a script → use repo-relative path
 - The signature phrase leaked in → remove it (these phrases are internal-only)
 
 ### "CI is failing on `verify_load_order.py` but my code looks fine"

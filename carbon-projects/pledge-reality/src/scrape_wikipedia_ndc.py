@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Scrape NDC target data from Wikipedia.
 Most countries have a "Nationally Determined Contributions" section on their climate change page.
@@ -11,7 +17,7 @@ import time
 import os
 import re
 
-OUTPUT = '/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/raw/ndc_wikipedia.json'
+OUTPUT = 'carbon-projects/pledge-reality/data/raw/ndc_wikipedia.json'
 
 # Wikipedia pages with NDC data
 NDC_PAGES = [

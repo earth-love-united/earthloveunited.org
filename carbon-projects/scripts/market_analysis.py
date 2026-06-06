@@ -1,10 +1,16 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Generate market analysis and narrative context for the carbon projects dataset.
 """
 import json
 
-INPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_enriched.jsonl"
-OUTPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/market_analysis.json"
+INPUT_FILE = "carbon-projects/unified/carbon_projects_enriched.jsonl"
+OUTPUT_FILE = "carbon-projects/unified/market_analysis.json"
 
 
 def main():

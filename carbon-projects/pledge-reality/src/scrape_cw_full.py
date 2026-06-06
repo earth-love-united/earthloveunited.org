@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Paginate through ALL Climate Watch NDC content data.
 Each country has ~366 indicators, API returns 500 records per page.
@@ -9,7 +15,7 @@ import json
 import time
 import os
 
-OUTPUT = '/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/raw/cw_ndc_full.json'
+OUTPUT = 'carbon-projects/pledge-reality/data/raw/cw_ndc_full.json'
 BASE_URL = "https://www.climatewatchdata.org/api/v1/data/ndc_content"
 
 def fetch_all():

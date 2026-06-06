@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Deduplication engine for unified carbon projects.
 Uses fuzzy matching on name, developer, country, type, methodology.
@@ -6,9 +12,9 @@ import json
 import re
 from collections import defaultdict
 
-INPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_unified.jsonl"
-OUTPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_deduped.jsonl"
-DEDUP_MAP_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/dedup_mapping.json"
+INPUT_FILE = "carbon-projects/unified/carbon_projects_unified.jsonl"
+OUTPUT_FILE = "carbon-projects/unified/carbon_projects_deduped.jsonl"
+DEDUP_MAP_FILE = "carbon-projects/unified/dedup_mapping.json"
 
 
 def normalize_text(text):

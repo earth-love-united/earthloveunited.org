@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 IPCC Report Text Extractor
 Extracts structured text from IPCC AR6 PDF reports.
@@ -11,7 +17,7 @@ from pathlib import Path
 import fitz  # PyMuPDF
 from tqdm import tqdm
 
-RAW_DIR = Path("/Users/ekmelozdemir/earthloveunited.org/climate-dataset/data/raw")
+RAW_DIR = Path("climate-dataset/data/raw")
 
 # IPCC AR6 report PDFs (publicly available)
 IPCC_REPORTS = {

@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Scrape Verra project descriptions using the browser.
 The Verra detail pages are JS-rendered SPAs, so we need the browser.
@@ -8,14 +14,14 @@ import time
 import subprocess
 import re
 
-INPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/raw/verra_projects.jsonl"
-OUTPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/raw/verra_descriptions.json"
+INPUT_FILE = "carbon-projects/raw/verra_projects.jsonl"
+OUTPUT_FILE = "carbon-projects/raw/verra_descriptions.json"
 
 def get_verra_ids_without_descriptions():
     """Get Verra project IDs that need descriptions."""
     # Load unified projects to find which ones are Verra-only (no description)
     unified = []
-    with open("/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_enriched.jsonl") as f:
+    with open("carbon-projects/unified/carbon_projects_enriched.jsonl") as f:
         for line in f:
             unified.append(json.loads(line))
 

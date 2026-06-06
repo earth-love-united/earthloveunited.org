@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Extract EPA Climate Explainers
 Authoritative, plain-language climate science from the US EPA.
@@ -12,7 +18,7 @@ import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-RAW_DIR = Path("/Users/ekmelozdemir/earthloveunited.org/climate-dataset/data/raw")
+RAW_DIR = Path("climate-dataset/data/raw")
 
 # EPA Climate Change pages to extract
 EPA_PAGES = [

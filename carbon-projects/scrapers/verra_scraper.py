@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Verra (VCS) Registry Scraper
 POST API returns ALL projects in a single call (~4,965 projects).
@@ -15,7 +21,7 @@ HEADERS = {
     "Referer": "https://registry.verra.org/",
     "Origin": "https://registry.verra.org",
 }
-OUTPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/raw/verra_projects.jsonl"
+OUTPUT_FILE = "carbon-projects/raw/verra_projects.jsonl"
 
 
 def scrape_verra():

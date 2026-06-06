@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Build Climate Knowledge Dataset v3 — Enhanced
 Combines all sources:
@@ -16,8 +22,8 @@ import re
 from pathlib import Path
 from collections import Counter
 
-RAW_DIR = Path("/Users/ekmelozdemir/earthloveunited.org/climate-dataset/data/raw")
-PROCESSED_DIR = Path("/Users/ekmelozdemir/earthloveunited.org/climate-dataset/data/processed")
+RAW_DIR = Path("climate-dataset/data/raw")
+PROCESSED_DIR = Path("climate-dataset/data/processed")
 
 # ─── Configuration ───
 MAX_CHUNK_WORDS = 400
@@ -266,7 +272,7 @@ print(f"  EPA: {epa_count} pages")
 # 7. ELU Research
 elu_count = 0
 for filename in ["RESEARCH.md", "DATA_SOURCES.md", "CARBON_REGISTRIES.md", "CLIMATE_DATASETS.md"]:
-    filepath = Path("/Users/ekmelozdemir/earthloveunited.org") / filename
+    filepath = Path(".") / filename
     if not filepath.exists():
         continue
     content = filepath.read_text()

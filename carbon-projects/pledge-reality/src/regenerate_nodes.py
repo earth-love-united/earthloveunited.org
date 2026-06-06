@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Regenerate pledge-nodes.json with improved gap calculations.
 Parses baseline years from NDC summaries and uses GCB historical emissions
@@ -10,7 +16,7 @@ import json
 import os
 import re
 
-DATA_DIR = '/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data'
+DATA_DIR = 'carbon-projects/pledge-reality/data'
 RAW_DIR = os.path.join(DATA_DIR, 'raw')
 PROC_DIR = os.path.join(DATA_DIR, 'processed')
 OUT_DIR = os.path.join(DATA_DIR, 'output')
@@ -181,7 +187,7 @@ for _, row in df_2024.iterrows():
     results.append(node)
 
 # Save
-output_path = '/Users/ekmelozdemir/earthloveunited.org/data/pledge-nodes.json'
+output_path = 'data/pledge-nodes.json'
 with open(output_path, 'w') as f:
     json.dump(results, f, indent=2, ensure_ascii=False)
 

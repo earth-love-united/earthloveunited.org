@@ -144,7 +144,7 @@ That's it. No other changes to gaia.html.
 
 ## Context
 
-- Project path: `/Users/ekmelozdemir/earthloveunited.org/`
+- Project path: `./`
 - gaia.html is at the root, DIS files are in `dis/` subdirectory
 - The existing gaia.html inline script (line 279-886) has all the chat logic, data, and rendering
 - The DIS system has state machine, engagement scoring, quest system, key gate, voice engine, and LLM bridge
@@ -153,7 +153,7 @@ That's it. No other changes to gaia.html.
 
 ## Report Back
 
-When done, write a brief summary to `/Users/ekmelozdemir/earthloveunited.org/DEV_STATUS.md` with:
+When done, write a brief summary to `./DEV_STATUS.md` with:
 - What was built/modified
 - What works
 - What's blocked

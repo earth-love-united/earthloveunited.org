@@ -1,7 +1,13 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 import pandas as pd
 import numpy as np
 
-df = pd.read_parquet('/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet')
+df = pd.read_parquet('carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet')
 
 print('=== REBUILDING GAP ANALYSIS WITH CW DATA ===')
 print('Shape:', df.shape)
@@ -59,11 +65,11 @@ df['gap_total_reduction_still_needed_pct'] = np.where(
 )
 
 # Save
-df.to_parquet('/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/output/pledge_vs_reality_v3.parquet', index=False)
-df.to_csv('/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/output/pledge_vs_reality_v3.csv', index=False)
+df.to_parquet('carbon-projects/pledge-reality/data/output/pledge_vs_reality_v3.parquet', index=False)
+df.to_csv('carbon-projects/pledge-reality/data/output/pledge_vs_reality_v3.csv', index=False)
 
 import os
-print('Saved v3:', round(os.path.getsize('/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/output/pledge_vs_reality_v3.parquet')/1024, 1), 'KB')
+print('Saved v3:', round(os.path.getsize('carbon-projects/pledge-reality/data/output/pledge_vs_reality_v3.parquet')/1024, 1), 'KB')
 
 # Coverage
 print('')

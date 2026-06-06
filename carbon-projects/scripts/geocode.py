@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Fast geocoding: use country centroids for ALL projects without coordinates.
 This gets us to 100% coverage immediately.
@@ -5,8 +11,8 @@ We can refine with Nominatim later for high-priority projects.
 """
 import json
 
-INPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_enriched.jsonl"
-OUTPUT_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_geocoded.jsonl"
+INPUT_FILE = "carbon-projects/unified/carbon_projects_enriched.jsonl"
+OUTPUT_FILE = "carbon-projects/unified/carbon_projects_geocoded.jsonl"
 
 # Only geocode projects that don't already have coordinates from Gold Standard
 SKIP_IF_HAS_COORDS = False  # Set to True to only fill in missing

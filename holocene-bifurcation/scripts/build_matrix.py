@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Phase 3: The Decadal Matrix (Interpolation)
 Splicing 5 completely different geological archives (Ice Cores, Tree Rings, Coral Reefs)
@@ -9,8 +15,8 @@ import pandas as pd
 import numpy as np
 from scipy.interpolate import pchip_interpolate
 
-RAW_DIR = "/Users/ekmelozdemir/earthloveunited.org/holocene-bifurcation/data/raw"
-OUT_DIR = "/Users/ekmelozdemir/earthloveunited.org/holocene-bifurcation/data/processed"
+RAW_DIR = "holocene-bifurcation/data/raw"
+OUT_DIR = "holocene-bifurcation/data/processed"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 # Input files

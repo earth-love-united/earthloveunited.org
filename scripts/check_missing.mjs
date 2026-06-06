@@ -1,6 +1,6 @@
 import json
 
-with open('/Users/ekmelozdemir/earthloveunited.org/data/pledge-nodes.json') as f:
+with open(new URL('../data/pledge-nodes.json', import.meta.url)) as f:
  raw = json.load(f)
  nodes = raw['data'] if '_meta' in raw else raw
 

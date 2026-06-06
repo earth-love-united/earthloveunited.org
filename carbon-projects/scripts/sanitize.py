@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Sanitize carbon_projects_v2 JSONL for HF viewer compatibility.
 Fixes: null → [] for list fields, null → "" for nullable string fields in nested structs.
@@ -6,8 +12,8 @@ import json
 from pathlib import Path
 from collections import defaultdict
 
-INPUT = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_v2_final.jsonl"
-OUTPUT = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/carbon_projects_v3.jsonl"
+INPUT = "carbon-projects/unified/carbon_projects_v2_final.jsonl"
+OUTPUT = "carbon-projects/unified/carbon_projects_v3.jsonl"
 
 # Fields that must be [] not null
 LIST_FIELDS = {

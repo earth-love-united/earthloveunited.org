@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 import pandas as pd
 import numpy as np
 import json
 
-PARQUET_FILE = "/Users/ekmelozdemir/earthloveunited.org/carbon-projects/unified/train.parquet"
+PARQUET_FILE = "carbon-projects/unified/train.parquet"
 
 def audit_dataset():
     df = pd.read_parquet(PARQUET_FILE)

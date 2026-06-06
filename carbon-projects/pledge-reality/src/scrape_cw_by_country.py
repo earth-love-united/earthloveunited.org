@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Query Climate Watch NDC content for specific countries by ISO code.
 This bypasses the pagination issue.
@@ -8,7 +14,7 @@ import json
 import time
 import os
 
-OUTPUT = '/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/raw/cw_ndc_by_country.json'
+OUTPUT = 'carbon-projects/pledge-reality/data/raw/cw_ndc_by_country.json'
 BASE_URL = "https://www.climatewatchdata.org/api/v1/data/ndc_content"
 
 # All ISO3 codes for countries in our dataset

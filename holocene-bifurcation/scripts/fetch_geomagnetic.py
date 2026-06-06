@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Phase 1: Fetch/Derive Geomagnetic Field Intensity (VADM)
 Since the raw SINT-2000 and CALS10k.2 databases are locked behind complex 
@@ -11,7 +17,7 @@ Earth's magnetic shield strength modulating cosmic ray flux.
 import os
 import pandas as pd
 
-RAW_DIR = "/Users/ekmelozdemir/earthloveunited.org/holocene-bifurcation/data/raw"
+RAW_DIR = "holocene-bifurcation/data/raw"
 SOLAR_CSV = os.path.join(RAW_DIR, "solar_14c.csv")
 MAG_CSV = os.path.join(RAW_DIR, "geomagnetic_intensity.csv")
 

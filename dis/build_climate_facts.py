@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Climate Facts Generator v1.0
 Creates structured, sourced climate data entries.
@@ -11,7 +17,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-OUTPUT_PATH = Path("/Users/ekmelozdemir/earthloveunited.org/dis/climate-facts.json")
+OUTPUT_PATH = Path("dis/climate-facts.json")
 
 # ═══════════════════════════════════════════════════════
 # CLIMATE FACTS DATABASE

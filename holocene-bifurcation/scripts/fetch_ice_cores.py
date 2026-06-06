@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Phase 1: Fetch Ice Cores (GISP2 Temperature, EPICA Dome C CO2)
 Downloads raw txt files from NOAA NCEI, parses the irregular headers, 
@@ -8,7 +14,7 @@ import os
 import pandas as pd
 import requests
 
-RAW_DIR = "/Users/ekmelozdemir/earthloveunited.org/holocene-bifurcation/data/raw"
+RAW_DIR = "holocene-bifurcation/data/raw"
 os.makedirs(RAW_DIR, exist_ok=True)
 
 # 1. GISP2 Temperature Proxy (Alley 2000)

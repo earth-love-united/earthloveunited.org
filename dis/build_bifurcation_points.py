@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Build Climate Bifurcation Points Database
 Specific tipping points, thresholds, and bifurcation points in the climate system.
@@ -8,7 +14,7 @@ Every entry: threshold_value, unit, confidence, source, consequences, irreversib
 import json
 from pathlib import Path
 
-OUTPUT_PATH = Path("/Users/ekmelozdemir/earthloveunited.org/dis/climate-bifurcation-points.json")
+OUTPUT_PATH = Path("dis/climate-bifurcation-points.json")
 
 BIFURCATION_POINTS = {
     "metadata": {

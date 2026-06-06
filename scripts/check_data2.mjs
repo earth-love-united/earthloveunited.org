@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-const nodes = JSON.parse(readFileSync('/Users/ekmelozdemir/earthloveunited.org/data/pledge-nodes.json')).data;
+const nodes = JSON.parse(readFileSync(new URL('../data/pledge-nodes.json', import.meta.url))).data;
 console.log('Pledge nodes count:', nodes.length);
 console.log('First node keys:', Object.keys(nodes[0]));
 console.log('First node lat/lng:', nodes[0].lat, nodes[0].lng);

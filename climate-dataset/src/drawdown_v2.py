@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Project Drawdown Solutions Scraper v2
 Extracts all 80+ solutions with full descriptions.
@@ -13,7 +19,7 @@ import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-RAW_DIR = Path("/Users/ekmelozdemir/earthloveunited.org/climate-dataset/data/raw")
+RAW_DIR = Path("climate-dataset/data/raw")
 
 # All Project Drawdown solutions
 SOLUTIONS = [

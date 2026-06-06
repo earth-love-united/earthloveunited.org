@@ -1,3 +1,9 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Expanded Wikipedia Climate Article List v2.0
 500+ articles covering all major climate topics.
@@ -173,7 +179,7 @@ print(f"Total unique Wikipedia articles: {len(EXPANDED_UNIQUE)}")
 
 # Save the list
 import json
-output_path = Path("/Users/ekmelozdemir/earthloveunited.org/climate-dataset/config/expanded_wiki_articles.json")
+output_path = Path("climate-dataset/config/expanded_wiki_articles.json")
 output_path.parent.mkdir(parents=True, exist_ok=True)
 with open(output_path, 'w') as f:
     json.dump(EXPANDED_UNIQUE, f, indent=2)

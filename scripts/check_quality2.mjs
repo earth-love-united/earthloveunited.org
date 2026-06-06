@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-const nodes = JSON.parse(readFileSync('/Users/ekmelozdemir/earthloveunited.org/data/pledge-nodes.json')).data;
+const nodes = JSON.parse(readFileSync(new URL('../data/pledge-nodes.json', import.meta.url))).data;
 
 // Check the cw_ fields that were in the enriched parquet
 console.log('=== SAMPLE NODE (USA) ===');

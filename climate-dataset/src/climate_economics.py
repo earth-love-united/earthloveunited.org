@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Climate Economics & Policy Content Generator
 Creates structured content about climate economics, policy, and finance.
@@ -8,7 +14,7 @@ Sources: Wikipedia articles + structured data from official sources.
 import json
 from pathlib import Path
 
-RAW_DIR = Path("/Users/ekmelozdemir/earthloveunited.org/climate-dataset/data/raw")
+RAW_DIR = Path("climate-dataset/data/raw")
 
 # ─── Climate Economics & Policy Articles to Extract ───
 ARTICLES = [

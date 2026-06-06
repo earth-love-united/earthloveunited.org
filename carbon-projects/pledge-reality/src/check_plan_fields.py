@@ -1,6 +1,12 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 import pandas as pd
 
-path = '/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet'
+path = 'carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet'
 df = pd.read_parquet(path)
 
 # Check fields referenced in implementation plan
@@ -21,7 +27,7 @@ for f in plan_fields:
 
 # Also check the pledge-nodes.json fields
 import json
-with open('/Users/ekmelozdemir/earthloveunited.org/data/pledge-nodes.json') as f:
+with open('data/pledge-nodes.json') as f:
     nodes = json.load(f)
 
 print('\n=== PLEDGE-NODES.JSON FIELDS ===')

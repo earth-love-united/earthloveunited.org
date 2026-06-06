@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Phase 1: Fetch Solar Activity (IntCal20 Delta 14C)
 Downloads raw 14C data from intcal.org and outputs a clean CSV 
@@ -8,7 +14,7 @@ import os
 import pandas as pd
 import requests
 
-RAW_DIR = "/Users/ekmelozdemir/earthloveunited.org/holocene-bifurcation/data/raw"
+RAW_DIR = "holocene-bifurcation/data/raw"
 os.makedirs(RAW_DIR, exist_ok=True)
 
 # IntCal20 Carbon-14 Calibration Curve (Reimer et al. 2020)

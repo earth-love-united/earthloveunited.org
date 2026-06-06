@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-const nodes = JSON.parse(readFileSync('/Users/ekmelozdemir/earthloveunited.org/data/pledge-nodes.json')).data;
+const nodes = JSON.parse(readFileSync(new URL('../data/pledge-nodes.json', import.meta.url))).data;
 
 // Check if any nodes have baseline_year info
 const withBaseline = nodes.filter(n => n.baseline_year || n.cw_baseline_year);

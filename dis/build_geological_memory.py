@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Build GAIA's Geological Memory
 Structured geological history dataset for GAIA's knowledge base.
@@ -9,7 +15,7 @@ Every entry: time_range, event, carbon_context, temperature, atmosphere, gaia_vo
 import json
 from pathlib import Path
 
-OUTPUT_PATH = Path("/Users/ekmelozdemir/earthloveunited.org/dis/geological-memory.json")
+OUTPUT_PATH = Path("dis/geological-memory.json")
 
 MEMORY = {
     "metadata": {

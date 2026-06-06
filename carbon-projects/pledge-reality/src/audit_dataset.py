@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Comprehensive audit of the pledge_vs_reality_enriched dataset.
 Checks: schema, duplicates, NaN coverage, mathematical correctness,
@@ -8,7 +14,7 @@ import pandas as pd
 import numpy as np
 import os, sys
 
-OUT = '/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet'
+OUT = 'carbon-projects/pledge-reality/data/output/pledge_vs_reality_enriched.parquet'
 
 PASS = 0
 FAIL = 0

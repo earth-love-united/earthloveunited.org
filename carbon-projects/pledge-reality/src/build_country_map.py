@@ -1,10 +1,16 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 import pandas as pd
 import json
 
-gcb = pd.read_csv('/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/processed/gcb_emissions.csv')
-cw = pd.read_csv('/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/processed/cw_ndc_parsed.csv')
+gcb = pd.read_csv('carbon-projects/pledge-reality/data/processed/gcb_emissions.csv')
+cw = pd.read_csv('carbon-projects/pledge-reality/data/processed/cw_ndc_parsed.csv')
 
-with open('/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/raw/wb_pop.json') as f:
+with open('carbon-projects/pledge-reality/data/raw/wb_pop.json') as f:
     wb_data = json.load(f)
 wb_map = {r['country']['value']: r['countryiso3code'] for r in wb_data[1]} if len(wb_data) > 1 else {}
 
@@ -45,5 +51,5 @@ for c in gcb['country'].unique():
     else:
         iso_mapping[c] = '' # No ISO code
 
-pd.DataFrame(list(iso_mapping.items()), columns=['country', 'iso_code']).to_csv('/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/processed/country_iso_map.csv', index=False)
+pd.DataFrame(list(iso_mapping.items()), columns=['country', 'iso_code']).to_csv('carbon-projects/pledge-reality/data/processed/country_iso_map.csv', index=False)
 print("Created country_iso_map.csv")

@@ -1,6 +1,12 @@
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 import json
 
-with open('/Users/ekmelozdemir/earthloveunited.org/data/pledge-nodes.json') as f:
+with open('data/pledge-nodes.json') as f:
     nodes = json.load(f)
 
 sorted_nodes = sorted(nodes, key=lambda n: n.get('fossil_co2_mt') or 0, reverse=True)

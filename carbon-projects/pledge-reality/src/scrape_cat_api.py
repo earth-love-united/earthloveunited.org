@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import os as _os
+from pathlib import Path as _Path
+_REPO = _Path(__file__).resolve()
+while _REPO != _REPO.parent and not (_REPO / '.git').exists():
+    _REPO = _REPO.parent
+_os.chdir(_REPO)
 """
 Fetch ALL CAT country-emissions data from the data portal API.
 7926 records across 41 regions, including NDC targets, current policy projections,
@@ -9,7 +15,7 @@ import json
 import time
 import os
 
-OUTPUT = '/Users/ekmelozdemir/earthloveunited.org/carbon-projects/pledge-reality/data/raw/cat_emissions_full.json'
+OUTPUT = 'carbon-projects/pledge-reality/data/raw/cat_emissions_full.json'
 BASE_URL = "https://climateactiontracker.org/data-portal/api/country-emissions/records/"
 
 def fetch_all():
