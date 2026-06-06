@@ -68,7 +68,7 @@
 - Pruned 10 old scripts from climate-dataset/src/
 - Removed __pycache__ dirs
 - Updated .gitignore
-- Created REPO_MAP.md
+- Created `docs/operations/REPO_MAP.md`
 - Archive: /tmp/earthloveunited-archive/
 
 ## Known Issues

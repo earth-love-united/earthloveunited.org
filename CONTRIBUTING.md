@@ -39,7 +39,7 @@ written so that human and AI contributors operate by exactly the same rails.
 ## Setting up locally
 
 ```bash
-git clone https://github.com/<ORG>/earthloveunited.org.git
+git clone https://github.com/gke0op/earthloveunited.org.git
 cd earthloveunited.org
 
 # Re-fetch the vendored globe.gl

@@ -1,9 +1,9 @@
 /**
  * Service Worker — Earth Love United
- * Cache-first for static assets, network-first for data files.
- * Version bump (v4) forces cache refresh on deploy.
+ * Cache-first for static assets, network-first for HTML and data files.
+ * Version bump (v6) forces cache refresh on deploy.
  */
-const CACHE_NAME = 'elu-v4';
+const CACHE_NAME = 'elu-v6';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -35,6 +35,7 @@ const STATIC_ASSETS = [
   // JS — Data layer
   '/js/data.js',
   '/js/data-schema.js',
+  '/js/vendor/globe.gl.js',
   // JS — Core modules
   '/js/quiz.js',
   '/js/cycle.js',
@@ -131,6 +132,12 @@ self.addEventListener('fetch', (event) => {
 
   // Data files: network-first (always fresh)
   if (url.pathname.startsWith('/data/')) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // HTML documents should update immediately, with cached fallback offline.
+  if (request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(networkFirst(request));
     return;
   }

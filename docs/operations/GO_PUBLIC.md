@@ -105,7 +105,8 @@ Companion datasets on Hugging Face:
 - ego0op/earth-love-united-carbon-projects
 
 Built with Claude, Hermes, and Owl alpha. Co-development of code by humans
-and agents is documented in AGENTS.md and CONTRIBUTING.md.
+and agents is documented in [AGENTS.md](../../AGENTS.md) and
+[CONTRIBUTING.md](../../CONTRIBUTING.md).
 
 See CREDITS.md for full third-party attribution."
 
@@ -276,8 +277,8 @@ The globe should render. If it doesn't, `js/vendor/globe.gl.js` is gitignored
 After everything works:
 
 ```bash
-rm GO_PUBLIC.md         # this file
-git add GO_PUBLIC.md
+rm docs/operations/GO_PUBLIC.md         # this file
+git add docs/operations/GO_PUBLIC.md
 git commit -m "chore: remove launch playbook (job done)"
 git push
 ```

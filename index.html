@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <!-- ─── Identity & social preview ─────────────────────────────── -->
-<meta name="description" content="An interactive, audit-friendly platform for global climate action. Explore the planet's living systems, see real carbon-project data, and pledge your action to a transparent foundation.">
+<meta name="description" content="Earth Love United is an open climate-science foundation site: a living globe, GAIA climate guide, inspectable datasets, and restoration pathways.">
 <meta name="theme-color" content="#0a1628">
 <meta name="author" content="Earth Love United Foundation">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Earth Love United — One Earth">
-<meta property="og:description" content="A global foundation for climate action — open, auditable, and built bare-metal. Explore the planet's living systems and pledge your action.">
+<meta property="og:title" content="Earth Love United — Living Climate Atlas">
+<meta property="og:description" content="Explore a living climate atlas, ask GAIA, inspect the datasets, and find restoration pathways.">
 <meta property="og:url" content="https://earthloveunited.org">
 <meta property="og:site_name" content="Earth Love United">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Earth Love United — One Earth">
-<meta name="twitter:description" content="A global foundation for climate action — open, auditable, and built bare-metal.">
+<meta name="twitter:title" content="Earth Love United — Living Climate Atlas">
+<meta name="twitter:description" content="A living climate atlas with GAIA, open datasets, and restoration pathways.">
 
 <!-- ─── Favicon (inline SVG — no extra HTTP request) ──────────── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27%230a1628%27%2F%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%234ecdc4%27%20stroke-width%3D%271.5%27%2F%3E%3Cellipse%20cx%3D%2716%27%20cy%3D%2716%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3Cpath%20d%3D%27M2%2016%20Q8%2012%2016%2016%20T30%2016%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3C%2Fsvg%3E">
@@ -38,7 +38,7 @@
   img-src 'self' data: https://cdn.jsdelivr.net https://unpkg.com https://*.tile.openstreetmap.org;
   font-src 'self' https://fonts.gstatic.com;
 ">
-<title>Earth Love United — One Earth</title>
+<title>Earth Love United — Living Climate Atlas</title>
 
 <!-- PWA -->
 <link rel="manifest" href="/manifest.json">
@@ -53,18 +53,18 @@
 <!-- CSS Modules -->
 <!-- Critical above-fold: preload -->
 <link rel="preload" href="css/base.css" as="style" onload="this.rel='stylesheet'">
-<link rel="preload" href="css/layout.css" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="css/layout.css?v=mission002" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="css/components.css" as="style" onload="this.rel='stylesheet'">
 <noscript>
   <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/layout.css?v=mission002">
   <link rel="stylesheet" href="css/components.css">
 </noscript>
 
 <!-- Non-critical: deferred with media=print trick -->
 <link rel="stylesheet" href="css/widgets.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/responsive.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/carbon-clock.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/responsive.css?v=mission001b" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/carbon-clock.css?v=mission001b" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="css/delegation.css" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="css/pledge-wall.css" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="css/gaia-bubble.css" media="print" onload="this.media='all'">
@@ -74,8 +74,8 @@
 <link rel="stylesheet" href="css/registry-check.css" media="print" onload="this.media='all'">
 <noscript>
   <link rel="stylesheet" href="css/widgets.css">
-  <link rel="stylesheet" href="css/responsive.css">
-  <link rel="stylesheet" href="css/carbon-clock.css">
+  <link rel="stylesheet" href="css/responsive.css?v=mission001b">
+  <link rel="stylesheet" href="css/carbon-clock.css?v=mission001b">
   <link rel="stylesheet" href="css/delegation.css">
   <link rel="stylesheet" href="css/pledge-wall.css">
   <link rel="stylesheet" href="css/gaia-bubble.css">
@@ -88,8 +88,8 @@
 <!-- Print stylesheet -->
 <link rel="stylesheet" href="css/print.css" media="print">
 
-<!-- Globe.gl (Local) — lazy-loaded on enterSite() to avoid blocking first paint -->
-<!-- <script src="js/vendor/globe.gl.js"></script> removed — loaded dynamically -->
+<!-- Globe.gl (Local) — classic script load so the Living Globe is available at boot -->
+<script src="js/vendor/globe.gl.js"></script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
 </head>
 <body><a href="#main-content" class="skip-nav">Skip to main content</a>
@@ -99,8 +99,8 @@
   <div class="hero-inner">
     <div class="hero-stage">
       <!-- Main heading -->
-      <h1>One Earth</h1>
-      <p class="hero-value">A living atlas for climate science, restoration, and planetary intelligence.</p>
+      <h1>Earth Love United</h1>
+      <p class="hero-value">A public climate-science instrument for wonder, evidence, restoration, and planetary care.</p>
 
       <!-- Hero telemetry (carbon clock injected by JS; delegate insight kept out of the first viewport) -->
       <div id="hero-telemetry" class="hero-telemetry" aria-label="Planetary telemetry">
@@ -112,33 +112,30 @@
       <div class="hero-actions" aria-label="Arrival actions">
         <button class="enter-btn" data-action="enterGlobe">Enter the Living Globe</button>
         <div class="hero-secondary-actions" aria-label="Secondary arrival actions">
-          <a class="hero-link hero-link-quiet" href="gaia.html">Ask GAIA</a>
+          <a class="hero-link hero-link-quiet" href="gaia.html#trust-layer">Ask GAIA</a>
           <span class="hero-action-sep" aria-hidden="true">·</span>
           <button class="hero-link hero-link-quiet" data-action="viewDatasets">View Datasets</button>
         </div>
       </div>
     </div>
 
+    <div class="memorial">In memory of Jean Missinhoun (1972–2024) · From oil to earth</div>
+
     <div class="arrival-pathways" aria-label="Choose your path">
       <button class="arrival-route" data-action="startLearning">
-        <span class="route-kicker">Learn</span>
-        <strong>Globe + GAIA + climate missions</strong>
+        <span class="route-kicker">Wonder</span>
+        <strong>Begin with the science beneath the living globe</strong>
       </button>
-      <!-- TODO: Replace mailto with volunteer intake form when ready. -->
       <a class="arrival-route" href="mailto:hello@earthloveunited.org?subject=Volunteer%20Interview">
         <span class="route-kicker">Contribute</span>
-        <strong>Open datasets + volunteer pathway</strong>
+        <strong>Help audit datasets, stories, and field knowledge</strong>
       </a>
-      <!-- TODO: Replace mailto with booking link when scheduling is live. -->
       <a class="arrival-route" href="mailto:hello@earthloveunited.org?subject=Partner%20Meeting">
         <span class="route-kicker">Partner</span>
-        <strong>Carbon credits + restoration partnerships</strong>
+        <strong>Discuss restoration, finance, and transparent impact</strong>
       </a>
     </div>
   </div>
-
-  <!-- Memorial — subtle, at the very bottom -->
-  <div class="memorial">In memory of Jean Missinhoun (1972–2024) · From oil to earth</div>
 </div>
 
 <!-- ═══ HAMBURGER (mobile GLOBE_OVERLAY trigger) ═══ -->
@@ -157,7 +154,7 @@
       <path d="M7 18C5 16 4 13.5 6 10c1.5-2.5 4-3 5.5-2.8C13 7.4 14 8 14 9.5s-1 2-2 2.5c-1.5.7-2 2-1.5 3.5.3 1 1 2 2 2.5" stroke="#7be8d0" stroke-width="1.2" stroke-linecap="round"/>
       <defs><linearGradient id="lg" x1="4" y1="4" x2="22" y2="22"><stop stop-color="#7be8d0"/><stop offset="1" stop-color="#2a8fa3"/></linearGradient></defs>
     </svg>
-    Earth Love United <span>·</span> One Earth
+    Earth Love United <span>·</span> Living Climate Atlas
   </div>
   <div class="stats">
     <div class="stat-block">
@@ -168,7 +165,7 @@
       <div class="stat-label">Your Restoration</div>
       <div class="stat-value positive" id="user-total">0 t CO₂</div>
     </div>
-    <a href="gaia.html" class="gaia-link" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;text-decoration:none;transition:all .2s;margin-left:8px">
+    <a href="gaia.html#trust-layer" class="gaia-link" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;text-decoration:none;transition:all .2s;margin-left:8px">
       <span style="font-size:14px">🌍</span>
       <span style="font-size:12px;color:var(--teal);letter-spacing:.5px">Talk to GAIA</span>
     </a>
@@ -239,12 +236,12 @@
 <!-- ═══ SECTIONS ═══ -->
 <div class="sections" id="main-content">
 
-  <!-- QUIZ -->
+  <!-- WONDER -->
   <div class="section" id="quiz">
     <div class="card reveal">
-      <div class="section-label">Warm Up</div>
-      <div class="section-title">What Do You Think?</div>
-      <div class="section-body">Before we dive in — let's test what you already know. No wrong answers, just intuition.</div>
+      <div class="section-label">Wonder</div>
+      <div class="section-title">Begin with a Question</div>
+      <div class="section-body">Climate science starts with disciplined curiosity: what moves carbon, what stores it, and what changes when land is damaged or restored?</div>
       <div class="quiz-widget" id="quiz-widget">
         <div class="quiz-question" id="q-text"></div>
         <div class="quiz-options" id="q-options"></div>
@@ -254,14 +251,41 @@
     </div>
   </div>
 
+  <!-- ACADEMY / VISION -->
+  <div class="section" id="academy">
+    <div class="card reveal">
+      <div class="section-label">Open Planetary Knowledge Commons</div>
+      <div class="section-title">A Public Instrument, Not a Closed Platform</div>
+      <div class="section-body">Earth Love United connects five layers: a living atlas, a climate-science guide, an audit trail, restoration scenarios, and a pathway for people and institutions to help.</div>
+      <div class="instrument-layers" aria-label="Earth Love United public instrument layers">
+        <div class="instrument-layer">
+          <span class="instrument-index">01</span>
+          <div><strong>Living Globe</strong><p>Project sites, country pledges, NDVI context, and climate events share one planetary surface.</p></div>
+        </div>
+        <div class="instrument-layer">
+          <span class="instrument-index">02</span>
+          <div><strong>GAIA</strong><p>A grounded guide that answers from climate sources and points back toward inspectable evidence.</p></div>
+        </div>
+        <div class="instrument-layer">
+          <span class="instrument-index">03</span>
+          <div><strong>Dataset Audit</strong><p>Open files and public Hugging Face datasets make the knowledge layer reviewable.</p></div>
+        </div>
+        <div class="instrument-layer">
+          <span class="instrument-index">04</span>
+          <div><strong>Action Layer</strong><p>Volunteers, researchers, communities, and partners turn evidence into restoration work.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- CARBON CYCLE -->
   <div class="section" id="carbon-cycle">
     <div class="card reveal">
-      <div class="section-label">Part 1 — The Carbon Cycle</div>
+      <div class="section-label">Climate Science Primer</div>
       <div class="section-title">Where Does Carbon Go?</div>
-      <div class="section-body">Carbon moves between five major reservoirs. Tap each one to see how much carbon it holds and how it moves.</div>
+      <div class="section-body">Carbon moves through the atmosphere, oceans, vegetation, soils, and human systems. The problem is not that carbon moves; the problem is that human activity has pushed the exchange out of balance.</div>
       <div class="cycle-widget">
-        <div class="cycle-title">The Carbon Cycle — Tap to explore</div>
+        <div class="cycle-title">The Carbon Cycle</div>
         <div class="cycle-flow">
           <div class="cycle-node atmosphere" data-action="showCycle" data-action-args='["atmosphere"]'>🌡️ Atmosphere</div>
           <span class="cycle-arrow">⇄</span>
@@ -281,24 +305,24 @@
   <!-- THE IMBALANCE -->
   <div class="section" id="imbalance">
     <div class="card reveal">
-      <div class="section-label">Part 2 — The Imbalance</div>
-      <div class="section-title">Nature Can't Keep Up</div>
-      <div class="section-body">Nature absorbs about 123 Gt of CO₂ per year. But we emit about 143 Gt. That gap — roughly <strong style="color:var(--warn)">20 Gt per year</strong> — is the problem. It accumulates. Every single year.</div>
+      <div class="section-label">Climate Science Primer</div>
+      <div class="section-title">The Annual Imbalance</div>
+      <div class="section-body">Current global flows are uneven: natural sinks absorb a large share of human emissions, but not all of them. The remaining gap, roughly <strong style="color:var(--warn)">20 Gt CO₂ per year</strong> in this site model, accumulates in the atmosphere and ocean.</div>
       <div class="big-counter" id="imbalance-counters">
         <div class="counter-box"><div class="counter-num leaf" id="counter-absorb">0</div><div class="counter-label">Gt absorbed/yr</div></div>
         <div class="counter-box"><div class="counter-num warn" id="counter-emit">0</div><div class="counter-label">Gt emitted/yr</div></div>
         <div class="counter-box"><div class="counter-num teal" id="counter-gap">0</div><div class="counter-label">Gt excess/yr</div></div>
       </div>
-      <div class="section-body" style="margin-top:24px">That 20 Gt excess is like adding <strong style="color:var(--warn)">4.3 billion cars</strong> to the road every year. It traps heat. It acidifies oceans. It disrupts every ecosystem on Earth.</div>
+      <div class="section-body science-note">The exact number changes with inventories and methods. The durable lesson is simpler: climate stability depends on reducing fossil emissions while protecting and restoring the sinks that still carry part of the burden.</div>
     </div>
   </div>
 
   <!-- BIOMES -->
   <div class="section" id="biomes">
     <div class="card reveal">
-      <div class="section-label">Part 3 — Biomes</div>
+      <div class="section-label">Climate Science Primer</div>
       <div class="section-title">Not All Green Is Equal</div>
-      <div class="section-body">A forest, a mangrove, a grassland — they all look green. But their carbon storage differs by orders of magnitude. Tap each biome to compare.</div>
+      <div class="section-body">A forest, a mangrove, a grassland, and a plantation can all appear green from orbit. Their carbon stocks, recovery times, water relationships, and biodiversity value are very different.</div>
       <div class="biome-cards" id="biome-cards"></div>
       <div class="biome-detail" id="biome-detail"></div>
     </div>
@@ -307,23 +331,100 @@
   <!-- COMPARE -->
   <div class="section" id="compare">
     <div class="card reveal">
-      <div class="section-label">Part 4 — Compare</div>
+      <div class="section-label">Climate Science Primer</div>
       <div class="section-title">Carbon Density (tC/ha)</div>
-      <div class="section-body">Watch how different ecosystems stack up. This is why restoring the right biome in the right place matters so much.</div>
+      <div class="section-body">Restoration is not a generic tree count. It is a place-based decision about carbon, water, biodiversity, land tenure, and community benefit.</div>
       <div class="compare-bars" id="compare-bars"></div>
     </div>
   </div>
 
-  <!-- SCENARIO BUILDER -->
+  <!-- LIVING GLOBE -->
+  <div class="section" id="projects">
+    <div class="card reveal">
+      <div class="section-label">Living Globe</div>
+      <div class="section-title">The Atlas Becomes Specific</div>
+      <div class="section-body">The globe connects restoration sites with climate context: wildfire recovery in Antalya, multilayer afforestation in Sri Lanka, mangrove recovery in Benin, and peatland lessons from Borneo.</div>
+      <div class="sites-grid" id="sites-grid"></div>
+    </div>
+  </div>
+
+  <!-- GAIA -->
+  <div class="section" id="gaia-guide">
+    <div class="card reveal">
+      <div class="section-label">GAIA</div>
+      <div class="section-title">A Guide for Asking Better Questions</div>
+      <div class="section-body">GAIA is not an oracle and not a substitute for scientific review. It is a climate-science guide designed to translate sources, surface uncertainty, and help visitors move from curiosity to evidence.</div>
+      <div class="gaia-callout">
+        <div>
+          <strong>Ask about carbon cycles, country emissions, restoration sites, source data, or scenario math.</strong>
+          <p>When the answer matters, follow the trail into the datasets and source documents.</p>
+        </div>
+        <a class="inline-cta" href="gaia.html#trust-layer">Ask GAIA</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATASETS -->
+  <div class="section" id="datasets">
+    <div class="card reveal">
+      <div class="section-label">Dataset Audit</div>
+      <div class="section-title">Inspect the Working Commons</div>
+      <div class="section-body">A climate foundation earns trust by letting people inspect the machinery. The site source, Hugging Face datasets, and raw runtime files are public so researchers, partners, volunteers, and critics can trace what the interface claims.</div>
+      <div class="dataset-platforms">
+        <a class="dataset-platform" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">
+          <strong>GitHub source</strong>
+          <span>Classic HTML, CSS, and JavaScript. No build step, no hidden bundle.</span>
+        </a>
+        <a class="dataset-platform" href="https://huggingface.co/ego0op" target="_blank" rel="noopener">
+          <strong>Hugging Face commons</strong>
+          <span>Public dataset profile for Earth Love United climate and carbon datasets.</span>
+        </a>
+      </div>
+      <div class="dataset-source-list" aria-label="Published Hugging Face datasets">
+        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge" target="_blank" rel="noopener">
+          <span class="dataset-status">Production · derived educational data</span>
+          <strong>Climate Knowledge Dataset</strong>
+          <em>Curated climate-science chunks for GAIA retrieval, education, and public source trails.</em>
+        </a>
+        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/carbon-projects-unified" target="_blank" rel="noopener">
+          <span class="dataset-status">Review · processed audit data</span>
+          <strong>Carbon Projects Unified</strong>
+          <em>Normalized registry/project records for comparison and carbon-project audit workflows.</em>
+        </a>
+        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-carbon-projects" target="_blank" rel="noopener">
+          <span class="dataset-status">Experimental · ELU release data</span>
+          <strong>Earth Love United Carbon Projects</strong>
+          <em>Foundation release layer for transparent review, future validation, and partner discussion.</em>
+        </a>
+      </div>
+      <div class="gaia-callout">
+        <div>
+          <strong>Audit path: question → GAIA orientation → dataset record → restoration assumption → human review.</strong>
+          <p>Use GAIA to ask what source family or dataset should be inspected before treating a claim as decision-grade.</p>
+        </div>
+        <a class="inline-cta" href="gaia.html#trust-layer">Open Trust Layer</a>
+      </div>
+      <div class="raw-data-label">Raw audit links</div>
+      <div class="dataset-links">
+        <a href="data/sites.json" target="_blank" rel="noopener">Project Sites JSON</a>
+        <a href="data/biomes.json" target="_blank" rel="noopener">Biome Carbon JSON</a>
+        <a href="data/pledge-nodes.json" target="_blank" rel="noopener">Country Pledges JSON</a>
+        <a href="data/climate-events.json" target="_blank" rel="noopener">Climate Events JSON</a>
+        <a href="data/events-core.csv" target="_blank" rel="noopener">Events CSV</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESTORATION ACTION -->
   <div class="section" id="scenario">
     <div class="card reveal">
-      <div class="section-label">Part 5 — Your Move</div>
-      <div class="section-title">Build a Restoration Scenario</div>
-      <div class="section-body">Choose a site, pick a restoration strategy, set the area. See what happens.</div>
+      <div class="section-label">Restoration Action</div>
+      <div class="section-title">Build a Scenario</div>
+      <div class="section-body">Choose a site, compare the current biome with a restoration pathway, and estimate carbon consequences over time. Treat the result as a transparent model, not a promise.</div>
       <div class="scenario-builder">
         <div class="sb-step"><div class="sb-step-label"><span class="step-num">1</span> Pick a site</div><div class="sb-options" id="sb-sites"></div></div>
-        <div class="sb-step"><div class="sb-step-label"><span class="step-num">2</span> What's there now</div><div class="sb-options" id="sb-from"></div></div>
-        <div class="sb-step"><div class="sb-step-label"><span class="step-num">3</span> Restore to</div><div class="sb-options" id="sb-to"></div></div>
+        <div class="sb-step"><div class="sb-step-label"><span class="step-num">2</span> Current biome</div><div class="sb-options" id="sb-from"></div></div>
+        <div class="sb-step"><div class="sb-step-label"><span class="step-num">3</span> Restoration pathway</div><div class="sb-options" id="sb-to"></div></div>
         <div class="sb-step">
           <div class="sb-step-label"><span class="step-num">4</span> Area (hectares)</div>
           <div style="display:flex;align-items:center;gap:16px">
@@ -340,70 +441,29 @@
     </div>
   </div>
 
-  <!-- PROJECTS -->
-  <div class="section" id="projects">
-    <div class="card reveal">
-      <div class="section-label">Part 6 — Action</div>
-      <div class="section-title">What We're Doing</div>
-      <div class="section-body">Earth Love United works on the ground — restoring degraded ecosystems across the tropics and Mediterranean. Click a project to explore it on the globe.</div>
-      <div class="sites-grid" id="sites-grid"></div>
-    </div>
-  </div>
-
-  <!-- DATASETS -->
-  <div class="section" id="datasets">
-    <div class="card reveal">
-      <div class="section-label">Open Commons</div>
-      <div class="section-title">Inspect the Working Datasets</div>
-      <div class="section-body">The open commons layer turns project sites, biomes, country pledges, and climate events into reusable public knowledge. Curated dataset hubs will sit beside the raw files so visitors can explore the story first and audit the source when needed.</div>
-      <div class="dataset-platforms">
-        <!-- TODO: Replace placeholder with public Hugging Face dataset collection URL when published. -->
-        <div class="dataset-platform dataset-platform-pending" aria-label="Hugging Face datasets coming soon">
-          <strong>Hugging Face datasets</strong>
-          <span>Public collection placeholder</span>
-        </div>
-        <!-- TODO: Replace placeholder with public GitHub source URL when repository link is confirmed. -->
-        <div class="dataset-platform dataset-platform-pending" aria-label="GitHub source coming soon">
-          <strong>GitHub source</strong>
-          <span>Source repository placeholder</span>
-        </div>
-      </div>
-      <div class="raw-data-label">Raw audit links</div>
-      <div class="dataset-links">
-        <a href="data/sites.json" target="_blank" rel="noopener">Project Sites JSON</a>
-        <a href="data/biomes.json" target="_blank" rel="noopener">Biome Carbon JSON</a>
-        <a href="data/pledge-nodes.json" target="_blank" rel="noopener">Country Pledges JSON</a>
-        <a href="data/climate-events.json" target="_blank" rel="noopener">Climate Events JSON</a>
-        <a href="data/events-core.csv" target="_blank" rel="noopener">Events CSV</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- TOGETHER -->
+  <!-- VOLUNTEER / PARTNER -->
   <div class="section" id="together">
     <div class="card reveal">
-      <div class="section-label">Part 7 — Together</div>
-      <div class="section-title">What We Can Do Together</div>
-      <div class="section-body">The climate crisis isn't solved by one organization. It's solved by millions of people making restoration possible.</div>
+      <div class="section-label">Volunteer / Partner</div>
+      <div class="section-title">Turn the Commons into Work</div>
+      <div class="section-body">This foundation needs careful people: scientists, data reviewers, storytellers, educators, field partners, and institutions willing to make restoration visible and accountable.</div>
       <div class="cta-grid">
         <div class="cta-card">
           <div class="cta-icon">🌍</div>
           <div class="cta-title">Explore</div>
-          <div class="cta-body">Start with the globe, climate science, and guided Academy missions as they come online.</div>
+          <div class="cta-body">Use the globe and GAIA to understand the foundation's climate-science layer before contacting the team.</div>
           <button class="cta-btn" data-action="enterGlobe">Explore Globe</button>
         </div>
         <div class="cta-card">
           <div class="cta-icon">🤝</div>
           <div class="cta-title">Volunteer / Interview</div>
-          <div class="cta-body">Help shape the open knowledge commons, datasets, curriculum, interviews, and field storytelling.</div>
-          <!-- TODO: Replace mailto with volunteer intake form when ready. -->
+          <div class="cta-body">Help review datasets, write learning material, interview field partners, or improve public evidence trails.</div>
           <a href="mailto:hello@earthloveunited.org?subject=Volunteer%20Interview" class="cta-btn">Volunteer</a>
         </div>
         <div class="cta-card">
           <div class="cta-icon">🌱</div>
           <div class="cta-title">Partner / Book Meeting</div>
-          <div class="cta-body">Discuss carbon credits, restoration projects, institutional partnerships, and transparent impact data.</div>
-          <!-- TODO: Replace mailto with booking link when scheduling is live. -->
+          <div class="cta-body">Discuss restoration sites, transparent monitoring, climate education, and accountable carbon-project data.</div>
           <a href="mailto:hello@earthloveunited.org?subject=Partner%20Meeting" class="cta-btn">Book Meeting</a>
         </div>
       </div>
@@ -415,13 +475,14 @@
     <div class="footer-logo">Earth Love United</div>
     <div class="footer-tagline">Restoring ecosystems. Rebalancing carbon. Reuniting with Earth.</div>
     <div class="footer-links">
-      <a href="#quiz">Quiz</a>
-      <a href="#carbon-cycle">Carbon Cycle</a>
-      <a href="#biomes">Biomes</a>
-      <a href="#scenario">Scenario Builder</a>
-      <a href="#projects">Our Projects</a>
-      <a href="#datasets">Datasets</a>
-      <a href="#together">Get Involved</a>
+      <a href="#quiz">Wonder</a>
+      <a href="#academy">Academy</a>
+      <a href="#carbon-cycle">Science</a>
+      <a href="#projects">Living Globe</a>
+      <a href="#gaia-guide">GAIA</a>
+      <a href="#datasets">Dataset Audit</a>
+      <a href="#scenario">Restoration</a>
+      <a href="#together">Volunteer / Partner</a>
       <a href="mailto:hello@earthloveunited.org">Contact</a>
     </div>
     <div class="footer-copy">© 2026 Earth Love United Foundation · earthloveunited.org</div>
@@ -466,9 +527,9 @@
 <!-- Globe Overlay System — Phase 4 -->
 <script src="js/globe-overlay.js?v=5"></script>
 <script src="js/site-panel.js"></script>
-<script src="js/carbon-clock.js"></script>
+<script src="js/carbon-clock.js?v=mission001b"></script>
 <script src="js/country-data.js"></script>
-<script src="js/delegation.js"></script>
+<script src="js/delegation.js?v=mission001"></script>
 <script src="js/pledge-wall.js"></script>
 <script src="js/gaia-nodes.js"></script>
 <!-- GAIA Knowledge Engine (loaded on demand) -->
@@ -480,7 +541,7 @@
 <script src="js/registry-check.js"></script>
 <script src="js/module-validator.js"></script>
 <script src="js/bridge-client.js"></script>
-<script src="js/app.js"></script>
+<script src="js/app.js?v=mission001"></script>
 
 <!-- Dev Tools — loaded only on localhost -->
 <script>
@@ -490,7 +551,7 @@
   if (h !== 'localhost' && h !== '127.0.0.1' && h !== '::1') return;
   var tools = [
     'tools/smoke-test.js',
-    'tools/stack-lint.js',
+    'tools/stack-lint.js?v=mission001',
     'tools/event-tracer.js',
     'tools/page-state.js',
     'tools/impact-analyzer.js',

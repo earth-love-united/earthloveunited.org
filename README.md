@@ -20,7 +20,7 @@ is nothing in here we wouldn't want a partner, donor, or researcher to read.
 ## Quick start
 
 ```bash
-git clone https://github.com/<ORG>/earthloveunited.org.git
+git clone https://github.com/gke0op/earthloveunited.org.git
 cd earthloveunited.org
 
 # Re-fetch the vendored globe.gl (gitignored — see CREDITS.md)
@@ -85,7 +85,9 @@ earthloveunited.org/
 ├── css/                    Design tokens, layout, components
 ├── data/                   Small, fast-loading JSON for the site
 ├── dis/                    Gaia knowledge index + climate facts (runtime data)
-├── docs/                   Architecture & research notes
+├── docs/                   Architecture, research, operations, and agent notes
+│   ├── operations/         Launch playbooks, mission plans, repo maps
+│   └── agents/             Agent-specific notes and migration landing area
 ├── ARCHITECTURE.md         Module map, z-index stack, event flows
 ├── AGENTS.md               Contributor & AI-agent conventions
 ├── CREDITS.md              Full third-party attribution
@@ -97,14 +99,13 @@ earthloveunited.org/
 
 ## Datasets
 
-We publish three open climate datasets on Hugging Face under CC BY 4.0, with
-**286 downloads** at the time of going public:
+We publish three open climate datasets on Hugging Face under CC BY 4.0:
 
-| Dataset | Rows | Downloads |
+| Dataset | Rows | Purpose |
 |---|---|---|
-| [`earth-love-united-climate-knowledge`](https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge) | ~10,100 | 158 |
-| [`carbon-projects-unified`](https://huggingface.co/datasets/ego0op/carbon-projects-unified) | ~23,300 | 100 |
-| [`earth-love-united-carbon-projects`](https://huggingface.co/datasets/ego0op/earth-love-united-carbon-projects) | ~23,300 | 28 |
+| [`earth-love-united-climate-knowledge`](https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge) | ~10,100 | Grounded GAIA climate knowledge |
+| [`carbon-projects-unified`](https://huggingface.co/datasets/ego0op/carbon-projects-unified) | ~23,300 | Unified carbon-project records |
+| [`earth-love-united-carbon-projects`](https://huggingface.co/datasets/ego0op/earth-love-united-carbon-projects) | ~23,300 | Earth Love United carbon-project release |
 
 These are the corpus behind Gaia's grounded answers. Built from IPCC AR6,
 Project Drawdown, US EPA, NOAA GML, Our World in Data, Wikipedia, and arXiv.
@@ -136,6 +137,7 @@ the browser console on any page:
 | `Tracer.start()` / `.report()` | Log all cross-module calls during a session |
 | `Impact.check('globe.js')` | Blast radius — who calls it, what breaks |
 | `DepGraph.mermaid()` | Dependency graph as Mermaid diagram |
+| `node tools/check-public-copy.js` | Static scan for unresolved draft copy and dummy links |
 
 The boot validator (`js/module-validator.js`) runs automatically at page load
 and reports `✅ [BOOT] N/N modules loaded` in the console.

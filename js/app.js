@@ -253,6 +253,35 @@ const App = {
     document.addEventListener('click', _interact);
     document.addEventListener('scroll', _interact, { passive: true });
     document.addEventListener('keydown', _interact);
+
+    this._bindStaticActions();
+  },
+
+  _bindStaticActions() {
+    const handlers = {
+      enterGlobe: () => this.enterGlobe(),
+      startLearning: () => this.startLearning(),
+      viewDatasets: () => this.viewDatasets(),
+      toggleGlobeOverlay: () => toggleGlobeOverlay(),
+      showCycle: (key) => safeCall('Cycle', 'show', key),
+    };
+
+    document.querySelectorAll('[data-action]').forEach((el) => {
+      const action = el.getAttribute('data-action');
+      if (!handlers[action] || el.dataset.appActionBound === 'true') return;
+      el.dataset.appActionBound = 'true';
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let args = [];
+        const argsAttr = el.getAttribute('data-action-args');
+        if (argsAttr) {
+          try { args = JSON.parse(argsAttr); } catch (_) { args = [argsAttr]; }
+        }
+        handlers[action](...args);
+      });
+    });
   },
 
   _enterBase() {

@@ -34,18 +34,18 @@ source_datasets:
 
 # 🌍 Earth Love United Climate Knowledge Dataset
 
-> **The most comprehensive open climate science knowledge dataset ever curated.**
-> Built for RAG, AI assistants, and climate education.
+> An open climate-science knowledge dataset curated for RAG, AI assistants,
+> public education, and source-traceable climate inquiry.
 
 ## Dataset Description
 
 This dataset contains **7,260 chunks of authoritative climate science knowledge**
 sourced from the world's most trusted climate institutions:
 
-- **IPCC AR6** (5 reports) — the gold standard of climate science
+- **IPCC AR6** (5 reports) — major international climate assessments
 - **Wikipedia** (119 climate articles) — broad encyclopedic coverage
-- **arXiv** (4,092 climate papers) — cutting-edge research
-- **Project Drawdown** (24 solutions) — the world's best climate solutions catalog
+- **arXiv** (4,092 climate papers) — research abstracts and paper metadata
+- **Project Drawdown** (24 solutions) — structured climate solutions material
 - **US EPA** (8 explainers) — plain-language government explanations
 - **Earth Love United** (83 sections) — original research synthesis
 

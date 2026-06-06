@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <!-- ─── Identity & social preview ─────────────────────────────── -->
-<meta name="description" content="Gaia — a grounded climate-science assistant built on IPCC, Drawdown, NOAA, and Project Drawdown data. Part of the Earth Love United Foundation.">
+<meta name="description" content="GAIA is Earth Love United's climate-science guide and audit assistant: ask questions, inspect sources, and move from evidence toward restoration action.">
 <meta name="theme-color" content="#0a1628">
 <meta name="author" content="Earth Love United Foundation">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="GAIA — Earth Love United">
-<meta property="og:description" content="A grounded climate-science assistant built on IPCC, Drawdown, NOAA, and Project Drawdown data.">
+<meta property="og:description" content="A grounded climate-science guide and audit assistant for sources, datasets, uncertainty, and restoration pathways.">
 <meta property="og:url" content="https://earthloveunited.org/gaia.html">
 <meta property="og:site_name" content="Earth Love United">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="GAIA — Earth Love United">
-<meta name="twitter:description" content="A grounded climate-science assistant for the climate emergency.">
+<meta name="twitter:description" content="A grounded climate-science guide for sources, datasets, uncertainty, and restoration pathways.">
 
 <!-- ─── Favicon (inline SVG — no extra HTTP request) ──────────── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27%230a1628%27%2F%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%234ecdc4%27%20stroke-width%3D%271.5%27%2F%3E%3Cellipse%20cx%3D%2716%27%20cy%3D%2716%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3Cpath%20d%3D%27M2%2016%20Q8%2012%2016%2016%20T30%2016%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3C%2Fsvg%3E">
@@ -115,7 +115,10 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
 #messages::-webkit-scrollbar-track{background:transparent}
 #messages::-webkit-scrollbar-thumb{background:rgba(78,205,196,.12);border-radius:2px}
 
-#welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;z-index:1;position:relative}
+#welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px;text-align:center;z-index:1;position:relative;overflow-y:auto}
+#welcome::-webkit-scrollbar{width:4px}
+#welcome::-webkit-scrollbar-track{background:transparent}
+#welcome::-webkit-scrollbar-thumb{background:rgba(78,205,196,.12);border-radius:2px}
 #welcome.hidden{display:none}
 .gaia-avatar{width:64px;height:64px;border-radius:50%;margin-bottom:14px;background:linear-gradient(135deg,rgba(78,205,196,.15),rgba(91,191,114,.1));border:1px solid rgba(78,205,196,.2);display:flex;align-items:center;justify-content:center;position:relative;animation:pulse-glow 3s infinite}
 .gaia-avatar .avatar-inner{font-size:28px;animation:breathe 4s infinite}
@@ -130,6 +133,22 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
 .suggestion-card .sc-icon{font-size:14px;margin-bottom:4px}
 .suggestion-card .sc-title{font-size:11px;color:var(--text);font-weight:500;margin-bottom:2px}
 .suggestion-card .sc-desc{font-size:9px;color:var(--text3);line-height:1.4}
+.trust-panel{width:min(760px,100%);margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.05)}
+.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.trust-card{padding:10px 11px;background:rgba(255,255,255,.02);border:1px solid rgba(78,205,196,.08);border-radius:7px;text-align:left}
+.trust-card .tc-kicker{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.trust-card strong{display:block;color:var(--text);font-size:11px;line-height:1.35;margin-bottom:3px}
+.trust-card p{color:var(--text3);font-size:9px;line-height:1.45}
+.provenance-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.provenance-card{padding:10px 11px;background:rgba(78,205,196,.035);border:1px solid rgba(78,205,196,.1);border-radius:7px;text-align:left;text-decoration:none;transition:all .2s}
+.provenance-card:hover{border-color:rgba(78,205,196,.28);background:rgba(78,205,196,.07);transform:translateY(-1px)}
+.provenance-card span{display:block;font-family:var(--mono);font-size:8px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.provenance-card strong{display:block;color:var(--mint);font-size:11px;line-height:1.35;margin-bottom:3px}
+.provenance-card em{display:block;color:var(--text3);font-style:normal;font-size:9px;line-height:1.45}
+.audit-links{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.audit-link{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:7px 10px;border:1px solid rgba(78,205,196,.14);border-radius:5px;color:var(--teal);font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;text-decoration:none}
+.audit-link:hover{background:rgba(78,205,196,.08)}
+.source-note{margin-top:8px;color:var(--text3);font-size:9px;line-height:1.5}
 
 .msg{display:flex;gap:8px;animation:fadeUp .3s ease-out}
 .msg.user{flex-direction:row-reverse}
@@ -215,13 +234,14 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
 #demo-banner .demo-close{position:absolute;right:12px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px}
 
 @media(max-width:1024px){#right-panel{position:absolute;right:0;top:0;bottom:0;z-index:20}}
-@media(max-width:768px){#sidebar{position:absolute;left:0;top:0;bottom:0;z-index:20}.suggestion-grid{grid-template-columns:1fr}.msg-content{max-width:90%}#messages{padding:10px}}
+@media(max-width:1024px){.trust-grid,.provenance-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){#sidebar{position:absolute;left:0;top:0;bottom:0;z-index:20}.suggestion-grid,.trust-grid,.provenance-row{grid-template-columns:1fr}.msg-content{max-width:90%}#messages{padding:10px}}
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
 </head>
 <body><a href="#main-content" class="skip-nav">Skip to main content</a>
 
-<div id="demo-banner"><span class="demo-badge">COP31 Demo</span> GAIA is running in demo mode — connected to live climate data <button class="demo-close" data-action="hideDemoBanner">✕</button></div>
+<div id="demo-banner"><span class="demo-badge">Audit Mode</span> GAIA answers should be checked against sources, datasets, and restoration context. <button class="demo-close" data-action="hideDemoBanner">✕</button></div>
 
 <div id="header">
   <div class="brand">
@@ -238,6 +258,7 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
     <button class="hdr-btn" id="voice-toggle-btn" data-action="toggleVoice" title="Toggle GAIA voice">🔇 Voice</button>
     <button class="hdr-btn" data-action="toggleSidebar">☰ Topics</button>
     <button class="hdr-btn" data-action="toggleSandbox">🧪 Sandbox</button>
+    <a class="hdr-btn" href="#trust-layer" style="text-decoration:none;display:flex;align-items:center">Source Audit</a>
     <button class="hdr-btn" data-action="startDemoMode">🎤 Demo</button>
     <button class="hdr-btn" id="api-key-btn" data-action="GaiaKeyGate.openModal" title="Enter OpenRouter API key to unlock full GAIA intelligence">🔑 API Key</button>
     <a href="index.html" class="hdr-btn" style="text-decoration:none;display:flex;align-items:center">🌍 Site</a>
@@ -279,6 +300,13 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
       <button class="topic-btn" data-action="askGaia" data-action-args='["How can I get involved or donate?"]'><span class="t-icon">🤝</span><span>Get Involved</span></button>
       <button class="topic-btn" data-action="askGaia" data-action-args='["What data sources do you use?"]'><span class="t-icon">📚</span><span>Data Sources</span></button>
     </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Source & Audit</div>
+      <button class="topic-btn" data-action="askGaia" data-action-args='["Explain your limits, source trail, and uncertainty rules."]'><span class="t-icon">🧭</span><span>GAIA Limits</span></button>
+      <a class="topic-btn" href="index.html#datasets" style="text-decoration:none"><span class="t-icon">🔎</span><span>Dataset Audit</span></a>
+      <a class="topic-btn" href="https://huggingface.co/ego0op" target="_blank" rel="noopener" style="text-decoration:none"><span class="t-icon">🤗</span><span>Hugging Face</span></a>
+      <a class="topic-btn" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener" style="text-decoration:none"><span class="t-icon">⌘</span><span>GitHub Source</span></a>
+    </div>
     <div class="sidebar-section" id="quest-panel" style="display:none;">
       <div class="sidebar-label">Your Quests</div>
       <div id="quest-list" style="display:flex;flex-direction:column;gap:4px;"></div>
@@ -290,20 +318,68 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
     <div id="welcome">
       <div class="gaia-avatar"><div class="avatar-ring"></div><div class="avatar-inner">🌍</div></div>
       <h1>I'm GAIA</h1>
-      <div class="subtitle">Your guide to Earth's restoration</div>
-      <div class="tagline">"The Earth does not belong to us. We belong to the Earth."</div>
+      <div class="subtitle">Climate-science guide and audit assistant</div>
+      <div class="tagline">Ask a question. Inspect the evidence trail. Treat uncertainty as part of the answer.</div>
       <div class="suggestion-grid">
         <div class="suggestion-card" data-action="askGaia" data-action-args='["Tell me about all your restoration projects"]'><div class="sc-icon">🌍</div><div class="sc-title">Explore Projects</div><div class="sc-desc">Sri Lanka, Turkey, Benin, Borneo</div></div>
         <div class="suggestion-card" data-action="askGaia" data-action-args='["What is the current CO2 level?"]'><div class="sc-icon">🌡️</div><div class="sc-title">Live Climate Data</div><div class="sc-desc">Real-time CO2, emissions, temperature</div></div>
         <div class="suggestion-card" data-action="askGaia" data-action-args='["Calculate: restore 1000 hectares of mangrove"]'><div class="sc-icon">🧮</div><div class="sc-title">Carbon Calculator</div><div class="sc-desc">Run restoration scenarios</div></div>
         <div class="suggestion-card" data-action="askGaia" data-action-args='["Give me the global outlook"]'><div class="sc-icon">🌐</div><div class="sc-title">Global Outlook</div><div class="sc-desc">Live CO₂, emissions, budget, market</div></div>
         <div class="suggestion-card" data-action="askGaia" data-action-args='["What are climate tipping points?"]'><div class="sc-icon">⚠️</div><div class="sc-title">Tipping Points</div><div class="sc-desc">Irreversible thresholds we're approaching</div></div>
+        <div class="suggestion-card" data-action="askGaia" data-action-args='["What data sources do you use, and how should I audit your answer?"]'><div class="sc-icon">📚</div><div class="sc-title">Source Trail</div><div class="sc-desc">Move from answer to dataset to source</div></div>
+      </div>
+      <div class="trust-panel" id="trust-layer">
+        <div class="trust-grid" aria-label="GAIA trust and limitation notes">
+          <div class="trust-card">
+            <div class="tc-kicker">Can Help</div>
+            <strong>Translate climate sources into questions people can inspect.</strong>
+            <p>Use GAIA for orientation, comparison, definitions, and restoration scenario framing.</p>
+          </div>
+          <div class="trust-card">
+            <div class="tc-kicker">Cannot Guarantee</div>
+            <strong>GAIA is not a scientific authority or certification body.</strong>
+            <p>Do not treat answers as peer review, legal advice, financial advice, or project verification.</p>
+          </div>
+          <div class="trust-card">
+            <div class="tc-kicker">Sources</div>
+            <strong>Good answers should point back to datasets and source families.</strong>
+            <p>Ask for the provenance trail when a claim affects decisions, partnerships, or public communication.</p>
+          </div>
+          <div class="trust-card">
+            <div class="tc-kicker">Uncertainty</div>
+            <strong>Ranges, assumptions, and missing data should stay visible.</strong>
+            <p>Restoration estimates are model outputs, not promises of future carbon storage.</p>
+          </div>
+        </div>
+        <div class="provenance-row" aria-label="Dataset provenance cards">
+          <a class="provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge" target="_blank" rel="noopener">
+            <span>Derived educational data · production</span>
+            <strong>Climate Knowledge</strong>
+            <em>Curated chunks for retrieval and climate education from IPCC, Drawdown, EPA, arXiv, Wikipedia, and ELU research.</em>
+          </a>
+          <a class="provenance-card" href="https://huggingface.co/datasets/ego0op/carbon-projects-unified" target="_blank" rel="noopener">
+            <span>Processed audit data · review</span>
+            <strong>Carbon Projects Unified</strong>
+            <em>Normalized project records for comparison, registry review, and transparent carbon-project analysis.</em>
+          </a>
+          <a class="provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-carbon-projects" target="_blank" rel="noopener">
+            <span>ELU release data · experimental</span>
+            <strong>ELU Carbon Projects</strong>
+            <em>Foundation-facing project release for audit workflows, public review, and future field validation.</em>
+          </a>
+        </div>
+        <div class="audit-links">
+          <a class="audit-link" href="index.html#datasets">Dataset Audit</a>
+          <a class="audit-link" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Source Code</a>
+          <a class="audit-link" href="climate-dataset/STATUS.md" target="_blank" rel="noopener">Build Status</a>
+        </div>
+        <div class="source-note">A trustworthy path is: question → GAIA orientation → source family → dataset record → restoration assumption → human review.</div>
       </div>
     </div>
     <div id="messages" style="display:none" aria-live="polite" aria-atomic="false" role="log"></div>
     <div id="input-area">
       <div id="input-wrap">
-        <textarea id="chat-input" placeholder="Ask GAIA anything — carbon, climate, projects, data..." rows="1" data-action-keydown="handleKeyDown" data-action-input="autoResize"></textarea>
+        <textarea id="chat-input" placeholder="Ask GAIA for a source trail, uncertainty, dataset context, or restoration scenario..." rows="1" data-action-keydown="handleKeyDown" data-action-input="autoResize"></textarea>
         <button id="send-btn" data-action="sendMessage">↑</button>
       </div>
       <div class="input-hints">
@@ -321,6 +397,15 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
   <div id="right-panel" class="collapsed">
     <div class="panel-header"><h3>🧪 Carbon Sandbox</h3><button class="panel-close" data-action="toggleSandbox">✕</button></div>
     <div id="sandbox-content">
+      <div class="sandbox-section">
+        <h4>Evidence Path <span>audit</span></h4>
+        <div class="query-builder">
+          <div class="quick-stat"><span class="qs-label">Question</span><span class="qs-value">Ask GAIA</span></div>
+          <div class="quick-stat"><span class="qs-label">Evidence</span><span class="qs-value">Open dataset</span></div>
+          <div class="quick-stat"><span class="qs-label">Action</span><span class="qs-value">Review scenario</span></div>
+          <a class="qb-btn" href="index.html#datasets" style="display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:8px">Open Dataset Audit</a>
+        </div>
+      </div>
       <div class="sandbox-section">
         <h4>Carbon Calculator <span>live</span></h4>
         <div class="query-builder">
@@ -341,7 +426,7 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
         </div>
       </div>
       <div class="sandbox-section">
-        <h4>Global Context <span>live</span></h4>
+        <h4>Global Context <span>cached</span></h4>
         <div class="quick-stat"><span class="qs-label">CO₂ (April 2026)</span><span class="qs-value warn">431.12 ppm</span></div>
         <div class="quick-stat"><span class="qs-label">Human emissions</span><span class="qs-value warn">~143 Gt CO₂/yr</span></div>
         <div class="quick-stat"><span class="qs-label">Nature absorption</span><span class="qs-value leaf">~123 Gt CO₂/yr</span></div>

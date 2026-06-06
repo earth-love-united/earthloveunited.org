@@ -3,9 +3,62 @@
 > **Read this before touching any code.** This document maps the entire module system,
 > z-index stacking order, event flows, and known traps.
 >
-> Last updated: 2026-05-21
+> Last updated: 2026-06-06
 
 ---
+
+## Public Journey
+
+The homepage is now organized as a public climate-science journey rather than
+as a scattered globe demo. The intended path is:
+
+```
+Wonder
+  → Climate Science
+  → Living Globe
+  → GAIA
+  → Dataset Audit
+  → Restoration Action
+  → Volunteer / Partner
+```
+
+Concrete section anchors in `index.html`:
+
+| Journey Step | Anchor | Purpose |
+|---|---|---|
+| Wonder | `#quiz` | Begin with questions and carbon literacy |
+| Climate Science | `#carbon-cycle`, `#imbalance`, `#biomes`, `#compare` | Explain carbon flows, sinks, uncertainty, and biome differences |
+| Living Globe | `#projects` plus `#globeViz` | Move from general science to place-based project context |
+| GAIA | `#gaia-guide`, `gaia.html#trust-layer` | Guide users from question to source trail |
+| Dataset Audit | `#datasets` | Expose source code, Hugging Face datasets, raw JSON/CSV files, and readiness status |
+| Restoration Action | `#scenario` | Frame model outputs as assumptions to inspect, not promises |
+| Volunteer / Partner | `#together` | Route careful contributors and institutions into review/action pathways |
+
+## Public Trust Layer
+
+Earth Love United's public trust layer has four surfaces:
+
+1. **GAIA interface** — `gaia.html` positions GAIA as a climate-science guide
+   and audit assistant. It must describe what GAIA can help with, what it
+   cannot guarantee, and how users should ask for source trails and uncertainty.
+2. **Dataset provenance** — `index.html#datasets` and
+   `gaia.html#trust-layer` link to the GitHub source, Hugging Face datasets,
+   local JSON/CSV runtime files, and dataset status labels such as production,
+   review, or experimental.
+3. **Testing and smoke validation** — boot validation, `SmokeTest.run()`,
+   `StackLint.audit()`, and the static DAG verifier are part of the public
+   audit story. They prove module loading and stacking invariants are not just
+   visual guesses.
+4. **Open-source auditability** — the site keeps classic scripts, no build
+   step, and readable source files so researchers, partners, and contributors
+   can inspect what the interface claims.
+
+GAIA answers should never be treated as peer review, legal advice, financial
+advice, or carbon-project certification. The expected pathway is:
+
+```
+question → GAIA orientation → source family → dataset record → restoration assumption → human review
+```
 
 ## Module Registry
 
@@ -121,14 +174,15 @@ User clicks globe point
        └─ fallback ───────────────────────────► Panel.open({...})
 ```
 
-## Event Flow: Enter Site (Hero → Globe)
+## Event Flow: Enter Living Globe (Hero → Globe)
 
 ```
-User clicks "Enter the Living System"
+User clicks "Enter the Living Globe"
   │
-  └─ enterSite() → App.enterSite()
+  └─ enterGlobe() → App.enterGlobe()
        ├─ #hero.classList.add('hidden')     → opacity:0, pe:none
        ├─ #topbar.classList.add('visible')  → opacity:1, pe:all
+       ├─ #globe-modes receives focus       → mode controls become visible
        ├─ updateProgress()                  → scroll bar width
        └─ scroll handler activates:
             └─ if scrollY > 30vh → #globeViz.pe = 'none'

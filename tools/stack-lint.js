@@ -43,6 +43,7 @@ const StackLint = (() => {
       if (s.position === 'fixed' || s.position === 'absolute') {
         const entry = {
           element: _label(el),
+          node: el,
           position: s.position,
           zIndex: s.zIndex === 'auto' ? 'auto' : parseInt(s.zIndex),
           pointerEvents: s.pointerEvents,
@@ -100,7 +101,7 @@ const StackLint = (() => {
     console.group('🪤 Stacking Context Trap Detection');
     const traps = [];
     positioned.filter(p => p.position === 'fixed').forEach(p => {
-      const el = document.querySelector(p.element.startsWith('#') ? p.element : `.${p.element.split('.')[1] || ''}`);
+      const el = p.node;
       if (!el) return;
 
       // Check if this fixed element is inside another fixed element

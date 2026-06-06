@@ -59,7 +59,7 @@
   margin-bottom: 0;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
-  letter-spacing: -0.045em;
+  letter-spacing: 0;
   text-align: center;
   white-space: nowrap;
   text-shadow: 0 0 24px rgba(196, 92, 74, 0.26);
@@ -165,7 +165,7 @@
   }
   .cc-value {
     font-size: clamp(54px,19vw,92px);
-    letter-spacing: -0.04em;
+    letter-spacing: 0;
   }
   .cc-unit {
     transform: translateY(-0.06em);
