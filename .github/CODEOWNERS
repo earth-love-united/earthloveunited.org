@@ -1,0 +1,60 @@
+# ═════════════════════════════════════════════════════════════════
+#  CODEOWNERS — Earth Love United
+# ═════════════════════════════════════════════════════════════════
+#
+#  Maps file patterns to required reviewers. GitHub enforces this
+#  automatically: any PR touching a pattern below cannot merge
+#  without an approval from a listed owner.
+#
+#  The reviewer below (@gke0op) represents the human-with-architect
+#  tier of the team. When a PR touches a protected path, the human
+#  brings in architectural review (typically by consulting the
+#  reviewer-role agent via Cowork) before approving.
+#
+#  See AGENTS.md § Operations for the full rationale.
+#  Roles, not agent names, govern review decisions.
+# ═════════════════════════════════════════════════════════════════
+
+# ─── Legal & governance (require human review) ──────────────────
+/LICENSE                              @gke0op
+/CREDITS.md                           @gke0op
+/CODE_OF_CONDUCT.md                   @gke0op
+/CONTRIBUTING.md                      @gke0op
+/README.md                            @gke0op
+
+# ─── Architectural authorities (require reviewer-tier review) ───
+/AGENTS.md                            @gke0op
+/ARCHITECTURE.md                      @gke0op
+/SWARM_SDK.md                         @gke0op
+/OPERATIONS.md                        @gke0op
+
+# ─── Core safety layer (the foundation modules) ─────────────────
+/js/gaia-utils.js                     @gke0op
+/js/module-contracts.js               @gke0op
+/js/module-validator.js               @gke0op
+/js/app.js                            @gke0op
+
+# ─── Cross-module communication & persistence (every module uses these) ──
+/js/event-bus.js                      @gke0op
+/js/storage-adapter.js                @gke0op
+
+# ─── Parallel subsystem (ES6 class pattern — different rules than IIFE) ──
+/js/modules/                          @gke0op
+
+# ─── Out-of-band agent↔browser bridge ──────────────────────────
+/infra/                               @gke0op
+
+# ─── Enforcement scripts (changing these changes the rules) ─────
+/scripts/verify_load_order.py         @gke0op
+/tools/agent-precommit                @gke0op
+/tools/install-hooks.sh               @gke0op
+/tools/start-mission.sh               @gke0op
+/tools/end-mission.sh                 @gke0op
+
+# ─── CI / GitHub config ──────────────────────────────────────────
+/.github/                             @gke0op
+/.gitignore                           @gke0op
+
+# ─── Everything else: no required owner ─────────────────────────
+# (PRs touching only non-protected paths can auto-merge when CI is green
+#  and the auto-merge label is present — see .github/workflows/auto-merge.yml)

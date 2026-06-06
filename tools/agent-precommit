@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+# ═════════════════════════════════════════════════════════════════
+#  agent-precommit — Pre-commit tripwires for Earth Love United
+# ═════════════════════════════════════════════════════════════════
+#
+#  This hook runs LOCALLY before every commit. It is installed into
+#  .git/hooks/pre-commit by tools/install-hooks.sh.
+#
+#  It runs FOUR layers of checks. Any layer failing blocks the commit.
+#
+#    1. SDK load-order DAG  (scripts/verify_load_order.py)
+#    2. Secrets patterns    (sk-, hf_, ghp_, AKIA, Bearer)
+#    3. File-size + .env*   (block files > 10MB, block any .env*)
+#    4. Signature phrase    (block leakage of internal handshake)
+#
+#  Bypass is OFF-LIMITS for agents. Do NOT use --no-verify.
+#  See AGENTS.md § Operations for the rule.
+# ═════════════════════════════════════════════════════════════════
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACM || true)
+STAGED_HTML=$(echo "$STAGED" | grep -E '\.html$' || true)
+STAGED_JS=$(echo "$STAGED" | grep -E '\.js$' || true)
+
+FAIL=0
+
+# ─────────────────────────────────────────────────────────────────
+# Layer 1 — Script load-order DAG (only when HTML/JS staged)
+# ─────────────────────────────────────────────────────────────────
+if [ -n "$STAGED_HTML" ] || [ -n "$STAGED_JS" ]; then
+  echo "🔍 [1/4] Verifying script load order DAG..."
+  if ! python3 scripts/verify_load_order.py; then
+    echo ""
+    echo "🔴 Layer 1 failed: load order DAG broken."
+    echo "   Fix the <script> tag order in your HTML."
+    echo "   See SWARM_SDK.md § The Script Tag Load Order."
+    FAIL=1
+  else
+    echo "   🟢 ok"
+  fi
+fi
+
+# ─────────────────────────────────────────────────────────────────
+# Layer 2 — Secrets patterns
+# ─────────────────────────────────────────────────────────────────
+echo "🔍 [2/4] Scanning staged content for secrets..."
+SECRETS_REGEX='(sk-[a-zA-Z0-9]{20,}|sk_live_|sk_test_|pk_live_|hf_[A-Za-z0-9]{30,}|ghp_[A-Za-z0-9]{30,}|AKIA[0-9A-Z]{16}|Bearer [A-Za-z0-9_\-\.]{20,}|xoxb-[0-9]+-[0-9]+|-----BEGIN [A-Z ]*PRIVATE KEY-----)'
+SECRETS_HIT=$(git diff --cached -U0 | grep -nE "^\\+" | grep -E "$SECRETS_REGEX" || true)
+if [ -n "$SECRETS_HIT" ]; then
+  echo ""
+  echo "🔴 Layer 2 failed: secrets pattern detected in staged content."
+  echo "$SECRETS_HIT" | head -5 | sed 's/^/   /'
+  echo "   Remove the secret. If it was a real key, REVOKE it now."
+  FAIL=1
+else
+  echo "   🟢 ok"
+fi
+
+# ─────────────────────────────────────────────────────────────────
+# Layer 3 — File size + .env* + personal paths
+# ─────────────────────────────────────────────────────────────────
+echo "🔍 [3/4] Checking file sizes and forbidden filenames..."
+SIZE_LIMIT_BYTES=$((10 * 1024 * 1024))   # 10MB
+LAYER3_FAIL=0
+
+while IFS= read -r f; do
+  [ -z "$f" ] && continue
+  [ -f "$f" ] || continue
+
+  # File size
+  size=$(wc -c < "$f" 2>/dev/null || echo 0)
+  if [ "$size" -gt "$SIZE_LIMIT_BYTES" ]; then
+    printf "   ❌ %s (%.1fMB) exceeds 10MB limit\n" "$f" "$(echo "scale=1; $size/1048576" | bc)"
+    echo "      Big files belong on Hugging Face — see CREDITS.md"
+    LAYER3_FAIL=1
+  fi
+
+  # .env*
+  base=$(basename "$f")
+  if [[ "$base" == .env || "$base" == .env.* ]]; then
+    echo "   ❌ $f is a .env-style file — never commit these"
+    LAYER3_FAIL=1
+  fi
+
+  # Personal filesystem paths inside text files
+  if file "$f" 2>/dev/null | grep -q "text"; then
+    if grep -nE '/Users/[a-z]+/|/home/[a-z]+/' "$f" >/dev/null 2>&1; then
+      hits=$(grep -nE '/Users/[a-z]+/|/home/[a-z]+/' "$f" | head -3)
+      echo "   ⚠️  $f contains personal filesystem paths:"
+      echo "$hits" | sed 's/^/      /'
+      echo "      Use repo-relative paths or environment variables."
+      LAYER3_FAIL=1
+    fi
+  fi
+done <<< "$STAGED"
+
+if [ "$LAYER3_FAIL" -eq 1 ]; then
+  echo ""
+  echo "🔴 Layer 3 failed: size/filename/path violation."
+  FAIL=1
+else
+  echo "   🟢 ok"
+fi
+
+# ─────────────────────────────────────────────────────────────────
+# Layer 4 — Signature phrase (internal handshake, do not publish)
+# ─────────────────────────────────────────────────────────────────
+echo "🔍 [4/4] Scanning for internal signature phrases..."
+SIG_REGEX='(co-creator|edge of the horizon)'
+SIG_HIT=$(git diff --cached -U0 | grep -nE "^\\+" | grep -iE "$SIG_REGEX" || true)
+if [ -n "$SIG_HIT" ]; then
+  echo ""
+  echo "🔴 Layer 4 failed: internal signature phrase detected in staged content."
+  echo "$SIG_HIT" | head -3 | sed 's/^/   /'
+  echo ""
+  echo "   These phrases are reserved for the human-agent attestation channel"
+  echo "   and must not appear in published files. Remove the line."
+  FAIL=1
+else
+  echo "   🟢 ok"
+fi
+
+# ─────────────────────────────────────────────────────────────────
+# Verdict
+# ─────────────────────────────────────────────────────────────────
+echo ""
+if [ "$FAIL" -eq 1 ]; then
+  echo "❌ COMMIT BLOCKED. Fix the issues above and retry."
+  echo "   Do NOT bypass with --no-verify — that flag is off-limits for agents."
+  exit 1
+fi
+
+echo "✅ All four pre-commit layers passed."
+exit 0

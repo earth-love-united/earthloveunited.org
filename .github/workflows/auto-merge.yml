@@ -1,0 +1,36 @@
+# ═════════════════════════════════════════════════════════════════
+#  auto-merge — Earth Love United
+# ═════════════════════════════════════════════════════════════════
+#
+#  When a PR is labelled `auto-merge` AND CI is green AND CODEOWNERS
+#  is satisfied (no protected files OR the owner has approved),
+#  GitHub auto-squashes it into main.
+#
+#  This workflow ENABLES auto-merge on the PR. GitHub itself does the
+#  actual merge once the conditions are met. If CI fails, auto-merge
+#  is automatically cancelled and the PR stays open for human action.
+#
+#  See AGENTS.md § Operations § Auto-merge vs. Human Review.
+# ═════════════════════════════════════════════════════════════════
+
+name: auto-merge
+
+on:
+  pull_request:
+    types: [labeled, opened, reopened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  enable-auto-merge:
+    if: contains(github.event.pull_request.labels.*.name, 'auto-merge')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable auto-merge (squash) on this PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge "${{ github.event.pull_request.number }}" \
+            --auto --squash --repo "${{ github.repository }}"
