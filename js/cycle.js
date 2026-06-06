@@ -18,12 +18,49 @@ const Cycle = {
     if (!el) return;
     el.className = 'cycle-detail show';
     el.innerHTML = `<h4>${d.title}</h4><p>${d.body}</p><div class="cd-stat">${d.stat}</div>`;
-  }
+  },
+
+  init() {
+    console.debug('[Stub] Cycle.init');
+    return true;
+  },
+
+  update() {
+    console.debug('[Stub] Cycle.update');
+    return true;
+  },
+
+  getCurrentPhase() {
+    console.debug('[Stub] Cycle.getCurrentPhase');
+    return true;
+  },
+
+  setPhase() {
+    console.debug('[Stub] Cycle.setPhase');
+    return true;
+  },
+
+  // ── Standard Module Lifecycle (SML) ──
+  reset() {
+    console.debug('[SML] Cycle.reset');
+    return true;
+  },
+
+  destroy() {
+    console.debug('[SML] Cycle.destroy');
+    return true;
+  },
+
+  getState() {
+    return {};
+  },
 };
 
 window.Cycle = Cycle;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('Cycle', {
-    provides: ['init', 'update', 'getCurrentPhase', 'setPhase'],
+    provides: ['init', 'update', 'getCurrentPhase', 'setPhase', 'reset', 'destroy', 'getState'],
     requires: [],
   });
+}

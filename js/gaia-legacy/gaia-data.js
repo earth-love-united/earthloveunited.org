@@ -270,11 +270,44 @@ const GAIA_DATA = (() => {
     saveSessionInfo(info) {
       Storage.safeSetItem('gaia_session', JSON.stringify(info));
     },
+
+    init() {
+      console.debug('[Stub] GAIA_DATA.init');
+      return true;
+    },
+
+    getVisitCount() {
+      console.debug('[Stub] GAIA_DATA.getVisitCount');
+      return 0;
+    },
+
+    getFirstVisit() {
+      console.debug('[Stub] GAIA_DATA.getFirstVisit');
+      return null;
+    },
+
+    getTotalTime() {
+      console.debug('[Stub] GAIA_DATA.getTotalTime');
+      return 0;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] GAIA_DATA.reset');
+      return true;
+    },
+    destroy() {
+      console.debug('[SML] GAIA_DATA.destroy');
+      return true;
+    },
+    getState() {
+      return {};
+    },
   };
 })();
 window.GAIA_DATA = GAIA_DATA;
 
   MODULE_CONTRACTS.register('GAIA_DATA', {
-    provides: ['init', 'getVisitCount', 'getFirstVisit', 'getTotalTime'],
+    provides: ['init', 'getVisitCount', 'getFirstVisit', 'getTotalTime', 'reset', 'destroy', 'getState'],
     requires: [],
   });

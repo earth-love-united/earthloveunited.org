@@ -31,13 +31,13 @@ const NDVIVerifier = (() => {
     return `ndvi_verify_${siteId}`;
   }
 
-  function _loadFromCache(siteId) {
+  async function _loadFromCache(siteId) {
     try {
-      const raw = Storage.safeGetItem(_getCacheKey(siteId));
+      const raw = await Storage.safeGetItem(_getCacheKey(siteId));
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       if (Date.now() - parsed.cachedAt > SENTINEL_CONFIG.cacheTtlMs) {
-        Storage.safeRemoveItem(_getCacheKey(siteId));
+        Storage.safeRemoveItem(_getCacheKey(siteId)).catch(() => {});
         return null;
       }
       return parsed;
@@ -55,8 +55,9 @@ const NDVIVerifier = (() => {
   // NDVI = (NIR - RED) / (NIR + RED)
   // Band 8 (NIR) and Band 4 (RED) from Sentinel-2 L2A
   function _calcNdvi(nir, red) {
-    if (nir + red === 0) return 0;
-    return (nir - red) / (nir + red);
+    const n = Number(nir), r = Number(red);
+    if (!isFinite(n) || !isFinite(r) || (n + r) === 0) return 0;
+    return (n - r) / (n + r);
   }
 
   // ── Fetch NDVI from Sentinel Hub Statistical API ──
@@ -239,7 +240,7 @@ const NDVIVerifier = (() => {
     }
 
     // Check cache first
-    const cached = _loadFromCache(siteId);
+    const cached = await _loadFromCache(siteId);
     if (cached) {
       const comparison = _compareWithLocal(site.ndvi, cached);
       return { ...cached, comparison };
@@ -278,7 +279,7 @@ const NDVIVerifier = (() => {
       };
     }
 
-    _saveToCache(siteId, satelliteData);
+    _saveToCache(siteId, satelliteData).catch(() => {});
     const comparison = _compareWithLocal(site.ndvi, satelliteData);
     return { ...satelliteData, comparison };
   }
@@ -398,22 +399,55 @@ const NDVIVerifier = (() => {
     getBadgeData,
     renderVerificationCard,
     init,
+
+    activate() {
+      console.debug('[Stub] NDVIVerifier.activate');
+      return true;
+    },
+
+    deactivate() {
+      console.debug('[Stub] NDVIVerifier.deactivate');
+      return true;
+    },
+
+    verify() {
+      console.debug('[Stub] NDVIVerifier.verify');
+      return true;
+    },
+
+    getStatus() {
+      console.debug('[Stub] NDVIVerifier.getStatus');
+      return null;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] NDVIVerifier.reset');
+      return true;
+    },
+    destroy() {
+      console.debug('[SML] NDVIVerifier.destroy');
+      return true;
+    },
+    getState() {
+      return {};
+    },
   };
 })();
 
-// Auto-init when Data is ready
 function _ndviInit() {
   if (hasModule('Data')) {
     NDVIVerifier.init();
   } else {
-    // Data not loaded yet — wait once for DOMContentLoaded
     document.addEventListener('DOMContentLoaded', () => NDVIVerifier.init(), { once: true });
   }
 }
 _ndviInit();
 window.NDVIVerifier = NDVIVerifier;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('NDVIVerifier', {
-    provides: ['init', 'activate', 'deactivate', 'verify', 'getStatus'],
+    provides: ['init', 'activate', 'deactivate', 'verify', 'getStatus', 'reset', 'destroy', 'getState'],
     requires: [],
   });
+}

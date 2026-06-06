@@ -57,7 +57,12 @@ const GLOBE_OVERLAY = (() => {
       <div class="globe-overlay-tabs" id="globe-overlay-tabs"></div>
       <div class="globe-overlay-content" id="globe-overlay-content"></div>
       <button class="globe-overlay-toggle" id="globe-overlay-toggle" aria-label="Toggle Panel">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        <svg class="toggle-bg" viewBox="0 0 16 140" xmlns="http://www.w3.org/2000/svg">
+          <path d="M -1 0 C 0 15, 16 15, 16 30 L 16 110 C 16 125, 0 125, -1 140 Z" />
+        </svg>
+        <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
       </button>
     `;
 
@@ -102,6 +107,11 @@ const GLOBE_OVERLAY = (() => {
     }
 
     currentSiteId = siteId;
+
+    // Emit EventBus event
+    if (hasModule('EventBus')) {
+      window.EventBus.emit('overlay:open', { siteId, site });
+    }
 
     // Update header
     overlayEl.querySelector('#globe-overlay-icon').textContent = site.icon || '🌍';
@@ -218,8 +228,15 @@ const GLOBE_OVERLAY = (() => {
   // ── Close overlay ──
   function close() {
     if (!overlayEl) return;
+    const wasOpen = isOpen;
+    const prevSiteId = currentSiteId;
     overlayEl.classList.remove('open');
     isOpen = false;
+
+    // Emit EventBus event
+    if (hasModule('EventBus') && wasOpen) {
+      window.EventBus.emit('overlay:close', { siteId: prevSiteId });
+    }
 
     // Clear rendered flags so content re-renders on next open
     overlayEl.querySelectorAll('.globe-overlay-tab-panel').forEach(el => {
@@ -272,11 +289,49 @@ const GLOBE_OVERLAY = (() => {
     refreshTab,
     isOpen: () => isOpen,
     getCurrentSite: () => currentSiteId,
+    // ── Standard Module Lifecycle (SML) ──
+    init() {
+      console.debug('[SML] GLOBE_OVERLAY.init');
+      return true;
+    },
+
+    reset() {
+      console.debug('[SML] GLOBE_OVERLAY.reset');
+      currentSiteId = null;
+      currentTabId = null;
+      isOpen = false;
+      return true;
+    },
+
+    destroy() {
+      console.debug('[SML] GLOBE_OVERLAY.destroy');
+
+      // Remove overlay DOM element
+      if (overlayEl) {
+        overlayEl.remove();
+        overlayEl = null;
+      }
+
+      // Reset state
+      currentSiteId = null;
+      currentTabId = null;
+      isOpen = false;
+
+      return true;
+    },
+
+    getState() {
+      return {};
+    },
   };
 })();
 window.GLOBE_OVERLAY = GLOBE_OVERLAY;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GLOBE_OVERLAY', {
-    provides: ['isOpen', 'getCurrentSite'],
+    provides: ['isOpen', 'getCurrentSite', 'init', 'reset', 'destroy', 'getState'],
     requires: [],
+    emits: ['overlay:open', 'overlay:close'],
+    listens: [],
   });
+}

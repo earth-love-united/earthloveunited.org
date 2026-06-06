@@ -68,38 +68,14 @@ const DELEGATION = (() => {
     const accentColor = toneColors[tone];
 
     return `
-      <div class="dg-card" style="border-color: ${accentColor}30">
-        <div class="dg-flag">${c.flag}</div>
-        <div class="dg-content">
-          <div class="dg-greeting">${getGreetingText(c, tone)}</div>
-          <div class="dg-stats">
-            <div class="dg-stat">
-              <div class="dg-stat-value" style="color: ${accentColor}">${c.formattedEmissions}</div>
-              <div class="dg-stat-label">CO₂ emitted in 2023</div>
-            </div>
-            <div class="dg-stat">
-              <div class="dg-stat-value">${c.perCapita} t</div>
-              <div class="dg-stat-label">per person</div>
-            </div>
-            <div class="dg-stat">
-              <div class="dg-stat-value">#${c.globalRank}</div>
-              <div class="dg-stat-label">global rank</div>
-            </div>
-            <div class="dg-stat">
-              <div class="dg-stat-value">${c.share}%</div>
-              <div class="dg-stat-label">of global emissions</div>
-            </div>
-          </div>
-          <div class="dg-context">${getContextText(c)}</div>
-          <div class="dg-cta">
-            <button class="dg-btn-primary" onclick="DELEGATION.exploreCountry()">
-              Explore ${c.name}'s carbon story →
-            </button>
-            <button class="dg-btn-secondary" onclick="DELEGATION.dismiss()">
-              Show me the planet
-            </button>
-          </div>
-        </div>
+      <div class="dg-card" style="--delegate-accent: ${accentColor}">
+        <span class="dg-flag" aria-hidden="true">${c.flag}</span>
+        <span class="dg-country">${c.name}:</span>
+        <span class="dg-emissions">${c.formattedEmissions} CO₂ in 2023</span>
+        <span class="dg-sep">·</span>
+        <span class="dg-rank">#${c.globalRank} globally</span>
+        <span class="dg-sep">·</span>
+        <span class="dg-person">${c.perCapita} t/person</span>
       </div>
     `;
   }
@@ -186,15 +162,23 @@ const DELEGATION = (() => {
     setTimeout(createGreeting, 500);
   }
 
+  // ── Standard Module Lifecycle (SML) ──
+  const _reset = () => { console.debug('[SML] DELEGATION.reset'); return true; };
+  const _destroy = () => { console.debug('[SML] DELEGATION.destroy'); return true; };
+  const _getState = () => ({ detected: detected ? { ...detected } : null, hasCountry: !!countryData });
+
   return {
     init, createGreeting, dismiss, exploreCountry,
     getDetected: () => detected,
     getCountryData: () => countryData,
+    reset: _reset,
+    destroy: _destroy,
+    getState: _getState,
   };
 })();
 window.DELEGATION = DELEGATION;
 
   MODULE_CONTRACTS.register('DELEGATION', {
-    provides: ['init', 'getDetected', 'getCountryData', 'destroy'],
+    provides: ['init', 'getDetected', 'getCountryData', 'destroy', 'reset', 'getState'],
     requires: ['GAIA_BUBBLE'],
   });

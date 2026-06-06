@@ -106,19 +106,27 @@ const GLOBE_MODES = (() => {
     safeCall('GLOBE_EVENTS', 'activate');
   }
 
+  // ── Standard Module Lifecycle (SML) ──
+  const _reset = () => { console.debug('[SML] GLOBE_MODES.reset'); _currentMode = 'countries'; return true; };
+  const _destroy = () => { console.debug('[SML] GLOBE_MODES.destroy'); return true; };
+  const _getState = () => ({ mode: _currentMode, countryDataReady: _countryDataReady });
+
   return {
     init,
     setMode,
     getMode: () => _currentMode,
     onCountryDataReady,
     isCountryDataReady: () => _countryDataReady,
+    reset: _reset,
+    destroy: _destroy,
+    getState: _getState,
   };
 })();
 window.GLOBE_MODES = GLOBE_MODES;
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GLOBE_MODES', {
-    provides: ['init', 'setMode', 'getMode', 'onCountryDataReady'],
+    provides: ['init', 'setMode', 'getMode', 'onCountryDataReady', 'reset', 'destroy', 'getState'],
     requires: ['GlobeModule'],
   });
 }

@@ -23,7 +23,7 @@
 window.GaiaReranker = (function () {
 
   MODULE_CONTRACTS.register('GaiaReranker', {
-    provides: ['load', 'rerank', 'getStatus'],
+    provides: ['load', 'rerank', 'getStatus', 'init', 'reset', 'destroy', 'getState'],
     requires: [],
   });
   let _model = null;
@@ -189,6 +189,22 @@ window.GaiaReranker = (function () {
         features: _model ? _model.feature_names : [],
       };
     },
+    reset() { console.debug(`[SML] GaiaReranker.reset`); return true; },
+    destroy() { console.debug(`[SML] GaiaReranker.destroy`); return true; },
+    getState() { return {
+    getStatus() {
+      console.debug(`[Stub] Module.getStatus`);
+      return true;
+    },
+    load() {
+      console.debug(`[Stub] Module.load`);
+      return true;
+    },
+    rerank() {
+      console.debug(`[Stub] Module.rerank`);
+      return true;
+    },
+}; },
   };
 })();
 

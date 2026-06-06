@@ -20,6 +20,9 @@ const CARBON_CLOCK = (() => {
   let heroEl = null;
   let topbarEl = null;
   let visible = false;
+  let _heroText = '';
+  let _heroUnitText = '';
+  let _topbarText = '';
 
   // ── Format numbers ──
   function formatTons(tons) {
@@ -35,6 +38,18 @@ const CARBON_CLOCK = (() => {
     return tps.toFixed(1) + ' t/s';
   }
 
+  function formatHeroTons(tons) {
+    const digits = Math.floor(tons).toString();
+    const firstGroup = digits.length % 3 || 3;
+    let formatted = digits.slice(0, firstGroup);
+
+    for (let i = firstGroup; i < digits.length; i += 3) {
+      formatted += '.' + digits.slice(i, i + 3);
+    }
+
+    return formatted;
+  }
+
   // ── Create hero clock ──
   function createHeroClock() {
     if (heroEl) return;
@@ -43,16 +58,14 @@ const CARBON_CLOCK = (() => {
     heroEl.id = 'carbon-clock-hero';
     heroEl.innerHTML = `
       <div class="cc-hero-inner">
-        <div class="cc-label">Excess CO₂ since you arrived</div>
-        <div class="cc-value" id="cc-hero-value">0 t</div>
-        <div class="cc-rate" id="cc-hero-rate">~${formatRate(TONS_PER_SECOND)}</div>
-        <div class="cc-bar">
-          <div class="cc-bar-fill" id="cc-hero-bar"></div>
+        <div class="cc-label">Net Human Emissions Since You Arrived</div>
+        <div class="cc-value-row" aria-live="off" aria-atomic="true">
+          <span class="cc-value" id="cc-hero-value">0</span>
+          <span class="cc-unit" id="cc-hero-unit">t</span>
         </div>
-        <div class="cc-context">
-          <span class="cc-annual">${ANNUAL_EXCESS_GT} Gt/year</span>
-          <span class="cc-sep">·</span>
-          <span class="cc-desc">the carbon nature can't absorb</span>
+        <div class="cc-explainer">
+          <span>Nature absorbs <strong>123 Gt</strong>. Humanity emits <strong>143 Gt</strong>.</span>
+          <span>This is the gap. It grows every second.</span>
         </div>
       </div>
     `;
@@ -99,25 +112,48 @@ const CARBON_CLOCK = (() => {
   }
 
   // ── Update display ──
-  function update() {
+  function render(now) {
     if (!startTime) return;
 
-    const elapsed = Date.now() - startTime;
+    const elapsed = now - startTime;
     totalTons = elapsed * TONS_PER_MS;
 
     // Update hero (cache DOM refs)
-    if (_heroValue) _heroValue.textContent = formatTons(totalTons);
+    const heroTons = formatHeroTons(totalTons);
+    if (_heroValue && heroTons !== _heroText) {
+      _heroValue.textContent = heroTons;
+      _heroText = heroTons;
+    }
+    if (_heroUnit && _heroUnitText !== 't') {
+      _heroUnit.textContent = 't';
+      _heroUnitText = 't';
+    }
     if (_heroBar) {
       const pct = Math.min((elapsed / 60000) * 100, 100);
       _heroBar.style.width = pct + '%';
     }
-    if (_topbarValue) _topbarValue.textContent = formatTons(totalTons);
+    const topbarTons = formatTons(totalTons);
+    if (_topbarValue && topbarTons !== _topbarText) {
+      _topbarValue.textContent = topbarTons;
+      _topbarText = topbarTons;
+    }
+  }
+
+  function tick() {
+    render(Date.now());
+    timer = requestAnimationFrame(tick);
+  }
+
+  // ── Update display ──
+  function update() {
+    render(Date.now());
   }
 
   // ── Cache DOM refs ──
-  let _heroValue = null, _heroBar = null, _topbarValue = null;
+  let _heroValue = null, _heroUnit = null, _heroBar = null, _topbarValue = null;
   function _cacheRefs() {
     _heroValue = $('cc-hero-value');
+    _heroUnit = $('cc-hero-unit');
     _heroBar = $('cc-hero-bar');
     _topbarValue = $('cc-topbar-value');
   }
@@ -127,14 +163,15 @@ const CARBON_CLOCK = (() => {
     if (timer) return;
     startTime = Date.now();
     _cacheRefs();
-    timer = setInterval(update, 500); // Update every 500ms — smooth enough for a clock
+    update();
+    timer = requestAnimationFrame(tick);
     visible = true;
   }
 
   // ── Stop ──
   function stop() {
     if (timer) {
-      clearInterval(timer);
+      cancelAnimationFrame(timer);
       timer = null;
     }
     visible = false;
@@ -167,13 +204,55 @@ const CARBON_CLOCK = (() => {
   }
 
   return {
-    init, start, stop, reset, getValue,
+    init, start, stop, getValue,
     TONS_PER_SECOND, ANNUAL_EXCESS_GT,
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] CARBON_CLOCK.reset');
+      startTime = Date.now();
+      totalTons = 0;
+      return true;
+    },
+
+    destroy() {
+      console.debug('[SML] CARBON_CLOCK.destroy');
+
+      // Clear the animation frame loop
+      if (timer) {
+        cancelAnimationFrame(timer);
+        timer = null;
+      }
+
+      // Nullify DOM references
+      heroEl = null;
+      topbarEl = null;
+      _heroValue = null;
+      _heroUnit = null;
+      _heroBar = null;
+      _topbarValue = null;
+      _heroText = '';
+      _heroUnitText = '';
+      _topbarText = '';
+
+      // Reset state
+      startTime = null;
+      totalTons = 0;
+      visible = false;
+
+      return true;
+    },
+
+    getState() {
+      return {};
+    },
   };
 })();
 window.CARBON_CLOCK = CARBON_CLOCK;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('CARBON_CLOCK', {
-    provides: ['init', 'start', 'stop', 'update'],
+    provides: ['init', 'start', 'stop', 'reset', 'destroy', 'getState'],
     requires: [],
   });
+}

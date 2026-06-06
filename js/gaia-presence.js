@@ -49,7 +49,6 @@ const GAIA_PRESENCE = (() => {
       <div class="pt-subtitle">${site.subtitle}</div>
       ${line ? `<div class="pt-xp">🌍 "${line}"</div>` : ''}
     `;
-    // Position near the cursor but keep on screen
     const x = Math.min(clientX, window.innerWidth - 260);
     const y = clientY - tooltipEl.offsetHeight - 12;
     tooltipEl.style.left = Math.max(8, x) + 'px';
@@ -64,6 +63,11 @@ const GAIA_PRESENCE = (() => {
   function speakTeaser(siteId) {
     const line = pickLine(siteId);
     if (!line) return;
+    // EventBus path (preferred)
+    if (hasModule('EventBus')) {
+      window.EventBus.emit('presence:tease', { siteId, line });
+    }
+    // Direct fallback
     if (hasModule('GAIA_BUBBLE')) {
       GAIA_BUBBLE.speak(line, 'mysterious', 5000);
     }
@@ -73,12 +77,79 @@ const GAIA_PRESENCE = (() => {
     showTooltip,
     hideTooltip,
     speakTeaser,
-    pickLine
+    pickLine,
+
+    init() {
+      console.debug('[SML] GAIA_PRESENCE.init');
+
+      // Listen for engagement signals via EventBus
+      if (hasModule('EventBus')) {
+        this._unsubEngagement = window.EventBus.on('engagement:signal', (data) => {
+          // React to site taps — show tooltip teaser
+          if (data.signal === 'site_tap' && data.siteId) {
+            const site = hasModule('Data') ? Data.getSite?.(data.siteId) : null;
+            if (site) {
+              speakTeaser(data.siteId);
+            }
+          }
+        });
+      }
+
+      return true;
+    },
+
+    show() {
+      console.debug('[SML] GAIA_PRESENCE.show');
+      return true;
+    },
+
+    hide() {
+      console.debug('[SML] GAIA_PRESENCE.hide');
+      return true;
+    },
+
+    tease() {
+      console.debug('[SML] GAIA_PRESENCE.tease');
+      return true;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] GAIA_PRESENCE.reset');
+      hideTooltip();
+      return true;
+    },
+
+    destroy() {
+      console.debug('[SML] GAIA_PRESENCE.destroy');
+
+      // Unsubscribe from EventBus
+      if (this._unsubEngagement) {
+        this._unsubEngagement();
+        this._unsubEngagement = null;
+      }
+
+      // Remove tooltip DOM element
+      if (tooltipEl) {
+        tooltipEl.remove();
+        tooltipEl = null;
+      }
+
+      return true;
+    },
+
+    getState() {
+      return {};
+    },
   };
 })();
-window.GAIA_PRESENCE = GAIA_PRESENCE
+window.GAIA_PRESENCE = GAIA_PRESENCE;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GAIA_PRESENCE', {
-    provides: ['init', 'show', 'hide', 'tease', 'destroy'],
+    provides: ['init', 'show', 'hide', 'tease', 'speakTeaser', 'showTooltip', 'hideTooltip', 'pickLine', 'destroy', 'reset', 'getState'],
     requires: ['GAIA_BUBBLE'],
-  });;
+    emits: ['presence:tease'],
+    listens: ['engagement:signal'],
+  });
+}

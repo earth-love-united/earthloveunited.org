@@ -182,6 +182,44 @@ git push -u origin main
 
 ---
 
+## Step 5b — Lock down `main` (branch protection)
+
+**Do this immediately after the first successful push, before any agent runs a mission.**
+
+In your browser:
+
+1. Go to `https://github.com/gke0op/earthloveunited.org/settings/branches`
+2. Click **Add branch protection rule**
+3. **Branch name pattern:** `main`
+4. Enable:
+   - ✅ **Require a pull request before merging**
+   - ✅ **Require approvals** — 1 approval
+   - ✅ **Require review from Code Owners** ← this enforces `.github/CODEOWNERS`
+   - ✅ **Require status checks to pass before merging**
+     - Select the `static` and `smoke` checks from the `ci` workflow (they'll show up after CI runs once)
+   - ✅ **Require branches to be up to date before merging**
+   - ✅ **Do not allow bypassing the above settings** (applies to admins too)
+   - ✅ **Restrict who can push to matching branches** — leave empty (no one pushes directly)
+5. Disable:
+   - ❌ **Allow force pushes**
+   - ❌ **Allow deletions**
+6. Click **Create** / **Save changes**
+
+This is the **mathematical guarantee** that a 10-hour OWL run cannot damage `main`. Worst case it creates a garbage branch you delete with one command.
+
+## Step 5c — Install the local pre-commit hook
+
+From your Mac terminal:
+
+```bash
+cd ~/earthloveunited.org
+./tools/install-hooks.sh
+```
+
+This symlinks `tools/agent-precommit` into `.git/hooks/pre-commit` so every local commit runs the four-layer check (DAG + secrets + size + signature). Re-run this after any pull that updates the hook.
+
+Tell each agent that runs missions to also run this command on their first checkout. `start-mission.sh` re-installs it automatically inside each worktree, so day-two missions don't need to remember.
+
 ## Step 6 — Cloudflare Pages connection
 
 In your browser:

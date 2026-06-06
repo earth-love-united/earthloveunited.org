@@ -506,14 +506,40 @@ const GLOBE_NDVI = (() => {
     getYear: () => _currentYear,
     getYears: () => [...YEARS],
     isActive: () => _active,
-    isMobile: () => _isMobile,
-  };
+    isMobile: () => _isMobile,    reset() {
+      console.debug(`[SML] GLOBE_NDVI.reset`);
+      return true;
+    },
+    destroy() {
+      console.debug(`[SML] GLOBE_NDVI.destroy`);
+      return true;
+    },
+    getState() {
+      return {
+    activate() {
+      console.debug(`[Stub] GLOBE_NDVI.activate`);
+      return true;
+    },
+    deactivate() {
+      console.debug(`[Stub] GLOBE_NDVI.deactivate`);
+      return true;
+    },
+    getYear() {
+      console.debug(`[Stub] GLOBE_NDVI.getYear`);
+      return true;
+    },
+    setYear() {
+      console.debug(`[Stub] GLOBE_NDVI.setYear`);
+      return true;
+    },
+};
+    },};
 })();
 window.GLOBE_NDVI = GLOBE_NDVI;
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GLOBE_NDVI', {
-    provides: ['init', 'activate', 'deactivate', 'setYear', 'getYear'],
+    provides: ['init', 'activate', 'deactivate', 'setYear', 'getYear', 'reset', 'destroy', 'getState'],
     requires: ['GlobeModule'],
   });
 }

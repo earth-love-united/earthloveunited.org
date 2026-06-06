@@ -537,14 +537,47 @@ const GLOBE_RESTORE = (() => {
     },
     detectCountryAt: (lat, lng) => detectCountry(lat, lng),
     isActive: () => _active,
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] GLOBE_RESTORE.reset');
+      return true;
+    },
+
+    destroy() {
+      console.debug('[SML] GLOBE_RESTORE.destroy');
+
+      // Destroy offscreen canvas (large GPU-backed ImageData)
+      if (_canvas) {
+        _canvas.width = 0;
+        _canvas.height = 0;
+        _canvas = null;
+      }
+      _ctx = null;
+
+      // Nullify large data buffers
+      _originalData = null;
+      _restorations = [];
+
+      // Reset state
+      _active = false;
+      _initialized = false;
+      _totalPixelsRestored = 0;
+      _totalCO2 = 0;
+
+      return true;
+    },
+
+    getState() {
+      return {};
+    },
   };
 })();
 window.GLOBE_RESTORE = GLOBE_RESTORE;
 
-MODULE_CONTRACTS.register('GLOBE_RESTORE', {
-  provides: ['init', 'activate', 'deactivate', 'restore', 'erase', 'reset', 'loadTexture',
-             'setAction', 'getAction', 'getActions', 'getStats',
-             'setBrushSize', 'getBrushSize', 'getBrushSizes',
-             'detectBiomeAt', 'detectCountryAt'],
-  requires: ['GlobeModule'],
-});
+if (typeof MODULE_CONTRACTS !== 'undefined') {
+  MODULE_CONTRACTS.register('GLOBE_RESTORE', {
+    provides: ['init', 'activate', 'deactivate', 'restore', 'erase', 'reset', 'loadTexture', 'setAction', 'getAction', 'getActions', 'getStats', 'setBrushSize', 'getBrushSize', 'getBrushSizes', 'detectBiomeAt', 'detectCountryAt', 'destroy', 'getState'],
+    requires: ['GlobeModule'],
+  });
+}

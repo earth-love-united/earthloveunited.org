@@ -20,7 +20,7 @@
 window.GaiaRetrieval = (function () {
 
   MODULE_CONTRACTS.register('GaiaRetrieval', {
-    provides: ['search', 'getStatus'],
+    provides: ['search', 'getStatus', 'init', 'reset', 'destroy', 'getState'],
     requires: ['GaiaEmbeddings', 'GaiaReranker'],
   });
   // ─── State ───────────────────────────────────────────────────────
@@ -468,6 +468,18 @@ window.GaiaRetrieval = (function () {
         reranker: rerankerStatus,
       };
     },
+    reset() { console.debug(`[SML] GaiaRetrieval.reset`); return true; },
+    destroy() { console.debug(`[SML] GaiaRetrieval.destroy`); return true; },
+    getState() { return {
+    getStatus() {
+      console.debug(`[Stub] Module.getStatus`);
+      return true;
+    },
+    search() {
+      console.debug(`[Stub] Module.search`);
+      return true;
+    },
+}; },
   };
 })();
 

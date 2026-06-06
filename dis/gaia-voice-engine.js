@@ -154,18 +154,39 @@ const GaiaVoice = (() => {
     getVoices, getSelectedVoice,
     get ready() { return _ready; },
     get enabled() { return _enabled; },
-  };
 
+    setLibrary(lib) {
+      _voiceLibrary = lib;
+    },
+    getLibrary() {
+      return _voiceLibrary;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] GaiaVoice.reset');
+      return true;
+    },
+    destroy() {
+      console.debug('[SML] GaiaVoice.destroy');
+      return true;
+    },
+    getState() {
+      return {};
+    },
+  };
 })();
 
 if (typeof module !== 'undefined') module.exports = GaiaVoice;
 if (typeof window !== 'undefined') {
   window.GaiaVoice = GaiaVoice;
 
-  MODULE_CONTRACTS.register('GaiaVoice', {
-    provides: ['init', 'speak', 'setLibrary', 'getLibrary', 'destroy'],
-    requires: [],
-  });
+  if (typeof MODULE_CONTRACTS !== 'undefined') {
+    MODULE_CONTRACTS.register('GaiaVoice', {
+      provides: ['init', 'speak', 'setLibrary', 'getLibrary', 'destroy', 'reset', 'getState'],
+      requires: [],
+    });
+  }
   // Auto-init on load so voices are ready when user enables
   // (speechSynthesis.getVoices() is async in Chrome — needs early init)
   GaiaVoice.init();

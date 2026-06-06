@@ -143,7 +143,11 @@ def build_contract_index() -> dict[str, dict]:
 def build_module_file_map(script_files: list[str]) -> dict[str, str]:
     """Map each module name to the JS file that defines it.
 
-    Pattern: window.MODULE_NAME = MODULE_NAME;
+    Patterns:
+      window.MODULE_NAME = MODULE_NAME;
+      window.MODULE_NAME = (function() { ... })();
+      window.MODULE_NAME = (() => { ... })();
+      window.MODULE_NAME = { ... };
     """
     module_to_file: dict[str, str] = {}
 
@@ -152,7 +156,8 @@ def build_module_file_map(script_files: list[str]) -> dict[str, str]:
         if not js_path.exists():
             continue
         content = js_path.read_text(encoding="utf-8")
-        for m in re.finditer(r"window\.(\w+)\s*=\s*\w+\s*;", content):
+        # Match window.X = <anything> — capture the module name
+        for m in re.finditer(r"window\.(\w+)\s*=\s*(?:\w+|[\(\{])", content):
             module_to_file[m.group(1)] = rel_path
 
     return module_to_file

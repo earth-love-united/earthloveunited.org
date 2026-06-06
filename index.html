@@ -97,17 +97,44 @@
 <!-- ═══ HERO ═══ -->
 <div id="hero">
   <div class="hero-inner">
-    <!-- Delegation greeting (injected by JS if country detected) -->
-    <div id="hero-delegation"></div>
+    <div class="hero-stage">
+      <!-- Main heading -->
+      <h1>One Earth</h1>
+      <p class="hero-value">A living atlas for climate science, restoration, and planetary intelligence.</p>
 
-    <!-- Main heading -->
-    <h1>One Earth</h1>
+      <!-- Hero telemetry (carbon clock injected by JS; delegate insight kept out of the first viewport) -->
+      <div id="hero-telemetry" class="hero-telemetry" aria-label="Planetary telemetry">
+        <div id="hero-carbon-clock"></div>
+        <div id="hero-delegation"></div>
+      </div>
 
-    <!-- Carbon Clock (injected by JS) -->
-    <div id="hero-carbon-clock"></div>
+      <!-- Primary actions -->
+      <div class="hero-actions" aria-label="Arrival actions">
+        <button class="enter-btn" data-action="enterGlobe">Enter the Living Globe</button>
+        <div class="hero-secondary-actions" aria-label="Secondary arrival actions">
+          <a class="hero-link hero-link-quiet" href="gaia.html">Ask GAIA</a>
+          <span class="hero-action-sep" aria-hidden="true">·</span>
+          <button class="hero-link hero-link-quiet" data-action="viewDatasets">View Datasets</button>
+        </div>
+      </div>
+    </div>
 
-    <!-- Single CTA -->
-    <button class="enter-btn" data-action="enterSite">Explore the Planet</button>
+    <div class="arrival-pathways" aria-label="Choose your path">
+      <button class="arrival-route" data-action="startLearning">
+        <span class="route-kicker">Learn</span>
+        <strong>Globe + GAIA + climate missions</strong>
+      </button>
+      <!-- TODO: Replace mailto with volunteer intake form when ready. -->
+      <a class="arrival-route" href="mailto:hello@earthloveunited.org?subject=Volunteer%20Interview">
+        <span class="route-kicker">Contribute</span>
+        <strong>Open datasets + volunteer pathway</strong>
+      </a>
+      <!-- TODO: Replace mailto with booking link when scheduling is live. -->
+      <a class="arrival-route" href="mailto:hello@earthloveunited.org?subject=Partner%20Meeting">
+        <span class="route-kicker">Partner</span>
+        <strong>Carbon credits + restoration partnerships</strong>
+      </a>
+    </div>
   </div>
 
   <!-- Memorial — subtle, at the very bottom -->
@@ -323,6 +350,35 @@
     </div>
   </div>
 
+  <!-- DATASETS -->
+  <div class="section" id="datasets">
+    <div class="card reveal">
+      <div class="section-label">Open Commons</div>
+      <div class="section-title">Inspect the Working Datasets</div>
+      <div class="section-body">The open commons layer turns project sites, biomes, country pledges, and climate events into reusable public knowledge. Curated dataset hubs will sit beside the raw files so visitors can explore the story first and audit the source when needed.</div>
+      <div class="dataset-platforms">
+        <!-- TODO: Replace placeholder with public Hugging Face dataset collection URL when published. -->
+        <div class="dataset-platform dataset-platform-pending" aria-label="Hugging Face datasets coming soon">
+          <strong>Hugging Face datasets</strong>
+          <span>Public collection placeholder</span>
+        </div>
+        <!-- TODO: Replace placeholder with public GitHub source URL when repository link is confirmed. -->
+        <div class="dataset-platform dataset-platform-pending" aria-label="GitHub source coming soon">
+          <strong>GitHub source</strong>
+          <span>Source repository placeholder</span>
+        </div>
+      </div>
+      <div class="raw-data-label">Raw audit links</div>
+      <div class="dataset-links">
+        <a href="data/sites.json" target="_blank" rel="noopener">Project Sites JSON</a>
+        <a href="data/biomes.json" target="_blank" rel="noopener">Biome Carbon JSON</a>
+        <a href="data/pledge-nodes.json" target="_blank" rel="noopener">Country Pledges JSON</a>
+        <a href="data/climate-events.json" target="_blank" rel="noopener">Climate Events JSON</a>
+        <a href="data/events-core.csv" target="_blank" rel="noopener">Events CSV</a>
+      </div>
+    </div>
+  </div>
+
   <!-- TOGETHER -->
   <div class="section" id="together">
     <div class="card reveal">
@@ -331,22 +387,24 @@
       <div class="section-body">The climate crisis isn't solved by one organization. It's solved by millions of people making restoration possible.</div>
       <div class="cta-grid">
         <div class="cta-card">
-          <div class="cta-icon">💚</div>
-          <div class="cta-title">Donate</div>
-          <div class="cta-body">Every dollar funds real restoration — seedlings, land, local teams, and long-term stewardship.</div>
-          <a href="#" class="cta-btn">Donate Now</a>
+          <div class="cta-icon">🌍</div>
+          <div class="cta-title">Explore</div>
+          <div class="cta-body">Start with the globe, climate science, and guided Academy missions as they come online.</div>
+          <button class="cta-btn" data-action="enterGlobe">Explore Globe</button>
         </div>
         <div class="cta-card">
           <div class="cta-icon">🤝</div>
-          <div class="cta-title">Partner With Us</div>
-          <div class="cta-body">Corporations, NGOs, and governments — let's restore ecosystems at scale together.</div>
-          <a href="#" class="cta-btn">Get in Touch</a>
+          <div class="cta-title">Volunteer / Interview</div>
+          <div class="cta-body">Help shape the open knowledge commons, datasets, curriculum, interviews, and field storytelling.</div>
+          <!-- TODO: Replace mailto with volunteer intake form when ready. -->
+          <a href="mailto:hello@earthloveunited.org?subject=Volunteer%20Interview" class="cta-btn">Volunteer</a>
         </div>
         <div class="cta-card">
-          <div class="cta-icon">📣</div>
-          <div class="cta-title">Spread the Word</div>
-          <div class="cta-body">Share this page. Talk about carbon. The more people understand, the faster we move.</div>
-          <a href="#" class="cta-btn">Share</a>
+          <div class="cta-icon">🌱</div>
+          <div class="cta-title">Partner / Book Meeting</div>
+          <div class="cta-body">Discuss carbon credits, restoration projects, institutional partnerships, and transparent impact data.</div>
+          <!-- TODO: Replace mailto with booking link when scheduling is live. -->
+          <a href="mailto:hello@earthloveunited.org?subject=Partner%20Meeting" class="cta-btn">Book Meeting</a>
         </div>
       </div>
     </div>
@@ -362,6 +420,7 @@
       <a href="#biomes">Biomes</a>
       <a href="#scenario">Scenario Builder</a>
       <a href="#projects">Our Projects</a>
+      <a href="#datasets">Datasets</a>
       <a href="#together">Get Involved</a>
       <a href="mailto:hello@earthloveunited.org">Contact</a>
     </div>

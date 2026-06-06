@@ -237,5 +237,36 @@ const GaiaKnowledge = (() => {
     get SEARCH_KNOWLEDGE_TOOL() { return SEARCH_KNOWLEDGE_TOOL; },
     get isLoaded() { return _loaded; },
     get chunkCount() { return _chunks.length; },
+
+    // ── SML ──
+    reset() {
+      _chunks = [];
+      _vocab = null;
+      _loaded = false;
+      _loading = false;
+    },
+    destroy() {
+      _chunks = [];
+      _vocab = null;
+      _loaded = false;
+      _loading = false;
+    },
+    getState() {
+      return {
+        loaded: _loaded,
+        loading: _loading,
+        chunkCount: _chunks.length,
+        vocabSize: _vocab ? _vocab.size : 0,
+      };
+    },
   };
 })();
+
+window.GaiaKnowledge = GaiaKnowledge;
+
+if (typeof MODULE_CONTRACTS !== 'undefined') {
+  MODULE_CONTRACTS.register('GaiaKnowledge', {
+    provides: ['init', 'search', 'getContext', 'getStats', 'executeTool', 'reset', 'destroy', 'getState'],
+    requires: [],
+  });
+}

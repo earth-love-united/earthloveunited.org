@@ -21,6 +21,17 @@ const BRIDGE_CLIENT = (() => {
   const WS_URL = 'ws://127.0.0.1:8765';
   const RECONNECT_DELAY = 3000;
 
+  // Only attempt to connect on localhost — the bridge is a local dev service.
+  // On production deploys (Cloudflare Pages, Hostinger, etc.) there is no
+  // bridge to connect to, so we no-op silently instead of spamming reconnect
+  // errors in the console.
+  const _IS_LOCAL = typeof location !== 'undefined' && (
+    location.hostname === 'localhost' ||
+    location.hostname === '127.0.0.1' ||
+    location.hostname === '::1' ||
+    location.protocol === 'file:'
+  );
+
   function connect() {
     if (_ws && (_ws.readyState === WebSocket.OPEN || _ws.readyState === WebSocket.CONNECTING)) {
       return;
@@ -101,6 +112,11 @@ const BRIDGE_CLIENT = (() => {
 
   return {
     init() {
+      // No-op on production — the bridge is a local dev service only.
+      if (!_IS_LOCAL) {
+        return false;
+      }
+
       console.debug('[Bridge] init');
 
       // Connect to the WebSocket bridge

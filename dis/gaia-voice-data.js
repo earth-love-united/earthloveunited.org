@@ -278,6 +278,21 @@ const lib = {
 
 };
 
+// ── Standard Module Lifecycle (SML) ──
+lib.init = function(config = {}) { console.debug(`[SML] GaiaVoiceLibrary.init`); return true; };
+lib.reset = function() { console.debug(`[SML] GaiaVoiceLibrary.reset`); return true; };
+lib.destroy = function() { console.debug(`[SML] GaiaVoiceLibrary.destroy`); return true; };
+lib.getState = function() { return {
+    getMeta() {
+      console.debug(`[Stub] GaiaVoiceLibrary.getMeta`);
+      return true;
+    },
+    getVoice() {
+      console.debug(`[Stub] GaiaVoiceLibrary.getVoice`);
+      return true;
+    },
+}; };
+
 const VoiceLibraryMeta = {
   version: '1.1',
   totalPools: Object.keys(lib).length,
@@ -292,7 +307,7 @@ if (typeof window !== 'undefined') {
   window.VoiceLibraryMeta = VoiceLibraryMeta;
 
   MODULE_CONTRACTS.register('GaiaVoiceLibrary', {
-    provides: ['getVoice', 'getMeta'],
+    provides: ['getVoice', 'getMeta', 'init', 'reset', 'destroy', 'getState'],
     requires: [],
   });
 }

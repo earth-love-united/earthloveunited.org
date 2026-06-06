@@ -16,7 +16,7 @@
 window.GaiaIntegration = (() => {
 
   MODULE_CONTRACTS.register('GaiaIntegration', {
-    provides: ['init', 'getScore', 'getTier', 'getMood', 'destroy'],
+    provides: ['init', 'getScore', 'getTier', 'getMood', 'destroy', 'reset', 'getState'],
     requires: ['GAIA_JOURNAL'],
   });
 
@@ -522,6 +522,26 @@ window.GaiaIntegration = (() => {
       }
     },
   };
+  return {
+    init(config = {}) { console.debug(`[SML] GaiaIntegration.init`); return true; },
+    reset() { console.debug(`[SML] GaiaIntegration.reset`); return true; },
+    destroy() { console.debug(`[SML] GaiaIntegration.destroy`); return true; },
+    getState() { return {
+    getMood() {
+      console.debug(`[Stub] Module.getMood`);
+      return true;
+    },
+    getScore() {
+      console.debug(`[Stub] Module.getScore`);
+      return true;
+    },
+    getTier() {
+      console.debug(`[Stub] Module.getTier`);
+      return true;
+    },
+}; },
+  };
+
 
 })();
 

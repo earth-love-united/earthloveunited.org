@@ -141,17 +141,44 @@
 /* ── Responsive ── */
 @media (max-width: 768px) {
   #gaia-bubble {
-    bottom: 16px;
-    right: 16px;
-    padding: 8px 12px;
+    bottom: 12px;
+    right: 12px;
+    padding: 8px 10px;
+    gap: 6px;
+    max-width: 200px;
+    z-index: 150;
   }
   .gaia-bubble-avatar {
-    width: 28px;
-    height: 28px;
-    font-size: 14px;
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
+  }
+  .gaia-bubble-text {
+    font-size: 11px;
+    max-width: 140px;
   }
   .gaia-quest-popup {
-    bottom: 56px;
-    right: 16px;
+    bottom: 52px;
+    right: 12px;
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  #gaia-bubble {
+    bottom: 8px;
+    right: 8px;
+    padding: 6px 8px;
+    max-width: 160px;
+  }
+  .gaia-bubble-avatar {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+  .gaia-bubble-text {
+    font-size: 10px;
+    max-width: 110px;
   }
 }

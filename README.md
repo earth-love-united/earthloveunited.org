@@ -38,7 +38,9 @@ python3 -m http.server 8000
 
 No `npm install`. No `pnpm`. No bundler. No build step at all. The site is two
 HTML files (`index.html`, `gaia.html`) loading classic `<script>` tags. See
-[ARCHITECTURE.md](ARCHITECTURE.md) for the full module map.
+[ARCHITECTURE.md](ARCHITECTURE.md) for the module map, and
+[SWARM_SDK.md](SWARM_SDK.md) for the Standard Module Lifecycle (SML) every
+module follows.
 
 ---
 

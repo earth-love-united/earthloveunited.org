@@ -282,16 +282,50 @@ const RegistryCheck = (() => {
     renderRegistryCard,
     renderRegistryBadge,
     REGISTRIES,
+
+    init() {
+      console.debug('[Stub] RegistryCheck.init');
+      return true;
+    },
+
+    check() {
+      console.debug('[Stub] RegistryCheck.check');
+      return true;
+    },
+
+    getRegistry() {
+      console.debug('[Stub] RegistryCheck.getRegistry');
+      return null;
+    },
+
+    getProject() {
+      console.debug('[Stub] RegistryCheck.getProject');
+      return null;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] RegistryCheck.reset');
+      return true;
+    },
+    destroy() {
+      console.debug('[SML] RegistryCheck.destroy');
+      return true;
+    },
+    getState() {
+      return {};
+    },
   };
 })();
 
-// Auto-init check if Data is ready
 if (hasModule('Data')) {
   console.log('[RegistryCheck] Module ready — call RegistryCheck.checkSite(id) to verify');
 }
 window.RegistryCheck = RegistryCheck;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('RegistryCheck', {
-    provides: ['init', 'check', 'getRegistry', 'getProject'],
+    provides: ['init', 'check', 'getRegistry', 'getProject', 'reset', 'destroy', 'getState'],
     requires: [],
   });
+}

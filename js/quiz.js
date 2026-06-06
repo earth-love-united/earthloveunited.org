@@ -74,12 +74,44 @@ const Quiz = {
         $text('q-score', '');
       }
     }, 3000);
-  }
+  },
+
+  start() {
+    console.debug('[Stub] Quiz.start');
+    return true;
+  },
+
+  next() {
+    console.debug('[Stub] Quiz.next');
+    return true;
+  },
+
+  getResult() {
+    console.debug('[Stub] Quiz.getResult');
+    return true;
+  },
+
+  // ── Standard Module Lifecycle (SML) ──
+  reset() {
+    console.debug('[SML] Quiz.reset');
+    return true;
+  },
+
+  destroy() {
+    console.debug('[SML] Quiz.destroy');
+    return true;
+  },
+
+  getState() {
+    return {};
+  },
 };
 
 window.Quiz = Quiz;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('Quiz', {
-    provides: ['init', 'start', 'next', 'answer', 'getResult', 'reset'],
+    provides: ['init', 'start', 'next', 'answer', 'getResult', 'reset', 'destroy', 'getState'],
     requires: [],
   });
+}

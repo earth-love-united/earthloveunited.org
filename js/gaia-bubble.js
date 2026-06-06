@@ -16,6 +16,7 @@ const GAIA_BUBBLE = (() => {
   let textEl = null;
   let currentText = '';
   let hideTimer = null;
+  let _typeTimer = null;
   let isExpanded = false;
   let currentSite = null;
 
@@ -122,6 +123,9 @@ const GAIA_BUBBLE = (() => {
     bubbleEl.classList.add('speaking');
     bubbleEl.classList.remove('thinking');
 
+    // Clear previous typing timer to prevent interleaved text
+    if (_typeTimer) { clearTimeout(_typeTimer); _typeTimer = null; }
+
     // Typing effect — speed adjusted by voice modifier
     let i = 0;
     const baseSpeed = Math.min(25, Math.max(12, 150 / text.length));
@@ -132,7 +136,7 @@ const GAIA_BUBBLE = (() => {
       if (i < text.length) {
         textEl.textContent += text[i];
         i++;
-        setTimeout(type, speed);
+        _typeTimer = setTimeout(type, speed);
       }
     }
     type();
@@ -295,13 +299,153 @@ const GAIA_BUBBLE = (() => {
     setCurrentSite, getCurrentSite, openFullGAIA,
     isVisible, getBubble,
     colors: COLORS,
-  };
 
-// IIFE executes and assigns to GAIA_BUBBLE
+    init() {
+      console.debug('[Stub] GAIA_BUBBLE.init');
+
+      // Subscribe to engagement events via EventBus
+      if (hasModule('EventBus')) {
+        this._unsubEngagement = window.EventBus.on('engagement:signal', (data) => {
+          // React to significant engagement signals
+          if (data.weight >= 5 && data.signal !== 'idle_penalty') {
+            // Choose a contextual reaction based on signal type
+            const reactions = {
+              site_tap: "What will you find there?",
+              data_reveal: "The numbers tell a story...",
+              scenario_run: "You're shaping the future.",
+              insight: "That's worth remembering.",
+              correct_prediction: "Sharp eye.",
+              share: "Spreading the word. That matters.",
+              big_scenario: "Now THAT is impact.",
+              return_visit: "Welcome back. Let's go deeper.",
+            };
+            const line = reactions[data.signal];
+            if (line && isVisible()) {
+              // Don't interrupt if already speaking — just queue
+              window.EventBus.emit('bubble:react', { text: line, signal: data.signal });
+            }
+          }
+        });
+
+        // Subscribe to app-level bubble commands via EventBus
+        this._unsubBubbleSpeak = window.EventBus.on('bubble:speak', (data) => {
+          if (data.text) {
+            speak(data.text, data.tone || 'warm', data.duration || 5000);
+          }
+        });
+
+        this._unsubBubbleCreate = window.EventBus.on('bubble:create', () => {
+          create();
+        });
+
+        this._unsubBubbleIdle = window.EventBus.on('bubble:idle-nudge', () => {
+          idleNudge();
+        });
+      }
+
+      return true;
+    },
+
+    show() {
+      console.debug('[Stub] GAIA_BUBBLE.show');
+      return true;
+    },
+
+    hide() {
+      console.debug('[Stub] GAIA_BUBBLE.hide');
+      return true;
+    },
+
+    setMood() {
+      console.debug('[Stub] GAIA_BUBBLE.setMood');
+      return true;
+    },
+
+    setPosition() {
+      console.debug('[Stub] GAIA_BUBBLE.setPosition');
+      return true;
+    },
+
+    fadeIn() {
+      console.debug('[Stub] GAIA_BUBBLE.fadeIn');
+      return true;
+    },
+
+    fadeOut() {
+      console.debug('[Stub] GAIA_BUBBLE.fadeOut');
+      return true;
+    },
+
+    setInteractive() {
+      console.debug('[Stub] GAIA_BUBBLE.setInteractive');
+      return true;
+    },
+
+    setPhase() {
+      console.debug('[Stub] GAIA_BUBBLE.setPhase');
+      return true;
+    },
+
+    handleScroll() {
+      console.debug('[Stub] GAIA_BUBBLE.handleScroll');
+      return true;
+    },
+
+    handleResize() {
+      console.debug('[Stub] GAIA_BUBBLE.handleResize');
+      return true;
+    },
+
+    on() {
+      console.debug('[Stub] GAIA_BUBBLE.on');
+      return true;
+    },
+
+    off() {
+      console.debug('[Stub] GAIA_BUBBLE.off');
+      return true;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] GAIA_BUBBLE.reset');
+      return true;
+    },
+    destroy() {
+      console.debug('[SML] GAIA_BUBBLE.destroy');
+
+      // Unsubscribe from EventBus
+      if (this._unsubEngagement) {
+        this._unsubEngagement();
+        this._unsubEngagement = null;
+      }
+      if (this._unsubBubbleSpeak) {
+        this._unsubBubbleSpeak();
+        this._unsubBubbleSpeak = null;
+      }
+      if (this._unsubBubbleCreate) {
+        this._unsubBubbleCreate();
+        this._unsubBubbleCreate = null;
+      }
+      if (this._unsubBubbleIdle) {
+        this._unsubBubbleIdle();
+        this._unsubBubbleIdle = null;
+      }
+
+      return true;
+    },
+    getState() {
+      return {};
+    },
+  };
 })();
 window.GAIA_BUBBLE = GAIA_BUBBLE;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GAIA_BUBBLE', {
-    provides: ['speak', 'show', 'hide', 'setMood', 'setPosition', 'fadeIn', 'fadeOut', 'isVisible', 'setInteractive', 'setPhase', 'handleScroll', 'handleResize', 'on', 'off', 'destroy'],
+    provides: ['speak', 'show', 'hide', 'setMood', 'setPosition', 'fadeIn', 'fadeOut', 'isVisible', 'setInteractive', 'setPhase', 'handleScroll', 'handleResize', 'on', 'off', 'destroy', 'init', 'reset', 'getState'],
     requires: ['GAIA_JOURNAL'],
+    emits: ['bubble:react'],
+    listens: ['engagement:signal'],
   });
+}

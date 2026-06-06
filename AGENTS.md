@@ -2,6 +2,13 @@
 
 > **Read this FIRST before writing any code.**
 > This file prevents you from going in circles, duplicating work, or breaking the architecture.
+>
+> Companion documents — read these too:
+> - `SWARM_SDK.md` — the **code architecture** (Standard Module Lifecycle, IIFE templates, contract system). The architectural authority.
+> - `OPERATIONS.md` — the **runbook** (the exact commands to run during a mission).
+> - `ARCHITECTURE.md` — the **module map** (z-index stack, event flows, script load order).
+>
+> This file (`AGENTS.md`) is the **rules**: what's protected, what auto-merges, how the team coordinates.
 
 ## ⚡ Architecture: 100% Bare Metal
 
@@ -185,13 +192,90 @@ Auto-runs at page load. Validates all modules in `MODULE_MANIFEST` are on `windo
 | File | Purpose |
 |------|---------|
 | `ARCHITECTURE.md` | Full module map, z-index stack, event flows, script load order, known traps |
+| `SWARM_SDK.md` | Code architecture — Standard Module Lifecycle, IIFE templates, contract system |
 | `.agent-context.md` | Quick reference for AI agents |
 | `js/gaia-utils.js` | Foundation: $(), safeCall, hasModule, safeGet, reportError, safeChain |
 | `js/module-contracts.js` | Module dependency/interface validation |
 | `js/module-validator.js` | Boot validator — checks all modules are on window |
+| `js/event-bus.js` | EventBus — decoupled pub/sub. Extends contracts with `emits` / `listens` |
+| `js/storage-adapter.js` | IndexedDB wrapper (`STORAGE_ADAPTER`) — use for any payload > 5MB |
+| `js/modules/` | **Parallel subsystem** (ES6 classes, NOT IIFE) — declarative learning modules |
 | `js/app.js` | Init entry point (load LAST) — runs pre-flight checks |
+| `infra/bridge.py` | Out-of-band agent↔browser WebSocket router (ports 8765 / 8766) |
 | `css/base.css` | Design tokens (:root variables), reset, animations |
 | `css/layout.css` | Page structure, z-index stack |
+
+---
+
+## 🧩 New Subsystems (read before touching these areas)
+
+### EventBus — decoupled pub/sub
+
+Cross-module signalling without direct coupling. Modules emit events; other
+modules subscribe. The contract schema now has two extra fields:
+
+```js
+MODULE_CONTRACTS.register('YOUR_MODULE', {
+  provides: ['init', 'reset', 'destroy', 'getState', 'doThing'],
+  requires: ['DependencyName'],
+  emits:    ['your-module:fired'],     // events YOU dispatch
+  listens:  ['other-module:received'], // events YOU subscribe to
+});
+```
+
+Runtime API:
+```js
+EventBus.emit('eventName', payload)
+const off = EventBus.on('eventName', cb)   // returns unsubscribe fn
+EventBus.once('eventName', cb)
+EventBus.off('eventName', cb)
+```
+
+Live channels so far: `bubble:react`, `engagement:signal`, `engagement:tier-change`.
+When adding a new channel, prefix it with the emitter's module name (`module:verb`).
+
+### STORAGE_ADAPTER — IndexedDB persistence
+
+`localStorage` is capped at ~5MB. For anything larger (knowledge indices, large
+caches, embeddings), use `STORAGE_ADAPTER` instead. Promise-based API:
+
+```js
+await STORAGE_ADAPTER.set('key', value)
+const value = await STORAGE_ADAPTER.get('key')
+await STORAGE_ADAPTER.remove('key')
+await STORAGE_ADAPTER.clear()
+const keys = await STORAGE_ADAPTER.keys()
+```
+
+Loaded on both `index.html` and `gaia.html`. Initialised lazily on first call.
+
+### infra/bridge.py — agent↔browser bridge
+
+Python WebSocket router for autonomous agents to push real-time updates into
+running browsers without polling. Two ports:
+
+- `ws://localhost:8765` — browser clients (the running site)
+- `ws://localhost:8766` — autonomous agents (your terminal / OWL / Hermes)
+
+Agents send `{action: "broadcast", payload: {...}}` and every connected
+browser receives `{source: "bridge", payload: {...}}`. Use this when you need
+to push state from a 10-hour mission into a running tab without reloading.
+
+Smoke test: `python infra/smoke_test.py` (requires the bridge running).
+
+### js/modules/ — declarative learning subsystem
+
+This directory is a **parallel architecture** using ES6 classes, NOT the IIFE
+pattern. It loads JSON module definitions from `data/modules/*.json` and
+renders the Hook → Explore → Discover → Verify → Connect lifecycle.
+
+Files: `module-engine.js`, `registry.js`, `renderers.js`, `gaia-bridge.js`,
+`calculator.js`.
+
+**Do NOT** try to IIFE-ify these files. The ES6 class pattern is intentional;
+both patterns coexist with different responsibilities (IIFE for global
+orchestration, ES6 classes for declarative content rendering). Both are
+compatible with the bare-metal philosophy because they require no build step.
 
 ---
 
@@ -232,3 +316,174 @@ Then:
 ## 🗑️ Dead Code Quarantine
 
 The `_dead/` directory contains quarantined files from previous agent sessions. **Do not resurrect them.**
+
+---
+
+## 🤝 Operations: How Agents Coordinate
+
+This section is the rulebook for working in the repo after it has been pushed
+to GitHub. It is written role-first (architect / reviewer / designer /
+generalist), not agent-first — the rules stay stable regardless of which
+agent (or human) is filling which role on a given mission.
+
+For the day-to-day "what command do I run?" version of this, see `OPERATIONS.md`.
+
+### Roles
+
+| Role | What this role does | When to invoke |
+|------|---------------------|----------------|
+| **architect** | Designs new modules, refactors core systems, owns ARCHITECTURE.md | Before major features, when patterns are being introduced |
+| **reviewer** | Reviews PRs touching protected files, judges architectural fit | Triggered automatically by CODEOWNERS on protected paths |
+| **designer** | Owns CSS, design tokens, visual language, layout | Visual / UX work |
+| **generalist** | Implements features, fixes bugs, writes data pipelines | Most missions |
+
+The mapping of which agent currently fills which role is documented separately
+in `.github/CODEOWNERS` and a lightweight `TEAM.md` (if present). Agents pick
+the role appropriate to the work, not the other way around.
+
+### The Mission Lifecycle
+
+Every piece of work — a feature, a fix, a refactor — is a **mission**. The
+mission lifecycle is identical for every agent:
+
+```
+1. start-mission.sh  →  fresh worktree on agent/<role>/<slug> branch
+2. work in that worktree, commit normally
+3. end-mission.sh    →  push, open PR, update MISSIONS.md
+4. CI runs           →  SmokeTest + StackLint in headless Chrome
+5. auto-merge        →  if green AND no protected files touched
+   OR human review   →  if CI red OR protected files touched
+```
+
+Concretely:
+
+```bash
+# Start
+./tools/start-mission.sh generalist add-events-filter
+# → cd ../earthloveunited.org-missions/add-events-filter
+
+# Work normally — edit, commit, etc.
+git add -A
+git commit -m "feat(globe): add events filter UI"
+
+# Finish
+./tools/end-mission.sh
+# → pushes branch, opens PR, returns PR URL
+```
+
+### Branch Naming
+
+```
+agent/<role>/<slug>            ← all agent mission branches
+fix/<slug>                     ← hotfixes (human-only convention)
+main                           ← protected, only updated via PR
+```
+
+The `<slug>` is kebab-case and descriptive: `add-events-filter`,
+`refactor-globe-modes`, not `update-1` or `wip`. Other agents read branch
+names to know what's in flight.
+
+### Protected Files (require reviewer approval)
+
+CODEOWNERS enforces this automatically. The list:
+
+```
+/LICENSE
+/CREDITS.md
+/CODE_OF_CONDUCT.md
+/AGENTS.md
+/ARCHITECTURE.md
+/README.md
+/.github/**
+/.gitignore
+/js/gaia-utils.js
+/js/module-contracts.js
+/js/module-validator.js
+/tools/agent-precommit
+/tools/start-mission.sh
+/tools/end-mission.sh
+```
+
+If your mission touches any of these, expect human review on the PR. Plan
+for it: open the PR with extra context in the description explaining why
+the change is necessary. Do **not** sneak protected changes into an
+unrelated PR — reviewers will reject the whole thing.
+
+### Pre-commit Tripwires
+
+Every commit is checked locally before it can be made. The hook lives at
+`tools/agent-precommit` and is installed via `tools/install-hooks.sh`. It
+blocks any commit containing:
+
+- Hardcoded secrets patterns (`sk-`, `hf_`, `ghp_`, `AKIA`, `Bearer`)
+- `.env*` files
+- Files larger than 10MB (point them at Hugging Face instead — see CREDITS.md)
+- Personal filesystem paths (`/Users/...`, `/home/...`)
+- Internal signature phrases reserved for human-agent attestation
+
+If a commit is blocked, the hook tells you exactly which line tripped which
+rule. Fix the line and retry. Do not bypass with `--no-verify` — that flag
+should be considered off-limits for agents.
+
+### Auto-merge vs. Human Review
+
+| Condition | Outcome |
+|-----------|---------|
+| CI green, no protected files touched, < 20 files changed | **Auto-merges** when labelled `auto-merge` |
+| CI green, but touches protected files | Human review required (CODEOWNERS blocks merge) |
+| CI red | Bounces back to the originating agent; no merge |
+| > 20 files changed in one PR | Human review required regardless of CI |
+| Pre-commit hook tripped | Commit never happens — agent must fix locally |
+
+All PRs touching protected files receive architectural review against the
+documented guidelines in this file and ARCHITECTURE.md. Reviewers will
+reject PRs that violate the IIFE pattern, the `window.X` rule, the z-index
+stack, or any of the DO-NOT rules at the top of this document — regardless
+of whether CI happens to pass.
+
+### Visibility: MISSIONS.md
+
+`MISSIONS.md` is the live kanban for the team. `start-mission.sh` adds an
+entry when work begins; `end-mission.sh` updates it when the PR opens or
+merges. Before starting a new mission, agents read `MISSIONS.md` to avoid
+collisions:
+
+```bash
+cat MISSIONS.md     # see what's in flight
+gh pr list           # see open PRs (same info, GitHub-side)
+```
+
+If two missions would touch overlapping files, the second agent should
+either wait for the first to merge OR coordinate via a comment on the
+first agent's PR.
+
+### Escalation: when to pull the human in
+
+The human (the foundation maintainer) is involved when something needs
+**judgment**, not when something needs **execution**. Escalate via the PR
+when:
+
+- CI has failed twice on the same change despite agent fixes
+- A protected file change is genuinely necessary
+- The mission revealed an architectural decision that should be made
+  explicitly (e.g., "should we add a new module type?")
+- A dependency between agents is blocking progress and can't be unblocked
+  via PR comments
+- The work has gone significantly out of scope from the original mission
+
+For everything else: keep going. Open PRs. Trust the rails.
+
+### What is explicitly OFF-LIMITS for agents
+
+- Force-pushing to any branch (`git push --force` / `--force-with-lease`)
+- Deleting branches that aren't yours
+- Modifying `.git/` internals directly
+- Bypassing the pre-commit hook with `--no-verify`
+- Editing CODEOWNERS to remove yourself from review
+- Pushing directly to `main`
+- Deleting `_dead/` (it's a deliberate quarantine, not garbage)
+- Touching the workspace's parent directories outside `earthloveunited.org/`
+
+These restrictions exist so that a 10-hour autonomous mission cannot damage
+shared state or the public release. If a mission appears to require any of
+the above, escalate via a PR comment — do not work around the restriction.

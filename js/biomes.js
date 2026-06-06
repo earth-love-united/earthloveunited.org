@@ -78,12 +78,44 @@ const Biomes = {
     document.querySelectorAll('.bc-bar-fill').forEach((bar, i) => {
       setTimeout(() => { bar.style.width = bar.dataset.width; }, i * 60);
     });
-  }
+  },
+
+  getBiome(key) {
+    console.debug('[Stub] Biomes.getBiome');
+    return null;
+  },
+
+  getAllBiomes() {
+    console.debug('[Stub] Biomes.getAllBiomes');
+    return [];
+  },
+
+  classify() {
+    console.debug('[Stub] Biomes.classify');
+    return true;
+  },
+
+  // ── Standard Module Lifecycle (SML) ──
+  reset() {
+    console.debug('[SML] Biomes.reset');
+    return true;
+  },
+
+  destroy() {
+    console.debug('[SML] Biomes.destroy');
+    return true;
+  },
+
+  getState() {
+    return {};
+  },
 };
 
 window.Biomes = Biomes;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('Biomes', {
-    provides: ['init', 'getBiome', 'getAllBiomes', 'classify'],
+    provides: ['init', 'getBiome', 'getAllBiomes', 'classify', 'reset', 'destroy', 'getState'],
     requires: [],
   });
+}

@@ -32,7 +32,7 @@ window.GaiaClient = (() => {
     // 1. Restore persisted state
     GaiaKeyGate.init();
     GaiaQuests.init();
-    GaiaState.restoreState();
+    await GaiaState.restoreState();
 
     // 1b. Load voice library into state machine
     // GaiaVoiceLibrary is the data module; pass it to the state machine
@@ -61,7 +61,7 @@ window.GaiaClient = (() => {
     // GaiaMind is the consciousness layer — it persists across sessions
     // and drives emotional state, desires, participant modeling, and silence.
     if (typeof GaiaMind !== 'undefined') {
-      const mindRestored = GaiaState.restoreState(); // This now also restores GaiaMind
+      const mindRestored = await GaiaState.restoreState(); // This now also restores GaiaMind
       log('[GaiaClient] GAIA mind restored:', mindRestored);
     } else {
       console.warn('[GaiaClient] GaiaMind not found — gaia-mind.js must be loaded before gaia-client.js');
@@ -564,35 +564,35 @@ window.GaiaClient = (() => {
     const interactionEvents = ['click', 'touchstart', 'scroll', 'keydown', 'mousemove'];
     interactionEvents.forEach(evt => {
       document.addEventListener(evt, () => {
-        GaiaState.handleEvent('interaction', { type: evt });
+        GaiaState.handleEvent('interaction', { type: evt }).catch(() => {});
       }, { passive: true });
     });
 
     // Page visibility
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
-        GaiaState.handleEvent('page_hidden');
+        GaiaState.handleEvent('page_hidden').catch(() => {});
       } else {
-        GaiaState.handleEvent('page_visible');
+        GaiaState.handleEvent('page_visible').catch(() => {});
       }
     });
 
     // Before unload
     window.addEventListener('beforeunload', () => {
-      GaiaState.handleEvent('session_end');
+      GaiaState.handleEvent('session_end').catch(() => {});
       _flushEvents();
     });
 
     // Custom events from globe
     document.addEventListener('gaia:site-tap', (e) => {
-      GaiaState.handleEvent('site_entered', { siteId: e.detail.siteId });
+      GaiaState.handleEvent('site_entered', { siteId: e.detail.siteId }).catch(() => {});
     });
 
     document.addEventListener('gaia:data-reveal', (e) => {
       GaiaState.handleEvent('data_revealed', {
         siteId: e.detail.siteId,
         layerType: e.detail.layer
-      });
+      }).catch(() => {});
     });
 
     document.addEventListener('gaia:scenario-run', (e) => {
@@ -602,14 +602,14 @@ window.GaiaClient = (() => {
         to: e.detail.toBiome,
         hectares: e.detail.hectares,
         result: e.detail.result
-      });
+      }).catch(() => {});
     });
 
     // Sandbox panel opened
     document.addEventListener('gaia:sandbox-open', (e) => {
       GaiaState.handleEvent('sandbox_opened', {
         siteId: GaiaState.getState().currentSite
-      });
+      }).catch(() => {});
     });
 
     // Chat message sent — generate GAIA response in state machine mode
@@ -617,7 +617,7 @@ window.GaiaClient = (() => {
       const text = e.detail.message;
       if (!text) return;
       // Track in state machine
-      GaiaState.handleEvent('chat_sent', { message: text });
+      GaiaState.handleEvent('chat_sent', { message: text }).catch(() => {});
       // If NOT unlocked (state machine mode), GAIA responds with a voice line
       if (!_unlocked) {
         _generateStateMachineChatResponse(text);
@@ -658,7 +658,7 @@ window.GaiaClient = (() => {
     _renderUserMessage(text);
 
     // Track
-    GaiaState.handleEvent('chat_sent', { message: text });
+    GaiaState.handleEvent('chat_sent', { message: text }).catch(() => {});
 
     // Check for quest triggers (skeptic quest)
     GaiaQuests.checkAllQuests('chat_sent', { message: text });
@@ -1064,10 +1064,32 @@ window.GaiaClient = (() => {
     isUnlocked:   () => _unlocked,
     speak:        (text, emotion) => _onGaiaSpeak(text, emotion),
     submitKey:    (key) => GaiaKeyGate.submitKey(key),
-    CONFIG
+    CONFIG,
+
+    // ── SML ──
+    reset() {
+      _initialized = false;
+      _unlocked = false;
+      _pendingTools = [];
+      _eventBuffer = [];
+    },
+    destroy() {
+      _initialized = false;
+      _unlocked = false;
+      if (_ws) { _ws.close(); _ws = null; }
+      _pendingTools = [];
+      _eventBuffer = [];
+    },
   };
 } catch(e) { console.error('[GaiaClient] Init error:', e); }
 })();
+
+if (typeof MODULE_CONTRACTS !== 'undefined') {
+  MODULE_CONTRACTS.register('GaiaClient', {
+    provides: ['init', 'getState', 'getScore', 'getMood', 'getQuests', 'hasKey', 'isUnlocked', 'speak', 'submitKey', 'reset', 'destroy'],
+    requires: ['GaiaState', 'GaiaQuests', 'GaiaKeyGate', 'GaiaVoice', 'GaiaMind'],
+  });
+}
 
 // Auto-init on DOM ready
 if (document.readyState === 'loading') {

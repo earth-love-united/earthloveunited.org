@@ -24,12 +24,44 @@ const Counters = {
       if (t < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
-  }
+  },
+
+  init() {
+    console.debug('[Stub] Counters.init');
+    return true;
+  },
+
+  increment() {
+    console.debug('[Stub] Counters.increment');
+    return true;
+  },
+
+  getCount() {
+    console.debug('[Stub] Counters.getCount');
+    return 0;
+  },
+
+  // ── Standard Module Lifecycle (SML) ──
+  reset() {
+    console.debug('[SML] Counters.reset');
+    return true;
+  },
+
+  destroy() {
+    console.debug('[SML] Counters.destroy');
+    return true;
+  },
+
+  getState() {
+    return {};
+  },
 };
 
 window.Counters = Counters;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('Counters', {
-    provides: ['init', 'increment', 'getCount', 'reset'],
+    provides: ['init', 'increment', 'getCount', 'reset', 'destroy', 'getState'],
     requires: [],
   });
+}

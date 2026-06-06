@@ -327,3 +327,128 @@ const GAIA_VOICE_CONFIG = {
     return Object.keys(this._modifiers);
   },
 };
+
+// ═══════════════════════════════════════════════════════════
+// GLOBAL ERROR HANDLER — catches uncaught errors and rejections
+// ═══════════════════════════════════════════════════════════
+window.onerror = function(message, source, lineno, colno, error) {
+  try {
+    reportError('window.onerror', error || new Error(message + ' at ' + source + ':' + lineno));
+  } catch (_) {}
+  return false;
+};
+
+window.onunhandledrejection = function(event) {
+  try {
+    const err = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+    reportError('unhandledrejection', err);
+  } catch (_) {}
+};
+
+// ═══════════════════════════════════════════════════════════
+// EVENT DELEGATION — replaces inline onclick/onkeydown/oninput
+// Usage: data-action="functionName" data-action-args='["arg1","arg2"]'
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('[data-action]');
+  if (!el) return;
+  var action = el.getAttribute('data-action');
+  if (!action) return;
+  var args = [];
+  var argsAttr = el.getAttribute('data-action-args');
+  if (argsAttr) {
+    try { args = JSON.parse(argsAttr); } catch (_) { args = [argsAttr]; }
+  }
+  // Resolve function: window[action] or dotted path like "GaiaKeyGate.openModal"
+  var fn = window;
+  var parts = action.split('.');
+  for (var i = 0; i < parts.length; i++) {
+    fn = fn[parts[i]];
+    if (!fn) return; // function not found, silently skip
+  }
+  if (typeof fn === 'function') {
+    fn.apply(null, args);
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  var el = e.target.closest('[data-action-keydown]');
+  if (!el) return;
+  var action = el.getAttribute('data-action-keydown');
+  if (!action) return;
+  var fn = window;
+  var parts = action.split('.');
+  for (var i = 0; i < parts.length; i++) {
+    fn = fn[parts[i]];
+    if (!fn) return;
+  }
+  if (typeof fn === 'function') {
+    fn(e);
+  }
+});
+
+document.addEventListener('input', function(e) {
+  var el = e.target.closest('[data-action-input]');
+  if (!el) return;
+  var action = el.getAttribute('data-action-input');
+  if (!action) return;
+  var fn = window;
+  var parts = action.split('.');
+  for (var i = 0; i < parts.length; i++) {
+    fn = fn[parts[i]];
+    if (!fn) return;
+  }
+  if (typeof fn === 'function') {
+    fn(el);
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+// FOCUS TRAP — traps Tab focus within a container element
+// Usage: var trap = createFocusTrap(modalEl, onClose); trap.activate(); trap.deactivate();
+// ═══════════════════════════════════════════════════════════
+function createFocusTrap(container, onClose) {
+  var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  var handler = function(e) {
+    if (e.key !== 'Tab') return;
+    var focusable = container.querySelectorAll(FOCUSABLE);
+    if (focusable.length === 0) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  };
+  var escHandler = function(e) {
+    if (e.key === 'Escape' && onClose) onClose();
+  };
+  return {
+    activate: function() {
+      document.addEventListener('keydown', handler);
+      document.addEventListener('keydown', escHandler);
+      // Focus first focusable element
+      var focusable = container.querySelectorAll(FOCUSABLE);
+      if (focusable.length > 0) focusable[0].focus();
+    },
+    deactivate: function() {
+      document.removeEventListener('keydown', handler);
+      document.removeEventListener('keydown', escHandler);
+    }
+  };
+}
+
+// ═══════════════════════════════════════════════════════════
+// REDUCED MOTION — respects prefers-reduced-motion
+// Usage: if (!prefersReducedMotion()) { startAnimation(); }
+// ═══════════════════════════════════════════════════════════
+function prefersReducedMotion() {
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}

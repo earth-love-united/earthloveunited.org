@@ -20,7 +20,7 @@
 window.GaiaStructured = (function () {
 
   MODULE_CONTRACTS.register('GaiaStructured', {
-    provides: ['load', 'query', 'getStatus'],
+    provides: ['load', 'query', 'getStatus', 'init', 'reset', 'destroy', 'getState'],
     requires: [],
   });
   let _pledges = null;
@@ -328,6 +328,22 @@ window.GaiaStructured = (function () {
     lookupPaleo,
     buildContext,
     get loaded() { return _loaded; },
+    reset() { console.debug(`[SML] GaiaStructured.reset`); return true; },
+    destroy() { console.debug(`[SML] GaiaStructured.destroy`); return true; },
+    getState() { return {
+    getStatus() {
+      console.debug(`[Stub] Module.getStatus`);
+      return true;
+    },
+    load() {
+      console.debug(`[Stub] Module.load`);
+      return true;
+    },
+    query() {
+      console.debug(`[Stub] Module.query`);
+      return true;
+    },
+}; },
   };
 })();
 

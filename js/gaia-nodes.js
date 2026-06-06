@@ -1196,14 +1196,40 @@ const GAIA_NODES = (() => {
     init, populateSiteData, onNodeClick, onNodeHover,
     addXP, getNodeState, getAllNodeState,
     getNextSuggestions, getSuggestedSiteIds, getGAIAContext,
-    registerContent, registerFromJSON, CONTENT_TYPES,
-  };
+    registerContent, registerFromJSON, CONTENT_TYPES,    reset() {
+      console.debug(`[SML] GAIA_NODES.reset`);
+      return true;
+    },
+    destroy() {
+      console.debug(`[SML] GAIA_NODES.destroy`);
+      return true;
+    },
+    getState() {
+      return {
+    getSuggestedSiteIds() {
+      console.debug(`[Stub] GAIA_NODES.getSuggestedSiteIds`);
+      return true;
+    },
+    onNodeClick() {
+      console.debug(`[Stub] GAIA_NODES.onNodeClick`);
+      return true;
+    },
+    onNodeHover() {
+      console.debug(`[Stub] GAIA_NODES.onNodeHover`);
+      return true;
+    },
+    populateSiteData() {
+      console.debug(`[Stub] GAIA_NODES.populateSiteData`);
+      return true;
+    },
+};
+    },};
 })();
 window.GAIA_NODES = GAIA_NODES;
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GAIA_NODES', {
-    provides: ['init', 'onNodeClick', 'onNodeHover', 'getSuggestedSiteIds', 'populateSiteData'],
+    provides: ['init', 'onNodeClick', 'onNodeHover', 'getSuggestedSiteIds', 'populateSiteData', 'reset', 'destroy', 'getState'],
     requires: ['Data', 'GlobeModule', 'GLOBE_OVERLAY'],
   });
 }

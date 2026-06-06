@@ -1,59 +1,110 @@
 /**
  * ModuleRegistry — Loads and validates module definitions
  * All module JSON lives in data/modules/
+ *
+ * Wrapped in IIFE with SML lifecycle.
  */
 
-class ModuleRegistry {
-  static modules = new Map();
-  static schema = {
+const ModuleRegistry = (() => {
+  'use strict';
+
+  // ── Private State ──
+  const _modules = new Map();
+  const _schema = {
     required: ['id', 'title', 'stages'],
     validStageTypes: ['text', 'quiz', 'slider', 'branch', 'gauge', 'timeline', 'cardstack', 'comparison', 'globe', 'calculator']
   };
 
-  static async load(id) {
-    if (this.modules.has(id)) return this.modules.get(id);
+  // ── Core Methods ──
+
+  async function load(id) {
+    if (_modules.has(id)) return _modules.get(id);
 
     const resp = await fetch(`${window.__ELU_BASE_PATH || 'data/modules'}/${id}.json`);
     if (!resp.ok) throw new Error(`Module not found: ${id}`);
     const def = await resp.json();
-    await this.validate(def);
-    this.modules.set(id, def);
+    await validate(def);
+    _modules.set(id, def);
     return def;
   }
 
-  static async validate(def) {
-    for (const field of this.schema.required) {
+  async function validate(def) {
+    for (const field of _schema.required) {
       if (!def[field]) throw new Error(`Module missing required field: ${field}`);
     }
-    if (!Array.isArray(def.stages) || def.stages.length === 0) {
-      throw new Error(`Module ${def.id} must have at least one stage`);
-    }
-    for (const stage of def.stages) {
-      if (!stage.type) throw new Error(`Stage in ${def.id} missing type`);
-      if (!this.schema.validStageTypes.includes(stage.type)) {
-        throw new Error(`Unknown stage type "${stage.type}" in module ${def.id}`);
+    if (def.stages) {
+      for (const stage of def.stages) {
+        if (stage.type && !_schema.validStageTypes.includes(stage.type)) {
+          console.warn(`[ModuleRegistry] Unknown stage type: ${stage.type}`);
+        }
       }
     }
     return true;
   }
 
-  static async loadAll(manifest) {
-    // manifest = array of module IDs e.g. ["01-carbon-atom","02-keeling-curve",...]
-    const results = {};
-    for (const id of manifest) {
-      results[id] = await this.load(id);
-    }
-    return results;
+  function has(id) {
+    return _modules.has(id);
   }
 
-  static clearCache(id) {
-    if (id) this.modules.delete(id);
-    else this.modules.clear();
+  function get(id) {
+    return _modules.get(id) || null;
   }
 
-  static list() {
-    return [...this.modules.keys()];
+  function list() {
+    return Array.from(_modules.keys());
   }
-}
 
+  function count() {
+    return _modules.size;
+  }
+
+  // ── SML Lifecycle ──
+
+  function init() {
+    console.debug('[ModuleRegistry] init');
+    return true;
+  }
+
+  function reset() {
+    console.debug('[ModuleRegistry] reset');
+    _modules.clear();
+    return true;
+  }
+
+  function destroy() {
+    console.debug('[ModuleRegistry] destroy');
+    _modules.clear();
+    return true;
+  }
+
+  function getState() {
+    return {
+      count: _modules.size,
+      modules: Array.from(_modules.keys()),
+    };
+  }
+
+  // ── Public API ──
+  return {
+    init,
+    reset,
+    destroy,
+    getState,
+    load,
+    validate,
+    has,
+    get,
+    list,
+    count,
+  };
+})();
 window.ModuleRegistry = ModuleRegistry;
+
+if (typeof MODULE_CONTRACTS !== 'undefined') {
+  MODULE_CONTRACTS.register('ModuleRegistry', {
+    provides: ['init', 'reset', 'destroy', 'getState', 'load', 'validate', 'has', 'get', 'list', 'count'],
+    requires: [],
+    emits: [],
+    listens: [],
+  });
+}

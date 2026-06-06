@@ -217,11 +217,50 @@ const GAIA_CHARTS = (() => {
     sparklineHTML, barChartHTML, countdownBarHTML, donutHTML,
     renderPending, colors: C,
     _drawSparkline: drawSparkline, _drawBarChart: drawBarChart, _drawCountdownBar: drawCountdownBar, _drawDonut: drawDonut,
+
+    init() {
+      console.debug('[Stub] GAIA_CHARTS.init');
+      return true;
+    },
+
+    render() {
+      console.debug('[Stub] GAIA_CHARTS.render');
+      return true;
+    },
+
+    update() {
+      console.debug('[Stub] GAIA_CHARTS.update');
+      return true;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] GAIA_CHARTS.reset');
+      return true;
+    },
+    destroy() {
+      console.debug('[SML] GAIA_CHARTS.destroy');
+      return true;
+    },
+    getState() {
+      return {};
+    },
+
+    destroy() {
+      console.debug('[SML] GAIA_CHARTS.destroy');
+
+      // Clear pending chart render queue
+      pending.length = 0;
+
+      return true;
+    },
   };
 })();
 window.GAIA_CHARTS = GAIA_CHARTS;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GAIA_CHARTS', {
-    provides: ['init', 'render', 'update', 'destroy'],
+    provides: ['init', 'render', 'update', 'destroy', 'reset', 'getState'],
     requires: [],
   });
+}

@@ -20,6 +20,7 @@ const PLEDGE_WALL = (() => {
   let promptEl = null;
   let hasPledged = false;
   let promptShown = false;
+  let _focusTrap = null;
 
   // ── Persistence ──
   async function save() {
@@ -194,6 +195,10 @@ const PLEDGE_WALL = (() => {
       modalEl.classList.add('visible');
     });
 
+    // Focus trap
+    _focusTrap = createFocusTrap(modalEl, closeModal);
+    _focusTrap.activate();
+
     // Character counter
     const textarea = $('pledge-text');
     const counter = $('pledge-char-count');
@@ -289,6 +294,7 @@ const PLEDGE_WALL = (() => {
   // ── Close modal ──
   function closeModal() {
     if (modalEl) {
+      if (_focusTrap) { _focusTrap.deactivate(); _focusTrap = null; }
       modalEl.classList.remove('visible');
       setTimeout(() => {
         if (modalEl && modalEl.parentNode) {

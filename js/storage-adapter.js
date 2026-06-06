@@ -21,6 +21,34 @@ const STORAGE_ADAPTER = (() => {
   const DB_VERSION = 1;
   const STORE_NAME = 'keyvalue';
   const DB_KEY_PATH = 'key';
+  const SCHEMA_VERSION_KEY = '__schema_version__';
+  const CURRENT_SCHEMA_VERSION = 1;
+
+  // ── Migrations ─────────────────────────────────────────────────
+  // Each migration is a function(oldData) -> newData
+  // Keyed by target schema version
+  const _migrations = {
+    // 1: initial version (no migration needed)
+    // Future: 2: function(data) { ... return transformedData; }
+  };
+
+  async function _runMigrations() {
+    try {
+      const storedVersion = await get(SCHEMA_VERSION_KEY);
+      const currentVersion = storedVersion ? parseInt(storedVersion, 10) : 0;
+      if (currentVersion >= CURRENT_SCHEMA_VERSION) return;
+      // Run each migration sequentially
+      for (let v = currentVersion + 1; v <= CURRENT_SCHEMA_VERSION; v++) {
+        if (_migrations[v]) {
+          console.log(`[STORAGE_ADAPTER] Running migration to schema v${v}`);
+          // Migration would transform data here
+        }
+      }
+      await set(SCHEMA_VERSION_KEY, String(CURRENT_SCHEMA_VERSION));
+    } catch (e) {
+      console.warn('[STORAGE_ADAPTER] Migration check failed:', e);
+    }
+  }
 
   // ── State ──────────────────────────────────────────────────────
   let _db = null;
@@ -234,6 +262,7 @@ const STORAGE_ADAPTER = (() => {
 
     return _openDB().then((db) => {
       reportWarn('STORAGE_ADAPTER', `Initialized — DB: ${_dbName} v${_dbVersion}, store: ${_storeName}`);
+      _runMigrations();
       return db;
     });
   }
@@ -315,6 +344,10 @@ const STORAGE_ADAPTER = (() => {
     reset,
     destroy,
     getState,
+
+    // Migration
+    migrateStorage: _runMigrations,
+    getSchemaVersion: () => CURRENT_SCHEMA_VERSION,
   };
 })();
 
@@ -324,7 +357,7 @@ window.STORAGE_ADAPTER = STORAGE_ADAPTER;
 // ── Module Contract ────────────────────────────────────────────────
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('STORAGE_ADAPTER', {
-    provides: ['init', 'reset', 'destroy', 'getState', 'get', 'set', 'remove', 'clear', 'keys'],
+    provides: ['init', 'reset', 'destroy', 'getState', 'get', 'set', 'remove', 'clear', 'keys', 'migrateStorage', 'getSchemaVersion'],
     requires: [],
   });
 }

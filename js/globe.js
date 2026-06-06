@@ -15,8 +15,19 @@ const GlobeModule = {
   isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     navigator.userAgent
   ) || (window.innerWidth < 768),
+  _globeLoadRetries: 0,
 
   init() {
+    // Guard: Globe constructor may not be loaded yet (lazy-loaded globe.gl.js)
+    if (typeof Globe === 'undefined') {
+      this._globeLoadRetries++;
+      if (this._globeLoadRetries > 60) {
+        reportError('GlobeModule', 'Globe.gl failed to load after 60 retries (~30s). Check CDN/network.');
+        return;
+      }
+      setTimeout(() => GlobeModule.init(), 500);
+      return;
+    }
     const el = $('globeViz');
     if (!el) { reportError('GlobeModule', 'globeViz element not found'); return; }
 
@@ -199,7 +210,7 @@ const GlobeModule = {
           const gap = p.reality_gap_mt;
           const status = gap === null ? 'No data' : (gap > 0 ? 'OVERSHOOTING' : 'On Track');
           window.dispatchEvent(new CustomEvent('pledgeHover', {
-            detail: { node: p, tooltip: p.country + ' | ' + p.fossil_co2_mt + ' MtCO2 | ' + status }
+            detail: { node: p, tooltip: p.country + ' | ' + (p.fossil_co2_mt != null ? p.fossil_co2_mt : '—') + ' MtCO2 | ' + status }
           }));
         } else {
           // Site hover
@@ -412,8 +423,9 @@ const GlobeModule = {
       tooltip.id = 'pledge-tooltip';
       document.body.appendChild(tooltip);
     }
+    this._tooltip = tooltip;
 
-    window.addEventListener('pledgeHover', (e) => {
+    this._onPledgeHover = (e) => {
       const detail = e.detail;
       if (!detail || !detail.node) {
         tooltip.classList.remove('visible');
@@ -429,18 +441,60 @@ const GlobeModule = {
         + '<div class="tt-detail">' + (n.fossil_co2_mt ? n.fossil_co2_mt.toFixed(1) : '—') + ' MtCO₂ · ' + target + '</div>'
         + '<div class="' + statusClass + '">' + statusText + '</div>';
       tooltip.classList.add('visible');
-    });
+    };
+    window.addEventListener('pledgeHover', this._onPledgeHover);
 
-    // Position tooltip near cursor
-    document.addEventListener('mousemove', (e) => {
+    this._onMouseMove = (e) => {
       if (tooltip.classList.contains('visible')) {
         const x = Math.min(e.clientX + 16, window.innerWidth - 320);
         const y = Math.min(e.clientY - 12, window.innerHeight - 80);
         tooltip.style.left = x + 'px';
         tooltip.style.top = y + 'px';
       }
-    });
-  }
+    };
+    document.addEventListener('mousemove', this._onMouseMove);
+  },
+
+  // ── Standard Module Lifecycle (SML) ──
+  reset() {
+    console.debug('[SML] GlobeModule.reset');
+    return true;
+  },
+
+  destroy() {
+    console.debug('[SML] GlobeModule.destroy');
+
+    // Remove event listeners (named references)
+    window.removeEventListener('pledgeHover', this._onPledgeHover);
+    document.removeEventListener('mousemove', this._onMouseMove);
+
+    // Destroy WebGL globe instance
+    if (this.world) {
+      // Globe.gl wraps Three.js — call its destroy method if available
+      if (typeof this.world.destroy === 'function') {
+        this.world.destroy();
+      }
+      this.world = null;
+    }
+
+    // Nullify country features (large GeoJSON)
+    this._countryFeatures = null;
+
+    // Nullify DOM references
+    if (this._tooltip) {
+      this._tooltip.remove();
+      this._tooltip = null;
+    }
+
+    // Nullify click handler
+    _globeClickHandler = null;
+
+    return true;
+  },
+
+  getState() {
+    return {};
+  },
 };
 
 // ═══════════════════════════════════════════════
@@ -588,7 +642,7 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['init', 'initPledgeNodes', 'updateNodeVisuals', 'setLens', 'setHexMode', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals'],
+    provides: ['init', 'initPledgeNodes', 'updateNodeVisuals', 'setLens', 'setHexMode', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
     requires: ['Data'],
   });
 }

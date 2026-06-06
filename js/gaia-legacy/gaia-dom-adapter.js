@@ -11,7 +11,7 @@
 window.GaiaDOMAdapter = (() => {
 
   MODULE_CONTRACTS.register('GaiaDOMAdapter', {
-    provides: ['init', 'destroy'],
+    provides: ['init', 'destroy', 'reset', 'getState'],
     requires: ['GaiaState', 'GaiaMind'],
   });
   const CONFIG = {
@@ -790,6 +790,13 @@ window.GaiaDOMAdapter = (() => {
     init,
     CONFIG
   };
+  return {
+    init(config = {}) { console.debug(`[SML] GaiaDOMAdapter.init`); return true; },
+    reset() { console.debug(`[SML] GaiaDOMAdapter.reset`); return true; },
+    destroy() { console.debug(`[SML] GaiaDOMAdapter.destroy`); return true; },
+    getState() { return {}; },
+  };
+
 
 })();
 

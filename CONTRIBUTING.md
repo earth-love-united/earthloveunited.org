@@ -1,9 +1,13 @@
 # Contributing to Earth Love United
 
 Thanks for wanting to help. This document is the short version of our
-contributor rules. The long version — including the deeper architectural
-reasoning — lives in [AGENTS.md](AGENTS.md) and
-[ARCHITECTURE.md](ARCHITECTURE.md). **Please skim both before opening a PR.**
+contributor rules. The long version lives in three companion files —
+**please skim all three before opening a PR:**
+
+- [AGENTS.md](AGENTS.md) — team coordination rules
+- [SWARM_SDK.md](SWARM_SDK.md) — code architecture (Standard Module Lifecycle, IIFE templates)
+- [ARCHITECTURE.md](ARCHITECTURE.md) — module map, z-index stack, event flows
+- [OPERATIONS.md](OPERATIONS.md) — day-to-day runbook (start/end mission, validate, push)
 
 We genuinely welcome external contributions. We're also experimenting with
 multi-agent development (Claude, Hermes, Owl alpha), and the rules below are
@@ -134,6 +138,23 @@ Co-authored-by: Hermes <agent@local>
 ```
 
 ---
+
+## Persistence & cross-module signalling
+
+A few subsystems are worth knowing about before you reach for the wrong tool:
+
+- **For storing > 5MB locally** — use `STORAGE_ADAPTER` (IndexedDB wrapper),
+  not `localStorage`. Promise-based: `await STORAGE_ADAPTER.set(key, val)`.
+- **For decoupled cross-module signals** — use `EventBus`:
+  `EventBus.emit('module:event', payload)` and declare the channels in your
+  contract's `emits` / `listens` arrays. See `SWARM_SDK.md § EventBus` for
+  the naming convention.
+- **For agent ↔ browser real-time push** — use `infra/bridge.py` (WebSocket
+  on ports 8765/8766). For in-browser intra-module signals, prefer
+  `EventBus` instead.
+- **ES6 classes are only for `js/modules/`** — the declarative learning
+  module subsystem. Everywhere else, use the IIFE pattern from
+  `SWARM_SDK.md`.
 
 ## What we will not accept
 

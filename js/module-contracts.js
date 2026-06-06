@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // MODULE CONTRACTS — dependency and interface validation
 //
-// Each module registers what it provides and requires.
+// Each module registers what it provides, requires, emits, and listens.
 // At boot, validate() checks that all dependencies are met
 // BEFORE App.init() runs, catching wiring issues immediately.
 //
@@ -18,12 +18,16 @@ const MODULE_CONTRACTS = (() => {
    * @param {string} name - Module name (must match window[name])
    * @param {Object} contract
    * @param {string[]} [contract.provides] - Public method names this module exposes
-   * @param {string[]} [contract.requires] - Module names this module depends on
+   * @param {string[]} [contract.requires] - Module names this module depends on (load order)
+   * @param {string[]} [contract.emits]   - Event names this module fires via EventBus
+   * @param {string[]} [contract.listens] - Event names this module subscribes to via EventBus
    */
   function register(name, contract) {
     _registry[name] = {
       provides: contract.provides || [],
       requires: contract.requires || [],
+      emits:   contract.emits   || [],
+      listens: contract.listens || [],
     };
   }
 
@@ -33,12 +37,21 @@ const MODULE_CONTRACTS = (() => {
    * 1. Every required module exists on window
    * 2. Every required module actually provides its declared methods
    * 3. Every registered module exists on window
+   * 4. Every listened-to event has at least one emitter
    *
    * @returns {{ ok: boolean, errors: string[], warnings: string[] }}
    */
   function validate() {
     const errors = [];
     const warnings = [];
+
+    // Build a set of all emitted events
+    const allEmitted = new Set();
+    for (const contract of Object.values(_registry)) {
+      for (const event of (contract.emits || [])) {
+        allEmitted.add(event);
+      }
+    }
 
     for (const [name, contract] of Object.entries(_registry)) {
       // Check: does this module exist on window?
@@ -65,6 +78,14 @@ const MODULE_CONTRACTS = (() => {
           } else {
             errors.push(`${name} requires ${dep} but it's not on window`);
           }
+        }
+      }
+
+      // Check: are all listened-to events emitted by someone?
+      for (const event of (contract.listens || [])) {
+        if (event === '*') continue; // wildcard = listen to all, skip check
+        if (!allEmitted.has(event)) {
+          warnings.push(`${name} listens to "${event}" but no module emits it`);
         }
       }
     }

@@ -108,6 +108,8 @@ const GAIA_VOICE = (() => {
   let idleTimer = null;
   let lastInteraction = Date.now();
   let sessionCount = 1;
+  let _voicePrefs = null;
+  let _isSilent = false;
 
   // ── Silence rules: when GAIA should NOT speak ──
   function shouldBeSilent(state, siteId, context) {
@@ -124,10 +126,11 @@ const GAIA_VOICE = (() => {
       return { silent: true, reason: "Let Jean's story breathe" };
     }
     // Check GAIA_MIND if available
-    if (typeof GaiaMind !== 'undefined') {
+    if (typeof GaiaMind !== 'undefined' && typeof GaiaMind.shouldGaiaSpeak === 'function') {
       const result = GaiaMind.shouldGaiaSpeak({ state, siteId, ...context });
-      // GaiaMind returns { speak: bool }, we need { silent: bool }
-      return { silent: !result.speak, reason: result.reason };
+      if (result) {
+        return { silent: !result.speak, reason: result.reason };
+      }
     }
     return { silent: false };
   }
@@ -183,7 +186,6 @@ const GAIA_VOICE = (() => {
   return {
     // Speak a line for a given state + context
     speak(state, site, preferredTone, context) {
-      // Check silence first
       const silence = shouldBeSilent(state, site, context);
       if (silence.silent) {
         return { text: null, tone: null, silent: true, reason: silence.reason, voiceModifiers: {} };
@@ -196,51 +198,60 @@ const GAIA_VOICE = (() => {
       return { ...line, voiceModifiers, silent: false };
     },
 
-    // Get a specific line by ID
+    silent: () => _isSilent,
+    setVoice: (v) => { _voicePrefs = v; },
+    getVoice: () => _voicePrefs,
+
     getLine(id) {
       usedLines[id] = Date.now();
       return LINES[id];
     },
 
-    // Record interaction (resets idle timer)
     interact() {
       lastInteraction = Date.now();
       if (idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(() => {
-        // Idle nudge after 20s
-      }, 20000);
+      idleTimer = setTimeout(() => {}, 20000);
     },
 
-    // Get idle nudge level based on time since last interaction
-    getIdleLevel() {
-      const idle = (Date.now() - lastInteraction) / 1000;
-      if (idle < 10) return null;
-      if (idle < 20) return 'GENTLE';
-      if (idle < 40) return 'MEDIUM';
-      return 'STRONG';
-    },
-
-    // Get idle nudge line
     getIdleNudge() {
       const level = this.getIdleLevel();
       if (!level) return null;
       return this.speak('IDLE', null, null);
     },
 
-    // Check if GAIA should be silent
-    shouldSilent: shouldBeSilent,
-    getVoiceModifiers,
-    getSessionCount: () => sessionCount,
+    setSilent: (val) => { _isSilent = !!val; },
     setSessionCount: (n) => { sessionCount = n; },
-
     getState: () => currentState,
     getMood: () => currentMood,
     getAllLines: () => LINES,
+    shouldSilent: shouldBeSilent,
+    getVoiceModifiers,
+    getSessionCount: () => sessionCount,
+
+    init() {
+      console.debug('[Stub] GAIA_VOICE.init');
+      return true;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] GAIA_VOICE.reset');
+      return true;
+    },
+    destroy() {
+      console.debug('[SML] GAIA_VOICE.destroy');
+      return true;
+    },
+    getState() {
+      return {};
+    },
   };
 })();
 window.GAIA_VOICE = GAIA_VOICE;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GAIA_VOICE', {
-    provides: ['init', 'speak', 'silent', 'setVoice', 'getVoice'],
+    provides: ['init', 'speak', 'silent', 'setVoice', 'getVoice', 'reset', 'destroy', 'getState'],
     requires: [],
   });
+}

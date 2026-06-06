@@ -21,6 +21,22 @@ const GaiaQuests = (() => {
       _migrateLegacyProgress();
       _migrated = true;
     }
+
+    // Listen for scenario runs and pledge submissions via EventBus
+    if (typeof window !== 'undefined' && window.EventBus) {
+      this._unsubScenario = window.EventBus.on('scenario:run', (data) => {
+        checkAllQuests('scenario_run', { siteId: data?.siteId });
+        if (data?.result && Math.abs(data.result) >= 1e6) {
+          checkAllQuests('big_scenario', { siteId: data?.siteId });
+        }
+        if (data?.result && data.result < 0) {
+          checkAllQuests('negative_scenario', { siteId: data?.siteId });
+        }
+      });
+      this._unsubPledge = window.EventBus.on('pledge:submit', () => {
+        checkAllQuests('share', {});
+      });
+    }
   }
 
   /**
@@ -115,6 +131,12 @@ const GaiaQuests = (() => {
     const results = GAIA_JOURNAL.checkQuestProgress(eventType, context?.siteId);
     if (results.length > 0) {
       _listeners.forEach(fn => fn({ type: 'quest_update' }));
+      // Emit EventBus events for completed quests
+      if (typeof window !== 'undefined' && window.EventBus) {
+        results.forEach(q => {
+          window.EventBus.emit('quest:complete', { questId: q.id, eventType, siteId: context?.siteId });
+        });
+      }
     }
     return results.map(q => ({ updated: true, questId: q.id, status: 'completed', isComplete: true }));
   }
@@ -143,13 +165,61 @@ const GaiaQuests = (() => {
   return {
     init, getQuest, getAllQuests, getActiveQuests, getCompletedQuests,
     updateProgress, checkAllQuests, getStats, resetAll, onQuestEvent,
+
+    getQuests() {
+      console.debug('[Stub] GaiaQuests.getQuests');
+      return [];
+    },
+
+    completeQuest() {
+      console.debug('[Stub] GaiaQuests.completeQuest');
+      return true;
+    },
+
+    getProgress() {
+      console.debug('[Stub] GaiaQuests.getProgress');
+      return {};
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] GaiaQuests.reset');
+      return true;
+    },
+
+    destroy() {
+      console.debug('[SML] GaiaQuests.destroy');
+
+      // Unsubscribe from EventBus
+      if (this._unsubScenario) {
+        this._unsubScenario();
+        this._unsubScenario = null;
+      }
+      if (this._unsubPledge) {
+        this._unsubPledge();
+        this._unsubPledge = null;
+      }
+
+      // Clear internal listeners
+      _listeners = [];
+
+      return true;
+    },
+
+    getState() {
+      return {};
+    },
   };
 })();
 
 if (typeof module !== 'undefined') module.exports = GaiaQuests;
 if (typeof window !== 'undefined') window.GaiaQuests = GaiaQuests;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GaiaQuests', {
-    provides: ['init', 'getQuests', 'completeQuest', 'getProgress'],
+    provides: ['init', 'getQuests', 'completeQuest', 'getProgress', 'reset', 'destroy', 'getState'],
     requires: [],
+    emits: ['quest:complete'],
+    listens: ['scenario:run', 'pledge:submit'],
   });
+}

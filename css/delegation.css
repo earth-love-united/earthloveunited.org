@@ -2,10 +2,10 @@
 /* DELEGATION GREETING                        */
 /* ═══════════════════════════════════════════ */
 #delegation-greeting {
-  margin: 0 auto 20px;
-  max-width: 560px;
+  margin: 0;
+  max-width: none;
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-4px);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 #delegation-greeting.visible {
@@ -14,141 +14,65 @@
 }
 
 .dg-card {
-  padding: 20px 24px;
-  background: linear-gradient(135deg, rgba(8, 10, 16, 0.95), rgba(12, 15, 25, 0.9));
-  border: 1px solid rgba(78, 205, 196, 0.12);
-  border-radius: 14px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--text2);
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: nowrap;
 }
 
 .dg-flag {
-  font-size: 36px;
+  font-size: 13px;
   line-height: 1;
   flex-shrink: 0;
-  padding-top: 2px;
 }
 
-.dg-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.dg-greeting {
-  font-size: 14px;
-  line-height: 1.6;
+.dg-country {
   color: var(--text);
-  margin-bottom: 14px;
   font-weight: 500;
 }
 
-.dg-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.dg-stat {
-  text-align: center;
-  padding: 8px 4px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.dg-stat-value {
+.dg-emissions {
+  color: var(--delegate-accent, var(--teal));
   font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--teal);
-  margin-bottom: 2px;
-}
-
-.dg-stat-label {
-  font-size: 8px;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  line-height: 1.3;
-}
-
-.dg-context {
   font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dg-rank,
+.dg-person {
   color: var(--text2);
-  line-height: 1.5;
-  margin-bottom: 14px;
-  padding: 8px 12px;
-  background: rgba(78, 205, 196, 0.03);
-  border-radius: 6px;
-  border-left: 2px solid rgba(78, 205, 196, 0.15);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
 }
 
-.dg-cta {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.dg-btn-primary {
-  padding: 8px 18px;
-  background: rgba(78, 205, 196, 0.1);
-  border: 1px solid rgba(78, 205, 196, 0.2);
-  border-radius: 8px;
-  color: var(--teal);
-  font-size: 12px;
-  font-family: var(--body);
-  cursor: pointer;
-  transition: all 0.2s;
-  flex: 1;
-  min-width: 160px;
-}
-
-.dg-btn-primary:hover {
-  background: rgba(78, 205, 196, 0.15);
-  border-color: rgba(78, 205, 196, 0.3);
-}
-
-.dg-btn-secondary {
-  padding: 8px 18px;
-  background: none;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  color: var(--text3);
-  font-size: 12px;
-  font-family: var(--body);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.dg-btn-secondary:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  color: var(--text2);
+.dg-sep {
+  color: rgba(255, 255, 255, 0.28);
 }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
   #delegation-greeting {
-    margin: 0 12px 16px;
+    margin: 0;
   }
   .dg-card {
-    padding: 16px;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    flex-wrap: wrap;
+    white-space: normal;
+    gap: 4px 6px;
   }
-  .dg-flag {
-    font-size: 28px;
-  }
-  .dg-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .dg-cta {
-    flex-direction: column;
-  }
-  .dg-btn-primary, .dg-btn-secondary {
-    width: 100%;
+  .dg-card,
+  .dg-emissions,
+  .dg-rank,
+  .dg-person {
+    font-size: 10px;
   }
 }

@@ -54,6 +54,7 @@ const GaiaMind = (() => {
   // [{ emotion, intensity, cause, timestamp, siteId }]
 
   function addEmotionalEvent(emotion, intensity, cause, siteId = null) {
+    const prevDominant = getDominantEmotion().emotion;
     _emotionalState[emotion] = Math.min(10, (_emotionalState[emotion] || 0) + intensity);
     _emotionalHistory.push({
       emotion,
@@ -64,6 +65,20 @@ const GaiaMind = (() => {
     });
     // Keep last 100 events
     if (_emotionalHistory.length > 100) _emotionalHistory = _emotionalHistory.slice(-100);
+
+    // Emit mood-change event when dominant emotion shifts
+    if (typeof window !== 'undefined' && window.EventBus) {
+      const newDominant = getDominantEmotion().emotion;
+      if (newDominant !== prevDominant) {
+        window.EventBus.emit('mind:mood-change', {
+          from: prevDominant,
+          to: newDominant,
+          emotion,
+          intensity,
+          cause,
+        });
+      }
+    }
   }
 
   function decayEmotions(daysPassed) {
@@ -746,14 +761,83 @@ const GaiaMind = (() => {
     // Persistence
     serialize,
     deserialize,
+
+    // Context
+    setContext(context) {
+      this._context = context;
+    },
+    getContext() {
+      return this._context || {};
+    },
+    getMood() {
+      return this._mood || {};
+    },
+    process(input) {
+      console.debug('[Stub] GaiaMind.process');
+      return input;
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    init() {
+      console.debug('[Stub] GaiaMind.init');
+
+      // Listen for engagement signals via EventBus
+      if (typeof window !== 'undefined' && window.EventBus) {
+        this._unsubEngagement = window.EventBus.on('engagement:signal', (data) => {
+          // Feed significant engagement into the mind's emotional model
+          if (data.signal && data.weight >= 5) {
+            const emotionMap = {
+              site_tap: 'curious',
+              data_reveal: 'curious',
+              scenario_run: 'excited',
+              big_scenario: 'proud',
+              negative_scenario: 'concerned',
+              insight: 'warm',
+              correct_prediction: 'proud',
+              share: 'excited',
+              return_visit: 'warm',
+            };
+            const emotion = emotionMap[data.signal];
+            if (emotion) {
+              addEmotionalEvent(emotion, Math.min(data.weight / 5, 3), data.signal, data.siteId || null);
+            }
+          }
+        });
+      }
+
+      return true;
+    },
+
+    reset() {
+      console.debug('[SML] GaiaMind.reset');
+      return true;
+    },
+
+    destroy() {
+      console.debug('[SML] GaiaMind.destroy');
+
+      // Unsubscribe from EventBus
+      if (this._unsubEngagement) {
+        this._unsubEngagement();
+        this._unsubEngagement = null;
+      }
+
+      return true;
+    },
+    getState() {
+      return {};
+    },
   };
 })();
-
 
 if (typeof module !== 'undefined') module.exports = GaiaMind;
 if (typeof window !== 'undefined') window.GaiaMind = GaiaMind;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GaiaMind', {
-    provides: ['init', 'serialize', 'deserialize', 'process', 'getMood', 'setContext', 'getContext'],
+    provides: ['init', 'serialize', 'deserialize', 'process', 'getMood', 'setContext', 'getContext', 'reset', 'destroy', 'getState'],
     requires: [],
+    emits: ['mind:mood-change'],
+    listens: ['engagement:signal'],
   });
+}

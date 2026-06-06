@@ -5,6 +5,8 @@
 
 const App = {
   async init() {
+    syncHeroScrollState();
+
     // Load data first
     try {
       await Data.init();
@@ -76,6 +78,14 @@ const App = {
     if (hasModule('GLOBE_EVENTS'))  GLOBE_EVENTS.init();
     if (hasModule('GLOBE_RESTORE')) GLOBE_RESTORE.init();
 
+    // Emit app:ready event via EventBus
+    if (hasModule('EventBus')) {
+      window.EventBus.emit('app:ready', {
+        modules: ['Data', 'GlobeModule', 'GAIA_NODES', 'CARBON_CLOCK', 'DELEGATION', 'PLEDGE_WALL', 'Quiz', 'Biomes', 'Scenario', 'GLOBE_MODES', 'GLOBE_NDVI', 'GLOBE_EVENTS', 'GLOBE_RESTORE'],
+        timestamp: Date.now(),
+      });
+    }
+
     // ── GAIA Foundation Layer ──
     // Fetch live data in background
     if (hasModule('GAIA_DATA')) {
@@ -104,6 +114,10 @@ const App = {
           let msg = days === 1 ? 'Welcome back. One day.' : `Welcome back. ${days} days.`;
           if (co2Diff && co2Diff > 0) msg += ` CO₂: ${co2Then.toFixed(1)} → ${co2Now.toFixed(1)} ppm. +${co2Diff}. Not a pause. Accumulation.`;
           setTimeout(() => {
+            // EventBus path + safeCall fallback
+            if (hasModule('EventBus')) {
+              window.EventBus.emit('bubble:speak', { text: msg, tone: 'warm', duration: 6000 });
+            }
             safeCall('GAIA_BUBBLE', 'speak', msg, 'warm', 6000);
           }, 1500);
         }
@@ -113,32 +127,57 @@ const App = {
     // ── Pending pledge from previous visit ──
     // If user left without pledging (detected via visibilitychange/beforeunload),
     // show a gentle reminder on their next visit.
+    // Checks both IndexedDB (visibilitychange path) and sessionStorage (beforeunload path).
     try {
-      const pendingPledge = localStorage.getItem('gaia_pending_pledge');
+      let pendingPledge = await window.STORAGE_ADAPTER.get('gaia_pending_pledge');
+      // sessionStorage fallback: beforeunload handler writes here synchronously
+      if (!pendingPledge) {
+        try {
+          const ss = sessionStorage.getItem('gaia_pending_pledge');
+          if (ss) { pendingPledge = JSON.parse(ss); sessionStorage.removeItem('gaia_pending_pledge'); }
+        } catch { /* ignore */ }
+      }
       if (pendingPledge && hasModule('PLEDGE_WALL') && !PLEDGE_WALL.hasPledged()) {
-        const pending = JSON.parse(pendingPledge);
+        const pending = typeof pendingPledge === 'string' ? JSON.parse(pendingPledge) : pendingPledge;
         if (pending.score >= 20 && Date.now() - pending.timestamp > 3600000) {
           setTimeout(() => {
-            safeCall('GAIA_BUBBLE', 'speak', "You were exploring last time. The carbon clock is still ticking. Before you go again — what's your pledge?", 'warm', 8000);
+            const pledgeMsg = "You were exploring last time. The carbon clock is still ticking. Before you go again — what's your pledge?";
+            if (hasModule('EventBus')) {
+              window.EventBus.emit('bubble:speak', { text: pledgeMsg, tone: 'warm', duration: 8000 });
+            }
+            safeCall('GAIA_BUBBLE', 'speak', pledgeMsg, 'warm', 8000);
           }, 3000);
         }
-        localStorage.removeItem('gaia_pending_pledge');
+        await window.STORAGE_ADAPTER.remove('gaia_pending_pledge');
       }
     } catch { /* ignore */ }
 
     // Create GAIA bubble — always visible after entering
+    if (hasModule('EventBus')) {
+      window.EventBus.emit('bubble:create', {});
+    }
     safeCall('GAIA_BUBBLE', 'create');
 
     // Speak greeting after hero
     setTimeout(() => {
       const line = safeCall('GAIA_VOICE', 'speak', 'GREETING', null, 'mysterious');
-      if (line) safeCall('GAIA_BUBBLE', 'speak', line.text, line.tone, 8000);
+      if (line) {
+        if (hasModule('EventBus')) {
+          window.EventBus.emit('bubble:speak', { text: line.text, tone: line.tone, duration: 8000 });
+        }
+        safeCall('GAIA_BUBBLE', 'speak', line.text, line.tone, 8000);
+      }
     }, 2000);
 
     // Idle nudge loop
     setInterval(() => {
       const nudge = safeGet('GAIA_ENGAGEMENT', 'shouldFireIdleNudge', false);
-      if (nudge) safeCall('GAIA_BUBBLE', 'idleNudge');
+      if (nudge) {
+        if (hasModule('EventBus')) {
+          window.EventBus.emit('bubble:idle-nudge', {});
+        }
+        safeCall('GAIA_BUBBLE', 'idleNudge');
+      }
     }, 5000);
 
     // ── Render site cards ──
@@ -205,17 +244,69 @@ const App = {
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') Panel.close(); });
 
     // ── Track all interactions for engagement ──
-    const _interact = () => safeCall('GAIA_ENGAGEMENT', 'interact');
+    const _interact = () => {
+      if (hasModule('EventBus')) {
+        window.EventBus.emit('engagement:interact', {});
+      }
+      safeCall('GAIA_ENGAGEMENT', 'interact');
+    };
     document.addEventListener('click', _interact);
     document.addEventListener('scroll', _interact, { passive: true });
     document.addEventListener('keydown', _interact);
   },
 
-  enterSite() {
+  _enterBase() {
     $('hero')?.classList.add('hidden');
+    document.body.classList.remove('hero-active');
     $('topbar')?.classList.add('visible');
-    setTimeout(() => { $('quiz')?.scrollIntoView({ behavior: 'smooth' }); }, 300);
+    if (hasModule('EventBus')) {
+      window.EventBus.emit('engagement:interact', {});
+    }
     safeCall('GAIA_ENGAGEMENT', 'interact');
+    // Eagerly load globe.gl on first interaction
+    if (!_globeGLLoaded && !_globeGLLoading) {
+      loadGlobeGL();
+    }
+  },
+
+  enterAndScroll(targetSelector, options = {}) {
+    this._enterBase();
+    const delay = options.delay == null ? 300 : options.delay;
+    setTimeout(() => {
+      if (options.scrollTop != null) {
+        window.scrollTo({ top: options.scrollTop, behavior: 'smooth' });
+      } else {
+        const target = document.querySelector(targetSelector);
+        if (target) {
+          const topbar = $('topbar');
+          const offset = (topbar ? topbar.offsetHeight : 0) + 20;
+          const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      }
+
+      const focusTarget = document.querySelector(options.focusSelector || targetSelector);
+      if (focusTarget) {
+        if (!focusTarget.hasAttribute('tabindex')) focusTarget.setAttribute('tabindex', '-1');
+        focusTarget.focus({ preventScroll: true });
+      }
+    }, delay);
+  },
+
+  enterGlobe() {
+    this.enterAndScroll('#globe-modes', { scrollTop: 0, focusSelector: '#globe-modes' });
+  },
+
+  startLearning() {
+    this.enterAndScroll('#quiz');
+  },
+
+  viewDatasets() {
+    this.enterAndScroll('#datasets');
+  },
+
+  enterSite() {
+    this.startLearning();
   },
 
   flyToSite(id) {
@@ -230,73 +321,161 @@ const App = {
         Panel.open(site);
       }
     }
-  }
-};
+  },
+  // ── Standard Module Lifecycle (SML) ──
+  reset() {
+    console.debug(`[SML] App.reset`);
+    return true;
+  },
+  destroy() {
+    console.debug(`[SML] App.destroy`);
+    return true;
+  },
+  getState() {
+    return {};
+  },};
 
 // Global enter button
 function enterSite() { App.enterSite(); }
+function enterGlobe() { App.enterGlobe(); }
+function startLearning() { App.startLearning(); }
+function viewDatasets() { App.viewDatasets(); }
 function flyToSite(id) { App.flyToSite(id); }
 function showCycle(key) { Cycle.show(key); }
 
-// Start — handle both async and already-loaded DOM
+function syncHeroScrollState() {
+  const hero = $('hero');
+  if (hero && !hero.classList.contains('hidden')) {
+    document.body.classList.add('hero-active');
+  } else {
+    document.body.classList.remove('hero-active');
+  }
+}
+
+// Lazy-load globe.gl — returns Promise that resolves when loaded
+let _globeGLLoading = false;
+let _globeGLLoaded = false;
+let _globeGLPromise = null;
+function loadGlobeGL() {
+  if (_globeGLLoaded) return Promise.resolve();
+  if (_globeGLPromise) return _globeGLPromise;
+  _globeGLLoading = true;
+  _globeGLPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'js/vendor/globe.gl.js';
+    script.onload = () => { _globeGLLoaded = true; _globeGLLoading = false; resolve(); };
+    script.onerror = () => { _globeGLLoading = false; _globeGLPromise = null; reject(new Error('Failed to load globe.gl')); };
+    document.head.appendChild(script);
+  });
+  return _globeGLPromise;
+}
+
+// Start — lazy-load globe.gl, then init
 let _startRetries = 0;
-function startApp() {
-  if (typeof GlobeModule === 'undefined' || typeof Data === 'undefined') {
-    if (++_startRetries > 30) {
-      console.error('[App] GlobeModule or Data not available after 3s — starting without globe');
-      // Start without globe — Data.init() will still work, globe just won't render
-      if (hasModule('Data')) App.init();
+async function startApp() {
+  if (typeof Data === 'undefined') {
+    if (++_startRetries > 50) {
+      console.error('[App] Data not available after 5s');
       return;
     }
     setTimeout(startApp, 100);
     return;
   }
+  // Load globe.gl if Globe constructor not available yet
+  if (typeof Globe === 'undefined' && !_globeGLLoading) {
+    loadGlobeGL().catch(() => console.warn('[App] globe.gl failed to load'));
+  }
+  // Wait for GlobeModule with timeout
+  if (typeof GlobeModule === 'undefined') {
+    if (++_startRetries > 30) {
+      console.warn('[App] GlobeModule not available after 3s — starting without globe');
+      _startRetries = 0;
+      App.init();
+      return;
+    }
+    setTimeout(startApp, 100);
+    return;
+  }
+  _startRetries = 0;
   App.init();
 }
 
 // Departure trigger — prompt pledge if user is leaving without pledging
-// Strategy: use visibilitychange (reliable, can show UI) as the primary
-// trigger, and beforeunload as a last-resort signal (can't show UI but
-// can persist a "returning user" flag for next visit).
+// Strategy: use visibilitychange (has time for async IndexedDB) as the primary
+// trigger, and beforeunload (sync-only, <1ms budget) with sessionStorage fallback.
 let _departurePrompted = false;
 
+function _buildPledgeData() {
+  if (!hasModule('PLEDGE_WALL')) return null;
+  const score = safeGet('GAIA_ENGAGEMENT', 'getScore', 0);
+  if (score >= 20 && !PLEDGE_WALL.hasPledged()) {
+    return { score, timestamp: Date.now() };
+  }
+  return null;
+}
+
 // Primary: visibilitychange fires when user switches tabs, minimizes, or
-// navigates away. This is reliable and allows DOM manipulation.
-document.addEventListener('visibilitychange', () => {
+// navigates away. This is reliable and allows async IndexedDB writes.
+document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState === 'hidden' && !_departurePrompted) {
     _departurePrompted = true;
-    if (hasModule('PLEDGE_WALL')) {
-      const score = safeGet('GAIA_ENGAGEMENT', 'getScore', 0);
-      if (score >= 20 && !PLEDGE_WALL.hasPledged()) {
-        try {
-          localStorage.setItem('gaia_pending_pledge', JSON.stringify({
-            score,
-            timestamp: Date.now(),
-            source: 'departure',
-          }));
-        } catch { /* ignore */ }
-      }
+    const pledge = _buildPledgeData();
+    if (pledge) {
+      pledge.source = 'departure';
+      try {
+        await window.STORAGE_ADAPTER.set('gaia_pending_pledge', pledge);
+      } catch { /* ignore */ }
+    }
+    if (hasModule('EventBus')) {
+      window.EventBus.emit('app:departure', {
+        score: pledge ? pledge.score : 0,
+        hasPledged: hasModule('PLEDGE_WALL') ? PLEDGE_WALL.hasPledged() : false,
+        source: 'visibilitychange',
+      });
     }
   }
 });
 
 // Last resort: beforeunload fires when the page is being unloaded.
-// Modern browsers restrict DOM manipulation here, so we only persist state.
+// Browsers give ~0ms here — IndexedDB Promise will be GC'd before it resolves.
+// Use sessionStorage as a synchronous fallback (survives page reload, read on next init).
 window.addEventListener('beforeunload', () => {
   if (_departurePrompted) return;
-  if (hasModule('PLEDGE_WALL')) {
-    const score = safeGet('GAIA_ENGAGEMENT', 'getScore', 0);
-    if (score >= 20 && !PLEDGE_WALL.hasPledged()) {
-      try {
-        localStorage.setItem('gaia_pending_pledge', JSON.stringify({
-          score,
-          timestamp: Date.now(),
-          source: 'beforeunload',
-        }));
-      } catch { /* ignore */ }
-    }
+  const pledge = _buildPledgeData();
+  if (pledge) {
+    pledge.source = 'beforeunload';
+    // Synchronous write — survives page teardown
+    try { sessionStorage.setItem('gaia_pending_pledge', JSON.stringify(pledge)); } catch { /* ignore */ }
+  }
+  if (hasModule('EventBus')) {
+    window.EventBus.emit('app:departure', {
+      score: pledge ? pledge.score : 0,
+      hasPledged: hasModule('PLEDGE_WALL') ? PLEDGE_WALL.hasPledged() : false,
+      source: 'beforeunload',
+    });
   }
 });
+
+// ═══════════════════════════════════════════════════════════
+// GLOBAL ACTIONS — data-action dispatcher helpers
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * toggleGlobeOverlay — data-action="toggleGlobeOverlay"
+ * Toggles the GLOBE_OVERLAY sidebar open/closed.
+ * Also animates the hamburger button active state.
+ */
+function toggleGlobeOverlay() {
+  if (!hasModule('GLOBE_OVERLAY')) return;
+  var btn = document.getElementById('hamburger-btn');
+  if (GLOBE_OVERLAY.isOpen()) {
+    GLOBE_OVERLAY.close();
+    if (btn) btn.classList.remove('active');
+  } else {
+    GLOBE_OVERLAY.open();
+    if (btn) btn.classList.add('active');
+  }
+}
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', startApp);
@@ -305,8 +484,18 @@ if (document.readyState === 'loading') {
 }
 
 window.App = App;
+window.enterGlobe = enterGlobe;
+window.startLearning = startLearning;
+window.viewDatasets = viewDatasets;
+window.toggleGlobeOverlay = toggleGlobeOverlay;
 
+syncHeroScrollState();
+
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('App', {
-    provides: ['init'],
+    provides: ['init', 'enterAndScroll', 'enterGlobe', 'startLearning', 'viewDatasets', 'reset', 'destroy', 'getState'],
     requires: ['MODULE_CONTRACTS', 'SITE_PANEL', 'PLEDGE_WALL', 'GAIA_BUBBLE', 'CARBON_CLOCK', 'DELEGATION', 'GAIA_VOICE', 'GAIA_DATA'],
+    emits: ['app:ready', 'app:departure', 'bubble:speak', 'bubble:create', 'bubble:idle-nudge', 'engagement:interact'],
+    listens: [],
   });
+}

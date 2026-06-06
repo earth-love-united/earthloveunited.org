@@ -22,8 +22,15 @@ const Data = {
     this.sites = await this._parseResponse(sitesRes, 'sites');
     this.pledgeNodes = await this._parseResponse(pledgeNodesRes, 'pledge-nodes');
 
+    // Validate loaded data against schemas
+    if (typeof DATA_SCHEMA !== 'undefined') {
+      if (this.biomes) DATA_SCHEMA.validate('biomes.json', this.biomes);
+      if (this.sites) DATA_SCHEMA.validate('sites.json', this.sites);
+      if (this.pledgeNodes) DATA_SCHEMA.validate('pledge-nodes.json', this.pledgeNodes);
+    }
+
     if (this.biomes && this.sites) {
-      console.log('[Data] Loaded:', Object.keys(this.biomes).length, 'biomes,', this.sites.length, 'sites,', this.pledgeNodes?.length || 0, 'pledge nodes');
+      console.log('[Data] Loaded:', Object.keys(this.biomes).filter(k => k !== '_meta').length, 'biomes,', this.sites.length, 'sites,', this.pledgeNodes?.length || 0, 'pledge nodes');
     } else {
       console.error('[Data] CRITICAL: Some data files failed to load. biomes:', !!this.biomes, 'sites:', !!this.sites);
     }
@@ -31,28 +38,35 @@ const Data = {
   },
 
   /** Parse a settled fetch promise — guards against HTTP errors and bad JSON */
-  async _parseResponse(settledResult, name) {
-    try {
-      if (settledResult.status === 'rejected') {
-        console.error(`[Data] Fetch failed for ${name}:`, settledResult.reason?.message || 'network error');
-        return null;
-      }
-      const resp = settledResult.value;
-      if (!resp.ok) {
-        console.error(`[Data] HTTP ${resp.status} for ${name}.json`);
-        return null;
-      }
-      return await resp.json();
-    } catch (e) {
-      console.error(`[Data] Parse error for ${name}:`, e.message);
-      return null;
-    }
-  },
+ async _parseResponse(settledResult, name) {
+ try {
+ if (settledResult.status === 'rejected') {
+ console.error(`[Data] Fetch failed for ${name}:`, settledResult.reason?.message || 'network error');
+ return null;
+ }
+ const resp = settledResult.value;
+ if (!resp.ok) {
+ console.error(`[Data] HTTP ${resp.status} for ${name}.json`);
+ return null;
+ }
+ const raw = await resp.json();
+ // Unwrap envelope if present (_meta + data structure)
+ if (raw && typeof raw === 'object' && '_meta' in raw && 'data' in raw) {
+ this._meta = this._meta || {};
+ this._meta[name] = raw._meta;
+ return raw.data;
+ }
+ return raw;
+ } catch (e) {
+ console.error(`[Data] Parse error for ${name}:`, e.message);
+ return null;
+ }
+ },
 
   getBiome(key) { return this.biomes ? this.biomes[key] : null; },
   getSite(id) { return this.sites ? this.sites.find(s => s.id === id) : null; },
   getPledgeNode(iso) { return this.pledgeNodes ? this.pledgeNodes.find(n => n.iso === iso) : null; },
-  getAllBiomes() { return this.biomes ? Object.entries(this.biomes).map(([k, v]) => ({ key: k, ...v })) : []; },
+  getAllBiomes() { return this.biomes ? Object.entries(this.biomes).filter(([k]) => k !== '_meta').map(([k, v]) => ({ key: k, ...v })) : []; },
 
   // Carbon calculation engine
   transitionCarbon(from, to, ha, yrs = 30) {

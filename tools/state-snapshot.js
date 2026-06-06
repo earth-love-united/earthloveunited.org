@@ -14,16 +14,17 @@
 const StateSnap = (() => {
   const STORAGE_KEY = 'elu_state_snapshots';
 
-  function _getSnapshots() {
+  async function _getSnapshots() {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      const val = await window.STORAGE_ADAPTER.get(STORAGE_KEY);
+      return val && typeof val === 'object' ? val : {};
     } catch {
       return {};
     }
   }
 
-  function _setSnapshots(snaps) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(snaps));
+  async function _setSnapshots(snaps) {
+    await window.STORAGE_ADAPTER.set(STORAGE_KEY, snaps);
   }
 
   // ── Capture current state ──
@@ -105,18 +106,18 @@ const StateSnap = (() => {
   }
 
   // ── Save snapshot ──
-  function save(label = 'snap_' + Date.now()) {
-    const snaps = _getSnapshots();
+  async function save(label = 'snap_' + Date.now()) {
+    const snaps = await _getSnapshots();
     snaps[label] = _captureState();
-    _setSnapshots(snaps);
+    await _setSnapshots(snaps);
     console.log(`%c📸 [StateSnap] Saved: "${label}"`, 'color: #4ecdc4; font-weight: bold;');
     console.log(`   Scroll: ${snaps[label].scroll.y}px | Overlay: ${snaps[label].overlay?.open ? 'OPEN' : 'closed'} | Section: ${snaps[label].activeSection}`);
     return snaps[label];
   }
 
   // ── Restore snapshot ──
-  function restore(label) {
-    const snaps = _getSnapshots();
+  async function restore(label) {
+    const snaps = await _getSnapshots();
     const snap = snaps[label];
     if (!snap) {
       console.warn(`[StateSnap] No snapshot named "${label}". Available:`, Object.keys(snaps));
@@ -162,8 +163,8 @@ const StateSnap = (() => {
   }
 
   // ── List snapshots ──
-  function list() {
-    const snaps = _getSnapshots();
+  async function list() {
+    const snaps = await _getSnapshots();
     const keys = Object.keys(snaps);
     if (keys.length === 0) {
       console.log('[StateSnap] No snapshots saved. Use StateSnap.save("label") to create one.');
@@ -182,8 +183,8 @@ const StateSnap = (() => {
   }
 
   // ── Compare two snapshots ──
-  function compare(labelA, labelB) {
-    const snaps = _getSnapshots();
+  async function compare(labelA, labelB) {
+    const snaps = await _getSnapshots();
     const a = snaps[labelA];
     const b = snaps[labelB];
     if (!a || !b) {
@@ -191,14 +192,12 @@ const StateSnap = (() => {
       return;
     }
 
-    console.group(`%c🔄 COMPARING: "${labelA}" vs "${labelB}"`, 'color: #ffd700; font-weight: bold;');
+    console.group(`%c🔄 COMPARING: "${labelA}" vs "${labelB}"`, 'color: #ffd700; font-weight: bold');
 
-    // Diff scroll
     if (a.scroll.y !== b.scroll.y) {
       console.log(`📜 Scroll: ${a.scroll.y}px → ${b.scroll.y}px`);
     }
 
-    // Diff element classes
     const allIds = new Set([...Object.keys(a.classes || {}), ...Object.keys(b.classes || {})]);
     for (const id of allIds) {
       const classA = (a.classes?.[id] || []).sort().join(' ');
@@ -208,7 +207,6 @@ const StateSnap = (() => {
       }
     }
 
-    // Diff styles
     for (const id of allIds) {
       const sA = a.styles?.[id] || {};
       const sB = b.styles?.[id] || {};
@@ -219,15 +217,12 @@ const StateSnap = (() => {
       }
     }
 
-    // Diff overlay
     if (a.overlay?.open !== b.overlay?.open) {
       console.log(`📋 Overlay: ${a.overlay?.open ? 'open' : 'closed'} → ${b.overlay?.open ? 'open' : 'closed'}`);
     }
     if (a.overlay?.currentSite !== b.overlay?.currentSite) {
       console.log(`📋 Overlay site: ${a.overlay?.currentSite} → ${b.overlay?.currentSite}`);
     }
-
-    // Diff active section
     if (a.activeSection !== b.activeSection) {
       console.log(`📍 Section: ${a.activeSection} → ${b.activeSection}`);
     }
@@ -236,26 +231,27 @@ const StateSnap = (() => {
   }
 
   // ── Export/Import ──
-  function exportSnaps() {
-    const json = JSON.stringify(_getSnapshots(), null, 2);
+  async function exportSnaps() {
+    const snaps = await _getSnapshots();
+    const json = JSON.stringify(snaps, null, 2);
     console.log(`[StateSnap] Export (${json.length} chars). Copy the returned string.`);
     return json;
   }
 
-  function importSnaps(json) {
+  async function importSnaps(json) {
     try {
       const data = typeof json === 'string' ? JSON.parse(json) : json;
-      const current = _getSnapshots();
+      const current = await _getSnapshots();
       const merged = { ...current, ...data };
-      _setSnapshots(merged);
+      await _setSnapshots(merged);
       console.log(`[StateSnap] Imported ${Object.keys(data).length} snapshots. Total: ${Object.keys(merged).length}`);
     } catch (err) {
       console.error('[StateSnap] Import failed:', err.message);
     }
   }
 
-  function clear() {
-    localStorage.removeItem(STORAGE_KEY);
+  async function clear() {
+    await window.STORAGE_ADAPTER.remove(STORAGE_KEY);
     console.log('[StateSnap] All snapshots cleared');
   }
 

@@ -187,11 +187,50 @@ const COUNTRY_DATA = (() => {
     getComparison,
     formatEmissions,
     COUNTRIES,
+
+    init() {
+      console.debug('[Stub] COUNTRY_DATA.init');
+      return true;
+    },
+
+    getCountries() {
+      return COUNTRIES;
+    },
+
+    lookup(query) {
+      console.debug('[Stub] COUNTRY_DATA.lookup');
+      return null;
+    },
+
+    getByCode(code) {
+      console.debug('[Stub] COUNTRY_DATA.getByCode');
+      return null;
+    },
+
+    search(query) {
+      console.debug('[Stub] COUNTRY_DATA.search');
+      return [];
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] COUNTRY_DATA.reset');
+      return true;
+    },
+    destroy() {
+      console.debug('[SML] COUNTRY_DATA.destroy');
+      return true;
+    },
+    getState() {
+      return {};
+    },
   };
 })();
 window.COUNTRY_DATA = COUNTRY_DATA;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('COUNTRY_DATA', {
-    provides: ['init', 'getCountry', 'getCountries', 'lookup', 'getByCode', 'search'],
+    provides: ['init', 'getCountry', 'getCountries', 'lookup', 'getByCode', 'search', 'reset', 'destroy', 'getState'],
     requires: [],
   });
+}

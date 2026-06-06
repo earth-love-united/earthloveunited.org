@@ -69,13 +69,12 @@
 #globe-overlay .globe-overlay-toggle {
   position: absolute;
   top: 50%;
-  right: -24px;
-  width: 24px;
+  right: -16px;
+  width: 16px;
   height: 140px;
-  background: rgba(8, 10, 18, 0.95);
-  border: 1px solid rgba(78, 205, 196, 0.2);
-  border-left: none;
-  border-radius: 0 8px 8px 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,23 +82,40 @@
   color: var(--teal);
   transform: translateY(-50%);
   pointer-events: auto;
-  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+  filter: drop-shadow(4px 0 12px rgba(0, 0, 0, 0.3));
   z-index: 100;
-  transition: background 0.2s;
+  transition: filter 0.2s, color 0.2s;
+  padding-right: 2px;
+  color-scheme: dark;
 }
 
 #globe-overlay .globe-overlay-toggle:hover {
-  background: rgba(8, 10, 18, 1);
+  filter: drop-shadow(4px 0 12px rgba(0, 0, 0, 0.4)) brightness(1.2);
   color: var(--mint);
 }
 
-#globe-overlay .globe-overlay-toggle svg {
+#globe-overlay .globe-overlay-toggle .toggle-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  fill: rgba(8, 10, 18, 0.95);
+  stroke: rgba(78, 205, 196, 0.3);
+  stroke-width: 1px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+#globe-overlay .globe-overlay-toggle .toggle-icon {
   width: 16px;
   height: 16px;
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  z-index: 1;
 }
 
-#globe-overlay.open .globe-overlay-toggle svg {
+#globe-overlay.open .globe-overlay-toggle .toggle-icon {
   transform: rotate(180deg);
 }
 
@@ -332,49 +348,9 @@
   margin: 20px 0;
 }
 
-/* ── Responsive ── */
-@media (max-width: 768px) {
-  #globe-overlay {
-    top: 0;
-    left: 0;
-    bottom: 0;
-    border-radius: 0;
-    width: 100vw;
-    max-width: 100vw;
-  }
-
-  #globe-overlay .globe-overlay-bg {
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-  }
-
-  #globe-overlay .globe-overlay-connector {
-    display: none;
-  }
-
-  .globe-overlay-header {
-    padding: 12px 16px 10px;
-  }
-
-  .globe-overlay-content {
-    padding: 16px 16px 32px;
-  }
-
-  .globe-overlay-content .overlay-stat-row {
-    flex-wrap: wrap;
-  }
-
-  .globe-overlay-content .overlay-stat {
-    min-width: calc(50% - 5px);
-  }
-}
-
-@media (max-width: 400px) {
-  .globe-overlay-content .overlay-stat-row {
-    flex-direction: column;
-  }
-}
+/* ── Responsive ──
+   Mobile styles for #globe-overlay are in css/responsive.css
+   to keep all mobile layout rules in one place. */
 
 /* ═══════════════════════════════════════════ */
 /* GAIA KNOWLEDGE — Source Popovers & Synthesis */

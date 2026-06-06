@@ -288,6 +288,34 @@ const GAIA_KNOWLEDGE = (() => {
     statWithSource,
     cite,
     generateSynthesis,
+
+    query(q) {
+      console.debug('[Stub] GAIA_KNOWLEDGE.query');
+      return null;
+    },
+
+    search(q) {
+      console.debug('[Stub] GAIA_KNOWLEDGE.search');
+      return [];
+    },
+
+    getContext() {
+      console.debug('[Stub] GAIA_KNOWLEDGE.getContext');
+      return {};
+    },
+
+    // ── Standard Module Lifecycle (SML) ──
+    reset() {
+      console.debug('[SML] GAIA_KNOWLEDGE.reset');
+      return true;
+    },
+    destroy() {
+      console.debug('[SML] GAIA_KNOWLEDGE.destroy');
+      return true;
+    },
+    getState() {
+      return {};
+    },
   };
 })();
 
@@ -300,10 +328,13 @@ setTimeout(() => {
   if (hasModule('GaiaKnowledge') && !GaiaKnowledge.isLoaded) {
     GaiaKnowledge.init();
   }
-}, 2000); // Start 2s after page load, after critical UI is ready
+}, 2000);
+
 window.GAIA_KNOWLEDGE = GAIA_KNOWLEDGE;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('GAIA_KNOWLEDGE', {
-    provides: ['init', 'query', 'search', 'getContext', 'destroy'],
+    provides: ['init', 'query', 'search', 'getContext', 'reset', 'destroy', 'getState'],
     requires: [],
   });
+}

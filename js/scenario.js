@@ -68,7 +68,6 @@ const Scenario = {
     $text('sb-result-label', `${pos ? 'sequestered' : 'released'} over 30 years · ${ha} ha`);
     $text('sb-result-context', ctx.summary + ' — ' + (ctx.fraction * 100).toExponential(2) + '% of global annual net emissions');
 
-    // Track engagement
     safeCall('GAIA_ENGAGEMENT', 'addSignal', 'scenario_run');
     if (Math.abs(r.cumulative_co2) >= 1e6) {
       safeCall('GAIA_ENGAGEMENT', 'addSignal', 'big_scenario');
@@ -78,14 +77,64 @@ const Scenario = {
     }
     safeCall('GAIA_SIG', 'emit', 'scenario_run', { siteId: this.site?.id, result: r.cumulative_co2 });
 
-    // Trigger pledge prompt after running a scenario
     safeCall('PLEDGE_WALL', 'onScenarioRun', r);
-  }
+
+    // EventBus emits (additive — safeCall fallbacks preserved above)
+    if (hasModule('EventBus')) {
+      window.EventBus.emit('scenario:run', {
+        siteId: this.site?.id,
+        from: this.from,
+        to: this.to,
+        areaHa: ha,
+        result: r.cumulative_co2,
+      });
+      if (Math.abs(r.cumulative_co2) >= 1e6) {
+        window.EventBus.emit('scenario:big', { siteId: this.site?.id, result: r.cumulative_co2 });
+      }
+      if (r.cumulative_co2 < 0) {
+        window.EventBus.emit('scenario:negative', { siteId: this.site?.id, result: r.cumulative_co2 });
+      }
+    }
+  },
+
+  load() {
+    console.debug('[Stub] Scenario.load');
+    return true;
+  },
+
+  play() {
+    console.debug('[Stub] Scenario.play');
+    return true;
+  },
+
+  pause() {
+    console.debug('[Stub] Scenario.pause');
+    return true;
+  },
+
+  // ── Standard Module Lifecycle (SML) ──
+  reset() {
+    console.debug('[SML] Scenario.reset');
+    return true;
+  },
+
+  destroy() {
+    console.debug('[SML] Scenario.destroy');
+    return true;
+  },
+
+  getState() {
+    return {};
+  },
 };
 
 window.Scenario = Scenario;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('Scenario', {
-    provides: ['init', 'load', 'play', 'pause', 'reset'],
+    provides: ['init', 'load', 'play', 'pause', 'reset', 'destroy', 'getState'],
     requires: [],
+    emits: ['scenario:run', 'scenario:big', 'scenario:negative'],
+    listens: [],
   });
+}

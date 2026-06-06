@@ -1,8 +1,9 @@
 // ═══════════════════════════════════════════════════════════════
-// DATA — Delegates to shared Data module (loaded via data.js).
-// All biome/site data lives in data.js + data/*.json files.
-// _biomes and _sites are live proxies (used by 1100 lines below).
+// GAIA CHAT — Main chat module for gaia.html
+// Wraps the chat UI, knowledge base, LLM integration, and event bridges.
+// Public functions referenced by inline handlers are re-exported to window.
 // ═══════════════════════════════════════════════════════════════
+const GaiaChat = (() => {
 
 // Minimal fallback data — used only if Data module fails to load (e.g. file:// CORS)
 const _FALLBACK_BIOMES = {
@@ -1179,5 +1180,99 @@ function toggleJournal() {
   if (!isVisible && typeof GaiaQuests !== 'undefined') {
     updateQuestPanel();
   }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SML — Standard Module Lifecycle
+// ═══════════════════════════════════════════════════════════════
+
+function reset() {
+  _conversationHistory = [];
+  isFirstMessage = true;
+  isProcessing = false;
+  demoMode = false;
+}
+
+function destroy() {
+  _conversationHistory = [];
+  isFirstMessage = true;
+  isProcessing = false;
+  demoMode = false;
+}
+
+function getState() {
+  return {
+    historyLength: _conversationHistory?.length || 0,
+    isFirstMessage,
+    isProcessing,
+    demoMode,
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PUBLIC API — exported to window.GaiaChat
+// ═══════════════════════════════════════════════════════════════
+
+return {
+  // Lifecycle
+  init: () => {},  // gaia-chat auto-initializes via DOMContentLoaded
+  reset,
+  destroy,
+  getState,
+
+  // Chat interface
+  sendMessage,
+  askGaia,
+  processQuery,
+
+  // UI toggles (called by inline handlers)
+  toggleVoice,
+  toggleSidebar,
+  toggleSandbox,
+  toggleJournal,
+  startDemoMode,
+  stopDemoMode,
+  runSandboxCalc,
+  lookupProject,
+
+  // Internal helpers exposed for inline handlers
+  handleKeyDown,
+  autoResize,
+  updateQuestPanel,
+  updateEngagementDisplay,
+
+  // Data
+  _biomes,
+  _sites,
+};
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// WINDOW BRIDGE — re-export functions needed by inline handlers
+// ═══════════════════════════════════════════════════════════════
+window.GaiaChat = GaiaChat;
+
+// Functions called by onclick="..." in gaia.html — bridge from IIFE return
+window.sendMessage    = GaiaChat.sendMessage;
+window.askGaia        = GaiaChat.askGaia;
+window.toggleVoice    = GaiaChat.toggleVoice;
+window.toggleSidebar  = GaiaChat.toggleSidebar;
+window.toggleSandbox  = GaiaChat.toggleSandbox;
+window.toggleJournal  = GaiaChat.toggleJournal;
+window.startDemoMode  = GaiaChat.startDemoMode;
+window.stopDemoMode   = GaiaChat.stopDemoMode;
+window.runSandboxCalc = GaiaChat.runSandboxCalc;
+window.lookupProject  = GaiaChat.lookupProject;
+window.handleKeyDown  = GaiaChat.handleKeyDown;
+window.autoResize     = GaiaChat.autoResize;
+
+// ═══════════════════════════════════════════════════════════════
+// MODULE CONTRACT
+// ═══════════════════════════════════════════════════════════════
+if (typeof MODULE_CONTRACTS !== 'undefined') {
+  MODULE_CONTRACTS.register('GaiaChat', {
+    provides: ['init', 'reset', 'destroy', 'getState', 'sendMessage', 'askGaia', 'processQuery', 'toggleVoice', 'toggleSidebar', 'toggleSandbox', 'toggleJournal', 'startDemoMode', 'stopDemoMode', 'runSandboxCalc', 'lookupProject', 'handleKeyDown', 'autoResize', 'updateQuestPanel', 'updateEngagementDisplay'],
+    requires: ['GaiaState', 'GaiaQuests', 'GaiaVoice', 'GaiaKeyGate', 'GaiaDOMAdapter', 'GaiaMind', 'GaiaRetrieval', 'GaiaStructured', 'GaiaEmbeddings', 'GaiaReranker'],
+  });
 }
 

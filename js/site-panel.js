@@ -13,6 +13,7 @@ const SITE_PANEL = (() => {
   let _lastTab = 'sat';
   let _lastRegCheck = null;
   let _gaiaCollapsed = false;
+  let _focusTrap = null;
 
   // ── Layer definitions ──
   const LAYERS = ['story', 'data', 'mystery', 'reveal', 'insight'];
@@ -320,6 +321,11 @@ const SITE_PANEL = (() => {
     currentSite = site;
     currentLayer = 0;
 
+    // Emit EventBus event
+    if (hasModule('EventBus')) {
+      window.EventBus.emit('site:open', { siteId: site.id, site });
+    }
+
     // Speak entry line
     if (hasModule('GAIA_VOICE') && hasModule('GAIA_BUBBLE')) {
       const line = GAIA_VOICE.speak('SITE_ENTRY', site.id);
@@ -338,12 +344,16 @@ const SITE_PANEL = (() => {
     overlayEl.classList.add('visible');
     panelEl.classList.add('open');
 
-    // Track visit
-    try {
-      const visited = JSON.parse(localStorage.getItem('gaia_visited_sites') || '[]');
-      if (!visited.includes(site.id)) visited.push(site.id);
-      localStorage.setItem('gaia_visited_sites', JSON.stringify(visited));
-    } catch { /* ignore */ }
+    // Focus trap
+    _focusTrap = createFocusTrap(panelEl, close);
+    _focusTrap.activate();
+
+    // Track visit (fire-and-forget async)
+    window.STORAGE_ADAPTER.get('gaia_visited_sites').then(visited => {
+      const list = Array.isArray(visited) ? visited : [];
+      if (!list.includes(site.id)) list.push(site.id);
+      window.STORAGE_ADAPTER.set('gaia_visited_sites', list);
+    }).catch(() => {});
   }
 
   // ── Render a specific layer ──
@@ -643,6 +653,7 @@ const SITE_PANEL = (() => {
 
   // ── Close ──
   function close() {
+    if (_focusTrap) { _focusTrap.deactivate(); _focusTrap = null; }
     if (overlayEl) overlayEl.classList.remove('visible');
     if (panelEl) panelEl.classList.remove('open');
     currentSite = null;
@@ -658,16 +669,83 @@ const SITE_PANEL = (() => {
     }
 
     safeCall('GAIA_ENGAGEMENT', 'save');
+
+    // Emit EventBus event
+    if (hasModule('EventBus')) {
+      window.EventBus.emit('site:close', {});
+    }
   }
 
-  return { open, close, nextLayer, selectPrediction, addInsight, verifyCurrentSite, switchVerifyTab, toggleGAIA, speakGAIA, addInsightFromGAIA, scrollToLayer, getCurrentLayer: () => currentLayer, getCurrentSite: () => currentSite };
+  return {
+    open, close, nextLayer, selectPrediction, addInsight, verifyCurrentSite,
+    switchVerifyTab, toggleGAIA, speakGAIA, addInsightFromGAIA, scrollToLayer,
+    getCurrentLayer: () => currentLayer, getCurrentSite: () => currentSite,
+
+    // ── Standard Module Lifecycle (SML) ──
+    init(config = {}) {
+      console.debug('[SML] SITE_PANEL.init');
+
+      // Listen for presence tease events via EventBus
+      if (hasModule('EventBus')) {
+        this._unsubPresence = window.EventBus.on('presence:tease', (data) => {
+          // Could trigger a subtle visual cue in the panel
+          // For now, just log — the bubble handles the speech
+          console.debug('[SITE_PANEL] Presence tease:', data.siteId, data.line);
+        });
+      }
+
+      return true;
+    },
+
+    reset() {
+      console.debug('[SML] SITE_PANEL.reset');
+      currentSite = null;
+      currentLayer = 0;
+      _gaiaCollapsed = false;
+      return true;
+    },
+
+    destroy() {
+      console.debug('[SML] SITE_PANEL.destroy');
+
+      // Unsubscribe from EventBus
+      if (this._unsubPresence) {
+        this._unsubPresence();
+        this._unsubPresence = null;
+      }
+
+      // Remove overlay click listener
+      if (overlayEl) {
+        overlayEl.removeEventListener('click', close);
+        overlayEl = null;
+      }
+
+      // Nullify DOM references
+      panelEl = null;
+
+      // Reset state
+      currentSite = null;
+      currentLayer = 0;
+      _gaiaCollapsed = false;
+
+      return true;
+    },
+
+    getState() {
+      return {};
+    },
+  };
 })();
 window.SITE_PANEL = SITE_PANEL;
 
+if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('SITE_PANEL', {
-    provides: ['open', 'close', 'nextLayer', 'selectPrediction', 'addInsight', 'verifyCurrentSite', 'switchVerifyTab', 'toggleGAIA', 'speakGAIA', 'addInsightFromGAIA', 'scrollToLayer'],
+    provides: ['open', 'close', 'nextLayer', 'selectPrediction', 'addInsight', 'verifyCurrentSite', 'switchVerifyTab', 'toggleGAIA', 'speakGAIA', 'addInsightFromGAIA', 'scrollToLayer', 'init', 'reset', 'destroy', 'getState'],
     requires: ['GLOBE_OVERLAY'],
+    emits: ['site:open', 'site:close'],
+    listens: ['presence:tease'],
   });
+}
 
 
 // ═══════════════════════════════════════════════
@@ -714,74 +792,78 @@ const PLEDGE_PANEL = (() => {
     const gap = node.reality_gap_mt;
     const gapClass = gap === null ? '' : (gap > 0 ? 'red' : 'green');
     const gapSign = gap !== null && gap > 0 ? '+' : '';
-    const onTrack = node.on_track || '';
-    const mom = node.momentum_cagr;
-    const momClass = mom > 0 ? 'red' : 'green';
+    const onTrack = node.on_track;
+ const mom = node.momentum_cagr;
+ const req = node.required_cagr;
+ const div = node.divergence;
 
-    let html = '';
+ let html = '';
 
-    // CAT rating badge
-    if (node.cat_rating) {
-      html += '<div class="pledge-cat-badge" style="background:' + (node.globe_color || '#95a5a6') + '22;border-color:' + (node.globe_color || '#95a5a6') + '">';
-      html += '<span class="pledge-cat-dot" style="background:' + (node.globe_color || '#95a5a6') + '"></span>';
-      html += node.cat_rating;
-      html += '</div>';
-    }
+ // CAT rating badge
+ if (node.cat_rating) {
+ html += '<div class="pledge-cat-badge" style="background:' + (node.globe_color || '#95a5a6') + '22;border-color:' + (node.globe_color || '#95a5a6') + '">';
+ html += '<span class="pledge-cat-dot" style="background:' + (node.globe_color || '#95a5a6') + '"></span>';
+ html += node.cat_rating;
+ html += '</div>';
+ }
 
-    // Reality Gap card — BIG
-    html += '<div class="pledge-gap-card">';
-    html += '<div class="pledge-big-number">' + fmt(node.fossil_co2_mt) + ' <span class="pledge-unit">MtCO₂</span></div>';
-    html += '<div class="pledge-label">Current Fossil Emissions</div>';
-    if (gap !== null) {
-      html += '<div class="pledge-gap-metric ' + gapClass + '">Gap to Target: ' + gapSign + fmt(gap) + ' MtCO₂</div>';
-    } else {
-      html += '<div class="pledge-gap-metric">No target data available</div>';
-    }
-    html += '</div>';
+ // Reality Gap card — BIG
+ html += '<div class="pledge-gap-card">';
+ html += '<div class="pledge-big-number">' + fmt(node.fossil_co2_mt) + ' <span class="pledge-unit">MtCO₂</span></div>';
+ html += '<div class="pledge-label">Current Fossil Emissions</div>';
+ if (gap !== null) {
+ html += '<div class="pledge-gap-metric ' + gapClass + '">Gap to Target: ' + gapSign + fmt(gap) + ' MtCO₂</div>';
+ } else {
+ html += '<div class="pledge-gap-metric">No target data available</div>';
+ }
+ html += '</div>';
 
-    // Emissions breakdown
-    html += '<div class="pledge-emit-grid">';
-    html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + fmt(node.fossil_co2_mt) + '</div><div class="pledge-emit-label">Fossil CO₂ (Mt)</div></div>';
-    html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + fmt(node.lulucf_co2_mt) + '</div><div class="pledge-emit-label">LULUCF CO₂ (Mt)</div></div>';
-    html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + fmt(node.total_co2_mt) + '</div><div class="pledge-emit-label">Total CO₂ (Mt)</div></div>';
-    html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + (node.co2_per_capita > 0 ? node.co2_per_capita.toFixed(2) : '—') + '</div><div class="pledge-emit-label">Per Capita (t)</div></div>';
-    html += '</div>';
+ // Emissions breakdown
+ html += '<div class="pledge-emit-grid">';
+ html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + fmt(node.fossil_co2_mt) + '</div><div class="pledge-emit-label">Fossil CO₂ (Mt)</div></div>';
+ html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + fmt(node.lulucf_co2_mt) + '</div><div class="pledge-emit-label">LULUCF CO₂ (Mt)</div></div>';
+ html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + fmt(node.total_co2_mt) + '</div><div class="pledge-emit-label">Total CO₂ (Mt)</div></div>';
+ html += '<div class="pledge-emit-item"><div class="pledge-emit-val">' + (typeof node.co2_per_capita === 'number' && node.co2_per_capita > 0 ? node.co2_per_capita.toFixed(2) : '—') + '</div><div class="pledge-emit-label">Per Capita (t)</div></div>';
+ html += '</div>';
 
-    // Momentum
-    html += '<div class="pledge-momentum">';
-    html += '<div class="pledge-momentum-actual ' + momClass + '">';
-    html += '<div class="pledge-momentum-label">Actual Velocity</div>';
-    html += '<div class="pledge-momentum-val">' + (mom > 0 ? '+' : '') + mom.toFixed(2) + '%/yr</div>';
-    html += '</div>';
-    if (node.required_cagr > 0) {
-      html += '<div class="pledge-momentum-vs">vs</div>';
-      html += '<div class="pledge-momentum-required">';
-      html += '<div class="pledge-momentum-label">Required Velocity</div>';
-      html += '<div class="pledge-momentum-val">-' + node.required_cagr.toFixed(2) + '%/yr</div>';
-      html += '</div>';
-    }
-    html += '</div>';
-    if (node.divergence !== null && node.divergence !== undefined && node.divergence !== 0) {
-      const divClass = node.divergence > 0 ? 'red' : 'green';
-      html += '<div class="pledge-divergence ' + divClass + '">Divergence: ' + (node.divergence > 0 ? '+' : '') + node.divergence.toFixed(2) + '%/yr</div>';
-    }
+ // Momentum — only render if actual velocity data exists
+ if (mom !== null && mom !== undefined) {
+ const momClass = mom > 0 ? 'red' : 'green';
+ html += '<div class="pledge-momentum">';
+ html += '<div class="pledge-momentum-actual ' + momClass + '">';
+ html += '<div class="pledge-momentum-label">Actual Velocity</div>';
+ html += '<div class="pledge-momentum-val">' + (mom > 0 ? '+' : '') + mom.toFixed(2) + '%/yr</div>';
+ html += '</div>';
+ if (req !== null && req !== undefined && req > 0) {
+ html += '<div class="pledge-momentum-vs">vs</div>';
+ html += '<div class="pledge-momentum-required">';
+ html += '<div class="pledge-momentum-label">Required Velocity</div>';
+ html += '<div class="pledge-momentum-val">-' + req.toFixed(2) + '%/yr</div>';
+ html += '</div>';
+ }
+ html += '</div>';
+ }
+ if (div !== null && div !== undefined && div !== 0) {
+ const divClass = div > 0 ? 'red' : 'green';
+ html += '<div class="pledge-divergence ' + divClass + '">Divergence: ' + (div > 0 ? '+' : '') + div.toFixed(2) + '%/yr</div>';
+ }
 
-    // Change since 2015
-    if (node.change_since_2015 !== null) {
-      const chg = node.change_since_2015;
-      const chgClass = chg > 0 ? 'red' : 'green';
-      html += '<div class="pledge-change ' + chgClass + '">Since 2015: ' + (chg > 0 ? '+' : '') + chg.toFixed(1) + '%</div>';
-    }
+ // Change since 2015
+ if (typeof node.change_since_2015 === 'number') {
+ const chg = node.change_since_2015;
+ const chgClass = chg > 0 ? 'red' : 'green';
+ html += '<div class="pledge-change ' + chgClass + '">Since 2015: ' + (chg > 0 ? '+' : '') + chg.toFixed(1) + '%</div>';
+ }
 
     // On track
-    if (onTrack === 'true') {
-      html += '<div class="pledge-on-track green">✓ On Track</div>';
-    } else if (onTrack === 'false') {
-      html += '<div class="pledge-on-track red">✗ Off Track</div>';
-    }
+  if (onTrack === true) {
+    html += '<div class="pledge-on-track green">✓ On Track</div>';
+  } else if (onTrack === false) {
+    html += '<div class="pledge-on-track red">✗ Off Track</div>';
+  }
 
-    // Finance
-    if (node.finance_total_bn > 0) {
+ // Finance
+ if (typeof node.finance_total_bn === 'number' && node.finance_total_bn > 0) {
       html += '<div class="pledge-section">';
       html += '<div class="pledge-section-title">Climate Finance</div>';
       html += '<div class="pledge-finance-total">$' + fmt(node.finance_total_bn) + 'B</div>';
@@ -812,11 +894,46 @@ const PLEDGE_PANEL = (() => {
     }
   }
 
-  return { open, close };
+  return {
+    open, close,
+
+    // ── Standard Module Lifecycle (SML) ──
+    init(config = {}) {
+      console.debug('[SML] PLEDGE_PANEL.init');
+      return true;
+    },
+
+    reset() {
+      console.debug('[SML] PLEDGE_PANEL.reset');
+      currentNode = null;
+      return true;
+    },
+
+    destroy() {
+      console.debug('[SML] PLEDGE_PANEL.destroy');
+
+      // Unsubscribe from EventBus
+      if (this._unsubScenario) {
+        this._unsubScenario();
+        this._unsubScenario = null;
+      }
+
+      currentNode = null;
+      return true;
+    },
+
+    getState() {
+      return {};
+    },
+  };
 })();
 window.PLEDGE_PANEL = PLEDGE_PANEL;
 
-MODULE_CONTRACTS.register('PLEDGE_PANEL', {
-  provides: ['open', 'close'],
-  requires: [],
-});
+if (typeof MODULE_CONTRACTS !== 'undefined') {
+  MODULE_CONTRACTS.register('PLEDGE_PANEL', {
+    provides: ['open', 'close', 'init', 'reset', 'destroy', 'getState'],
+    requires: [],
+    emits: ['pledge:submit'],
+    listens: ['scenario:run'],
+  });
+}

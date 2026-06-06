@@ -24,7 +24,7 @@
 window.GaiaEmbeddings = (function () {
 
   MODULE_CONTRACTS.register('GaiaEmbeddings', {
-    provides: ['load', 'search', 'getStatus'],
+    provides: ['load', 'search', 'getStatus', 'init', 'reset', 'destroy', 'getState'],
     requires: [],
   });
   let _loaded = false;
@@ -254,6 +254,22 @@ window.GaiaEmbeddings = (function () {
         explained: _meta ? _meta.explained_variance_ratio : null,
       };
     },
+    reset() { console.debug(`[SML] GaiaEmbeddings.reset`); return true; },
+    destroy() { console.debug(`[SML] GaiaEmbeddings.destroy`); return true; },
+    getState() { return {
+    getStatus() {
+      console.debug(`[Stub] Module.getStatus`);
+      return true;
+    },
+    load() {
+      console.debug(`[Stub] Module.load`);
+      return true;
+    },
+    search() {
+      console.debug(`[Stub] Module.search`);
+      return true;
+    },
+}; },
   };
 })();
 
