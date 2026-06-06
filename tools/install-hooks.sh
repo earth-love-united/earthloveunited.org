@@ -34,9 +34,12 @@ if [ -e "$HOOK_DST" ] && [ ! -L "$HOOK_DST" ]; then
   mv "$HOOK_DST" "$BACKUP"
 fi
 
-ln -sf "$HOOK_SRC" "$HOOK_DST"
+# Use a RELATIVE symlink target so the hook works regardless of where the
+# repo lives (different machines, worktrees, containers). An absolute target
+# would break the moment the repo is cloned to another path.
+ln -sf ../../tools/agent-precommit "$HOOK_DST"
 
-echo "✅ Installed: .git/hooks/pre-commit → tools/agent-precommit"
+echo "✅ Installed: .git/hooks/pre-commit → ../../tools/agent-precommit"
 echo ""
 echo "Test it without committing:"
 echo "   ./tools/agent-precommit"
