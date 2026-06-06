@@ -99,3 +99,9 @@ holocene-bifurcation/data/
 tools/scraper/data/
 data/*.jsonl
 carbon-projects/unified/*.csv
+
+# ─── Runtime site assets: intentionally force-TRACKED for deploy ─
+# The specific files the live site loads (dis/knowledge-index.json, dist/*,
+# data/climate-knowledge-curated.jsonl, textures/ndvi/*, holocene runtime
+# data) are committed via `git add -f` so Cloudflare's clean build is
+# self-contained. The broad ignores above still apply to NEW files.

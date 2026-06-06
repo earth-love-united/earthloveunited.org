@@ -1,0 +1,21 @@
+{
+  "v": 1,
+  "built": "2026-05-20T13:46:18Z",
+  "files": {
+    "index.json": {
+      "bytes": 3163310
+    },
+    "paleo.json": {
+      "bytes": 130140
+    },
+    "pledges.json": {
+      "bytes": 250483
+    },
+    "projects-by-country.json": {
+      "bytes": 81089
+    },
+    "index.json.gz": {
+      "bytes": 763953
+    }
+  }
+}
