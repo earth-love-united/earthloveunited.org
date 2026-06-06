@@ -1,0 +1,5 @@
+import { readFileSync } from 'fs';
+const sites = JSON.parse(readFileSync('/Users/ekmelozdemir/earthloveunited.org/data/sites.json')).data;
+console.log('Sites count:', sites.length);
+console.log('First site keys:', Object.keys(sites[0]));
+console.log('First site lat/lng:', sites[0].lat, sites[0].lng);

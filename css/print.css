@@ -1,0 +1,61 @@
+/* ═══════════════════════════════════════════════════════════
+   PRINT STYLES — Carbon report friendly
+   Hides interactive elements, shows content cleanly
+   ═══════════════════════════════════════════════════════════ */
+
+@media print {
+  /* Hide interactive/chrome elements */
+  #topbar, #globe-modes, #events-filter, #ndvi-timeline,
+  #events-timeline, #ndvi-prompt, #scroll-progress,
+  #globe-overlay, #site-panel, #panel-backdrop,
+  #pledge-modal, #pledge-wall, #pledge-tooltip,
+  #gaia-bubble, .memorial, .footer-links,
+  #sidebar, #right-panel, #input-area,
+  #demo-banner, .globe-modes, .events-filter {
+    display: none !important;
+  }
+
+  /* Show sections cleanly */
+  .sections {
+    position: static !important;
+    z-index: auto !important;
+  }
+
+  .section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 2em;
+  }
+
+  /* Make globe viz visible but static */
+  #globeViz {
+    position: relative !important;
+    page-break-after: always;
+  }
+
+  /* Ensure text is readable */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+
+  /* Show URLs after links */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 80%;
+    color: #666;
+  }
+
+  /* Carbon cards print nicely */
+  .data-card, .compare-bars, .scenario-builder,
+  .cycle-widget, .biome-cards {
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 1cm;
+  }
+}
