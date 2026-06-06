@@ -22,7 +22,7 @@ set -uo pipefail
 
 ORG="earth-love-united"
 REPO="earthloveunited.org"
-ADMIN="gke0op"                       # org owner, added to every team
+ADMIN="elu-foundation"               # org owner account, added to every team
 TEAMS=(architects reviewers maintainers)
 
 # CI job names from .github/workflows/ci.yml — these are the required checks
@@ -71,11 +71,13 @@ done
 echo
 
 echo "════ 2/4 repo access for teams ════"
-# architects + reviewers: push; maintainers: admin
-declare -A PERM=( [architects]=push [reviewers]=push [maintainers]=admin )
+# bash 3.2 (macOS default) has no associative arrays — use a case instead.
+# maintainers: admin; everyone else: push
+team_perm() { case "$1" in maintainers) echo admin ;; *) echo push ;; esac; }
 for t in "${TEAMS[@]}"; do
-  code=$(api PUT "/orgs/$ORG/teams/$t/repos/$ORG/$REPO" "{\"permission\":\"${PERM[$t]}\"}")
-  echo "  $t -> ${PERM[$t]} : HTTP $code"
+  p=$(team_perm "$t")
+  code=$(api PUT "/orgs/$ORG/teams/$t/repos/$ORG/$REPO" "{\"permission\":\"$p\"}")
+  echo "  $t -> $p : HTTP $code"
 done
 echo
 
