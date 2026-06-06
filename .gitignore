@@ -88,3 +88,14 @@ _dead/
 # Generated / deployment artefacts (not for git)
 _deploy/
 manifest.json
+
+# ─── Infra safety backups (local only) ─────────────────────────
+.infra-backup/
+
+# ─── Data purged from history (live on Hugging Face) ───────────
+# Added 2026-06-06 after history rewrite — never re-track these.
+carbon-projects/raw/
+holocene-bifurcation/data/
+tools/scraper/data/
+data/*.jsonl
+carbon-projects/unified/*.csv
