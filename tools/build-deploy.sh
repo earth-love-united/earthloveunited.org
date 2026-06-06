@@ -16,7 +16,10 @@
 
 set -euo pipefail
 
-REPO_ROOT="$(git rev-parse --show-toplevel)"
+# Resolve repo root WITHOUT git — CI build containers (e.g. Cloudflare Pages)
+# often check out files without a usable .git, which would make
+# `git rev-parse` fail under `set -e`. Derive it from this script's location.
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
 DEPLOY_DIR="_deploy"
@@ -52,8 +55,10 @@ cp -r css "$DEPLOY_DIR/"
 [ -d assets ]   && cp -r assets   "$DEPLOY_DIR/"
 [ -d textures ] && cp -r textures "$DEPLOY_DIR/"
 
-# Runtime data — rsync preserves directory structure and is portable across macOS/Linux
-rsync -a --exclude='*.bak*' --exclude='.DS_Store' data/ "$DEPLOY_DIR/data/"
+# Runtime data — use cp (no rsync dependency; CI images may lack rsync).
+mkdir -p "$DEPLOY_DIR/data"
+cp -r data/. "$DEPLOY_DIR/data/"
+find "$DEPLOY_DIR/data" \( -name '*.bak*' -o -name '.DS_Store' \) -delete 2>/dev/null || true
 
 # DIS knowledge JSONs + JS bridges
 mkdir -p "$DEPLOY_DIR/dis"
