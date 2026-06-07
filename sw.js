@@ -1,15 +1,15 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for static assets, network-first for HTML and data files.
- * Version bump (v7) forces cache refresh on deploy.
+ * Version bump (v8) forces cache refresh on deploy — bundles replaced individual JS.
  */
-const CACHE_NAME = 'elu-v7';
+const CACHE_NAME = 'elu-v8';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   '/gaia.html',
-  // CSS (critical — preloaded)
+  // CSS (critical — inlined in index.html since A3, but keep for gaia.html / noscript)
   '/css/base.css',
   '/css/layout.css',
   '/css/components.css',
@@ -26,68 +26,10 @@ const STATIC_ASSETS = [
   '/css/registry-check.css',
   '/css/gaia-sources.css',
   '/css/print.css',
-  // JS — Foundation (must load first)
-  '/js/gaia-utils.js',
-  '/js/module-contracts.js',
-  '/js/event-bus.js',
-  '/js/storage-adapter.js',
-  '/js/storage.js',
-  // JS — Data layer
-  '/js/data.js',
-  '/js/data-schema.js',
-  '/js/vendor/globe.gl.js',
-  // JS — Core modules
-  '/js/quiz.js',
-  '/js/cycle.js',
-  '/js/biomes.js',
-  '/js/counters.js',
-  '/js/scenario.js',
-  '/js/globe.js',
-  '/js/globe-modes.js',
-  '/js/globe-restore.js',
-  '/js/globe-ndvi.js',
-  '/js/climate-data-loader.js',
-  '/js/globe-events.js',
-  // JS — GAIA layer
-  '/js/gaia-legacy/gaia-data.js',
-  '/js/gaia-legacy/gaia-signals.js',
-  '/js/gaia-legacy/gaia-charts.js',
-  '/js/gaia-voice.js',
-  '/js/gaia-engagement.js',
-  '/js/gaia-journal.js',
-  '/js/gaia-bubble.js',
-  '/js/globe-overlay.js',
-  '/js/site-panel.js',
-  '/js/carbon-clock.js',
-  '/js/country-data.js',
-  '/js/delegation.js',
-  '/js/pledge-wall.js',
-  '/js/gaia-nodes.js',
-  '/js/gaia-legacy/gaia-knowledge.js',
-  '/js/gaia-overlay-knowledge.js',
-  '/js/ndvi-verifier.js',
-  '/js/gaia-presence.js',
-  '/js/registry-check.js',
-  '/js/module-validator.js',
-  '/js/bridge-client.js',
-  '/js/app.js',
-  // JS — gaia.html specific
-  '/js/gaia-chat.js',
-  '/js/gaia-embeddings.js',
-  '/js/gaia-reranker.js',
-  '/js/gaia-retrieval.js',
-  '/js/gaia-structured.js',
-  '/js/gaia-legacy/gaia-dom-adapter.js',
-  '/js/gaia-legacy/gaia-integration.js',
-  // JS — DIS (GAIA intelligence)
-  '/dis/gaia-mind.js',
-  '/dis/gaia-state-machine.js',
-  '/dis/gaia-voice-engine.js',
-  '/dis/gaia-voice-data.js',
-  '/dis/gaia-quest-system.js',
-  '/dis/gaia-key-gate.js',
-  '/dis/gaia-client.js',
-  '/dis/gaia-knowledge.js',
+  // JS — Bundles (B1: replaced 42 individual files with 3 bundles)
+  '/js/foundation.bundle.js',  // sync: gaia-utils → data
+  '/js/app.bundle.js',         // deferred: quiz → app.js (index.html)
+  '/js/gaia.bundle.js',        // deferred: gaia-data → gaia-integration (gaia.html)
   // Data (small, cacheable)
   '/data/biomes.json',
   '/data/sites.json',

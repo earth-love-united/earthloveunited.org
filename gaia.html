@@ -53,39 +53,17 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GAIA">
 <script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
-<script src="js/gaia-utils.js"></script>
-<script src="js/module-contracts.js"></script>
-<script src="js/event-bus.js"></script>
-<script src="js/storage-adapter.js"></script>
-<script src="js/data.js"></script>
-<script src="js/gaia-legacy/gaia-data.js"></script>
-<script src="js/gaia-legacy/gaia-charts.js"></script>
-<!-- Grounded retrieval over the curated climate knowledge base:
-     BM25 (sparse, lexical) + LSA embeddings (dense, semantic) fused via RRF,
-     plus structured pledge/project/paleo lookups. Loaded before gaia-chat so
-     window.GaiaRetrieval, GaiaEmbeddings, and GaiaStructured exist when the
-     chat dispatches its first turn. -->
-<script src="js/gaia-embeddings.js"></script>
-<script src="js/gaia-reranker.js"></script>
-<script src="js/gaia-retrieval.js"></script>
-<script src="js/gaia-structured.js"></script>
-<!-- DIS Integration — must load before gaia-chat so all dependencies are registered -->
-<script src="js/gaia-legacy/gaia-knowledge.js"></script>
-<script src="dis/gaia-voice-data.js"></script>
-<script src="dis/gaia-state-machine.js?v=1779280176"></script>
-<script src="dis/gaia-voice-engine.js"></script>
-<script src="js/gaia-journal.js"></script>
-<script src="dis/gaia-quest-system.js"></script>
-<script src="dis/gaia-key-gate.js"></script>
-<script src="dis/gaia-mind.js"></script>
-<script src="js/gaia-legacy/gaia-dom-adapter.js?v=1779281239"></script>
-<script src="js/gaia-chat.js?v=1779303871"></script>
+<!-- JS Bundles (B1) — 2 script tags instead of 18 -->
+<!-- Foundation: sync-loaded (gaia-utils → data) -->
+<script src="js/foundation.bundle.js"></script>
+<!-- GAIA modules: deferred (gaia-data → gaia-integration) -->
+<script src="js/gaia.bundle.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/gaia-sources.css">
 <link rel="stylesheet" href="css/print.css" media="print">
 <!-- gaia-client.js NOT loaded — requires Cloudflare Worker backend -->
 <!-- <script src="dis/gaia-client.js"></script> -->
-<script src="js/gaia-legacy/gaia-integration.js"></script>
+<!-- gaia-integration.js is included in gaia.bundle.js -->
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#030307;--bg2:#080a10;--bg3:#0c0e16;--teal:#4ecdc4;--mint:#7be8d0;--ocean:#2a8fa3;--deep:#1a3a5c;--leaf:#5bbf72;--amber:#d4a574;--warn:#c45c4a;--violet:#8b7fc7;--text:#e2dfd8;--text2:#9a9590;--text3:#5a5652;--mono:"JetBrains Mono",monospace;--display:"Cormorant Garamond",serif;--body:"Outfit",sans-serif}
@@ -387,7 +365,6 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
           <a class="audit-link" href="index.html#datasets">Dataset Audit</a>
           <a class="audit-link" href="data/provenance-registry.json" target="_blank" rel="noopener" data-provenance-id="provenance-registry">Registry JSON</a>
           <a class="audit-link" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Source Code</a>
-          <a class="audit-link" href="climate-dataset/STATUS.md" target="_blank" rel="noopener">Build Status</a>
         </div>
         <div class="source-note">A trustworthy path is: question → GAIA orientation → registry entry → source family → dataset record → restoration assumption → human review. Experimental data should not be presented as verified field truth.</div>
       </div>

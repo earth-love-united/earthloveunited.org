@@ -45,7 +45,6 @@ agents-insights/
 .continue/
 
 # ─── Build / dist artifacts ─────────────────────────────────────
-dist/
 dis/dist/
 build/
 
@@ -54,19 +53,10 @@ js/vendor/
 
 # ─── Large data files (live on Hugging Face Datasets) ──────────
 # Climate knowledge corpus
-climate-dataset/data/raw/
-climate-dataset/data/processed/
-dis/knowledge-index.json
-dis/knowledge-index.json.gz
-dis/geological-memory.json
 dis/climate-facts.json
-dis/climate-bifurcation-points.json
 
 # Carbon projects — all heavy data lives on Hugging Face (see tools/fetch-data.sh)
-carbon-projects/unified/*.jsonl
-carbon-projects/unified/*.parquet
-carbon-projects/data/
-carbon-projects/pledge-reality/data/
+# (carbon-projects/ moved to ~/Desktop/datasets/)
 
 # Scraper outputs (re-scrape or fetch from HF)
 tools/scraper/data/external/
@@ -94,14 +84,16 @@ manifest.json
 
 # ─── Data purged from history (live on Hugging Face) ───────────
 # Added 2026-06-06 after history rewrite — never re-track these.
-carbon-projects/raw/
-holocene-bifurcation/data/
 tools/scraper/data/
 data/*.jsonl
-carbon-projects/unified/*.csv
+
+# ─── Moved to ~/Desktop/datasets/ ──────────────────────────────
+climate-dataset/
+carbon-projects/
+holocene-bifurcation/
 
 # ─── Runtime site assets: intentionally force-TRACKED for deploy ─
-# The specific files the live site loads (dis/knowledge-index.json, dist/*,
-# data/climate-knowledge-curated.jsonl, textures/ndvi/*, holocene runtime
-# data) are committed via `git add -f` so Cloudflare's clean build is
-# self-contained. The broad ignores above still apply to NEW files.
+# The specific files the live site loads (dist/knowledge/*,
+# textures/ndvi/*) are committed via `git add -f` so Cloudflare's
+# clean build is self-contained. The broad ignores above still apply
+# to NEW files.

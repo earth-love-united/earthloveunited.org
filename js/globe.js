@@ -360,12 +360,18 @@ const GlobeModule = {
         if (this._canvasEl) {
           this._canvasEl.addEventListener('pointermove', this._onCanvasPointerMove);
           this._canvasEl.addEventListener('click', this._onCanvasClick);
+          console.log('[Globe] Country raycasting canvas listeners attached');
+        } else {
+          console.warn('[Globe] Canvas not available for country raycasting');
         }
 
-        // Notify mode modules that country data is ready
+        // Notify mode modules that country data are ready
         safeCall('GLOBE_MODES', 'onCountryDataReady');
+        console.log('[Globe] Country data ready:', this._countryFeatures?.length, 'features');
       })
-      .catch(e => console.warn('[Globe] Country borders fetch failed:', e.message));
+      .catch(e => {
+        console.warn('[Globe] Country borders fetch failed:', e.message);
+      });
 
     // ── Hex country tooltip mouse tracking ──
     // (removed — tooltip positioning now handled in _onCanvasPointerMove)
