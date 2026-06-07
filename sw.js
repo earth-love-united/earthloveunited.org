@@ -1,9 +1,9 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for static assets, network-first for HTML and data files.
- * Version bump (v6) forces cache refresh on deploy.
+ * Version bump (v7) forces cache refresh on deploy.
  */
-const CACHE_NAME = 'elu-v6';
+const CACHE_NAME = 'elu-v7';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -92,6 +92,7 @@ const STATIC_ASSETS = [
   '/data/biomes.json',
   '/data/sites.json',
   '/data/climate-events.json',
+  '/data/provenance-registry.json',
 ];
 
 // ── Install: pre-cache static assets ──

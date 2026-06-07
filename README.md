@@ -84,6 +84,7 @@ earthloveunited.org/
 │   └── ...                 ~40 IIFE modules
 ├── css/                    Design tokens, layout, components
 ├── data/                   Small, fast-loading JSON for the site
+│   └── provenance-registry.json  Dataset readiness + source-trail registry
 ├── dis/                    Gaia knowledge index + climate facts (runtime data)
 ├── docs/                   Architecture, research, operations, and agent notes
 │   ├── operations/         Launch playbooks, mission plans, repo maps
@@ -110,6 +111,13 @@ We publish three open climate datasets on Hugging Face under CC BY 4.0:
 These are the corpus behind Gaia's grounded answers. Built from IPCC AR6,
 Project Drawdown, US EPA, NOAA GML, Our World in Data, Wikipedia, and arXiv.
 Full source attribution lives in [CREDITS.md](CREDITS.md).
+
+Dataset cards and GAIA source guidance are backed by
+[`data/provenance-registry.json`](data/provenance-registry.json). The registry
+tracks each public dataset's readiness label (`production`, `review-stage`, or
+`experimental`), data type, local files, external links, intended use, known
+limits, and GAIA prompt hint. Update the registry before changing public
+readiness language.
 
 ---
 
@@ -138,6 +146,7 @@ the browser console on any page:
 | `Impact.check('globe.js')` | Blast radius — who calls it, what breaks |
 | `DepGraph.mermaid()` | Dependency graph as Mermaid diagram |
 | `node tools/check-public-copy.js` | Static scan for unresolved draft copy and dummy links |
+| `node tools/check-provenance-registry.js` | Validate dataset readiness/source-trail registry |
 
 The boot validator (`js/module-validator.js`) runs automatically at page load
 and reports `✅ [BOOT] N/N modules loaded` in the console.

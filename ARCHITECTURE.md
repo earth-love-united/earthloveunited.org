@@ -41,10 +41,11 @@ Earth Love United's public trust layer has four surfaces:
 1. **GAIA interface** — `gaia.html` positions GAIA as a climate-science guide
    and audit assistant. It must describe what GAIA can help with, what it
    cannot guarantee, and how users should ask for source trails and uncertainty.
-2. **Dataset provenance** — `index.html#datasets` and
-   `gaia.html#trust-layer` link to the GitHub source, Hugging Face datasets,
-   local JSON/CSV runtime files, and dataset status labels such as production,
-   review, or experimental.
+2. **Dataset provenance** — `data/provenance-registry.json` is the source of
+   truth for public readiness labels, data types, local paths, external links,
+   intended use, known limits, and GAIA prompt hints. `index.html#datasets`
+   and `gaia.html#trust-layer` expose registry-backed cards using
+   `data-provenance-id` attributes.
 3. **Testing and smoke validation** — boot validation, `SmokeTest.run()`,
    `StackLint.audit()`, and the static DAG verifier are part of the public
    audit story. They prove module loading and stacking invariants are not just
@@ -57,8 +58,11 @@ GAIA answers should never be treated as peer review, legal advice, financial
 advice, or carbon-project certification. The expected pathway is:
 
 ```
-question → GAIA orientation → source family → dataset record → restoration assumption → human review
+question → GAIA orientation → registry entry → source family → dataset record → restoration assumption → human review
 ```
+
+Run `node tools/check-provenance-registry.js` after changing dataset cards,
+readiness labels, or GAIA provenance copy.
 
 ## Module Registry
 

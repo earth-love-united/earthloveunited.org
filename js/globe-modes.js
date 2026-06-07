@@ -7,6 +7,7 @@ const GLOBE_MODES = (() => {
   let _currentMode = 'countries';
   let _initialized = false;
   let _countryDataReady = false;
+  let _pledgeNodesVisible = true;
 
   function init() {
     if (_initialized) return;
@@ -25,6 +26,18 @@ const GLOBE_MODES = (() => {
         if (mode) setMode(mode);
       });
     });
+
+    // Wire pledge nodes toggle
+    const toggle = $('gm-toggle-nodes');
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        _pledgeNodesVisible = !_pledgeNodesVisible;
+        toggle.classList.toggle('active', _pledgeNodesVisible);
+        if (hasModule('GlobeModule')) {
+          GlobeModule.togglePledgeNodes(_pledgeNodesVisible);
+        }
+      });
+    }
 
     console.log('[GLOBE_MODES] init — 3 modes ready');
   }
@@ -77,6 +90,16 @@ const GLOBE_MODES = (() => {
   }
 
   function _deactivateCurrent() {
+    // Clear hex country colors (return to transparent)
+    if (hasModule('GlobeModule') && GlobeModule.world) {
+      GlobeModule.setHexMode(
+        () => 'rgba(255,255,255,0.02)',
+        () => 0.003
+      );
+    }
+    // Hide hex legend when leaving countries mode
+    const legend = $('hex-legend');
+    if (legend) legend.style.display = 'none';
     safeCall('GLOBE_NDVI', 'deactivate');
     safeCall('GLOBE_EVENTS', 'deactivate');
   }
@@ -85,15 +108,18 @@ const GLOBE_MODES = (() => {
     // Restore night earth texture (in case NDVI swapped it)
     safeCall('GlobeModule', 'restoreDefaultTexture');
 
-    // Restore node visuals (points, labels, rings)
-    safeCall('GlobeModule', 'restoreNodeVisuals');
+    // Apply country-colored hex map
+    safeCall('GlobeModule', 'applyCountryHexColors');
 
-    // Reset hex to empty wireframe grid
-    if (hasModule('GlobeModule') && GlobeModule.world) {
-      GlobeModule.setHexMode(
-        () => 'rgba(78,205,196,0.08)',
-        () => 0.003
-      );
+    // Show hex legend
+    const legend = $('hex-legend');
+    if (legend) legend.style.display = '';
+
+    // Restore node visuals (pledge cylinders) — respect toggle state
+    if (_pledgeNodesVisible) {
+      safeCall('GlobeModule', 'restoreNodeVisuals');
+    } else {
+      safeCall('GlobeModule', 'clearNodeVisuals');
     }
   }
 
@@ -117,6 +143,7 @@ const GLOBE_MODES = (() => {
     getMode: () => _currentMode,
     onCountryDataReady,
     isCountryDataReady: () => _countryDataReady,
+    isPledgeNodesVisible: () => _pledgeNodesVisible,
     reset: _reset,
     destroy: _destroy,
     getState: _getState,

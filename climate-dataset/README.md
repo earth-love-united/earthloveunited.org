@@ -88,6 +88,19 @@ sourced from the world's most trusted climate institutions:
 3. **Climate Education** — Build interactive learning experiences
 4. **Fact-Checking** — Verify climate claims against authoritative sources
 
+## Provenance Registry
+
+Public readiness language for this dataset is maintained in
+[`../data/provenance-registry.json`](../data/provenance-registry.json) under
+the `climate-knowledge` entry. Update that registry entry when source families,
+intended use, known limits, local paths, or Hugging Face links change.
+
+Validate the registry from the repository root:
+
+```bash
+node tools/check-provenance-registry.js
+```
+
 ## Sources and Licensing
 
 | Source | License | Commercial Use |

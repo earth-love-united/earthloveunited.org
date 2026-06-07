@@ -313,6 +313,43 @@
 .gm-icon{ font-size:14px; line-height:1; }
 .gm-label{ white-space:nowrap; }
 
+/* ── Pledge nodes toggle ── */
+.gm-divider{ width:1px; height:20px; background:rgba(255,255,255,0.1); margin:0 2px; align-self:center; }
+.gm-toggle{
+  display:flex; align-items:center; gap:5px;
+  padding:6px 12px; border:none; border-radius:8px;
+  background:transparent; color:rgba(255,255,255,0.4);
+  font-family:var(--font); font-size:11px; font-weight:500;
+  cursor:pointer; transition:all 0.25s ease;
+}
+.gm-toggle:hover{ color:rgba(255,255,255,0.7); background:rgba(255,255,255,0.05); }
+.gm-toggle.active{
+  color:var(--mint); background:rgba(78,205,196,0.1);
+}
+.gm-toggle-icon{ font-size:10px; line-height:1; }
+.gm-toggle-label{ white-space:nowrap; }
+
+/* ── Hex country hover tooltip ── */
+#hex-country-tooltip {
+  position: fixed; z-index: 1000; pointer-events: none;
+  background: rgba(8,10,18,0.92); backdrop-filter: blur(8px);
+  border: 1px solid rgba(78,205,196,0.15); border-radius: 8px;
+  padding: 8px 12px; opacity: 0; transition: opacity 0.15s;
+  transform: translate(-50%, -120%); box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+#hex-country-tooltip.visible { opacity: 1; }
+
+/* ── Hex legend ── */
+.hex-legend{
+  position: fixed; bottom: 14px; right: 56px; z-index: 60;
+  display: flex; flex-direction: column; gap: 2px; padding: 6px 8px;
+  background: rgba(8,10,18,0.8); backdrop-filter: blur(8px);
+  border: 1px solid rgba(78,205,196,0.1); border-radius: 8px;
+  font-size: 9px; color: var(--text3); letter-spacing: 0.5px;
+}
+.hex-legend-row{ display: flex; align-items: center; gap: 6px; }
+.hex-legend-swatch{ width: 10px; height: 10px; border-radius: 2px; }
+
 /* ═══ EVENTS FILTER ═══ */
 .events-filter{
   position:fixed; top:124px; left:50%; transform:translateX(-50%);

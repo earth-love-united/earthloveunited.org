@@ -50,6 +50,28 @@
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+<!-- ─── Resource Hints (A2) ─────────────────────────────────── -->
+<!-- Preconnect to CDN origins to save DNS+TCP+TLS round trips -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- DNS prefetch for API origins (lower priority than preconnect) -->
+<link rel="dns-prefetch" href="https://gml.noaa.gov">
+<link rel="dns-prefetch" href="https://api.carbonmark.com">
+<link rel="dns-prefetch" href="https://services.sentinel-hub.com">
+<link rel="dns-prefetch" href="https://eonet.gsfc.nasa.gov">
+<link rel="dns-prefetch" href="https://earthquake.usgs.gov">
+<!-- Preload critical JS foundation (sync-loaded, preload saves discovery time) -->
+<link rel="preload" href="js/gaia-utils.js" as="script">
+<link rel="preload" href="js/module-contracts.js" as="script">
+<link rel="preload" href="js/event-bus.js" as="script">
+<link rel="preload" href="js/data.js" as="script">
+<link rel="preload" href="js/globe.js" as="script">
+<!-- Preload deferred CSS that's needed for first interaction -->
+<link rel="preload" href="css/globe-overlay.css?v=4" as="style">
+<link rel="preload" href="css/gaia-bubble.css" as="style">
+
 <!-- CSS Modules -->
 <!-- Critical above-fold: preload -->
 <link rel="preload" href="css/base.css" as="style" onload="this.rel='stylesheet'">
@@ -88,9 +110,9 @@
 <!-- Print stylesheet -->
 <link rel="stylesheet" href="css/print.css" media="print">
 
-<!-- Globe.gl (Local) — classic script load so the Living Globe is available at boot -->
-<script src="js/vendor/globe.gl.js"></script>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
+<!-- Globe.gl — loaded on demand when entering globe mode (not at boot) -->
+<!-- Was: <script src="js/vendor/globe.gl.js"></script> -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%200%20100%20100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
 </head>
 <body><a href="#main-content" class="skip-nav">Skip to main content</a>
 
@@ -120,22 +142,13 @@
     </div>
 
     <div class="memorial">In memory of Jean Missinhoun (1972–2024) · From oil to earth</div>
-
-    <div class="arrival-pathways" aria-label="Choose your path">
-      <button class="arrival-route" data-action="startLearning">
-        <span class="route-kicker">Wonder</span>
-        <strong>Begin with the science beneath the living globe</strong>
-      </button>
-      <a class="arrival-route" href="mailto:hello@earthloveunited.org?subject=Volunteer%20Interview">
-        <span class="route-kicker">Contribute</span>
-        <strong>Help audit datasets, stories, and field knowledge</strong>
-      </a>
-      <a class="arrival-route" href="mailto:hello@earthloveunited.org?subject=Partner%20Meeting">
-        <span class="route-kicker">Partner</span>
-        <strong>Discuss restoration, finance, and transparent impact</strong>
-      </a>
-    </div>
   </div>
+</div>
+
+<!-- ═══ SCROLL INDICATOR ═══ -->
+<div class="scroll-indicator" aria-hidden="true">
+  <span class="scroll-arrow">↓</span>
+  <span class="scroll-label">Scroll to explore</span>
 </div>
 
 <!-- ═══ HAMBURGER (mobile GLOBE_OVERLAY trigger) ═══ -->
@@ -186,6 +199,18 @@
   <button class="gm-btn" data-mode="events" aria-label="Events mode">
     <span class="gm-icon">📍</span><span class="gm-label">Events</span>
   </button>
+  <div class="gm-divider"></div>
+  <button id="gm-toggle-nodes" class="gm-toggle active" aria-label="Toggle pledge nodes">
+    <span class="gm-toggle-icon">🔴</span><span class="gm-toggle-label">Nodes</span>
+  </button>
+</div>
+
+<!-- ── HEX LEGEND ── -->
+<div class="hex-legend" id="hex-legend">
+  <div class="hex-legend-row"><span class="hex-legend-swatch" style="background:hsla(220,40%,30%,0.5)"></span> Low emissions</div>
+  <div class="hex-legend-row"><span class="hex-legend-swatch" style="background:hsla(160,60%,40%,0.55)"></span> High emissions</div>
+  <div class="hex-legend-row"><span class="hex-legend-swatch" style="background:hsla(10,75%,42%,0.6)"></span> Overshooting</div>
+  <div class="hex-legend-row"><span class="hex-legend-swatch" style="background:hsla(140,72%,40%,0.55)"></span> On track</div>
 </div>
 
 <!-- ═══ EVENTS FILTER (shown in Events mode only) ═══ -->
@@ -325,93 +350,9 @@
       <div class="section-body">A forest, a mangrove, a grassland, and a plantation can all appear green from orbit. Their carbon stocks, recovery times, water relationships, and biodiversity value are very different.</div>
       <div class="biome-cards" id="biome-cards"></div>
       <div class="biome-detail" id="biome-detail"></div>
-    </div>
-  </div>
-
-  <!-- COMPARE -->
-  <div class="section" id="compare">
-    <div class="card reveal">
-      <div class="section-label">Climate Science Primer</div>
-      <div class="section-title">Carbon Density (tC/ha)</div>
+      <div class="section-title" style="margin-top:32px;font-size:clamp(18px,2.5vw,28px)">Carbon Density (tC/ha)</div>
       <div class="section-body">Restoration is not a generic tree count. It is a place-based decision about carbon, water, biodiversity, land tenure, and community benefit.</div>
       <div class="compare-bars" id="compare-bars"></div>
-    </div>
-  </div>
-
-  <!-- LIVING GLOBE -->
-  <div class="section" id="projects">
-    <div class="card reveal">
-      <div class="section-label">Living Globe</div>
-      <div class="section-title">The Atlas Becomes Specific</div>
-      <div class="section-body">The globe connects restoration sites with climate context: wildfire recovery in Antalya, multilayer afforestation in Sri Lanka, mangrove recovery in Benin, and peatland lessons from Borneo.</div>
-      <div class="sites-grid" id="sites-grid"></div>
-    </div>
-  </div>
-
-  <!-- GAIA -->
-  <div class="section" id="gaia-guide">
-    <div class="card reveal">
-      <div class="section-label">GAIA</div>
-      <div class="section-title">A Guide for Asking Better Questions</div>
-      <div class="section-body">GAIA is not an oracle and not a substitute for scientific review. It is a climate-science guide designed to translate sources, surface uncertainty, and help visitors move from curiosity to evidence.</div>
-      <div class="gaia-callout">
-        <div>
-          <strong>Ask about carbon cycles, country emissions, restoration sites, source data, or scenario math.</strong>
-          <p>When the answer matters, follow the trail into the datasets and source documents.</p>
-        </div>
-        <a class="inline-cta" href="gaia.html#trust-layer">Ask GAIA</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- DATASETS -->
-  <div class="section" id="datasets">
-    <div class="card reveal">
-      <div class="section-label">Dataset Audit</div>
-      <div class="section-title">Inspect the Working Commons</div>
-      <div class="section-body">A climate foundation earns trust by letting people inspect the machinery. The site source, Hugging Face datasets, and raw runtime files are public so researchers, partners, volunteers, and critics can trace what the interface claims.</div>
-      <div class="dataset-platforms">
-        <a class="dataset-platform" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">
-          <strong>GitHub source</strong>
-          <span>Classic HTML, CSS, and JavaScript. No build step, no hidden bundle.</span>
-        </a>
-        <a class="dataset-platform" href="https://huggingface.co/ego0op" target="_blank" rel="noopener">
-          <strong>Hugging Face commons</strong>
-          <span>Public dataset profile for Earth Love United climate and carbon datasets.</span>
-        </a>
-      </div>
-      <div class="dataset-source-list" aria-label="Published Hugging Face datasets">
-        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge" target="_blank" rel="noopener">
-          <span class="dataset-status">Production · derived educational data</span>
-          <strong>Climate Knowledge Dataset</strong>
-          <em>Curated climate-science chunks for GAIA retrieval, education, and public source trails.</em>
-        </a>
-        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/carbon-projects-unified" target="_blank" rel="noopener">
-          <span class="dataset-status">Review · processed audit data</span>
-          <strong>Carbon Projects Unified</strong>
-          <em>Normalized registry/project records for comparison and carbon-project audit workflows.</em>
-        </a>
-        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-carbon-projects" target="_blank" rel="noopener">
-          <span class="dataset-status">Experimental · ELU release data</span>
-          <strong>Earth Love United Carbon Projects</strong>
-          <em>Foundation release layer for transparent review, future validation, and partner discussion.</em>
-        </a>
-      </div>
-      <div class="gaia-callout">
-        <div>
-          <strong>Audit path: question → GAIA orientation → dataset record → restoration assumption → human review.</strong>
-          <p>Use GAIA to ask what source family or dataset should be inspected before treating a claim as decision-grade.</p>
-        </div>
-        <a class="inline-cta" href="gaia.html#trust-layer">Open Trust Layer</a>
-      </div>
-      <div class="raw-data-label">Raw audit links</div>
-      <div class="dataset-links">
-        <a href="data/sites.json" target="_blank" rel="noopener">Project Sites JSON</a>
-        <a href="data/biomes.json" target="_blank" rel="noopener">Biome Carbon JSON</a>
-        <a href="data/pledge-nodes.json" target="_blank" rel="noopener">Country Pledges JSON</a>
-        <a href="data/climate-events.json" target="_blank" rel="noopener">Climate Events JSON</a>
-        <a href="data/events-core.csv" target="_blank" rel="noopener">Events CSV</a>
-      </div>
     </div>
   </div>
 
@@ -478,14 +419,61 @@
       <a href="#quiz">Wonder</a>
       <a href="#academy">Academy</a>
       <a href="#carbon-cycle">Science</a>
-      <a href="#projects">Living Globe</a>
-      <a href="#gaia-guide">GAIA</a>
-      <a href="#datasets">Dataset Audit</a>
+      <a href="#biomes">Biomes</a>
       <a href="#scenario">Restoration</a>
+      <a href="#datasets">Transparency</a>
       <a href="#together">Volunteer / Partner</a>
       <a href="mailto:hello@earthloveunited.org">Contact</a>
     </div>
     <div class="footer-copy">© 2026 Earth Love United Foundation · earthloveunited.org</div>
+  </div>
+
+  <!-- ═══ TRANSPARENCY / DATASET AUDIT ═══ -->
+  <div class="section" id="datasets" style="padding-top:64px">
+    <div class="card reveal">
+      <div class="section-label">Transparency</div>
+      <div class="section-title">Inspect the Working Commons</div>
+      <div class="section-body">A climate foundation earns trust by letting people inspect the machinery. The site source, Hugging Face datasets, and raw runtime files are public so researchers, partners, volunteers, and critics can trace what the interface claims.</div>
+      <div class="dataset-platforms">
+        <a class="dataset-platform" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">
+          <strong>GitHub source</strong>
+          <span>Classic HTML, CSS, and JavaScript. No build step, no hidden bundle.</span>
+        </a>
+        <a class="dataset-platform" href="https://huggingface.co/ego0op" target="_blank" rel="noopener">
+          <strong>Hugging Face commons</strong>
+          <span>Public dataset profile for Earth Love United climate and carbon datasets.</span>
+        </a>
+        <a class="dataset-platform" href="data/provenance-registry.json" target="_blank" rel="noopener" data-provenance-id="provenance-registry">
+          <strong>Provenance registry</strong>
+          <span>Source of truth for readiness labels, intended use, and known limits.</span>
+        </a>
+      </div>
+      <div class="dataset-source-list" aria-label="Published Hugging Face datasets">
+        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge" target="_blank" rel="noopener" data-provenance-id="climate-knowledge">
+          <span class="dataset-status">Production · derived educational data</span>
+          <strong>Climate Knowledge Dataset</strong>
+          <em>Curated climate-science chunks for GAIA retrieval, education, and public source trails.</em>
+        </a>
+        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/carbon-projects-unified" target="_blank" rel="noopener" data-provenance-id="carbon-projects-unified">
+          <span class="dataset-status">Review · processed audit data</span>
+          <strong>Carbon Projects Unified</strong>
+          <em>Normalized registry/project records for comparison and carbon-project audit workflows.</em>
+        </a>
+        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-carbon-projects" target="_blank" rel="noopener" data-provenance-id="elu-carbon-projects">
+          <span class="dataset-status">Experimental · ELU release data</span>
+          <strong>Earth Love United Carbon Projects</strong>
+          <em>Foundation release layer for transparent review, future validation, and partner discussion.</em>
+        </a>
+      </div>
+      <div class="raw-data-label">Raw data</div>
+      <div class="dataset-links" data-provenance-id="runtime-globe-data">
+        <a href="data/sites.json" target="_blank" rel="noopener">Project Sites JSON</a>
+        <a href="data/biomes.json" target="_blank" rel="noopener">Biome Carbon JSON</a>
+        <a href="data/pledge-nodes.json" target="_blank" rel="noopener">Country Pledges JSON</a>
+        <a href="data/climate-events.json" target="_blank" rel="noopener">Climate Events JSON</a>
+        <a href="data/events-core.csv" target="_blank" rel="noopener">Events CSV</a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -568,6 +556,12 @@
   });
 })();
 </script>
+
+
+<!-- Globe mode back button -->
+<button id="globe-back-btn" onclick="exitGlobe()" aria-label="Back to Foundation">
+  ← Back to Foundation
+</button>
 
 <!-- Service Worker registration -->
 <script>

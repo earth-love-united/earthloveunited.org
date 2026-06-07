@@ -34,6 +34,33 @@ const Data = {
     } else {
       console.error('[Data] CRITICAL: Some data files failed to load. biomes:', !!this.biomes, 'sites:', !!this.sites);
     }
+
+    // ── Country Hex Color Lookup ──
+    // Built once from pledgeNodes, keyed by ISO_A3
+    // Used by GlobeModule to color hex polygons per-country
+    this.countryHexColors = {};
+    if (this.pledgeNodes) {
+      this.pledgeNodes.forEach(n => {
+        this.countryHexColors[n.iso] = {
+          country: n.country,
+          iso: n.iso,
+          lat: n.lat,
+          lng: n.lng,
+          emissions: n.fossil_co2_mt,
+          perCapita: n.co2_per_capita,
+          gap: n.reality_gap_mt,
+          onTrack: n.on_track,
+          catRating: n.cat_rating,
+          catScore: n.cat_score,
+          globeColor: n.globe_color,
+          targetYear: n.target_year,
+          reductionPct: n.reduction_pct,
+          lulucf: n.lulucf_co2_mt,
+          totalCo2: n.total_co2_mt,
+        };
+      });
+      console.log('[Data] Country hex colors:', Object.keys(this.countryHexColors).length, 'countries');
+    }
     return this;
   },
 
@@ -66,6 +93,7 @@ const Data = {
   getBiome(key) { return this.biomes ? this.biomes[key] : null; },
   getSite(id) { return this.sites ? this.sites.find(s => s.id === id) : null; },
   getPledgeNode(iso) { return this.pledgeNodes ? this.pledgeNodes.find(n => n.iso === iso) : null; },
+  getCountryHexData(iso) { return this.countryHexColors ? this.countryHexColors[iso] || null : null; },
   getAllBiomes() { return this.biomes ? Object.entries(this.biomes).filter(([k]) => k !== '_meta').map(([k, v]) => ({ key: k, ...v })) : []; },
 
   // Carbon calculation engine

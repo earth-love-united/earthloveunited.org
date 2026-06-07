@@ -62,8 +62,9 @@ const App = {
     }
 
     // Init all existing modules — errors are now VISIBLE via reportError
+    // NOTE: GlobeModule is NOT initialized here — it initializes on demand
+    // when entering globe mode. This prevents WebGL rendering in foundation mode.
     const modules = [
-      ['GlobeModule', () => GlobeModule.init()],
       ['Quiz',        () => Quiz.init()],
       ['Biomes',      () => Biomes.init()],
       ['Scenario',    () => Scenario.init()],
@@ -260,7 +261,6 @@ const App = {
   _bindStaticActions() {
     const handlers = {
       enterGlobe: () => this.enterGlobe(),
-      startLearning: () => this.startLearning(),
       viewDatasets: () => this.viewDatasets(),
       toggleGlobeOverlay: () => toggleGlobeOverlay(),
       showCycle: (key) => safeCall('Cycle', 'show', key),
@@ -322,20 +322,33 @@ const App = {
     }, delay);
   },
 
-  enterGlobe() {
-    this.enterAndScroll('#globe-modes', { scrollTop: 0, focusSelector: '#globe-modes' });
+  async enterGlobe() {
+    document.body.classList.add('globe-mode');
+    $('topbar')?.classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Load globe.gl if not already loaded, then init GlobeModule
+    if (!_globeGLLoaded && !_globeGLLoading) {
+      await loadGlobeGL().catch(() => console.warn('[App] globe.gl failed to load'));
+    }
+    if (hasModule('GlobeModule') && !GlobeModule._initialized) {
+      try { GlobeModule.init(); GlobeModule._initialized = true; } catch (err) { reportError('GlobeModule.init()', err); }
+    }
+    if (hasModule('EventBus')) {
+      window.EventBus.emit('engagement:interact', {});
+    }
+    safeCall('GAIA_ENGAGEMENT', 'interact');
+    document.addEventListener('keydown', _onGlobeKeyDown);
   },
 
-  startLearning() {
-    this.enterAndScroll('#quiz');
+  exitGlobe() {
+    document.body.classList.remove('globe-mode');
+    $('topbar')?.classList.remove('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.removeEventListener('keydown', _onGlobeKeyDown);
   },
 
   viewDatasets() {
     this.enterAndScroll('#datasets');
-  },
-
-  enterSite() {
-    this.startLearning();
   },
 
   flyToSite(id) {
@@ -365,12 +378,17 @@ const App = {
   },};
 
 // Global enter button
-function enterSite() { App.enterSite(); }
 function enterGlobe() { App.enterGlobe(); }
-function startLearning() { App.startLearning(); }
+function exitGlobe() { App.exitGlobe(); }
 function viewDatasets() { App.viewDatasets(); }
 function flyToSite(id) { App.flyToSite(id); }
 function showCycle(key) { Cycle.show(key); }
+
+function _onGlobeKeyDown(e) {
+  if (e.key === 'Escape' && document.body.classList.contains('globe-mode')) {
+    App.exitGlobe();
+  }
+}
 
 function syncHeroScrollState() {
   const hero = $('hero');
@@ -410,21 +428,8 @@ async function startApp() {
     setTimeout(startApp, 100);
     return;
   }
-  // Load globe.gl if Globe constructor not available yet
-  if (typeof Globe === 'undefined' && !_globeGLLoading) {
-    loadGlobeGL().catch(() => console.warn('[App] globe.gl failed to load'));
-  }
-  // Wait for GlobeModule with timeout
-  if (typeof GlobeModule === 'undefined') {
-    if (++_startRetries > 30) {
-      console.warn('[App] GlobeModule not available after 3s — starting without globe');
-      _startRetries = 0;
-      App.init();
-      return;
-    }
-    setTimeout(startApp, 100);
-    return;
-  }
+  // NOTE: globe.gl and GlobeModule are NOT loaded/initialized at boot.
+  // They initialize lazily when the user enters globe mode.
   _startRetries = 0;
   App.init();
 }
@@ -514,7 +519,7 @@ if (document.readyState === 'loading') {
 
 window.App = App;
 window.enterGlobe = enterGlobe;
-window.startLearning = startLearning;
+window.exitGlobe = exitGlobe;
 window.viewDatasets = viewDatasets;
 window.toggleGlobeOverlay = toggleGlobeOverlay;
 
@@ -522,7 +527,7 @@ syncHeroScrollState();
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('App', {
-    provides: ['init', 'enterAndScroll', 'enterGlobe', 'startLearning', 'viewDatasets', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'enterAndScroll', 'enterGlobe', 'exitGlobe', 'viewDatasets', 'reset', 'destroy', 'getState'],
     requires: ['MODULE_CONTRACTS', 'SITE_PANEL', 'PLEDGE_WALL', 'GAIA_BUBBLE', 'CARBON_CLOCK', 'DELEGATION', 'GAIA_VOICE', 'GAIA_DATA'],
     emits: ['app:ready', 'app:departure', 'bubble:speak', 'bubble:create', 'bubble:idle-nudge', 'engagement:interact'],
     listens: [],

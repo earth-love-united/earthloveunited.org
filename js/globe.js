@@ -8,6 +8,51 @@
 // the onPointClick/onLabelClick/onGlobeClick callbacks and setOnGlobeClick.
 let _globeClickHandler = null;
 
+// ── Point-in-polygon (ray casting) ──
+function _pointInRing(lng, lat, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1];
+    const xj = ring[j][0], yj = ring[j][1];
+    if ((yi > lat) !== (yj > lat) && lng < (xj - xi) * (lat - yi) / (yj - yi) + xi) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+function _pointInFeature(lng, lat, feature) {
+  const geom = feature.geometry;
+  if (!geom) return false;
+  const coords = geom.coordinates;
+  if (!coords) return false;
+  if (geom.type === 'Polygon') {
+    if (!_pointInRing(lng, lat, coords[0])) return false;
+    for (let h = 1; h < coords.length; h++) {
+      if (_pointInRing(lng, lat, coords[h])) return false;
+    }
+    return true;
+  }
+  if (geom.type === 'MultiPolygon') {
+    for (let p = 0; p < coords.length; p++) {
+      if (!_pointInRing(lng, lat, coords[p][0])) continue;
+      let inHole = false;
+      for (let h = 1; h < coords[p].length; h++) {
+        if (_pointInRing(lng, lat, coords[p][h])) { inHole = true; break; }
+      }
+      if (!inHole) return true;
+    }
+  }
+  return false;
+}
+
+function _findCountryAtPoint(lng, lat, features) {
+  for (let i = features.length - 1; i >= 0; i--) {
+    if (_pointInFeature(lng, lat, features[i])) return features[i];
+  }
+  return null;
+}
+
 const GlobeModule = {
   world: null,
   userTotal: 0,
@@ -123,10 +168,207 @@ const GlobeModule = {
           .hexPolygonColor(() => 'rgba(78,205,196,0.08)')
           .hexPolygonAltitude(() => 0.003)
           .hexPolygonCurvatureResolution(0);
+
+        // Apply country colors immediately after polygon creation so they
+        // aren't overwritten by the default wireframe above
+        this.applyCountryHexColors();
+
+        // ── Country hover/click via globe surface raycasting ──
+        // Instead of per-hex hit testing (which misses gaps between hexes),
+        // we raycast against the globe sphere and do point-in-polygon against
+        // the GeoJSON country features. This means ANY point over a country
+        // triggers hover/click, regardless of hex tile boundaries.
+        this._countryHoverFeature = null;
+        this._countryHoverThrottle = 0;
+
+        // Raycaster for globe surface hit-testing
+        this._countryRaycaster = null;
+        this._countryMouse = null;
+        this._globeRadius = this.world.getGlobeRadius();
+
+        // Try to get THREE.Raycaster from the globe's renderer
+        try {
+          const renderer = this.world.renderer();
+          if (renderer) {
+            // Access THREE through the renderer's properties
+            const r = renderer;
+            // globe.gl bundles THREE internally; try common access paths
+            const THREE = r.THREE || (r.constructor && r.constructor.THREE);
+            if (THREE) {
+              this._countryRaycaster = new THREE.Raycaster();
+              this._countryMouse = new THREE.Vector2();
+            }
+          }
+        } catch(e) { /* ignore — will use fallback */ }
+
+        this._onCanvasPointerMove = (e) => {
+          if (!this._countryFeatures || !this._countryFeatures.length) return;
+          const now = Date.now();
+          if (now - this._countryHoverThrottle < 30) return; // ~30fps throttle
+          this._countryHoverThrottle = now;
+
+          const canvas = this._canvasEl;
+          if (!canvas) return;
+          const rect = canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          // Convert to normalized device coordinates
+          this._countryMouse.x = (x / rect.width) * 2 - 1;
+          this._countryMouse.y = -(y / rect.height) * 2 + 1;
+
+          // Raycast against globe sphere to get lat/lng
+          let lat, lng;
+          if (this._countryRaycaster) {
+            // Use THREE.Raycaster
+            const camera = this.world.camera();
+            if (!camera) return;
+            this._countryRaycaster.setFromCamera(this._countryMouse, camera);
+            const origin = this._countryRaycaster.ray.origin;
+            const direction = this._countryRaycaster.ray.direction;
+            const r = this._globeRadius;
+            const a = direction.dot(direction);
+            const b = 2 * origin.dot(direction);
+            const c = origin.dot(origin) - r * r;
+            const disc = b * b - 4 * a * c;
+            if (disc < 0) {
+              const tt = $('hex-country-tooltip');
+              if (tt) tt.classList.remove('visible');
+              this._countryHoverFeature = null;
+              return;
+            }
+            const t = (-b - Math.sqrt(disc)) / (2 * a);
+            if (t < 0) {
+              const tt = $('hex-country-tooltip');
+              if (tt) tt.classList.remove('visible');
+              this._countryHoverFeature = null;
+              return;
+            }
+            const hit = origin.clone().add(direction.clone().multiplyScalar(t));
+            lng = Math.atan2(hit.y, hit.x) * 180 / Math.PI;
+            lat = Math.asin(hit.z / r) * 180 / Math.PI;
+          } else {
+            // Fallback: use world.getSceneCoords (slower but works)
+            const scenePt = this.world.getSceneCoords(x, y, 0);
+            if (!scenePt) {
+              const tt = $('hex-country-tooltip');
+              if (tt) tt.classList.remove('visible');
+              this._countryHoverFeature = null;
+              return;
+            }
+            const r = this._globeRadius;
+            lng = Math.atan2(scenePt.y, scenePt.x) * 180 / Math.PI;
+            lat = Math.asin(Math.max(-1, Math.min(1, scenePt.z / r))) * 180 / Math.PI;
+          }
+
+          // Find country at this lat/lng
+          const feature = _findCountryAtPoint(lng, lat, this._countryFeatures);
+          if (!feature) {
+            const tt = $('hex-country-tooltip');
+            if (tt) tt.classList.remove('visible');
+            this._countryHoverFeature = null;
+            return;
+          }
+
+          const iso = feature.properties?.ISO_A3;
+          const d = iso ? Data.countryHexColors?.[iso] : null;
+          if (!d) {
+            const tt = $('hex-country-tooltip');
+            if (tt) tt.classList.remove('visible');
+            this._countryHoverFeature = null;
+            return;
+          }
+
+          // Only update DOM if country changed
+          if (this._countryHoverFeature !== feature) {
+            this._countryHoverFeature = feature;
+            let tt = $('hex-country-tooltip');
+            if (!tt) {
+              tt = document.createElement('div');
+              tt.id = 'hex-country-tooltip';
+              document.body.appendChild(tt);
+            }
+            const gap = d.gap;
+            const status = gap === null ? 'No target' : (gap > 0 ? 'OVERSHOOTING' : 'ON TRACK');
+            const emissions = d.emissions ? d.emissions.toLocaleString() + ' MtCO₂' : 'No data';
+            tt.innerHTML = '<div class="tt-country">' + d.country + '</div>'
+              + '<div class="tt-detail">' + emissions + (d.perCapita ? ' · ' + d.perCapita + ' t/person' : '') + '</div>'
+              + '<div class="' + (gap === null ? '' : (gap > 0 ? 'tt-status-red' : 'tt-status-green')) + '">' + status + '</div>';
+            tt.classList.add('visible');
+          }
+
+          // Position tooltip
+          const tt2 = $('hex-country-tooltip');
+          if (tt2) {
+            const tx = Math.min(e.clientX + 16, window.innerWidth - 260);
+            const ty = Math.min(e.clientY - 12, window.innerHeight - 80);
+            tt2.style.left = tx + 'px';
+            tt2.style.top = ty + 'px';
+          }
+        };
+
+        this._onCanvasClick = (e) => {
+          if (!this._countryHoverFeature) return;
+          const iso = this._countryHoverFeature.properties?.ISO_A3;
+          if (!iso || !Data.countryHexColors) return;
+          const d = Data.countryHexColors[iso];
+          if (!d) return;
+
+          // Fly to country centroid
+          if (typeof this.world.pointOfView === 'function' && d.lat && d.lng) {
+            this.world.pointOfView({ lat: d.lat, lng: d.lng, altitude: 1.5 }, 600);
+          }
+          // Open country card in GLOBE_OVERLAY
+          if (hasModule('GLOBE_OVERLAY')) {
+            GLOBE_OVERLAY.registerSite({
+              siteId: 'country-' + iso,
+              icon: '🌍',
+              title: d.country,
+              subtitle: (d.emissions ? d.emissions + ' MtCO₂' : 'No data') + ' · ' + (d.catRating || 'No CAT rating'),
+              tabs: [
+                {
+                  id: 'pledge',
+                  label: '📊 Pledge',
+                  render: (panelEl) => {
+                    const gap = d.gap;
+                    const statusColor = gap === null ? 'var(--text3)' : (gap > 0 ? '#e74c3c' : '#2ecc71');
+                    const statusText = gap === null ? 'No target data' : (gap > 0 ? 'OVERSHOOTING' : 'ON TRACK');
+                    const target = d.reductionPct ? d.reductionPct + '% by ' + Math.round(d.targetYear) : 'No target set';
+                    panelEl.innerHTML = '<h3>Emissions</h3>'
+                      + '<div class="overlay-stat-row"><div class="overlay-stat"><div class="overlay-stat-value">' + (d.emissions ? d.emissions.toLocaleString() : '—') + '</div><div class="overlay-stat-label">MtCO₂/year</div></div>'
+                      + '<div class="overlay-stat"><div class="overlay-stat-value">' + (d.perCapita ? d.perCapita : '—') + '</div><div class="overlay-stat-label">t/person</div></div></div>'
+                      + '<div class="overlay-divider"></div>'
+                      + '<h3>Target</h3>'
+                      + '<p style="font-size:12px;color:var(--text2);line-height:1.6;">' + target + '</p>'
+                      + '<div class="overlay-divider"></div>'
+                      + '<h3>Status</h3>'
+                      + '<p style="font-size:13px;color:' + statusColor + ';font-weight:600;">' + statusText + '</p>'
+                      + (d.gap !== null ? '<p style="font-size:11px;color:var(--text3);margin-top:4px;">Gap: ' + (d.gap > 0 ? '+' : '') + d.gap.toLocaleString() + ' MtCO₂</p>' : '')
+                      + '<div class="overlay-divider"></div>'
+                      + '<h3>CAT Rating</h3>'
+                      + '<p style="font-size:12px;color:var(--text2);">' + (d.catRating || 'Not rated') + ' <span style="color:var(--text3)">(score: ' + (d.catScore || 0) + '/5)</span></p>';
+                  },
+                },
+              ],
+            });
+            GLOBE_OVERLAY.open('country-' + iso);
+          }
+        };
+
+        // Attach to the globe canvas
+        this._canvasEl = this.world.renderer?.()?.domElement;
+        if (this._canvasEl) {
+          this._canvasEl.addEventListener('pointermove', this._onCanvasPointerMove);
+          this._canvasEl.addEventListener('click', this._onCanvasClick);
+        }
+
         // Notify mode modules that country data is ready
         safeCall('GLOBE_MODES', 'onCountryDataReady');
       })
       .catch(e => console.warn('[Globe] Country borders fetch failed:', e.message));
+
+    // ── Hex country tooltip mouse tracking ──
+    // (removed — tooltip positioning now handled in _onCanvasPointerMove)
 
     this.world.pointOfView({ lat: 20, lng: 40, altitude: 2.2 });
     this.world.controls().autoRotate = true;
@@ -242,11 +484,87 @@ const GlobeModule = {
     return 0.3 + Math.min(co2 / 20000, 0.8);
   },
 
+  // ── Country hex color function — per-feature coloring ──
+  // Each country gets a unique, perceptually distinct color
+  // Uses HSL with deterministic hue from ISO hash + gap-based saturation
+  _countryHexColorFn(feature) {
+    const iso = feature?.properties?.ISO_A3;
+    if (!iso || !Data.countryHexColors) return 'rgba(255,255,255,0.03)';
+    const d = Data.countryHexColors[iso];
+    if (!d) return 'rgba(255,255,255,0.03)';
+
+    // Deterministic hue from ISO code hash — ensures adjacent countries
+    // get different colors even with similar emissions
+    let hash = 0;
+    for (let i = 0; i < iso.length; i++) {
+      hash = ((hash << 5) - hash) + iso.charCodeAt(i);
+      hash |= 0;
+    }
+    const hue = Math.abs(hash) % 360;
+
+    const gap = d.gap;
+    let sat, lum, alpha;
+
+    if (gap !== null && gap !== undefined) {
+      if (gap > 0) {
+        // Overshooting: shift hue toward red (0°), increase saturation
+        const intensity = Math.min(Math.abs(gap) / 500, 1);
+        sat = 55 + intensity * 35;
+        lum = 42 + (1 - intensity) * 12;
+        alpha = 0.45 + intensity * 0.20;
+      } else {
+        // On track: shift hue toward green (120°), moderate saturation
+        const intensity = Math.min(Math.abs(gap) / 200, 1);
+        sat = 50 + intensity * 30;
+        lum = 40 + (1 - intensity) * 10;
+        alpha = 0.42 + intensity * 0.20;
+      }
+    } else {
+      // No target data: use emissions to modulate lightness/alpha
+      // so high emitters are brighter, low emitters are dimmer
+      const emissions = d.emissions || 0;
+      const logEm = Math.log(Math.max(emissions, 1));
+      const t = Math.min(logEm / Math.log(12000), 1);
+      sat = 40 + t * 25;
+      lum = 32 + t * 18;
+      alpha = 0.30 + t * 0.25;
+    }
+
+    return 'hsla(' + hue + ',' + Math.round(sat) + '%,' + Math.round(lum) + '%,' + alpha.toFixed(2) + ')';
+  },
+
   // ── Mode API — used by GLOBE_MODES orchestrator ──
   setHexMode(colorFn, altFn) {
     if (!this.world) return;
     this.world.hexPolygonColor(colorFn);
     if (altFn) this.world.hexPolygonAltitude(altFn);
+  },
+
+  // ── Apply country-colored hex map ──
+  applyCountryHexColors() {
+    if (!this.world) return;
+    this.world.hexPolygonColor((f) => this._countryHexColorFn(f));
+    this.world.hexPolygonAltitude(() => 0.005);
+    // Increase margin so borders between countries are more visible
+    if (this.isMobile) {
+      this.world.hexPolygonMargin(0.75);
+    } else {
+      this.world.hexPolygonMargin(0.68);
+    }
+  },
+
+  // ── Toggle pledge node cylinders on/off ──
+  togglePledgeNodes(show) {
+    if (!this.world) return;
+    if (show) {
+      this.initPledgeNodes();
+      this.updateNodeVisuals();
+    } else {
+      // Remove only pledge-type points, keep site points
+      const currentPoints = this.world.pointsData() || [];
+      const sitePoints = currentPoints.filter(p => p._type !== 'pledge');
+      this.world.pointsData(sitePoints);
+    }
   },
 
   /**
@@ -468,6 +786,13 @@ const GlobeModule = {
     window.removeEventListener('pledgeHover', this._onPledgeHover);
     document.removeEventListener('mousemove', this._onMouseMove);
 
+    // Remove canvas listeners
+    if (this._canvasEl) {
+      this._canvasEl.removeEventListener('pointermove', this._onCanvasPointerMove);
+      this._canvasEl.removeEventListener('click', this._onCanvasClick);
+      this._canvasEl = null;
+    }
+
     // Destroy WebGL globe instance
     if (this.world) {
       // Globe.gl wraps Three.js — call its destroy method if available
@@ -642,7 +967,7 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['init', 'initPledgeNodes', 'updateNodeVisuals', 'setLens', 'setHexMode', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'initPledgeNodes', 'updateNodeVisuals', 'setLens', 'setHexMode', 'applyCountryHexColors', 'togglePledgeNodes', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
     requires: ['Data'],
   });
 }

@@ -32,6 +32,21 @@
 ">
 <title>GAIA — Earth Love United</title>
 
+<!-- ─── Resource Hints (A2) ─────────────────────────────────── -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://openrouter.ai" crossorigin>
+<link rel="dns-prefetch" href="https://gml.noaa.gov">
+<link rel="dns-prefetch" href="https://api.carbonmark.com">
+<link rel="dns-prefetch" href="https://eonet.gsfc.nasa.gov">
+<link rel="dns-prefetch" href="https://earthquake.usgs.gov">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/globe.gl" as="script">
+<link rel="preload" href="js/gaia-utils.js" as="script">
+<link rel="preload" href="js/data.js" as="script">
+<link rel="preload" href="js/gaia-chat.js?v=1779303871" as="script">
+
 <!-- PWA -->
 <link rel="manifest" href="/manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -340,10 +355,10 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
             <strong>GAIA is not a scientific authority or certification body.</strong>
             <p>Do not treat answers as peer review, legal advice, financial advice, or project verification.</p>
           </div>
-          <div class="trust-card">
+          <div class="trust-card" data-provenance-id="provenance-registry">
             <div class="tc-kicker">Sources</div>
-            <strong>Good answers should point back to datasets and source families.</strong>
-            <p>Ask for the provenance trail when a claim affects decisions, partnerships, or public communication.</p>
+            <strong>Good answers should point back to registry-backed datasets and source families.</strong>
+            <p>Ask for the registry entry when a claim affects decisions, partnerships, or public communication.</p>
           </div>
           <div class="trust-card">
             <div class="tc-kicker">Uncertainty</div>
@@ -352,17 +367,17 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
           </div>
         </div>
         <div class="provenance-row" aria-label="Dataset provenance cards">
-          <a class="provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge" target="_blank" rel="noopener">
+          <a class="provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge" target="_blank" rel="noopener" data-provenance-id="climate-knowledge">
             <span>Derived educational data · production</span>
             <strong>Climate Knowledge</strong>
             <em>Curated chunks for retrieval and climate education from IPCC, Drawdown, EPA, arXiv, Wikipedia, and ELU research.</em>
           </a>
-          <a class="provenance-card" href="https://huggingface.co/datasets/ego0op/carbon-projects-unified" target="_blank" rel="noopener">
+          <a class="provenance-card" href="https://huggingface.co/datasets/ego0op/carbon-projects-unified" target="_blank" rel="noopener" data-provenance-id="carbon-projects-unified">
             <span>Processed audit data · review</span>
             <strong>Carbon Projects Unified</strong>
             <em>Normalized project records for comparison, registry review, and transparent carbon-project analysis.</em>
           </a>
-          <a class="provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-carbon-projects" target="_blank" rel="noopener">
+          <a class="provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-carbon-projects" target="_blank" rel="noopener" data-provenance-id="elu-carbon-projects">
             <span>ELU release data · experimental</span>
             <strong>ELU Carbon Projects</strong>
             <em>Foundation-facing project release for audit workflows, public review, and future field validation.</em>
@@ -370,10 +385,11 @@ body{width:100%;height:100vh;background:var(--bg);color:var(--text);font-family:
         </div>
         <div class="audit-links">
           <a class="audit-link" href="index.html#datasets">Dataset Audit</a>
+          <a class="audit-link" href="data/provenance-registry.json" target="_blank" rel="noopener" data-provenance-id="provenance-registry">Registry JSON</a>
           <a class="audit-link" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Source Code</a>
           <a class="audit-link" href="climate-dataset/STATUS.md" target="_blank" rel="noopener">Build Status</a>
         </div>
-        <div class="source-note">A trustworthy path is: question → GAIA orientation → source family → dataset record → restoration assumption → human review.</div>
+        <div class="source-note">A trustworthy path is: question → GAIA orientation → registry entry → source family → dataset record → restoration assumption → human review. Experimental data should not be presented as verified field truth.</div>
       </div>
     </div>
     <div id="messages" style="display:none" aria-live="polite" aria-atomic="false" role="log"></div>

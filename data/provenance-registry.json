@@ -1,0 +1,243 @@
+{
+  "schema_version": "1.0",
+  "last_updated": "2026-06-06",
+  "readiness_labels": [
+    "production",
+    "review-stage",
+    "experimental"
+  ],
+  "data_types": [
+    "source",
+    "processed",
+    "derived-educational",
+    "demo",
+    "registry"
+  ],
+  "items": [
+    {
+      "id": "climate-knowledge",
+      "title": "Climate Knowledge Dataset",
+      "short_description": "Curated climate-science chunks for GAIA retrieval, education, and public source trails.",
+      "readiness_label": "production",
+      "data_type": "derived-educational",
+      "local_paths": [
+        "data/climate-knowledge-curated.jsonl",
+        "climate-dataset/README.md",
+        "climate-dataset/STATUS.md",
+        "climate-dataset/data/processed/earth_love_united_climate_knowledge_v2.jsonl"
+      ],
+      "external_links": [
+        {
+          "label": "Hugging Face dataset",
+          "url": "https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge"
+        },
+        {
+          "label": "GitHub source",
+          "url": "https://github.com/gke0op/earthloveunited.org"
+        }
+      ],
+      "source_families": [
+        "IPCC AR6",
+        "Project Drawdown",
+        "US EPA",
+        "NOAA GML",
+        "Wikipedia",
+        "arXiv",
+        "Earth Love United research"
+      ],
+      "last_reviewed": "2026-06-06",
+      "maintainer_note": "Use for source-traceable climate education and retrieval. Keep row counts and source families aligned with the Hugging Face card and climate-dataset status notes.",
+      "known_limits": [
+        "Derived chunks are not a substitute for reading original source documents.",
+        "Retrieval quality depends on chunking, source balance, and query phrasing.",
+        "Some source families carry their own licenses and attribution requirements."
+      ],
+      "intended_use": [
+        "Ground GAIA answers in inspectable climate source families.",
+        "Support public education, source discovery, and review workflows."
+      ],
+      "not_for": [
+        "Peer review replacement",
+        "Legal advice",
+        "Financial advice",
+        "Carbon-project certification"
+      ],
+      "gaia_prompt_hint": "When using this dataset, point users to the source family, the Hugging Face record, and any uncertainty or retrieval limitation before treating an answer as decision-grade."
+    },
+    {
+      "id": "carbon-projects-unified",
+      "title": "Carbon Projects Unified",
+      "short_description": "Normalized registry and project records for comparison and carbon-project audit workflows.",
+      "readiness_label": "review-stage",
+      "data_type": "processed",
+      "local_paths": [
+        "carbon-projects/README.md",
+        "carbon-projects/dataset_card.md",
+        "carbon-projects/unified/carbon_projects_final.jsonl",
+        "carbon-projects/unified/normalization_stats.json"
+      ],
+      "external_links": [
+        {
+          "label": "Hugging Face dataset",
+          "url": "https://huggingface.co/datasets/ego0op/carbon-projects-unified"
+        },
+        {
+          "label": "GitHub source",
+          "url": "https://github.com/gke0op/earthloveunited.org"
+        }
+      ],
+      "source_families": [
+        "Verra",
+        "Gold Standard",
+        "project registry metadata",
+        "normalization scripts"
+      ],
+      "last_reviewed": "2026-06-06",
+      "maintainer_note": "Use as an audit working set. Registry records may be incomplete, stale, duplicated, or revised upstream.",
+      "known_limits": [
+        "Processed records depend on upstream registry availability and field consistency.",
+        "Normalization does not verify project climate impact.",
+        "Project inclusion does not imply endorsement."
+      ],
+      "intended_use": [
+        "Compare project metadata across registries.",
+        "Support transparent audit, deduplication, and review workflows."
+      ],
+      "not_for": [
+        "Verified field truth",
+        "Investment diligence",
+        "Carbon-credit quality rating",
+        "Project endorsement"
+      ],
+      "gaia_prompt_hint": "When discussing carbon projects, describe this as a review-stage processed dataset and remind users that registry metadata is not proof of field performance."
+    },
+    {
+      "id": "elu-carbon-projects",
+      "title": "Earth Love United Carbon Projects",
+      "short_description": "Foundation-facing carbon-project release layer for public review, partner discussion, and future validation.",
+      "readiness_label": "experimental",
+      "data_type": "processed",
+      "local_paths": [
+        "carbon-projects/PLAN.md",
+        "carbon-projects/CARBON_REGISTRIES.md",
+        "carbon-projects/raw/verra_projects.jsonl",
+        "carbon-projects/raw/gold_standard_projects.jsonl"
+      ],
+      "external_links": [
+        {
+          "label": "Hugging Face dataset",
+          "url": "https://huggingface.co/datasets/ego0op/earth-love-united-carbon-projects"
+        },
+        {
+          "label": "GitHub source",
+          "url": "https://github.com/gke0op/earthloveunited.org"
+        }
+      ],
+      "source_families": [
+        "Verra",
+        "Gold Standard",
+        "Earth Love United project review"
+      ],
+      "last_reviewed": "2026-06-06",
+      "maintainer_note": "Use as an experimental public release layer. Field validation and independent review remain future work.",
+      "known_limits": [
+        "Experimental status means records may change as review methods improve.",
+        "Not all records have independent field verification.",
+        "Do not present as certified restoration impact."
+      ],
+      "intended_use": [
+        "Invite public review and partner questions.",
+        "Track candidate audit records and future validation needs."
+      ],
+      "not_for": [
+        "Verified field truth",
+        "Carbon-credit certification",
+        "Procurement decisions without independent due diligence"
+      ],
+      "gaia_prompt_hint": "When using this entry, state that it is experimental and should not be described as verified field truth."
+    },
+    {
+      "id": "runtime-globe-data",
+      "title": "Runtime Globe Data",
+      "short_description": "Small local JSON and CSV files used by the living globe, public journey, and scenario widgets.",
+      "readiness_label": "review-stage",
+      "data_type": "demo",
+      "local_paths": [
+        "data/sites.json",
+        "data/biomes.json",
+        "data/pledge-nodes.json",
+        "data/climate-events.json",
+        "data/events-core.csv",
+        "data/events-meta.json"
+      ],
+      "external_links": [
+        {
+          "label": "GitHub source",
+          "url": "https://github.com/gke0op/earthloveunited.org"
+        }
+      ],
+      "source_families": [
+        "Earth Love United site data",
+        "country pledge summaries",
+        "climate event references",
+        "biome carbon assumptions"
+      ],
+      "last_reviewed": "2026-06-06",
+      "maintainer_note": "Use for public interface context and transparent scenario assumptions. Keep values readable and small enough for static hosting.",
+      "known_limits": [
+        "Runtime files prioritize fast loading and public explanation over full source depth.",
+        "Scenario outputs are simplified models.",
+        "Country and event summaries should be audited before policy-grade use."
+      ],
+      "intended_use": [
+        "Power the public globe and homepage audit links.",
+        "Expose assumptions behind visible widgets."
+      ],
+      "not_for": [
+        "Policy-grade national inventory",
+        "Field verification",
+        "Complete event archive"
+      ],
+      "gaia_prompt_hint": "When pointing to runtime data, explain that these are public interface files and should be cross-checked with source datasets for high-stakes use."
+    },
+    {
+      "id": "provenance-registry",
+      "title": "Provenance Registry",
+      "short_description": "Human-readable source of truth for public dataset cards, readiness labels, and GAIA source guidance.",
+      "readiness_label": "production",
+      "data_type": "registry",
+      "local_paths": [
+        "data/provenance-registry.json",
+        "tools/check-provenance-registry.js"
+      ],
+      "external_links": [
+        {
+          "label": "GitHub source",
+          "url": "https://github.com/gke0op/earthloveunited.org"
+        }
+      ],
+      "source_families": [
+        "Earth Love United governance",
+        "public dataset cards",
+        "GAIA trust layer"
+      ],
+      "last_reviewed": "2026-06-06",
+      "maintainer_note": "Update this registry before changing public dataset readiness labels or GAIA source guidance.",
+      "known_limits": [
+        "Registry entries document provenance expectations; they do not validate all upstream scientific claims.",
+        "Manual review is still required when source files or external dataset cards change."
+      ],
+      "intended_use": [
+        "Back public dataset cards with inspectable metadata.",
+        "Give GAIA a consistent source-trail model.",
+        "Guide contributors updating provenance language."
+      ],
+      "not_for": [
+        "Scientific peer review",
+        "Automated certification",
+        "Replacement for source licenses and dataset cards"
+      ],
+      "gaia_prompt_hint": "Use this registry as the first stop for ELU dataset readiness, intended use, known limits, and audit routing."
+    }
+  ]
+}
