@@ -92,6 +92,9 @@ climate-dataset/
 carbon-projects/
 holocene-bifurcation/
 
+# ─── Archive (stale docs / design prototypes) ───────────────────
+_archive/
+
 # ─── Runtime site assets: intentionally force-TRACKED for deploy ─
 # The specific files the live site loads (dist/knowledge/*,
 # textures/ndvi/*) are committed via `git add -f` so Cloudflare's

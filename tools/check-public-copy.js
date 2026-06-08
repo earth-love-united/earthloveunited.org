@@ -16,16 +16,9 @@ const DEFAULT_FILES = [
   'index.html',
   'gaia.html',
   'README.md',
-  'CONTRIBUTING.md',
   'ARCHITECTURE.md',
   'docs/agents/README.md',
-  'docs/operations/README.md',
   'docs/operations/GO_PUBLIC.md',
-  'docs/operations/WAVE_4_PLAN.md',
-  'docs/operations/REPO_MAP.md',
-  'docs/operations/README_CLEANUP.md',
-  'climate-dataset/README.md',
-  'climate-dataset/STATUS.md',
 ].map(file => path.join(ROOT, file));
 
 const RISKY_TERMS = [

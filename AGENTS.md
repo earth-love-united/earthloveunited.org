@@ -4,9 +4,7 @@
 > This file prevents you from going in circles, duplicating work, or breaking the architecture.
 >
 > Companion documents — read these too:
-> - `SWARM_SDK.md` — the **code architecture** (Standard Module Lifecycle, IIFE templates, contract system). The architectural authority.
-> - `OPERATIONS.md` — the **runbook** (the exact commands to run during a mission).
-> - `ARCHITECTURE.md` — the **module map** (z-index stack, event flows, script load order).
+> - `ARCHITECTURE.md` — the **module map** (z-index stack, event flows, script load order, known traps, key files).
 >
 > This file (`AGENTS.md`) is the **rules**: what's protected, what auto-merges, how the team coordinates.
 
@@ -191,9 +189,7 @@ Auto-runs at page load. Validates all modules in `MODULE_MANIFEST` are on `windo
 
 | File | Purpose |
 |------|---------|
-| `ARCHITECTURE.md` | Full module map, z-index stack, event flows, script load order, known traps |
-| `SWARM_SDK.md` | Code architecture — Standard Module Lifecycle, IIFE templates, contract system |
-| `.agent-context.md` | Quick reference for AI agents |
+| `ARCHITECTURE.md` | Full module map, z-index stack, event flows, script load order, known traps, key files |
 | `js/gaia-utils.js` | Foundation: $(), safeCall, hasModule, safeGet, reportError, safeChain |
 | `js/module-contracts.js` | Module dependency/interface validation |
 | `js/module-validator.js` | Boot validator — checks all modules are on window |
@@ -326,7 +322,7 @@ to GitHub. It is written role-first (architect / reviewer / designer /
 generalist), not agent-first — the rules stay stable regardless of which
 agent (or human) is filling which role on a given mission.
 
-For the day-to-day "what command do I run?" version of this, see `OPERATIONS.md`.
+For the day-to-day "what command do I run?" version of this, see the Operations section below.
 
 ### Roles
 
@@ -390,7 +386,6 @@ CODEOWNERS enforces this automatically. The list:
 ```
 /LICENSE
 /CREDITS.md
-/CODE_OF_CONDUCT.md
 /AGENTS.md
 /ARCHITECTURE.md
 /README.md

@@ -1,9 +1,9 @@
 /**
  * Service Worker — Earth Love United
- * Cache-first for static assets, network-first for HTML and data files.
- * Version bump (v8) forces cache refresh on deploy — bundles replaced individual JS.
+ * Cache-first for static assets, network-first for HTML and data.
+ * Version bump (v9) — matches current individual-file architecture.
  */
-const CACHE_NAME = 'elu-v8';
+const CACHE_NAME = 'elu-v9';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -26,10 +26,48 @@ const STATIC_ASSETS = [
   '/css/registry-check.css',
   '/css/gaia-sources.css',
   '/css/print.css',
-  // JS — Bundles (B1: replaced 42 individual files with 3 bundles)
-  '/js/foundation.bundle.js',  // sync: gaia-utils → data
-  '/js/app.bundle.js',         // deferred: quiz → app.js (index.html)
-  '/js/gaia.bundle.js',        // deferred: gaia-data → gaia-integration (gaia.html)
+  // JS — individual files (B1 bundles removed in v9)
+  '/js/gaia-utils.js',
+  '/js/module-contracts.js',
+  '/js/event-bus.js',
+  '/js/storage-adapter.js',
+  '/js/storage.js',
+  '/js/data-schema.js',
+  '/js/data.js',
+  '/js/quiz.js',
+  '/js/cycle.js',
+  '/js/biomes.js',
+  '/js/counters.js',
+  '/js/scenario.js',
+  '/js/globe.js',
+  '/js/globe-modes.js',
+  '/js/globe-restore.js',
+  '/js/globe-ndvi.js',
+  '/js/climate-data-loader.js',
+  '/js/globe-events.js',
+  '/js/gaia-voice.js',
+  '/js/gaia-engagement.js',
+  '/js/gaia-journal.js',
+  '/js/gaia-bubble.js',
+  '/js/globe-overlay.js',
+  '/js/site-panel.js',
+  '/js/carbon-clock.js',
+  '/js/country-data.js',
+  '/js/delegation.js',
+  '/js/pledge-wall.js',
+  '/js/gaia-nodes.js',
+  '/js/module-validator.js',
+  '/js/bridge-client.js',
+  '/js/app.js',
+  // GAIA legacy
+  '/js/gaia-legacy/gaia-data.js',
+  '/js/gaia-legacy/gaia-signals.js',
+  '/js/gaia-legacy/gaia-charts.js',
+  '/js/gaia-legacy/gaia-knowledge.js',
+  '/js/gaia-overlay-knowledge.js',
+  '/js/ndvi-verifier.js',
+  '/js/gaia-presence.js',
+  '/js/registry-check.js',
   // Data (small, cacheable)
   '/data/biomes.json',
   '/data/sites.json',

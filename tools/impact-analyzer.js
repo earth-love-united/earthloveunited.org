@@ -120,7 +120,7 @@ const Impact = (() => {
       calls: [],
       calledBy: ['js/gaia-nodes.js'],
       css: [],
-      data: ['dis/gaia-knowledge-base.json'],
+      data: ['dist/knowledge/index.json.gz'],
       exports: ['GAIA_KNOWLEDGE'],
       risk: 'MEDIUM',
       note: 'TF-IDF knowledge engine — powers Synthesis tab in overlay',

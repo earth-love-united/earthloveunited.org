@@ -67,7 +67,6 @@
 <link rel="preload" href="js/module-contracts.js" as="script">
 <link rel="preload" href="js/event-bus.js" as="script">
 <link rel="preload" href="js/data.js" as="script">
-<link rel="preload" href="js/globe.js?v=2" as="script">
 <!-- Preload deferred CSS that's needed for first interaction -->
 <link rel="preload" href="css/globe-overlay.css?v=4" as="style">
 <link rel="preload" href="css/gaia-bubble.css" as="style">
@@ -149,7 +148,7 @@ body.globe-mode #topbar{opacity:1;pointer-events:all}
 #globe-back-btn{display:none;position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:200;padding:10px 28px;border:1px solid rgba(78,205,196,.25);border-radius:999px;background:rgba(5,5,9,.85);backdrop-filter:blur(8px);color:var(--teal);font-family:var(--body);font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s}
 #globe-back-btn:hover{border-color:var(--teal);background:rgba(78,205,196,.1)}
 body.globe-mode #globe-back-btn{display:block}
-.globe-modes,.events-filter,#ndvi-prompt,#ndvi-timeline,#events-timeline{display:none!important}
+body:not(.globe-mode) .globe-modes,body:not(.globe-mode) .events-filter,body:not(.globe-mode) #ndvi-prompt,body:not(.globe-mode) #ndvi-timeline,body:not(.globe-mode) #events-timeline{display:none!important}
 body.globe-mode .globe-modes,body.globe-mode #globe-modes{display:flex!important}
 body.globe-mode .events-filter,body.globe-mode #events-filter{display:flex!important}
 body.globe-mode #ndvi-prompt{display:flex!important}
@@ -794,11 +793,47 @@ body.globe-mode #events-timeline{display:flex!important}
   <div id="panel-content"></div>
 </div>
 
-<!-- JS Bundles (B1) — 2 script tags instead of 42 -->
-<!-- Foundation: sync-loaded, must be first (gaia-utils → data) -->
-<script src="js/foundation.bundle.js"></script>
-<!-- App: deferred feature modules (quiz → app.js), loads after HTML parse -->
-<script src="js/app.bundle.js" defer></script>
+<!-- JS Modules — loaded in dependency order -->
+<script src="js/vendor/globe.gl.js"></script>
+<script src="js/gaia-utils.js"></script>
+<script src="js/module-contracts.js"></script>
+<script src="js/event-bus.js"></script>
+<script src="js/storage-adapter.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/data-schema.js"></script>
+<script src="js/data.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/cycle.js"></script>
+<script src="js/biomes.js"></script>
+<script src="js/counters.js"></script>
+<script src="js/scenario.js"></script>
+<script src="js/globe.js?v=3"></script>
+<script src="js/globe-modes.js"></script>
+<script src="js/globe-restore.js?v=1779401429"></script>
+<script src="js/globe-ndvi.js?v=1779401429"></script>
+<script src="js/climate-data-loader.js"></script>
+<script src="js/globe-events.js"></script>
+<script src="js/gaia-legacy/gaia-data.js"></script>
+<script src="js/gaia-legacy/gaia-charts.js"></script>
+<script src="js/gaia-voice.js"></script>
+<script src="js/gaia-engagement.js"></script>
+<script src="js/gaia-journal.js"></script>
+<script src="js/gaia-bubble.js"></script>
+<script src="js/globe-overlay.js?v=5"></script>
+<script src="js/site-panel.js"></script>
+<script src="js/carbon-clock.js?v=mission001b"></script>
+<script src="js/country-data.js"></script>
+<script src="js/delegation.js?v=mission001"></script>
+<script src="js/pledge-wall.js"></script>
+<script src="js/gaia-nodes.js"></script>
+<script src="js/gaia-legacy/gaia-knowledge.js"></script>
+<script src="js/gaia-overlay-knowledge.js"></script>
+<script src="js/ndvi-verifier.js"></script>
+<script src="js/gaia-presence.js"></script>
+<script src="js/registry-check.js"></script>
+<script src="js/module-validator.js"></script>
+<script src="js/bridge-client.js"></script>
+<script src="js/app.js?v=mission001"></script>
 
 <!-- Dev Tools — loaded only on localhost -->
 <script>

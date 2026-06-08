@@ -181,30 +181,13 @@ const GlobeModule = {
         this._countryHoverFeature = null;
         this._countryHoverThrottle = 0;
 
-        // Raycaster for globe surface hit-testing
-        this._countryRaycaster = null;
-        this._countryMouse = null;
+        // Globe surface raycasting for country detection
         this._globeRadius = this.world.getGlobeRadius();
-
-        // Try to get THREE.Raycaster from the globe's renderer
-        try {
-          const renderer = this.world.renderer();
-          if (renderer) {
-            // Access THREE through the renderer's properties
-            const r = renderer;
-            // globe.gl bundles THREE internally; try common access paths
-            const THREE = r.THREE || (r.constructor && r.constructor.THREE);
-            if (THREE) {
-              this._countryRaycaster = new THREE.Raycaster();
-              this._countryMouse = new THREE.Vector2();
-            }
-          }
-        } catch(e) { /* ignore — will use fallback */ }
 
         this._onCanvasPointerMove = (e) => {
           if (!this._countryFeatures || !this._countryFeatures.length) return;
           const now = Date.now();
-          if (now - this._countryHoverThrottle < 30) return; // ~30fps throttle
+          if (now - this._countryHoverThrottle < 30) return;
           this._countryHoverThrottle = now;
 
           const canvas = this._canvasEl;
@@ -212,72 +195,53 @@ const GlobeModule = {
           const rect = canvas.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
+          const ndcX = (x / rect.width) * 2 - 1;
+          const ndcY = -(y / rect.height) * 2 + 1;
 
-          // Convert to normalized device coordinates
-          this._countryMouse.x = (x / rect.width) * 2 - 1;
-          this._countryMouse.y = -(y / rect.height) * 2 + 1;
-
-          // Raycast against globe sphere to get lat/lng
-          let lat, lng;
-          if (this._countryRaycaster) {
-            // Use THREE.Raycaster
-            const camera = this.world.camera();
-            if (!camera) return;
-            this._countryRaycaster.setFromCamera(this._countryMouse, camera);
-            const origin = this._countryRaycaster.ray.origin;
-            const direction = this._countryRaycaster.ray.direction;
-            const r = this._globeRadius;
-            const a = direction.dot(direction);
-            const b = 2 * origin.dot(direction);
-            const c = origin.dot(origin) - r * r;
-            const disc = b * b - 4 * a * c;
-            if (disc < 0) {
-              const tt = $('hex-country-tooltip');
-              if (tt) tt.classList.remove('visible');
-              this._countryHoverFeature = null;
-              return;
-            }
-            const t = (-b - Math.sqrt(disc)) / (2 * a);
-            if (t < 0) {
-              const tt = $('hex-country-tooltip');
-              if (tt) tt.classList.remove('visible');
-              this._countryHoverFeature = null;
-              return;
-            }
-            const hit = origin.clone().add(direction.clone().multiplyScalar(t));
-            lng = Math.atan2(hit.y, hit.x) * 180 / Math.PI;
-            lat = Math.asin(hit.z / r) * 180 / Math.PI;
-          } else {
-            // Fallback: use world.getSceneCoords (slower but works)
-            const scenePt = this.world.getSceneCoords(x, y, 0);
-            if (!scenePt) {
-              const tt = $('hex-country-tooltip');
-              if (tt) tt.classList.remove('visible');
-              this._countryHoverFeature = null;
-              return;
-            }
-            const r = this._globeRadius;
-            lng = Math.atan2(scenePt.y, scenePt.x) * 180 / Math.PI;
-            lat = Math.asin(Math.max(-1, Math.min(1, scenePt.z / r))) * 180 / Math.PI;
-          }
+          // Raycast against globe sphere to get 3D hit point
+          const camera = this.world.camera();
+          if (!camera) { this._clearCountryHover(); return; }
+          const r = this._globeRadius;
+          const aspect = rect.width / rect.height;
+          const fov = camera.fov * Math.PI / 180;
+          const tanHalfFov = Math.tan(fov / 2);
+          // Direction in camera space
+          const dirCamX = ndcX * tanHalfFov * aspect;
+          const dirCamY = ndcY * tanHalfFov;
+          const dirCamZ = -1;
+          // Rotate by camera quaternion to get world-space direction
+          const q = camera.quaternion;
+          const qx = q.x, qy = q.y, qz = q.z, qw = q.w;
+          const vx = dirCamX, vy = dirCamY, vz = dirCamZ;
+          const tx = 2 * (qy * vz - qz * vy);
+          const ty = 2 * (qz * vx - qx * vz);
+          const tz = 2 * (qx * vy - qy * vx);
+          const wx = vx + qw * tx + qy * tz - qz * ty;
+          const wy = vy + qw * ty + qz * tx - qx * tz;
+          const wz = vz + qw * tz + qx * ty - qy * tx;
+          // Sphere intersection: |camPos + t*w|^2 = r^2
+          const ox = camera.position.x, oy = camera.position.y, oz = camera.position.z;
+          const a = wx*wx + wy*wy + wz*wz;
+          const b = 2*(ox*wx + oy*wy + oz*wz);
+          const c = ox*ox + oy*oy + oz*oz - r*r;
+          const disc = b*b - 4*a*c;
+          if (disc < 0) { this._clearCountryHover(); return; }
+          const t = (-b - Math.sqrt(disc)) / (2*a);
+          if (t < 0) { this._clearCountryHover(); return; }
+          const hitX = ox + t*wx, hitY = oy + t*wy, hitZ = oz + t*wz;
+          // Convert 3D hit point to lat/lng using globe.gl's own method
+          const geo = this.world.toGeoCoords({x: hitX, y: hitY, z: hitZ});
+          if (!geo || isNaN(geo.lat) || isNaN(geo.lng)) { this._clearCountryHover(); return; }
+          const lat = geo.lat;
+          const lng = geo.lng;
 
           // Find country at this lat/lng
           const feature = _findCountryAtPoint(lng, lat, this._countryFeatures);
-          if (!feature) {
-            const tt = $('hex-country-tooltip');
-            if (tt) tt.classList.remove('visible');
-            this._countryHoverFeature = null;
-            return;
-          }
+          if (!feature) { this._clearCountryHover(); return; }
 
           const iso = feature.properties?.ISO_A3;
           const d = iso ? Data.countryHexColors?.[iso] : null;
-          if (!d) {
-            const tt = $('hex-country-tooltip');
-            if (tt) tt.classList.remove('visible');
-            this._countryHoverFeature = null;
-            return;
-          }
+          if (!d) { this._clearCountryHover(); return; }
 
           // Only update DOM if country changed
           if (this._countryHoverFeature !== feature) {
@@ -360,14 +324,10 @@ const GlobeModule = {
         if (this._canvasEl) {
           this._canvasEl.addEventListener('pointermove', this._onCanvasPointerMove);
           this._canvasEl.addEventListener('click', this._onCanvasClick);
-          console.log('[Globe] Country raycasting canvas listeners attached');
-        } else {
-          console.warn('[Globe] Canvas not available for country raycasting');
         }
 
         // Notify mode modules that country data are ready
         safeCall('GLOBE_MODES', 'onCountryDataReady');
-        console.log('[Globe] Country data ready:', this._countryFeatures?.length, 'features');
       })
       .catch(e => {
         console.warn('[Globe] Country borders fetch failed:', e.message);
@@ -375,6 +335,13 @@ const GlobeModule = {
 
     // ── Hex country tooltip mouse tracking ──
     // (removed — tooltip positioning now handled in _onCanvasPointerMove)
+
+    // ── Country hover helper ──
+    this._clearCountryHover = () => {
+      const tt = $('hex-country-tooltip');
+      if (tt) tt.classList.remove('visible');
+      this._countryHoverFeature = null;
+    };
 
     this.world.pointOfView({ lat: 20, lng: 40, altitude: 2.2 });
     this.world.controls().autoRotate = true;
@@ -493,50 +460,67 @@ const GlobeModule = {
   // ── Country hex color function — per-feature coloring ──
   // Each country gets a unique, perceptually distinct color
   // Uses HSL with deterministic hue from ISO hash + gap-based saturation
+  // ── Diverging color scale for carbon sustainability ──
+  // Green = on track, Red = overshooting, intensity = magnitude
+  // Per-capita emissions modulate saturation (higher = more vivid)
   _countryHexColorFn(feature) {
     const iso = feature?.properties?.ISO_A3;
     if (!iso || !Data.countryHexColors) return 'rgba(255,255,255,0.03)';
     const d = Data.countryHexColors[iso];
     if (!d) return 'rgba(255,255,255,0.03)';
 
-    // Deterministic hue from ISO code hash — ensures adjacent countries
-    // get different colors even with similar emissions
-    let hash = 0;
-    for (let i = 0; i < iso.length; i++) {
-      hash = ((hash << 5) - hash) + iso.charCodeAt(i);
-      hash |= 0;
-    }
-    const hue = Math.abs(hash) % 360;
-
     const gap = d.gap;
-    let sat, lum, alpha;
+    const perCapita = d.perCapita || 0;
+    const onTrack = d.onTrack;
 
-    if (gap !== null && gap !== undefined) {
-      if (gap > 0) {
-        // Overshooting: shift hue toward red (0°), increase saturation
-        const intensity = Math.min(Math.abs(gap) / 500, 1);
-        sat = 55 + intensity * 35;
-        lum = 42 + (1 - intensity) * 12;
-        alpha = 0.45 + intensity * 0.20;
-      } else {
-        // On track: shift hue toward green (120°), moderate saturation
-        const intensity = Math.min(Math.abs(gap) / 200, 1);
-        sat = 50 + intensity * 30;
-        lum = 40 + (1 - intensity) * 10;
-        alpha = 0.42 + intensity * 0.20;
-      }
+    // Base hue: green (140°) → yellow (60°) → red (0°)
+    // Based on gap magnitude and direction
+    let hue, sat, lum, alpha;
+
+    if (onTrack === true || (gap !== null && gap !== undefined && gap <= 0)) {
+      // On track: green family
+      const intensity = gap !== null && gap !== undefined ? Math.min(Math.abs(gap) / 300, 1) : 0.3;
+      hue = 140 - intensity * 20; // 140 (green) → 120 (yellow-green)
+      sat = 50 + intensity * 30;
+      lum = 35 + intensity * 10;
+      alpha = 0.50 + intensity * 0.20;
+    } else if (gap !== null && gap !== undefined && gap > 0) {
+      // Overshooting: red family
+      const intensity = Math.min(gap / 500, 1);
+      hue = 60 - intensity * 60; // 60 (yellow) → 0 (red)
+      sat = 55 + intensity * 35;
+      lum = 42 - intensity * 8;
+      alpha = 0.50 + intensity * 0.20;
     } else {
-      // No target data: use emissions to modulate lightness/alpha
-      // so high emitters are brighter, low emitters are dimmer
-      const emissions = d.emissions || 0;
-      const logEm = Math.log(Math.max(emissions, 1));
-      const t = Math.min(logEm / Math.log(12000), 1);
-      sat = 40 + t * 25;
-      lum = 32 + t * 18;
-      alpha = 0.30 + t * 0.25;
+      // No target data: neutral grey-blue based on per-capita
+      const pc = Math.min(perCapita / 20, 1);
+      hue = 210; // blue-grey
+      sat = 20 + pc * 30;
+      lum = 40 + pc * 15;
+      alpha = 0.35 + pc * 0.25;
     }
 
-    return 'hsla(' + hue + ',' + Math.round(sat) + '%,' + Math.round(lum) + '%,' + alpha.toFixed(2) + ')';
+    // Boost saturation for high per-capita countries
+    if (perCapita > 10) sat = Math.min(sat + 15, 95);
+
+    return 'hsla(' + Math.round(hue) + ',' + Math.round(sat) + '%,' + Math.round(lum) + '%,' + alpha.toFixed(2) + ')';
+  }
+
+  // ── Elevation function: total emissions → hex altitude ──
+  // High emitters rise up (mountains), low emitters sink (valleys)
+  _countryHexAltitudeFn(feature) {
+    const iso = feature?.properties?.ISO_A3;
+    if (!iso || !Data.countryHexColors) return 0.003;
+    const d = Data.countryHexColors[iso];
+    if (!d) return 0.003;
+
+    const emissions = d.emissions || 0;
+    // Log scale: 1 Mt → 0.003, 10000 Mt → 0.025
+    const logEm = Math.log(Math.max(emissions, 1));
+    const minLog = Math.log(1);
+    const maxLog = Math.log(12000);
+    const t = Math.min(Math.max((logEm - minLog) / (maxLog - minLog), 0), 1);
+    return 0.003 + t * 0.022;
   },
 
   // ── Mode API — used by GLOBE_MODES orchestrator ──
@@ -550,7 +534,7 @@ const GlobeModule = {
   applyCountryHexColors() {
     if (!this.world) return;
     this.world.hexPolygonColor((f) => this._countryHexColorFn(f));
-    this.world.hexPolygonAltitude(() => 0.005);
+    this.world.hexPolygonAltitude((f) => this._countryHexAltitudeFn(f));
     // Increase margin so borders between countries are more visible
     if (this.isMobile) {
       this.world.hexPolygonMargin(0.75);

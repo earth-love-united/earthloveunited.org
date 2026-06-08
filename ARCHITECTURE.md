@@ -258,8 +258,7 @@ that appear ABOVE it in this list.
 | `data/biomes.json` | 12 biome types with carbon density, sequestration rates | Data.init() |
 | `data/sites.json` | 4 restoration sites with NDVI, climate, narratives | Data.init() |
 | `data/pledge-nodes.json` | 123 countries with emissions, targets, reality gaps | Data.init() |
-| `dis/climate-facts.json` | Global climate statistics | GAIA_KNOWLEDGE |
-| `dis/gaia-knowledge-base.json` | 2541 text chunks for TF-IDF search | GAIA_KNOWLEDGE |
+| `dis/climate-facts.json` | Global climate statistics | gaia-nodes.js |
 
 ---
 
@@ -273,3 +272,26 @@ that appear ABOVE it in this list.
 | `transform: translateX(100%)` without `pe:none` | Element is off-screen but has live hit area | Always pair transform with pe:none |
 | Duplicate CSS selectors (`#panel-backdrop` × 2) | Second rule may override first unexpectedly | Lint / manual audit |
 | `safeCall` swallows errors | Catch block logs warning but returns undefined | Check console for `[safeCall]` warnings |
+
+---
+
+## Before You Ship
+
+1. Run the boot validator: open console, look for 🔴 errors from `[BOOT]`
+2. Check no `position:fixed` element has `pointer-events:auto` when it should be hidden
+3. Click a globe point → verify GLOBE_OVERLAY left sidebar opens
+4. Scroll to quiz → verify quiz buttons are clickable
+5. Check console for `[safeCall] X.Y() threw:` warnings
+6. Run `SmokeTest.run()` in console — all 22 tests should pass
+7. Run `StackLint.audit()` — no stacking regressions
+
+## Key Files for Common Tasks
+
+| Task | Files |
+|------|-------|
+| Add a new globe point layer | `js/globe.js` (renderer), `js/gaia-nodes.js` (click handler) |
+| Add a new GLOBE_OVERLAY tab | `js/gaia-nodes.js` (registerAllSites), `css/globe-overlay.css` |
+| Add a new pledge data field | `data/pledge-nodes.json`, `js/site-panel.js` (PLEDGE_PANEL.renderDashboard) |
+| Modify z-index stacking | `css/layout.css`, update z-index table in this file |
+| Add a new GAIA module | Create IIFE, add `window.X = X`, add to `MODULE_MANIFEST` in `module-validator.js` |
+| Add a new dev tool | Create IIFE in `tools/`, add `<script>` tag in `index.html` |
