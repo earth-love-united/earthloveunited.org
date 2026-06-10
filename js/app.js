@@ -7,6 +7,13 @@ const App = {
   async init() {
     syncHeroScrollState();
 
+    // ── Carbon Clock — zero data dependencies; must start BEFORE any network
+    //    waits. On slow connections Data.init() can take seconds, and the hero
+    //    counter should never sit blank while that happens.
+    if (hasModule('CARBON_CLOCK')) {
+      CARBON_CLOCK.init();
+    }
+
     // Load data first
     try {
       await Data.init();
@@ -33,11 +40,6 @@ const App = {
     if (hasModule('GAIA_NODES')) {
       GAIA_NODES.init();
       GAIA_NODES.populateSiteData();
-    }
-
-    // ── Carbon Clock — starts ticking immediately ──
-    if (hasModule('CARBON_CLOCK')) {
-      CARBON_CLOCK.init();
     }
 
     // ── Delegation Greeting — personalized country entry ──

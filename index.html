@@ -900,11 +900,14 @@ body.globe-mode[data-globe-mode="ndvi"] #ndvi-prompt.visible{display:flex!import
   ← Back to Foundation
 </button>
 
-<!-- Service Worker registration -->
+<!-- Service Worker registration — deferred to window load so the ~50-file
+     precache never competes with first paint on slow connections -->
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=10').catch(function() {
-    // SW registration failed — site still works without it
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js?v=10').catch(function() {
+      // SW registration failed — site still works without it
+    });
   });
 }
 </script>

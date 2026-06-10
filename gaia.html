@@ -558,7 +558,9 @@ if (window.innerWidth <= 768) {
 <!-- Service Worker registration -->
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(function() {});
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js?v=10').catch(function() {});
+  });
 }
 </script>
 
