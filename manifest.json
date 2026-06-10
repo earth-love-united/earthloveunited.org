@@ -1,0 +1,26 @@
+{
+  "name": "Earth Love United — One Earth",
+  "short_name": "ELU",
+  "description": "Restoring ecosystems, rebalancing carbon, reuniting with Earth. Explore our 3D globe and carbon restoration scenarios.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#030307",
+  "theme_color": "#4ecdc4",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='24' fill='%23030307'/><circle cx='96' cy='96' r='72' fill='none' stroke='%234ecdc4' stroke-width='4'/><ellipse cx='96' cy='96' rx='32' ry='72' fill='none' stroke='%237be8d0' stroke-width='3' opacity='0.8'/><path d='M24 96 Q48 72 96 96 T168 96' fill='none' stroke='%237be8d0' stroke-width='3' opacity='0.8'/><circle cx='96' cy='96' r='16' fill='%234ecdc4' opacity='0.3'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='64' fill='%23030307'/><circle cx='256' cy='256' r='192' fill='none' stroke='%234ecdc4' stroke-width='8'/><ellipse cx='256' cy='256' rx='85' ry='192' fill='none' stroke='%237be8d0' stroke-width='6' opacity='0.8'/><path d='M64 256 Q128 192 256 256 T448 256' fill='none' stroke='%237be8d0' stroke-width='6' opacity='0.8'/><circle cx='256' cy='256' r='42' fill='%234ecdc4' opacity='0.3'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "science"],
+  "lang": "en"
+}

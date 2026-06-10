@@ -77,7 +77,7 @@ _dead/
 
 # Generated / deployment artefacts (not for git)
 _deploy/
-manifest.json
+# NOTE: manifest.json (PWA manifest at repo root) is a SOURCE file — do not ignore.
 
 # ─── Infra safety backups (local only) ─────────────────────────
 .infra-backup/
