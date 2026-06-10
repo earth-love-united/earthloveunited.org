@@ -457,6 +457,34 @@ body.globe-mode[data-globe-mode="ndvi"] #ndvi-prompt.visible{display:flex!import
         <div id="hero-carbon-clock"></div>
         <div id="hero-delegation"></div>
       </div>
+      <!-- INSTANT BOOT CLOCK — zero dependencies, ticks at first paint.
+           CARBON_CLOCK adopts this element + epoch when modules finish loading
+           (see js/carbon-clock.js createHeroClock/start), so the number never
+           resets or jumps. Keep markup identical to createHeroClock(). -->
+      <script>
+      (function () {
+        var c = document.getElementById('hero-carbon-clock');
+        if (!c) return;
+        window.__CC_T0 = Date.now();
+        c.innerHTML = '<div id="carbon-clock-hero"><div class="cc-hero-inner">' +
+          '<div class="cc-label">Net Human Emissions Since You Arrived</div>' +
+          '<div class="cc-value-row" aria-live="off" aria-atomic="true">' +
+          '<span class="cc-value" id="cc-hero-value">0</span>' +
+          '<span class="cc-unit" id="cc-hero-unit">t</span></div>' +
+          '<div class="cc-explainer">' +
+          '<span>Nature absorbs <strong>123 Gt</strong>. Humanity emits <strong>143 Gt</strong>.</span>' +
+          '<span>This is the gap. It grows every second.</span></div>' +
+          '</div></div>';
+        var v = document.getElementById('cc-hero-value');
+        var TPMS = 20e9 / (365.25 * 24 * 3600 * 1000); // 20 Gt/yr in tons/ms
+        window.__CC_TICK = setInterval(function () {
+          var d = Math.floor((Date.now() - window.__CC_T0) * TPMS).toString();
+          var g = d.length % 3 || 3, out = d.slice(0, g);
+          for (var i = g; i < d.length; i += 3) out += '.' + d.slice(i, i + 3);
+          v.textContent = out;
+        }, 120);
+      })();
+      </script>
 
       <!-- Primary actions -->
       <div class="hero-actions" aria-label="Arrival actions">
@@ -824,8 +852,10 @@ body.globe-mode[data-globe-mode="ndvi"] #ndvi-prompt.visible{display:flex!import
   <div id="panel-content"></div>
 </div>
 
-<!-- JS Modules — loaded in dependency order -->
-<script src="js/vendor/globe.gl.js"></script>
+<!-- JS Modules — loaded in dependency order.
+     NOTE: js/vendor/globe.gl.js (1.8MB) is NOT loaded here — App.enterGlobe()
+     lazy-loads it via loadGlobeGL(). A sync tag here blocks every module
+     below it and delays first paint by seconds on slow connections. -->
 <script src="js/gaia-utils.js"></script>
 <script src="js/module-contracts.js"></script>
 <script src="js/event-bus.js"></script>

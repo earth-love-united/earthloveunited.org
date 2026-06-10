@@ -54,6 +54,14 @@ const CARBON_CLOCK = (() => {
   function createHeroClock() {
     if (heroEl) return;
 
+    // Adopt the instant boot clock if index.html already rendered it
+    // (inline script in the hero — ticks from first paint, before modules load).
+    const existing = document.getElementById('carbon-clock-hero');
+    if (existing) {
+      heroEl = existing;
+      return;
+    }
+
     heroEl = document.createElement('div');
     heroEl.id = 'carbon-clock-hero';
     heroEl.innerHTML = `
@@ -161,7 +169,13 @@ const CARBON_CLOCK = (() => {
   // ── Start ──
   function start() {
     if (timer) return;
-    startTime = Date.now();
+    // Take over from the inline boot ticker: reuse its epoch so the
+    // number never resets or jumps backwards, then stop its interval.
+    if (window.__CC_TICK) {
+      clearInterval(window.__CC_TICK);
+      window.__CC_TICK = null;
+    }
+    startTime = window.__CC_T0 || Date.now();
     _cacheRefs();
     update();
     timer = requestAnimationFrame(tick);
