@@ -249,6 +249,10 @@ const SmokeTest = (() => {
           const gv = document.getElementById('globeViz');
           if (!gv) return { pass: false, detail: '#globeViz not found' };
           const canvas = gv.querySelector('canvas');
+          // Globe is lazy-initialized — only rendered after entering globe mode.
+          if (!canvas && !window.GlobeModule?._initialized) {
+            return { pass: true, detail: 'Globe not yet entered (lazy init) — OK. Re-run after Enter the Living Globe for full check.' };
+          }
           return {
             pass: !!canvas,
             detail: canvas ? `Canvas: ${canvas.offsetWidth}x${canvas.offsetHeight}` : 'No canvas inside #globeViz — globe not rendered!',
@@ -277,7 +281,11 @@ const SmokeTest = (() => {
         name: 'Globe has interactive points',
         critical: false,
         test: () => {
-          if (!window.GlobeModule || !GlobeModule.world) return { pass: false, detail: 'GlobeModule.world not available' };
+          if (!window.GlobeModule || !GlobeModule.world) {
+            // Lazy init — world only exists after entering globe mode.
+            if (!window.GlobeModule?._initialized) return { pass: true, detail: 'Globe not yet entered (lazy init) — OK' };
+            return { pass: false, detail: 'GlobeModule.world not available' };
+          }
           const pointsData = GlobeModule.world.pointsData();
           return {
             pass: pointsData && pointsData.length > 0,
@@ -292,13 +300,19 @@ const SmokeTest = (() => {
     // ═══════════════════════════════════════════
     interactions: [
       {
-        name: 'enterSite() is callable',
+        name: 'Hero enter button is wired (data-action="enterGlobe")',
         critical: true,
         test: () => {
-          const exists = typeof window.enterSite === 'function';
+          // The hero button uses delegated data-action binding (no inline onclick).
+          const btn = document.querySelector('.enter-btn[data-action="enterGlobe"]');
+          const bound = btn && btn.dataset.appActionBound === 'true';
+          const handler = typeof window.App?.enterGlobe === 'function';
           return {
-            pass: exists,
-            detail: exists ? 'enterSite() global function exists' : 'enterSite() not found — hero button will not work!',
+            pass: !!(btn && handler),
+            detail: !btn ? '.enter-btn[data-action=enterGlobe] not found — hero button missing!'
+              : !handler ? 'App.enterGlobe() not found — hero button will not work!'
+              : bound ? 'Hero button bound via data-action → App.enterGlobe()'
+              : 'Button + App.enterGlobe() exist (binding flag not yet set)',
           };
         },
       },
@@ -317,7 +331,11 @@ const SmokeTest = (() => {
         name: 'Globe onPointClick handler is set',
         critical: true,
         test: () => {
-          if (!window.GlobeModule || !GlobeModule.world) return { pass: false, detail: 'GlobeModule.world not available' };
+          if (!window.GlobeModule || !GlobeModule.world) {
+            // Lazy init — world only exists after entering globe mode.
+            if (!window.GlobeModule?._initialized) return { pass: true, detail: 'Globe not yet entered (lazy init) — OK' };
+            return { pass: false, detail: 'GlobeModule.world not available' };
+          }
           // Globe.gl stores callbacks internally — we test by checking if the accessor returns a function
           const clickFn = GlobeModule.world.onPointClick();
           return {

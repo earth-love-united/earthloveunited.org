@@ -58,6 +58,7 @@
 <script src="js/module-contracts.js"></script>
 <script src="js/event-bus.js"></script>
 <script src="js/storage-adapter.js"></script>
+<script src="js/storage.js"></script>
 <script src="js/data.js"></script>
 <script src="js/gaia-legacy/gaia-data.js"></script>
 <script src="js/gaia-legacy/gaia-charts.js"></script>
@@ -80,9 +81,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/gaia-sources.css">
 <link rel="stylesheet" href="css/print.css" media="print">
-<!-- gaia-client.js NOT loaded — requires Cloudflare Worker backend -->
-<!-- <script src="dis/gaia-client.js"></script> -->
-<!-- gaia-integration.js is included in gaia.bundle.js -->
+<!-- gaia-client.js IS loaded above (line ~78). Without the Cloudflare Worker
+     backend it runs in STATE MACHINE mode (no isolate WebSocket). -->
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#030307;--bg2:#080a10;--bg3:#0c0e16;--teal:#4ecdc4;--mint:#7be8d0;--ocean:#2a8fa3;--deep:#1a3a5c;--leaf:#5bbf72;--amber:#d4a574;--warn:#c45c4a;--violet:#8b7fc7;--text:#e2dfd8;--text2:#9a9590;--text3:#5a5652;--mono:"JetBrains Mono",monospace;--display:"Cormorant Garamond",serif;--body:"Outfit",sans-serif}

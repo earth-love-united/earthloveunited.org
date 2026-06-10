@@ -11,7 +11,7 @@ const App = {
     try {
       await Data.init();
     } catch (err) {
-      console.error('[App] Data.init() failed:', err);
+      reportError('App.Data.init()', err);
       // Show user-visible error so the page isn't silently broken
       const hero = $('hero');
       if (hero) {
@@ -20,9 +20,10 @@ const App = {
           const banner = document.createElement('div');
           banner.className = 'data-error-banner';
           banner.style.cssText = 'background:rgba(196,92,74,0.15);border:1px solid rgba(196,92,74,0.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:12px;color:var(--warn);line-height:1.6;';
-          banner.innerHTML = '⚠️ Could not load site data. Some features may be unavailable. <button onclick="location.reload()" style="background:rgba(196,92,74,0.2);border:1px solid rgba(196,92,74,0.3);border-radius:4px;color:var(--warn);padding:2px 8px;cursor:pointer;font-size:11px;margin-left:8px;">Retry</button>';
+          banner.innerHTML = '⚠️ Could not load site data. Some features may be unavailable. <button type="button" class="data-error-retry" style="background:rgba(196,92,74,0.2);border:1px solid rgba(196,92,74,0.3);border-radius:4px;color:var(--warn);padding:2px 8px;cursor:pointer;font-size:11px;margin-left:8px;">Retry</button>';
           hero.querySelector('.hero-inner')?.insertBefore(banner, hero.querySelector('.hero-inner').firstChild)
             || hero.insertBefore(banner, hero.firstChild);
+          banner.querySelector('.data-error-retry')?.addEventListener('click', () => location.reload());
         }
       }
       // Continue init -- modules that depend on Data will handle undefined gracefully
@@ -65,19 +66,21 @@ const App = {
     // NOTE: GlobeModule is NOT initialized here — it initializes on demand
     // when entering globe mode. This prevents WebGL rendering in foundation mode.
     const modules = [
-      ['Quiz',        () => Quiz.init()],
-      ['Biomes',      () => Biomes.init()],
-      ['Scenario',    () => Scenario.init()],
-      ['GLOBE_MODES', () => { if (hasModule('GLOBE_MODES')) GLOBE_MODES.init(); }],
+      ['Quiz',          () => Quiz.init()],
+      ['Biomes',        () => Biomes.init()],
+      ['Scenario',      () => Scenario.init()],
+      ['GLOBE_MODES',   () => { if (hasModule('GLOBE_MODES')) GLOBE_MODES.init(); }],
     ];
     for (const [name, initFn] of modules) {
       try { initFn(); } catch (err) { reportError(`${name}.init()`, err); }
     }
 
     // Async module inits (data fetching — fire and forget, they handle errors internally)
-    if (hasModule('GLOBE_NDVI'))    GLOBE_NDVI.init();
-    if (hasModule('GLOBE_EVENTS'))  GLOBE_EVENTS.init();
-    if (hasModule('GLOBE_RESTORE')) GLOBE_RESTORE.init();
+    if (hasModule('GLOBE_NDVI'))       GLOBE_NDVI.init();
+    if (hasModule('GLOBE_EVENTS'))     GLOBE_EVENTS.init();
+    if (hasModule('GLOBE_RESTORE'))    GLOBE_RESTORE.init();
+    if (hasModule('PULSE_DASHBOARD'))  PULSE_DASHBOARD.init();
+    if (hasModule('CARBON_SHADOW'))    CARBON_SHADOW.init();
 
     // Emit app:ready event via EventBus
     if (hasModule('EventBus')) {
@@ -185,7 +188,7 @@ const App = {
     const sitesGrid = $('sites-grid');
     if (sitesGrid) {
       sitesGrid.innerHTML = Data.sites.map(s => `
-        <div class="site-card" onclick="flyToSite('${s.id}')">
+        <div class="site-card" data-action="flyToSite" data-action-args='["${s.id}"]'>
           <div class="site-icon">${s.id === 'sri_lanka' ? '🌳' : s.id === 'antalya' ? '🔥' : s.id === 'benin' ? '🌿' : '🌴'}</div>
           <div class="site-name">${s.name}</div>
           <div class="site-loc">${s.id === 'sri_lanka' ? 'SRI LANKA' : s.id === 'antalya' ? 'TURKEY' : s.id === 'benin' ? 'BENIN' : 'BORNEO'}</div>
@@ -328,7 +331,7 @@ const App = {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     // Load globe.gl if not already loaded, then init GlobeModule
     if (!_globeGLLoaded && !_globeGLLoading) {
-      await loadGlobeGL().catch(() => console.warn('[App] globe.gl failed to load'));
+      await loadGlobeGL().catch(() => reportWarn('App', 'globe.gl failed to load'));
     }
     if (hasModule('GlobeModule') && !GlobeModule._initialized) {
       try { GlobeModule.init(); GlobeModule._initialized = true; } catch (err) { reportError('GlobeModule.init()', err); }
@@ -386,6 +389,10 @@ function showCycle(key) { Cycle.show(key); }
 
 function _onGlobeKeyDown(e) {
   if (e.key === 'Escape' && document.body.classList.contains('globe-mode')) {
+    const countryTooltip = $('hex-country-tooltip');
+    if (countryTooltip?.classList.contains('visible') && countryTooltip.classList.contains('selected')) {
+      return;
+    }
     App.exitGlobe();
   }
 }
@@ -420,9 +427,9 @@ function loadGlobeGL() {
 // Start — lazy-load globe.gl, then init
 let _startRetries = 0;
 async function startApp() {
-  if (typeof Data === 'undefined') {
+  if (!hasModule('Data')) {
     if (++_startRetries > 50) {
-      console.error('[App] Data not available after 5s');
+      reportError('App.startApp()', new Error('Data not available after 5s'));
       return;
     }
     setTimeout(startApp, 100);
@@ -501,7 +508,7 @@ window.addEventListener('beforeunload', () => {
  */
 function toggleGlobeOverlay() {
   if (!hasModule('GLOBE_OVERLAY')) return;
-  var btn = document.getElementById('hamburger-btn');
+  var btn = $('hamburger-btn');
   if (GLOBE_OVERLAY.isOpen()) {
     GLOBE_OVERLAY.close();
     if (btn) btn.classList.remove('active');

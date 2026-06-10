@@ -8,13 +8,15 @@ const Data = {
   biomes: null,
   sites: null,
   pledgeNodes: null,
+  version: 'prod001',
 
   async init() {
     // Fetch all data files in parallel — each individually guarded
+    const v = '?v=' + this.version;
     const [biomesRes, sitesRes, pledgeNodesRes] = await Promise.allSettled([
-      fetch('data/biomes.json'),
-      fetch('data/sites.json'),
-      fetch('data/pledge-nodes.json')
+      fetch('data/biomes.json' + v),
+      fetch('data/sites.json' + v),
+      fetch('data/pledge-nodes.json' + v)
     ]);
 
     // Parse each response individually — a 404 on one shouldn't kill the others

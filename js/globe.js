@@ -1,3 +1,4 @@
+// GLOBE v2.0 — Elevation + diverging colors + hover fix
 // ═══════════════════════════════════════════════
 // GLOBE — Globe.gl init, panel open/close
 // ═══════════════════════════════════════════════
@@ -7,6 +8,10 @@
 // inside chained arrow functions. This variable is shared between
 // the onPointClick/onLabelClick/onGlobeClick callbacks and setOnGlobeClick.
 let _globeClickHandler = null;
+const GLOBE_DRAG_CLICK_THRESHOLD_PX = 6;
+const GLOBE_DRAG_SUPPRESS_MS = 350;
+const COUNTRY_GEOJSON_URL = 'https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson';
+const COUNTRY_GEOJSON_TIMEOUT_MS = 8000;
 
 // ── Point-in-polygon (ray casting) ──
 function _pointInRing(lng, lat, ring) {
@@ -53,6 +58,154 @@ function _findCountryAtPoint(lng, lat, features) {
   return null;
 }
 
+const COUNTRY_ISO_FALLBACKS = {
+  France: 'FRA',
+  Norway: 'NOR',
+  Kosovo: 'XKX',
+  'N. Cyprus': 'CYP',
+  'Northern Cyprus': 'CYP',
+  Somaliland: 'SOM',
+};
+
+const COUNTRY_STATUS = {
+  MISSING: 'missing',
+  NO_TARGET: 'no-target',
+  OVERSHOOTING: 'overshooting',
+  ON_TRACK: 'on-track',
+};
+
+const COUNTRY_STATUS_LABELS = {
+  [COUNTRY_STATUS.MISSING]: 'No pledge data',
+  [COUNTRY_STATUS.NO_TARGET]: 'No target',
+  [COUNTRY_STATUS.OVERSHOOTING]: 'Overshooting',
+  [COUNTRY_STATUS.ON_TRACK]: 'On track',
+};
+
+const COUNTRY_STATUS_BADGE_CLASSES = {
+  [COUNTRY_STATUS.MISSING]: 'neutral',
+  [COUNTRY_STATUS.NO_TARGET]: 'neutral',
+  [COUNTRY_STATUS.OVERSHOOTING]: 'red',
+  [COUNTRY_STATUS.ON_TRACK]: 'green',
+};
+
+function _resolveCountryIso(feature) {
+  const props = feature?.properties || {};
+  if (props.ISO_A3 && props.ISO_A3 !== '-99') return props.ISO_A3;
+
+  const names = [props.ADMIN, props.NAME, props.name].filter(Boolean);
+  for (const name of names) {
+    if (COUNTRY_ISO_FALLBACKS[name]) return COUNTRY_ISO_FALLBACKS[name];
+  }
+
+  return props.ISO_A3 || props.ISO_A2 || 'UNK';
+}
+
+function _getCountryDisplayData(feature) {
+  if (!feature) return null;
+  const props = feature.properties || {};
+  const iso = _resolveCountryIso(feature);
+  const data = Data.countryHexColors?.[iso];
+  const country = data?.country || props.ADMIN || props.NAME || props.name || iso;
+
+  if (data) {
+    return Object.assign({}, data, {
+      iso,
+      country,
+      hasData: true,
+    });
+  }
+
+  return {
+    iso,
+    country,
+    emissions: null,
+    perCapita: null,
+    reductionPct: null,
+    targetYear: null,
+    gap: null,
+    onTrack: null,
+    catRating: 'No pledge dataset record',
+    catScore: null,
+    lat: null,
+    lng: null,
+    hasData: false,
+  };
+}
+
+function _escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[ch]);
+}
+
+function _isFiniteNumber(value) {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function _getCountryStatusKey(d) {
+  if (!d?.hasData) return COUNTRY_STATUS.MISSING;
+  if (!_isFiniteNumber(d.gap)) return COUNTRY_STATUS.NO_TARGET;
+  return d.gap > 0 ? COUNTRY_STATUS.OVERSHOOTING : COUNTRY_STATUS.ON_TRACK;
+}
+
+function _getCountryStatusText(d) {
+  return COUNTRY_STATUS_LABELS[_getCountryStatusKey(d)];
+}
+
+function _getCountryStatusClass(d) {
+  return COUNTRY_STATUS_BADGE_CLASSES[_getCountryStatusKey(d)];
+}
+
+function _getCountryEmissionsClass(d) {
+  if (!d?.hasData || !_isFiniteNumber(d.perCapita)) return 'No emissions class';
+  if (d.perCapita < 2) return 'Low emissions';
+  if (d.perCapita < 6) return 'Moderate emissions';
+  if (d.perCapita < 12) return 'High emissions';
+  return 'Very high emissions';
+}
+
+function _getCountryProjectCount(feature) {
+  if (!feature || !Array.isArray(Data.sites)) return null;
+  const countryIso = _resolveCountryIso(feature);
+  return Data.sites.filter(site => (
+    site?.countryIso === countryIso || (
+    !site?.countryIso &&
+    Number.isFinite(site?.lat) &&
+    Number.isFinite(site?.lng) &&
+    _pointInFeature(site.lng, site.lat, feature))
+  )).length;
+}
+
+function _getCountryGaiaComment(d, projectCount) {
+  const statusKey = _getCountryStatusKey(d);
+  if (statusKey === COUNTRY_STATUS.MISSING) return 'GAIA is missing pledge data here; the border still keeps its place on the map.';
+  if (projectCount > 0) return 'Restoration signal detected inside this country.';
+  if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'The promise is visible, but the target line is still incomplete.';
+  if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'This pathway is running hot against the current pledge.';
+  return 'This country is closer to the green lane in the current dataset.';
+}
+
+function _isCountryModeActive() {
+  return safeGet('GLOBE_MODES', 'getMode', document.body?.dataset?.globeMode || 'countries') === 'countries';
+}
+
+function _fetchJsonWithTimeout(url, timeoutMs) {
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+  return fetch(url, controller ? { signal: controller.signal } : undefined)
+    .then(resp => {
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      return resp.json();
+    })
+    .finally(() => {
+      if (timer) clearTimeout(timer);
+    });
+}
+
 const GlobeModule = {
   world: null,
   userTotal: 0,
@@ -61,6 +214,15 @@ const GlobeModule = {
     navigator.userAgent
   ) || (window.innerWidth < 768),
   _globeLoadRetries: 0,
+  _canvasPointer: null,
+  _suppressGlobeClickUntil: 0,
+  _canvasDragGuardBound: false,
+  _countryBordersVisible: false,
+  _countryBorderWarned: false,
+  _countryHoverClearTimer: null,
+  _selectedCountryFeature: null,
+  _countryDataState: 'idle',
+  _countryDataError: null,
 
   init() {
     // Guard: Globe constructor may not be loaded yet (lazy-loaded globe.gl.js)
@@ -84,14 +246,14 @@ const GlobeModule = {
       .specularImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-water.png')
       .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
       .showAtmosphere(!this.isMobile).atmosphereColor('#4ecdc4').atmosphereAltitude(0.25)
-      .pointsData(Data.sites)
+      .pointsData(Data.sites || [])
       .pointLat('lat').pointLng('lng').pointAltitude(0.01).pointRadius(0.6)
       .pointColor(() => '#4ecdc4').pointResolution(this.isMobile ? 8 : 16)
-      .labelsData(Data.sites)
+      .labelsData(Data.sites || [])
       .labelLat('lat').labelLng('lng').labelText('name').labelSize(1.4)
       .labelDotRadius(0.4).labelDotOrientation(() => 'bottom')
       .labelColor(() => 'rgba(123,232,208,0.9)').labelResolution(3).labelAltitude(0.02)
-      .ringsData(Data.sites)
+      .ringsData(Data.sites || [])
       .ringLat('lat').ringLng('lng')
       .ringColor(() => t => `rgba(78,205,196,${1 - t})`)
       .ringMaxRadius(4).ringPropagationSpeed(1.5).ringRepeatPeriod(1200)
@@ -112,6 +274,7 @@ const GlobeModule = {
         }
       })
       .onPointClick(site => {
+        if (GlobeModule.shouldIgnoreCanvasClick()) return;
         // Mode handler intercepts ALL clicks when active
         if (_globeClickHandler && site) {
           _globeClickHandler(site.lat, site.lng);
@@ -124,6 +287,7 @@ const GlobeModule = {
         }
       })
       .onLabelClick(site => {
+        if (GlobeModule.shouldIgnoreCanvasClick()) return;
         if (_globeClickHandler && site) {
           _globeClickHandler(site.lat, site.lng);
           return;
@@ -139,6 +303,7 @@ const GlobeModule = {
     // (safeChain Proxy can silently swallow unknown methods)
     if (typeof this.world.onGlobeClick === 'function') {
       this.world.onGlobeClick(({ lat, lng }) => {
+        if (GlobeModule.shouldIgnoreCanvasClick()) return;
         if (_globeClickHandler) {
           _globeClickHandler(lat, lng);
         }
@@ -155,10 +320,15 @@ const GlobeModule = {
     // ── Country hex polygons — shared between modes ──
     // Default: empty wireframe grid (visible edges, transparent fill)
     this._countryFeatures = null;
-    fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
-      .then(r => r.json())
+    this._countryDataState = 'loading';
+    this._countryDataError = null;
+    _fetchJsonWithTimeout(COUNTRY_GEOJSON_URL, COUNTRY_GEOJSON_TIMEOUT_MS)
       .then(countries => {
-        this._countryFeatures = countries.features.filter(d => d.properties.ISO_A2 !== 'AQ');
+        if (!countries || !Array.isArray(countries.features)) {
+          throw new Error('Malformed country GeoJSON');
+        }
+        this._countryFeatures = countries.features.filter(d => d.properties?.ISO_A2 !== 'AQ');
+        this._countryDataState = 'ready';
         const hexRes = this.isMobile ? 2 : 3;
         const hexMargin = this.isMobile ? 0.7 : 0.62;
         this.world
@@ -169,9 +339,15 @@ const GlobeModule = {
           .hexPolygonAltitude(() => 0.003)
           .hexPolygonCurvatureResolution(0);
 
-        // Apply country colors immediately after polygon creation so they
-        // aren't overwritten by the default wireframe above
-        this.applyCountryHexColors();
+        // Apply country visuals only when the country tab is active. GeoJSON
+        // can resolve after a fast mode switch into NDVI/events.
+        const currentMode = safeGet('GLOBE_MODES', 'getMode', document.body.dataset.globeMode || 'countries');
+        if (currentMode === 'countries') {
+          this.applyCountryHexColors();
+          this.applyCountryBorders();
+        } else {
+          this.clearCountryBorders();
+        }
 
         // ── Country hover/click via globe surface raycasting ──
         // Instead of per-hex hit testing (which misses gaps between hexes),
@@ -184,14 +360,9 @@ const GlobeModule = {
         // Globe surface raycasting for country detection
         this._globeRadius = this.world.getGlobeRadius();
 
-        this._onCanvasPointerMove = (e) => {
-          if (!this._countryFeatures || !this._countryFeatures.length) return;
-          const now = Date.now();
-          if (now - this._countryHoverThrottle < 30) return;
-          this._countryHoverThrottle = now;
-
+        this._countryFeatureFromCanvasEvent = (e) => {
           const canvas = this._canvasEl;
-          if (!canvas) return;
+          if (!canvas || !this._countryFeatures || !this._countryFeatures.length) return null;
           const rect = canvas.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
@@ -225,103 +396,72 @@ const GlobeModule = {
           const b = 2*(ox*wx + oy*wy + oz*wz);
           const c = ox*ox + oy*oy + oz*oz - r*r;
           const disc = b*b - 4*a*c;
-          if (disc < 0) { this._clearCountryHover(); return; }
+          if (disc < 0) return null;
           const t = (-b - Math.sqrt(disc)) / (2*a);
-          if (t < 0) { this._clearCountryHover(); return; }
+          if (t < 0) return null;
           const hitX = ox + t*wx, hitY = oy + t*wy, hitZ = oz + t*wz;
           // Convert 3D hit point to lat/lng using globe.gl's own method
           const geo = this.world.toGeoCoords({x: hitX, y: hitY, z: hitZ});
-          if (!geo || isNaN(geo.lat) || isNaN(geo.lng)) { this._clearCountryHover(); return; }
-          const lat = geo.lat;
-          const lng = geo.lng;
+          if (!geo || isNaN(geo.lat) || isNaN(geo.lng)) return null;
+          return _findCountryAtPoint(geo.lng, geo.lat, this._countryFeatures);
+        };
+
+        this._onCanvasPointerMove = (e) => {
+          if (!this._countryFeatures || !this._countryFeatures.length) return;
+          if (!_isCountryModeActive()) return;
+          if (this._selectedCountryFeature) return;
+          const now = Date.now();
+          if (now - this._countryHoverThrottle < 30) return;
+          this._countryHoverThrottle = now;
 
           // Find country at this lat/lng
-          const feature = _findCountryAtPoint(lng, lat, this._countryFeatures);
-          if (!feature) { this._clearCountryHover(); return; }
+          const feature = this._countryFeatureFromCanvasEvent(e);
+          if (!feature) { this._scheduleCountryHoverClear(); return; }
 
-          const iso = feature.properties?.ISO_A3;
-          const d = iso ? Data.countryHexColors?.[iso] : null;
-          if (!d) { this._clearCountryHover(); return; }
+          if (this._countryHoverClearTimer) {
+            clearTimeout(this._countryHoverClearTimer);
+            this._countryHoverClearTimer = null;
+          }
+
+          const d = _getCountryDisplayData(feature);
+          if (!d) { this._scheduleCountryHoverClear(); return; }
 
           // Only update DOM if country changed
           if (this._countryHoverFeature !== feature) {
             this._countryHoverFeature = feature;
-            let tt = $('hex-country-tooltip');
-            if (!tt) {
-              tt = document.createElement('div');
-              tt.id = 'hex-country-tooltip';
-              document.body.appendChild(tt);
-            }
-            const gap = d.gap;
-            const status = gap === null ? 'No target' : (gap > 0 ? 'OVERSHOOTING' : 'ON TRACK');
-            const emissions = d.emissions ? d.emissions.toLocaleString() + ' MtCO₂' : 'No data';
-            tt.innerHTML = '<div class="tt-country">' + d.country + '</div>'
-              + '<div class="tt-detail">' + emissions + (d.perCapita ? ' · ' + d.perCapita + ' t/person' : '') + '</div>'
-              + '<div class="' + (gap === null ? '' : (gap > 0 ? 'tt-status-red' : 'tt-status-green')) + '">' + status + '</div>';
-            tt.classList.add('visible');
+            this._refreshCountryBorders();
+            this._renderCountryInfoCard(feature, false);
           }
 
           // Position tooltip
-          const tt2 = $('hex-country-tooltip');
-          if (tt2) {
-            const tx = Math.min(e.clientX + 16, window.innerWidth - 260);
-            const ty = Math.min(e.clientY - 12, window.innerHeight - 80);
-            tt2.style.left = tx + 'px';
-            tt2.style.top = ty + 'px';
-          }
+          this._positionCountryInfoCard(e);
         };
 
         this._onCanvasClick = (e) => {
-          if (!this._countryHoverFeature) return;
-          const iso = this._countryHoverFeature.properties?.ISO_A3;
-          if (!iso || !Data.countryHexColors) return;
-          const d = Data.countryHexColors[iso];
+          if (this.shouldIgnoreCanvasClick()) return;
+          if (!_isCountryModeActive()) return;
+          if (this._countryHoverClearTimer) {
+            clearTimeout(this._countryHoverClearTimer);
+            this._countryHoverClearTimer = null;
+          }
+          const feature = this._countryFeatureFromCanvasEvent(e);
+          if (!feature) {
+            this.clearCountrySelection();
+            return;
+          }
+          const d = _getCountryDisplayData(feature);
           if (!d) return;
-
-          // Fly to country centroid
-          if (typeof this.world.pointOfView === 'function' && d.lat && d.lng) {
-            this.world.pointOfView({ lat: d.lat, lng: d.lng, altitude: 1.5 }, 600);
-          }
-          // Open country card in GLOBE_OVERLAY
-          if (hasModule('GLOBE_OVERLAY')) {
-            GLOBE_OVERLAY.registerSite({
-              siteId: 'country-' + iso,
-              icon: '🌍',
-              title: d.country,
-              subtitle: (d.emissions ? d.emissions + ' MtCO₂' : 'No data') + ' · ' + (d.catRating || 'No CAT rating'),
-              tabs: [
-                {
-                  id: 'pledge',
-                  label: '📊 Pledge',
-                  render: (panelEl) => {
-                    const gap = d.gap;
-                    const statusColor = gap === null ? 'var(--text3)' : (gap > 0 ? '#e74c3c' : '#2ecc71');
-                    const statusText = gap === null ? 'No target data' : (gap > 0 ? 'OVERSHOOTING' : 'ON TRACK');
-                    const target = d.reductionPct ? d.reductionPct + '% by ' + Math.round(d.targetYear) : 'No target set';
-                    panelEl.innerHTML = '<h3>Emissions</h3>'
-                      + '<div class="overlay-stat-row"><div class="overlay-stat"><div class="overlay-stat-value">' + (d.emissions ? d.emissions.toLocaleString() : '—') + '</div><div class="overlay-stat-label">MtCO₂/year</div></div>'
-                      + '<div class="overlay-stat"><div class="overlay-stat-value">' + (d.perCapita ? d.perCapita : '—') + '</div><div class="overlay-stat-label">t/person</div></div></div>'
-                      + '<div class="overlay-divider"></div>'
-                      + '<h3>Target</h3>'
-                      + '<p style="font-size:12px;color:var(--text2);line-height:1.6;">' + target + '</p>'
-                      + '<div class="overlay-divider"></div>'
-                      + '<h3>Status</h3>'
-                      + '<p style="font-size:13px;color:' + statusColor + ';font-weight:600;">' + statusText + '</p>'
-                      + (d.gap !== null ? '<p style="font-size:11px;color:var(--text3);margin-top:4px;">Gap: ' + (d.gap > 0 ? '+' : '') + d.gap.toLocaleString() + ' MtCO₂</p>' : '')
-                      + '<div class="overlay-divider"></div>'
-                      + '<h3>CAT Rating</h3>'
-                      + '<p style="font-size:12px;color:var(--text2);">' + (d.catRating || 'Not rated') + ' <span style="color:var(--text3)">(score: ' + (d.catScore || 0) + '/5)</span></p>';
-                  },
-                },
-              ],
-            });
-            GLOBE_OVERLAY.open('country-' + iso);
-          }
+          this._selectedCountryFeature = feature;
+          this._countryHoverFeature = feature;
+          this._renderCountryInfoCard(feature, true);
+          this._positionCountryInfoCard(e);
+          this._refreshCountryBorders();
         };
 
         // Attach to the globe canvas
         this._canvasEl = this.world.renderer?.()?.domElement;
         if (this._canvasEl) {
+          this._bindCanvasDragGuard();
           this._canvasEl.addEventListener('pointermove', this._onCanvasPointerMove);
           this._canvasEl.addEventListener('click', this._onCanvasClick);
         }
@@ -330,7 +470,7 @@ const GlobeModule = {
         safeCall('GLOBE_MODES', 'onCountryDataReady');
       })
       .catch(e => {
-        console.warn('[Globe] Country borders fetch failed:', e.message);
+        this._handleCountryGeoJsonFailure(e);
       });
 
     // ── Hex country tooltip mouse tracking ──
@@ -338,10 +478,46 @@ const GlobeModule = {
 
     // ── Country hover helper ──
     this._clearCountryHover = () => {
+      if (this._countryHoverClearTimer) {
+        clearTimeout(this._countryHoverClearTimer);
+        this._countryHoverClearTimer = null;
+      }
+
+      if (this._selectedCountryFeature) {
+        if (this._countryHoverFeature && this._countryHoverFeature !== this._selectedCountryFeature) {
+          this._countryHoverFeature = null;
+          this._refreshCountryBorders();
+        }
+        return;
+      }
+
       const tt = $('hex-country-tooltip');
       if (tt) tt.classList.remove('visible');
-      this._countryHoverFeature = null;
+      if (this._countryHoverFeature) {
+        this._countryHoverFeature = null;
+        this._refreshCountryBorders();
+      }
     };
+
+    this._scheduleCountryHoverClear = () => {
+      if (this._countryHoverClearTimer) return;
+      this._countryHoverClearTimer = setTimeout(() => {
+        this._countryHoverClearTimer = null;
+        this._clearCountryHover();
+      }, 90);
+    };
+
+    if (!this._countryKeydownBound) {
+      this._countryKeydownBound = true;
+      this._onCountryKeydown = (event) => {
+        if (event.key === 'Escape' && this._selectedCountryFeature) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          this.clearCountrySelection();
+        }
+      };
+      document.addEventListener('keydown', this._onCountryKeydown);
+    }
 
     this.world.pointOfView({ lat: 20, lng: 40, altitude: 2.2 });
     this.world.controls().autoRotate = true;
@@ -386,6 +562,7 @@ const GlobeModule = {
       })
       .pointResolution(12)
       .onGlobeClick(({ lat, lng }) => {
+        if (GlobeModule.shouldIgnoreCanvasClick()) return;
         // Mode handler intercepts globe surface clicks
         if (_globeClickHandler) {
           _globeClickHandler(lat, lng);
@@ -393,6 +570,7 @@ const GlobeModule = {
         }
       })
       .onPointClick(p => {
+        if (GlobeModule.shouldIgnoreCanvasClick()) return;
         // Mode handler intercepts ALL clicks when active
         if (_globeClickHandler && p) {
           _globeClickHandler(p.lat, p.lng);
@@ -464,55 +642,39 @@ const GlobeModule = {
   // Green = on track, Red = overshooting, intensity = magnitude
   // Per-capita emissions modulate saturation (higher = more vivid)
   _countryHexColorFn(feature) {
-    const iso = feature?.properties?.ISO_A3;
-    if (!iso || !Data.countryHexColors) return 'rgba(255,255,255,0.03)';
-    const d = Data.countryHexColors[iso];
-    if (!d) return 'rgba(255,255,255,0.03)';
+    const d = _getCountryDisplayData(feature);
+    if (!d) return 'rgba(149,165,166,0.22)';
 
-    const gap = d.gap;
     const perCapita = d.perCapita || 0;
-    const onTrack = d.onTrack;
+    const statusKey = _getCountryStatusKey(d);
+    if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(149,165,166,0.28)';
 
-    // Base hue: green (140°) → yellow (60°) → red (0°)
-    // Based on gap magnitude and direction
-    let hue, sat, lum, alpha;
+    // Fallback hexes use the same status hue categories as polygons:
+    // slate = missing pledge data, amber = no target, red = overshooting,
+    // green = on track. Per-capita emissions affects saturation only.
+    const pc = Math.min(perCapita / 20, 1);
+    const te = Math.min(Math.log(Math.max(d.emissions || 0, 1)) / Math.log(12000), 1);
 
-    if (onTrack === true || (gap !== null && gap !== undefined && gap <= 0)) {
-      // On track: green family
-      const intensity = gap !== null && gap !== undefined ? Math.min(Math.abs(gap) / 300, 1) : 0.3;
-      hue = 140 - intensity * 20; // 140 (green) → 120 (yellow-green)
-      sat = 50 + intensity * 30;
-      lum = 35 + intensity * 10;
-      alpha = 0.50 + intensity * 0.20;
-    } else if (gap !== null && gap !== undefined && gap > 0) {
-      // Overshooting: red family
-      const intensity = Math.min(gap / 500, 1);
-      hue = 60 - intensity * 60; // 60 (yellow) → 0 (red)
-      sat = 55 + intensity * 35;
-      lum = 42 - intensity * 8;
-      alpha = 0.50 + intensity * 0.20;
-    } else {
-      // No target data: neutral grey-blue based on per-capita
-      const pc = Math.min(perCapita / 20, 1);
-      hue = 210; // blue-grey
-      sat = 20 + pc * 30;
-      lum = 40 + pc * 15;
-      alpha = 0.35 + pc * 0.25;
+    let hue = 130;
+    if (statusKey === COUNTRY_STATUS.NO_TARGET) {
+      hue = 35;
+    } else if (statusKey === COUNTRY_STATUS.OVERSHOOTING) {
+      const i = Math.min(d.gap / 500, 1);
+      hue = 18 - i * 18;
     }
 
-    // Boost saturation for high per-capita countries
-    if (perCapita > 10) sat = Math.min(sat + 15, 95);
+    const sat = 40 + pc * 45;
+    const lum = 42 - te * 8;
+    const alpha = 0.35 + te * 0.40;
 
     return 'hsla(' + Math.round(hue) + ',' + Math.round(sat) + '%,' + Math.round(lum) + '%,' + alpha.toFixed(2) + ')';
-  }
+  },
 
   // ── Elevation function: total emissions → hex altitude ──
   // High emitters rise up (mountains), low emitters sink (valleys)
   _countryHexAltitudeFn(feature) {
-    const iso = feature?.properties?.ISO_A3;
-    if (!iso || !Data.countryHexColors) return 0.003;
-    const d = Data.countryHexColors[iso];
-    if (!d) return 0.003;
+    const d = _getCountryDisplayData(feature);
+    if (!d?.hasData) return 0.003;
 
     const emissions = d.emissions || 0;
     // Log scale: 1 Mt → 0.003, 10000 Mt → 0.025
@@ -523,6 +685,141 @@ const GlobeModule = {
     return 0.003 + t * 0.022;
   },
 
+  _renderCountryInfoCard(feature, selected) {
+    const d = _getCountryDisplayData(feature);
+    if (!d) return;
+
+    let tt = $('hex-country-tooltip');
+    if (!tt) {
+      tt = document.createElement('div');
+      tt.id = 'hex-country-tooltip';
+      document.body.appendChild(tt);
+    }
+
+    if (!this._countryTooltipBound) {
+      this._countryTooltipBound = true;
+      tt.addEventListener('click', (event) => {
+        const stat = event.target.closest('[data-country-stat]');
+        if (!stat) return;
+        event.preventDefault();
+        event.stopPropagation();
+        stat.focus({ preventScroll: true });
+
+        const activeFeature = this._selectedCountryFeature || this._countryHoverFeature;
+        const activeData = _getCountryDisplayData(activeFeature);
+        if (!activeData) return;
+
+        const type = stat.getAttribute('data-country-stat');
+        const projectCount = _getCountryProjectCount(activeFeature);
+        const message = type === 'projects'
+          ? activeData.country + ' has ' + (projectCount ?? 'an unknown number of') + ' restoration site' + (projectCount === 1 ? '' : 's') + ' in the current atlas layer.'
+          : activeData.country + ' is classed as ' + _getCountryEmissionsClass(activeData).toLowerCase() + ' from per-person CO₂. Its pledge status is separate: ' + _getCountryStatusText(activeData).toLowerCase() + '.';
+        safeCall('GAIA_BUBBLE', 'speak', message, 'curious', 4200);
+      });
+    }
+
+    const projectCount = _getCountryProjectCount(feature);
+    const projects = projectCount === null
+      ? 'Unknown'
+      : projectCount + ' site' + (projectCount === 1 ? '' : 's');
+    const statusText = _getCountryStatusText(d);
+    const statusClass = _getCountryStatusClass(d);
+    const emissions = d.emissions ? d.emissions.toLocaleString() + ' MtCO₂/yr' : 'No emissions data';
+    const perCapita = d.perCapita ? d.perCapita + ' t/person' : 'No per-person data';
+    const comment = _getCountryGaiaComment(d, projectCount);
+
+    tt.classList.toggle('selected', !!selected);
+    tt.innerHTML = '<div class="tt-topline">'
+      + '<div class="tt-country">' + _escapeHtml(d.country) + '</div>'
+      + '<div class="tt-pill tt-status-' + statusClass + '">' + _escapeHtml(statusText) + '</div>'
+      + '</div>'
+      + '<div class="tt-detail">' + _escapeHtml(emissions) + ' · ' + _escapeHtml(perCapita) + '</div>'
+      + '<div class="tt-stat-grid">'
+      + '<button type="button" class="tt-stat" data-country-stat="emissions"><span>Class</span><strong>' + _escapeHtml(_getCountryEmissionsClass(d)) + '</strong></button>'
+      + '<button type="button" class="tt-stat" data-country-stat="projects"><span>Restoration</span><strong>' + _escapeHtml(projects) + '</strong></button>'
+      + '</div>'
+      + '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
+    tt.classList.add('visible');
+  },
+
+  _positionCountryInfoCard(event) {
+    const tt = $('hex-country-tooltip');
+    if (!tt || !event) return;
+
+    const width = tt.offsetWidth || 280;
+    const height = tt.offsetHeight || 140;
+    const margin = 12;
+    const topSafe = window.innerWidth <= 900 ? 112 : 92;
+    const bottomSafe = window.innerWidth <= 900 ? 132 : 112;
+    const maxX = Math.max(margin, window.innerWidth - width - margin);
+    const maxY = Math.max(topSafe, window.innerHeight - bottomSafe - height);
+    const preferAbove = event.clientY - height - 16 >= topSafe;
+    const rawX = event.clientX + 16;
+    const rawY = preferAbove ? event.clientY - height - 16 : event.clientY + 16;
+    const x = Math.max(margin, Math.min(rawX, maxX));
+    const y = Math.max(topSafe, Math.min(rawY, maxY));
+    tt.style.left = x + 'px';
+    tt.style.top = y + 'px';
+    tt.style.transform = 'none';
+  },
+
+  _countryBorderColorFn(feature) {
+    if (feature === this._countryHoverFeature) return 'rgba(246,255,250,0.96)';
+    if (feature === this._selectedCountryFeature) return 'rgba(123,232,208,0.86)';
+
+    const d = _getCountryDisplayData(feature);
+    if (!d) return 'rgba(180,215,218,0.34)';
+    const statusKey = _getCountryStatusKey(d);
+    if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(170,205,214,0.34)';
+    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(214,184,138,0.38)';
+    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'rgba(255,132,112,0.42)';
+    return 'rgba(116,232,172,0.42)';
+  },
+
+  _countryPolygonPaintColorFn(feature) {
+    const hovered = feature === this._countryHoverFeature;
+    const selected = feature === this._selectedCountryFeature;
+    const d = _getCountryDisplayData(feature);
+    const hoverBoost = hovered ? 0.12 : (selected ? 0.08 : 0);
+    if (!d) return 'rgba(120,150,165,' + (0.10 + hoverBoost).toFixed(2) + ')';
+    const statusKey = _getCountryStatusKey(d);
+    if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(120,150,165,' + (0.10 + hoverBoost).toFixed(2) + ')';
+
+    const emissions = d.emissions || 0;
+    const te = Math.min(Math.log(Math.max(emissions, 1)) / Math.log(12000), 1);
+    const alpha = Math.min(0.20, 0.12 + te * 0.08) + hoverBoost;
+    const cappedAlpha = Math.min(alpha, 0.32).toFixed(2);
+
+    // Status drives hue; emissions only modulates opacity. A low-emissions
+    // country can still be overshooting its pledge target.
+    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(212,165,116,' + (0.10 + hoverBoost).toFixed(2) + ')';
+    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) {
+      const intensity = Math.min(d.gap / 500, 1);
+      const red = Math.round(220 + intensity * 35);
+      const green = Math.round(108 - intensity * 40);
+      return 'rgba(' + red + ',' + green + ',58,' + cappedAlpha + ')';
+    }
+    return 'rgba(46,204,113,' + cappedAlpha + ')';
+  },
+
+  _supportsCountryBorders() {
+    if (!this.world) return false;
+    return [
+      'polygonsData',
+      'polygonCapColor',
+      'polygonSideColor',
+      'polygonStrokeColor',
+      'polygonAltitude',
+    ].every(name => typeof this.world[name] === 'function');
+  },
+
+  _refreshCountryBorders() {
+    if (!this.world || !this._countryBordersVisible || !this._supportsCountryBorders()) return;
+    this.world
+      .polygonStrokeColor((f) => this._countryBorderColorFn(f))
+      .polygonCapColor((f) => this._countryPolygonPaintColorFn(f));
+  },
+
   // ── Mode API — used by GLOBE_MODES orchestrator ──
   setHexMode(colorFn, altFn) {
     if (!this.world) return;
@@ -530,9 +827,62 @@ const GlobeModule = {
     if (altFn) this.world.hexPolygonAltitude(altFn);
   },
 
+  setCountryBordersVisible(visible) {
+    if (!this.world) return;
+
+    this._countryBordersVisible = !!visible;
+    if (!this._supportsCountryBorders()) {
+      if (!this._countryBorderWarned) {
+        this._countryBorderWarned = true;
+        reportWarn('GlobeModule', 'Country polygon border layer is not supported by this globe.gl build');
+      }
+      return;
+    }
+
+    if (!this._countryFeatures || !this._countryFeatures.length) {
+      this.world.polygonsData([]);
+      return;
+    }
+
+    if (!visible) {
+      this.world
+        .polygonsData([])
+        .polygonStrokeColor(() => 'rgba(0,0,0,0)')
+        .polygonCapColor(() => 'rgba(0,0,0,0)')
+        .polygonSideColor(() => 'rgba(0,0,0,0)');
+      return;
+    }
+
+    if (typeof this.world.polygonsTransitionDuration === 'function') {
+      this.world.polygonsTransitionDuration(0);
+    }
+
+    this.world
+      .polygonsData(this._countryFeatures)
+      .polygonAltitude(() => 0.007)
+      .polygonCapColor((f) => this._countryPolygonPaintColorFn(f))
+      .polygonSideColor(() => 'rgba(0,0,0,0)')
+      .polygonStrokeColor((f) => this._countryBorderColorFn(f));
+
+    if (typeof this.world.polygonCapCurvatureResolution === 'function') {
+      this.world.polygonCapCurvatureResolution(1);
+    }
+  },
+
   // ── Apply country-colored hex map ──
   applyCountryHexColors() {
     if (!this.world) return;
+    if (this._supportsCountryBorders()) {
+      if (typeof this.world.hexPolygonsTransitionDuration === 'function') {
+        this.world.hexPolygonsTransitionDuration(0);
+      }
+      this.world
+        .hexPolygonsData([])
+        .hexPolygonColor(() => 'rgba(0,0,0,0)')
+        .hexPolygonAltitude(() => 0);
+      return;
+    }
+
     this.world.hexPolygonColor((f) => this._countryHexColorFn(f));
     this.world.hexPolygonAltitude((f) => this._countryHexAltitudeFn(f));
     // Increase margin so borders between countries are more visible
@@ -541,6 +891,25 @@ const GlobeModule = {
     } else {
       this.world.hexPolygonMargin(0.68);
     }
+  },
+
+  applyCountryBorders() {
+    this.setCountryBordersVisible(true);
+  },
+
+  clearCountryBorders() {
+    this.setCountryBordersVisible(false);
+  },
+
+  clearCountrySelection() {
+    this._selectedCountryFeature = null;
+    this._countryHoverFeature = null;
+    const tt = $('hex-country-tooltip');
+    if (tt) {
+      if (tt.contains(document.activeElement)) document.activeElement.blur();
+      tt.classList.remove('visible', 'selected');
+    }
+    this._refreshCountryBorders();
   },
 
   // ── Toggle pledge node cylinders on/off ──
@@ -617,6 +986,98 @@ const GlobeModule = {
   clearOnGlobeClick() {
     _globeClickHandler = null;
     console.log('[Globe] Click handler CLEARED');
+  },
+
+  _bindCanvasDragGuard() {
+    if (!this._canvasEl || this._canvasDragGuardBound) return;
+    this._canvasDragGuardBound = true;
+
+    this._onCanvasPointerDown = (e) => {
+      if (this._selectedCountryFeature) this.clearCountrySelection();
+      this._canvasPointer = {
+        id: e.pointerId,
+        x: e.clientX,
+        y: e.clientY,
+        dragged: false,
+      };
+    };
+
+    this._onCanvasPointerMoveGuard = (e) => {
+      const p = this._canvasPointer;
+      if (!p || p.id !== e.pointerId) return;
+      const dx = e.clientX - p.x;
+      const dy = e.clientY - p.y;
+      if ((dx * dx + dy * dy) > (GLOBE_DRAG_CLICK_THRESHOLD_PX * GLOBE_DRAG_CLICK_THRESHOLD_PX)) {
+        p.dragged = true;
+      }
+    };
+
+    this._onCanvasPointerUp = (e) => {
+      const p = this._canvasPointer;
+      if (p && p.id === e.pointerId && p.dragged) {
+        this._suppressGlobeClickUntil = Date.now() + GLOBE_DRAG_SUPPRESS_MS;
+        this.clearCountrySelection();
+      }
+      this._canvasPointer = null;
+    };
+
+    this._onCanvasPointerCancel = () => {
+      this._canvasPointer = null;
+    };
+
+    this._canvasEl.addEventListener('pointerdown', this._onCanvasPointerDown);
+    this._canvasEl.addEventListener('pointermove', this._onCanvasPointerMoveGuard);
+    this._canvasEl.addEventListener('pointerup', this._onCanvasPointerUp);
+    this._canvasEl.addEventListener('pointercancel', this._onCanvasPointerCancel);
+
+    this._onCanvasMouseDown = (e) => {
+      if (this._selectedCountryFeature) this.clearCountrySelection();
+      this._canvasPointer = {
+        id: 'mouse',
+        x: e.clientX,
+        y: e.clientY,
+        dragged: false,
+      };
+    };
+
+    this._onCanvasMouseMoveGuard = (e) => {
+      const p = this._canvasPointer;
+      if (!p || p.id !== 'mouse') return;
+      const dx = e.clientX - p.x;
+      const dy = e.clientY - p.y;
+      if ((dx * dx + dy * dy) > (GLOBE_DRAG_CLICK_THRESHOLD_PX * GLOBE_DRAG_CLICK_THRESHOLD_PX)) {
+        p.dragged = true;
+      }
+    };
+
+    this._onCanvasMouseUp = () => {
+      const p = this._canvasPointer;
+      if (p && p.id === 'mouse' && p.dragged) {
+        this._suppressGlobeClickUntil = Date.now() + GLOBE_DRAG_SUPPRESS_MS;
+        this.clearCountrySelection();
+      }
+      this._canvasPointer = null;
+    };
+
+    this._canvasEl.addEventListener('mousedown', this._onCanvasMouseDown);
+    this._canvasEl.addEventListener('mousemove', this._onCanvasMouseMoveGuard);
+    this._canvasEl.addEventListener('mouseup', this._onCanvasMouseUp);
+  },
+
+  shouldIgnoreCanvasClick() {
+    return Date.now() < (this._suppressGlobeClickUntil || 0);
+  },
+
+  _handleCountryGeoJsonFailure(error) {
+    this._countryDataState = 'unavailable';
+    this._countryDataError = error?.message || 'Country GeoJSON unavailable';
+    this._countryFeatures = [];
+    this.clearCountrySelection();
+    this.clearCountryBorders();
+    if (this.world && typeof this.world.hexPolygonsData === 'function') {
+      this.world.hexPolygonsData([]);
+    }
+    reportWarn('GlobeModule', 'Country polygons unavailable: ' + this._countryDataError);
   },
 
   getCountryFeatures() {
@@ -775,13 +1236,24 @@ const GlobeModule = {
     // Remove event listeners (named references)
     window.removeEventListener('pledgeHover', this._onPledgeHover);
     document.removeEventListener('mousemove', this._onMouseMove);
+    document.removeEventListener('keydown', this._onCountryKeydown);
+    this._countryKeydownBound = false;
 
     // Remove canvas listeners
     if (this._canvasEl) {
+      this._canvasEl.removeEventListener('pointerdown', this._onCanvasPointerDown);
+      this._canvasEl.removeEventListener('pointermove', this._onCanvasPointerMoveGuard);
+      this._canvasEl.removeEventListener('pointerup', this._onCanvasPointerUp);
+      this._canvasEl.removeEventListener('pointercancel', this._onCanvasPointerCancel);
+      this._canvasEl.removeEventListener('mousedown', this._onCanvasMouseDown);
+      this._canvasEl.removeEventListener('mousemove', this._onCanvasMouseMoveGuard);
+      this._canvasEl.removeEventListener('mouseup', this._onCanvasMouseUp);
       this._canvasEl.removeEventListener('pointermove', this._onCanvasPointerMove);
       this._canvasEl.removeEventListener('click', this._onCanvasClick);
       this._canvasEl = null;
     }
+    this._canvasDragGuardBound = false;
+    this._canvasPointer = null;
 
     // Destroy WebGL globe instance
     if (this.world) {
@@ -808,7 +1280,11 @@ const GlobeModule = {
   },
 
   getState() {
-    return {};
+    return {
+      countryDataState: this._countryDataState,
+      countryDataError: this._countryDataError,
+      countryFeatureCount: this._countryFeatures?.length || 0,
+    };
   },
 };
 
@@ -957,7 +1433,7 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['init', 'initPledgeNodes', 'updateNodeVisuals', 'setLens', 'setHexMode', 'applyCountryHexColors', 'togglePledgeNodes', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'initPledgeNodes', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountryHexColors', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'togglePledgeNodes', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
     requires: ['Data'],
   });
 }

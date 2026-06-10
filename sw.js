@@ -1,9 +1,9 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for static assets, network-first for HTML and data.
- * Version bump (v9) — matches current individual-file architecture.
+ * Version bump (v10) — JS/CSS use network-first to avoid stale production code.
  */
-const CACHE_NAME = 'elu-v9';
+const CACHE_NAME = 'elu-v10';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -53,6 +53,8 @@ const STATIC_ASSETS = [
   '/js/site-panel.js',
   '/js/carbon-clock.js',
   '/js/country-data.js',
+  '/js/carbon-shadow.js',
+  '/js/pulse-dashboard.js',
   '/js/delegation.js',
   '/js/pledge-wall.js',
   '/js/gaia-nodes.js',
@@ -119,6 +121,13 @@ self.addEventListener('fetch', (event) => {
 
   // HTML documents should update immediately, with cached fallback offline.
   if (request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // JS/CSS should update immediately too; stale scripts caused old modules to run.
+  if (request.destination === 'script' || request.destination === 'style' ||
+      url.pathname.endsWith('.js') || url.pathname.endsWith('.css')) {
     event.respondWith(networkFirst(request));
     return;
   }

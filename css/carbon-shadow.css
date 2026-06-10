@@ -1,0 +1,161 @@
+/* ═══════════════════════════════════════════════════════════
+   CARBON SHADOW — Scroll-driven carbon visualization
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Canvas container (fixed, behind scroll content) ── */
+#cs-canvas-container {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+#cs-canvas-container.visible {
+  opacity: 1;
+}
+#cs-canvas {
+  width: 100%;
+  height: 100%;
+  max-width: 600px;
+  max-height: 600px;
+}
+
+/* ── Carbon Shadow sections ── */
+.cs-section {
+  position: relative;
+  z-index: 10;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  pointer-events: none;
+}
+.cs-section > * {
+  pointer-events: auto;
+}
+
+/* ── Text content ── */
+.cs-content {
+  max-width: 520px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.cs-content.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cs-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--teal);
+  margin-bottom: 12px;
+}
+
+.cs-title {
+  font-family: var(--display);
+  font-size: clamp(22px, 4vw, 36px);
+  font-weight: 300;
+  color: var(--text);
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.cs-sub {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text2);
+}
+
+.cs-stat {
+  font-family: var(--mono);
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 700;
+  color: var(--mint);
+  margin: 16px 0 8px;
+  letter-spacing: -1px;
+}
+.cs-stat.warn { color: var(--warn); }
+.cs-stat.teal { color: var(--teal); }
+.cs-stat.leaf { color: var(--leaf); }
+
+/* ── Country selector ── */
+#cs-country-selector {
+  display: none;
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 24px;
+  pointer-events: auto;
+}
+#cs-country-selector label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+#cs-country-select {
+  background: rgba(8, 10, 18, 0.9);
+  border: 1px solid rgba(78, 205, 196, 0.2);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 14px;
+  padding: 10px 16px;
+  cursor: pointer;
+  max-width: 280px;
+  width: 100%;
+}
+#cs-country-select:focus {
+  border-color: var(--teal);
+  outline: none;
+}
+
+/* ── Scroll progress dots ── */
+#cs-progress {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+#cs-progress.visible {
+  opacity: 1;
+}
+.cs-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: background 0.3s, transform 0.3s;
+  cursor: pointer;
+}
+.cs-dot.active {
+  background: var(--teal);
+  transform: scale(1.4);
+}
+
+/* ── Responsive ── */
+@media (max-width: 720px) {
+  #cs-progress { display: none; }
+  .cs-section { min-height: 50vh; }
+  #cs-canvas { max-width: 320px; max-height: 320px; }
+}

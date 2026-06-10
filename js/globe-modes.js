@@ -12,6 +12,7 @@ const GLOBE_MODES = (() => {
   function init() {
     if (_initialized) return;
     _initialized = true;
+    _applyModeState(_currentMode);
 
     // Wire mode button clicks
     const buttons = document.querySelectorAll('.gm-btn');
@@ -42,6 +43,10 @@ const GLOBE_MODES = (() => {
     console.log('[GLOBE_MODES] init — 3 modes ready');
   }
 
+  function _applyModeState(mode) {
+    document.body.dataset.globeMode = mode;
+  }
+
   /**
    * Called by GlobeModule when country GeoJSON is loaded.
    * This is the signal that hex polygon data is available for NDVI coloring.
@@ -67,6 +72,7 @@ const GLOBE_MODES = (() => {
     _deactivateCurrent();
 
     _currentMode = mode;
+    _applyModeState(mode);
 
     // Update button active states
     document.querySelectorAll('.gm-btn').forEach(btn => {
@@ -92,10 +98,12 @@ const GLOBE_MODES = (() => {
   function _deactivateCurrent() {
     // Clear hex country colors (return to transparent)
     if (hasModule('GlobeModule') && GlobeModule.world) {
+      GlobeModule.clearCountrySelection();
       GlobeModule.setHexMode(
         () => 'rgba(255,255,255,0.02)',
         () => 0.003
       );
+      GlobeModule.clearCountryBorders();
     }
     // Hide hex legend when leaving countries mode
     const legend = $('hex-legend');
@@ -108,8 +116,9 @@ const GLOBE_MODES = (() => {
     // Restore night earth texture (in case NDVI swapped it)
     safeCall('GlobeModule', 'restoreDefaultTexture');
 
-    // Apply country-colored hex map
+    // Apply country polygon paint; hexes are only a fallback/detail layer.
     safeCall('GlobeModule', 'applyCountryHexColors');
+    safeCall('GlobeModule', 'applyCountryBorders');
 
     // Show hex legend
     const legend = $('hex-legend');
@@ -124,6 +133,8 @@ const GLOBE_MODES = (() => {
   }
 
   function _activateNDVI() {
+    safeCall('GLOBE_OVERLAY', 'close');
+    safeCall('SITE_PANEL', 'close');
     safeCall('GlobeModule', 'clearNodeVisuals');
     safeCall('GLOBE_NDVI', 'activate');
   }
@@ -133,7 +144,7 @@ const GLOBE_MODES = (() => {
   }
 
   // ── Standard Module Lifecycle (SML) ──
-  const _reset = () => { console.debug('[SML] GLOBE_MODES.reset'); _currentMode = 'countries'; return true; };
+  const _reset = () => { console.debug('[SML] GLOBE_MODES.reset'); _currentMode = 'countries'; _applyModeState(_currentMode); return true; };
   const _destroy = () => { console.debug('[SML] GLOBE_MODES.destroy'); return true; };
   const _getState = () => ({ mode: _currentMode, countryDataReady: _countryDataReady });
 

@@ -233,8 +233,8 @@ const GLOBE_EVENTS = (() => {
   }
 
   function activate() {
-    if (!_events || !hasModule('GlobeModule') || !GlobeModule.world) return;
     _active = true;
+    if (!_events || !hasModule('GlobeModule') || !GlobeModule.world) return;
 
     const filterPanel = $('events-filter');
     if (filterPanel) filterPanel.style.display = 'flex';
@@ -343,7 +343,6 @@ const GLOBE_EVENTS = (() => {
   }
 
   function deactivate() {
-    if (!hasModule('GlobeModule') || !GlobeModule.world) return;
     _active = false;
 
     const filterPanel = $('events-filter');
@@ -358,6 +357,8 @@ const GLOBE_EVENTS = (() => {
       const playBtn = $('events-play');
       if (playBtn) playBtn.textContent = '▶';
     }
+
+    if (!hasModule('GlobeModule') || !GlobeModule.world) return;
 
     if (_previousPointsData) GlobeModule.world.pointsData(_previousPointsData);
     if (_previousLabelsData) GlobeModule.world.labelsData(_previousLabelsData);

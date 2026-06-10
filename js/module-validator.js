@@ -43,7 +43,9 @@ const MODULE_MANIFEST = {
   CARBON_CLOCK:     { file: 'js/carbon-clock.js',      required: false, note: 'CO₂ clock in topbar' },
   PLEDGE_WALL:      { file: 'js/pledge-wall.js',       required: false, note: 'Pledge modal + wall' },
   NDVIVerifier:     { file: 'js/ndvi-verifier.js',     required: false, note: 'Satellite verification' },
-  RegistryCheck:    { file: 'js/registry-check.js',    required: false, note: 'Carbon registry check' },
+  RegistryCheck:     { file: 'js/registry-check.js',    required: false, note: 'Carbon registry check' },
+  CARBON_SHADOW:     { file: 'js/carbon-shadow.js',    required: false, note: 'Personal carbon calculator' },
+  PULSE_DASHBOARD:   { file: 'js/pulse-dashboard.js',  required: false, note: 'Live planetary vital signs dashboard' },
 };
 
 (function validateModules() {

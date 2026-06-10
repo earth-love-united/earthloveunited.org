@@ -77,15 +77,39 @@
   .sb-option{ padding:8px 12px; font-size:12px; }
 
   /* ── TOPBAR ── */
-  #topbar{ padding:10px 12px; }
+  #topbar{ padding:10px 12px 8px; }
+  body.globe-mode #topbar{
+    display:grid;
+    grid-template-columns:52px minmax(0,1fr) auto;
+    gap:8px;
+    min-height:58px;
+  }
+  body.globe-mode #topbar .logo{
+    gap:8px;
+    min-width:0;
+    overflow:hidden;
+    white-space:nowrap;
+    font-size:15px;
+  }
+  body.globe-mode #topbar .brand-subtitle,
+  body.globe-mode #topbar .brand-sep{ display:none; }
   #topbar .stats{ gap:8px; }
+  body.globe-mode #topbar .stats{ justify-self:end; }
+  body.globe-mode #topbar .gaia-link{
+    width:44px;
+    min-height:42px;
+    justify-content:center;
+    padding:8px!important;
+    margin-left:0!important;
+  }
+  body.globe-mode #topbar .gaia-link span:last-child{ display:none; }
   .stat-block{ display:none; }
   .stat-label{ font-size:8px; }
   .stat-value{ font-size:11px; }
 
   /* ── GLOBE MODE SWITCHER ── */
   .globe-modes{
-    top:60px;
+    top:76px;
     padding:2px;
     gap:1px;
     max-width:96vw;
@@ -118,6 +142,17 @@
   .events-timeline input[type="range"]{ height:4px; }
   .nt-label{ font-size:10px; }
   .nt-year{ font-size:14px; }
+  #ndvi-prompt{
+    bottom:86px;
+    width:max-content;
+    max-width:calc(100vw - 32px);
+    height:auto;
+    min-height:0;
+    max-height:none;
+    padding:9px 14px;
+    border-radius:20px;
+    font-size:12px;
+  }
 
   /* ── HERO ── */
   .hero-inner{ max-width:90%; }

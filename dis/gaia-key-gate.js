@@ -16,6 +16,7 @@ const GaiaKeyGate = (() => {
   let _previewShown = false;
   let _modalOpen = false;
   let _formHandlerSetup = false;
+  const _callbacks = {};  // host callbacks (registered by gaia-client.js)
 
   async function _loadKey() {
     try {
@@ -268,6 +269,9 @@ const GaiaKeyGate = (() => {
   init();
 
   return {
+    // Host callback registration — same contract as GaiaState.registerCallbacks.
+    // gaia-client.js registers modal/tease hooks here; stored for forward use.
+    registerCallbacks: (cb) => Object.assign(_callbacks, cb),
     init, hasKey, needsReEntry, submitKey, getStoredKey, clearKey,
     getTeaseLevel, getTeaseConfig,
     shouldShowPreview, showPreview, hasPreviewBeenShown,

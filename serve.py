@@ -9,21 +9,26 @@ import socket
 import sys
 import os
 import webbrowser
+import time
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-with socketserver.TCPServer(("", PORT), http.server.SimpleHTTPRequestHandler) as httpd:
-    httpd.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # SO_REUSEADDR
+class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        self.send_header('Pragma', 'no-cache')
+        self.send_header('Expires', '0')
+        super().end_headers()
+    def log_message(self, format, *args):
+        pass
+
+with socketserver.TCPServer(("", PORT), NoCacheHandler) as httpd:
+    httpd.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     print(f"\n   🌍 Earth Love United Server")
     print(f"   ─────────────────────────────")
     print(f"   Local:  http://localhost:{PORT}")
-    print(f"   Module: http://localhost:{PORT}/design/modules/test-harness.html")
     print(f"   ─────────────────────────────")
     print(f"   Serving from: {os.getcwd()}\n")
-    try:
-        webbrowser.open(f"http://localhost:{PORT}/design/modules/test-harness.html")
-    except:
-        pass
     httpd.serve_forever()

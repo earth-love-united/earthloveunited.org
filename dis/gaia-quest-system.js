@@ -43,12 +43,12 @@ const GaiaQuests = (() => {
    * One-time migration: if user has progress in old 'gaia_quests' key,
    * merge it into GAIA_JOURNAL's storage by firing equivalent signals.
    */
-  function _migrateLegacyProgress() {
+  async function _migrateLegacyProgress() {
     if (typeof Storage === 'undefined') return;
     try {
-      const raw = Storage.safeGetItem('gaia_quests');
+      const raw = await Storage.safeGetItem('gaia_quests');
       if (!raw) return;
-      const oldProgress = JSON.parse(raw);
+      const oldProgress = typeof raw === 'string' ? JSON.parse(raw) : raw;
       if (!oldProgress || typeof oldProgress !== 'object') return;
 
       console.log('[GaiaQuests] Migrating legacy quest progress to GAIA_JOURNAL...');
