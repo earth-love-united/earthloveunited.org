@@ -456,6 +456,14 @@ const GlobeModule = {
           this._renderCountryInfoCard(feature, true);
           this._positionCountryInfoCard(e);
           this._refreshCountryBorders();
+
+          // Open the swipeable hover card
+          if (Data.pledgeNodes) {
+            const pledgeNode = Data.pledgeNodes.find(p => p.iso === d.iso);
+            if (pledgeNode && hasModule('PLEDGE_PANEL')) {
+              PLEDGE_PANEL.open(pledgeNode);
+            }
+          }
         };
 
         // Attach to the globe canvas
@@ -910,6 +918,9 @@ const GlobeModule = {
       tt.classList.remove('visible', 'selected');
     }
     this._refreshCountryBorders();
+    if (typeof GLOBE_OVERLAY !== 'undefined') {
+      GLOBE_OVERLAY.close();
+    }
   },
 
   // ── Toggle pledge node cylinders on/off ──

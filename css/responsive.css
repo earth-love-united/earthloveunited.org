@@ -58,11 +58,11 @@
     transform: translateY(0);
   }
   .hover-card {
-    height: 280px;
+    height: 440px;
   }
   .hover-card.expanded {
-    height: 480px;
-    max-height: 75vh;
+    height: 580px;
+    max-height: 85vh;
   }
   .globe-overlay-header { padding: 12px 16px 8px; }
   .globe-overlay-content { padding: 12px 16px 24px; }

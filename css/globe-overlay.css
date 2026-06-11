@@ -5,13 +5,14 @@
 
 #globe-overlay {
   position: fixed;
-  left: 30px;
-  bottom: 30px;
-  width: 380px;
-  z-index: 50;
+  left: 50%;
+  top: 50%;
+  width: 400px;
+  max-width: 95vw;
+  z-index: 250;
   pointer-events: none;
   opacity: 0;
-  transform: scale(0.95) translateY(10px);
+  transform: translate(-50%, -50%) scale(0.95);
   transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   flex-direction: column;
@@ -19,17 +20,26 @@
 
 #globe-overlay.open {
   opacity: 1;
-  transform: scale(1) translateY(0);
+  transform: translate(-50%, -50%) scale(1);
   pointer-events: auto;
 }
 
-/* ── Hover Card ── */
+/* ── Hover Card Container ── */
 .hover-card {
   width: 100%;
-  height: 280px; /* Initial small card height */
+  height: 480px; /* Initial small card height */
+  position: relative;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+  transition: transform 0.3s ease, opacity 0.3s ease, height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.hover-card-inner {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  position: relative;
   background: linear-gradient(135deg, rgba(6, 8, 14, 0.96), rgba(10, 12, 22, 0.93));
   border: 1px solid rgba(78, 205, 196, 0.12);
   border-radius: 20px;
@@ -40,10 +50,47 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   overflow: hidden;
-  touch-action: none;
-  user-select: none;
-  cursor: grab;
-  transition: transform 0.3s ease, opacity 0.3s ease, height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Edge Slider Buttons ── */
+.hover-card-edge-btn {
+  position: absolute;
+  top: 50%;
+  width: 24px;
+  height: 140px;
+  background: rgba(8, 10, 18, 0.95);
+  border: 1px solid rgba(78, 205, 196, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--teal);
+  transform: translateY(-50%);
+  pointer-events: auto;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  transition: background 0.2s, color 0.2s;
+  padding: 0;
+  outline: none;
+}
+
+.hover-card-edge-btn:hover {
+  background: rgba(8, 10, 18, 1);
+  color: var(--mint);
+}
+
+.hover-card-edge-btn.left {
+  left: -24px;
+  border-radius: 8px 0 0 8px;
+  border-right: none;
+}
+
+.hover-card-edge-btn.right {
+  right: -24px;
+  border-radius: 0 8px 8px 0;
+  border-left: none;
 }
 
 .hover-card:active {
@@ -51,7 +98,8 @@
 }
 
 .hover-card.expanded {
-  height: 560px; /* Detailed view height */
+  height: 80vh; /* Use viewport height for expanded view */
+  max-height: 720px;
 }
 
 .hover-card.is-dragging {
@@ -120,6 +168,15 @@
   justify-content: space-between;
   height: 100%;
   box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.hover-card-intro::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for cleaner UI */
+}
+.hover-card-intro {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .hover-card-intro-content {
@@ -131,7 +188,47 @@
   font-size: 26px;
   font-weight: 300;
   color: var(--mint);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+}
+
+/* ── Hover Card Badge ── */
+.hover-card-badge {
+  margin-bottom: 14px;
+}
+
+.hover-card-badge .badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  font-family: var(--mono);
+}
+
+.hover-card-badge .badge.success {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.hover-card-badge .badge.warning {
+  background: rgba(241, 196, 15, 0.15);
+  color: #f1c40f;
+  border: 1px solid rgba(241, 196, 15, 0.3);
+}
+
+.hover-card-badge .badge.danger {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.hover-card-badge .badge.neutral {
+  background: rgba(127, 140, 141, 0.15);
+  color: #95a5a6;
+  border: 1px solid rgba(127, 140, 141, 0.3);
 }
 
 .hover-card-intro-desc {
@@ -139,6 +236,46 @@
   line-height: 1.6;
   color: var(--text2);
   margin-bottom: 12px;
+}
+
+/* ── Hover Card Stats Grid ── */
+.hover-card-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.stat-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.stat-box:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(78, 205, 196, 0.15);
+}
+
+.stat-label {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text3);
+  margin-bottom: 4px;
+  font-family: var(--mono);
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mint);
+  font-family: var(--mono);
 }
 
 .hover-card-more-btn {
@@ -174,6 +311,120 @@
   letter-spacing: 1px;
   margin-top: 12px;
   opacity: 0.6;
+}
+
+/* ── Hover Card Extended Info ── */
+.hover-card-extended-info {
+  margin-top: 14px;
+  border-top: 1px solid rgba(78, 205, 196, 0.08);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hover-card-section-title {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+  font-family: var(--mono);
+  margin-bottom: 4px;
+}
+
+.hover-card-blockquote {
+  margin: 0;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.015);
+  border-left: 2px solid rgba(78, 205, 196, 0.15);
+  border-radius: 0 6px 6px 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text2);
+  font-style: italic;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.hover-card-blockquote::-webkit-scrollbar {
+  width: 3px;
+}
+
+.hover-card-blockquote::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hover-card-blockquote::-webkit-scrollbar-thumb {
+  background: rgba(78, 205, 196, 0.1);
+  border-radius: 2px;
+}
+
+.mini-stat-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.mini-stat-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.mini-stat-label {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text3);
+  margin-bottom: 2px;
+  font-family: var(--mono);
+}
+
+.mini-stat-value {
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--mono);
+}
+
+.biome-transition-flow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.biome-node {
+  flex: 1;
+  font-size: 11px;
+  color: var(--text2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.biome-node-label {
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  font-family: var(--mono);
+}
+
+.biome-node-value {
+  font-weight: 500;
+  color: var(--mint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.biome-arrow {
+  color: var(--teal);
+  font-size: 12px;
+  flex-shrink: 0;
 }
 
 /* Display States */
@@ -336,7 +587,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 18px 18px 32px;
+  padding: 24px;
   min-height: 0;
 }
 

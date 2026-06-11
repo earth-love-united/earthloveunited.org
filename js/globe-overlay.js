@@ -24,6 +24,46 @@ const GLOBE_OVERLAY = (() => {
   // Populated externally by gaia-nodes.js
   const registry = {};
 
+  // Helper to map biome key to pretty name with icon
+  function getBiomeName(biomeKey) {
+    if (typeof Data !== 'undefined' && Data.biomes && Data.biomes[biomeKey]) {
+      return (Data.biomes[biomeKey].icon || '') + ' ' + (Data.biomes[biomeKey].name || biomeKey);
+    }
+    const fallbacks = {
+      "tropical_rainforest": "🌳 Tropical Rainforest",
+      "tropical_dry_forest": "🌴 Tropical Dry Forest",
+      "mangrove": "🌿 Mangrove",
+      "temperate_deciduous": "🍂 Temperate Deciduous",
+      "temperate_coniferous": "🌲 Temperate Coniferous",
+      "boreal_forest": "🌲 Boreal Forest",
+      "grassland_savanna": "🌾 Grassland / Savanna",
+      "wetland_peatland": "💧 Wetland / Peatland",
+      "seagrass_meadow": "🌊 Seagrass Meadow",
+      "agricultural_cropland": "🌾 Agricultural Cropland",
+      "degraded_bare_land": "🏜️ Degraded / Bare Land",
+      "urban_built": "🏙️ Urban / Built"
+    };
+    return fallbacks[biomeKey] || biomeKey;
+  }
+
+  // Helper to format population figures
+  function formatPopulation(num) {
+    if (num === undefined || num === null || isNaN(num)) return 'N/A';
+    if (num >= 1e9) return (num / 1e9).toFixed(2) + ' B';
+    if (num >= 1e6) return (num / 1e6).toFixed(1) + ' M';
+    if (num >= 1e3) return (num / 1e3).toFixed(0) + ' K';
+    return num.toString();
+  }
+
+  // Helper to format percentage emissions change since 2015
+  function formatChange(val) {
+    if (val === undefined || val === null || isNaN(val)) return 'N/A';
+    const sign = val >= 0 ? '+' : '';
+    const arrow = val > 0 ? '▲' : (val < 0 ? '▼' : '');
+    const color = val > 0 ? 'var(--warn)' : (val < 0 ? 'var(--leaf)' : 'var(--text2)');
+    return `<span style="color: ${color}; font-weight: 600;">${arrow} ${sign}${val}%</span>`;
+  }
+
   // ── Register site content ──
   function registerSite(siteConfig) {
     registry[siteConfig.siteId] = siteConfig;
@@ -77,37 +117,42 @@ const GLOBE_OVERLAY = (() => {
     overlayEl.id = 'globe-overlay';
     overlayEl.innerHTML = `
       <div class="hover-card" id="hover-card">
-        <!-- Story-style progress bars at the top of the card -->
-        <div class="hover-card-progress" id="hover-card-progress"></div>
-        
-        <!-- Intro/Small Card View -->
-        <div class="hover-card-intro" id="hover-card-intro">
-          <div class="hover-card-intro-content">
-            <div class="hover-card-intro-title" id="hover-card-intro-title"></div>
-            <div class="hover-card-intro-desc" id="hover-card-intro-desc"></div>
-          </div>
-          <button class="hover-card-more-btn" id="hover-card-more-btn">Explore Details</button>
-          <div class="hover-card-swipe-prompt">← Swipe left to close / Swipe right for next →</div>
-        </div>
-
-        <!-- Expanded Detailed View -->
-        <div class="globe-overlay-header">
-          <div class="globe-overlay-header-left">
-            <span class="globe-overlay-icon" id="globe-overlay-icon"></span>
-            <div>
-              <div class="globe-overlay-title" id="globe-overlay-title"></div>
-              <div class="globe-overlay-subtitle" id="globe-overlay-subtitle"></div>
+        <button class="hover-card-edge-btn left" id="hover-card-btn-left" aria-label="Swipe Left to Close">◀</button>
+        <button class="hover-card-edge-btn right" id="hover-card-btn-right" aria-label="Swipe Right for Next">▶</button>
+        <div class="hover-card-inner">
+          <!-- Story-style progress bars at the top of the card -->
+          <div class="hover-card-progress" id="hover-card-progress"></div>
+          
+          <!-- Intro/Small Card View -->
+          <div class="hover-card-intro" id="hover-card-intro">
+            <div class="hover-card-intro-content">
+              <div class="hover-card-intro-title" id="hover-card-intro-title"></div>
+              <div class="hover-card-badge" id="hover-card-badge"></div>
+              <div class="hover-card-intro-desc" id="hover-card-intro-desc"></div>
             </div>
+            <button class="hover-card-more-btn" id="hover-card-more-btn">Explore Details</button>
+            <div class="hover-card-swipe-prompt">← Swipe left to close / Swipe right for next →</div>
           </div>
-          <div class="hover-card-header-nav">
-            <button class="hover-card-header-btn" id="hover-card-header-prev" aria-label="Previous tab">◀</button>
-            <button class="hover-card-header-btn" id="hover-card-header-next" aria-label="Next tab">▶</button>
+
+          <!-- Expanded Detailed View -->
+          <div class="globe-overlay-header">
+            <div class="globe-overlay-header-left">
+              <span class="globe-overlay-icon" id="globe-overlay-icon"></span>
+              <div>
+                <div class="globe-overlay-title" id="globe-overlay-title"></div>
+                <div class="globe-overlay-subtitle" id="globe-overlay-subtitle"></div>
+              </div>
+            </div>
+            <div class="hover-card-header-nav">
+              <button class="hover-card-header-btn" id="hover-card-header-prev" aria-label="Previous tab">◀</button>
+              <button class="hover-card-header-btn" id="hover-card-header-next" aria-label="Next tab">▶</button>
+            </div>
+            <button class="globe-overlay-close" id="globe-overlay-close" aria-label="Close">✕</button>
           </div>
-          <button class="globe-overlay-close" id="globe-overlay-close" aria-label="Close">✕</button>
+          <div class="globe-overlay-gaia" id="globe-overlay-gaia"></div>
+          <div class="globe-overlay-tabs" id="globe-overlay-tabs"></div>
+          <div class="globe-overlay-content" id="globe-overlay-content"></div>
         </div>
-        <div class="globe-overlay-gaia" id="globe-overlay-gaia"></div>
-        <div class="globe-overlay-tabs" id="globe-overlay-tabs"></div>
-        <div class="globe-overlay-content" id="globe-overlay-content"></div>
       </div>
     `;
 
@@ -130,12 +175,25 @@ const GLOBE_OVERLAY = (() => {
     overlayEl.querySelector('#hover-card-header-prev').addEventListener('click', prevTab);
     overlayEl.querySelector('#hover-card-header-next').addEventListener('click', nextTab);
 
+    // Edge Swipe Buttons
+    overlayEl.querySelector('#hover-card-btn-left').addEventListener('click', (e) => {
+      e.stopPropagation();
+      swipeClose();
+    });
+    overlayEl.querySelector('#hover-card-btn-right').addEventListener('click', (e) => {
+      e.stopPropagation();
+      nextSite();
+    });
+
     // ── Pointer Drag / Swipe Physics ──
     let startX = 0;
     let startY = 0;
     let isDragging = false;
 
     cardEl.addEventListener('pointerdown', (e) => {
+      // Don't drag if clicking the edge buttons
+      if (e.target.closest('.hover-card-edge-btn')) return;
+
       // Don't drag if clicking interactive elements inside expanded content!
       if (cardEl.classList.contains('expanded')) {
         if (e.target.closest('#globe-overlay-content') || e.target.closest('.hover-card-header-nav') || e.target.closest('#globe-overlay-close')) {
@@ -197,6 +255,7 @@ const GLOBE_OVERLAY = (() => {
   function swipeClose() {
     const cardEl = overlayEl?.querySelector('#hover-card');
     if (cardEl) {
+      cardEl.classList.add('swipe-left');
       setTimeout(() => {
         cardEl.classList.remove('swipe-left');
         cardEl.style.transform = '';
@@ -208,6 +267,31 @@ const GLOBE_OVERLAY = (() => {
   }
 
   function nextSite() {
+    const cardEl = overlayEl?.querySelector('#hover-card');
+
+    // If it's a pledge site, navigate through the global Data.pledgeNodes array
+    if (currentSiteId && currentSiteId.startsWith('pledge_') && typeof Data !== 'undefined' && Data.pledgeNodes) {
+      const iso = currentSiteId.replace('pledge_', '');
+      const idx = Data.pledgeNodes.findIndex(p => p.iso === iso);
+      if (idx !== -1) {
+        const nextNode = Data.pledgeNodes[(idx + 1) % Data.pledgeNodes.length];
+        if (nextNode && typeof PLEDGE_PANEL !== 'undefined') {
+          if (cardEl) {
+            cardEl.classList.add('swipe-right');
+            setTimeout(() => {
+              cardEl.classList.remove('swipe-right');
+              cardEl.style.transform = '';
+              PLEDGE_PANEL.open(nextNode);
+            }, 350);
+          } else {
+            PLEDGE_PANEL.open(nextNode);
+          }
+          return;
+        }
+      }
+    }
+
+    // Fallback for non-pledge sites (local registry)
     const keys = Object.keys(registry);
     if (keys.length === 0) return;
 
@@ -218,8 +302,6 @@ const GLOBE_OVERLAY = (() => {
     }
 
     const nextSiteId = keys[nextIndex];
-    const cardEl = overlayEl?.querySelector('#hover-card');
-    
     if (cardEl) {
       setTimeout(() => {
         cardEl.classList.remove('swipe-right');
@@ -254,31 +336,208 @@ const GLOBE_OVERLAY = (() => {
       window.EventBus.emit('overlay:open', { siteId, site });
     }
 
+    // Hide the hex country tooltip while the overlay is open to avoid competition
+    const tt = document.getElementById('hex-country-tooltip');
+    if (tt) {
+      tt.classList.remove('visible');
+      tt.style.display = 'none';
+    }
+
     // Populate Intro View
     overlayEl.querySelector('#hover-card-intro-title').textContent = site.title || siteId;
     
-    // Extract description text dynamically with fallbacks
-    let desc = '';
-    if (site.description) {
-      desc = site.description;
-    } else if (site.tabs && site.tabs.length > 0) {
-      try {
-        const temp = document.createElement('div');
-        site.tabs[0].render(temp, site.siteData || {});
-        const p = temp.querySelector('p');
-        desc = p ? p.textContent : '';
-      } catch (e) {
-        desc = '';
+    // Parse siteData to extract dynamic stats or generate fallback content
+    const data = site.siteData;
+    let badgeHtml = '';
+    let descHtml = '';
+
+    if (data && (data.cat_rating || data.co2_per_capita !== undefined)) {
+      // Country / Pledge Node
+      const rating = data.cat_rating || 'No Rating';
+      let ratingClass = 'neutral';
+      const ratingLower = rating.toLowerCase();
+      if (ratingLower.includes('critically') || ratingLower.includes('highly insufficient')) {
+        ratingClass = 'danger';
+      } else if (ratingLower.includes('insufficient')) {
+        ratingClass = 'warning';
+      } else if (ratingLower.includes('sufficient') || ratingLower.includes('1.5') || ratingLower.includes('compatible')) {
+        ratingClass = 'success';
       }
+
+      badgeHtml = `<span class="badge ${ratingClass}">${rating}</span>`;
+
+      const fmt = (val, suffix = '') => (val !== undefined && val !== null) ? val + suffix : 'N/A';
+      
+      descHtml = `
+        <div class="hover-card-stats-grid">
+          <div class="stat-box">
+            <span class="stat-label">Total Fossil CO₂</span>
+            <span class="stat-value">${fmt(data.fossil_co2_mt, ' Mt')}</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Per Capita</span>
+            <span class="stat-value">${fmt(data.co2_per_capita, ' t')}</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Reality Gap</span>
+            <span class="stat-value">${fmt(data.reality_gap_mt, ' Mt')}</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">2030 Target</span>
+            <span class="stat-value">${data.target_year ? `${data.reduction_pct}% by ${data.target_year}` : 'None'}</span>
+          </div>
+        </div>
+
+        <div class="hover-card-extended-info">
+          <div class="mini-stat-row">
+            <div class="mini-stat-box">
+              <span class="mini-stat-label">Population</span>
+              <span class="mini-stat-value">${formatPopulation(data.population)}</span>
+            </div>
+            <div class="mini-stat-box">
+              <span class="mini-stat-label">Emissions Since 2015</span>
+              <span class="mini-stat-value">${formatChange(data.change_since_2015)}</span>
+            </div>
+          </div>
+          ${data.conditionality ? `
+            <div class="hover-card-section">
+              <div class="hover-card-section-title">Conditionality</div>
+              <div style="font-size: 11px; color: var(--text2);">${data.conditionality}</div>
+            </div>
+          ` : ''}
+          ${data.ndc_summary ? `
+            <div class="hover-card-section">
+              <div class="hover-card-section-title">The Pledge</div>
+              <blockquote class="hover-card-blockquote">${data.ndc_summary}</blockquote>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    } else if (data && (data.area !== undefined || data.trees !== undefined)) {
+      // Restoration Site
+      const status = data.status || 'Active';
+      badgeHtml = `<span class="badge success">${status}</span>`;
+
+      const formatNum = (val) => {
+        if (val === undefined || val === null) return 'N/A';
+        if (typeof val === 'number') {
+          if (val >= 1e6) return (val / 1e6).toFixed(1) + 'M';
+          if (val >= 1e3) return (val / 1e3).toFixed(1) + 'K';
+          return val.toString();
+        }
+        return val;
+      };
+
+      // Helper to compute dynamic carbon / trees / partner fallback estimates
+      const area = data.area || 0;
+      const currentBiome = data.currentBiome || '';
+      const primaryBiome = data.primaryBiome || '';
+
+      const getBiomeDensity = (biomeKey) => {
+        if (typeof Data !== 'undefined' && Data.biomes && Data.biomes[biomeKey]) {
+          return Data.biomes[biomeKey].density || 0;
+        }
+        const densities = {
+          "tropical_rainforest": 350,
+          "tropical_dry_forest": 180,
+          "mangrove": 950,
+          "temperate_deciduous": 220,
+          "temperate_coniferous": 300,
+          "boreal_forest": 160,
+          "grassland_savanna": 90,
+          "wetland_peatland": 1400,
+          "seagrass_meadow": 500,
+          "agricultural_cropland": 50,
+          "degraded_bare_land": 10,
+          "urban_built": 30
+        };
+        return densities[biomeKey] || 0;
+      };
+
+      const currentDensity = getBiomeDensity(currentBiome);
+      const targetDensity = getBiomeDensity(primaryBiome);
+      const deltaDensity = Math.max(0, targetDensity - currentDensity);
+
+      const treesPlanted = data.trees !== undefined ? data.trees : (area * 1000);
+      const carbonSequestered = data.carbon !== undefined ? data.carbon : (area * deltaDensity);
+      const partner = data.partner || (data.id === 'sri_lanka' ? 'SPE' : (data.id === 'antalya' ? 'COP31 Taskforce' : 'Local Wetlands Initiative'));
+
+      const currentBiomePretty = getBiomeName(currentBiome);
+      const primaryBiomePretty = getBiomeName(primaryBiome);
+
+      descHtml = `
+        <div class="hover-card-stats-grid">
+          <div class="stat-box">
+            <span class="stat-label">Restoration Area</span>
+            <span class="stat-value">${formatNum(area)} ha</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Trees Planted</span>
+            <span class="stat-value">${formatNum(treesPlanted)}</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Carbon Sequestered</span>
+            <span class="stat-value">${formatNum(carbonSequestered)} t</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Local Partner</span>
+            <span class="stat-value" style="font-size: 11px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${partner}</span>
+          </div>
+        </div>
+
+        <div class="hover-card-extended-info">
+          <div class="hover-card-section">
+            <div class="hover-card-section-title">Restoration Goal</div>
+            <div class="biome-transition-flow">
+              <div class="biome-node">
+                <span class="biome-node-label">Current Biome</span>
+                <span class="biome-node-value" title="${currentBiome}">${currentBiomePretty}</span>
+              </div>
+              <span class="biome-arrow">➔</span>
+              <div class="biome-node">
+                <span class="biome-node-label">Target Biome</span>
+                <span class="biome-node-value" title="${primaryBiome}">${primaryBiomePretty}</span>
+              </div>
+            </div>
+          </div>
+          ${data.narrative ? `
+            <div class="hover-card-section">
+              <div class="hover-card-section-title">Project Narrative</div>
+              <blockquote class="hover-card-blockquote">${data.narrative}</blockquote>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    } else {
+      // Fallback description
+      badgeHtml = `<span class="badge neutral">Info</span>`;
+      let desc = '';
+      if (site.description) {
+        desc = site.description;
+      } else if (site.tabs && site.tabs.length > 0) {
+        try {
+          const temp = document.createElement('div');
+          site.tabs[0].render(temp, site.siteData || {});
+          const p = temp.querySelector('p');
+          desc = p ? p.textContent : '';
+        } catch (e) {
+          desc = '';
+        }
+      }
+      if (!desc || desc.length < 5) {
+        desc = site.subtitle || 'Discover environmental impact, restore initiatives, and local biomes.';
+      }
+      if (desc.length > 120) {
+        desc = desc.substring(0, 117) + '...';
+      }
+      descHtml = `<p class="fallback-desc">${desc}</p>`;
     }
-    if (!desc || desc.length < 5) {
-      desc = site.subtitle || 'Discover environmental impact, restore initiatives, and local biomes.';
+
+    const badgeEl = overlayEl.querySelector('#hover-card-badge');
+    if (badgeEl) {
+      badgeEl.innerHTML = badgeHtml;
     }
-    // Truncate to ~120 characters
-    if (desc.length > 120) {
-      desc = desc.substring(0, 117) + '...';
-    }
-    overlayEl.querySelector('#hover-card-intro-desc').textContent = desc;
+    overlayEl.querySelector('#hover-card-intro-desc').innerHTML = descHtml;
 
     // Update Header (Detailed View)
     overlayEl.querySelector('#globe-overlay-icon').textContent = site.icon || '🌍';
@@ -430,6 +689,12 @@ const GLOBE_OVERLAY = (() => {
     // Emit EventBus event
     if (hasModule('EventBus') && wasOpen) {
       window.EventBus.emit('overlay:close', { siteId: prevSiteId });
+    }
+
+    // Restore the hex country tooltip display
+    const tt = document.getElementById('hex-country-tooltip');
+    if (tt) {
+      tt.style.display = '';
     }
 
     // Clear rendered flags
