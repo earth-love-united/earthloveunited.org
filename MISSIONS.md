@@ -37,3 +37,4 @@ See `AGENTS.md` § Operations for the full lifecycle.
 
 | Finished | Role | Slug | PR | Outcome |
 |----------|------|------|----|---------|
+| 2026-06-11T18:00:26Z | designer | swipeable-hover-card | https://github.com/earth-love-united/earthloveunited.org/pull/1 | pending-review |
