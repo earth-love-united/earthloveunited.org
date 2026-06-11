@@ -34,6 +34,41 @@ const GLOBE_OVERLAY = (() => {
     return registry[siteId] || null;
   }
 
+  // ── Story Progress Bar ──
+  function updateProgressBar() {
+    const progressContainer = overlayEl?.querySelector('#hover-card-progress');
+    if (!progressContainer || !currentSiteId) return;
+
+    const site = registry[currentSiteId];
+    if (!site || !site.tabs) return;
+
+    const total = site.tabs.length;
+    const activeIndex = site.tabs.findIndex(t => t.id === currentTabId);
+
+    progressContainer.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+      const segment = document.createElement('div');
+      segment.className = 'progress-segment';
+      if (i < activeIndex) {
+        segment.classList.add('active');
+      } else if (i === activeIndex) {
+        segment.classList.add('current');
+      }
+      const fill = document.createElement('div');
+      fill.className = 'progress-segment-fill';
+      if (i < activeIndex) {
+        fill.style.width = '100%';
+      } else if (i === activeIndex) {
+        fill.style.width = '100%';
+        fill.style.transition = 'width 0.3s ease';
+      } else {
+        fill.style.width = '0%';
+      }
+      segment.appendChild(fill);
+      progressContainer.appendChild(segment);
+    }
+  }
+
   // ── Create overlay DOM ──
   function createOverlay() {
     if (overlayEl) return;
@@ -41,54 +76,159 @@ const GLOBE_OVERLAY = (() => {
     overlayEl = document.createElement('div');
     overlayEl.id = 'globe-overlay';
     overlayEl.innerHTML = `
-      <div class="globe-overlay-connector"></div>
-      <div class="globe-overlay-bg"></div>
-      <div class="globe-overlay-header">
-        <div class="globe-overlay-header-left">
-          <span class="globe-overlay-icon" id="globe-overlay-icon"></span>
-          <div>
-            <div class="globe-overlay-title" id="globe-overlay-title"></div>
-            <div class="globe-overlay-subtitle" id="globe-overlay-subtitle"></div>
+      <div class="hover-card" id="hover-card">
+        <!-- Story-style progress bars at the top of the card -->
+        <div class="hover-card-progress" id="hover-card-progress"></div>
+        
+        <!-- Intro/Small Card View -->
+        <div class="hover-card-intro" id="hover-card-intro">
+          <div class="hover-card-intro-content">
+            <div class="hover-card-intro-title" id="hover-card-intro-title"></div>
+            <div class="hover-card-intro-desc" id="hover-card-intro-desc"></div>
           </div>
+          <button class="hover-card-more-btn" id="hover-card-more-btn">Explore Details</button>
+          <div class="hover-card-swipe-prompt">← Swipe left to close / Swipe right for next →</div>
         </div>
-        <button class="globe-overlay-close" id="globe-overlay-close" aria-label="Close">✕</button>
+
+        <!-- Expanded Detailed View -->
+        <div class="globe-overlay-header">
+          <div class="globe-overlay-header-left">
+            <span class="globe-overlay-icon" id="globe-overlay-icon"></span>
+            <div>
+              <div class="globe-overlay-title" id="globe-overlay-title"></div>
+              <div class="globe-overlay-subtitle" id="globe-overlay-subtitle"></div>
+            </div>
+          </div>
+          <div class="hover-card-header-nav">
+            <button class="hover-card-header-btn" id="hover-card-header-prev" aria-label="Previous tab">◀</button>
+            <button class="hover-card-header-btn" id="hover-card-header-next" aria-label="Next tab">▶</button>
+          </div>
+          <button class="globe-overlay-close" id="globe-overlay-close" aria-label="Close">✕</button>
+        </div>
+        <div class="globe-overlay-gaia" id="globe-overlay-gaia"></div>
+        <div class="globe-overlay-tabs" id="globe-overlay-tabs"></div>
+        <div class="globe-overlay-content" id="globe-overlay-content"></div>
       </div>
-      <div class="globe-overlay-gaia" id="globe-overlay-gaia"></div>
-      <div class="globe-overlay-tabs" id="globe-overlay-tabs"></div>
-      <div class="globe-overlay-content" id="globe-overlay-content"></div>
-      <button class="globe-overlay-toggle" id="globe-overlay-toggle" aria-label="Toggle Panel">
-        <svg class="toggle-bg" viewBox="0 0 16 140" xmlns="http://www.w3.org/2000/svg">
-          <path d="M -1 0 C 0 15, 16 15, 16 30 L 16 110 C 16 125, 0 125, -1 140 Z" />
-        </svg>
-        <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
     `;
 
-    // Insert into body — NOT into globeViz, which has z-index:1 and would
-    // trap the overlay inside that stacking context (below .sections z-index:10)
     document.body.appendChild(overlayEl);
 
     // Close button
     overlayEl.querySelector('#globe-overlay-close').addEventListener('click', close);
     
-    // Toggle Slider
-    overlayEl.querySelector('#globe-overlay-toggle').addEventListener('click', () => {
-      if (isOpen) {
-        close();
-      } else {
-        if (!currentSiteId) {
-          // If no site is loaded yet, just grab the first one from registry
-          const keys = Object.keys(registry);
-          if (keys.length > 0) open(keys[0]);
-        } else {
-          // Re-open current site
-          overlayEl.classList.add('open');
-          isOpen = true;
-        }
+    // More button
+    const cardEl = overlayEl.querySelector('#hover-card');
+    overlayEl.querySelector('#hover-card-more-btn').addEventListener('click', () => {
+      cardEl.classList.add('expanded');
+      // Render charts if needed
+      if (hasModule('GAIA_CHARTS')) {
+        setTimeout(() => GAIA_CHARTS.renderPending(), 50);
       }
     });
+
+    // Header Prev/Next buttons
+    overlayEl.querySelector('#hover-card-header-prev').addEventListener('click', prevTab);
+    overlayEl.querySelector('#hover-card-header-next').addEventListener('click', nextTab);
+
+    // ── Pointer Drag / Swipe Physics ──
+    let startX = 0;
+    let startY = 0;
+    let isDragging = false;
+
+    cardEl.addEventListener('pointerdown', (e) => {
+      // Don't drag if clicking interactive elements inside expanded content!
+      if (cardEl.classList.contains('expanded')) {
+        if (e.target.closest('#globe-overlay-content') || e.target.closest('.hover-card-header-nav') || e.target.closest('#globe-overlay-close')) {
+          return;
+        }
+      }
+
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+
+      cardEl.classList.remove('snap-back', 'swipe-left', 'swipe-right');
+      cardEl.classList.add('is-dragging');
+      cardEl.setPointerCapture(e.pointerId);
+    });
+
+    cardEl.addEventListener('pointermove', (e) => {
+      if (!isDragging) return;
+
+      const deltaX = e.clientX - startX;
+      const deltaY = e.clientY - startY;
+
+      // Apply drag transform with rotation and dampened vertical movement
+      cardEl.style.transform = `translate(${deltaX}px, ${deltaY * 0.2}px) rotate(${deltaX * 0.05}deg)`;
+    });
+
+    const handleRelease = (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      cardEl.classList.remove('is-dragging');
+      cardEl.releasePointerCapture(e.pointerId);
+
+      const deltaX = e.clientX - startX;
+      const swipeThreshold = 120; // px
+
+      if (deltaX > swipeThreshold) {
+        // Swipe Right -> Next Country
+        cardEl.classList.add('swipe-right');
+        nextSite();
+      } else if (deltaX < -swipeThreshold) {
+        // Swipe Left -> Dismiss
+        cardEl.classList.add('swipe-left');
+        swipeClose();
+      } else {
+        // Snap back to center
+        cardEl.classList.add('snap-back');
+        cardEl.style.transform = '';
+        setTimeout(() => {
+          cardEl.classList.remove('snap-back');
+        }, 400);
+      }
+    };
+
+    cardEl.addEventListener('pointerup', handleRelease);
+    cardEl.addEventListener('pointercancel', handleRelease);
+  }
+
+  // ── Swipe outcomes ──
+  function swipeClose() {
+    const cardEl = overlayEl?.querySelector('#hover-card');
+    if (cardEl) {
+      setTimeout(() => {
+        cardEl.classList.remove('swipe-left');
+        cardEl.style.transform = '';
+        close();
+      }, 350);
+    } else {
+      close();
+    }
+  }
+
+  function nextSite() {
+    const keys = Object.keys(registry);
+    if (keys.length === 0) return;
+
+    let nextIndex = 0;
+    if (currentSiteId) {
+      const currentIndex = keys.indexOf(currentSiteId);
+      nextIndex = (currentIndex + 1) % keys.length;
+    }
+
+    const nextSiteId = keys[nextIndex];
+    const cardEl = overlayEl?.querySelector('#hover-card');
+    
+    if (cardEl) {
+      setTimeout(() => {
+        cardEl.classList.remove('swipe-right');
+        cardEl.style.transform = '';
+        open(nextSiteId);
+      }, 350);
+    } else {
+      open(nextSiteId);
+    }
   }
 
   // ── Open overlay for a site ──
@@ -101,10 +241,11 @@ const GLOBE_OVERLAY = (() => {
 
     if (!overlayEl) createOverlay();
 
-    // If same site is already open, just switch tab
-    if (currentSiteId === siteId && isOpen) {
-      return;
-    }
+    // Reset card state to intro view (not expanded)
+    const cardEl = overlayEl.querySelector('#hover-card');
+    cardEl.classList.remove('expanded');
+    cardEl.style.transform = '';
+    cardEl.className = 'hover-card';
 
     currentSiteId = siteId;
 
@@ -113,7 +254,33 @@ const GLOBE_OVERLAY = (() => {
       window.EventBus.emit('overlay:open', { siteId, site });
     }
 
-    // Update header
+    // Populate Intro View
+    overlayEl.querySelector('#hover-card-intro-title').textContent = site.title || siteId;
+    
+    // Extract description text dynamically with fallbacks
+    let desc = '';
+    if (site.description) {
+      desc = site.description;
+    } else if (site.tabs && site.tabs.length > 0) {
+      try {
+        const temp = document.createElement('div');
+        site.tabs[0].render(temp, site.siteData || {});
+        const p = temp.querySelector('p');
+        desc = p ? p.textContent : '';
+      } catch (e) {
+        desc = '';
+      }
+    }
+    if (!desc || desc.length < 5) {
+      desc = site.subtitle || 'Discover environmental impact, restore initiatives, and local biomes.';
+    }
+    // Truncate to ~120 characters
+    if (desc.length > 120) {
+      desc = desc.substring(0, 117) + '...';
+    }
+    overlayEl.querySelector('#hover-card-intro-desc').textContent = desc;
+
+    // Update Header (Detailed View)
     overlayEl.querySelector('#globe-overlay-icon').textContent = site.icon || '🌍';
     overlayEl.querySelector('#globe-overlay-title').textContent = site.title || siteId;
     overlayEl.querySelector('#globe-overlay-subtitle').textContent = site.subtitle || '';
@@ -137,7 +304,7 @@ const GLOBE_OVERLAY = (() => {
       }
     }
 
-    // Build tabs
+    // Pre-build tabs in container
     const tabsEl = overlayEl.querySelector('#globe-overlay-tabs');
     tabsEl.innerHTML = '';
     site.tabs.forEach((tab, i) => {
@@ -149,10 +316,9 @@ const GLOBE_OVERLAY = (() => {
       tabsEl.appendChild(tabEl);
     });
 
-    // Render first tab content
+    // Render tab content panels
     const contentEl = overlayEl.querySelector('#globe-overlay-content');
     contentEl.innerHTML = '';
-
     site.tabs.forEach((tab, i) => {
       const panelEl = document.createElement('div');
       panelEl.className = 'globe-overlay-tab-panel' + (i === 0 ? ' active' : '');
@@ -163,9 +329,11 @@ const GLOBE_OVERLAY = (() => {
     // Render first tab
     currentTabId = site.tabs[0].id;
     renderTabContent(currentTabId, site);
+    
+    // Update progress bar
+    updateProgressBar();
 
-    // Open — use rAF to ensure the initial state is rendered first
-    // so the CSS transition animates from -105% to 0
+    // Open container
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         overlayEl.classList.add('open');
@@ -173,7 +341,6 @@ const GLOBE_OVERLAY = (() => {
       });
     });
 
-    // Emit event
     dispatchEvent('overlay:open', { siteId });
   }
 
@@ -197,6 +364,9 @@ const GLOBE_OVERLAY = (() => {
 
     // Render content if not already rendered
     renderTabContent(tabId, site);
+
+    // Update progress bar
+    updateProgressBar();
 
     // Render any pending charts for this tab
     if (hasModule('GAIA_CHARTS')) {
@@ -225,6 +395,30 @@ const GLOBE_OVERLAY = (() => {
     }
   }
 
+  // ── Tab navigation ──
+  function prevTab() {
+    if (!currentSiteId || !currentTabId) return;
+    const site = registry[currentSiteId];
+    if (!site || !site.tabs) return;
+
+    const currentIndex = site.tabs.findIndex(t => t.id === currentTabId);
+    if (currentIndex > 0) {
+      switchTab(site.tabs[currentIndex - 1].id);
+    }
+  }
+
+  // ── Next tab navigation ──
+  function nextTab() {
+    if (!currentSiteId || !currentTabId) return;
+    const site = registry[currentSiteId];
+    if (!site || !site.tabs) return;
+
+    const currentIndex = site.tabs.findIndex(t => t.id === currentTabId);
+    if (currentIndex < site.tabs.length - 1) {
+      switchTab(site.tabs[currentIndex + 1].id);
+    }
+  }
+
   // ── Close overlay ──
   function close() {
     if (!overlayEl) return;
@@ -238,7 +432,7 @@ const GLOBE_OVERLAY = (() => {
       window.EventBus.emit('overlay:close', { siteId: prevSiteId });
     }
 
-    // Clear rendered flags so content re-renders on next open
+    // Clear rendered flags
     overlayEl.querySelectorAll('.globe-overlay-tab-panel').forEach(el => {
       delete el.dataset.rendered;
     });
@@ -246,11 +440,9 @@ const GLOBE_OVERLAY = (() => {
     currentSiteId = null;
     currentTabId = null;
 
-    // Clean up any stale globe transform from legacy Panel.open()
     const globeEl = document.getElementById('globeViz');
     if (globeEl) globeEl.style.transform = '';
 
-    // Resume globe auto-rotation (paused in site-panel.js open())
     if (hasModule('GlobeModule') && GlobeModule.world && GlobeModule.world.controls()) {
       GlobeModule.world.controls().autoRotate = true;
     }
@@ -263,10 +455,6 @@ const GLOBE_OVERLAY = (() => {
     document.dispatchEvent(new CustomEvent(name, { detail }));
   }
 
-  /**
-   * Re-render the currently active tab (clears cached render and re-runs).
-   * Used by interactive content that needs to update in-place.
-   */
   function refreshTab() {
     if (!currentSiteId || !currentTabId) return;
     const site = registry[currentSiteId];

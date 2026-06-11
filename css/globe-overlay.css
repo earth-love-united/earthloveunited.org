@@ -5,118 +5,204 @@
 
 #globe-overlay {
   position: fixed;
-  top: 56px;   /* Clear the topbar (z-index 100, ~50px tall) */
-  left: 10px;
-  bottom: 10px;
-  height: auto;
-  width: 520px;
-  max-width: calc(80vw - 20px);
+  left: 30px;
+  bottom: 30px;
+  width: 380px;
   z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.95) translateY(10px);
+  transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   flex-direction: column;
-  border-radius: 14px;
-  transform: translateX(calc(-100% - 10px));
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-  pointer-events: none;
-  overflow: visible; /* so toggle handle shows */
 }
 
 #globe-overlay.open {
-  transform: translateX(0);
+  opacity: 1;
+  transform: scale(1) translateY(0);
   pointer-events: auto;
 }
 
-/* ── Overlay background ── */
-#globe-overlay .globe-overlay-bg {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, rgba(6, 8, 14, 0.97), rgba(10, 12, 22, 0.95));
-  border: 1px solid rgba(78, 205, 196, 0.08);
-  border-radius: 14px;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(0, 0, 0, 0.2),
-    0 0 60px rgba(78, 205, 196, 0.03);
-  backdrop-filter: blur(12px);
-  z-index: -1;
-}
-
-/* ── Connector line (Assassin's Creed II style) ── */
-#globe-overlay .globe-overlay-connector {
-  position: absolute;
-  top: 60px;
-  left: -30px;
-  width: 30px;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(78, 205, 196, 0), rgba(78, 205, 196, 0.25));
-  pointer-events: none;
-  z-index: -2;
-}
-
-#globe-overlay .globe-overlay-connector::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: -1px;
-  width: 6px;
-  height: 3px;
-  background: rgba(78, 205, 196, 0.15);
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(78, 205, 196, 0.2);
-}
-
-/* ── Toggle Handle ── */
-#globe-overlay .globe-overlay-toggle {
-  position: absolute;
-  top: 50%;
-  right: -16px;
-  width: 16px;
-  height: 140px;
-  background: transparent;
-  border: none;
-  border-radius: 0;
+/* ── Hover Card ── */
+.hover-card {
+  width: 100%;
+  height: 280px; /* Initial small card height */
   display: flex;
+  flex-direction: column;
+  position: relative;
+  background: linear-gradient(135deg, rgba(6, 8, 14, 0.96), rgba(10, 12, 22, 0.93));
+  border: 1px solid rgba(78, 205, 196, 0.12);
+  border-radius: 20px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 0, 0, 0.2),
+    0 0 80px rgba(78, 205, 196, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+  transition: transform 0.3s ease, opacity 0.3s ease, height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.hover-card:active {
+  cursor: grabbing;
+}
+
+.hover-card.expanded {
+  height: 560px; /* Detailed view height */
+}
+
+.hover-card.is-dragging {
+  transition: none !important;
+}
+
+.hover-card.snap-back {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hover-card.swipe-left {
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease;
+  transform: translate(-150%, 50px) rotate(-15deg) !important;
+  opacity: 0 !important;
+}
+
+.hover-card.swipe-right {
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease;
+  transform: translate(150%, 50px) rotate(15deg) !important;
+  opacity: 0 !important;
+}
+
+/* ── Story Progress Bar ── */
+.hover-card-progress {
+  display: flex;
+  gap: 4px;
+  padding: 10px 18px 0;
+  width: 100%;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hover-card.expanded .hover-card-progress {
+  opacity: 1;
+}
+
+.progress-segment {
+  height: 3px;
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-segment-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--teal);
+  transition: width 0.1s linear;
+}
+
+.progress-segment.active .progress-segment-fill {
+  width: 100%;
+}
+
+.progress-segment.current .progress-segment-fill {
+  width: 0%;
+}
+
+/* ── Intro Page Layout ── */
+.hover-card-intro {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.hover-card-intro-content {
+  flex: 1;
+}
+
+.hover-card-intro-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--mint);
+  margin-bottom: 8px;
+}
+
+.hover-card-intro-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+
+.hover-card-more-btn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  padding: 10px 18px;
+  border: 1px solid rgba(78, 205, 196, 0.3);
+  border-radius: 30px;
+  background: rgba(78, 205, 196, 0.05);
   color: var(--teal);
-  transform: translateY(-50%);
-  pointer-events: auto;
-  filter: drop-shadow(4px 0 12px rgba(0, 0, 0, 0.3));
-  z-index: 100;
-  transition: filter 0.2s, color 0.2s;
-  padding-right: 2px;
-  color-scheme: dark;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 10px;
+  align-self: flex-start;
 }
 
-#globe-overlay .globe-overlay-toggle:hover {
-  filter: drop-shadow(4px 0 12px rgba(0, 0, 0, 0.4)) brightness(1.2);
-  color: var(--mint);
+.hover-card-more-btn:hover {
+  background: rgba(78, 205, 196, 0.15);
+  border-color: var(--teal);
+  box-shadow: 0 0 15px rgba(78, 205, 196, 0.2);
 }
 
-#globe-overlay .globe-overlay-toggle .toggle-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  fill: rgba(8, 10, 18, 0.95);
-  stroke: rgba(78, 205, 196, 0.3);
-  stroke-width: 1px;
-  z-index: -1;
-  pointer-events: none;
+.hover-card-swipe-prompt {
+  font-size: 9px;
+  color: var(--text3);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 12px;
+  opacity: 0.6;
 }
 
-#globe-overlay .globe-overlay-toggle .toggle-icon {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-  position: relative;
-  z-index: 1;
+/* Display States */
+.hover-card .hover-card-intro {
+  display: flex;
 }
 
-#globe-overlay.open .globe-overlay-toggle .toggle-icon {
-  transform: rotate(180deg);
+.hover-card.expanded .hover-card-intro {
+  display: none !important;
+}
+
+.hover-card .globe-overlay-header,
+.hover-card .globe-overlay-content {
+  display: none;
+}
+
+.hover-card.expanded .globe-overlay-header {
+  display: flex;
+}
+
+.hover-card.expanded .globe-overlay-content {
+  display: block;
+}
+
+/* Hide legacy sidebar decorations */
+#globe-overlay .globe-overlay-connector,
+#globe-overlay .globe-overlay-toggle,
+#globe-overlay .globe-overlay-bg {
+  display: none !important;
 }
 
 /* ── Header ── */
@@ -214,13 +300,7 @@
 
 /* ── Tab bar ── */
 .globe-overlay-tabs {
-  display: flex;
-  gap: 2px;
-  padding: 0 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  flex-shrink: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
+  display: none !important;
 }
 
 .globe-overlay-tabs::-webkit-scrollbar {
@@ -812,3 +892,40 @@
   border-top: 1px solid rgba(255, 255, 255, 0.03);
   line-height: 1.5;
 }
+
+/* ── Header Nav Buttons ── */
+.hover-card-header-nav {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  margin-right: 12px;
+}
+
+.hover-card.expanded .hover-card-header-nav {
+  display: flex;
+}
+
+.hover-card-header-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(78, 205, 196, 0.2);
+  background: rgba(78, 205, 196, 0.05);
+  color: var(--teal);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+
+.hover-card-header-btn:hover {
+  background: rgba(78, 205, 196, 0.15);
+  border-color: var(--teal);
+  color: var(--mint);
+}
+
