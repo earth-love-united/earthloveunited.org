@@ -255,7 +255,7 @@ Registries: VCS (460 listings), TVER (32), ICR (39), CMARK (41)`);
 }
 
 // Store conversation history for LLM context
-const _conversationHistory = [];
+let _conversationHistory = [];
 
 function _addToHistory(role, content) {
   _conversationHistory.push({ role, content });
