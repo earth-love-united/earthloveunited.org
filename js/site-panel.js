@@ -777,7 +777,7 @@ const PLEDGE_PANEL = (() => {
         siteId: 'pledge_' + node.iso,
         icon: '🌐',
         title: node.country,
-        subtitle: (node.reduction_pct > 0 ? node.reduction_pct + '% by ' + Math.round(node.target_year) : 'No target') + (node.cat_rating ? ' · ' + node.cat_rating : ''),
+        subtitle: (node.reduction_pct > 0 ? node.reduction_pct + '% by ' + Math.round(node.target_year) : 'No quantified reduction') + (node.cat_rating ? ' · ' + node.cat_rating : ''),
         siteData: node,
         tabs: [
           { id: 'dashboard', label: 'Dashboard', render: renderDashboard },
@@ -790,9 +790,10 @@ const PLEDGE_PANEL = (() => {
   function renderDashboard(el, node) {
     if (!node) return;
     const gap = node.reality_gap_mt;
-    const gapClass = gap === null ? '' : (gap > 0 ? 'red' : 'green');
-    const gapSign = gap !== null && gap > 0 ? '+' : '';
-    const onTrack = node.on_track;
+    const hasGap = typeof gap === 'number' && Number.isFinite(gap);
+    const gapClass = !hasGap ? '' : (gap > 0 ? 'red' : 'green');
+    const gapSign = hasGap && gap > 0 ? '+' : '';
+    const onTrack = hasGap ? gap <= 0 : null;
  const mom = node.momentum_cagr;
  const req = node.required_cagr;
  const div = node.divergence;
@@ -811,10 +812,10 @@ const PLEDGE_PANEL = (() => {
  html += '<div class="pledge-gap-card">';
  html += '<div class="pledge-big-number">' + fmt(node.fossil_co2_mt) + ' <span class="pledge-unit">MtCO₂</span></div>';
  html += '<div class="pledge-label">Current Fossil Emissions</div>';
- if (gap !== null) {
+ if (hasGap) {
  html += '<div class="pledge-gap-metric ' + gapClass + '">Gap to Target: ' + gapSign + fmt(gap) + ' MtCO₂</div>';
  } else {
- html += '<div class="pledge-gap-metric">No target data available</div>';
+ html += '<div class="pledge-gap-metric">Reality gap unavailable</div>';
  }
  html += '</div>';
 

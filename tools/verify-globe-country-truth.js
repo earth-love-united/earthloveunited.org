@@ -8,9 +8,14 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const pledgePayload = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/pledge-nodes.json'), 'utf8'));
 const sitesPayload = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/sites.json'), 'utf8'));
+const countryMarkersPayload = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/country-markers.json'), 'utf8'));
+const globeSource = fs.readFileSync(path.join(ROOT, 'js/globe.js'), 'utf8');
+const indexSource = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+const countryPanelSource = fs.readFileSync(path.join(ROOT, 'js/site-panel.js'), 'utf8');
 
 const pledgeRows = Array.isArray(pledgePayload.data) ? pledgePayload.data : pledgePayload;
 const sites = Array.isArray(sitesPayload.data) ? sitesPayload.data : sitesPayload;
+const countryMarkers = Array.isArray(countryMarkersPayload.data) ? countryMarkersPayload.data : countryMarkersPayload;
 
 function fail(message) {
   console.error('FAIL:', message);
@@ -24,7 +29,7 @@ if (args.includes('--help') || args.includes('-h')) {
   node tools/verify-globe-country-truth.js --geojson /path/to/ne_110m_admin_0_countries.geojson
 
 Checks pledge status mappings, emissions classes, restoration site countryIso
-values, and optionally country polygon coverage when a local GeoJSON is supplied.`);
+values, small-country markers, and optionally combined polygon/marker coverage.`);
   process.exit(0);
 }
 const geojsonFlagIndex = args.indexOf('--geojson');
@@ -35,14 +40,19 @@ if (geojsonFlagIndex >= 0 && !geojsonPath) {
 
 const STATUS = {
   MISSING: 'missing',
-  NO_TARGET: 'no-target',
+  GAP_UNAVAILABLE: 'gap-unavailable',
   OVERSHOOTING: 'overshooting',
   ON_TRACK: 'on-track',
 };
 
+const MIN_BASE_COUNTRY_FEATURE_COUNT = 170;
+const REQUIRED_SMALL_COUNTRY_ISOS = {
+  MDV: 'Maldives',
+};
+
 const LABELS = {
   [STATUS.MISSING]: 'No pledge data',
-  [STATUS.NO_TARGET]: 'No target',
+  [STATUS.GAP_UNAVAILABLE]: 'Gap unavailable',
   [STATUS.OVERSHOOTING]: 'Overshooting',
   [STATUS.ON_TRACK]: 'On track',
 };
@@ -53,7 +63,7 @@ function isFiniteNumber(value) {
 
 function statusKey(row) {
   if (!row) return STATUS.MISSING;
-  if (!isFiniteNumber(row.reality_gap_mt)) return STATUS.NO_TARGET;
+  if (!isFiniteNumber(row.reality_gap_mt)) return STATUS.GAP_UNAVAILABLE;
   return row.reality_gap_mt > 0 ? STATUS.OVERSHOOTING : STATUS.ON_TRACK;
 }
 
@@ -120,7 +130,7 @@ function resolveFeatureIso(feature) {
 
 const counts = {
   [STATUS.MISSING]: 0,
-  [STATUS.NO_TARGET]: 0,
+  [STATUS.GAP_UNAVAILABLE]: 0,
   [STATUS.OVERSHOOTING]: 0,
   [STATUS.ON_TRACK]: 0,
 };
@@ -151,8 +161,44 @@ for (const row of pledgeRows) {
   }
 }
 
-for (const key of [STATUS.NO_TARGET, STATUS.OVERSHOOTING, STATUS.ON_TRACK]) {
+for (const key of [STATUS.GAP_UNAVAILABLE, STATUS.OVERSHOOTING, STATUS.ON_TRACK]) {
   if (!counts[key]) fail(`Expected at least one ${LABELS[key]} pledge row`);
+}
+
+const GLOBE_STATUS_NAMES = {
+  [STATUS.MISSING]: 'MISSING',
+  [STATUS.GAP_UNAVAILABLE]: 'GAP_UNAVAILABLE',
+  [STATUS.OVERSHOOTING]: 'OVERSHOOTING',
+  [STATUS.ON_TRACK]: 'ON_TRACK',
+};
+for (const [key, label] of Object.entries(LABELS)) {
+  const mapping = `[COUNTRY_STATUS.${GLOBE_STATUS_NAMES[key]}]: '${label}'`;
+  if (!globeSource.includes(mapping)) {
+    fail(`Globe country status mapping is missing: ${key}=${label}`);
+  }
+}
+
+const legendStart = indexSource.indexOf('<div class="hex-legend" id="hex-legend">');
+const legendEnd = indexSource.indexOf('<!-- ═══ EVENTS FILTER', legendStart);
+const legendBlock = legendStart >= 0 && legendEnd > legendStart
+  ? indexSource.slice(legendStart, legendEnd)
+  : '';
+const legendLabels = [...legendBlock.matchAll(/<div class="hex-legend-row">[\s\S]*?<\/span>\s*([^<]+)<\/div>/g)]
+  .map(match => match[1].trim());
+if (JSON.stringify(legendLabels) !== JSON.stringify(Object.values(LABELS))) {
+  fail(`Countries-mode legend labels differ from status mapping: ${legendLabels.join(', ')}`);
+}
+if (!countryPanelSource.includes('const onTrack = hasGap ? gap <= 0 : null;')) {
+  fail('Country panel status must derive from the same finite reality-gap rule as the globe');
+}
+if (!countryPanelSource.includes('Reality gap unavailable')) {
+  fail('Country panel is missing the Gap unavailable explanation');
+}
+if (!globeSource.includes('ne_110m_admin_0_countries.geojson')) {
+  fail('Globe country geometry source must use the performant 110m base layer');
+}
+if (!globeSource.includes('country-marker')) {
+  fail('Globe is missing the small-country marker layer');
 }
 
 if (!lowAndOvershooting.length) {
@@ -177,6 +223,20 @@ const siteIsoWithoutPledge = sites.filter(site => site.countryIso && !pledgeByIs
 if (siteIsoWithoutPledge.length) {
   fail(`Restoration site countryIso values missing from pledge data: ${siteIsoWithoutPledge.map(s => `${s.id || s.name}=${s.countryIso}`).join(', ')}`);
 }
+const markerIso = new Set();
+for (const marker of countryMarkers) {
+  if (!marker.iso || !/^[A-Z]{3}$/.test(marker.iso)) {
+    fail(`Small-country marker has invalid ISO alpha-3 code: ${marker.name || '<unknown>'}=${marker.iso}`);
+  }
+  if (!isFiniteNumber(marker.lat) || !isFiniteNumber(marker.lng)) {
+    fail(`Small-country marker has invalid coordinates: ${marker.iso || marker.name}`);
+  }
+  if (markerIso.has(marker.iso)) fail(`Duplicate small-country marker ISO: ${marker.iso}`);
+  markerIso.add(marker.iso);
+}
+for (const [iso, name] of Object.entries(REQUIRED_SMALL_COUNTRY_ISOS)) {
+  if (!markerIso.has(iso)) fail(`Required small-country marker missing: ${name} (${iso})`);
+}
 let geojsonAudit = null;
 if (geojsonPath) {
   if (!fs.existsSync(path.resolve(geojsonPath))) {
@@ -184,9 +244,27 @@ if (geojsonPath) {
   }
   const geojson = JSON.parse(fs.readFileSync(path.resolve(geojsonPath), 'utf8'));
   const features = (geojson.features || []).filter(feature => feature.properties?.ISO_A2 !== 'AQ');
+  if (features.length < MIN_BASE_COUNTRY_FEATURE_COUNT) {
+    fail(`Country base geometry is incomplete: expected at least ${MIN_BASE_COUNTRY_FEATURE_COUNT} non-Antarctic features, found ${features.length}`);
+  }
+  const featureIsoSet = new Set(features.map(resolveFeatureIso));
+  const duplicateMarkerIso = [...markerIso].filter(iso => featureIsoSet.has(iso));
+  if (duplicateMarkerIso.length) {
+    fail(`Small-country markers duplicate base geometry: ${duplicateMarkerIso.join(', ')}`);
+  }
+  const combinedCountryIso = new Set([...featureIsoSet, ...markerIso]);
+  const pledgeCountriesMissingCoverage = [...seenPledgeIso].filter(iso => !combinedCountryIso.has(iso));
+  if (pledgeCountriesMissingCoverage.length) {
+    fail(`Pledge countries missing from combined country coverage: ${pledgeCountriesMissingCoverage.join(', ')}`);
+  }
+  const requiredSmallCountriesMissing = Object.entries(REQUIRED_SMALL_COUNTRY_ISOS)
+    .filter(([iso]) => !combinedCountryIso.has(iso));
+  if (requiredSmallCountriesMissing.length) {
+    fail(`Required small-country geometry missing: ${requiredSmallCountriesMissing.map(([iso, name]) => `${name} (${iso})`).join(', ')}`);
+  }
   const featureCounts = {
     [STATUS.MISSING]: 0,
-    [STATUS.NO_TARGET]: 0,
+    [STATUS.GAP_UNAVAILABLE]: 0,
     [STATUS.OVERSHOOTING]: 0,
     [STATUS.ON_TRACK]: 0,
   };
@@ -206,29 +284,44 @@ if (geojsonPath) {
   }
 
   const siteMatches = sites.map(site => {
-    const feature = site.countryIso
-      ? features.find(candidate => resolveFeatureIso(candidate) === site.countryIso)
-      : features.find(candidate => pointInFeature(site.lng, site.lat, candidate));
-    const iso = feature ? resolveFeatureIso(feature) : null;
-    const row = iso ? pledgeByIso[iso] : null;
+    const declaredFeature = features.find(candidate => resolveFeatureIso(candidate) === site.countryIso);
+    const coordinateFeature = features.find(candidate => pointInFeature(site.lng, site.lat, candidate));
+    const coordinateIso = coordinateFeature ? resolveFeatureIso(coordinateFeature) : null;
+    const row = coordinateIso ? pledgeByIso[coordinateIso] : null;
     return {
       site: site.name,
       id: site.id,
-      source: site.countryIso ? 'countryIso' : 'point-in-polygon',
-      iso,
-      country: row?.country || feature?.properties?.ADMIN || null,
+      declaredIso: site.countryIso,
+      declaredFeatureFound: !!declaredFeature,
+      coordinateIso,
+      country: row?.country || coordinateFeature?.properties?.ADMIN || null,
+      matches: !!coordinateIso && coordinateIso === site.countryIso,
       status: LABELS[statusKey(row)],
       emissionsClass: emissionsClass(row),
     };
   });
 
-  const unmatchedSites = siteMatches.filter(match => !match.iso);
+  const unmatchedSites = siteMatches.filter(match => !match.coordinateIso);
   if (unmatchedSites.length) {
     fail(`Restoration sites did not match any country polygon: ${unmatchedSites.map(s => s.id || s.site).join(', ')}`);
+  }
+  const missingDeclaredFeatures = siteMatches.filter(match => !match.declaredFeatureFound);
+  if (missingDeclaredFeatures.length) {
+    fail(`Restoration site countryIso values did not match a country polygon: ${missingDeclaredFeatures.map(s => `${s.id}=${s.declaredIso}`).join(', ')}`);
+  }
+  const mismatchedSites = siteMatches.filter(match => match.coordinateIso && !match.matches);
+  if (mismatchedSites.length) {
+    fail(`Restoration site coordinates disagree with countryIso: ${mismatchedSites.map(s => `${s.id}=${s.declaredIso}, coordinates=${s.coordinateIso}`).join('; ')}`);
   }
 
   geojsonAudit = {
     countryFeatureCount: features.length,
+    countryMarkerCount: countryMarkers.length,
+    combinedCountryCount: combinedCountryIso.size,
+    pledgeCountriesMissingCoverage,
+    requiredSmallCountryCoverage: Object.fromEntries(
+      Object.entries(REQUIRED_SMALL_COUNTRY_ISOS).map(([iso, name]) => [name, combinedCountryIso.has(iso)])
+    ),
     featureStatusCounts: Object.fromEntries(
       Object.entries(featureCounts).map(([key, count]) => [LABELS[key], count])
     ),

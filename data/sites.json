@@ -223,7 +223,7 @@
       "name": "West Kalimantan",
       "subtitle": "Peat Swamp Deforestation · Borneo",
       "countryIso": "IDN",
-      "lat": 1.15,
+      "lat": -0.15,
       "lng": 110.35,
       "primaryBiome": "wetland_peatland",
       "currentBiome": "agricultural_cropland",

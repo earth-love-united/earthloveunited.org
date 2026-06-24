@@ -69,21 +69,21 @@ const COUNTRY_ISO_FALLBACKS = {
 
 const COUNTRY_STATUS = {
   MISSING: 'missing',
-  NO_TARGET: 'no-target',
+  GAP_UNAVAILABLE: 'gap-unavailable',
   OVERSHOOTING: 'overshooting',
   ON_TRACK: 'on-track',
 };
 
 const COUNTRY_STATUS_LABELS = {
   [COUNTRY_STATUS.MISSING]: 'No pledge data',
-  [COUNTRY_STATUS.NO_TARGET]: 'No target',
+  [COUNTRY_STATUS.GAP_UNAVAILABLE]: 'Gap unavailable',
   [COUNTRY_STATUS.OVERSHOOTING]: 'Overshooting',
   [COUNTRY_STATUS.ON_TRACK]: 'On track',
 };
 
 const COUNTRY_STATUS_BADGE_CLASSES = {
   [COUNTRY_STATUS.MISSING]: 'neutral',
-  [COUNTRY_STATUS.NO_TARGET]: 'neutral',
+  [COUNTRY_STATUS.GAP_UNAVAILABLE]: 'neutral',
   [COUNTRY_STATUS.OVERSHOOTING]: 'red',
   [COUNTRY_STATUS.ON_TRACK]: 'green',
 };
@@ -148,7 +148,7 @@ function _isFiniteNumber(value) {
 
 function _getCountryStatusKey(d) {
   if (!d?.hasData) return COUNTRY_STATUS.MISSING;
-  if (!_isFiniteNumber(d.gap)) return COUNTRY_STATUS.NO_TARGET;
+  if (!_isFiniteNumber(d.gap)) return COUNTRY_STATUS.GAP_UNAVAILABLE;
   return d.gap > 0 ? COUNTRY_STATUS.OVERSHOOTING : COUNTRY_STATUS.ON_TRACK;
 }
 
@@ -168,6 +168,27 @@ function _getCountryEmissionsClass(d) {
   return 'Very high emissions';
 }
 
+function _countryMarkerFeature(marker) {
+  return {
+    properties: {
+      ISO_A3: marker.iso,
+      ADMIN: marker.name,
+      NAME: marker.name,
+    },
+    geometry: null,
+    _countryMarker: true,
+  };
+}
+
+function _getCountryMarkerColor(marker) {
+  const d = _getCountryDisplayData(_countryMarkerFeature(marker));
+  const statusKey = _getCountryStatusKey(d);
+  if (statusKey === COUNTRY_STATUS.GAP_UNAVAILABLE) return '#d4a574';
+  if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return '#ff543a';
+  if (statusKey === COUNTRY_STATUS.ON_TRACK) return '#2ecc71';
+  return '#7896a5';
+}
+
 function _getCountryProjectCount(feature) {
   if (!feature || !Array.isArray(Data.sites)) return null;
   const countryIso = _resolveCountryIso(feature);
@@ -184,7 +205,7 @@ function _getCountryGaiaComment(d, projectCount) {
   const statusKey = _getCountryStatusKey(d);
   if (statusKey === COUNTRY_STATUS.MISSING) return 'GAIA is missing pledge data here; the border still keeps its place on the map.';
   if (projectCount > 0) return 'Restoration signal detected inside this country.';
-  if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'The promise is visible, but the target line is still incomplete.';
+  if (statusKey === COUNTRY_STATUS.GAP_UNAVAILABLE) return 'Pledge data is present, but this dataset has no comparable reality-gap value.';
   if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'This pathway is running hot against the current pledge.';
   return 'This country is closer to the green lane in the current dataset.';
 }
@@ -223,6 +244,7 @@ const GlobeModule = {
   _selectedCountryFeature: null,
   _countryDataState: 'idle',
   _countryDataError: null,
+  _countryMarkerClickUntil: 0,
 
   init() {
     // Guard: Globe constructor may not be loaded yet (lazy-loaded globe.gl.js)
@@ -439,6 +461,7 @@ const GlobeModule = {
 
         this._onCanvasClick = (e) => {
           if (this.shouldIgnoreCanvasClick()) return;
+          if (Date.now() < this._countryMarkerClickUntil) return;
           if (!_isCountryModeActive()) return;
           if (this._countryHoverClearTimer) {
             clearTimeout(this._countryHoverClearTimer);
@@ -547,22 +570,27 @@ const GlobeModule = {
   initPledgeNodes() {
     if (!Data.pledgeNodes || !Data.pledgeNodes.length) return;
     const pledgeNodes = Data.pledgeNodes;
+    const pledgeIso = new Set(pledgeNodes.map(node => node.iso));
 
     // Combine site points + pledge nodes into a single pointsData call
     // Sites get type='site', pledge nodes get type='pledge'
     const allPoints = [
       ...(Data.sites || []).map(s => ({ ...s, _type: 'site' })),
       ...pledgeNodes.map(n => ({ ...n, _type: 'pledge' })),
+      ...(Data.countryMarkers || [])
+        .filter(marker => !pledgeIso.has(marker.iso))
+        .map(marker => ({ ...marker, _type: 'country-marker' })),
     ];
 
     this.world
       .pointsData(allPoints)
       .pointLat('lat')
       .pointLng('lng')
-      .pointAltitude(p => p._type === 'pledge' ? this.pledgePointAltitude(p) : 0.01)
-      .pointRadius(p => p._type === 'pledge' ? this.pledgePointRadius(p) : 0.6)
+      .pointAltitude(p => p._type === 'pledge' ? this.pledgePointAltitude(p) : (p._type === 'country-marker' ? 0.014 : 0.01))
+      .pointRadius(p => p._type === 'pledge' ? this.pledgePointRadius(p) : (p._type === 'country-marker' ? 0.34 : 0.6))
       .pointColor(p => {
         if (p._type === 'pledge') return this.pledgePointColor(p);
+        if (p._type === 'country-marker') return _getCountryMarkerColor(p);
         // Site color logic
         const suggestedIds = hasModule('GAIA_NODES') ? GAIA_NODES.getSuggestedSiteIds('') : [];
         if (suggestedIds.includes(p.id)) return '#ffd700';
@@ -577,11 +605,27 @@ const GlobeModule = {
           return;
         }
       })
-      .onPointClick(p => {
+      .onPointClick((p, event) => {
         if (GlobeModule.shouldIgnoreCanvasClick()) return;
         // Mode handler intercepts ALL clicks when active
         if (_globeClickHandler && p) {
           _globeClickHandler(p.lat, p.lng);
+          return;
+        }
+        if (p._type === 'country-marker') {
+          this._countryMarkerClickUntil = Date.now() + 100;
+          this.world.controls().autoRotate = false;
+          const feature = _countryMarkerFeature(p);
+          this._selectedCountryFeature = feature;
+          this._countryHoverFeature = feature;
+          this._renderCountryInfoCard(feature, true);
+          this._positionCountryInfoCard(event && Number.isFinite(event.clientX) ? event : {
+            clientX: window.innerWidth / 2,
+            clientY: window.innerHeight / 2,
+          });
+
+          const pledgeNode = Data.pledgeNodes.find(node => node.iso === p.iso);
+          if (pledgeNode && hasModule('PLEDGE_PANEL')) PLEDGE_PANEL.open(pledgeNode);
           return;
         }
         if (p._type === 'pledge') {
@@ -609,11 +653,11 @@ const GlobeModule = {
         }
         if (p._type === 'pledge') {
           const gap = p.reality_gap_mt;
-          const status = gap === null ? 'No data' : (gap > 0 ? 'OVERSHOOTING' : 'On Track');
+          const status = !_isFiniteNumber(gap) ? 'Gap unavailable' : (gap > 0 ? 'OVERSHOOTING' : 'On Track');
           window.dispatchEvent(new CustomEvent('pledgeHover', {
             detail: { node: p, tooltip: p.country + ' | ' + (p.fossil_co2_mt != null ? p.fossil_co2_mt : '—') + ' MtCO2 | ' + status }
           }));
-        } else {
+        } else if (p._type === 'site') {
           // Site hover
           if (hasModule('GAIA_NODES')) {
             GAIA_NODES.onNodeHover(p.id);
@@ -622,6 +666,8 @@ const GlobeModule = {
             safeCall('GAIA_ENGAGEMENT', 'interact');
           }
           window.dispatchEvent(new CustomEvent('pledgeHover', { detail: null }));
+        } else {
+          window.dispatchEvent(new CustomEvent('pledgeHover', { detail: { node: p } }));
         }
       });
   },
@@ -658,13 +704,13 @@ const GlobeModule = {
     if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(149,165,166,0.28)';
 
     // Fallback hexes use the same status hue categories as polygons:
-    // slate = missing pledge data, amber = no target, red = overshooting,
+    // slate = missing pledge data, amber = gap unavailable, red = overshooting,
     // green = on track. Per-capita emissions affects saturation only.
     const pc = Math.min(perCapita / 20, 1);
     const te = Math.min(Math.log(Math.max(d.emissions || 0, 1)) / Math.log(12000), 1);
 
     let hue = 130;
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) {
+    if (statusKey === COUNTRY_STATUS.GAP_UNAVAILABLE) {
       hue = 35;
     } else if (statusKey === COUNTRY_STATUS.OVERSHOOTING) {
       const i = Math.min(d.gap / 500, 1);
@@ -779,7 +825,7 @@ const GlobeModule = {
     if (!d) return 'rgba(180,215,218,0.34)';
     const statusKey = _getCountryStatusKey(d);
     if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(170,205,214,0.34)';
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(214,184,138,0.38)';
+    if (statusKey === COUNTRY_STATUS.GAP_UNAVAILABLE) return 'rgba(214,184,138,0.38)';
     if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'rgba(255,132,112,0.42)';
     return 'rgba(116,232,172,0.42)';
   },
@@ -800,7 +846,7 @@ const GlobeModule = {
 
     // Status drives hue; emissions only modulates opacity. A low-emissions
     // country can still be overshooting its pledge target.
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(212,165,116,' + (0.10 + hoverBoost).toFixed(2) + ')';
+    if (statusKey === COUNTRY_STATUS.GAP_UNAVAILABLE) return 'rgba(212,165,116,' + (0.10 + hoverBoost).toFixed(2) + ')';
     if (statusKey === COUNTRY_STATUS.OVERSHOOTING) {
       const intensity = Math.min(d.gap / 500, 1);
       const red = Math.round(220 + intensity * 35);
@@ -1151,6 +1197,7 @@ const GlobeModule = {
       : [];
 
     this.world.pointColor(p => {
+      if (p._type === 'country-marker') return _getCountryMarkerColor(p);
       // Pledge nodes: use gap color
       if (p._type === 'pledge') {
         const gap = p.reality_gap_mt;
@@ -1169,6 +1216,7 @@ const GlobeModule = {
     });
 
     this.world.pointRadius(p => {
+      if (p._type === 'country-marker') return 0.34;
       if (p._type === 'pledge') {
         const co2 = p.fossil_co2_mt || 0;
         return 0.3 + Math.min(co2 / 20000, 0.8);
@@ -1212,10 +1260,17 @@ const GlobeModule = {
         return;
       }
       const n = detail.node;
+      if (n._type === 'country-marker') {
+        tooltip.innerHTML = '<div class="tt-country">' + _escapeHtml(n.name) + '</div>'
+          + '<div class="tt-detail">Small-country marker</div>'
+          + '<div>No pledge data</div>';
+        tooltip.classList.add('visible');
+        return;
+      }
       const gap = n.reality_gap_mt;
-      const statusClass = gap === null ? '' : (gap > 0 ? 'tt-status-red' : 'tt-status-green');
-      const statusText = gap === null ? 'No target data' : (gap > 0 ? 'OVERSHOOTING' : 'ON TRACK');
-      const target = n.reduction_pct > 0 ? n.reduction_pct + '% by ' + Math.round(n.target_year) : 'No target';
+      const statusClass = !_isFiniteNumber(gap) ? '' : (gap > 0 ? 'tt-status-red' : 'tt-status-green');
+      const statusText = !_isFiniteNumber(gap) ? 'GAP UNAVAILABLE' : (gap > 0 ? 'OVERSHOOTING' : 'ON TRACK');
+      const target = n.reduction_pct > 0 ? n.reduction_pct + '% by ' + Math.round(n.target_year) : 'No quantified reduction';
       const cat = n.cat_rating ? ' · ' + n.cat_rating : '';
       tooltip.innerHTML = '<div class="tt-country">' + n.country + cat + '</div>'
         + '<div class="tt-detail">' + (n.fossil_co2_mt ? n.fossil_co2_mt.toFixed(1) : '—') + ' MtCO₂ · ' + target + '</div>'

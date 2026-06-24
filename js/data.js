@@ -8,21 +8,24 @@ const Data = {
   biomes: null,
   sites: null,
   pledgeNodes: null,
-  version: 'prod001',
+  countryMarkers: null,
+  version: 'prod002',
 
   async init() {
     // Fetch all data files in parallel — each individually guarded
     const v = '?v=' + this.version;
-    const [biomesRes, sitesRes, pledgeNodesRes] = await Promise.allSettled([
+    const [biomesRes, sitesRes, pledgeNodesRes, countryMarkersRes] = await Promise.allSettled([
       fetch('data/biomes.json' + v),
       fetch('data/sites.json' + v),
-      fetch('data/pledge-nodes.json' + v)
+      fetch('data/pledge-nodes.json' + v),
+      fetch('data/country-markers.json' + v)
     ]);
 
     // Parse each response individually — a 404 on one shouldn't kill the others
     this.biomes = await this._parseResponse(biomesRes, 'biomes');
     this.sites = await this._parseResponse(sitesRes, 'sites');
     this.pledgeNodes = await this._parseResponse(pledgeNodesRes, 'pledge-nodes');
+    this.countryMarkers = await this._parseResponse(countryMarkersRes, 'country-markers');
 
     // Validate loaded data against schemas
     if (typeof DATA_SCHEMA !== 'undefined') {
@@ -32,7 +35,7 @@ const Data = {
     }
 
     if (this.biomes && this.sites) {
-      console.log('[Data] Loaded:', Object.keys(this.biomes).filter(k => k !== '_meta').length, 'biomes,', this.sites.length, 'sites,', this.pledgeNodes?.length || 0, 'pledge nodes');
+      console.log('[Data] Loaded:', Object.keys(this.biomes).filter(k => k !== '_meta').length, 'biomes,', this.sites.length, 'sites,', this.pledgeNodes?.length || 0, 'pledge nodes,', this.countryMarkers?.length || 0, 'country markers');
     } else {
       console.error('[Data] CRITICAL: Some data files failed to load. biomes:', !!this.biomes, 'sites:', !!this.sites);
     }
