@@ -347,7 +347,7 @@ async function _callOpenRouter(userMessage) {
     console.warn('[GAIA] No API key found');
     return { error: 'No API key found. Click 🔑 API Key to enter your OpenRouter key.' };
   }
-  console.log('[GAIA] Using LLM mode, key:', apiKey.substring(0, 12) + '...');
+  console.log('[GAIA] Using LLM mode');
 
   let turn;
   try {
