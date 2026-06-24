@@ -238,12 +238,11 @@ const GlobeModule = {
     const el = $('globeViz');
     if (!el) { reportError('GlobeModule', 'globeViz element not found'); return; }
 
-    // safeChain: if any method doesn't exist (e.g. specularImageUrl), it's
-    // skipped with a dev warning instead of crashing the entire init.
+    // safeChain: if any method doesn't exist, it's skipped with a dev
+    // warning instead of crashing the entire init.
     this.world = safeChain(new Globe(el, { animateIn: true, waitForGlobeReady: true }), 'Globe')
       .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg')
       .bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
-
       .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
       .showAtmosphere(!this.isMobile).atmosphereColor('#4ecdc4').atmosphereAltitude(0.25)
       .pointsData(Data.sites || [])
