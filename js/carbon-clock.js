@@ -73,7 +73,7 @@ const CARBON_CLOCK = (() => {
           <span class="cc-unit" id="cc-hero-unit">t</span>
         </div>
         <div class="cc-explainer">
-          <span>Humanity emitted ~42 GtCO₂ in 2025. About half stayed in the atmosphere; the rest was absorbed by land and ocean sinks.</span>
+          <span>Nature absorbs <strong>~22 GtCO₂/yr</strong>. Humanity emits <strong>~42 GtCO₂/yr</strong>.</span>
           <span>This is the gap. It grows every second.</span>
         </div>
       </div>
