@@ -9,7 +9,7 @@ const Counters = {
     if (this.animated) return;
     this.animated = true;
     this.animateNum('counter-absorb', 0, 123, 1500, '');
-    this.animateNum('counter-emit', 0, 143, 1800, '');
+    this.animateNum('counter-emit', 0, 42, 1800, '');
     setTimeout(() => this.animateNum('counter-gap', 0, 20, 800, ''), 1200);
   },
 

@@ -264,28 +264,44 @@ const App = {
   },
 
   _bindStaticActions() {
+    if (this._staticActionsBound) return;
+    this._staticActionsBound = true;
+
     const handlers = {
       enterGlobe: () => this.enterGlobe(),
       viewDatasets: () => this.viewDatasets(),
       toggleGlobeOverlay: () => toggleGlobeOverlay(),
       showCycle: (key) => safeCall('Cycle', 'show', key),
+      flyToSite: (id) => this.flyToSite(id),
     };
 
-    document.querySelectorAll('[data-action]').forEach((el) => {
+    const runAction = (el, e) => {
       const action = el.getAttribute('data-action');
-      if (!handlers[action] || el.dataset.appActionBound === 'true') return;
-      el.dataset.appActionBound = 'true';
-      el.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+      if (!handlers[action]) return false;
 
-        let args = [];
-        const argsAttr = el.getAttribute('data-action-args');
-        if (argsAttr) {
-          try { args = JSON.parse(argsAttr); } catch (_) { args = [argsAttr]; }
-        }
-        handlers[action](...args);
-      });
+      e.preventDefault();
+      e.stopPropagation();
+
+      let args = [];
+      const argsAttr = el.getAttribute('data-action-args');
+      if (argsAttr) {
+        try { args = JSON.parse(argsAttr); } catch (_) { args = [argsAttr]; }
+      }
+      handlers[action](...args);
+      return true;
+    };
+
+    document.addEventListener('click', (e) => {
+      const el = e.target.closest('[data-action]');
+      if (!el) return;
+      runAction(el, e);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const el = e.target.closest('[data-action]');
+      if (!el || !el.matches('[role="button"],button,a')) return;
+      runAction(el, e);
     });
   },
 

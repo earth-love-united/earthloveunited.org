@@ -158,8 +158,8 @@ const PULSE_DASHBOARD = (() =>
     const emissions = snap?.humanEmissions || {};
     const facts = _facts();
 
-    const years15 = budget.yearsLeft15 !== undefined ? budget.yearsLeft15 : Math.max(0, Math.round((budget.remaining15 || 250) / (facts.annual_emissions_2025 || 38)));
-    const years20 = budget.yearsLeft20 !== undefined ? budget.yearsLeft20 : Math.max(0, Math.round((budget.remaining20 || 1200) / (facts.annual_emissions_2025 || 38)));
+    const years15 = budget.yearsLeft15 !== undefined ? budget.yearsLeft15 : Math.max(0, Math.round((budget.remaining15 || 170) / (facts.annual_emissions_2025 || 38)));
+    const years20 = budget.yearsLeft20 !== undefined ? budget.yearsLeft20 : Math.max(0, Math.round((budget.remaining20 || 1150) / (facts.annual_emissions_2025 || 38)));
 
     // Carbon clock integration
     let clockAccumulated = '';
@@ -176,17 +176,17 @@ const PULSE_DASHBOARD = (() =>
         <span class="pulse-live-dot" title="Live data"></span>
       </div>
       <div class="pulse-grid">
-        ${_card('1.5°C Budget Left', _fmt(budget.remaining15 || 250, 0), 'GtCO2', null, '~' + years15 + ' years at current rate', 'var(--warn)')}
-        ${_card('2.0°C Budget Left', _fmt(budget.remaining20 || 1200, 0), 'GtCO2', null, '~' + years20 + ' years at current rate', 'var(--amber)')}
+        ${_card('1.5°C Budget Left', _fmt(budget.remaining15 || 170, 0), 'GtCO2', null, '~' + years15 + ' years at current rate', 'var(--warn)')}
+        ${_card('2.0°C Budget Left', _fmt(budget.remaining20 || 1150, 0), 'GtCO2', null, '~' + years20 + ' years at current rate', 'var(--amber)')}
         ${_card('Human Emissions', _fmt(emissions.annualGt || facts.annual_emissions_2025, 1), 'GtCO₂/yr', null, 'fossil + land use', 'var(--warn)')}
-        ${_card('Nature Absorption', _fmt(emissions.natureAbsorptionGt || 123, 1), 'GtCO₂/yr', null, 'ocean + land sinks', 'var(--leaf)')}
+        ${_card('Nature Absorption', _fmt(emissions.natureAbsorptionGt || 22, 1), 'GtCO₂/yr', null, 'ocean + land sinks', 'var(--leaf)')}
       </div>
       <div class="pulse-budget-bar">
         <div class="pulse-budget-label">1.5°C budget consumed</div>
         <div class="pulse-budget-track">
-          <div class="pulse-budget-fill" style="width:${Math.min(100, ((facts.carbon_budget_15 - (budget.remaining15 || 250)) / facts.carbon_budget_15 * 100))}%"></div>
+          <div class="pulse-budget-fill" style="width:${Math.min(100, ((facts.carbon_budget_15 - (budget.remaining15 || 170)) / facts.carbon_budget_15 * 100))}%"></div>
         </div>
-        <div class="pulse-budget-numbers"><span>${_fmt(facts.carbon_budget_15 - (budget.remaining15 || 250), 0)} Gt used</span><span>${_fmt(budget.remaining15 || 250, 0)} Gt left</span></div>
+        <div class="pulse-budget-numbers"><span>${_fmt(facts.carbon_budget_15 - (budget.remaining15 || 170), 0)} Gt used</span><span>${_fmt(budget.remaining15 || 170, 0)} Gt left</span></div>
       </div>
       ${clockAccumulated ? '<div class="pulse-clock-row"><span class="pulse-clock-label">Excess accumulated since you arrived:</span><span class="pulse-clock-value">' + clockAccumulated + '</span></div>' : ''}
       <div class="pulse-sources">Source: Global Carbon Project · IPCC AR6 · Carbon clock: real-time</div>
@@ -306,7 +306,7 @@ const PULSE_DASHBOARD = (() =>
         co2: { latest: facts.co2_current, yearlyChange: facts.co2_annual_increase, keeling12: [], yearlyTrend: [] },
         methane: { latest: facts.methane_current },
         carbonMarket: {},
-        humanEmissions: { annualGt: 143, natureAbsorptionGt: 123, netExcessGt: 20 },
+        humanEmissions: { annualGt: 42.2, natureAbsorptionGt: 22, netExcessGt: 20 },
         carbonBudget: { remaining15: facts.carbon_budget_15, remaining20: facts.carbon_budget_20, yearsLeft15: Math.max(0, Math.round(facts.carbon_budget_15 / (facts.annual_emissions_2025 || 38))), yearsLeft20: Math.max(0, Math.round(facts.carbon_budget_20 / (facts.annual_emissions_2025 || 38))) },
       };
     }

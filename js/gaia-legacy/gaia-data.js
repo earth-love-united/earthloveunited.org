@@ -152,8 +152,8 @@ const GAIA_DATA = (() => {
       const co2MonthlyChange = co2Latest && co2Prev ? +(co2Latest.co2 - co2Prev.co2).toFixed(2) : null;
       const co2YearlyChange = co2Latest && co2YearAgo ? +(co2Latest.co2 - co2YearAgo.co2).toFixed(2) : null;
 
-      // 24-hour human emissions estimate (143 Gt/yr = ~392,000 t/day = ~16,300 t/hr)
-      const dailyEmissionsGt = 143 / 365;
+      // 24-hour human emissions estimate (42 Gt/yr = ~115,000 t/day = ~4,800 t/hr)
+      const dailyEmissionsGt = 42 / 365;
       const hourlyEmissionsGt = dailyEmissionsGt / 24;
 
       // Methane
@@ -212,15 +212,15 @@ const GAIA_DATA = (() => {
         humanEmissions: {
           dailyGt: +dailyEmissionsGt.toFixed(2),
           hourlyGt: +hourlyEmissionsGt.toFixed(2),
-          annualGt: 143,
-          natureAbsorptionGt: 123,
+          annualGt: 42,
+          natureAbsorptionGt: 22,
           netExcessGt: 20,
         },
         carbonBudget: {
-          remaining15: 250,
-          remaining20: 1200,
-          yearsLeft15: Math.max(0, Math.round(250 / 37.8)),
-          yearsLeft20: Math.max(0, Math.round(1200 / 37.8)),
+          remaining15: 170,
+          remaining20: 1150,
+          yearsLeft15: Math.max(0, Math.round(170 / 42.2)),
+          yearsLeft20: Math.max(0, Math.round(1150 / 42.2)),
         }
       };
     },

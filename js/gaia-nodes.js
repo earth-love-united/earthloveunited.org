@@ -30,14 +30,14 @@ const GAIA_NODES = (() => {
     co2_annual_increase: 2.7,
     methane_current: 1940,
     methane_preindustrial: 722,
-    temp_anomaly: 1.5,
+    temp_anomaly: 1.19,
     temp_anomaly_2021: 1.2,
     warming_rate: 0.2,
-    carbon_budget_15: 250,
-    carbon_budget_20: 1200,
-    annual_emissions_2023: 37.8,
-    annual_emissions_2025: 38.2,
-    land_use_emissions: 3.6,
+    carbon_budget_15: 170,
+    carbon_budget_20: 1150,
+    annual_emissions_2023: 37.4,
+    annual_emissions_2025: 42.2,
+    land_use_emissions: 4.8,
     ocean_sink: 2.5,
     land_sink: 3.4,
     airborne_fraction: 0.44,
@@ -525,12 +525,12 @@ const GAIA_NODES = (() => {
 
       <h3>The Fire Equation</h3>
       <p>Hotter + drier = more fire. It's not complicated. The 2021 wildfires were the predictable result of decades of warming and drying. And it will happen again. The question is when, and how much we've done to prevent it.</p>
-      <p>Globally, the warming rate is <strong>${FACTS.warming_rate}°C per decade</strong> since 1970. The Arctic is warming <strong>3.5x</strong> faster. And the remaining carbon budget for 1.5°C? <strong>${FACTS.carbon_budget_15} Gt CO₂</strong> — at current emissions rates, that's gone by 2031.</p>
+      <p>Globally, the warming rate is <strong>${FACTS.warming_rate}°C per decade</strong> since 1970. The Arctic is warming <strong>3.5x</strong> faster. And the remaining carbon budget for 1.5°C? <strong>${FACTS.carbon_budget_15} Gt CO₂</strong> — at current emissions rates, that's gone by ~2030.</p>
 
       ${statRow([
         { value: `${FACTS.warming_rate}°C/dec`, label: 'Warming Rate' },
         { value: `${FACTS.carbon_budget_15} Gt`, label: '1.5°C Budget Left' },
-        { value: '~6 years', label: 'At Current Rate' },
+        { value: '~4 years', label: 'At Current Rate' },
       ])}
     `;
     renderChart(tempId, tempChartData, { color: '#d4a574' });
@@ -960,13 +960,13 @@ const GAIA_NODES = (() => {
       <div class="overlay-divider"></div>
 
       <h3>The Carbon Budget Clock</h3>
-      <p>Humanity emits <strong>${FACTS.annual_emissions_2025} Gt CO₂ per year</strong>. The remaining carbon budget for 1.5°C is <strong>${FACTS.carbon_budget_15} Gt CO₂</strong>. At current rates, that's gone by 2031. For 2°C, it's ${FACTS.carbon_budget_20} Gt — gone by ~2045.</p>
+      <p>Humanity emits <strong>${FACTS.annual_emissions_2025} Gt CO₂ per year</strong>. The remaining carbon budget for 1.5°C is <strong>${FACTS.carbon_budget_15} Gt CO₂</strong>. At current rates, that's gone by ~2030. For 2°C, it's ${FACTS.carbon_budget_20} Gt — gone by ~2053.</p>
       <p>Every fraction of a degree matters. The difference between 1.5°C and 2°C is hundreds of millions of people exposed to severe heat, meters of additional sea level rise, and the loss of virtually all coral reefs.</p>
 
       ${statRow([
         { value: `${FACTS.carbon_budget_15} Gt`, label: '1.5°C Budget Left' },
         { value: `${FACTS.carbon_budget_20} Gt`, label: '2°C Budget Left' },
-        { value: '~6 years', label: 'At Current Rate' },
+        { value: '~4 years', label: 'At Current Rate' },
       ])}
 
       <div class="overlay-divider"></div>

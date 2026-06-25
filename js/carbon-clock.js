@@ -1,6 +1,7 @@
 /**
- * CARBON CLOCK v1.0
- * Live counter showing real-time excess CO₂ accumulation
+ * CARBON CLOCK v2.0
+ * Live counter showing real-time atmospheric CO₂ accumulation
+ * Net annual growth ~20 Gt/yr (Friedlingstein et al 2026, GCB 2025)
  * 20 Gt/year = ~635 tons/second = ~0.635 tons every millisecond
  * 
  * Displays on hero, then mini version in topbar after entering
@@ -72,7 +73,7 @@ const CARBON_CLOCK = (() => {
           <span class="cc-unit" id="cc-hero-unit">t</span>
         </div>
         <div class="cc-explainer">
-          <span>Nature absorbs <strong>123 Gt</strong>. Humanity emits <strong>143 Gt</strong>.</span>
+          <span>Humanity emitted ~42 GtCO₂ in 2025. About half stayed in the atmosphere; the rest was absorbed by land and ocean sinks.</span>
           <span>This is the gap. It grows every second.</span>
         </div>
       </div>
