@@ -8,9 +8,13 @@
 
 This is the source of [earthloveunited.org](https://earthloveunited.org) — the
 public face of the Earth Love United Foundation, a global initiative for
-sustainability and climate action. The site is an interactive 3D experience
-combining a globe-anchored knowledge layer, a grounded climate-science RAG
-agent ("Gaia"), and a pledge wall for community commitments.
+sustainability and climate action.
+
+**v1 surface:** an entry page with a live carbon clock, and a living globe of
+country climate pledges vs reality. Earlier experimental layers (the "Gaia"
+climate-science RAG agent, pledge wall, quiz, biomes, scenario builder, NDVI
+and events globe modes) are parked in [`_archive/v1-cut/`](_archive/v1-cut/)
+with full git history, ready to return one at a time.
 
 We open-sourced this codebase because foundations should be auditable. There
 is nothing in here we wouldn't want a partner, donor, or researcher to read.
@@ -28,16 +32,13 @@ mkdir -p js/vendor
 curl -L https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js \
   -o js/vendor/globe.gl.js
 
-# (Optional) Fetch the climate + carbon datasets from Hugging Face
-./tools/fetch-data.sh           # all   — needs `pip install huggingface_hub`
-
 # Serve. That's it.
 python3 -m http.server 8000
 # → open http://localhost:8000
 ```
 
-No `npm install`. No `pnpm`. No bundler. No build step at all. The site is two
-HTML files (`index.html`, `gaia.html`) loading classic `<script>` tags. See
+No `npm install`. No `pnpm`. No bundler. No build step at all. The site is one
+HTML file (`index.html`) loading ten classic `<script>` tags. See
 [ARCHITECTURE.md](ARCHITECTURE.md) for the module map, and
 [SWARM_SDK.md](SWARM_SDK.md) for the Standard Module Lifecycle (SML) every
 module follows.
@@ -72,19 +73,18 @@ Full architectural conventions are in [AGENTS.md](AGENTS.md).
 
 ```
 earthloveunited.org/
-├── index.html              Landing page (the globe)
-├── gaia.html               Gaia agent interface
+├── index.html              The site: hero + carbon clock + countries globe
 ├── js/
 │   ├── gaia-utils.js       Foundation: safeCall, hasModule, $, reportError
 │   ├── module-contracts.js Module dependency/interface validation
-│   ├── module-validator.js Boot validator — checks all modules on window
-│   ├── app.js              Init entry point
-│   ├── globe.js            Globe.gl-backed 3D earth
-│   ├── gaia-*.js           Gaia agent system (chat, voice, retrieval, etc.)
-│   └── ...                 ~40 IIFE modules
-├── css/                    Design tokens, layout, components
-├── data/                   Small, fast-loading JSON for the site
-│   └── provenance-registry.json  Dataset readiness + source-trail registry
+│   ├── app.js              Init entry point, hero ⇄ globe navigation
+│   ├── globe.js            Globe.gl-backed 3D earth (pledge vs reality)
+│   ├── carbon-clock.js     Live emissions counter
+│   ├── data.js             Loads data/pledge-nodes.json
+│   └── ...                 10 IIFE modules total
+├── css/carbon-clock.css    (critical CSS is inlined in index.html)
+├── data/pledge-nodes.json  Country pledge + emissions data
+├── _archive/v1-cut/        Everything cut for v1 (restorable, see its README)
 ├── dis/                    Gaia knowledge index + climate facts (runtime data)
 ├── docs/                   Architecture, research, operations, and agent notes
 │   ├── operations/         Launch playbooks, mission plans, repo maps

@@ -315,7 +315,10 @@ const GlobeModule = {
     console.log('[Globe] init — ' + (this.world.pointsData()?.length || 0) + ' points loaded');
 
     // ── Pledge vs Reality country nodes ──
-    this.initPledgeNodes();
+    // v1: point layer disabled — the bare countries globe carries pledge data
+    // via colored hex polygons + the country tooltip instead of dot markers.
+    // Re-enable by uncommenting when the nodes toggle returns.
+    // this.initPledgeNodes();
 
     // ── Country hex polygons — shared between modes ──
     // Default: empty wireframe grid (visible edges, transparent fill)
@@ -531,8 +534,9 @@ const GlobeModule = {
     // Apply initial node visual states
     this.updateNodeVisuals();
 
-    // Initialize pledge tooltip
-    this._initPledgeTooltip();
+    // v1: pledge point tooltip disabled along with initPledgeNodes() — the
+    // country tooltip (#hex-country-tooltip) covers pledge data instead.
+    // this._initPledgeTooltip();
   },
 
   // ── Pledge nodes layer ──

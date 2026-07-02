@@ -1,32 +1,17 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for static assets, network-first for HTML and data.
- * Version bump (v10) — JS/CSS use network-first to avoid stale production code.
+ * Version bump (v11) — v1 de-bloat: precache list trimmed to the
+ * hero + carbon clock + bare countries globe surface.
  */
-const CACHE_NAME = 'elu-v10';
+const CACHE_NAME = 'elu-v11';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
-  '/gaia.html',
-  // CSS (critical — inlined in index.html since A3, but keep for gaia.html / noscript)
-  '/css/base.css',
-  '/css/layout.css',
-  '/css/components.css',
-  // CSS (non-critical — deferred)
-  '/css/widgets.css',
-  '/css/responsive.css',
+  // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css',
-  '/css/delegation.css',
-  '/css/pledge-wall.css',
-  '/css/gaia-bubble.css',
-  '/css/globe-overlay.css',
-  '/css/gaia-presence.css',
-  '/css/ndvi-verifier.css',
-  '/css/registry-check.css',
-  '/css/gaia-sources.css',
-  '/css/print.css',
-  // JS — individual files (B1 bundles removed in v9)
+  // JS — v1 core
   '/js/gaia-utils.js',
   '/js/module-contracts.js',
   '/js/event-bus.js',
@@ -34,47 +19,11 @@ const STATIC_ASSETS = [
   '/js/storage.js',
   '/js/data-schema.js',
   '/js/data.js',
-  '/js/quiz.js',
-  '/js/cycle.js',
-  '/js/biomes.js',
-  '/js/counters.js',
-  '/js/scenario.js',
   '/js/globe.js',
-  '/js/globe-modes.js',
-  '/js/globe-restore.js',
-  '/js/globe-ndvi.js',
-  '/js/climate-data-loader.js',
-  '/js/globe-events.js',
-  '/js/gaia-voice.js',
-  '/js/gaia-engagement.js',
-  '/js/gaia-journal.js',
-  '/js/gaia-bubble.js',
-  '/js/globe-overlay.js',
-  '/js/site-panel.js',
   '/js/carbon-clock.js',
-  '/js/country-data.js',
-  '/js/carbon-shadow.js',
-  '/js/pulse-dashboard.js',
-  '/js/delegation.js',
-  '/js/pledge-wall.js',
-  '/js/gaia-nodes.js',
-  '/js/module-validator.js',
-  '/js/bridge-client.js',
   '/js/app.js',
-  // GAIA legacy
-  '/js/gaia-legacy/gaia-data.js',
-  '/js/gaia-legacy/gaia-signals.js',
-  '/js/gaia-legacy/gaia-charts.js',
-  '/js/gaia-legacy/gaia-knowledge.js',
-  '/js/gaia-overlay-knowledge.js',
-  '/js/ndvi-verifier.js',
-  '/js/gaia-presence.js',
-  '/js/registry-check.js',
   // Data (small, cacheable)
-  '/data/biomes.json',
-  '/data/sites.json',
-  '/data/climate-events.json',
-  '/data/provenance-registry.json',
+  '/data/pledge-nodes.json',
 ];
 
 // ── Install: pre-cache static assets ──

@@ -9,9 +9,10 @@ loads AFTER all of its dependencies.
 Exits 0 on success, non-zero on any violation.
 
 Usage:
-    python3 scripts/verify-load-order.py [index.html gaia.html ...]
+    python3 scripts/verify-load-order.py [index.html ...]
 
-If no files given, defaults to index.html and gaia.html in the project root.
+If no files given, defaults to index.html in the project root.
+(gaia.html was archived in the v1 de-bloat — see _archive/v1-cut/)
 """
 
 import os
@@ -230,7 +231,6 @@ def validate_load_order(
 def main() -> None:
     html_files = [Path(f) for f in sys.argv[1:]] if len(sys.argv) > 1 else [
         PROJECT_ROOT / "index.html",
-        PROJECT_ROOT / "gaia.html",
     ]
     for p in html_files:
         if not p.exists():

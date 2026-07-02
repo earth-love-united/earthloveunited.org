@@ -11,30 +11,25 @@ const Data = {
   version: 'prod001',
 
   async init() {
-    // Fetch all data files in parallel — each individually guarded
+    // v1: the bare countries globe only needs pledge-nodes.json.
+    // biomes.json / sites.json were archived with the foundation sections
+    // (see _archive/) — getBiome/getSite degrade to null.
     const v = '?v=' + this.version;
-    const [biomesRes, sitesRes, pledgeNodesRes] = await Promise.allSettled([
-      fetch('data/biomes.json' + v),
-      fetch('data/sites.json' + v),
+    const [pledgeNodesRes] = await Promise.allSettled([
       fetch('data/pledge-nodes.json' + v)
     ]);
 
-    // Parse each response individually — a 404 on one shouldn't kill the others
-    this.biomes = await this._parseResponse(biomesRes, 'biomes');
-    this.sites = await this._parseResponse(sitesRes, 'sites');
     this.pledgeNodes = await this._parseResponse(pledgeNodesRes, 'pledge-nodes');
 
-    // Validate loaded data against schemas
+    // Validate loaded data against schema
     if (typeof DATA_SCHEMA !== 'undefined') {
-      if (this.biomes) DATA_SCHEMA.validate('biomes.json', this.biomes);
-      if (this.sites) DATA_SCHEMA.validate('sites.json', this.sites);
       if (this.pledgeNodes) DATA_SCHEMA.validate('pledge-nodes.json', this.pledgeNodes);
     }
 
-    if (this.biomes && this.sites) {
-      console.log('[Data] Loaded:', Object.keys(this.biomes).filter(k => k !== '_meta').length, 'biomes,', this.sites.length, 'sites,', this.pledgeNodes?.length || 0, 'pledge nodes');
+    if (this.pledgeNodes) {
+      console.log('[Data] Loaded:', this.pledgeNodes.length, 'pledge nodes');
     } else {
-      console.error('[Data] CRITICAL: Some data files failed to load. biomes:', !!this.biomes, 'sites:', !!this.sites);
+      console.error('[Data] CRITICAL: pledge-nodes.json failed to load — country layer will be uncolored');
     }
 
     // ── Country Hex Color Lookup ──
