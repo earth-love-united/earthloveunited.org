@@ -8,6 +8,7 @@ const Data = {
   biomes: null,
   sites: null,
   pledgeNodes: null,
+  smallNations: null,
   version: 'prod001',
 
   async init() {
@@ -15,11 +16,15 @@ const Data = {
     // biomes.json / sites.json were archived with the foundation sections
     // (see _archive/) — getBiome/getSite degrade to null.
     const v = '?v=' + this.version;
-    const [pledgeNodesRes] = await Promise.allSettled([
-      fetch('data/pledge-nodes.json' + v)
+    const [pledgeNodesRes, smallNationsRes] = await Promise.allSettled([
+      fetch('data/pledge-nodes.json' + v),
+      fetch('data/small-nations.json' + v)
     ]);
 
     this.pledgeNodes = await this._parseResponse(pledgeNodesRes, 'pledge-nodes');
+    // UN members absent from the 110m country GeoJSON (island + micro
+    // nations) — GlobeModule renders these as small circular markers.
+    this.smallNations = await this._parseResponse(smallNationsRes, 'small-nations');
 
     // Validate loaded data against schema
     if (typeof DATA_SCHEMA !== 'undefined') {

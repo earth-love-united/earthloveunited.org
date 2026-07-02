@@ -331,6 +331,11 @@ const GlobeModule = {
           throw new Error('Malformed country GeoJSON');
         }
         this._countryFeatures = countries.features.filter(d => d.properties?.ISO_A2 !== 'AQ');
+        // Island + micro nations missing from the 110m GeoJSON get synthetic
+        // dot-sized circle features — same layers, colors, tooltip, and click
+        // behavior as every other country. Appended LAST so they win the
+        // point-in-polygon scan (it iterates back-to-front).
+        this._appendSmallNationFeatures();
         this._countryDataState = 'ready';
         const hexRes = this.isMobile ? 2 : 3;
         const hexMargin = this.isMobile ? 0.7 : 0.62;
@@ -772,12 +777,14 @@ const GlobeModule = {
     if (feature === this._selectedCountryFeature) return 'rgba(123,232,208,0.86)';
 
     const d = _getCountryDisplayData(feature);
-    if (!d) return 'rgba(180,215,218,0.34)';
+    const small = !!feature?.properties?.__smallNation;
+    if (!d) return small ? 'rgba(200,230,235,0.7)' : 'rgba(180,215,218,0.34)';
     const statusKey = _getCountryStatusKey(d);
-    if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(170,205,214,0.34)';
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(214,184,138,0.38)';
-    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'rgba(255,132,112,0.42)';
-    return 'rgba(116,232,172,0.42)';
+    // Small-nation dots get a brighter rim so they read at a few pixels wide
+    if (statusKey === COUNTRY_STATUS.MISSING) return small ? 'rgba(200,230,235,0.7)' : 'rgba(170,205,214,0.34)';
+    if (statusKey === COUNTRY_STATUS.NO_TARGET) return small ? 'rgba(230,195,145,0.8)' : 'rgba(214,184,138,0.38)';
+    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return small ? 'rgba(255,140,118,0.85)' : 'rgba(255,132,112,0.42)';
+    return small ? 'rgba(126,240,180,0.85)' : 'rgba(116,232,172,0.42)';
   },
 
   _countryPolygonPaintColorFn(feature) {
@@ -785,6 +792,18 @@ const GlobeModule = {
     const selected = feature === this._selectedCountryFeature;
     const d = _getCountryDisplayData(feature);
     const hoverBoost = hovered ? 0.12 : (selected ? 0.08 : 0);
+
+    // Small-nation dot markers: a few pixels wide, so the usual low-alpha
+    // country wash would vanish. Paint them at legend-swatch strength.
+    if (feature?.properties?.__smallNation) {
+      const boost = hovered ? 0.25 : (selected ? 0.18 : 0);
+      const statusKey = d ? _getCountryStatusKey(d) : COUNTRY_STATUS.MISSING;
+      if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(212,165,116,' + (0.60 + boost).toFixed(2) + ')';
+      if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'rgba(255,84,58,' + (0.65 + boost).toFixed(2) + ')';
+      if (statusKey === COUNTRY_STATUS.ON_TRACK) return 'rgba(46,204,113,' + (0.60 + boost).toFixed(2) + ')';
+      return 'rgba(120,150,165,' + (0.55 + boost).toFixed(2) + ')';
+    }
+
     if (!d) return 'rgba(120,150,165,' + (0.10 + hoverBoost).toFixed(2) + ')';
     const statusKey = _getCountryStatusKey(d);
     if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(120,150,165,' + (0.10 + hoverBoost).toFixed(2) + ')';
@@ -894,6 +913,45 @@ const GlobeModule = {
       this.world.hexPolygonMargin(0.75);
     } else {
       this.world.hexPolygonMargin(0.68);
+    }
+  },
+
+  // ── Small nations (island + micro states) ──
+  // Natural Earth 110m has no polygons for ~28 UN members (Maldives,
+  // Seychelles, Tuvalu, Singapore, ...). We inject each as a synthetic
+  // dot-sized circular Feature so they flow through the SAME polygon
+  // layers as real countries: status fill color, border, hover highlight,
+  // country tooltip, and click-to-pin all work unchanged.
+  _appendSmallNationFeatures() {
+    const nations = Data.smallNations;
+    if (!Array.isArray(nations) || !nations.length) return;
+    if (!Array.isArray(this._countryFeatures)) return;
+
+    const existing = new Set(this._countryFeatures.map(f => _resolveCountryIso(f)));
+    const R = 0.55;       // circle radius in degrees (~5px dot at default zoom)
+    const STEPS = 20;
+
+    const added = [];
+    nations.forEach(n => {
+      if (!n || !n.iso || existing.has(n.iso)) return;
+      const latR = R;
+      // Correct longitude radius so circles stay round away from the equator
+      const lngR = R / Math.max(0.2, Math.cos(n.lat * Math.PI / 180));
+      const ring = [];
+      for (let i = 0; i <= STEPS; i++) {
+        const a = (i / STEPS) * Math.PI * 2;
+        ring.push([n.lng + Math.cos(a) * lngR, n.lat + Math.sin(a) * latR]);
+      }
+      added.push({
+        type: 'Feature',
+        properties: { ISO_A3: n.iso, ADMIN: n.country, NAME: n.country, __smallNation: true },
+        geometry: { type: 'Polygon', coordinates: [ring] },
+      });
+    });
+
+    if (added.length) {
+      this._countryFeatures = this._countryFeatures.concat(added);
+      console.log('[Globe] Small nations layer:', added.length, 'dot markers added');
     }
   },
 

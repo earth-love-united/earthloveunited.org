@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "description": "UN member states absent from Natural Earth 1:110m admin_0 — rendered on the globe as small circular markers so island and micro nations stay visible. Coordinates are approximate national centroids/capitals.",
+    "source": "Natural Earth 110m gap analysis, 2026-07-02",
+    "count": 28
+  },
+  "data": [
+    { "iso": "AND", "country": "Andorra",                          "lat": 42.55,  "lng": 1.58 },
+    { "iso": "ATG", "country": "Antigua and Barbuda",              "lat": 17.08,  "lng": -61.80 },
+    { "iso": "BHR", "country": "Bahrain",                          "lat": 26.05,  "lng": 50.55 },
+    { "iso": "BRB", "country": "Barbados",                         "lat": 13.17,  "lng": -59.55 },
+    { "iso": "CPV", "country": "Cabo Verde",                       "lat": 15.10,  "lng": -23.62 },
+    { "iso": "COM", "country": "Comoros",                          "lat": -11.65, "lng": 43.35 },
+    { "iso": "DMA", "country": "Dominica",                         "lat": 15.42,  "lng": -61.34 },
+    { "iso": "FSM", "country": "Micronesia",                       "lat": 6.92,   "lng": 158.25 },
+    { "iso": "GRD", "country": "Grenada",                          "lat": 12.11,  "lng": -61.68 },
+    { "iso": "KIR", "country": "Kiribati",                         "lat": 1.45,   "lng": 172.98 },
+    { "iso": "KNA", "country": "Saint Kitts and Nevis",            "lat": 17.30,  "lng": -62.73 },
+    { "iso": "LCA", "country": "Saint Lucia",                      "lat": 13.90,  "lng": -60.97 },
+    { "iso": "LIE", "country": "Liechtenstein",                    "lat": 47.16,  "lng": 9.55 },
+    { "iso": "MCO", "country": "Monaco",                           "lat": 43.73,  "lng": 7.42 },
+    { "iso": "MDV", "country": "Maldives",                         "lat": 3.25,   "lng": 73.22 },
+    { "iso": "MHL", "country": "Marshall Islands",                 "lat": 7.10,   "lng": 171.38 },
+    { "iso": "MLT", "country": "Malta",                            "lat": 35.90,  "lng": 14.51 },
+    { "iso": "MUS", "country": "Mauritius",                        "lat": -20.28, "lng": 57.55 },
+    { "iso": "NRU", "country": "Nauru",                            "lat": -0.52,  "lng": 166.93 },
+    { "iso": "PLW", "country": "Palau",                            "lat": 7.50,   "lng": 134.62 },
+    { "iso": "SMR", "country": "San Marino",                       "lat": 43.94,  "lng": 12.46 },
+    { "iso": "SGP", "country": "Singapore",                        "lat": 1.35,   "lng": 103.82 },
+    { "iso": "STP", "country": "São Tomé and Príncipe",            "lat": 0.33,   "lng": 6.73 },
+    { "iso": "SYC", "country": "Seychelles",                       "lat": -4.68,  "lng": 55.48 },
+    { "iso": "TON", "country": "Tonga",                            "lat": -21.18, "lng": -175.20 },
+    { "iso": "TUV", "country": "Tuvalu",                           "lat": -8.52,  "lng": 179.20 },
+    { "iso": "VCT", "country": "Saint Vincent and the Grenadines", "lat": 13.25,  "lng": -61.20 },
+    { "iso": "WSM", "country": "Samoa",                            "lat": -13.83, "lng": -171.77 }
+  ]
+}
