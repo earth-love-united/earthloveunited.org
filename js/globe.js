@@ -53,7 +53,20 @@ function _pointInFeature(lng, lat, feature) {
 
 function _findCountryAtPoint(lng, lat, features) {
   for (let i = features.length - 1; i >= 0; i--) {
-    if (_pointInFeature(lng, lat, features[i])) return features[i];
+    const f = features[i];
+    // Small-nation dot markers: hit-test by angular distance so the hover
+    // target stays comfortable even though the visual dot is ~3px.
+    const p = f.properties;
+    if (p && p.__smallNation) {
+      const dLat = lat - p.__lat;
+      let dLng = lng - p.__lng;
+      if (dLng > 180) dLng -= 360;
+      if (dLng < -180) dLng += 360;
+      dLng *= Math.max(0.2, Math.cos(p.__lat * Math.PI / 180));
+      if (dLat * dLat + dLng * dLng <= p.__hitR * p.__hitR) return f;
+      continue;
+    }
+    if (_pointInFeature(lng, lat, f)) return f;
   }
   return null;
 }
@@ -780,11 +793,11 @@ const GlobeModule = {
     const small = !!feature?.properties?.__smallNation;
     if (!d) return small ? 'rgba(200,230,235,0.7)' : 'rgba(180,215,218,0.34)';
     const statusKey = _getCountryStatusKey(d);
-    // Small-nation dots get a brighter rim so they read at a few pixels wide
-    if (statusKey === COUNTRY_STATUS.MISSING) return small ? 'rgba(200,230,235,0.7)' : 'rgba(170,205,214,0.34)';
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) return small ? 'rgba(230,195,145,0.8)' : 'rgba(214,184,138,0.38)';
-    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return small ? 'rgba(255,140,118,0.85)' : 'rgba(255,132,112,0.42)';
-    return small ? 'rgba(126,240,180,0.85)' : 'rgba(116,232,172,0.42)';
+    // Small-nation dots get a bright rim so they read at a few pixels wide
+    if (statusKey === COUNTRY_STATUS.MISSING) return small ? 'rgba(225,245,248,0.9)' : 'rgba(170,205,214,0.34)';
+    if (statusKey === COUNTRY_STATUS.NO_TARGET) return small ? 'rgba(245,210,160,0.92)' : 'rgba(214,184,138,0.38)';
+    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return small ? 'rgba(255,150,128,0.95)' : 'rgba(255,132,112,0.42)';
+    return small ? 'rgba(136,245,188,0.95)' : 'rgba(116,232,172,0.42)';
   },
 
   _countryPolygonPaintColorFn(feature) {
@@ -794,14 +807,14 @@ const GlobeModule = {
     const hoverBoost = hovered ? 0.12 : (selected ? 0.08 : 0);
 
     // Small-nation dot markers: a few pixels wide, so the usual low-alpha
-    // country wash would vanish. Paint them at legend-swatch strength.
+    // country wash would vanish. Paint them near-solid for contrast.
     if (feature?.properties?.__smallNation) {
-      const boost = hovered ? 0.25 : (selected ? 0.18 : 0);
+      const boost = hovered ? 0.10 : (selected ? 0.08 : 0);
       const statusKey = d ? _getCountryStatusKey(d) : COUNTRY_STATUS.MISSING;
-      if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(212,165,116,' + (0.60 + boost).toFixed(2) + ')';
-      if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'rgba(255,84,58,' + (0.65 + boost).toFixed(2) + ')';
-      if (statusKey === COUNTRY_STATUS.ON_TRACK) return 'rgba(46,204,113,' + (0.60 + boost).toFixed(2) + ')';
-      return 'rgba(120,150,165,' + (0.55 + boost).toFixed(2) + ')';
+      if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(224,172,110,' + (0.88 + boost).toFixed(2) + ')';
+      if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'rgba(255,84,58,' + (0.90 + boost).toFixed(2) + ')';
+      if (statusKey === COUNTRY_STATUS.ON_TRACK) return 'rgba(46,214,118,' + (0.88 + boost).toFixed(2) + ')';
+      return 'rgba(150,182,196,' + (0.85 + boost).toFixed(2) + ')';
     }
 
     if (!d) return 'rgba(120,150,165,' + (0.10 + hoverBoost).toFixed(2) + ')';
@@ -928,8 +941,9 @@ const GlobeModule = {
     if (!Array.isArray(this._countryFeatures)) return;
 
     const existing = new Set(this._countryFeatures.map(f => _resolveCountryIso(f)));
-    const R = 0.55;       // circle radius in degrees (~5px dot at default zoom)
-    const STEPS = 20;
+    const R = 0.28;        // visual radius in degrees (~3px dot at default zoom)
+    const HIT_R = 1.0;     // hover/click hit radius (decoupled from the visual)
+    const STEPS = 16;
 
     const added = [];
     nations.forEach(n => {
@@ -944,7 +958,10 @@ const GlobeModule = {
       }
       added.push({
         type: 'Feature',
-        properties: { ISO_A3: n.iso, ADMIN: n.country, NAME: n.country, __smallNation: true },
+        properties: {
+          ISO_A3: n.iso, ADMIN: n.country, NAME: n.country,
+          __smallNation: true, __lat: n.lat, __lng: n.lng, __hitR: HIT_R,
+        },
         geometry: { type: 'Polygon', coordinates: [ring] },
       });
     });
