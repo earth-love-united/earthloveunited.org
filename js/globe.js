@@ -772,6 +772,18 @@ const GlobeModule = {
           this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
           return;
         }
+        // ☆ watch toggle
+        const watch = event.target.closest('[data-country-watch]');
+        if (watch) {
+          event.preventDefault();
+          event.stopPropagation();
+          this._toggleWatch(watch.getAttribute('data-country-watch'));
+          if (this._selectedCountryFeature) {
+            this._renderCountryInfoCard(this._selectedCountryFeature, true);
+            this._dockCountryCard();
+          }
+          return;
+        }
         const stat = event.target.closest('[data-country-stat]');
         if (!stat) return;
         event.preventDefault();
@@ -874,9 +886,11 @@ const GlobeModule = {
 
     tt.classList.toggle('selected', !!selected);
 
+    const watched = selected && this._getWatchlist().includes(d.iso);
     let html = '<div class="tt-topline">'
       + '<div class="tt-country">' + _escapeHtml(d.country) + '</div>'
       + '<div class="tt-pill tt-status-' + statusClass + '">' + _escapeHtml(statusText) + '</div>'
+      + (selected ? '<button type="button" class="tt-watch' + (watched ? ' watched' : '') + '" data-country-watch="' + _escapeHtml(d.iso) + '" aria-label="Watch this country" title="Watch — build a list, get updates">' + (watched ? '★' : '☆') + '</button>' : '')
       + (selected ? '<button type="button" class="tt-close" data-country-close aria-label="Close">✕</button>' : '')
       + '</div>'
       + '<div class="tt-detail">' + _escapeHtml(emissions) + ' · ' + _escapeHtml(perCapita) + '</div>';
@@ -1133,8 +1147,68 @@ const GlobeModule = {
       html += '<div class="tt-ctg-supply tt-ctg-none">No registered carbon projects in the unified dataset for this country yet.</div>';
     }
 
+    // ── The hook: free sourcing brief, ELU as the verification layer ──
+    html += '<a class="tt-brief-btn" href="' + _escapeHtml(this._briefMailto(node, cp, price)) + '">Request a sourcing brief for ' + _escapeHtml(node.country) + '</a>'
+      + '<div class="tt-brief-sub">Free · registry records pulled + satellite ground-truth where possible · no obligation</div>';
+
     html += '</div>';
+
+    // Watchlist line (retention): appears once anything is watched
+    const wl = this._getWatchlist();
+    if (wl.length) {
+      const listNames = wl.join(', ');
+      const wlMail = 'mailto:info@earthloveunited.org'
+        + '?subject=' + encodeURIComponent('Watchlist updates — ' + listNames)
+        + '&body=' + encodeURIComponent('Hello Earth Love United,\n\nPlease send me updates on these countries from the living globe (new registered projects, verification results, market moves):\n\n' + listNames + '\n\nMy email: \nOrganization (optional): \n');
+      html += '<div class="tt-watchline">★ ' + wl.length + ' watched · <a href="' + _escapeHtml(wlMail) + '">email me updates</a></div>';
+    }
     return html;
+  },
+
+  // ── Watchlist (localStorage, ISO codes) ──
+  _getWatchlist() {
+    try { return JSON.parse(localStorage.getItem('elu_watchlist') || '[]'); } catch { return []; }
+  },
+  _toggleWatch(iso) {
+    const wl = this._getWatchlist();
+    const i = wl.indexOf(iso);
+    if (i >= 0) wl.splice(i, 1); else wl.push(iso);
+    try { localStorage.setItem('elu_watchlist', JSON.stringify(wl)); } catch { /* ignore */ }
+    return wl.includes(iso);
+  },
+
+  // Prefilled sourcing-brief email — the lead arrives with full context
+  _briefMailto(node, cp, price) {
+    const gap = node.reality_gap_mt;
+    const fmt = (n) => (hasModule('Data') ? Data.fmt(n) : String(n));
+    const lines = [
+      'Hello Earth Love United,',
+      '',
+      'I was exploring the living globe and would like a sourcing brief for ' + node.country + '.',
+      '',
+      'Context from the atlas:',
+      '- Pledge status: ' + (node.cat_rating || 'n/a') + (typeof gap === 'number' ? ' · gap to target ' + (gap > 0 ? '+' : '') + fmt(gap) + ' MtCO2/yr' : ''),
+    ];
+    if (cp && cp.c > 0) {
+      lines.push('- Projects in the unified dataset: ' + cp.c + ' (' + fmt(cp.ar) + ' tCO2/yr claimed)');
+      (cp.top || []).slice(0, 3).forEach(p => {
+        const reg = (p.r === 'gold_standard' ? 'GS' : p.r === 'verra' ? 'VCS' : p.r);
+        lines.push('  · ' + p.n + ' [' + reg + ']');
+      });
+    }
+    lines.push(
+      '- Reference price at time of visit: ~$' + price.toFixed(2) + '/t',
+      '',
+      'About me:',
+      '- Organization: ',
+      '- Volume I am exploring (tCO2): ',
+      '- Timeline: ',
+      '',
+      'Thanks,'
+    );
+    return 'mailto:info@earthloveunited.org'
+      + '?subject=' + encodeURIComponent('Sourcing brief request — ' + node.country + ' (' + node.iso + ')')
+      + '&body=' + encodeURIComponent(lines.join('\n'));
   },
 
   // ── Project markers: the pinned country's top projects on the globe ──

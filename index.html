@@ -204,6 +204,16 @@ body.globe-mode #globe-back-btn{display:block}
 #hex-country-tooltip .tt-proj-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);font-size:10.5px;line-height:1.3}
 #hex-country-tooltip .tt-proj-meta{color:var(--text3);font-family:var(--mono);font-size:8.5px;letter-spacing:.3px}
 #hex-country-tooltip .tt-ctg-note{margin-top:6px;color:var(--text3);font-size:9px;line-height:1.35}
+/* the hook: sourcing brief CTA + watchlist */
+#hex-country-tooltip .tt-brief-btn{display:block;margin-top:9px;padding:10px 12px;border:1px solid var(--teal);border-radius:6px;background:rgba(78,205,196,.08);color:var(--teal);font-family:var(--mono);font-size:10px;letter-spacing:1.2px;text-transform:uppercase;text-align:center;text-decoration:none;transition:all .2s}
+#hex-country-tooltip .tt-brief-btn:hover{background:var(--teal);color:var(--bg)}
+#hex-country-tooltip .tt-brief-sub{margin-top:5px;color:var(--text3);font-size:8.5px;letter-spacing:.3px;text-align:center;line-height:1.4}
+#hex-country-tooltip .tt-watch{flex:0 0 auto;width:26px;height:26px;margin:-2px 0 0 2px;border:1px solid rgba(255,255,255,.12);border-radius:50%;background:rgba(255,255,255,.03);color:var(--text2);font-size:12px;line-height:1;cursor:pointer;transition:all .15s}
+#hex-country-tooltip .tt-watch:hover{border-color:var(--amber);color:var(--amber)}
+#hex-country-tooltip .tt-watch.watched{border-color:rgba(212,165,116,.5);background:rgba(212,165,116,.12);color:var(--amber)}
+#hex-country-tooltip .tt-watchline{margin:8px 0 0;color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:.4px;text-align:center}
+#hex-country-tooltip .tt-watchline a{color:var(--amber);text-decoration:none}
+#hex-country-tooltip .tt-watchline a:hover{text-decoration:underline}
 /* deck navigation — swipe physics (ported from agent/designer/swipeable-hover-card) */
 #hex-country-tooltip.selected{touch-action:pan-y;cursor:grab}
 #hex-country-tooltip.tt-dragging{transition:none!important;cursor:grabbing;user-select:none}
