@@ -972,9 +972,9 @@ const GlobeModule = {
     if (!Array.isArray(this._countryFeatures)) return;
 
     const existing = new Set(this._countryFeatures.map(f => _resolveCountryIso(f)));
-    const R = 0.28;        // visual radius in degrees (~3px dot at default zoom)
+    const R = 0.16;        // visual radius in degrees (~1.5px dot at default zoom)
     const HIT_R = 1.0;     // hover/click hit radius (decoupled from the visual)
-    const STEPS = 16;
+    const STEPS = 12;
 
     const added = [];
     nations.forEach(n => {
