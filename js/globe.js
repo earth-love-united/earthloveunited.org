@@ -833,12 +833,19 @@ const GlobeModule = {
           this.navigateCountry(-1, { fromDrag: true });  // dragged right → previous
         } else {
           tt.classList.add('tt-snap');
-          tt.style.transform = '';
+          tt.style.transform = 'none';
           setTimeout(() => tt.classList.remove('tt-snap'), 450);
         }
       };
       tt.addEventListener('pointerup', _dragRelease);
       tt.addEventListener('pointercancel', _dragRelease);
+
+      // Keep the docked card on-screen when the window resizes
+      window.addEventListener('resize', () => {
+        if (tt.classList.contains('selected') && tt.classList.contains('visible')) {
+          this._dockCountryCard();
+        }
+      });
 
       // Horizontal trackpad / shift-wheel browses the deck; vertical keeps scrolling the card
       let _wheelNavAt = 0;
@@ -922,6 +929,7 @@ const GlobeModule = {
       this._selectedCountryFeature = target.feature;
       this._countryHoverFeature = target.feature;
       this._renderCountryInfoCard(target.feature, true);
+      this._dockCountryCard();
       this._refreshCountryBorders();
 
       // Fly the globe to the new country, keeping the current zoom
@@ -937,7 +945,7 @@ const GlobeModule = {
         void tt.offsetWidth;
         tt.classList.add('tt-snap');
         tt.classList.remove(inClass);
-        tt.style.transform = '';
+        tt.style.transform = 'none';
         setTimeout(() => { tt.classList.remove('tt-snap'); this._navBusy = false; }, 460);
       } else {
         this._navBusy = false;
@@ -1034,9 +1042,32 @@ const GlobeModule = {
     return html;
   },
 
+  // Pinned cards dock to a stable screen position — the card stays still
+  // while deck navigation flies the globe underneath. Hover cards follow
+  // the cursor as before.
+  _dockCountryCard() {
+    const tt = $('hex-country-tooltip');
+    if (!tt) return;
+    const w = tt.offsetWidth || 340;
+    const h = tt.offsetHeight || 320;
+    let x, y;
+    if (window.innerWidth <= 900) {
+      x = Math.max(14, (window.innerWidth - w) / 2);
+      y = 64; // just below the topbar
+    } else {
+      x = window.innerWidth - w - 28;
+      y = Math.max(80, Math.min((window.innerHeight - h) / 2, window.innerHeight - h - 24));
+    }
+    tt.style.left = x + 'px';
+    tt.style.top = y + 'px';
+    tt.style.transform = 'none';
+  },
+
   _positionCountryInfoCard(event) {
     const tt = $('hex-country-tooltip');
-    if (!tt || !event) return;
+    if (!tt) return;
+    if (tt.classList.contains('selected')) { this._dockCountryCard(); return; }
+    if (!event) return;
 
     const width = tt.offsetWidth || 280;
     const height = tt.offsetHeight || 140;
