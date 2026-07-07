@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <!-- ─── Identity & social preview ─────────────────────────────── -->
-<meta name="description" content="Earth Love United is an open climate foundation: a live carbon clock and a living globe of country pledges vs reality.">
+<meta name="description" content="Earth Love United Foundation (ELU) is a global nonprofit established in 2020, promoting environmental justice and climate action through innovative, nature-based solutions — with a live carbon clock and a living globe of country pledges vs reality.">
 <meta name="theme-color" content="#0a1628">
 <meta name="author" content="Earth Love United Foundation">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Earth Love United — Living Climate Atlas">
-<meta property="og:description" content="A live carbon clock and a living globe of country pledges vs reality.">
+<meta property="og:title" content="Earth Love United | Global Sustainability Nonprofit">
+<meta property="og:description" content="A global nonprofit driving climate action through nature-based solutions — enter the living globe of country pledges vs reality.">
 <meta property="og:url" content="https://earthloveunited.org">
 <meta property="og:site_name" content="Earth Love United">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Earth Love United — Living Climate Atlas">
-<meta name="twitter:description" content="A live carbon clock and a living globe of country pledges vs reality.">
+<meta name="twitter:title" content="Earth Love United | Global Sustainability Nonprofit">
+<meta name="twitter:description" content="A global nonprofit driving climate action through nature-based solutions — enter the living globe of country pledges vs reality.">
 
 <!-- ─── Favicon (inline SVG — no extra HTTP request) ──────────── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27%230a1628%27%2F%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%234ecdc4%27%20stroke-width%3D%271.5%27%2F%3E%3Cellipse%20cx%3D%2716%27%20cy%3D%2716%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3Cpath%20d%3D%27M2%2016%20Q8%2012%2016%2016%20T30%2016%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3C%2Fsvg%3E">
@@ -38,7 +38,7 @@
   img-src 'self' data: https://cdn.jsdelivr.net;
   font-src 'self' https://fonts.gstatic.com;
 ">
-<title>Earth Love United — Living Climate Atlas</title>
+<title>Earth Love United | Global Sustainability Nonprofit</title>
 
 <!-- PWA -->
 <link rel="manifest" href="/manifest.json">
@@ -185,6 +185,73 @@ body:not(.globe-mode) .hex-legend{display:none}
 .footer .footer-links a{color:var(--text2);text-decoration:none;font-size:12px;transition:color .2s}
 .footer .footer-links a:hover{color:var(--teal)}
 .footer .footer-copy{font-size:10px;color:var(--text3);opacity:.6}
+/* ── site nav (foundation mode; hidden in globe mode) ── */
+#site-nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 26px;background:linear-gradient(180deg,rgba(5,5,9,.94),rgba(5,5,9,.6) 72%,transparent)}
+#site-nav .nav-brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:16px;letter-spacing:1px;color:var(--mint);text-decoration:none;white-space:nowrap}
+#site-nav .nav-links{display:flex;flex-wrap:wrap;gap:3px 17px;justify-content:flex-end}
+#site-nav .nav-links a{color:var(--text2);text-decoration:none;font-size:11px;letter-spacing:1.7px;text-transform:uppercase;transition:color .2s;padding:4px 0}
+#site-nav .nav-links a:hover{color:var(--teal)}
+body.globe-mode #site-nav{display:none}
+/* ── hero secondary action + memorial link ── */
+#hero .ghost-btn{display:inline-block;padding:15px 30px;border:1px solid rgba(78,205,196,.3);border-radius:999px;background:transparent;color:var(--teal);font-family:var(--body);font-size:12px;letter-spacing:2.2px;text-transform:uppercase;text-decoration:none;transition:all .3s}
+#hero .ghost-btn:hover{border-color:var(--teal);background:rgba(78,205,196,.07);transform:translateY(-2px)}
+#hero .memorial a{color:inherit;text-decoration:none;border-bottom:1px dotted rgba(154,149,144,.4)}
+#hero .memorial a:hover{color:var(--text2)}
+/* ── foundation sections ── */
+.section{max-width:1060px;margin:0 auto;padding:88px 26px 26px}
+.sec-kicker{font-family:var(--mono);font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:var(--teal);margin-bottom:12px}
+.section h2{font-family:var(--display);font-size:clamp(30px,3.8vw,46px);font-weight:300;color:var(--mint);letter-spacing:1.5px;margin-bottom:16px}
+.sec-lead{max-width:840px;color:var(--text2);font-size:16px;line-height:1.7}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:36px}
+.card{padding:26px 24px;border:1px solid rgba(78,205,196,.14);border-radius:12px;background:var(--bg2);transition:border-color .25s,transform .25s}
+.card:hover{border-color:rgba(78,205,196,.34);transform:translateY(-2px)}
+.card .card-tag{font-family:var(--mono);font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
+.card h3{font-family:var(--display);font-size:23px;font-weight:400;color:var(--text);letter-spacing:.6px;margin-bottom:8px}
+.card p{color:var(--text2);font-size:14px;line-height:1.65}
+.card .card-cta{display:inline-block;margin-top:18px;padding:10px 22px;border:1px solid rgba(78,205,196,.3);border-radius:999px;background:transparent;color:var(--teal);font-family:var(--body);font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .25s}
+.card .card-cta:hover{background:var(--teal);color:var(--bg)}
+.why-list{list-style:none;margin-top:20px;display:grid;gap:10px;max-width:840px}
+.why-list li{position:relative;padding:14px 16px 14px 40px;border:1px solid rgba(78,205,196,.12);border-radius:10px;background:rgba(255,255,255,.02);color:var(--text2);font-size:14px;line-height:1.55}
+.why-list li::before{content:'◆';position:absolute;left:16px;top:14px;color:var(--teal);font-size:11px}
+.talk-row{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-top:34px}
+.talk-row .talk-line{font-family:var(--display);font-style:italic;font-size:19px;color:var(--text2)}
+/* partners */
+.partner-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:36px}
+.p-logo{display:flex;align-items:center;justify-content:center;min-height:86px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.92);border:1px solid rgba(78,205,196,.1)}
+.p-logo img{max-width:100%;max-height:58px;object-fit:contain}
+.p-logo.noimg{background:var(--bg2);border-color:rgba(78,205,196,.16)}
+.p-logo.noimg img{display:none}
+.p-logo.noimg::before{content:attr(data-name);color:var(--text2);font-size:12px;letter-spacing:1px;text-align:center;line-height:1.4}
+/* team */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:36px}
+.t-card{padding:26px 20px;border:1px solid rgba(78,205,196,.14);border-radius:12px;background:var(--bg2);text-align:center}
+.t-photo{position:relative;width:118px;height:118px;margin:0 auto 16px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 35%,rgba(78,205,196,.18),rgba(26,58,92,.35));border:1px solid rgba(78,205,196,.25)}
+.t-photo img{width:100%;height:100%;object-fit:cover;object-position:top center}
+.t-photo.noimg img{display:none}
+.t-photo.noimg::before{content:attr(data-initials);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:34px;color:var(--mint)}
+.t-card h3{font-family:var(--body);font-weight:500;font-size:16px;color:var(--text);letter-spacing:.4px}
+.t-card .t-role{margin-top:4px;font-family:var(--mono);font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--teal)}
+/* tribute */
+#tribute .trib-wrap{display:grid;grid-template-columns:1fr;gap:30px;margin-top:10px}
+@media(min-width:880px){#tribute .trib-wrap{grid-template-columns:minmax(0,1fr) 300px;align-items:start}}
+.trib-prose p{color:var(--text2);font-size:15px;line-height:1.8;margin-bottom:18px;max-width:70ch}
+.trib-prose p:first-of-type::first-letter{font-family:var(--display);font-size:46px;line-height:.9;color:var(--mint);float:left;padding:4px 8px 0 0}
+.trib-prose em{color:var(--text);font-style:italic}
+.trib-close{font-family:var(--display);font-style:italic;font-size:18px;color:var(--text);line-height:1.6;border-left:2px solid rgba(78,205,196,.35);padding-left:16px;margin-top:6px;max-width:60ch}
+.trib-aside figure{margin:0;border-radius:12px;overflow:hidden;border:1px solid rgba(78,205,196,.16)}
+.trib-aside img{width:100%;display:block}
+.trib-aside.noimg{display:none}
+.trib-aside figcaption{padding:10px 12px;font-size:11px;color:var(--text3);background:var(--bg2)}
+/* contact */
+.contact-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+.contact-ctas a{display:inline-block;padding:14px 28px;border-radius:999px;font-family:var(--body);font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .25s}
+.contact-ctas .mail-main{border:1px solid var(--teal);background:var(--teal);color:var(--bg)}
+.contact-ctas .mail-main:hover{background:var(--mint);border-color:var(--mint)}
+.contact-ctas .mail-alt{border:1px solid rgba(78,205,196,.3);color:var(--teal)}
+.contact-ctas .mail-alt:hover{background:rgba(78,205,196,.08)}
+.section .sec-note{margin-top:22px;font-size:12.5px;color:var(--text3)}
+.sections .section:last-of-type{padding-bottom:96px}
+@media(max-width:720px){.section{padding:64px 20px 20px}#site-nav{padding:10px 14px}#site-nav .nav-links{gap:2px 12px}#site-nav .nav-links a{font-size:10px;letter-spacing:1.3px}#site-nav .nav-brand span{display:none}}
 /* responsive */
 @media(max-width:720px){.hero-inner{max-width:92%}.hero-stage{padding:0 0 28px}.hero-value{margin-bottom:24px;font-size:15px}.hero-actions{gap:10px;margin-top:26px}#hero .enter-btn{width:100%;max-width:320px;min-height:44px;padding:12px 18px;font-size:11px}.hero-telemetry{max-width:360px}#hero .memorial{margin-bottom:24px}}
 @media(max-width:900px),(orientation:portrait) and (max-width:1100px){body.globe-mode #topbar{padding:10px 12px 8px;background:linear-gradient(180deg,rgba(5,5,9,.96) 0%,rgba(5,5,9,.78) 64%,rgba(5,5,9,0) 100%)}body.globe-mode #topbar .logo{gap:8px;font-size:15px;letter-spacing:1px}body.globe-mode #topbar .brand-subtitle,body.globe-mode #topbar .brand-sep{display:none}body.globe-mode #topbar .stats{gap:8px}body.globe-mode #topbar .stat-block{display:none}.cc-topbar{max-width:168px}}
@@ -201,12 +268,34 @@ body:not(.globe-mode) .hex-legend{display:none}
 </head>
 <body><a href="#main-content" class="skip-nav">Skip to main content</a>
 
+<!-- ═══ SITE NAV (foundation mode; hidden in globe mode) ═══ -->
+<nav id="site-nav" aria-label="Site">
+  <a class="nav-brand" href="#top" aria-label="Earth Love United — back to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="13" cy="12" r="9" stroke="url(#lgn)" stroke-width="1.2"/>
+      <path d="M7 18C5 16 4 13.5 6 10c1.5-2.5 4-3 5.5-2.8C13 7.4 14 8 14 9.5s-1 2-2 2.5c-1.5.7-2 2-1.5 3.5.3 1 1 2 2 2.5" stroke="#7be8d0" stroke-width="1.2" stroke-linecap="round"/>
+      <defs><linearGradient id="lgn" x1="4" y1="4" x2="22" y2="22"><stop stop-color="#7be8d0"/><stop offset="1" stop-color="#2a8fa3"/></linearGradient></defs>
+    </svg>
+    <span>Earth Love United</span>
+  </a>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#projects">What We Do</a>
+    <a href="#carbon">Carbon Credits</a>
+    <a href="#partners">Partners</a>
+    <a href="#team">Team</a>
+    <a href="#tribute">Tribute</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
 <!-- ═══ HERO ═══ -->
 <div id="hero">
+  <span id="top"></span>
   <div class="hero-inner">
     <div class="hero-stage">
-      <h1>Earth Love United</h1>
-      <p class="hero-value">A public climate-science instrument for wonder, evidence, restoration, and planetary care.</p>
+      <h1>Earth Love United Foundation</h1>
+      <p class="hero-value">A global nonprofit established in 2020, dedicated to promoting environmental justice and driving climate action through innovative, nature-based solutions — reconnecting humanity with the Earth.</p>
 
       <!-- Hero telemetry (carbon clock injected by JS) -->
       <div id="hero-telemetry" class="hero-telemetry" aria-label="Planetary telemetry">
@@ -241,13 +330,14 @@ body:not(.globe-mode) .hex-legend{display:none}
       })();
       </script>
 
-      <!-- Primary action -->
+      <!-- Primary action: the globe is the door -->
       <div class="hero-actions" aria-label="Arrival actions">
         <button class="enter-btn" data-action="enterGlobe">Enter the Living Globe</button>
+        <a class="ghost-btn" href="#about">Explore the Foundation ↓</a>
       </div>
     </div>
 
-    <div class="memorial">In memory of Jean Missinhoun (1972–2024) · From oil to earth</div>
+    <div class="memorial"><a href="#tribute">In memory of Jean Missinhoun (1972–2024) · From oil to earth</a></div>
   </div>
 </div>
 
@@ -282,14 +372,164 @@ body:not(.globe-mode) .hex-legend{display:none}
 <!-- ═══ GLOBE ═══ -->
 <div id="globeViz"></div>
 
-<!-- ═══ FOOTER ═══ -->
+<!-- ═══ FOUNDATION SECTIONS (legacy site content, June 2025 archive) ═══ -->
 <div class="sections" id="main-content">
+
+  <!-- ── ABOUT ── -->
+  <section class="section" id="about" aria-labelledby="about-h">
+    <div class="sec-kicker">Who we are</div>
+    <h2 id="about-h">A Short Story About Us</h2>
+    <p class="sec-lead">Earth Love United Foundation (ELU) is a global nonprofit organization established in 2020, dedicated to promoting environmental justice and driving climate action through innovative, nature-based solutions. Our mission is to reconnect humanity with the Earth, emphasizing sustainable living and ecological balance.</p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-tag">Mission</div>
+        <p>To drive high-integrity climate solutions through research, education, and inclusive partnerships—harnessing nature, data, and innovation to remove carbon, restore ecosystems, and uplift the communities most affected by climate change.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">Vision</div>
+        <p>To create a just, climate-resilient world where science, innovation, and community action restore balance to the planet and empower every generation to thrive.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WHAT WE DO ── -->
+  <section class="section" id="projects" aria-labelledby="projects-h">
+    <div class="sec-kicker">What we do</div>
+    <h2 id="projects-h">Projects</h2>
+    <p class="sec-lead">Earth Love United’s integrated model blends rigorous scientific methods, blockchain innovation, and market-oriented strategies to deliver high-integrity carbon solutions while uplifting communities most vulnerable to climate change.</p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-tag">Carbon Markets</div>
+        <h3>Access the Best. For the Best.</h3>
+        <p>Curated, verified carbon credits and consultancy for buyers who demand integrity.</p>
+        <a class="card-cta" href="#carbon">Learn more</a>
+      </div>
+      <div class="card">
+        <div class="card-tag">Climate Innovation &amp; Research</div>
+        <h3>Grounded in data. Powered by purpose. Built for a cooler planet.</h3>
+        <p>Our research now lives as an open instrument: a living globe of country pledges vs reality, with a carbon clock that never stops.</p>
+        <button class="card-cta" data-action="enterGlobe">Enter the Living Globe</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CARBON CREDITS & CONSULTANCY ── -->
+  <section class="section" id="carbon" aria-labelledby="carbon-h">
+    <div class="sec-kicker">Our solutions</div>
+    <h2 id="carbon-h">Carbon Credits &amp; Consultancy</h2>
+    <p class="sec-lead">At Earth Love United, we don’t just offer carbon credits. We offer curation, credibility, and connection. Our foundation serves as a high-integrity problem solver, linking elite buyers with the most impactful, verified projects from around the globe.</p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-tag">Carbon Credits</div>
+        <p>Flexible access to top-tier credits for buyers who want agility and precision.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">Consultancy &amp; Due Diligence</div>
+        <p>We help clients pick the best from the best. Our team’s exposure to countless projects across Africa, South America, and Asia gives us a sharp edge.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">Carbon Literacy &amp; Strategic ESG Alignment</div>
+        <p>Let us help you align carbon strategies with SDGs, climate finance trends, and future-proofed procurement.</p>
+      </div>
+    </div>
+    <h2 style="margin-top:64px;font-size:clamp(24px,2.8vw,34px)">Why Work With Us?</h2>
+    <ul class="why-list">
+      <li>Access to over 100 million high-quality credits</li>
+      <li>Transparency, speed, and discretion</li>
+      <li>Regenerative economics — carbon is a bridge, and an emerging commodity</li>
+    </ul>
+    <div class="talk-row">
+      <span class="talk-line">You didn’t come this far to stop.</span>
+      <a class="card-cta" href="mailto:Carbon@earthloveunited.org">Let’s talk — send us an email</a>
+    </div>
+  </section>
+
+  <!-- ── PARTNERS ── -->
+  <section class="section" id="partners" aria-labelledby="partners-h">
+    <div class="sec-kicker">Network</div>
+    <h2 id="partners-h">Our Partners</h2>
+    <p class="sec-lead">We collaborate with a dynamic network of partners spanning inclusive education, environmental conservation, AI for climate, community empowerment, sustainable finance, and digital innovation. These partnerships strengthen our ability to deliver impact at scale—combining technical expertise, grassroots engagement, and financial tools to advance a just and climate-resilient future.</p>
+    <div class="partner-row">
+      <div class="p-logo" data-name="St. Vincent’s"><img src="assets/legacy/partner-st-vincents.png" alt="St. Vincent’s logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+      <div class="p-logo" data-name="GRND"><img src="assets/legacy/partner-grnd.png" alt="GRND logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+      <div class="p-logo" data-name="SPE"><img src="assets/legacy/partner-spe.png" alt="SPE logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+      <div class="p-logo" data-name="Connecticut Green Bank"><img src="assets/legacy/partner-connecticut-green-bank.png" alt="Connecticut Green Bank logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+      <div class="p-logo" data-name="Climate Change AI"><img src="assets/legacy/partner-climate-change-ai.png" alt="Climate Change AI logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+      <div class="p-logo" data-name="Avocademy"><img src="assets/legacy/partner-avocademy.png" alt="Avocademy logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+    </div>
+  </section>
+
+  <!-- ── TEAM ── -->
+  <section class="section" id="team" aria-labelledby="team-h">
+    <div class="sec-kicker">People</div>
+    <h2 id="team-h">The Team</h2>
+    <div class="team-grid">
+      <div class="t-card">
+        <div class="t-photo" data-initials="EO"><img src="assets/legacy/ekmel.jpg" alt="Ekmel Ozdemir" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <h3>Ekmel Ozdemir</h3>
+        <div class="t-role">General Manager</div>
+      </div>
+      <div class="t-card">
+        <div class="t-photo" data-initials="BG"><img src="assets/legacy/brandon.jpg" alt="Brandon Garvey" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <h3>Brandon Garvey</h3>
+        <div class="t-role">Marketing</div>
+      </div>
+      <div class="t-card">
+        <div class="t-photo" data-initials="IK"><img src="assets/legacy/ishita.png" alt="Ishita Kumar" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <h3>Ishita Kumar</h3>
+        <div class="t-role">Legal Lead</div>
+      </div>
+      <div class="t-card">
+        <div class="t-photo" data-initials="MM"><img src="assets/legacy/mike.png" alt="Mike Mutai" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <h3>Mike Mutai</h3>
+        <div class="t-role">Lead Developer</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TRIBUTE ── -->
+  <section class="section" id="tribute" aria-labelledby="tribute-h">
+    <div class="sec-kicker">Tribute · 1972–2024</div>
+    <h2 id="tribute-h">Remembering Jean</h2>
+    <div class="trib-wrap">
+      <div class="trib-prose">
+        <p>With profound sadness, we announce the unexpected passing of Jean Missinhoun, founder and chairman of the Earth Love United Foundation, on June 1, 2024, at the age of 52. Jean’s unwavering dedication to environmental preservation has left a lasting mark on our world. Originally from Benin, Jean’s journey led him to London, where he thrived as a hedge fund investor focused on energy investments.</p>
+        <p>Recognizing the critical crossroads our planet is at, Jean committed to advocating for a shift toward green energy solutions. His book, <em>The Green Energy Boom</em>, has inspired countless individuals. Under Jean’s visionary leadership, Earth Love United Foundation forged partnerships with nearly a dozen organizations across the globe and initiated groundbreaking research into sustainable energy sources and natural carbon capture solutions such as hemp, mangroves, seagrass, and algae. His belief in inclusive policies and community empowerment resonates deeply within our ongoing initiatives.</p>
+        <p>Ekmel Ozdemir, who worked alongside Jean as General Manager since the founding of Earth Love United in 2020, serves as interim chairman. Though we mourn the loss of a visionary leader, we are comforted in knowing that Jean’s spirit will live on through the work of the Foundation. Together, we honor his memory by championing worldwide environmental stewardship and sustainable practices.</p>
+        <p>Jean’s legacy will be embodied by the advancements of the Foundation but also in the hearts of those he inspired to fight against climate change. We extend our deepest condolences to Jean Missinhoun’s family, friends, and all those whose lives he touched.</p>
+        <div class="trib-close">May your vision guide us toward a future of harmony with our planet’s precious ecosystems and drive us to never stop saving the world.</div>
+      </div>
+      <div class="trib-aside">
+        <figure>
+          <img src="assets/legacy/dove.jpg" alt="A dove in flight" loading="lazy" decoding="async" onerror="this.closest('.trib-aside').classList.add('noimg')">
+          <figcaption>From oil to earth — Jean Missinhoun, 1972–2024</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section class="section" id="contact" aria-labelledby="contact-h">
+    <div class="sec-kicker">Contact</div>
+    <h2 id="contact-h">Get in Touch</h2>
+    <p class="sec-lead">Whether you are a buyer, researcher, partner organization, or volunteer — write to us. We read everything.</p>
+    <div class="contact-ctas">
+      <a class="mail-main" href="mailto:info@earthloveunited.org">info@earthloveunited.org</a>
+      <a class="mail-alt" href="mailto:Carbon@earthloveunited.org">Carbon desk</a>
+    </div>
+    <p class="sec-note">Earth Love United is volunteer-powered. If you want to contribute — from ecology to code — the door is open.</p>
+  </section>
+
   <div class="footer">
     <div class="footer-logo">Earth Love United</div>
     <div class="footer-tagline">Restoring ecosystems. Rebalancing carbon. Reuniting with Earth.</div>
     <div class="footer-links">
+      <a href="#about">About</a>
+      <a href="#carbon">Carbon Credits</a>
+      <a href="#team">Team</a>
+      <a href="#tribute">Tribute</a>
       <a href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Source</a>
-      <a href="mailto:hello@earthloveunited.org">Contact</a>
+      <a href="mailto:info@earthloveunited.org">Contact</a>
     </div>
     <div class="footer-copy">© 2026 Earth Love United Foundation · earthloveunited.org</div>
   </div>
