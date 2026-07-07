@@ -827,10 +827,10 @@ const GlobeModule = {
         tt.classList.remove('tt-dragging');
         try { tt.releasePointerCapture(_dragPointerId); } catch { /* ignore */ }
         const dx = e.clientX - _dragStartX;
-        if (dx < -110) {
-          this.navigateCountry(1, { fromDrag: true });   // dragged left → next
-        } else if (dx > 110) {
-          this.navigateCountry(-1, { fromDrag: true });  // dragged right → previous
+        if (dx > 110) {
+          this.navigateCountry(1, { fromDrag: true });   // swipe right → next (Bumble)
+        } else if (dx < -110) {
+          this.navigateCountry(-1, { fromDrag: true });  // swipe left → previous
         } else {
           tt.classList.add('tt-snap');
           tt.style.transform = 'none';
@@ -856,7 +856,8 @@ const GlobeModule = {
         const now = Date.now();
         if (now - _wheelNavAt < 500) return;
         _wheelNavAt = now;
-        this.navigateCountry(e.deltaX > 0 ? 1 : -1);
+        // Natural scrolling: fingers swiping right = negative deltaX = next
+        this.navigateCountry(e.deltaX < 0 ? 1 : -1);
       }, { passive: false });
     }
 
@@ -922,8 +923,10 @@ const GlobeModule = {
 
     this._navBusy = true;
     const tt = $('hex-country-tooltip');
-    const outClass = dir > 0 ? 'tt-fly-left' : 'tt-fly-right';
-    const inClass = dir > 0 ? 'tt-enter-right' : 'tt-enter-left';
+    // Bumble semantics: advancing throws the card out to the RIGHT and the
+    // next one enters from the left; going back mirrors it.
+    const outClass = dir > 0 ? 'tt-fly-right' : 'tt-fly-left';
+    const inClass = dir > 0 ? 'tt-enter-left' : 'tt-enter-right';
 
     const swap = () => {
       this._selectedCountryFeature = target.feature;
