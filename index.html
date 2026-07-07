@@ -45,6 +45,7 @@
     "https://www.instagram.com/earthloveunited/",
     "https://www.linkedin.com/company/earth-love-united",
     "https://twitter.com/EarthLoveUnited",
+    "https://www.youtube.com/@earthloveunited502",
     "https://github.com/gke0op/earthloveunited.org"
   ]
 }
@@ -60,6 +61,7 @@
   - Connect: self + raw.githubusercontent.com (country GeoJSON)
   - Images: self + data: + cdn.jsdelivr.net (globe textures)
   - Fonts: self + fonts.gstatic.com
+  - Frames: youtube-nocookie.com only (volunteer video, injected on click)
 -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
@@ -68,6 +70,7 @@
   connect-src 'self' https://raw.githubusercontent.com https://api.carbonmark.com;
   img-src 'self' data: https://cdn.jsdelivr.net;
   font-src 'self' https://fonts.gstatic.com;
+  frame-src https://www.youtube-nocookie.com;
 ">
 <title>Earth Love United | Global Sustainability Nonprofit</title>
 
@@ -300,6 +303,16 @@ body.globe-mode #site-nav{display:none}
 .big-cta{margin-top:34px;padding:15px 32px!important;font-size:12px!important}
 .data-note{margin-top:24px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--text3);max-width:760px}
 .data-note a{color:var(--teal);text-decoration:none;border-bottom:1px dotted rgba(78,205,196,.4)}
+/* volunteer video (click-to-load; YouTube loads only on demand) */
+.video-block{margin-top:36px}
+.video-poster{position:relative;display:block;width:100%;max-width:760px;aspect-ratio:16/9;padding:0;border:1px solid rgba(78,205,196,.18);border-radius:12px;overflow:hidden;background:var(--bg2);cursor:pointer;transition:border-color .25s,transform .25s}
+.video-poster:hover{border-color:rgba(78,205,196,.4);transform:translateY(-2px)}
+.video-poster img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85;transition:opacity .25s}
+.video-poster:hover img{opacity:1}
+.video-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(5,5,9,.72);border:1px solid rgba(78,205,196,.5);color:var(--mint);backdrop-filter:blur(4px);transition:all .25s}
+.video-poster:hover .video-play{background:rgba(78,205,196,.25)}
+.video-frame{width:100%;max-width:760px;aspect-ratio:16/9;border:1px solid rgba(78,205,196,.18);border-radius:12px}
+.video-caption{margin-top:12px;font-size:12.5px;color:var(--text3);font-style:italic}
 /* contact */
 .contact-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
 .contact-ctas a{display:inline-block;padding:14px 28px;border-radius:999px;font-family:var(--body);font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .25s}
@@ -449,6 +462,29 @@ body.globe-mode #site-nav{display:none}
         <p>To create a just, climate-resilient world where science, innovation, and community action restore balance to the planet and empower every generation to thrive.</p>
       </div>
     </div>
+    <div class="video-block">
+      <button class="video-poster" id="elu-video" aria-label="Play video: What is Earth Love United?">
+        <img src="assets/legacy/video-what-is-elu.jpg" alt="" loading="lazy" decoding="async">
+        <span class="video-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+      </button>
+      <p class="video-caption">“What is Earth Love United?” — made by our volunteers.</p>
+    </div>
+    <script>
+    (function () {
+      var b = document.getElementById('elu-video');
+      if (!b) return;
+      b.addEventListener('click', function () {
+        var f = document.createElement('iframe');
+        f.src = 'https://www.youtube-nocookie.com/embed/PtF-imhEpUw?autoplay=1';
+        f.title = 'What is Earth Love United?';
+        f.className = 'video-frame';
+        f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        f.setAttribute('allowfullscreen', '');
+        f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+        b.replaceWith(f);
+      }, { once: true });
+    })();
+    </script>
   </section>
 
   <!-- ── WHAT WE DO ── -->
@@ -657,6 +693,9 @@ body.globe-mode #site-nav{display:none}
       </a>
       <a href="https://twitter.com/EarthLoveUnited" target="_blank" rel="noopener" aria-label="X (Twitter)">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 2.3h3.3l-7.3 8.3 8.6 11.1h-6.7l-5.3-6.8-6 6.8H1.5l7.8-8.9L1 2.3h6.9l4.8 6.2 5.5-6.2zm-1.2 17.5h1.8L7 4.1H5l12 15.7z"/></svg>
+      </a>
+      <a href="https://www.youtube.com/@earthloveunited502" target="_blank" rel="noopener" aria-label="YouTube">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 7.2s-.2-1.6-.9-2.3c-.9-.9-1.8-.9-2.3-1C16.6 3.6 12 3.6 12 3.6s-4.6 0-7.8.3c-.4.1-1.4.1-2.3 1-.7.7-.9 2.3-.9 2.3S.8 9.1.8 11v1.8c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.9.9 2 .9 2.5 1 1.8.2 7.6.3 7.6.3s4.6 0 7.8-.3c.4-.1 1.4-.1 2.3-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8zM9.7 15.1V8.5l6.1 3.3-6.1 3.3z"/></svg>
       </a>
     </div>
     <div class="footer-links">
