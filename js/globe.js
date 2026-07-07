@@ -749,6 +749,13 @@ const GlobeModule = {
     if (!this._countryTooltipBound) {
       this._countryTooltipBound = true;
       tt.addEventListener('click', (event) => {
+        // ✕ on the pinned card
+        if (event.target.closest('[data-country-close]')) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.clearCountrySelection();
+          return;
+        }
         const stat = event.target.closest('[data-country-stat]');
         if (!stat) return;
         event.preventDefault();
@@ -779,17 +786,109 @@ const GlobeModule = {
     const comment = _getCountryGaiaComment(d, projectCount);
 
     tt.classList.toggle('selected', !!selected);
-    tt.innerHTML = '<div class="tt-topline">'
+
+    let html = '<div class="tt-topline">'
       + '<div class="tt-country">' + _escapeHtml(d.country) + '</div>'
       + '<div class="tt-pill tt-status-' + statusClass + '">' + _escapeHtml(statusText) + '</div>'
+      + (selected ? '<button type="button" class="tt-close" data-country-close aria-label="Close">✕</button>' : '')
       + '</div>'
-      + '<div class="tt-detail">' + _escapeHtml(emissions) + ' · ' + _escapeHtml(perCapita) + '</div>'
-      + '<div class="tt-stat-grid">'
-      + '<button type="button" class="tt-stat" data-country-stat="emissions"><span>Class</span><strong>' + _escapeHtml(_getCountryEmissionsClass(d)) + '</strong></button>'
-      + '<button type="button" class="tt-stat" data-country-stat="projects"><span>Restoration</span><strong>' + _escapeHtml(projects) + '</strong></button>'
-      + '</div>'
-      + '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
+      + '<div class="tt-detail">' + _escapeHtml(emissions) + ' · ' + _escapeHtml(perCapita) + '</div>';
+
+    if (!selected) {
+      // ── Compact hover card ──
+      html += '<div class="tt-stat-grid">'
+        + '<button type="button" class="tt-stat" data-country-stat="emissions"><span>Class</span><strong>' + _escapeHtml(_getCountryEmissionsClass(d)) + '</strong></button>'
+        + '<button type="button" class="tt-stat" data-country-stat="projects"><span>Restoration</span><strong>' + _escapeHtml(projects) + '</strong></button>'
+        + '</div>'
+        + '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
+    } else {
+      // ── Pinned card: full pledge-vs-reality metrics ──
+      html += this._renderCountryMetrics(d);
+    }
+
+    tt.innerHTML = html;
     tt.classList.add('visible');
+  },
+
+  // Full metrics block for the pinned country card. Reads the raw pledge
+  // node (Data.pledgeNodes has all 27 fields); degrades to a short note
+  // for countries without pledge data.
+  _renderCountryMetrics(d) {
+    const node = (hasModule('Data') && typeof Data.getPledgeNode === 'function') ? Data.getPledgeNode(d.iso) : null;
+    const fmt = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '—'
+      : (hasModule('Data') ? Data.fmt(n) : String(n));
+
+    if (!node) {
+      return '<div class="tt-comment" style="margin-top:8px">No pledge dataset entry for this country yet. Its emissions and NDC data are not in the current atlas layer.</div>'
+        + '<div class="tt-hint">esc or ✕ to close</div>';
+    }
+
+    let html = '';
+
+    // CAT rating badge
+    if (node.cat_rating) {
+      const c = node.globe_color || '#95a5a6';
+      html += '<div class="tt-cat" style="border-color:' + c + '55;background:' + c + '18">'
+        + '<span class="tt-cat-dot" style="background:' + c + '"></span>'
+        + _escapeHtml(node.cat_rating) + ' <span class="tt-cat-src">· Climate Action Tracker</span></div>';
+    }
+
+    // Reality gap
+    const gap = node.reality_gap_mt;
+    html += '<div class="tt-gap">'
+      + '<div class="tt-gap-big">' + fmt(node.fossil_co2_mt) + ' <span>MtCO₂/yr fossil</span></div>'
+      + (gap === null || gap === undefined
+          ? '<div class="tt-gap-line">No target data available</div>'
+          : '<div class="tt-gap-line ' + (gap > 0 ? 'tt-red' : 'tt-green') + '">Gap to pledge target: ' + (gap > 0 ? '+' : '') + fmt(gap) + ' MtCO₂</div>')
+      + '</div>';
+
+    // Emissions grid
+    const pc = (typeof node.co2_per_capita === 'number' && node.co2_per_capita > 0) ? node.co2_per_capita.toFixed(1) : '—';
+    html += '<div class="tt-grid4">'
+      + '<div><span>Fossil</span><strong>' + fmt(node.fossil_co2_mt) + '</strong></div>'
+      + '<div><span>LULUCF</span><strong>' + fmt(node.lulucf_co2_mt) + '</strong></div>'
+      + '<div><span>Total Mt</span><strong>' + fmt(node.total_co2_mt) + '</strong></div>'
+      + '<div><span>t/person</span><strong>' + pc + '</strong></div>'
+      + '</div>';
+
+    // Momentum: actual vs required velocity
+    const mom = node.momentum_cagr, req = node.required_cagr, div = node.divergence;
+    if (typeof mom === 'number') {
+      html += '<div class="tt-momentum">'
+        + '<div class="' + (mom > 0 ? 'tt-red' : 'tt-green') + '"><span>Actual</span><strong>' + (mom > 0 ? '+' : '') + mom.toFixed(2) + '%/yr</strong></div>'
+        + (typeof req === 'number' && req > 0
+            ? '<em>vs</em><div class="tt-teal"><span>Required</span><strong>−' + req.toFixed(2) + '%/yr</strong></div>'
+            : '')
+        + '</div>';
+      if (typeof div === 'number' && div !== 0) {
+        html += '<div class="tt-divergence ' + (div > 0 ? 'tt-red' : 'tt-green') + '">Divergence: ' + (div > 0 ? '+' : '') + div.toFixed(2) + '%/yr</div>';
+      }
+    }
+
+    // Chips: since 2015 · target · on/off track
+    const chips = [];
+    if (typeof node.change_since_2015 === 'number') {
+      chips.push('<span class="tt-chip ' + (node.change_since_2015 > 0 ? 'tt-red' : 'tt-green') + '">Since 2015: ' + (node.change_since_2015 > 0 ? '+' : '') + node.change_since_2015.toFixed(1) + '%</span>');
+    }
+    if (node.reduction_pct > 0) {
+      chips.push('<span class="tt-chip">Target: −' + node.reduction_pct + '% by ' + Math.round(node.target_year) + '</span>');
+    }
+    if (node.on_track === true) chips.push('<span class="tt-chip tt-green">✓ On track</span>');
+    else if (node.on_track === false) chips.push('<span class="tt-chip tt-red">✗ Off track</span>');
+    if (chips.length) html += '<div class="tt-chips">' + chips.join('') + '</div>';
+
+    // Climate finance
+    if (typeof node.finance_total_bn === 'number' && node.finance_total_bn > 0) {
+      html += '<div class="tt-finance">$' + fmt(node.finance_total_bn) + 'B <span>target conditional on international finance</span></div>';
+    }
+
+    // NDC summary
+    if (node.ndc_summary) {
+      html += '<div class="tt-ndc"><span>NDC pledge</span>' + _escapeHtml(node.ndc_summary) + '</div>';
+    }
+
+    html += '<div class="tt-hint">esc or ✕ to close · drag globe to explore</div>';
+    return html;
   },
 
   _positionCountryInfoCard(event) {
