@@ -350,6 +350,7 @@ window.onunhandledrejection = function(event) {
 // Usage: data-action="functionName" data-action-args='["arg1","arg2"]'
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('click', function(e) {
+  if (!(e.target instanceof Element)) return;
   var el = e.target.closest('[data-action]');
   if (!el) return;
   var action = el.getAttribute('data-action');
@@ -372,6 +373,7 @@ document.addEventListener('click', function(e) {
 });
 
 document.addEventListener('keydown', function(e) {
+  if (!(e.target instanceof Element)) return;
   var el = e.target.closest('[data-action-keydown]');
   if (!el) return;
   var action = el.getAttribute('data-action-keydown');
@@ -388,6 +390,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 document.addEventListener('input', function(e) {
+  if (!(e.target instanceof Element)) return;
   var el = e.target.closest('[data-action-input]');
   if (!el) return;
   var action = el.getAttribute('data-action-input');

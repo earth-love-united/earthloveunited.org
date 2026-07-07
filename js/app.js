@@ -84,6 +84,7 @@ const App = {
     };
 
     document.addEventListener('click', (e) => {
+      if (!(e.target instanceof Element)) return;
       const el = e.target.closest('[data-action]');
       if (!el) return;
       runAction(el, e);
@@ -91,6 +92,7 @@ const App = {
 
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter' && e.key !== ' ') return;
+      if (!(e.target instanceof Element)) return;
       const el = e.target.closest('[data-action]');
       if (!el || !el.matches('[role="button"],button,a')) return;
       runAction(el, e);

@@ -541,6 +541,13 @@ const GlobeModule = {
           event.preventDefault();
           event.stopImmediatePropagation();
           this.clearCountrySelection();
+          return;
+        }
+        // Arrow keys browse the pinned card deck
+        if ((event.key === 'ArrowRight' || event.key === 'ArrowLeft') && this._selectedCountryFeature) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          this.navigateCountry(event.key === 'ArrowRight' ? 1 : -1);
         }
       };
       document.addEventListener('keydown', this._onCountryKeydown);
@@ -756,6 +763,14 @@ const GlobeModule = {
           this.clearCountrySelection();
           return;
         }
+        // ◀ ▶ edge buttons
+        const nav = event.target.closest('[data-country-nav]');
+        if (nav) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
+          return;
+        }
         const stat = event.target.closest('[data-country-stat]');
         if (!stat) return;
         event.preventDefault();
@@ -773,6 +788,69 @@ const GlobeModule = {
           : activeData.country + ' is classed as ' + _getCountryEmissionsClass(activeData).toLowerCase() + ' from per-person CO₂. Its pledge status is separate: ' + _getCountryStatusText(activeData).toLowerCase() + '.';
         safeCall('GAIA_BUBBLE', 'speak', message, 'curious', 4200);
       });
+
+      // ── Swipe physics (ported from agent/designer/swipeable-hover-card) ──
+      // Drag the pinned card like a deck: card follows the pointer with a
+      // slight rotation; past the threshold it flies off and the next /
+      // previous country card enters. Vertical drags stay native scroll
+      // (touch-action: pan-y in CSS + horizontal-intent detection here).
+      let _dragStartX = 0, _dragStartY = 0, _dragging = false, _dragEngaged = false, _dragPointerId = null;
+
+      tt.addEventListener('pointerdown', (e) => {
+        if (!tt.classList.contains('selected')) return;
+        if (e.target.closest('.tt-close,.tt-nav,[data-country-stat],a')) return;
+        _dragging = true; _dragEngaged = false;
+        _dragStartX = e.clientX; _dragStartY = e.clientY;
+        _dragPointerId = e.pointerId;
+      });
+
+      tt.addEventListener('pointermove', (e) => {
+        if (!_dragging) return;
+        const dx = e.clientX - _dragStartX;
+        const dy = e.clientY - _dragStartY;
+        if (!_dragEngaged) {
+          if (Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx)) { _dragging = false; return; } // vertical → native scroll
+          if (Math.abs(dx) < 12 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+          _dragEngaged = true;
+          tt.classList.remove('tt-snap');
+          tt.classList.add('tt-dragging');
+          try { tt.setPointerCapture(_dragPointerId); } catch { /* ignore */ }
+        }
+        tt.style.transform = 'translate(' + dx + 'px, ' + (dy * 0.15) + 'px) rotate(' + (dx * 0.04) + 'deg)';
+      });
+
+      const _dragRelease = (e) => {
+        if (!_dragging) return;
+        _dragging = false;
+        if (!_dragEngaged) return;
+        _dragEngaged = false;
+        tt.classList.remove('tt-dragging');
+        try { tt.releasePointerCapture(_dragPointerId); } catch { /* ignore */ }
+        const dx = e.clientX - _dragStartX;
+        if (dx < -110) {
+          this.navigateCountry(1, { fromDrag: true });   // dragged left → next
+        } else if (dx > 110) {
+          this.navigateCountry(-1, { fromDrag: true });  // dragged right → previous
+        } else {
+          tt.classList.add('tt-snap');
+          tt.style.transform = '';
+          setTimeout(() => tt.classList.remove('tt-snap'), 450);
+        }
+      };
+      tt.addEventListener('pointerup', _dragRelease);
+      tt.addEventListener('pointercancel', _dragRelease);
+
+      // Horizontal trackpad / shift-wheel browses the deck; vertical keeps scrolling the card
+      let _wheelNavAt = 0;
+      tt.addEventListener('wheel', (e) => {
+        if (!tt.classList.contains('selected')) return;
+        if (Math.abs(e.deltaX) < 28 || Math.abs(e.deltaX) < Math.abs(e.deltaY) * 1.4) return;
+        e.preventDefault();
+        const now = Date.now();
+        if (now - _wheelNavAt < 500) return;
+        _wheelNavAt = now;
+        this.navigateCountry(e.deltaX > 0 ? 1 : -1);
+      }, { passive: false });
     }
 
     const projectCount = _getCountryProjectCount(feature);
@@ -804,10 +882,75 @@ const GlobeModule = {
     } else {
       // ── Pinned card: full pledge-vs-reality metrics ──
       html += this._renderCountryMetrics(d);
+      html += '<button type="button" class="tt-nav tt-nav-prev" data-country-nav="-1" aria-label="Previous country">◀</button>'
+        + '<button type="button" class="tt-nav tt-nav-next" data-country-nav="1" aria-label="Next country">▶</button>';
     }
 
     tt.innerHTML = html;
     tt.classList.add('visible');
+  },
+
+  // ── Card deck navigation (Bumble-style) ──
+  // Cycles Data.pledgeNodes order (emissions-ranked). Card stays where it
+  // was pinned; the globe flies to each country underneath.
+  navigateCountry(dir, opts = {}) {
+    if (this._navBusy) return;
+    const nodes = (hasModule('Data') && Array.isArray(Data.pledgeNodes)) ? Data.pledgeNodes : [];
+    if (!nodes.length || !this._featureByIso) return;
+    const cur = this._selectedCountryFeature;
+    if (!cur) return;
+
+    const curIso = _resolveCountryIso(cur);
+    const len = nodes.length;
+    let idx = nodes.findIndex(n => n.iso === curIso);
+
+    // Find the next node that has a renderable feature
+    let target = null;
+    for (let step = 1; step <= len; step++) {
+      const cand = nodes[((idx + dir * step) % len + len) % len];
+      const f = this._featureByIso[cand.iso];
+      if (f) { target = { node: cand, feature: f }; break; }
+    }
+    if (!target) return;
+
+    this._navBusy = true;
+    const tt = $('hex-country-tooltip');
+    const outClass = dir > 0 ? 'tt-fly-left' : 'tt-fly-right';
+    const inClass = dir > 0 ? 'tt-enter-right' : 'tt-enter-left';
+
+    const swap = () => {
+      this._selectedCountryFeature = target.feature;
+      this._countryHoverFeature = target.feature;
+      this._renderCountryInfoCard(target.feature, true);
+      this._refreshCountryBorders();
+
+      // Fly the globe to the new country, keeping the current zoom
+      if (this.world) {
+        const pov = this.world.pointOfView();
+        this.world.pointOfView({ lat: target.node.lat, lng: target.node.lng, altitude: pov.altitude }, 650);
+      }
+
+      if (tt) {
+        tt.classList.remove(outClass);
+        tt.classList.add(inClass);
+        // force reflow so the enter transform applies before transitioning back
+        void tt.offsetWidth;
+        tt.classList.add('tt-snap');
+        tt.classList.remove(inClass);
+        tt.style.transform = '';
+        setTimeout(() => { tt.classList.remove('tt-snap'); this._navBusy = false; }, 460);
+      } else {
+        this._navBusy = false;
+      }
+    };
+
+    if (tt) {
+      tt.classList.remove('tt-snap', 'tt-dragging');
+      tt.classList.add(outClass);
+      setTimeout(swap, opts.fromDrag ? 300 : 260);
+    } else {
+      swap();
+    }
   },
 
   // Full metrics block for the pinned country card. Reads the raw pledge
@@ -887,7 +1030,7 @@ const GlobeModule = {
       html += '<div class="tt-ndc"><span>NDC pledge</span>' + _escapeHtml(node.ndc_summary) + '</div>';
     }
 
-    html += '<div class="tt-hint">esc or ✕ to close · drag globe to explore</div>';
+    html += '<div class="tt-hint">← → or swipe to browse countries · esc closes</div>';
     return html;
   },
 
@@ -1104,6 +1247,10 @@ const GlobeModule = {
       this._countryFeatures = this._countryFeatures.concat(added);
       console.log('[Globe] Small nations layer:', added.length, 'dot markers added');
     }
+
+    // ISO → feature lookup for card navigation (arrow keys / swipe / buttons)
+    this._featureByIso = {};
+    this._countryFeatures.forEach(f => { this._featureByIso[_resolveCountryIso(f)] = f; });
   },
 
   applyCountryBorders() {
