@@ -350,15 +350,21 @@ const GlobeModule = {
         // point-in-polygon scan (it iterates back-to-front).
         this._appendSmallNationFeatures();
         this._countryDataState = 'ready';
-        const hexRes = this.isMobile ? 2 : 3;
-        const hexMargin = this.isMobile ? 0.7 : 0.62;
-        this.world
-          .hexPolygonsData(this._countryFeatures)
-          .hexPolygonResolution(hexRes).hexPolygonMargin(hexMargin)
-          .hexPolygonUseDots(false)
-          .hexPolygonColor(() => 'rgba(78,205,196,0.08)')
-          .hexPolygonAltitude(() => 0.003)
-          .hexPolygonCurvatureResolution(0);
+        // Only build the H3 hex layer when the solid polygon-border layer is
+        // NOT available (old globe.gl builds). Building world-wide hexes just
+        // to clear them two calls later (applyCountryHexColors) blocked the
+        // main thread for seconds-to-minutes on real GPUs/DPR-2 screens.
+        if (!this._supportsCountryBorders()) {
+          const hexRes = this.isMobile ? 2 : 3;
+          const hexMargin = this.isMobile ? 0.7 : 0.62;
+          this.world
+            .hexPolygonsData(this._countryFeatures)
+            .hexPolygonResolution(hexRes).hexPolygonMargin(hexMargin)
+            .hexPolygonUseDots(false)
+            .hexPolygonColor(() => 'rgba(78,205,196,0.08)')
+            .hexPolygonAltitude(() => 0.003)
+            .hexPolygonCurvatureResolution(0);
+        }
 
         // Apply country visuals only when the country tab is active. GeoJSON
         // can resolve after a fast mode switch into NDVI/events.
@@ -547,7 +553,29 @@ const GlobeModule = {
     this.world.controls().dampingFactor = 0.1;
 
     const m = this.world.globeMaterial();
-    m.bumpScale = 12; m.emissive.setHex(0x040810); m.emissiveIntensity = 0.05; m.shininess = 30;
+    // Low shininess + dark specular: the vendored globe.gl build has no
+    // specularImageUrl(), so a high shininess puts a milky Phong sheen over
+    // the WHOLE sphere (not just water) and washes out the night texture.
+    m.bumpScale = 12; m.emissive.setHex(0x040810); m.emissiveIntensity = 0.05;
+    m.shininess = 4;
+    if (m.specular?.setHex) m.specular.setHex(0x0a0f14);
+
+    // The bundled three.js uses physical light units, but globe.gl seeds its
+    // default lights with legacy-style intensities pre-multiplied by π
+    // (ambient 3.14, directional 1.88) — ~3x overbright, washing out the
+    // night texture. The lights are added asynchronously after globe-ready,
+    // so rescale on a couple of deferred ticks. The >1.5 guard makes this
+    // idempotent (rescaled values are 1.0 / 0.6) and protects against a
+    // future vendor bump that fixes intensities upstream.
+    const _fixLights = () => {
+      if (typeof this.world?.scene !== 'function') return;
+      this.world.scene().traverse(o => {
+        if (o.isLight && o.intensity > 1.5) o.intensity = o.intensity / Math.PI;
+      });
+    };
+    _fixLights();
+    setTimeout(_fixLights, 500);
+    setTimeout(_fixLights, 2500);
 
     // Apply initial node visual states
     this.updateNodeVisuals();
@@ -817,18 +845,18 @@ const GlobeModule = {
       return 'rgba(150,182,196,' + (0.85 + boost).toFixed(2) + ')';
     }
 
-    if (!d) return 'rgba(120,150,165,' + (0.10 + hoverBoost).toFixed(2) + ')';
+    if (!d) return 'rgba(120,150,165,' + (0.14 + hoverBoost).toFixed(2) + ')';
     const statusKey = _getCountryStatusKey(d);
-    if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(120,150,165,' + (0.10 + hoverBoost).toFixed(2) + ')';
+    if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(120,150,165,' + (0.14 + hoverBoost).toFixed(2) + ')';
 
     const emissions = d.emissions || 0;
     const te = Math.min(Math.log(Math.max(emissions, 1)) / Math.log(12000), 1);
-    const alpha = Math.min(0.20, 0.12 + te * 0.08) + hoverBoost;
-    const cappedAlpha = Math.min(alpha, 0.32).toFixed(2);
+    const alpha = Math.min(0.28, 0.16 + te * 0.12) + hoverBoost;
+    const cappedAlpha = Math.min(alpha, 0.42).toFixed(2);
 
     // Status drives hue; emissions only modulates opacity. A low-emissions
     // country can still be overshooting its pledge target.
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(212,165,116,' + (0.10 + hoverBoost).toFixed(2) + ')';
+    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(212,165,116,' + (0.16 + hoverBoost).toFixed(2) + ')';
     if (statusKey === COUNTRY_STATUS.OVERSHOOTING) {
       const intensity = Math.min(d.gap / 500, 1);
       const red = Math.round(220 + intensity * 35);
@@ -901,7 +929,10 @@ const GlobeModule = {
       .polygonStrokeColor((f) => this._countryBorderColorFn(f));
 
     if (typeof this.world.polygonCapCurvatureResolution === 'function') {
-      this.world.polygonCapCurvatureResolution(1);
+      // 1° tessellation on 204 country caps generated millions of triangles
+      // and froze low/mid GPUs. 5° is visually identical at cap altitude
+      // 0.007 and ~25x lighter.
+      this.world.polygonCapCurvatureResolution(5);
     }
   },
 
@@ -951,8 +982,12 @@ const GlobeModule = {
       const latR = R;
       // Correct longitude radius so circles stay round away from the equator
       const lngR = R / Math.max(0.2, Math.cos(n.lat * Math.PI / 180));
+      // NOTE: ring must wind CLOCKWISE (Natural Earth / shapefile convention).
+      // Counterclockwise winding is interpreted on the sphere as the polygon's
+      // COMPLEMENT — each "dot" became a cap covering the whole planet, which
+      // stacked 28 translucent full-sphere meshes (the milky wash + the lag).
       const ring = [];
-      for (let i = 0; i <= STEPS; i++) {
+      for (let i = STEPS; i >= 0; i--) {
         const a = (i / STEPS) * Math.PI * 2;
         ring.push([n.lng + Math.cos(a) * lngR, n.lat + Math.sin(a) * latR]);
       }
