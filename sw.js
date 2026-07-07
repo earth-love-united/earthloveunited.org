@@ -1,10 +1,10 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for static assets, network-first for HTML and data.
- * Version bump (v12) — small-nations layer: island + micro states
- * rendered as dot markers (data/small-nations.json).
+ * Version bump (v13) — Close the Gap: per-country carbon project slice
+ * (data/carbon-projects.json) + credit-market strip on country cards.
  */
-const CACHE_NAME = 'elu-v12';
+const CACHE_NAME = 'elu-v13';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -25,6 +25,7 @@ const STATIC_ASSETS = [
   // Data (small, cacheable)
   '/data/pledge-nodes.json',
   '/data/small-nations.json',
+  '/data/carbon-projects.json',
 ];
 
 // ── Install: pre-cache static assets ──

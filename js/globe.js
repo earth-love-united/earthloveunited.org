@@ -483,6 +483,7 @@ const GlobeModule = {
           this._renderCountryInfoCard(feature, true);
           this._positionCountryInfoCard(e);
           this._refreshCountryBorders();
+          this._showCountryProjects(_resolveCountryIso(feature));
         };
 
         // Attach to the globe canvas
@@ -934,6 +935,7 @@ const GlobeModule = {
       this._renderCountryInfoCard(target.feature, true);
       this._dockCountryCard();
       this._refreshCountryBorders();
+      this._showCountryProjects(target.node.iso);
 
       // Fly the globe to the new country, keeping the current zoom
       if (this.world) {
@@ -1041,8 +1043,126 @@ const GlobeModule = {
       html += '<div class="tt-ndc"><span>NDC pledge</span>' + _escapeHtml(node.ndc_summary) + '</div>';
     }
 
+    // ── Close the Gap: the credit market bridge ──
+    html += this._renderCloseTheGap(node);
+
     html += '<div class="tt-hint">← → or swipe to browse countries · esc closes</div>';
     return html;
+  },
+
+  // ── Carbon price (voluntary market) ──
+  // Live median listing price from Carbonmark, cached for the session;
+  // falls back to a baked estimate so the card never blocks on the network.
+  CARBON_PRICE_FALLBACK: 6.5, // USD/tCO₂ — Ecosystem Marketplace VCM avg (est.)
+  _carbonPrice: null,          // { value, live }
+  _fetchCarbonPrice() {
+    if (this._carbonPrice || this._carbonPriceFetching) return;
+    try {
+      const cached = sessionStorage.getItem('elu_carbon_price');
+      if (cached) {
+        const c = JSON.parse(cached);
+        if (Date.now() - c.at < 3600000) { this._carbonPrice = { value: c.value, live: true }; return; }
+      }
+    } catch { /* ignore */ }
+    this._carbonPriceFetching = true;
+    fetch('https://api.carbonmark.com/prices')
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(list => {
+        const prices = (Array.isArray(list) ? list : [])
+          .map(l => Number(l.purchasePrice))
+          .filter(p => p > 0.5 && p < 500)
+          .sort((a, b) => a - b);
+        if (!prices.length) throw new Error('no prices');
+        const median = prices[Math.floor(prices.length / 2)];
+        this._carbonPrice = { value: median, live: true };
+        try { sessionStorage.setItem('elu_carbon_price', JSON.stringify({ value: median, at: Date.now() })); } catch { /* ignore */ }
+        // Refresh the pinned card so the estimate becomes the live figure
+        if (this._selectedCountryFeature) {
+          this._renderCountryInfoCard(this._selectedCountryFeature, true);
+          this._dockCountryCard();
+        }
+      })
+      .catch(() => { /* fallback stays in effect */ })
+      .finally(() => { this._carbonPriceFetching = false; });
+  },
+
+  _renderCloseTheGap(node) {
+    this._fetchCarbonPrice();
+    const cp = (hasModule('Data') && typeof Data.getCarbonProjects === 'function') ? Data.getCarbonProjects(node.iso) : null;
+    const price = this._carbonPrice ? this._carbonPrice.value : this.CARBON_PRICE_FALLBACK;
+    const live = !!this._carbonPrice;
+    const fmt = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '—'
+      : (hasModule('Data') ? Data.fmt(n) : String(n));
+
+    let html = '<div class="tt-ctg"><span class="tt-ctg-label">Close the gap</span>';
+
+    // Demand side: the pledge gap priced in credits
+    const gap = node.reality_gap_mt;
+    if (typeof gap === 'number' && gap > 0) {
+      const credits = gap * 1e6; // 1 credit = 1 tCO₂
+      const usd = credits * price;
+      html += '<div class="tt-ctg-line">Overshoot ≈ <strong>' + fmt(credits) + ' credits/yr</strong>'
+        + ' ≈ <strong>$' + fmt(usd) + '/yr</strong>'
+        + ' <em>at ~$' + price.toFixed(2) + '/t voluntary ' + (live ? 'median (Carbonmark, live)' : 'avg (est.)') + '</em></div>';
+    } else if (typeof gap === 'number') {
+      html += '<div class="tt-ctg-line tt-green">Tracking at or under its pledge — credits here go beyond the target.</div>';
+    }
+
+    // Supply side: real projects on the ground
+    if (cp && cp.c > 0) {
+      html += '<div class="tt-ctg-supply">' + cp.c.toLocaleString() + ' carbon project' + (cp.c === 1 ? '' : 's')
+        + ' on the ground · <strong>' + fmt(cp.ar) + ' tCO₂/yr</strong> claimed'
+        + (cp.ci > 0 ? ' · ' + fmt(cp.ci) + ' credits issued' : '') + '</div>';
+      const top = (cp.top || []).slice(0, 3);
+      if (top.length) {
+        html += '<div class="tt-projects">';
+        top.forEach(p => {
+          const reg = p.r === 'gold_standard' ? 'GS' : p.r === 'verra' ? 'VCS' : (p.r || '?').toUpperCase().slice(0, 4);
+          const type = (p.t || 'other').replace(/_/g, ' ');
+          html += '<a class="tt-proj" href="' + _escapeHtml(p.u) + '" target="_blank" rel="noopener">'
+            + '<span class="tt-proj-reg">' + _escapeHtml(reg) + '</span>'
+            + '<span class="tt-proj-name">' + _escapeHtml(p.n) + '</span>'
+            + '<span class="tt-proj-meta">' + _escapeHtml(type) + ' · ' + fmt(p.ar) + ' t/yr</span>'
+            + '</a>';
+        });
+        html += '</div>';
+        const shown = Math.min((cp.top || []).length, 6);
+        html += '<div class="tt-ctg-note">' + shown + ' largest shown as ◆ on the globe — registry links open the public record</div>';
+      }
+    } else {
+      html += '<div class="tt-ctg-supply tt-ctg-none">No registered carbon projects in the unified dataset for this country yet.</div>';
+    }
+
+    html += '</div>';
+    return html;
+  },
+
+  // ── Project markers: the pinned country's top projects on the globe ──
+  _showCountryProjects(iso) {
+    if (!this.world || typeof this.world.pointsData !== 'function') return;
+    const cp = (hasModule('Data') && typeof Data.getCarbonProjects === 'function') ? Data.getCarbonProjects(iso) : null;
+    const pts = (cp && cp.top ? cp.top : []).filter(p => typeof p.lat === 'number' && typeof p.lng === 'number');
+    const typeColor = (t) => t === 'forestry' || t === 'agriculture' ? 'rgba(91,191,114,0.95)'
+      : t === 'renewable_energy' ? 'rgba(78,205,196,0.95)'
+      : t === 'energy_efficiency' ? 'rgba(123,232,208,0.9)'
+      : 'rgba(212,165,116,0.95)';
+    this.world
+      .pointsData(pts)
+      .pointLat('lat').pointLng('lng')
+      .pointAltitude(0.015).pointRadius(0.22)
+      .pointColor(p => typeColor(p.t))
+      .pointResolution(10);
+    if (typeof this.world.pointLabel === 'function') {
+      this.world.pointLabel(p =>
+        '<div style="max-width:220px"><strong>' + _escapeHtml(p.n) + '</strong><br>'
+        + _escapeHtml((p.t || 'other').replace(/_/g, ' ')) + ' · '
+        + (hasModule('Data') ? Data.fmt(p.ar) : p.ar) + ' tCO₂/yr</div>');
+    }
+  },
+
+  _clearCountryProjects() {
+    if (!this.world || typeof this.world.pointsData !== 'function') return;
+    this.world.pointsData([]);
   },
 
   // Pinned cards dock to a stable screen position — the card stays still
@@ -1303,6 +1423,7 @@ const GlobeModule = {
       if (tt.contains(document.activeElement)) document.activeElement.blur();
       tt.classList.remove('visible', 'selected');
     }
+    this._clearCountryProjects();
     this._refreshCountryBorders();
   },
 

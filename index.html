@@ -14,10 +14,34 @@
 <meta property="og:description" content="A global nonprofit driving climate action through nature-based solutions — enter the living globe of country pledges vs reality.">
 <meta property="og:url" content="https://earthloveunited.org">
 <meta property="og:site_name" content="Earth Love United">
+<meta property="og:image" content="https://earthloveunited.org/assets/legacy/elu-logo.png">
+<meta property="og:image:alt" content="Earth Love United Foundation logo">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Earth Love United | Global Sustainability Nonprofit">
 <meta name="twitter:description" content="A global nonprofit driving climate action through nature-based solutions — enter the living globe of country pledges vs reality.">
+<meta name="twitter:image" content="https://earthloveunited.org/assets/legacy/elu-logo.png">
+
+<!-- Organization structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  "name": "Earth Love United Foundation",
+  "alternateName": "ELU",
+  "url": "https://earthloveunited.org",
+  "logo": "https://earthloveunited.org/assets/legacy/elu-logo.png",
+  "foundingDate": "2020",
+  "founder": {
+    "@type": "Person",
+    "name": "Jean Missinhoun",
+    "description": "Founder and chairman of Earth Love United Foundation (1972–2024), author of The Green Energy Boom"
+  },
+  "email": "info@earthloveunited.org",
+  "description": "A global nonprofit established in 2020, dedicated to promoting environmental justice and driving climate action through innovative, nature-based solutions.",
+  "sameAs": ["https://github.com/gke0op/earthloveunited.org"]
+}
+</script>
 
 <!-- ─── Favicon (inline SVG — no extra HTTP request) ──────────── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27%230a1628%27%2F%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%234ecdc4%27%20stroke-width%3D%271.5%27%2F%3E%3Cellipse%20cx%3D%2716%27%20cy%3D%2716%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3Cpath%20d%3D%27M2%2016%20Q8%2012%2016%2016%20T30%2016%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3C%2Fsvg%3E">
@@ -34,7 +58,7 @@
   default-src 'self';
   script-src 'self' 'unsafe-inline';
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  connect-src 'self' https://raw.githubusercontent.com;
+  connect-src 'self' https://raw.githubusercontent.com https://api.carbonmark.com;
   img-src 'self' data: https://cdn.jsdelivr.net;
   font-src 'self' https://fonts.gstatic.com;
 ">
@@ -154,6 +178,22 @@ body.globe-mode #globe-back-btn{display:block}
 #hex-country-tooltip .tt-ndc{margin:8px 0 0;padding:8px 10px;border-left:2px solid rgba(78,205,196,.25);border-radius:0 6px 6px 0;background:rgba(255,255,255,.02);color:var(--text2);font-size:11px;line-height:1.5}
 #hex-country-tooltip .tt-ndc span{display:block;color:var(--teal);font-family:var(--mono);font-size:8.5px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px}
 #hex-country-tooltip .tt-hint{margin:9px 0 0;color:var(--text3);font-family:var(--mono);font-size:8.5px;letter-spacing:.8px;text-transform:uppercase;text-align:center;opacity:.7}
+/* Close the Gap — credit market bridge */
+#hex-country-tooltip .tt-ctg{margin:10px 0 0;padding:9px 10px;border:1px solid rgba(123,232,208,.16);border-radius:8px;background:linear-gradient(180deg,rgba(78,205,196,.06),rgba(78,205,196,.02))}
+#hex-country-tooltip .tt-ctg-label{display:block;color:var(--mint);font-family:var(--mono);font-size:8.5px;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:5px}
+#hex-country-tooltip .tt-ctg-line{color:var(--text2);font-size:11.5px;line-height:1.45}
+#hex-country-tooltip .tt-ctg-line strong{color:var(--text);font-family:var(--mono);font-size:11.5px;font-weight:500}
+#hex-country-tooltip .tt-ctg-line em{display:block;color:var(--text3);font-size:9.5px;font-style:normal;margin-top:2px}
+#hex-country-tooltip .tt-ctg-supply{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.06);color:var(--text2);font-size:11px;line-height:1.4}
+#hex-country-tooltip .tt-ctg-supply strong{color:var(--text);font-family:var(--mono);font-weight:500}
+#hex-country-tooltip .tt-ctg-none{color:var(--text3)}
+#hex-country-tooltip .tt-projects{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+#hex-country-tooltip .tt-proj{display:grid;grid-template-columns:34px 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:5px 7px;border:1px solid rgba(255,255,255,.06);border-radius:6px;background:rgba(255,255,255,.02);text-decoration:none;transition:border-color .15s,background .15s}
+#hex-country-tooltip .tt-proj:hover{border-color:rgba(78,205,196,.3);background:rgba(78,205,196,.06)}
+#hex-country-tooltip .tt-proj-reg{grid-row:1/3;justify-self:center;padding:3px 5px;border:1px solid rgba(78,205,196,.25);border-radius:4px;color:var(--teal);font-family:var(--mono);font-size:8.5px;letter-spacing:.5px}
+#hex-country-tooltip .tt-proj-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);font-size:10.5px;line-height:1.3}
+#hex-country-tooltip .tt-proj-meta{color:var(--text3);font-family:var(--mono);font-size:8.5px;letter-spacing:.3px}
+#hex-country-tooltip .tt-ctg-note{margin-top:6px;color:var(--text3);font-size:9px;line-height:1.35}
 /* deck navigation — swipe physics (ported from agent/designer/swipeable-hover-card) */
 #hex-country-tooltip.selected{touch-action:pan-y;cursor:grab}
 #hex-country-tooltip.tt-dragging{transition:none!important;cursor:grabbing;user-select:none}
@@ -242,6 +282,13 @@ body.globe-mode #site-nav{display:none}
 .trib-aside img{width:100%;display:block}
 .trib-aside.noimg{display:none}
 .trib-aside figcaption{padding:10px 12px;font-size:11px;color:var(--text3);background:var(--bg2)}
+/* globe explainer */
+.globe-key{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.globe-key span{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid rgba(78,205,196,.14);border-radius:999px;background:var(--bg2);color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:.6px}
+.globe-key i{width:11px;height:11px;border-radius:3px;font-style:normal;flex:0 0 auto}
+.big-cta{margin-top:34px;padding:15px 32px!important;font-size:12px!important}
+.data-note{margin-top:24px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--text3);max-width:760px}
+.data-note a{color:var(--teal);text-decoration:none;border-bottom:1px dotted rgba(78,205,196,.4)}
 /* contact */
 .contact-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
 .contact-ctas a{display:inline-block;padding:14px 28px;border-radius:999px;font-family:var(--body);font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .25s}
@@ -280,11 +327,12 @@ body.globe-mode #site-nav{display:none}
   </a>
   <div class="nav-links">
     <a href="#about">About</a>
-    <a href="#projects">What We Do</a>
-    <a href="#carbon">Carbon Credits</a>
-    <a href="#partners">Partners</a>
+    <a href="#projects">Projects</a>
+    <a href="#globe">Globe</a>
+    <a href="#carbon">Carbon</a>
     <a href="#team">Team</a>
     <a href="#tribute">Tribute</a>
+    <a href="#support">Support</a>
     <a href="#contact">Contact</a>
   </div>
 </nav>
@@ -413,6 +461,35 @@ body.globe-mode #site-nav{display:none}
     </div>
   </section>
 
+  <!-- ── THE LIVING GLOBE (key instrument explainer) ── -->
+  <section class="section" id="globe" aria-labelledby="globe-h">
+    <div class="sec-kicker">The key instrument</div>
+    <h2 id="globe-h">The Living Globe</h2>
+    <p class="sec-lead">What you enter from the top of this page is a living atlas of climate accountability: 123 countries, each colored by the distance between what it pledged and what it is actually doing. Island and micro nations appear as status dots. Spin it, tap a country, and read its record.</p>
+    <div class="globe-key" role="list" aria-label="Country status colors">
+      <span role="listitem"><i style="background:rgba(120,150,165,0.45)"></i> No pledge data</span>
+      <span role="listitem"><i style="background:rgba(212,165,116,0.45)"></i> No target</span>
+      <span role="listitem"><i style="background:rgba(255,84,58,0.55)"></i> Overshooting</span>
+      <span role="listitem"><i style="background:rgba(46,204,113,0.50)"></i> On track</span>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-tag">Pledges vs Reality</div>
+        <p>Every country card shows its stated target — how much, by when, against which baseline — next to its measured emissions trajectory. The gap between promise and reality is the number we care about.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">Country Cards</div>
+        <p>Tap a country for its full record: emissions and per-capita footprint, momentum, climate finance, the official pledge summary in plain words, and an independent rating where one exists.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">The Carbon Clock</div>
+        <p>Nature absorbs roughly 22 GtCO₂ a year; humanity emits roughly 42. The clock at the top of this page counts the gap — it has not stopped once since you arrived.</p>
+      </div>
+    </div>
+    <button class="card-cta big-cta" data-action="enterGlobe">Enter the Living Globe</button>
+    <p class="data-note">The pledge layer is versioned JSON, validated against a schema on every load — <a href="data/pledge-nodes.json">inspect the raw data</a> yourself.</p>
+  </section>
+
   <!-- ── CARBON CREDITS & CONSULTANCY ── -->
   <section class="section" id="carbon" aria-labelledby="carbon-h">
     <div class="sec-kicker">Our solutions</div>
@@ -459,6 +536,29 @@ body.globe-mode #site-nav{display:none}
     </div>
   </section>
 
+  <!-- ── OPEN BY DESIGN ── -->
+  <section class="section" id="open" aria-labelledby="open-h">
+    <div class="sec-kicker">Trust layer</div>
+    <h2 id="open-h">Open by Design</h2>
+    <p class="sec-lead">Most foundations ask you to trust them. We would rather you check. Everything this site claims can be traced to source — the code, the data, and the tests that hold them together.</p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-tag">Open Source</div>
+        <p>The entire site is readable classic scripts — no build step, no minified mystery. Every line is public and inspectable.</p>
+        <a class="card-cta" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Read the source</a>
+      </div>
+      <div class="card">
+        <div class="card-tag">Open Data</div>
+        <p>The globe's pledge layer ships as versioned JSON with a declared schema — country, target, baseline, emissions, finance. No number appears on the globe that is not in this file.</p>
+        <a class="card-cta" href="data/pledge-nodes.json">Inspect the data</a>
+      </div>
+      <div class="card">
+        <div class="card-tag">Auditable Claims</div>
+        <p>Built-in smoke tests, schema validation on every load, and a public-copy checker that fails the build on unresolved claims. The site polices its own honesty.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ── TEAM ── -->
   <section class="section" id="team" aria-labelledby="team-h">
     <div class="sec-kicker">People</div>
@@ -494,7 +594,7 @@ body.globe-mode #site-nav{display:none}
     <div class="trib-wrap">
       <div class="trib-prose">
         <p>With profound sadness, we announce the unexpected passing of Jean Missinhoun, founder and chairman of the Earth Love United Foundation, on June 1, 2024, at the age of 52. Jean’s unwavering dedication to environmental preservation has left a lasting mark on our world. Originally from Benin, Jean’s journey led him to London, where he thrived as a hedge fund investor focused on energy investments.</p>
-        <p>Recognizing the critical crossroads our planet is at, Jean committed to advocating for a shift toward green energy solutions. His book, <em>The Green Energy Boom</em>, has inspired countless individuals. Under Jean’s visionary leadership, Earth Love United Foundation forged partnerships with nearly a dozen organizations across the globe and initiated groundbreaking research into sustainable energy sources and natural carbon capture solutions such as hemp, mangroves, seagrass, and algae. His belief in inclusive policies and community empowerment resonates deeply within our ongoing initiatives.</p>
+        <p>Recognizing the critical crossroads our planet is at, Jean committed to advocating for a shift toward green energy solutions. His book, <a href="https://www.amazon.com/Green-Energy-Boom-Global-Quest/dp/B08XFFFX45" target="_blank" rel="noopener" style="color:inherit"><em>The Green Energy Boom: A Global Quest for Money, Power and Energy</em></a>, has inspired countless individuals. Under Jean’s visionary leadership, Earth Love United Foundation forged partnerships with nearly a dozen organizations across the globe and initiated groundbreaking research into sustainable energy sources and natural carbon capture solutions such as hemp, mangroves, seagrass, and algae. His belief in inclusive policies and community empowerment resonates deeply within our ongoing initiatives.</p>
         <p>Ekmel Ozdemir, who worked alongside Jean as General Manager since the founding of Earth Love United in 2020, serves as interim chairman. Though we mourn the loss of a visionary leader, we are comforted in knowing that Jean’s spirit will live on through the work of the Foundation. Together, we honor his memory by championing worldwide environmental stewardship and sustainable practices.</p>
         <p>Jean’s legacy will be embodied by the advancements of the Foundation but also in the hearts of those he inspired to fight against climate change. We extend our deepest condolences to Jean Missinhoun’s family, friends, and all those whose lives he touched.</p>
         <div class="trib-close">May your vision guide us toward a future of harmony with our planet’s precious ecosystems and drive us to never stop saving the world.</div>
@@ -506,6 +606,17 @@ body.globe-mode #site-nav{display:none}
         </figure>
       </div>
     </div>
+  </section>
+
+  <!-- ── SUPPORT ── -->
+  <section class="section" id="support" aria-labelledby="support-h">
+    <div class="sec-kicker">Support</div>
+    <h2 id="support-h">Support the Foundation</h2>
+    <p class="sec-lead">Earth Love United is volunteer-powered and independent. We are designing our donation infrastructure in the open — deliberately, because how a climate foundation handles money is itself a climate claim. Until those rails are live, support starts with a conversation.</p>
+    <div class="contact-ctas">
+      <a class="mail-main" href="mailto:info@earthloveunited.org?subject=Supporting%20Earth%20Love%20United">Talk to us about supporting ELU</a>
+    </div>
+    <p class="sec-note">Time and expertise count as much as funding — researchers, ecologists, and engineers have shaped this foundation from the start.</p>
   </section>
 
   <!-- ── CONTACT ── -->
@@ -525,9 +636,12 @@ body.globe-mode #site-nav{display:none}
     <div class="footer-tagline">Restoring ecosystems. Rebalancing carbon. Reuniting with Earth.</div>
     <div class="footer-links">
       <a href="#about">About</a>
+      <a href="#globe">The Living Globe</a>
       <a href="#carbon">Carbon Credits</a>
+      <a href="#partners">Partners</a>
       <a href="#team">Team</a>
       <a href="#tribute">Tribute</a>
+      <a href="#support">Support</a>
       <a href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Source</a>
       <a href="mailto:info@earthloveunited.org">Contact</a>
     </div>
