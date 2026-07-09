@@ -169,7 +169,7 @@ function loadGlobeGL() {
   _globeGLLoading = true;
   _globeGLPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'js/vendor/globe.gl.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js';
     script.onload = () => { _globeGLLoaded = true; _globeGLLoading = false; resolve(); };
     script.onerror = () => { _globeGLLoading = false; _globeGLPromise = null; reject(new Error('Failed to load globe.gl')); };
     document.head.appendChild(script);
