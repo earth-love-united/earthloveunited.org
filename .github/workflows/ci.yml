@@ -91,7 +91,7 @@ jobs:
 
       - name: Run SmokeTest + StackLint in headless Chromium
         run: |
-          cat > /tmp/runchecks.mjs <<'JS'
+          cat > runchecks.mjs <<'JS'
           import { chromium } from 'playwright';
           const browser = await chromium.launch();
           const ctx = await browser.newContext();
@@ -125,8 +125,8 @@ jobs:
 
           await browser.close();
 
-          const smokeFailed = smoke?.error || (smoke?.failed && smoke.failed > 0);
-          const stackFailed = stack?.error || (Array.isArray(stack?.issues) && stack.issues.length > 0);
+          const smokeFailed = smoke?.error || (Array.isArray(smoke) && smoke.some(r => r.pass === false));
+          const stackFailed = stack?.error || (Array.isArray(stack) && stack.some(r => r.pass === false));
 
           if (smokeFailed || stackFailed || consoleErrors.length) {
             console.error('❌ checks failed');
@@ -135,7 +135,8 @@ jobs:
           }
           console.log('✅ all checks passed');
           JS
-          node /tmp/runchecks.mjs
+          node runchecks.mjs
+          rm -f runchecks.mjs package.json package-lock.json
 
       - name: Tear down server
         if: always()
