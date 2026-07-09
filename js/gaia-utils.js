@@ -226,8 +226,8 @@ function hasModule(globalName) {
 // instead of breaking the entire chain.
 //
 // Usage:
-//   safeChain(globe).specularImageUrl('...').unknownMethod().pointsData(data);
-//   // If .specularImageUrl doesn't exist → skipped, chain continues
+//   safeChain(globe).unknownMethod().pointsData(data);
+//   // If .unknownMethod doesn't exist → skipped, chain continues
 // ═══════════════════════════════════════════════════════════
 
 /**
