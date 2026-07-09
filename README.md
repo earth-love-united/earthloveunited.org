@@ -184,3 +184,5 @@ contains only the foundation's public website and is not financial software.
 
 Maintainer: Ekmel Ozdemir — [github.com/gke0op](https://github.com/gke0op) ·
 [huggingface.co/ego0op](https://huggingface.co/ego0op)
+
+<!-- deploy nudge: retrigger Cloudflare Pages build 2026-07-10 -->
