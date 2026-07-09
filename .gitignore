@@ -62,6 +62,9 @@ dis/climate-facts.json
 tools/scraper/data/external/
 tools/scraper/data/scraped/
 
+# Machine-specific scraper binaries (symlinked from local paths)
+tools/scraper/bin/
+
 # Large binary assets
 textures/ndvi/
 
