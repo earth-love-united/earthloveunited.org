@@ -8,33 +8,39 @@ const Data = {
   biomes: null,
   sites: null,
   pledgeNodes: null,
+  smallNations: null,
+  carbonProjects: null,
   version: 'prod001',
 
   async init() {
-    // Fetch all data files in parallel — each individually guarded
+    // v1: the bare countries globe only needs pledge-nodes.json.
+    // biomes.json / sites.json were archived with the foundation sections
+    // (see _archive/) — getBiome/getSite degrade to null.
     const v = '?v=' + this.version;
-    const [biomesRes, sitesRes, pledgeNodesRes] = await Promise.allSettled([
-      fetch('data/biomes.json' + v),
-      fetch('data/sites.json' + v),
-      fetch('data/pledge-nodes.json' + v)
+    const [pledgeNodesRes, smallNationsRes, carbonProjectsRes] = await Promise.allSettled([
+      fetch('data/pledge-nodes.json' + v),
+      fetch('data/small-nations.json' + v),
+      fetch('data/carbon-projects.json' + v)
     ]);
 
-    // Parse each response individually — a 404 on one shouldn't kill the others
-    this.biomes = await this._parseResponse(biomesRes, 'biomes');
-    this.sites = await this._parseResponse(sitesRes, 'sites');
     this.pledgeNodes = await this._parseResponse(pledgeNodesRes, 'pledge-nodes');
+    // UN members absent from the 110m country GeoJSON (island + micro
+    // nations) — GlobeModule renders these as small circular markers.
+    this.smallNations = await this._parseResponse(smallNationsRes, 'small-nations');
+    // Per-country carbon project slice (top registered projects + totals)
+    // baked from the carbon-projects-unified dataset — drives the
+    // "Close the Gap" section of the country cards.
+    this.carbonProjects = await this._parseResponse(carbonProjectsRes, 'carbon-projects');
 
-    // Validate loaded data against schemas
+    // Validate loaded data against schema
     if (typeof DATA_SCHEMA !== 'undefined') {
-      if (this.biomes) DATA_SCHEMA.validate('biomes.json', this.biomes);
-      if (this.sites) DATA_SCHEMA.validate('sites.json', this.sites);
       if (this.pledgeNodes) DATA_SCHEMA.validate('pledge-nodes.json', this.pledgeNodes);
     }
 
-    if (this.biomes && this.sites) {
-      console.log('[Data] Loaded:', Object.keys(this.biomes).filter(k => k !== '_meta').length, 'biomes,', this.sites.length, 'sites,', this.pledgeNodes?.length || 0, 'pledge nodes');
+    if (this.pledgeNodes) {
+      console.log('[Data] Loaded:', this.pledgeNodes.length, 'pledge nodes');
     } else {
-      console.error('[Data] CRITICAL: Some data files failed to load. biomes:', !!this.biomes, 'sites:', !!this.sites);
+      console.error('[Data] CRITICAL: pledge-nodes.json failed to load — country layer will be uncolored');
     }
 
     // ── Country Hex Color Lookup ──
@@ -95,6 +101,7 @@ const Data = {
   getBiome(key) { return this.biomes ? this.biomes[key] : null; },
   getSite(id) { return this.sites ? this.sites.find(s => s.id === id) : null; },
   getPledgeNode(iso) { return this.pledgeNodes ? this.pledgeNodes.find(n => n.iso === iso) : null; },
+  getCarbonProjects(iso) { return this.carbonProjects ? this.carbonProjects[iso] || null : null; },
   getCountryHexData(iso) { return this.countryHexColors ? this.countryHexColors[iso] || null : null; },
   getAllBiomes() { return this.biomes ? Object.entries(this.biomes).filter(([k]) => k !== '_meta').map(([k, v]) => ({ key: k, ...v })) : []; },
 

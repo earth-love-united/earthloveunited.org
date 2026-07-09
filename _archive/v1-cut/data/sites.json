@@ -78,7 +78,8 @@
           "icon": "🌿"
         }
       ],
-      "connection": "SPE's flagship — approved by the Governor of Northern Province, land confirmed across Jaffna, Vavuniya, Mullaitivu, Mannar, and Kilinochchi."
+      "connection": "SPE reports project identification across five districts. Independent verification of government approval pending.",
+      "climate_note": "Temperature and precipitation values are illustrative estimates for educational purposes. Station data verification pending."
     },
     {
       "id": "antalya",
@@ -152,7 +153,8 @@
           "icon": "🌱"
         }
       ],
-      "connection": "COP31 is in Antalya. This is what happened to the host region's forests."
+      "connection": "COP31 is in Antalya. This is what happened to the host region's forests.",
+      "climate_note": "Temperature and precipitation values are illustrative estimates for educational purposes. Station data verification pending."
     },
     {
       "id": "benin",
@@ -164,7 +166,7 @@
       "primaryBiome": "mangrove",
       "currentBiome": "degraded_bare_land",
       "area": 2500,
-      "narrative": "Jean Missinhoun was from Benin. The Ouidah lagoons once held dense mangroves — the most carbon-dense ecosystems on Earth. Restoring them here is climate action and a homecoming.",
+      "narrative": "Jean Missinhoun, founder of Earth Love United, carried this mangrove project in his heart until his passing (date unverified). The Ouidah lagoons once held dense mangroves — the most carbon-dense ecosystems on Earth. Restoring them continues his vision.",
       "ndvi": [
         {
           "year": 2000,
@@ -216,7 +218,8 @@
           "icon": "🌾"
         }
       ],
-      "connection": "Jean's homeland. Mangroves store 950 tC/ha — restoring them honors his legacy."
+      "connection": "Jean's homeland. Mangroves store 950 tC/ha — restoring them honors his legacy.",
+      "climate_note": "Temperature and precipitation values are illustrative estimates for educational purposes. Station data verification pending."
     },
     {
       "id": "borneo",
@@ -290,7 +293,8 @@
           "icon": "🌾"
         }
       ],
-      "connection": "Green ≠ carbon. Oil palm (NDVI 0.65) stores a fraction of the peat swamp it replaced (1,400 vs 50 tC/ha)."
+      "connection": "Green ≠ carbon. Oil palm (NDVI 0.65) stores a fraction of the peat swamp it replaced (1,400 vs 50 tC/ha).",
+      "climate_note": "Temperature and precipitation values are illustrative estimates for educational purposes. Station data verification pending."
     }
   ]
 }

@@ -8,7 +8,7 @@ const Quiz = {
       q: "How much CO₂ does humanity add to the atmosphere each year?",
       options: ["5 Gt", "20 Gt", "100 Gt", "500 Gt"],
       correct: 1,
-      explain: "Humanity emits ~143 Gt CO₂/yr but nature absorbs ~123 Gt. The net excess is ~20 Gt/yr — and it accumulates every year."
+      explain: "Humanity emitted ~42 GtCO₂ in 2025. About half stayed in the atmosphere (~20 Gt/yr net increase). The rest was absorbed by land and ocean sinks."
     },
     {
       q: "Which ecosystem stores the most carbon per hectare?",
@@ -18,15 +18,15 @@ const Quiz = {
     },
     {
       q: "If you restore 100 hectares of degraded land to tropical rainforest, how much CO₂ could it sequester over 30 years?",
-      options: ["~10,000 t", "~100,000 t", "~1,000,000 t", "~10,000,000 t"],
-      correct: 2,
-      explain: "100 ha × (350-10) tC/ha × 3.67 × 30 years ≈ 3.7 million t CO₂. That's like taking 800,000 cars off the road for a year."
+      options: ["~100,000 t", "~350,000 t", "~1,000,000 t", "~10,000,000 t"],
+      correct: 0,
+      explain: "The stock recovery is ~340 tC/ha × 100 ha × 3.67 = ~125,000 tCO₂. Even adding 30 years of annual accumulation, the total stays in the ~100,000 t range — far below millions."
     },
     {
-      q: "What percentage of global annual net emissions would restoring 2,500 ha of mangrove offset?",
-      options: ["0.0001%", "0.04%", "1%", "10%"],
-      correct: 1,
-      explain: "2,500 ha of mangrove restoration sequesters ~14.7M t CO₂ over 30 years. That's ~0.04% of one year's global net emissions. Every bit counts."
+      q: "What percentage of one year's global net emissions would restoring 2,500 ha of mangrove offset annually?",
+      options: ["~0.0003%", "~0.003%", "~0.03%", "~0.3%"],
+      correct: 0,
+      explain: "2,500 ha × 6.5 tC/ha/yr × 3.67 = ~60,000 tCO₂/yr. That's ~0.0003% of annual net emissions (~20 Gt). Small, but every bit counts — and mangroves protect coasts, store centuries of carbon, and support fisheries too."
     }
   ],
 

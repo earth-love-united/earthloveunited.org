@@ -1,11 +1,11 @@
 /**
- * SMOKE TEST SUITE
- * Comprehensive runtime validation for Earth Love United.
- * 
+ * SMOKE TEST SUITE (v1 surface)
+ * Runtime validation for Earth Love United — hero + carbon clock + bare countries globe.
+ *
  * Run in browser console:   SmokeTest.run()
  * Run specific category:    SmokeTest.run('modules')
  * View last results:        SmokeTest.results
- * 
+ *
  * Can also be loaded as a script tag for CI/automated checks.
  * Exits with console.error if any CRITICAL test fails.
  */
@@ -25,7 +25,7 @@ const SmokeTest = (() => {
         name: 'Core modules on window',
         critical: true,
         test: () => {
-          const required = ['GLOBE_OVERLAY', 'GAIA_NODES', 'SITE_PANEL', 'PLEDGE_PANEL'];
+          const required = ['Data', 'GlobeModule', 'CARBON_CLOCK', 'App'];
           const missing = required.filter(m => typeof window[m] === 'undefined');
           return {
             pass: missing.length === 0,
@@ -34,80 +34,54 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'GAIA modules on window',
-        critical: false,
+        name: 'Infrastructure modules on window',
+        critical: true,
         test: () => {
-          const modules = ['GAIA_BUBBLE', 'GAIA_VOICE', 'GAIA_ENGAGEMENT', 'GAIA_PRESENCE',
-                           'GAIA_JOURNAL', 'GAIA_KNOWLEDGE', 'GAIA_CHARTS', 'GAIA_DATA'];
-          const missing = modules.filter(m => typeof window[m] === 'undefined');
-          return {
-            pass: missing.length === 0,
-            detail: missing.length
-              ? `Missing: ${missing.join(', ')} (${modules.length - missing.length}/${modules.length} loaded)`
-              : `All ${modules.length} GAIA modules present`,
-          };
-        },
-      },
-      {
-        name: 'Utility modules on window',
-        critical: false,
-        test: () => {
-          const modules = ['CARBON_CLOCK', 'PLEDGE_WALL', 'NDVIVerifier', 'RegistryCheck',
-                           'COUNTRY_DATA', 'DELEGATION'];
+          const modules = ['EventBus', 'MODULE_CONTRACTS', 'STORAGE_ADAPTER', 'Storage', 'DATA_SCHEMA'];
           const missing = modules.filter(m => typeof window[m] === 'undefined');
           return {
             pass: missing.length === 0,
             detail: missing.length
               ? `Missing: ${missing.join(', ')}`
-              : `All ${modules.length} utility modules present`,
+              : `All ${modules.length} infrastructure modules present`,
           };
         },
       },
       {
-        name: 'safeCall routes to GLOBE_OVERLAY.open',
+        name: 'safeCall utilities exist',
         critical: true,
         test: () => {
-          const obj = window['GLOBE_OVERLAY'];
-          const hasOpen = obj && typeof obj.open === 'function';
+          const fns = ['safeCall', 'hasModule', 'safeGet'].filter(f => typeof window[f] !== 'function');
           return {
-            pass: hasOpen,
-            detail: hasOpen ? 'GLOBE_OVERLAY.open() is callable via safeCall' : 'GLOBE_OVERLAY.open NOT accessible — sidebar will never open!',
+            pass: fns.length === 0,
+            detail: fns.length ? `Missing utils: ${fns.join(', ')}` : 'safeCall / hasModule / safeGet callable',
           };
         },
       },
       {
-        name: 'safeCall routes to GAIA_BUBBLE.speak',
-        critical: false,
-        test: () => {
-          const obj = window['GAIA_BUBBLE'];
-          const has = obj && typeof obj.speak === 'function';
-          return {
-            pass: has,
-            detail: has ? 'GAIA_BUBBLE.speak() is callable' : 'GAIA_BUBBLE.speak NOT accessible — GAIA will be silent',
-          };
-        },
-      },
-      {
-        name: 'Data module loaded with sites',
+        name: 'Carbon clock is ticking',
         critical: true,
         test: () => {
-          const hasData = typeof Data !== 'undefined' && Data.sites && Data.sites.length > 0;
+          const el = document.getElementById('cc-hero-value');
+          if (!el) return { pass: false, detail: '#cc-hero-value not found — hero clock missing' };
+          const val = el.textContent.replace(/\./g, '');
+          const n = parseInt(val, 10);
           return {
-            pass: hasData,
-            detail: hasData ? `${Data.sites.length} sites, ${Data.biomes ? Object.keys(Data.biomes).length : 0} biomes loaded` : 'Data.sites is empty or Data not loaded',
+            pass: Number.isFinite(n) && n > 0,
+            detail: Number.isFinite(n) && n > 0 ? `Clock at ${el.textContent} t` : `Clock value "${el.textContent}" — not ticking`,
           };
         },
       },
       {
-        name: 'GLOBE_OVERLAY registry has sites',
+        name: 'Data module loaded with pledge nodes',
         critical: true,
         test: () => {
-          if (!window.GLOBE_OVERLAY) return { pass: false, detail: 'GLOBE_OVERLAY not on window' };
-          // Try to check if antalya is registered
-          const site = GLOBE_OVERLAY.getSite('antalya');
+          const ok = typeof Data !== 'undefined' && Data.pledgeNodes && Data.pledgeNodes.length > 0;
           return {
-            pass: !!site,
-            detail: site ? 'antalya registered in GLOBE_OVERLAY' : 'antalya NOT registered — GAIA_NODES.init() may not have run',
+            pass: ok,
+            detail: ok
+              ? `${Data.pledgeNodes.length} pledge nodes, ${Data.countryHexColors ? Object.keys(Data.countryHexColors).length : 0} country colors`
+              : 'Data.pledgeNodes is empty or Data not loaded',
           };
         },
       },
@@ -128,35 +102,6 @@ const SmokeTest = (() => {
           return {
             pass: isOpaque,
             detail: isOpaque ? `background: ${bg}` : 'TRANSPARENT — clicks will fall through to globe!',
-          };
-        },
-      },
-      {
-        name: '#site-panel has pointer-events:none when closed',
-        critical: true,
-        test: () => {
-          const el = document.getElementById('site-panel');
-          if (!el) return { pass: true, detail: '#site-panel not in DOM (OK if not rendered yet)' };
-          if (el.classList.contains('open')) return { pass: true, detail: '#site-panel is .open — skip check' };
-          const pe = getComputedStyle(el).pointerEvents;
-          return {
-            pass: pe === 'none',
-            detail: pe === 'none' ? 'Correctly pe:none when closed' : `pe:${pe} — INVISIBLE CLICK BLOCKER!`,
-          };
-        },
-      },
-      {
-        name: '#globe-overlay is NOT inside #globeViz',
-        critical: true,
-        test: () => {
-          const overlay = document.getElementById('globe-overlay');
-          if (!overlay) return { pass: true, detail: 'Not created yet (OK — created on first open)' };
-          const insideGlobe = overlay.closest('#globeViz') !== null;
-          return {
-            pass: !insideGlobe,
-            detail: insideGlobe
-              ? 'INSIDE #globeViz — z-index trapped below .sections!'
-              : `Parent: ${overlay.parentElement.tagName} (correct)`,
           };
         },
       },
@@ -206,9 +151,8 @@ const SmokeTest = (() => {
           const expected = [
             { id: 'globeViz', maxZ: 5 },
             { sel: '.sections', minZ: 5, maxZ: 15 },
-            { id: 'globe-overlay', minZ: 40, maxZ: 60 },
-            { id: 'site-panel', minZ: 80, maxZ: 100 },
             { id: 'topbar', minZ: 95, maxZ: 110 },
+            { id: 'hero', minZ: 150, maxZ: 250 },
           ];
           const issues = [];
           for (const e of expected) {
@@ -234,7 +178,7 @@ const SmokeTest = (() => {
         name: 'Critical DOM elements exist',
         critical: true,
         test: () => {
-          const required = ['globeViz', 'hero', 'topbar', 'site-panel', 'panel-content', 'panel-backdrop'];
+          const required = ['globeViz', 'hero', 'topbar', 'hex-legend', 'globe-back-btn', 'hero-carbon-clock'];
           const missing = required.filter(id => !document.getElementById(id));
           return {
             pass: missing.length === 0,
@@ -278,7 +222,7 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'Globe has interactive points',
+        name: 'Globe has country polygons',
         critical: false,
         test: () => {
           if (!window.GlobeModule || !GlobeModule.world) {
@@ -286,10 +230,19 @@ const SmokeTest = (() => {
             if (!window.GlobeModule?._initialized) return { pass: true, detail: 'Globe not yet entered (lazy init) — OK' };
             return { pass: false, detail: 'GlobeModule.world not available' };
           }
-          const pointsData = GlobeModule.world.pointsData();
+          // Countries mode renders via the solid polygons layer;
+          // the hex layer is a fallback wireframe. Either counts.
+          const polyData = typeof GlobeModule.world.polygonsData === 'function' ? GlobeModule.world.polygonsData() : null;
+          const hexData = typeof GlobeModule.world.hexPolygonsData === 'function' ? GlobeModule.world.hexPolygonsData() : null;
+          const count = Math.max(polyData?.length || 0, hexData?.length || 0);
+          // GeoJSON fetch is async with an 8s timeout — an empty layer right
+          // after entering is not necessarily a failure.
+          if (!count && GlobeModule._countryDataState === 'loading') {
+            return { pass: true, detail: 'Country GeoJSON still loading — OK' };
+          }
           return {
-            pass: pointsData && pointsData.length > 0,
-            detail: pointsData ? `${pointsData.length} points on globe (${pointsData.filter(p => p._type === 'site').length} sites, ${pointsData.filter(p => p._type === 'pledge').length} pledges)` : 'No points data',
+            pass: count > 0,
+            detail: count ? `${count} country features on globe` : `No country polygon data (state: ${GlobeModule._countryDataState})`,
           };
         },
       },
@@ -303,44 +256,24 @@ const SmokeTest = (() => {
         name: 'Hero enter button is wired (data-action="enterGlobe")',
         critical: true,
         test: () => {
-          // The hero button uses delegated data-action binding (no inline onclick).
           const btn = document.querySelector('.enter-btn[data-action="enterGlobe"]');
-          const bound = btn && btn.dataset.appActionBound === 'true';
           const handler = typeof window.App?.enterGlobe === 'function';
           return {
             pass: !!(btn && handler),
             detail: !btn ? '.enter-btn[data-action=enterGlobe] not found — hero button missing!'
               : !handler ? 'App.enterGlobe() not found — hero button will not work!'
-              : bound ? 'Hero button bound via data-action → App.enterGlobe()'
-              : 'Button + App.enterGlobe() exist (binding flag not yet set)',
+              : 'Hero button bound via data-action → App.enterGlobe()',
           };
         },
       },
       {
-        name: 'flyToSite() is callable',
-        critical: false,
-        test: () => {
-          const exists = typeof window.flyToSite === 'function';
-          return {
-            pass: exists,
-            detail: exists ? 'flyToSite() global function exists' : 'flyToSite() not found — site cards will not work',
-          };
-        },
-      },
-      {
-        name: 'Globe onPointClick handler is set',
+        name: 'exitGlobe() is callable (back button)',
         critical: true,
         test: () => {
-          if (!window.GlobeModule || !GlobeModule.world) {
-            // Lazy init — world only exists after entering globe mode.
-            if (!window.GlobeModule?._initialized) return { pass: true, detail: 'Globe not yet entered (lazy init) — OK' };
-            return { pass: false, detail: 'GlobeModule.world not available' };
-          }
-          // Globe.gl stores callbacks internally — we test by checking if the accessor returns a function
-          const clickFn = GlobeModule.world.onPointClick();
+          const exists = typeof window.exitGlobe === 'function';
           return {
-            pass: typeof clickFn === 'function',
-            detail: typeof clickFn === 'function' ? 'onPointClick handler is set' : 'onPointClick handler is NOT set — globe clicks will do nothing!',
+            pass: exists,
+            detail: exists ? 'exitGlobe() global function exists' : 'exitGlobe() not found — back button will not work',
           };
         },
       },
@@ -351,14 +284,14 @@ const SmokeTest = (() => {
     // ═══════════════════════════════════════════
     resources: [
       {
-        name: 'CSP allows CDN connect-src',
+        name: 'CSP allows globe resources',
         critical: false,
         test: () => {
           const meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
           if (!meta) return { pass: true, detail: 'No CSP meta tag (all connections allowed)' };
           const content = meta.getAttribute('content') || '';
-          const hasCDN = content.includes('cdn.jsdelivr.net');
-          const hasGH = content.includes('raw.githubusercontent.com');
+          const hasCDN = content.includes('cdn.jsdelivr.net');       // globe textures (img-src)
+          const hasGH = content.includes('raw.githubusercontent.com'); // country GeoJSON (connect-src)
           return {
             pass: hasCDN && hasGH,
             detail: `cdn.jsdelivr.net: ${hasCDN ? '✅' : '❌'}, raw.githubusercontent.com: ${hasGH ? '✅' : '❌'}`,
@@ -370,12 +303,10 @@ const SmokeTest = (() => {
         critical: true,
         test: () => {
           if (typeof Data === 'undefined') return { pass: false, detail: 'Data module not loaded' };
-          const biomes = Data.biomes ? Object.keys(Data.biomes).length : 0;
-          const sites = Data.sites ? Data.sites.length : 0;
           const pledges = Data.pledgeNodes ? Data.pledgeNodes.length : 0;
           return {
-            pass: biomes > 0 && sites > 0,
-            detail: `${biomes} biomes, ${sites} sites, ${pledges} pledge nodes`,
+            pass: pledges > 0,
+            detail: `${pledges} pledge nodes`,
           };
         },
       },
@@ -392,9 +323,9 @@ const SmokeTest = (() => {
     _results = [];
 
     const categories = category ? { [category]: TESTS[category] } : TESTS;
-    
+
     console.group('%c🧪 SMOKE TEST SUITE', 'color: #4ecdc4; font-weight: bold; font-size: 14px;');
-    
+
     let totalPass = 0;
     let totalFail = 0;
     let criticalFail = 0;
@@ -406,7 +337,7 @@ const SmokeTest = (() => {
       }
 
       console.group(`📦 ${catName.toUpperCase()}`);
-      
+
       for (const test of tests) {
         try {
           const result = await test.test();
@@ -440,7 +371,7 @@ const SmokeTest = (() => {
           console.error(`  💥 ${test.name} — THREW: ${err.message}`);
         }
       }
-      
+
       console.groupEnd();
     }
 
@@ -456,7 +387,7 @@ const SmokeTest = (() => {
 
     console.groupEnd();
     _running = false;
-    return _results;
+    return { passed: totalPass, failed: totalFail, criticalFailed: criticalFail, results: [..._results] };
   }
 
   // ── Results as table ──

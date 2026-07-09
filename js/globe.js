@@ -53,7 +53,20 @@ function _pointInFeature(lng, lat, feature) {
 
 function _findCountryAtPoint(lng, lat, features) {
   for (let i = features.length - 1; i >= 0; i--) {
-    if (_pointInFeature(lng, lat, features[i])) return features[i];
+    const f = features[i];
+    // Small-nation dot markers: hit-test by angular distance so the hover
+    // target stays comfortable even though the visual dot is ~3px.
+    const p = f.properties;
+    if (p && p.__smallNation) {
+      const dLat = lat - p.__lat;
+      let dLng = lng - p.__lng;
+      if (dLng > 180) dLng -= 360;
+      if (dLng < -180) dLng += 360;
+      dLng *= Math.max(0.2, Math.cos(p.__lat * Math.PI / 180));
+      if (dLat * dLat + dLng * dLng <= p.__hitR * p.__hitR) return f;
+      continue;
+    }
+    if (_pointInFeature(lng, lat, f)) return f;
   }
   return null;
 }
@@ -314,7 +327,10 @@ const GlobeModule = {
     console.log('[Globe] init — ' + (this.world.pointsData()?.length || 0) + ' points loaded');
 
     // ── Pledge vs Reality country nodes ──
-    this.initPledgeNodes();
+    // v1: point layer disabled — the bare countries globe carries pledge data
+    // via colored hex polygons + the country tooltip instead of dot markers.
+    // Re-enable by uncommenting when the nodes toggle returns.
+    // this.initPledgeNodes();
 
     // ── Country hex polygons — shared between modes ──
     // Default: empty wireframe grid (visible edges, transparent fill)
@@ -327,16 +343,27 @@ const GlobeModule = {
           throw new Error('Malformed country GeoJSON');
         }
         this._countryFeatures = countries.features.filter(d => d.properties?.ISO_A2 !== 'AQ');
+        // Island + micro nations missing from the 110m GeoJSON get synthetic
+        // dot-sized circle features — same layers, colors, tooltip, and click
+        // behavior as every other country. Appended LAST so they win the
+        // point-in-polygon scan (it iterates back-to-front).
+        this._appendSmallNationFeatures();
         this._countryDataState = 'ready';
-        const hexRes = this.isMobile ? 2 : 3;
-        const hexMargin = this.isMobile ? 0.7 : 0.62;
-        this.world
-          .hexPolygonsData(this._countryFeatures)
-          .hexPolygonResolution(hexRes).hexPolygonMargin(hexMargin)
-          .hexPolygonUseDots(false)
-          .hexPolygonColor(() => 'rgba(78,205,196,0.08)')
-          .hexPolygonAltitude(() => 0.003)
-          .hexPolygonCurvatureResolution(0);
+        // Only build the H3 hex layer when the solid polygon-border layer is
+        // NOT available (old globe.gl builds). Building world-wide hexes just
+        // to clear them two calls later (applyCountryHexColors) blocked the
+        // main thread for seconds-to-minutes on real GPUs/DPR-2 screens.
+        if (!this._supportsCountryBorders()) {
+          const hexRes = this.isMobile ? 2 : 3;
+          const hexMargin = this.isMobile ? 0.7 : 0.62;
+          this.world
+            .hexPolygonsData(this._countryFeatures)
+            .hexPolygonResolution(hexRes).hexPolygonMargin(hexMargin)
+            .hexPolygonUseDots(false)
+            .hexPolygonColor(() => 'rgba(78,205,196,0.08)')
+            .hexPolygonAltitude(() => 0.003)
+            .hexPolygonCurvatureResolution(0);
+        }
 
         // Apply country visuals only when the country tab is active. GeoJSON
         // can resolve after a fast mode switch into NDVI/events.
@@ -455,6 +482,7 @@ const GlobeModule = {
           this._renderCountryInfoCard(feature, true);
           this._positionCountryInfoCard(e);
           this._refreshCountryBorders();
+          this._showCountryProjects(_resolveCountryIso(feature));
         };
 
         // Attach to the globe canvas
@@ -513,6 +541,13 @@ const GlobeModule = {
           event.preventDefault();
           event.stopImmediatePropagation();
           this.clearCountrySelection();
+          return;
+        }
+        // Arrow keys browse the pinned card deck
+        if ((event.key === 'ArrowRight' || event.key === 'ArrowLeft') && this._selectedCountryFeature) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          this.navigateCountry(event.key === 'ArrowRight' ? 1 : -1);
         }
       };
       document.addEventListener('keydown', this._onCountryKeydown);
@@ -525,13 +560,36 @@ const GlobeModule = {
     this.world.controls().dampingFactor = 0.1;
 
     const m = this.world.globeMaterial();
-    m.bumpScale = 12; m.emissive.setHex(0x040810); m.emissiveIntensity = 0.05; m.shininess = 30;
+    // Low shininess + dark specular: the vendored globe.gl build has no
+    // specularImageUrl(), so a high shininess puts a milky Phong sheen over
+    // the WHOLE sphere (not just water) and washes out the night texture.
+    m.bumpScale = 12; m.emissive.setHex(0x040810); m.emissiveIntensity = 0.05;
+    m.shininess = 4;
+    if (m.specular?.setHex) m.specular.setHex(0x0a0f14);
+
+    // The bundled three.js uses physical light units, but globe.gl seeds its
+    // default lights with legacy-style intensities pre-multiplied by π
+    // (ambient 3.14, directional 1.88) — ~3x overbright, washing out the
+    // night texture. The lights are added asynchronously after globe-ready,
+    // so rescale on a couple of deferred ticks. The >1.5 guard makes this
+    // idempotent (rescaled values are 1.0 / 0.6) and protects against a
+    // future vendor bump that fixes intensities upstream.
+    const _fixLights = () => {
+      if (typeof this.world?.scene !== 'function') return;
+      this.world.scene().traverse(o => {
+        if (o.isLight && o.intensity > 1.5) o.intensity = o.intensity / Math.PI;
+      });
+    };
+    _fixLights();
+    setTimeout(_fixLights, 500);
+    setTimeout(_fixLights, 2500);
 
     // Apply initial node visual states
     this.updateNodeVisuals();
 
-    // Initialize pledge tooltip
-    this._initPledgeTooltip();
+    // v1: pledge point tooltip disabled along with initPledgeNodes() — the
+    // country tooltip (#hex-country-tooltip) covers pledge data instead.
+    // this._initPledgeTooltip();
   },
 
   // ── Pledge nodes layer ──
@@ -698,6 +756,33 @@ const GlobeModule = {
     if (!this._countryTooltipBound) {
       this._countryTooltipBound = true;
       tt.addEventListener('click', (event) => {
+        // ✕ on the pinned card
+        if (event.target.closest('[data-country-close]')) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.clearCountrySelection();
+          return;
+        }
+        // ◀ ▶ edge buttons
+        const nav = event.target.closest('[data-country-nav]');
+        if (nav) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
+          return;
+        }
+        // ☆ watch toggle
+        const watch = event.target.closest('[data-country-watch]');
+        if (watch) {
+          event.preventDefault();
+          event.stopPropagation();
+          this._toggleWatch(watch.getAttribute('data-country-watch'));
+          if (this._selectedCountryFeature) {
+            this._renderCountryInfoCard(this._selectedCountryFeature, true);
+            this._dockCountryCard();
+          }
+          return;
+        }
         const stat = event.target.closest('[data-country-stat]');
         if (!stat) return;
         event.preventDefault();
@@ -715,6 +800,77 @@ const GlobeModule = {
           : activeData.country + ' is classed as ' + _getCountryEmissionsClass(activeData).toLowerCase() + ' from per-person CO₂. Its pledge status is separate: ' + _getCountryStatusText(activeData).toLowerCase() + '.';
         safeCall('GAIA_BUBBLE', 'speak', message, 'curious', 4200);
       });
+
+      // ── Swipe physics (ported from agent/designer/swipeable-hover-card) ──
+      // Drag the pinned card like a deck: card follows the pointer with a
+      // slight rotation; past the threshold it flies off and the next /
+      // previous country card enters. Vertical drags stay native scroll
+      // (touch-action: pan-y in CSS + horizontal-intent detection here).
+      let _dragStartX = 0, _dragStartY = 0, _dragging = false, _dragEngaged = false, _dragPointerId = null;
+
+      tt.addEventListener('pointerdown', (e) => {
+        if (!tt.classList.contains('selected')) return;
+        if (e.target.closest('.tt-close,.tt-nav,[data-country-stat],a')) return;
+        _dragging = true; _dragEngaged = false;
+        _dragStartX = e.clientX; _dragStartY = e.clientY;
+        _dragPointerId = e.pointerId;
+      });
+
+      tt.addEventListener('pointermove', (e) => {
+        if (!_dragging) return;
+        const dx = e.clientX - _dragStartX;
+        const dy = e.clientY - _dragStartY;
+        if (!_dragEngaged) {
+          if (Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx)) { _dragging = false; return; } // vertical → native scroll
+          if (Math.abs(dx) < 12 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+          _dragEngaged = true;
+          tt.classList.remove('tt-snap');
+          tt.classList.add('tt-dragging');
+          try { tt.setPointerCapture(_dragPointerId); } catch { /* ignore */ }
+        }
+        tt.style.transform = 'translate(' + dx + 'px, ' + (dy * 0.15) + 'px) rotate(' + (dx * 0.04) + 'deg)';
+      });
+
+      const _dragRelease = (e) => {
+        if (!_dragging) return;
+        _dragging = false;
+        if (!_dragEngaged) return;
+        _dragEngaged = false;
+        tt.classList.remove('tt-dragging');
+        try { tt.releasePointerCapture(_dragPointerId); } catch { /* ignore */ }
+        const dx = e.clientX - _dragStartX;
+        if (dx > 110) {
+          this.navigateCountry(1, { fromDrag: true });   // swipe right → next (Bumble)
+        } else if (dx < -110) {
+          this.navigateCountry(-1, { fromDrag: true });  // swipe left → previous
+        } else {
+          tt.classList.add('tt-snap');
+          tt.style.transform = 'none';
+          setTimeout(() => tt.classList.remove('tt-snap'), 450);
+        }
+      };
+      tt.addEventListener('pointerup', _dragRelease);
+      tt.addEventListener('pointercancel', _dragRelease);
+
+      // Keep the docked card on-screen when the window resizes
+      window.addEventListener('resize', () => {
+        if (tt.classList.contains('selected') && tt.classList.contains('visible')) {
+          this._dockCountryCard();
+        }
+      });
+
+      // Horizontal trackpad / shift-wheel browses the deck; vertical keeps scrolling the card
+      let _wheelNavAt = 0;
+      tt.addEventListener('wheel', (e) => {
+        if (!tt.classList.contains('selected')) return;
+        if (Math.abs(e.deltaX) < 28 || Math.abs(e.deltaX) < Math.abs(e.deltaY) * 1.4) return;
+        e.preventDefault();
+        const now = Date.now();
+        if (now - _wheelNavAt < 500) return;
+        _wheelNavAt = now;
+        // Natural scrolling: fingers swiping right = negative deltaX = next
+        this.navigateCountry(e.deltaX < 0 ? 1 : -1);
+      }, { passive: false });
     }
 
     const projectCount = _getCountryProjectCount(feature);
@@ -728,22 +884,386 @@ const GlobeModule = {
     const comment = _getCountryGaiaComment(d, projectCount);
 
     tt.classList.toggle('selected', !!selected);
-    tt.innerHTML = '<div class="tt-topline">'
+
+    const watched = selected && this._getWatchlist().includes(d.iso);
+    let html = '<div class="tt-topline">'
       + '<div class="tt-country">' + _escapeHtml(d.country) + '</div>'
       + '<div class="tt-pill tt-status-' + statusClass + '">' + _escapeHtml(statusText) + '</div>'
+      + (selected ? '<button type="button" class="tt-watch' + (watched ? ' watched' : '') + '" data-country-watch="' + _escapeHtml(d.iso) + '" aria-label="Watch this country" title="Watch — build a list, get updates">' + (watched ? '★' : '☆') + '</button>' : '')
+      + (selected ? '<button type="button" class="tt-close" data-country-close aria-label="Close">✕</button>' : '')
       + '</div>'
-      + '<div class="tt-detail">' + _escapeHtml(emissions) + ' · ' + _escapeHtml(perCapita) + '</div>'
-      + '<div class="tt-stat-grid">'
-      + '<button type="button" class="tt-stat" data-country-stat="emissions"><span>Class</span><strong>' + _escapeHtml(_getCountryEmissionsClass(d)) + '</strong></button>'
-      + '<button type="button" class="tt-stat" data-country-stat="projects"><span>Restoration</span><strong>' + _escapeHtml(projects) + '</strong></button>'
-      + '</div>'
-      + '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
+      + '<div class="tt-detail">' + _escapeHtml(emissions) + ' · ' + _escapeHtml(perCapita) + '</div>';
+
+    if (!selected) {
+      // ── Compact hover card ──
+      html += '<div class="tt-stat-grid">'
+        + '<button type="button" class="tt-stat" data-country-stat="emissions"><span>Class</span><strong>' + _escapeHtml(_getCountryEmissionsClass(d)) + '</strong></button>'
+        + '<button type="button" class="tt-stat" data-country-stat="projects"><span>Restoration</span><strong>' + _escapeHtml(projects) + '</strong></button>'
+        + '</div>'
+        + '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
+    } else {
+      // ── Pinned card: full pledge-vs-reality metrics ──
+      html += this._renderCountryMetrics(d);
+      html += '<button type="button" class="tt-nav tt-nav-prev" data-country-nav="-1" aria-label="Previous country">◀</button>'
+        + '<button type="button" class="tt-nav tt-nav-next" data-country-nav="1" aria-label="Next country">▶</button>';
+    }
+
+    tt.innerHTML = html;
     tt.classList.add('visible');
+  },
+
+  // ── Card deck navigation (Bumble-style) ──
+  // Cycles Data.pledgeNodes order (emissions-ranked). Card stays where it
+  // was pinned; the globe flies to each country underneath.
+  navigateCountry(dir, opts = {}) {
+    if (this._navBusy) return;
+    const nodes = (hasModule('Data') && Array.isArray(Data.pledgeNodes)) ? Data.pledgeNodes : [];
+    if (!nodes.length || !this._featureByIso) return;
+    const cur = this._selectedCountryFeature;
+    if (!cur) return;
+
+    const curIso = _resolveCountryIso(cur);
+    const len = nodes.length;
+    let idx = nodes.findIndex(n => n.iso === curIso);
+
+    // Find the next node that has a renderable feature
+    let target = null;
+    for (let step = 1; step <= len; step++) {
+      const cand = nodes[((idx + dir * step) % len + len) % len];
+      const f = this._featureByIso[cand.iso];
+      if (f) { target = { node: cand, feature: f }; break; }
+    }
+    if (!target) return;
+
+    this._navBusy = true;
+    const tt = $('hex-country-tooltip');
+    // Bumble semantics: advancing throws the card out to the RIGHT and the
+    // next one enters from the left; going back mirrors it.
+    const outClass = dir > 0 ? 'tt-fly-right' : 'tt-fly-left';
+    const inClass = dir > 0 ? 'tt-enter-left' : 'tt-enter-right';
+
+    const swap = () => {
+      this._selectedCountryFeature = target.feature;
+      this._countryHoverFeature = target.feature;
+      this._renderCountryInfoCard(target.feature, true);
+      this._dockCountryCard();
+      this._refreshCountryBorders();
+      this._showCountryProjects(target.node.iso);
+
+      // Fly the globe to the new country, keeping the current zoom
+      if (this.world) {
+        const pov = this.world.pointOfView();
+        this.world.pointOfView({ lat: target.node.lat, lng: target.node.lng, altitude: pov.altitude }, 650);
+      }
+
+      if (tt) {
+        tt.classList.remove(outClass);
+        tt.classList.add(inClass);
+        // force reflow so the enter transform applies before transitioning back
+        void tt.offsetWidth;
+        tt.classList.add('tt-snap');
+        tt.classList.remove(inClass);
+        tt.style.transform = 'none';
+        setTimeout(() => { tt.classList.remove('tt-snap'); this._navBusy = false; }, 460);
+      } else {
+        this._navBusy = false;
+      }
+    };
+
+    if (tt) {
+      tt.classList.remove('tt-snap', 'tt-dragging');
+      tt.classList.add(outClass);
+      setTimeout(swap, opts.fromDrag ? 300 : 260);
+    } else {
+      swap();
+    }
+  },
+
+  // Full metrics block for the pinned country card. Reads the raw pledge
+  // node (Data.pledgeNodes has all 27 fields); degrades to a short note
+  // for countries without pledge data.
+  _renderCountryMetrics(d) {
+    const node = (hasModule('Data') && typeof Data.getPledgeNode === 'function') ? Data.getPledgeNode(d.iso) : null;
+    const fmt = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '—'
+      : (hasModule('Data') ? Data.fmt(n) : String(n));
+
+    if (!node) {
+      return '<div class="tt-comment" style="margin-top:8px">No pledge dataset entry for this country yet. Its emissions and NDC data are not in the current atlas layer.</div>'
+        + '<div class="tt-hint">esc or ✕ to close</div>';
+    }
+
+    let html = '';
+
+    // CAT rating badge
+    if (node.cat_rating) {
+      const c = node.globe_color || '#95a5a6';
+      html += '<div class="tt-cat" style="border-color:' + c + '55;background:' + c + '18">'
+        + '<span class="tt-cat-dot" style="background:' + c + '"></span>'
+        + _escapeHtml(node.cat_rating) + ' <span class="tt-cat-src">· Climate Action Tracker</span></div>';
+    }
+
+    // Reality gap
+    const gap = node.reality_gap_mt;
+    html += '<div class="tt-gap">'
+      + '<div class="tt-gap-big">' + fmt(node.fossil_co2_mt) + ' <span>MtCO₂/yr fossil</span></div>'
+      + (gap === null || gap === undefined
+          ? '<div class="tt-gap-line">No target data available</div>'
+          : '<div class="tt-gap-line ' + (gap > 0 ? 'tt-red' : 'tt-green') + '">Gap to pledge target: ' + (gap > 0 ? '+' : '') + fmt(gap) + ' MtCO₂</div>')
+      + '</div>';
+
+    // Emissions grid
+    const pc = (typeof node.co2_per_capita === 'number' && node.co2_per_capita > 0) ? node.co2_per_capita.toFixed(1) : '—';
+    html += '<div class="tt-grid4">'
+      + '<div><span>Fossil</span><strong>' + fmt(node.fossil_co2_mt) + '</strong></div>'
+      + '<div><span>LULUCF</span><strong>' + fmt(node.lulucf_co2_mt) + '</strong></div>'
+      + '<div><span>Total Mt</span><strong>' + fmt(node.total_co2_mt) + '</strong></div>'
+      + '<div><span>t/person</span><strong>' + pc + '</strong></div>'
+      + '</div>';
+
+    // Momentum: actual vs required velocity
+    const mom = node.momentum_cagr, req = node.required_cagr, div = node.divergence;
+    if (typeof mom === 'number') {
+      html += '<div class="tt-momentum">'
+        + '<div class="' + (mom > 0 ? 'tt-red' : 'tt-green') + '"><span>Actual</span><strong>' + (mom > 0 ? '+' : '') + mom.toFixed(2) + '%/yr</strong></div>'
+        + (typeof req === 'number' && req > 0
+            ? '<em>vs</em><div class="tt-teal"><span>Required</span><strong>−' + req.toFixed(2) + '%/yr</strong></div>'
+            : '')
+        + '</div>';
+      if (typeof div === 'number' && div !== 0) {
+        html += '<div class="tt-divergence ' + (div > 0 ? 'tt-red' : 'tt-green') + '">Divergence: ' + (div > 0 ? '+' : '') + div.toFixed(2) + '%/yr</div>';
+      }
+    }
+
+    // Chips: since 2015 · target · on/off track
+    const chips = [];
+    if (typeof node.change_since_2015 === 'number') {
+      chips.push('<span class="tt-chip ' + (node.change_since_2015 > 0 ? 'tt-red' : 'tt-green') + '">Since 2015: ' + (node.change_since_2015 > 0 ? '+' : '') + node.change_since_2015.toFixed(1) + '%</span>');
+    }
+    if (node.reduction_pct > 0) {
+      chips.push('<span class="tt-chip">Target: −' + node.reduction_pct + '% by ' + Math.round(node.target_year) + '</span>');
+    }
+    if (node.on_track === true) chips.push('<span class="tt-chip tt-green">✓ On track</span>');
+    else if (node.on_track === false) chips.push('<span class="tt-chip tt-red">✗ Off track</span>');
+    if (chips.length) html += '<div class="tt-chips">' + chips.join('') + '</div>';
+
+    // Climate finance
+    if (typeof node.finance_total_bn === 'number' && node.finance_total_bn > 0) {
+      html += '<div class="tt-finance">$' + fmt(node.finance_total_bn) + 'B <span>target conditional on international finance</span></div>';
+    }
+
+    // NDC summary
+    if (node.ndc_summary) {
+      html += '<div class="tt-ndc"><span>NDC pledge</span>' + _escapeHtml(node.ndc_summary) + '</div>';
+    }
+
+    // ── Close the Gap: the credit market bridge ──
+    html += this._renderCloseTheGap(node);
+
+    html += '<div class="tt-hint">← → or swipe to browse countries · esc closes</div>';
+    return html;
+  },
+
+  // ── Carbon price (voluntary market) ──
+  // Live median listing price from Carbonmark, cached for the session;
+  // falls back to a baked estimate so the card never blocks on the network.
+  CARBON_PRICE_FALLBACK: 6.5, // USD/tCO₂ — Ecosystem Marketplace VCM avg (est.)
+  _carbonPrice: null,          // { value, live }
+  _fetchCarbonPrice() {
+    if (this._carbonPrice || this._carbonPriceFetching) return;
+    try {
+      const cached = sessionStorage.getItem('elu_carbon_price');
+      if (cached) {
+        const c = JSON.parse(cached);
+        if (Date.now() - c.at < 3600000) { this._carbonPrice = { value: c.value, live: true }; return; }
+      }
+    } catch { /* ignore */ }
+    this._carbonPriceFetching = true;
+    fetch('https://api.carbonmark.com/prices')
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(list => {
+        const prices = (Array.isArray(list) ? list : [])
+          .map(l => Number(l.purchasePrice))
+          .filter(p => p > 0.5 && p < 500)
+          .sort((a, b) => a - b);
+        if (!prices.length) throw new Error('no prices');
+        const median = prices[Math.floor(prices.length / 2)];
+        this._carbonPrice = { value: median, live: true };
+        try { sessionStorage.setItem('elu_carbon_price', JSON.stringify({ value: median, at: Date.now() })); } catch { /* ignore */ }
+        // Refresh the pinned card so the estimate becomes the live figure
+        if (this._selectedCountryFeature) {
+          this._renderCountryInfoCard(this._selectedCountryFeature, true);
+          this._dockCountryCard();
+        }
+      })
+      .catch(() => { /* fallback stays in effect */ })
+      .finally(() => { this._carbonPriceFetching = false; });
+  },
+
+  _renderCloseTheGap(node) {
+    this._fetchCarbonPrice();
+    const cp = (hasModule('Data') && typeof Data.getCarbonProjects === 'function') ? Data.getCarbonProjects(node.iso) : null;
+    const price = this._carbonPrice ? this._carbonPrice.value : this.CARBON_PRICE_FALLBACK;
+    const live = !!this._carbonPrice;
+    const fmt = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '—'
+      : (hasModule('Data') ? Data.fmt(n) : String(n));
+
+    let html = '<div class="tt-ctg"><span class="tt-ctg-label">Close the gap</span>';
+
+    // Demand side: the pledge gap priced in credits
+    const gap = node.reality_gap_mt;
+    if (typeof gap === 'number' && gap > 0) {
+      const credits = gap * 1e6; // 1 credit = 1 tCO₂
+      const usd = credits * price;
+      html += '<div class="tt-ctg-line">Overshoot ≈ <strong>' + fmt(credits) + ' credits/yr</strong>'
+        + ' ≈ <strong>$' + fmt(usd) + '/yr</strong>'
+        + ' <em>at ~$' + price.toFixed(2) + '/t voluntary ' + (live ? 'median (Carbonmark, live)' : 'avg (est.)') + '</em></div>';
+    } else if (typeof gap === 'number') {
+      html += '<div class="tt-ctg-line tt-green">Tracking at or under its pledge — credits here go beyond the target.</div>';
+    }
+
+    // Supply side: real projects on the ground
+    if (cp && cp.c > 0) {
+      html += '<div class="tt-ctg-supply">' + cp.c.toLocaleString() + ' carbon project' + (cp.c === 1 ? '' : 's')
+        + ' on the ground · <strong>' + fmt(cp.ar) + ' tCO₂/yr</strong> claimed'
+        + (cp.ci > 0 ? ' · ' + fmt(cp.ci) + ' credits issued' : '') + '</div>';
+      const top = (cp.top || []).slice(0, 3);
+      if (top.length) {
+        html += '<div class="tt-projects">';
+        top.forEach(p => {
+          const reg = p.r === 'gold_standard' ? 'GS' : p.r === 'verra' ? 'VCS' : (p.r || '?').toUpperCase().slice(0, 4);
+          const type = (p.t || 'other').replace(/_/g, ' ');
+          html += '<a class="tt-proj" href="' + _escapeHtml(p.u) + '" target="_blank" rel="noopener">'
+            + '<span class="tt-proj-reg">' + _escapeHtml(reg) + '</span>'
+            + '<span class="tt-proj-name">' + _escapeHtml(p.n) + '</span>'
+            + '<span class="tt-proj-meta">' + _escapeHtml(type) + ' · ' + fmt(p.ar) + ' t/yr</span>'
+            + '</a>';
+        });
+        html += '</div>';
+        const shown = Math.min((cp.top || []).length, 6);
+        html += '<div class="tt-ctg-note">' + shown + ' largest shown as ◆ on the globe — registry links open the public record</div>';
+      }
+    } else {
+      html += '<div class="tt-ctg-supply tt-ctg-none">No registered carbon projects in the unified dataset for this country yet.</div>';
+    }
+
+    // ── The hook: free sourcing brief, ELU as the verification layer ──
+    html += '<a class="tt-brief-btn" href="' + _escapeHtml(this._briefMailto(node, cp, price)) + '">Request a sourcing brief for ' + _escapeHtml(node.country) + '</a>'
+      + '<div class="tt-brief-sub">Free · registry records pulled + satellite ground-truth where possible · no obligation</div>';
+
+    html += '</div>';
+
+    // Watchlist line (retention): appears once anything is watched
+    const wl = this._getWatchlist();
+    if (wl.length) {
+      const listNames = wl.join(', ');
+      const wlMail = 'mailto:info@earthloveunited.org'
+        + '?subject=' + encodeURIComponent('Watchlist updates — ' + listNames)
+        + '&body=' + encodeURIComponent('Hello Earth Love United,\n\nPlease send me updates on these countries from the living globe (new registered projects, verification results, market moves):\n\n' + listNames + '\n\nMy email: \nOrganization (optional): \n');
+      html += '<div class="tt-watchline">★ ' + wl.length + ' watched · <a href="' + _escapeHtml(wlMail) + '">email me updates</a></div>';
+    }
+    return html;
+  },
+
+  // ── Watchlist (localStorage, ISO codes) ──
+  _getWatchlist() {
+    try { return JSON.parse(localStorage.getItem('elu_watchlist') || '[]'); } catch { return []; }
+  },
+  _toggleWatch(iso) {
+    const wl = this._getWatchlist();
+    const i = wl.indexOf(iso);
+    if (i >= 0) wl.splice(i, 1); else wl.push(iso);
+    try { localStorage.setItem('elu_watchlist', JSON.stringify(wl)); } catch { /* ignore */ }
+    return wl.includes(iso);
+  },
+
+  // Prefilled sourcing-brief email — the lead arrives with full context
+  _briefMailto(node, cp, price) {
+    const gap = node.reality_gap_mt;
+    const fmt = (n) => (hasModule('Data') ? Data.fmt(n) : String(n));
+    const lines = [
+      'Hello Earth Love United,',
+      '',
+      'I was exploring the living globe and would like a sourcing brief for ' + node.country + '.',
+      '',
+      'Context from the atlas:',
+      '- Pledge status: ' + (node.cat_rating || 'n/a') + (typeof gap === 'number' ? ' · gap to target ' + (gap > 0 ? '+' : '') + fmt(gap) + ' MtCO2/yr' : ''),
+    ];
+    if (cp && cp.c > 0) {
+      lines.push('- Projects in the unified dataset: ' + cp.c + ' (' + fmt(cp.ar) + ' tCO2/yr claimed)');
+      (cp.top || []).slice(0, 3).forEach(p => {
+        const reg = (p.r === 'gold_standard' ? 'GS' : p.r === 'verra' ? 'VCS' : p.r);
+        lines.push('  · ' + p.n + ' [' + reg + ']');
+      });
+    }
+    lines.push(
+      '- Reference price at time of visit: ~$' + price.toFixed(2) + '/t',
+      '',
+      'About me:',
+      '- Organization: ',
+      '- Volume I am exploring (tCO2): ',
+      '- Timeline: ',
+      '',
+      'Thanks,'
+    );
+    return 'mailto:info@earthloveunited.org'
+      + '?subject=' + encodeURIComponent('Sourcing brief request — ' + node.country + ' (' + node.iso + ')')
+      + '&body=' + encodeURIComponent(lines.join('\n'));
+  },
+
+  // ── Project markers: the pinned country's top projects on the globe ──
+  _showCountryProjects(iso) {
+    if (!this.world || typeof this.world.pointsData !== 'function') return;
+    const cp = (hasModule('Data') && typeof Data.getCarbonProjects === 'function') ? Data.getCarbonProjects(iso) : null;
+    const pts = (cp && cp.top ? cp.top : []).filter(p => typeof p.lat === 'number' && typeof p.lng === 'number');
+    const typeColor = (t) => t === 'forestry' || t === 'agriculture' ? 'rgba(91,191,114,0.95)'
+      : t === 'renewable_energy' ? 'rgba(78,205,196,0.95)'
+      : t === 'energy_efficiency' ? 'rgba(123,232,208,0.9)'
+      : 'rgba(212,165,116,0.95)';
+    this.world
+      .pointsData(pts)
+      .pointLat('lat').pointLng('lng')
+      .pointAltitude(0.015).pointRadius(0.22)
+      .pointColor(p => typeColor(p.t))
+      .pointResolution(10);
+    if (typeof this.world.pointLabel === 'function') {
+      this.world.pointLabel(p =>
+        '<div style="max-width:220px"><strong>' + _escapeHtml(p.n) + '</strong><br>'
+        + _escapeHtml((p.t || 'other').replace(/_/g, ' ')) + ' · '
+        + (hasModule('Data') ? Data.fmt(p.ar) : p.ar) + ' tCO₂/yr</div>');
+    }
+  },
+
+  _clearCountryProjects() {
+    if (!this.world || typeof this.world.pointsData !== 'function') return;
+    this.world.pointsData([]);
+  },
+
+  // Pinned cards dock to a stable screen position — the card stays still
+  // while deck navigation flies the globe underneath. Hover cards follow
+  // the cursor as before.
+  _dockCountryCard() {
+    const tt = $('hex-country-tooltip');
+    if (!tt) return;
+    const w = tt.offsetWidth || 340;
+    const h = tt.offsetHeight || 320;
+    let x, y;
+    if (window.innerWidth <= 900) {
+      x = Math.max(14, (window.innerWidth - w) / 2);
+      y = 64; // just below the topbar
+    } else {
+      x = window.innerWidth - w - 28;
+      y = Math.max(80, Math.min((window.innerHeight - h) / 2, window.innerHeight - h - 24));
+    }
+    tt.style.left = x + 'px';
+    tt.style.top = y + 'px';
+    tt.style.transform = 'none';
   },
 
   _positionCountryInfoCard(event) {
     const tt = $('hex-country-tooltip');
-    if (!tt || !event) return;
+    if (!tt) return;
+    if (tt.classList.contains('selected')) { this._dockCountryCard(); return; }
+    if (!event) return;
 
     const width = tt.offsetWidth || 280;
     const height = tt.offsetHeight || 140;
@@ -767,12 +1287,14 @@ const GlobeModule = {
     if (feature === this._selectedCountryFeature) return 'rgba(123,232,208,0.86)';
 
     const d = _getCountryDisplayData(feature);
-    if (!d) return 'rgba(180,215,218,0.34)';
+    const small = !!feature?.properties?.__smallNation;
+    if (!d) return small ? 'rgba(200,230,235,0.7)' : 'rgba(180,215,218,0.34)';
     const statusKey = _getCountryStatusKey(d);
-    if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(170,205,214,0.34)';
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(214,184,138,0.38)';
-    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'rgba(255,132,112,0.42)';
-    return 'rgba(116,232,172,0.42)';
+    // Small-nation dots get a bright rim so they read at a few pixels wide
+    if (statusKey === COUNTRY_STATUS.MISSING) return small ? 'rgba(225,245,248,0.9)' : 'rgba(170,205,214,0.34)';
+    if (statusKey === COUNTRY_STATUS.NO_TARGET) return small ? 'rgba(245,210,160,0.92)' : 'rgba(214,184,138,0.38)';
+    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return small ? 'rgba(255,150,128,0.95)' : 'rgba(255,132,112,0.42)';
+    return small ? 'rgba(136,245,188,0.95)' : 'rgba(116,232,172,0.42)';
   },
 
   _countryPolygonPaintColorFn(feature) {
@@ -780,18 +1302,30 @@ const GlobeModule = {
     const selected = feature === this._selectedCountryFeature;
     const d = _getCountryDisplayData(feature);
     const hoverBoost = hovered ? 0.12 : (selected ? 0.08 : 0);
-    if (!d) return 'rgba(120,150,165,' + (0.10 + hoverBoost).toFixed(2) + ')';
+
+    // Small-nation dot markers: a few pixels wide, so the usual low-alpha
+    // country wash would vanish. Paint them near-solid for contrast.
+    if (feature?.properties?.__smallNation) {
+      const boost = hovered ? 0.10 : (selected ? 0.08 : 0);
+      const statusKey = d ? _getCountryStatusKey(d) : COUNTRY_STATUS.MISSING;
+      if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(224,172,110,' + (0.88 + boost).toFixed(2) + ')';
+      if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'rgba(255,84,58,' + (0.90 + boost).toFixed(2) + ')';
+      if (statusKey === COUNTRY_STATUS.ON_TRACK) return 'rgba(46,214,118,' + (0.88 + boost).toFixed(2) + ')';
+      return 'rgba(150,182,196,' + (0.85 + boost).toFixed(2) + ')';
+    }
+
+    if (!d) return 'rgba(120,150,165,' + (0.14 + hoverBoost).toFixed(2) + ')';
     const statusKey = _getCountryStatusKey(d);
-    if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(120,150,165,' + (0.10 + hoverBoost).toFixed(2) + ')';
+    if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(120,150,165,' + (0.14 + hoverBoost).toFixed(2) + ')';
 
     const emissions = d.emissions || 0;
     const te = Math.min(Math.log(Math.max(emissions, 1)) / Math.log(12000), 1);
-    const alpha = Math.min(0.20, 0.12 + te * 0.08) + hoverBoost;
-    const cappedAlpha = Math.min(alpha, 0.32).toFixed(2);
+    const alpha = Math.min(0.28, 0.16 + te * 0.12) + hoverBoost;
+    const cappedAlpha = Math.min(alpha, 0.42).toFixed(2);
 
     // Status drives hue; emissions only modulates opacity. A low-emissions
     // country can still be overshooting its pledge target.
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(212,165,116,' + (0.10 + hoverBoost).toFixed(2) + ')';
+    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(212,165,116,' + (0.16 + hoverBoost).toFixed(2) + ')';
     if (statusKey === COUNTRY_STATUS.OVERSHOOTING) {
       const intensity = Math.min(d.gap / 500, 1);
       const red = Math.round(220 + intensity * 35);
@@ -864,7 +1398,10 @@ const GlobeModule = {
       .polygonStrokeColor((f) => this._countryBorderColorFn(f));
 
     if (typeof this.world.polygonCapCurvatureResolution === 'function') {
-      this.world.polygonCapCurvatureResolution(1);
+      // 1° tessellation on 204 country caps generated millions of triangles
+      // and froze low/mid GPUs. 5° is visually identical at cap altitude
+      // 0.007 and ~25x lighter.
+      this.world.polygonCapCurvatureResolution(5);
     }
   },
 
@@ -892,6 +1429,57 @@ const GlobeModule = {
     }
   },
 
+  // ── Small nations (island + micro states) ──
+  // Natural Earth 110m has no polygons for ~28 UN members (Maldives,
+  // Seychelles, Tuvalu, Singapore, ...). We inject each as a synthetic
+  // dot-sized circular Feature so they flow through the SAME polygon
+  // layers as real countries: status fill color, border, hover highlight,
+  // country tooltip, and click-to-pin all work unchanged.
+  _appendSmallNationFeatures() {
+    const nations = Data.smallNations;
+    if (!Array.isArray(nations) || !nations.length) return;
+    if (!Array.isArray(this._countryFeatures)) return;
+
+    const existing = new Set(this._countryFeatures.map(f => _resolveCountryIso(f)));
+    const R = 0.16;        // visual radius in degrees (~1.5px dot at default zoom)
+    const HIT_R = 1.0;     // hover/click hit radius (decoupled from the visual)
+    const STEPS = 12;
+
+    const added = [];
+    nations.forEach(n => {
+      if (!n || !n.iso || existing.has(n.iso)) return;
+      const latR = R;
+      // Correct longitude radius so circles stay round away from the equator
+      const lngR = R / Math.max(0.2, Math.cos(n.lat * Math.PI / 180));
+      // NOTE: ring must wind CLOCKWISE (Natural Earth / shapefile convention).
+      // Counterclockwise winding is interpreted on the sphere as the polygon's
+      // COMPLEMENT — each "dot" became a cap covering the whole planet, which
+      // stacked 28 translucent full-sphere meshes (the milky wash + the lag).
+      const ring = [];
+      for (let i = STEPS; i >= 0; i--) {
+        const a = (i / STEPS) * Math.PI * 2;
+        ring.push([n.lng + Math.cos(a) * lngR, n.lat + Math.sin(a) * latR]);
+      }
+      added.push({
+        type: 'Feature',
+        properties: {
+          ISO_A3: n.iso, ADMIN: n.country, NAME: n.country,
+          __smallNation: true, __lat: n.lat, __lng: n.lng, __hitR: HIT_R,
+        },
+        geometry: { type: 'Polygon', coordinates: [ring] },
+      });
+    });
+
+    if (added.length) {
+      this._countryFeatures = this._countryFeatures.concat(added);
+      console.log('[Globe] Small nations layer:', added.length, 'dot markers added');
+    }
+
+    // ISO → feature lookup for card navigation (arrow keys / swipe / buttons)
+    this._featureByIso = {};
+    this._countryFeatures.forEach(f => { this._featureByIso[_resolveCountryIso(f)] = f; });
+  },
+
   applyCountryBorders() {
     this.setCountryBordersVisible(true);
   },
@@ -908,6 +1496,7 @@ const GlobeModule = {
       if (tt.contains(document.activeElement)) document.activeElement.blur();
       tt.classList.remove('visible', 'selected');
     }
+    this._clearCountryProjects();
     this._refreshCountryBorders();
   },
 

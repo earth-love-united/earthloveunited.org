@@ -5,98 +5,104 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ─── Identity & social preview ─────────────────────────────── -->
-<meta name="description" content="Earth Love United is an open climate-science foundation site: a living globe, GAIA climate guide, inspectable datasets, and restoration pathways.">
+<meta name="description" content="Earth Love United Foundation (ELU) is a global nonprofit established in 2020, promoting environmental justice and climate action through innovative, nature-based solutions — with a live carbon clock and a living globe of country pledges vs reality.">
 <meta name="theme-color" content="#0a1628">
 <meta name="author" content="Earth Love United Foundation">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Earth Love United — Living Climate Atlas">
-<meta property="og:description" content="Explore a living climate atlas, ask GAIA, inspect the datasets, and find restoration pathways.">
+<meta property="og:title" content="Earth Love United | Global Sustainability Nonprofit">
+<meta property="og:description" content="A global nonprofit driving climate action through nature-based solutions — enter the living globe of country pledges vs reality.">
 <meta property="og:url" content="https://earthloveunited.org">
 <meta property="og:site_name" content="Earth Love United">
+<meta property="og:image" content="https://earthloveunited.org/assets/legacy/elu-logo.png">
+<meta property="og:image:alt" content="Earth Love United Foundation logo">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Earth Love United — Living Climate Atlas">
-<meta name="twitter:description" content="A living climate atlas with GAIA, open datasets, and restoration pathways.">
+<meta name="twitter:site" content="@EarthLoveUnited">
+<meta name="twitter:title" content="Earth Love United | Global Sustainability Nonprofit">
+<meta name="twitter:description" content="A global nonprofit driving climate action through nature-based solutions — enter the living globe of country pledges vs reality.">
+<meta name="twitter:image" content="https://earthloveunited.org/assets/legacy/elu-logo.png">
+
+<!-- Organization structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  "name": "Earth Love United Foundation",
+  "alternateName": "ELU",
+  "url": "https://earthloveunited.org",
+  "logo": "https://earthloveunited.org/assets/legacy/elu-logo.png",
+  "foundingDate": "2020",
+  "founder": {
+    "@type": "Person",
+    "name": "Jean Missinhoun",
+    "description": "Founder and chairman of Earth Love United Foundation (1972–2024), author of The Green Energy Boom"
+  },
+  "email": "info@earthloveunited.org",
+  "description": "A global nonprofit established in 2020, dedicated to promoting environmental justice and driving climate action through innovative, nature-based solutions.",
+  "sameAs": [
+    "https://www.facebook.com/EarthLoveUnited/",
+    "https://www.instagram.com/earthloveunited/",
+    "https://www.linkedin.com/company/earth-love-united",
+    "https://twitter.com/EarthLoveUnited",
+    "https://www.youtube.com/@earthloveunited502",
+    "https://github.com/gke0op/earthloveunited.org"
+  ]
+}
+</script>
 
 <!-- ─── Favicon (inline SVG — no extra HTTP request) ──────────── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27%230a1628%27%2F%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%234ecdc4%27%20stroke-width%3D%271.5%27%2F%3E%3Cellipse%20cx%3D%2716%27%20cy%3D%2716%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3Cpath%20d%3D%27M2%2016%20Q8%2012%2016%2016%20T30%2016%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3C%2Fsvg%3E">
 
 <!--
-  Content Security Policy — restrictive but allows our CDN dependencies.
-  - Scripts: self + globe.gl CDN + jsdelivr (for three-globe)
-  - Styles: self + fonts.googleapis.com + inline (needed for dynamic styles)
-  - Connect: self + API endpoints (NOAA, Carbonmark, Sentinel Hub, registry APIs)
-  - Images: self + data: + CDN sources
+  Content Security Policy — v1 surface only.
+  - Scripts: self + inline (boot clock, SW registration)
+  - Styles: self + fonts.googleapis.com + inline
+  - Connect: self + raw.githubusercontent.com (country GeoJSON)
+  - Images: self + data: + cdn.jsdelivr.net (globe textures)
   - Fonts: self + fonts.gstatic.com
+  - Frames: youtube-nocookie.com only (volunteer video, injected on click)
 -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
+  script-src 'self' 'unsafe-inline';
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  connect-src 'self' https://gml.noaa.gov https://api.carbonmark.com https://services.sentinel-hub.com https://modis.ornl.gov https://registry.vcsprogram.com https://my.goldstandard.org https://cdm.unfccc.int https://production-api.globalforestwatch.org https://cdn.jsdelivr.net https://raw.githubusercontent.com https://eonet.gsfc.nasa.gov https://earthquake.usgs.gov;
-  img-src 'self' data: https://cdn.jsdelivr.net https://unpkg.com https://*.tile.openstreetmap.org;
+  connect-src 'self' https://raw.githubusercontent.com https://api.carbonmark.com;
+  img-src 'self' data: https://cdn.jsdelivr.net;
   font-src 'self' https://fonts.gstatic.com;
+  frame-src https://www.youtube-nocookie.com;
 ">
-<title>Earth Love United — Living Climate Atlas</title>
+<title>Earth Love United | Global Sustainability Nonprofit</title>
 
 <!-- PWA -->
 <link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ELU">
 
-<!-- SEO + Social -->
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<!-- ─── Resource Hints (A2) ─────────────────────────────────── -->
-<!-- Preconnect to CDN origins to save DNS+TCP+TLS round trips -->
+<!-- Resource hints -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://unpkg.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- DNS prefetch for API origins (lower priority than preconnect) -->
-<link rel="dns-prefetch" href="https://gml.noaa.gov">
-<link rel="dns-prefetch" href="https://api.carbonmark.com">
-<link rel="dns-prefetch" href="https://services.sentinel-hub.com">
-<link rel="dns-prefetch" href="https://eonet.gsfc.nasa.gov">
-<link rel="dns-prefetch" href="https://earthquake.usgs.gov">
-<!-- Preload critical JS foundation (sync-loaded, preload saves discovery time) -->
+<link rel="dns-prefetch" href="https://raw.githubusercontent.com">
 <link rel="preload" href="js/gaia-utils.js" as="script">
-<link rel="preload" href="js/module-contracts.js" as="script">
-<link rel="preload" href="js/event-bus.js" as="script">
-<link rel="preload" href="js/data.js?v=prod001" as="script">
-<!-- Preload deferred CSS that's needed for first interaction -->
-<link rel="preload" href="css/globe-overlay.css?v=4" as="style">
-<link rel="preload" href="css/gaia-bubble.css" as="style">
+<link rel="preload" href="js/data.js?v=v1" as="script">
 
-<!-- CSS Modules -->
-<!-- Critical CSS inlined (A3) — base + layout + components -->
+<!-- ═══ CRITICAL CSS (inlined) ═══ -->
 <style>
-/* ═══ INLINED CRITICAL CSS (A3) ═══ */
-/* base.css */
+/* base */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#050509;--bg2:#0a0b12;--bg3:#0e1018;--teal:#4ecdc4;--mint:#7be8d0;--ocean:#2a8fa3;--deep:#1a3a5c;--leaf:#5bbf72;--amber:#d4a574;--warn:#c45c4a;--text:#e2dfd8;--text2:#9a9590;--text3:#5a5652;--mono:'JetBrains Mono',monospace;--display:'Cormorant Garamond',serif;--body:'Outfit',sans-serif}
 html{scroll-behavior:smooth}
 body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--body);overflow-x:hidden}
 @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-@keyframes correctPulse{0%{transform:scale(1)}50%{transform:scale(1.08);box-shadow:0 0 30px rgba(91,191,114,.4)}100%{transform:scale(1)}}
-@keyframes wrongShake{0%,100%{transform:translateX(0);border-color:var(--warn)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-@keyframes bounce{0%,100%{transform:rotate(45deg) translate(0,0)}50%{transform:rotate(45deg) translate(6px,6px)}}
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease-out,transform .7s ease-out}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.gaia-link{background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.15)}
-.gaia-link:hover{background:rgba(78,205,196,.15)}
 .skip-nav{position:absolute;top:-100%;left:0;z-index:9999;padding:8px 16px;background:var(--teal);color:var(--bg);font-size:14px;font-weight:600;text-decoration:none;border-radius:0 0 4px 0}
 .skip-nav:focus{top:0}
-.hamburger-btn{display:none;position:fixed;top:12px;left:12px;z-index:101;width:40px;height:40px;border:1px solid rgba(78,205,196,.15);border-radius:8px;background:rgba(8,10,18,.8);backdrop-filter:blur(8px);cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0}
-.hamburger-line{display:block;width:18px;height:2px;background:var(--teal);border-radius:1px;transition:all .3s}
-.hamburger-btn.active .hamburger-line:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
-.hamburger-btn.active .hamburger-line:nth-child(2){opacity:0}
-.hamburger-btn.active .hamburger-line:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
-.hamburger-spacer{display:none}
-/* layout.css */
+/* hero */
 #hero{position:relative;z-index:200;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;transition:opacity 1.2s,visibility 1.2s;overflow:hidden}
 #hero.hidden{opacity:0;visibility:hidden;pointer-events:none}
 #hero::before{content:'';position:absolute;inset:-15%;pointer-events:none;background:radial-gradient(circle at 50% 40%,rgba(196,92,74,.16),rgba(196,92,74,.04) 34%,transparent 58%),radial-gradient(circle at 50% 62%,rgba(78,205,196,.08),transparent 42%)}
@@ -109,23 +115,18 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 .hero-actions{order:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;margin-top:30px;margin-bottom:0;animation:fadeUp .8s ease-out .6s both}
 #hero .enter-btn{padding:16px 34px;border:1px solid var(--teal);border-radius:999px;background:var(--teal);color:var(--bg);font-family:var(--body);font-size:13px;letter-spacing:2.4px;text-transform:uppercase;cursor:pointer;transition:all .3s;box-shadow:0 0 24px rgba(78,205,196,.18)}
 #hero .enter-btn:hover{background:var(--mint);border-color:var(--mint);color:var(--bg);transform:translateY(-2px);box-shadow:0 0 28px rgba(123,232,208,.28)}
-.hero-link{display:inline-flex;align-items:center;justify-content:center;min-height:47px;padding:13px 22px;border:1px solid rgba(78,205,196,.2);border-radius:4px;background:rgba(78,205,196,.06);color:var(--teal);font-family:var(--body);font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .3s;cursor:pointer}
-.hero-link:hover{background:rgba(78,205,196,.14);border-color:rgba(78,205,196,.45)}
-.hero-link-quiet{min-height:auto;padding:4px 6px;background:transparent;border-color:transparent;color:var(--text2);font-size:11px}
-.hero-link-quiet:hover{background:rgba(255,255,255,.05);border-color:rgba(78,205,196,.24);color:var(--teal)}
-.hero-secondary-actions{display:flex;align-items:center;justify-content:center;gap:8px;color:rgba(255,255,255,.28)}
-.hero-action-sep{font-family:var(--mono);font-size:14px;line-height:1;color:rgba(255,255,255,.32)}
 #hero .memorial{position:relative;bottom:auto;order:5;margin:0 auto 24px;font-size:11px;color:var(--text3);font-style:italic;opacity:.72;animation:fadeUp .8s ease-out 1s both}
-.scroll-indicator{display:flex;flex-direction:column;align-items:center;gap:4px;padding:24px 0 32px;animation:fadeUp .8s ease-out 1.2s both}
-.scroll-arrow{font-size:20px;color:var(--teal);opacity:.5;animation:csBounce 2s ease-in-out infinite}
-.scroll-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text3);opacity:.4}
-@keyframes csBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
-.hero-telemetry{order:3;display:flex;align-items:center;justify-content:center;width:min(920px,100%);margin:0 auto;padding:0;border:0;border-radius:0;background:none;color:var(--text2);animation:fadeUp .6s ease-out .15s both}
-#hero-carbon-clock,#hero-delegation{margin:0;min-width:0}
-#hero-delegation{display:none}
-#hero #delegation-greeting{display:none!important}
+.hero-telemetry{order:3;display:flex;align-items:center;justify-content:center;width:min(920px,100%);margin:0 auto;padding:0;color:var(--text2);animation:fadeUp .6s ease-out .15s both}
+#hero-carbon-clock{margin:0;min-width:0}
+/* globe */
 #globeViz{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
-body.hero-active #gaia-bubble,#hero:not(.hidden) ~ #gaia-bubble{display:none!important}
+body.globe-mode #hero,body.globe-mode .sections{display:none!important}
+body.globe-mode #globeViz{z-index:1;pointer-events:all}
+body.globe-mode #topbar{opacity:1;pointer-events:all}
+#globe-back-btn{display:none;position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:200;padding:10px 28px;border:1px solid rgba(78,205,196,.25);border-radius:999px;background:rgba(5,5,9,.85);backdrop-filter:blur(8px);color:var(--teal);font-family:var(--body);font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s}
+#globe-back-btn:hover{border-color:var(--teal);background:rgba(78,205,196,.1)}
+body.globe-mode #globe-back-btn{display:block}
+/* topbar */
 #topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 28px;background:linear-gradient(180deg,rgba(5,5,9,.95),rgba(5,5,9,0));pointer-events:none;opacity:0;transition:opacity .6s}
 #topbar.visible{opacity:1;pointer-events:all}
 #topbar .logo{display:flex;align-items:center;gap:10px;min-width:0;overflow:hidden;white-space:nowrap;font-family:var(--display);font-size:17px;font-weight:300;letter-spacing:1px;color:var(--mint)}
@@ -133,225 +134,11 @@ body.hero-active #gaia-bubble,#hero:not(.hidden) ~ #gaia-bubble{display:none!imp
 #topbar .brand-wordmark,#topbar .brand-subtitle{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #topbar .brand-sep{opacity:.3;flex:0 0 auto}
 #topbar .stats{display:flex;gap:28px;align-items:center;min-width:0}
-#topbar .gaia-link{flex:0 0 auto;white-space:nowrap}
 .stat-block{text-align:right}
 .stat-label{color:var(--text3);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px}
 .stat-value{font-family:var(--mono);font-size:13px;font-weight:500;transition:color .3s}
 .stat-value.negative{color:var(--warn)}
-.stat-value.positive{color:var(--leaf)}
-#scroll-progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--teal),var(--mint));z-index:1000;width:0;transition:width .1s linear}
-body.globe-mode #hero,body.globe-mode .sections{display:none!important}
-body.globe-mode #globeViz{z-index:1;pointer-events:all}
-body.globe-mode #topbar{opacity:1;pointer-events:all}
-#globe-back-btn{display:none;position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:200;padding:10px 28px;border:1px solid rgba(78,205,196,.25);border-radius:999px;background:rgba(5,5,9,.85);backdrop-filter:blur(8px);color:var(--teal);font-family:var(--body);font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s}
-#globe-back-btn:hover{border-color:var(--teal);background:rgba(78,205,196,.1)}
-body.globe-mode #globe-back-btn{display:block}
-body:not(.globe-mode) .globe-modes,body:not(.globe-mode) .events-filter,body:not(.globe-mode) #ndvi-prompt,body:not(.globe-mode) #ndvi-timeline,body:not(.globe-mode) #events-timeline{display:none!important}
-body.globe-mode .globe-modes,body.globe-mode #globe-modes{display:flex!important}
-body.globe-mode:not([data-globe-mode="events"]) .events-filter,body.globe-mode:not([data-globe-mode="events"]) #events-filter,body.globe-mode:not([data-globe-mode="events"]) #events-timeline{display:none!important}
-body.globe-mode:not([data-globe-mode="ndvi"]) #ndvi-prompt,body.globe-mode:not([data-globe-mode="ndvi"]) #ndvi-timeline{display:none!important}
-body.globe-mode[data-globe-mode="ndvi"] #ndvi-prompt:not(.visible){display:none!important}
-@media(max-width:900px),(orientation:portrait) and (max-width:1100px){body.globe-mode .hamburger-btn{display:flex}body.globe-mode .hamburger-spacer{display:block;width:52px;flex-shrink:0}body.globe-mode #topbar{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:center;min-height:58px;padding:10px 12px 8px;background:linear-gradient(180deg,rgba(5,5,9,.96) 0%,rgba(5,5,9,.78) 64%,rgba(5,5,9,0) 100%)}body.globe-mode #topbar .logo{gap:8px;font-size:15px;letter-spacing:1px}body.globe-mode #topbar .brand-subtitle,body.globe-mode #topbar .brand-sep{display:none}body.globe-mode #topbar .stats{justify-self:end;gap:8px}body.globe-mode #topbar .stat-block{display:none}body.globe-mode #topbar .gaia-link{width:44px;min-height:42px;justify-content:center;padding:8px!important;margin-left:0!important}body.globe-mode #topbar .gaia-link span:last-child{display:none}.cc-topbar{max-width:168px}.globe-modes{top:76px;max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none}.globe-modes::-webkit-scrollbar{display:none}.gm-btn{padding:7px 12px}.gm-label{display:none}.gm-toggle{padding:7px 12px}.gm-toggle-label{display:none}}
-body.globe-mode[data-globe-mode="events"] .events-filter,body.globe-mode[data-globe-mode="events"] #events-filter,body.globe-mode[data-globe-mode="events"] #events-timeline{display:flex!important}
-body.globe-mode[data-globe-mode="ndvi"] #ndvi-timeline{display:flex!important}
-body.globe-mode[data-globe-mode="ndvi"] #ndvi-prompt.visible{display:flex!important}
-.sections{position:relative;z-index:10;background:var(--bg)}
-.section{display:flex;flex-direction:column;align-items:center;padding:48px 24px 56px;position:relative;pointer-events:none}
-.section > *{pointer-events:auto}
-.section:last-of-type{padding-bottom:40px}
-.section + .section::before{content:'';display:block;width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(78,205,196,.2),transparent);margin:0 auto 32px}
-.science-note{margin-top:24px;padding-top:18px;border-top:1px solid rgba(255,255,255,.06)}
-.instrument-layers{display:flex;flex-direction:column;gap:12px;margin-top:24px}
-.instrument-layer{display:grid;grid-template-columns:46px 1fr;gap:14px;align-items:start;padding:14px 0;border-top:1px solid rgba(255,255,255,.06)}
-.instrument-layer:first-child{border-top:0;padding-top:0}
-.instrument-index{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:var(--teal)}
-.instrument-layer strong{display:block;margin-bottom:4px;font-family:var(--display);font-size:18px;font-weight:300;color:var(--mint)}
-.instrument-layer p{color:var(--text2);font-size:13px;line-height:1.6}
-.gaia-callout{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:24px;padding:18px;border:1px solid rgba(78,205,196,.14);border-radius:8px;background:rgba(78,205,196,.04)}
-.gaia-callout strong{display:block;margin-bottom:6px;color:var(--text);font-size:14px;line-height:1.5}
-.gaia-callout p{color:var(--text3);font-size:12px;line-height:1.5}
-.inline-cta{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:10px 18px;border:1px solid var(--teal);border-radius:4px;color:var(--teal);font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-decoration:none;text-transform:uppercase;white-space:nowrap;transition:all .25s}
-.inline-cta:hover{background:var(--teal);color:var(--bg)}
-.dataset-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:12px}
-.dataset-links a{padding:12px 14px;border:1px solid rgba(78,205,196,.16);border-radius:6px;background:rgba(78,205,196,.045);color:var(--teal);font-family:var(--mono);font-size:11px;text-decoration:none;text-transform:uppercase;letter-spacing:1px;text-align:center;transition:all .25s}
-.dataset-links a:hover{background:rgba(78,205,196,.12);border-color:rgba(78,205,196,.35)}
-.dataset-platforms{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:24px}
-.dataset-platform{display:flex;flex-direction:column;gap:6px;padding:16px 18px;border:1px solid rgba(78,205,196,.18);border-radius:8px;background:rgba(78,205,196,.05);text-decoration:none;text-align:left;transition:background .25s,border-color .25s,transform .25s}
-.dataset-platform:hover{background:rgba(78,205,196,.1);border-color:rgba(78,205,196,.35);transform:translateY(-1px)}
-.dataset-platform strong{color:var(--mint);font-family:var(--display);font-size:18px;font-weight:300}
-.dataset-platform span{color:var(--text2);font-size:12px;line-height:1.5}
-.dataset-platform-pending{border-style:dashed;background:rgba(255,255,255,.025)}
-.dataset-source-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.06);border-radius:8px;background:rgba(255,255,255,.02)}
-.dataset-source-list a{color:var(--text2);font-size:12px;line-height:1.5;text-decoration:none;transition:color .2s}
-.dataset-source-list a:hover{color:var(--teal)}
-.dataset-provenance-card{display:flex;flex-direction:column;gap:5px;padding:14px;border:1px solid rgba(78,205,196,.12);border-radius:7px;background:rgba(78,205,196,.035);transition:all .25s}
-.dataset-provenance-card:hover{border-color:rgba(78,205,196,.3);background:rgba(78,205,196,.075);transform:translateY(-1px)}
-.dataset-status{color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;line-height:1.4}
-.dataset-provenance-card strong{color:var(--mint);font-family:var(--display);font-size:18px;font-weight:300;line-height:1.25}
-.dataset-provenance-card em{color:var(--text2);font-style:normal;font-size:12px;line-height:1.55}
-.raw-data-label{margin-top:22px;color:var(--text3);font-family:var(--mono);font-size:10px;letter-spacing:1.6px;text-transform:uppercase;text-align:left}
-.footer{position:relative;z-index:10;padding:48px 24px 32px;text-align:center;background:linear-gradient(0deg,rgba(5,5,9,1),rgba(5,5,9,.9))}
-.footer .footer-logo{font-family:var(--display);font-size:22px;color:var(--mint);font-weight:300;letter-spacing:2px;margin-bottom:6px}
-.footer .footer-tagline{font-size:12px;color:var(--text3);margin-bottom:24px}
-.footer .footer-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
-.footer .footer-links a{color:var(--text2);text-decoration:none;font-size:12px;transition:color .2s}
-.footer .footer-links a:hover{color:var(--teal)}
-.footer .footer-copy{font-size:10px;color:var(--text3);opacity:.6}
-@media(max-width:720px){.hero-inner{max-width:92%}.hero-stage{padding:0 0 28px}.hero-value{margin-bottom:24px;font-size:15px}.hero-actions{gap:10px;margin-top:26px}#hero .enter-btn,.hero-link{width:100%;max-width:320px;min-height:44px;padding:12px 18px;font-size:11px}.hero-secondary-actions{gap:6px}#hero .hero-secondary-actions .hero-link{width:auto;min-height:auto;padding:4px 6px}.hero-telemetry{max-width:360px}#hero .memorial{margin-bottom:24px}.instrument-layer{grid-template-columns:1fr;gap:6px}.instrument-index{font-size:10px}.gaia-callout{flex-direction:column;align-items:flex-start}.inline-cta{width:100%}.dataset-platforms{grid-template-columns:1fr}.dataset-source-list{grid-template-columns:1fr;padding:12px}}
-@media(prefers-reduced-motion:reduce){#hero *,#hero *::before,#hero *::after{animation:none!important;transition:none!important}#hero .enter-btn:hover{transform:none}}
-/* components.css */
-.card{max-width:680px;width:100%;background:linear-gradient(135deg,rgba(8,10,18,.95),rgba(12,15,25,.93));border:1px solid rgba(78,205,196,.08);border-radius:12px;padding:32px 28px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
-.section-label{font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--teal);margin-bottom:10px;font-family:var(--mono)}
-.section-title{font-family:var(--display);font-size:clamp(22px,3.5vw,36px);font-weight:300;color:var(--text);margin-bottom:14px;line-height:1.2}
-.section-body{font-size:14px;line-height:1.7;color:var(--text2)}
-.cta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
-.cta-card{padding:22px 18px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:10px;text-align:center;transition:all .3s;cursor:pointer}
-.cta-card:hover{border-color:rgba(78,205,196,.2);transform:translateY(-2px)}
-.cta-card .cta-icon{font-size:28px;margin-bottom:10px}
-.cta-card .cta-title{font-family:var(--display);font-size:18px;color:var(--text);margin-bottom:6px}
-.cta-card .cta-body{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:12px}
-.cta-card .cta-btn{display:inline-block;padding:10px 24px;border:1px solid var(--teal);border-radius:4px;color:var(--teal);font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .3s}
-.cta-card .cta-btn:hover{background:var(--teal);color:var(--bg)}
-.time-slider{width:100%;appearance:none;height:6px;background:rgba(255,255,255,.06);border-radius:3px;outline:none;cursor:pointer}
-.time-slider::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px rgba(78,205,196,.4),0 2px 6px rgba(0,0,0,.3);cursor:pointer;border:2px solid rgba(255,255,255,.15);transition:transform .15s,box-shadow .15s}
-.time-slider::-webkit-slider-thumb:hover{transform:scale(1.15);box-shadow:0 0 16px rgba(78,205,196,.6),0 2px 8px rgba(0,0,0,.4)}
-.time-slider::-webkit-slider-thumb:active{transform:scale(1.05)}
-.time-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px rgba(78,205,196,.4),0 2px 6px rgba(0,0,0,.3);cursor:pointer;border:2px solid rgba(255,255,255,.15)}
-.time-slider::-moz-range-track{height:6px;background:rgba(255,255,255,.06);border-radius:3px}
-.area-slider{width:100%;appearance:none;height:6px;background:rgba(255,255,255,.06);border-radius:3px;outline:none;cursor:pointer}
-.area-slider::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:var(--leaf);box-shadow:0 0 8px rgba(91,191,114,.4),0 2px 4px rgba(0,0,0,.3);cursor:pointer;border:2px solid rgba(255,255,255,.15);transition:transform .15s}
-.area-slider::-webkit-slider-thumb:hover{transform:scale(1.15)}
-.area-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--leaf);box-shadow:0 0 8px rgba(91,191,114,.4),0 2px 4px rgba(0,0,0,.3);cursor:pointer;border:2px solid rgba(255,255,255,.15)}
-.area-slider::-moz-range-track{height:6px;background:rgba(255,255,255,.06);border-radius:3px}
-#panel-backdrop{position:fixed;top:0;left:0;width:100%;height:100%;z-index:85;display:none;background:rgba(0,0,0,.3);cursor:pointer}
-#panel-backdrop.show{display:block}
-.site-panel-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:85;display:none;background:rgba(0,0,0,.3);cursor:pointer}
-.site-panel-overlay.visible{display:block}
-#site-panel{position:fixed;top:200px;right:0;width:440px;height:calc(100% - 200px);z-index:90;background:linear-gradient(135deg,rgba(8,10,18,.98),rgba(12,15,25,.98));border-left:1px solid rgba(78,205,196,.08);transform:translateX(100%);transition:transform .25s cubic-bezier(.22,1,.36,1);overflow-y:auto;overflow-x:hidden;padding:16px 28px 28px;will-change:transform;-webkit-overflow-scrolling:touch;pointer-events:none}
-#site-panel.open{transform:translateX(0);pointer-events:auto}
-.panel-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border:1px solid rgba(255,255,255,.12);border-radius:50%;background:rgba(8,10,18,.85);color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;z-index:5}
-.panel-close:hover{border-color:var(--teal);color:var(--teal);background:rgba(78,205,196,.08)}
-#panel-backdrop{position:fixed;top:0;left:0;width:100%;height:100%;z-index:85;display:none;background:rgba(0,0,0,.3);cursor:pointer}
-#panel-backdrop.show{display:block}
-.site-title{font-family:var(--display);font-size:28px;font-weight:300;color:var(--mint);margin-bottom:4px}
-.site-subtitle{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px}
-.site-narrative{font-size:14px;line-height:1.7;color:var(--text2);margin-bottom:24px;border-left:2px solid rgba(78,205,196,.15);padding-left:16px}
-.slider-section{margin-bottom:24px}
-.slider-section h3{font-family:var(--display);font-size:16px;font-weight:400;color:var(--text);margin-bottom:12px}
-.slider-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--text3);font-family:var(--mono)}
-.year-display{font-family:var(--mono);font-size:22px;color:var(--teal);margin-bottom:8px}
-.ndvi-bar{height:6px;border-radius:3px;margin:8px 0 4px;transition:width .4s,background .4s}
-.ndvi-label{font-size:11px;color:var(--text3)}
-.carbon-card{background:rgba(78,205,196,.05);border:1px solid rgba(78,205,196,.08);border-radius:8px;padding:16px;margin-bottom:16px}
-.carbon-card .big-number{font-family:var(--mono);font-size:28px;font-weight:500;color:var(--teal)}
-.carbon-card .big-unit{font-size:13px;color:var(--text2);margin-left:4px}
-.carbon-card .big-label{font-size:11px;color:var(--text3);margin-top:4px}
-.climate-row{display:flex;gap:12px;margin-bottom:16px}
-.climate-mini{flex:1;background:rgba(255,255,255,.02);border-radius:6px;padding:10px}
-.climate-mini .cm-label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3)}
-.climate-mini .cm-value{font-family:var(--mono);font-size:16px;margin-top:2px}
-.climate-mini .cm-delta{font-size:10px;margin-top:2px}
-.cm-delta.warming{color:var(--warn)}.cm-delta.drying{color:var(--amber)}
-.sandbox-section{border-top:1px solid rgba(255,255,255,.05);padding-top:20px;margin-top:8px}
-.sandbox-section h3{font-family:var(--display);font-size:16px;font-weight:400;color:var(--text);margin-bottom:12px}
-.sandbox-options{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.sandbox-btn{padding:10px 14px;border:1px solid rgba(78,205,196,.12);border-radius:6px;background:none;color:var(--text);font-family:var(--body);font-size:13px;cursor:pointer;text-align:left;transition:all .2s}
-.sandbox-btn:hover{border-color:var(--teal);background:rgba(78,205,196,.05)}
-.sandbox-btn.active{border-color:var(--teal);background:rgba(78,205,196,.1);color:var(--mint)}
-.sandbox-btn .sb-icon{margin-right:8px}
-.area-control{margin-bottom:16px}
-.area-control label{font-size:11px;color:var(--text3);display:block;margin-bottom:6px}
-.area-value{font-family:var(--mono);font-size:14px;color:var(--leaf);margin-top:4px}
-.result-card{background:rgba(91,191,114,.05);border:1px solid rgba(91,191,114,.12);border-radius:8px;padding:16px;margin-bottom:12px}
-.result-card .big-number{font-family:var(--mono);font-size:24px;color:var(--leaf)}
-.result-card .context-line{font-size:12px;color:var(--text2);margin-top:8px;line-height:1.6}
-.fraction-line{font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:6px}
-.elu-connection{margin-top:20px;padding:16px;background:rgba(212,165,116,.04);border:1px solid rgba(212,165,116,.1);border-radius:8px;font-size:13px;line-height:1.7;color:var(--text2)}
-.elu-connection strong{color:var(--amber)}
-.sites-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:24px}
-.site-card{padding:22px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:10px;cursor:pointer;transition:all .3s}
-.site-card:hover{border-color:rgba(78,205,196,.2);background:rgba(78,205,196,.03);transform:translateY(-2px)}
-.site-card .site-icon{font-size:24px;margin-bottom:10px}
-.site-card .site-name{font-family:var(--display);font-size:18px;color:var(--text);margin-bottom:4px}
-.site-card .site-loc{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
-.site-card .site-desc{font-size:13px;color:var(--text2);line-height:1.6}
-.site-card .site-stat{font-family:var(--mono);font-size:13px;color:var(--teal);margin-top:12px}
-.scene-tooltip{font-family:var(--body)!important;font-size:13px!important;background:rgba(8,10,18,.92)!important;color:var(--mint)!important;border:1px solid rgba(78,205,196,.15)!important;border-radius:6px!important;padding:8px 14px!important;backdrop-filter:blur(8px)!important;pointer-events:none!important}
-.site-panel-gaia{margin:4px 0 16px 0;background:rgba(78,205,196,0.03);border:1px solid rgba(78,205,196,0.08);border-radius:8px;overflow:hidden}
-.gaia-section-header{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;user-select:none;transition:background 0.15s}
-.gaia-section-header:hover{background:rgba(78,205,196,0.05)}
-.gaia-section-icon{font-size:14px}
-.gaia-section-title{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--teal);flex:1}
-.gaia-section-toggle{font-size:8px;color:var(--text3);transition:transform 0.2s}
-.gaia-section-body{padding:0 14px 12px 14px;transition:max-height 0.3s ease,padding 0.3s ease;max-height:300px;overflow:hidden}
-.gaia-section-body.collapsed{max-height:0;padding:0 14px}
-.gaia-guidance{font-size:12px;line-height:1.6;color:var(--text2);margin-bottom:10px}
-.gaia-suggestions{display:flex;flex-wrap:wrap;gap:6px}
-.gaia-suggestion-chip{padding:5px 12px;border:1px solid rgba(78,205,196,0.15);border-radius:12px;background:rgba(78,205,196,0.04);color:var(--teal);font-size:11px;cursor:pointer;transition:all 0.2s;font-family:var(--body)}
-.gaia-suggestion-chip:hover{background:rgba(78,205,196,0.1);border-color:rgba(78,205,196,0.3)}
-.quest-progress-list{display:flex;flex-direction:column;gap:8px}
-.quest-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:8px;transition:all 0.2s}
-.quest-item.completed{background:rgba(78,205,196,0.04);border-color:rgba(78,205,196,0.12)}
-.quest-icon{font-size:14px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,0.04);flex-shrink:0}
-.quest-item.completed .quest-icon{background:rgba(78,205,196,0.15);color:var(--teal)}
-.quest-info{flex:1;min-width:0}
-.quest-name{font-size:12px;color:var(--text);font-weight:500}
-.quest-desc{font-size:10px;color:var(--text3);margin-top:2px}
-.quest-progress-bar{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:4px;overflow:hidden}
-.quest-progress-fill{height:100%;background:var(--teal);border-radius:2px;transition:width 0.3s}
-.quest-count{font-size:10px;color:var(--text3);font-family:var(--mono);flex-shrink:0}
-#pledge-panel{position:fixed;top:0;right:0;width:440px;height:100%;z-index:90;background:linear-gradient(135deg,rgba(8,10,18,.98),rgba(12,15,25,.98));border-left:1px solid rgba(78,205,196,.08);transform:translateX(100%);transition:transform .25s cubic-bezier(.22,1,.36,1);overflow-y:auto;overflow-x:hidden;padding:56px 28px 28px;will-change:transform;-webkit-overflow-scrolling:touch;pointer-events:none}
-#pledge-panel.open{transform:translateX(0);pointer-events:auto}
-.pledge-header{margin-bottom:8px}
-.pledge-country{font-family:var(--display);font-size:28px;font-weight:300;color:var(--mint);margin-bottom:2px}
-.pledge-iso{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
-.pledge-subtitle{font-size:12px;color:var(--text3);margin-bottom:12px;line-height:1.5}
-.pledge-cat-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:4px;border:1px solid;font-size:11px;color:var(--text2);margin-bottom:16px}
-.pledge-cat-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.pledge-section{margin-bottom:24px}
-.pledge-section-title{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--teal);margin-bottom:10px}
-.pledge-gap-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:8px;padding:16px;margin-bottom:8px}
-.pledge-big-number{font-family:var(--mono);font-size:24px;color:var(--text)}
-.pledge-unit{font-size:12px;color:var(--text3)}
-.pledge-label{font-size:10px;color:var(--text3);margin-bottom:8px}
-.pledge-gap-metric{font-size:13px;font-weight:500}
-.pledge-gap-metric.red{color:var(--warn)}.pledge-gap-metric.green{color:var(--leaf)}
-.pledge-emit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.pledge-emit-item{padding:10px;background:rgba(255,255,255,.02);border-radius:6px;text-align:center}
-.pledge-emit-val{font-family:var(--mono);font-size:16px;color:var(--text)}
-.pledge-emit-label{font-size:9px;color:var(--text3);margin-top:2px}
-.pledge-momentum{display:flex;align-items:center;gap:12px}
-.pledge-momentum-actual,.pledge-momentum-required{flex:1;text-align:center;padding:10px;background:rgba(255,255,255,.02);border-radius:6px}
-.pledge-momentum-label{font-size:9px;color:var(--text3);margin-bottom:4px}
-.pledge-momentum-val{font-family:var(--mono);font-size:16px}
-.pledge-momentum-vs{font-size:11px;color:var(--text3)}
-.pledge-momentum-actual.red .pledge-momentum-val{color:var(--warn)}
-.pledge-momentum-actual.green .pledge-momentum-val{color:var(--leaf)}
-.pledge-momentum-required .pledge-momentum-val{color:var(--teal)}
-.pledge-divergence{font-size:12px;text-align:center;padding:8px;border-radius:6px;background:rgba(255,255,255,.02);margin-top:8px}
-.pledge-divergence.red{color:var(--warn)}.pledge-divergence.green{color:var(--leaf)}
-.pledge-change{font-family:var(--mono);font-size:20px;text-align:center;padding:12px;background:rgba(255,255,255,.02);border-radius:6px}
-.pledge-change.red{color:var(--warn)}.pledge-change.green{color:var(--leaf)}
-.pledge-finance{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:8px;padding:16px;text-align:center}
-.pledge-finance-total{font-family:var(--mono);font-size:28px;color:var(--mint);margin-bottom:4px}
-.pledge-finance-label{font-size:11px;color:var(--text3)}
-.pledge-finance-breakdown{font-size:10px;color:var(--text3);margin-top:8px}
-.pledge-ndc-text{font-size:12px;line-height:1.7;color:var(--text2);max-height:200px;overflow-y:auto;padding:12px;background:rgba(255,255,255,.02);border-radius:6px;border-left:2px solid rgba(78,205,196,.15)}
-.pledge-on-track{padding:10px;border-radius:6px;text-align:center;font-size:14px;font-weight:500}
-.pledge-on-track.green{background:rgba(46,204,113,.1);color:var(--leaf);border:1px solid rgba(46,204,113,.2)}
-.pledge-on-track.red{background:rgba(231,76,60,.1);color:var(--warn);border:1px solid rgba(231,76,60,.2)}
-.globe-modes{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:100;pointer-events:auto;display:flex;gap:2px;background:rgba(8,10,18,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(78,205,196,0.12);border-radius:10px;padding:3px;box-shadow:0 4px 24px rgba(0,0,0,0.4)}
-.gm-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:8px;background:transparent;color:rgba(255,255,255,0.5);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.25s ease;letter-spacing:0.3px}
-.gm-btn:hover{color:rgba(255,255,255,0.8);background:rgba(78,205,196,0.08)}
-.gm-btn.active{color:#fff;background:rgba(78,205,196,0.15);box-shadow:0 0 12px rgba(78,205,196,0.15)}
-.gm-icon{font-size:14px;line-height:1}
-.gm-label{white-space:nowrap}
-.gm-divider{width:1px;height:20px;background:rgba(255,255,255,0.1);margin:0 2px;align-self:center}
-.gm-toggle{display:flex;align-items:center;gap:5px;padding:6px 12px;border:none;border-radius:8px;background:transparent;color:rgba(255,255,255,0.4);font-family:var(--font);font-size:11px;font-weight:500;cursor:pointer;transition:all 0.25s ease}
-.gm-toggle:hover{color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.05)}
-.gm-toggle.active{color:var(--mint);background:rgba(78,205,196,0.1)}
-.gm-toggle-icon{font-size:10px;line-height:1}
-.gm-toggle-label{white-space:nowrap}
+/* country tooltip (globe) */
 #hex-country-tooltip{position:fixed;z-index:1000;pointer-events:none;width:min(292px,calc(100vw - 28px));background:rgba(8,10,18,0.94);backdrop-filter:blur(10px);border:1px solid rgba(78,205,196,0.18);border-radius:8px;padding:10px 12px;opacity:0;transition:opacity 0.15s,border-color 0.15s,box-shadow 0.15s;transform:translate(-50%,-120%);box-shadow:0 8px 22px rgba(0,0,0,0.46)}
 #hex-country-tooltip.visible{opacity:1;pointer-events:auto}
 #hex-country-tooltip.selected{border-color:rgba(123,232,208,0.42);box-shadow:0 12px 28px rgba(0,0,0,0.55),0 0 18px rgba(78,205,196,0.10)}
@@ -368,94 +155,233 @@ body.globe-mode[data-globe-mode="ndvi"] #ndvi-prompt.visible{display:flex!import
 #hex-country-tooltip .tt-stat span{display:block;color:var(--text3);font-family:var(--mono);font-size:8px;line-height:1.1;letter-spacing:.8px;text-transform:uppercase}
 #hex-country-tooltip .tt-stat strong{display:block;overflow:hidden;text-overflow:ellipsis;color:var(--mint);font-size:11px;line-height:1.25;font-weight:600}
 #hex-country-tooltip .tt-comment{color:var(--text2);font-size:11px;line-height:1.35}
-@media(prefers-reduced-motion:reduce){#hex-country-tooltip{transition:none}}
+/* pinned (expanded) country card */
+#hex-country-tooltip.selected{width:min(370px,calc(100vw - 28px));max-height:min(74vh,620px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+#hex-country-tooltip .tt-close{flex:0 0 auto;width:26px;height:26px;margin:-2px -2px 0 2px;border:1px solid rgba(255,255,255,.12);border-radius:50%;background:rgba(255,255,255,.03);color:var(--text2);font-size:11px;line-height:1;cursor:pointer;transition:all .15s}
+#hex-country-tooltip .tt-close:hover{border-color:var(--teal);color:var(--teal);background:rgba(78,205,196,.08)}
+#hex-country-tooltip .tt-cat{display:flex;align-items:center;gap:7px;margin:9px 0 0;padding:6px 9px;border:1px solid;border-radius:6px;color:var(--text);font-size:11px;line-height:1.3}
+#hex-country-tooltip .tt-cat-dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%}
+#hex-country-tooltip .tt-cat-src{color:var(--text3);font-size:9px;letter-spacing:.4px}
+#hex-country-tooltip .tt-gap{margin:9px 0 0;padding:10px 11px;border:1px solid rgba(78,205,196,.14);border-radius:8px;background:rgba(78,205,196,.04)}
+#hex-country-tooltip .tt-gap-big{font-family:var(--mono);font-size:21px;color:var(--text);line-height:1.1}
+#hex-country-tooltip .tt-gap-big span{font-family:var(--body);font-size:10px;color:var(--text3);letter-spacing:.6px;text-transform:uppercase}
+#hex-country-tooltip .tt-gap-line{margin-top:5px;font-size:11px;color:var(--text2)}
+#hex-country-tooltip .tt-red{color:var(--warn)}
+#hex-country-tooltip .tt-green{color:var(--leaf)}
+#hex-country-tooltip .tt-teal{color:var(--teal)}
+#hex-country-tooltip .tt-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0 0}
+#hex-country-tooltip .tt-grid4 > div{min-width:0;padding:6px 6px;border:1px solid rgba(255,255,255,.07);border-radius:6px;background:rgba(255,255,255,.02);text-align:center}
+#hex-country-tooltip .tt-grid4 span{display:block;color:var(--text3);font-family:var(--mono);font-size:8px;letter-spacing:.6px;text-transform:uppercase}
+#hex-country-tooltip .tt-grid4 strong{display:block;overflow:hidden;text-overflow:ellipsis;color:var(--text);font-family:var(--mono);font-size:12px;font-weight:500;margin-top:2px}
+#hex-country-tooltip .tt-momentum{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 0}
+#hex-country-tooltip .tt-momentum > div{flex:1;padding:7px 8px;border:1px solid rgba(255,255,255,.07);border-radius:6px;background:rgba(255,255,255,.02);text-align:center}
+#hex-country-tooltip .tt-momentum span{display:block;color:var(--text3);font-family:var(--mono);font-size:8px;letter-spacing:.6px;text-transform:uppercase}
+#hex-country-tooltip .tt-momentum strong{display:block;font-family:var(--mono);font-size:13px;font-weight:500;margin-top:2px}
+#hex-country-tooltip .tt-momentum em{color:var(--text3);font-size:10px;font-style:normal}
+#hex-country-tooltip .tt-divergence{margin:6px 0 0;padding:5px 8px;border-radius:6px;background:rgba(255,255,255,.02);font-size:11px;text-align:center}
+#hex-country-tooltip .tt-chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 0}
+#hex-country-tooltip .tt-chip{padding:4px 8px;border:1px solid rgba(255,255,255,.09);border-radius:999px;background:rgba(255,255,255,.025);color:var(--text2);font-family:var(--mono);font-size:9.5px;letter-spacing:.3px}
+#hex-country-tooltip .tt-chip.tt-red{border-color:rgba(255,107,107,.26);background:rgba(255,107,107,.07)}
+#hex-country-tooltip .tt-chip.tt-green{border-color:rgba(46,204,113,.25);background:rgba(46,204,113,.07)}
+#hex-country-tooltip .tt-finance{margin:8px 0 0;padding:8px 10px;border:1px solid rgba(212,165,116,.2);border-radius:6px;background:rgba(212,165,116,.06);color:var(--amber);font-family:var(--mono);font-size:14px}
+#hex-country-tooltip .tt-finance span{display:block;color:var(--text3);font-family:var(--body);font-size:9.5px;letter-spacing:.4px;text-transform:uppercase;margin-top:2px}
+#hex-country-tooltip .tt-ndc{margin:8px 0 0;padding:8px 10px;border-left:2px solid rgba(78,205,196,.25);border-radius:0 6px 6px 0;background:rgba(255,255,255,.02);color:var(--text2);font-size:11px;line-height:1.5}
+#hex-country-tooltip .tt-ndc span{display:block;color:var(--teal);font-family:var(--mono);font-size:8.5px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px}
+#hex-country-tooltip .tt-hint{margin:9px 0 0;color:var(--text3);font-family:var(--mono);font-size:8.5px;letter-spacing:.8px;text-transform:uppercase;text-align:center;opacity:.7}
+/* Close the Gap — credit market bridge */
+#hex-country-tooltip .tt-ctg{margin:10px 0 0;padding:9px 10px;border:1px solid rgba(123,232,208,.16);border-radius:8px;background:linear-gradient(180deg,rgba(78,205,196,.06),rgba(78,205,196,.02))}
+#hex-country-tooltip .tt-ctg-label{display:block;color:var(--mint);font-family:var(--mono);font-size:8.5px;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:5px}
+#hex-country-tooltip .tt-ctg-line{color:var(--text2);font-size:11.5px;line-height:1.45}
+#hex-country-tooltip .tt-ctg-line strong{color:var(--text);font-family:var(--mono);font-size:11.5px;font-weight:500}
+#hex-country-tooltip .tt-ctg-line em{display:block;color:var(--text3);font-size:9.5px;font-style:normal;margin-top:2px}
+#hex-country-tooltip .tt-ctg-supply{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.06);color:var(--text2);font-size:11px;line-height:1.4}
+#hex-country-tooltip .tt-ctg-supply strong{color:var(--text);font-family:var(--mono);font-weight:500}
+#hex-country-tooltip .tt-ctg-none{color:var(--text3)}
+#hex-country-tooltip .tt-projects{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+#hex-country-tooltip .tt-proj{display:grid;grid-template-columns:34px 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:5px 7px;border:1px solid rgba(255,255,255,.06);border-radius:6px;background:rgba(255,255,255,.02);text-decoration:none;transition:border-color .15s,background .15s}
+#hex-country-tooltip .tt-proj:hover{border-color:rgba(78,205,196,.3);background:rgba(78,205,196,.06)}
+#hex-country-tooltip .tt-proj-reg{grid-row:1/3;justify-self:center;padding:3px 5px;border:1px solid rgba(78,205,196,.25);border-radius:4px;color:var(--teal);font-family:var(--mono);font-size:8.5px;letter-spacing:.5px}
+#hex-country-tooltip .tt-proj-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);font-size:10.5px;line-height:1.3}
+#hex-country-tooltip .tt-proj-meta{color:var(--text3);font-family:var(--mono);font-size:8.5px;letter-spacing:.3px}
+#hex-country-tooltip .tt-ctg-note{margin-top:6px;color:var(--text3);font-size:9px;line-height:1.35}
+/* the hook: sourcing brief CTA + watchlist */
+#hex-country-tooltip .tt-brief-btn{display:block;margin-top:9px;padding:10px 12px;border:1px solid var(--teal);border-radius:6px;background:rgba(78,205,196,.08);color:var(--teal);font-family:var(--mono);font-size:10px;letter-spacing:1.2px;text-transform:uppercase;text-align:center;text-decoration:none;transition:all .2s}
+#hex-country-tooltip .tt-brief-btn:hover{background:var(--teal);color:var(--bg)}
+#hex-country-tooltip .tt-brief-sub{margin-top:5px;color:var(--text3);font-size:8.5px;letter-spacing:.3px;text-align:center;line-height:1.4}
+#hex-country-tooltip .tt-watch{flex:0 0 auto;width:26px;height:26px;margin:-2px 0 0 2px;border:1px solid rgba(255,255,255,.12);border-radius:50%;background:rgba(255,255,255,.03);color:var(--text2);font-size:12px;line-height:1;cursor:pointer;transition:all .15s}
+#hex-country-tooltip .tt-watch:hover{border-color:var(--amber);color:var(--amber)}
+#hex-country-tooltip .tt-watch.watched{border-color:rgba(212,165,116,.5);background:rgba(212,165,116,.12);color:var(--amber)}
+#hex-country-tooltip .tt-watchline{margin:8px 0 0;color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:.4px;text-align:center}
+#hex-country-tooltip .tt-watchline a{color:var(--amber);text-decoration:none}
+#hex-country-tooltip .tt-watchline a:hover{text-decoration:underline}
+/* deck navigation — swipe physics (ported from agent/designer/swipeable-hover-card) */
+#hex-country-tooltip.selected{touch-action:pan-y;cursor:grab}
+#hex-country-tooltip.tt-dragging{transition:none!important;cursor:grabbing;user-select:none}
+#hex-country-tooltip.tt-snap{transition:transform .4s cubic-bezier(.175,.885,.32,1.275),opacity .3s ease}
+#hex-country-tooltip.tt-fly-left{transition:transform .3s cubic-bezier(.25,.8,.25,1),opacity .3s ease;transform:translate(-140%,40px) rotate(-12deg)!important;opacity:0!important;pointer-events:none}
+#hex-country-tooltip.tt-fly-right{transition:transform .3s cubic-bezier(.25,.8,.25,1),opacity .3s ease;transform:translate(140%,40px) rotate(12deg)!important;opacity:0!important;pointer-events:none}
+#hex-country-tooltip.tt-enter-right{transition:none!important;transform:translate(48%,14px) rotate(5deg);opacity:0}
+#hex-country-tooltip.tt-enter-left{transition:none!important;transform:translate(-48%,14px) rotate(-5deg);opacity:0}
+#hex-country-tooltip .tt-nav{position:absolute;top:50%;transform:translateY(-50%);width:22px;height:96px;border:1px solid rgba(78,205,196,.18);background:rgba(8,10,18,.92);color:var(--teal);font-size:10px;cursor:pointer;opacity:0;transition:opacity .2s,background .2s;display:flex;align-items:center;justify-content:center}
+#hex-country-tooltip .tt-nav-prev{left:0;border-radius:0 8px 8px 0;border-left:none}
+#hex-country-tooltip .tt-nav-next{right:0;border-radius:8px 0 0 8px;border-right:none}
+#hex-country-tooltip.selected:hover .tt-nav{opacity:.85}
+#hex-country-tooltip .tt-nav:hover{background:rgba(78,205,196,.14);opacity:1}
+@media(hover:none){#hex-country-tooltip .tt-nav{opacity:.55}}
+@media(prefers-reduced-motion:reduce){#hex-country-tooltip{transition:none}#hex-country-tooltip.tt-snap,#hex-country-tooltip.tt-fly-left,#hex-country-tooltip.tt-fly-right{transition:none}}
+/* hex legend */
 .hex-legend{position:fixed;bottom:14px;right:56px;z-index:60;display:flex;flex-direction:column;gap:2px;padding:6px 8px;background:rgba(8,10,18,0.8);backdrop-filter:blur(8px);border:1px solid rgba(78,205,196,0.1);border-radius:8px;font-size:9px;color:var(--text3);letter-spacing:0.5px}
 .hex-legend-row{display:flex;align-items:center;gap:6px}
 .hex-legend-swatch{width:10px;height:10px;border-radius:2px}
-.events-filter{position:fixed;top:124px;left:50%;transform:translateX(-50%);z-index:95;pointer-events:auto;display:flex;flex-wrap:nowrap;align-items:center;gap:12px;background:rgba(8,10,18,0.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(78,205,196,0.08);border-radius:12px;padding:6px 16px;box-shadow:0 4px 16px rgba(0,0,0,0.2);width:max-content;max-width:95vw;overflow-x:auto;scrollbar-width:none}
-.ef-group{display:flex;gap:8px;align-items:center}
-.ef-divider{width:1px;height:24px;background:rgba(255,255,255,0.1)}
-.ef-btn{padding:6px 12px;border:1px solid rgba(255,255,255,0.1);border-radius:20px;background:rgba(255,255,255,0.02);color:rgba(255,255,255,0.4);font-family:var(--font);font-size:11px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;letter-spacing:0.5px}
-.ef-btn:hover{color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.05)}
-.ef-btn.active{color:var(--mint);background:rgba(78,205,196,0.1);border-color:rgba(78,205,196,0.3);box-shadow:0 0 8px rgba(78,205,196,0.1)}
-#event-hover-tooltip{position:fixed;z-index:110;pointer-events:none;font-family:var(--body);font-size:12px;background:rgba(8,10,18,0.92);color:var(--mint);border:1px solid rgba(78,205,196,0.15);border-radius:6px;padding:6px 12px;backdrop-filter:blur(8px);transform:translate(-50%,-120%);opacity:0;transition:opacity 0.15s;box-shadow:0 4px 12px rgba(0,0,0,0.4)}
-#event-hover-tooltip.visible{opacity:1}
-#event-hover-tooltip .tt-type{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--teal);margin-bottom:2px}
-#event-hover-tooltip .tt-name{font-weight:500;color:#fff}
-.ndvi-timeline{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:100;pointer-events:auto;display:flex;align-items:center;gap:16px;background:linear-gradient(180deg,rgba(14,20,30,0.85),rgba(8,10,18,0.95));backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(78,205,196,0.25);border-radius:40px;padding:14px 28px;box-shadow:0 16px 40px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.05) inset,0 0 20px rgba(78,205,196,0.15);min-width:380px;width:45vw;max-width:540px}
-.nt-label{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,0.5);min-width:32px;text-align:center;font-weight:500}
-.nt-year{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--mint);min-width:44px;text-align:center;text-shadow:0 0 12px rgba(78,205,196,0.6)}
-.ndvi-timeline input[type="range"]{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(140,100,50,0.8) 0%,rgba(76,175,80,0.8) 50%,rgba(20,120,60,0.8) 100%);outline:none;cursor:pointer;box-shadow:inset 0 1px 3px rgba(0,0,0,0.5)}
-.ndvi-timeline input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--mint);border:2px solid #fff;box-shadow:0 0 12px rgba(78,205,196,0.8),0 2px 6px rgba(0,0,0,0.5);cursor:grab;transition:transform 0.2s,box-shadow 0.2s}
-.ndvi-timeline input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.15);box-shadow:0 0 16px rgba(78,205,196,1),0 4px 10px rgba(0,0,0,0.5)}
-.ndvi-timeline input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--mint);border:2px solid #fff;box-shadow:0 0 12px rgba(78,205,196,0.8),0 2px 6px rgba(0,0,0,0.5);cursor:grab;transition:transform 0.2s,box-shadow 0.2s}
-.ndvi-timeline input[type="range"]::-moz-range-thumb:hover{transform:scale(1.15);box-shadow:0 0 16px rgba(78,205,196,1),0 4px 10px rgba(0,0,0,0.5)}
-.nt-play{width:38px;height:38px;border-radius:50%;border:1px solid rgba(78,205,196,0.4);background:rgba(78,205,196,0.1);color:var(--mint);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s cubic-bezier(0.2,0.8,0.2,1);box-shadow:0 0 10px rgba(78,205,196,0.1)}
-.nt-play:hover{background:rgba(78,205,196,0.25);border-color:rgba(78,205,196,0.6);transform:scale(1.05);box-shadow:0 0 16px rgba(78,205,196,0.3)}
-.nt-attribution{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.04em;white-space:nowrap;font-family:var(--body)}
-.events-timeline{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:100;pointer-events:auto;display:flex;align-items:center;gap:16px;background:linear-gradient(180deg,rgba(8,10,18,0.85),rgba(4,6,12,0.95));backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,80,80,0.25);border-radius:40px;padding:14px 28px;box-shadow:0 16px 40px rgba(0,0,0,0.8),0 0 0 1px rgba(255,255,255,0.05) inset,0 0 20px rgba(255,80,80,0.15);min-width:380px;width:45vw;max-width:540px}
-.et-label{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,0.5);min-width:36px;text-align:center;font-weight:500}
-.et-date{font-family:var(--mono);font-size:14px;font-weight:600;color:#ff5050;min-width:80px;text-align:center;text-shadow:0 0 12px rgba(255,80,80,0.6);text-transform:uppercase}
-.et-year{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:4px;font-family:var(--mono);font-size:13px;font-weight:600;padding:4px 6px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none}
-.et-year:hover{border-color:rgba(255,255,255,0.4)}
-.et-year option{background:#000}
-.events-timeline input[type="range"]{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:rgba(255,255,255,0.08);outline:none;cursor:pointer}
-.events-timeline input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:#ff5050;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 10px rgba(255,80,80,0.6);cursor:grab}
-.events-timeline input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#ff5050;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 10px rgba(255,80,80,0.6);cursor:grab}
-.et-play{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,80,80,0.3);background:rgba(255,80,80,0.08);color:#ff5050;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
-.et-play:hover{background:rgba(255,80,80,0.18);border-color:rgba(255,80,80,0.5)}
-.et-attribution{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(255,255,255,0.3);white-space:nowrap;font-family:var(--body)}
-#ndvi-prompt{position:fixed;top:auto;bottom:128px;left:50%;transform:translateX(-50%);z-index:100;pointer-events:none;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex-direction:row;gap:8px;width:max-content;max-width:calc(100vw - 32px);height:auto;min-height:0;max-height:none;padding:10px 20px;background:rgba(8,10,18,0.8);backdrop-filter:blur(12px);border:1px solid rgba(78,205,196,0.15);border-radius:20px;font-size:12px;color:var(--text2);font-family:var(--body);line-height:1.35;text-align:left;box-shadow:0 4px 16px rgba(0,0,0,0.3)}
-
+body:not(.globe-mode) .hex-legend{display:none}
+/* globe.gl scene tooltip */
+.scene-tooltip{font-family:var(--body)!important;font-size:13px!important;background:rgba(8,10,18,.92)!important;color:var(--mint)!important;border:1px solid rgba(78,205,196,.15)!important;border-radius:6px!important;padding:8px 14px!important;backdrop-filter:blur(8px)!important;pointer-events:none!important}
+/* footer */
+.sections{position:relative;z-index:10;background:var(--bg)}
+.footer{position:relative;z-index:10;padding:48px 24px 32px;text-align:center;background:linear-gradient(0deg,rgba(5,5,9,1),rgba(5,5,9,.9))}
+.footer .footer-logo{font-family:var(--display);font-size:22px;color:var(--mint);font-weight:300;letter-spacing:2px;margin-bottom:6px}
+.footer .footer-tagline{font-size:12px;color:var(--text3);margin-bottom:24px}
+.footer .footer-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.footer .footer-links a{color:var(--text2);text-decoration:none;font-size:12px;transition:color .2s}
+.footer .footer-links a:hover{color:var(--teal)}
+.footer .footer-social{display:flex;gap:14px;justify-content:center;margin-bottom:22px}
+.footer .footer-social a{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid rgba(78,205,196,.18);border-radius:50%;color:var(--text2);transition:all .25s}
+.footer .footer-social a:hover{color:var(--teal);border-color:var(--teal);transform:translateY(-2px)}
+.footer .footer-social svg{width:16px;height:16px;fill:currentColor}
+.footer .footer-copy{font-size:10px;color:var(--text3);opacity:.6}
+/* ── site nav (foundation mode; hidden in globe mode) ── */
+#site-nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 26px;background:linear-gradient(180deg,rgba(5,5,9,.94),rgba(5,5,9,.6) 72%,transparent)}
+#site-nav .nav-brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:16px;letter-spacing:1px;color:var(--mint);text-decoration:none;white-space:nowrap}
+#site-nav .nav-links{display:flex;flex-wrap:wrap;gap:3px 17px;justify-content:flex-end}
+#site-nav .nav-links a{color:var(--text2);text-decoration:none;font-size:11px;letter-spacing:1.7px;text-transform:uppercase;transition:color .2s;padding:4px 0}
+#site-nav .nav-links a:hover{color:var(--teal)}
+body.globe-mode #site-nav{display:none}
+/* ── hero secondary action + memorial link ── */
+#hero .ghost-btn{display:inline-block;padding:15px 30px;border:1px solid rgba(78,205,196,.3);border-radius:999px;background:transparent;color:var(--teal);font-family:var(--body);font-size:12px;letter-spacing:2.2px;text-transform:uppercase;text-decoration:none;transition:all .3s}
+#hero .ghost-btn:hover{border-color:var(--teal);background:rgba(78,205,196,.07);transform:translateY(-2px)}
+#hero .memorial a{color:inherit;text-decoration:none;border-bottom:1px dotted rgba(154,149,144,.4)}
+#hero .memorial a:hover{color:var(--text2)}
+/* ── foundation sections ── */
+.section{max-width:1060px;margin:0 auto;padding:88px 26px 26px}
+.sec-kicker{font-family:var(--mono);font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:var(--teal);margin-bottom:12px}
+.section h2{font-family:var(--display);font-size:clamp(30px,3.8vw,46px);font-weight:300;color:var(--mint);letter-spacing:1.5px;margin-bottom:16px}
+.sec-lead{max-width:840px;color:var(--text2);font-size:16px;line-height:1.7}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:36px}
+.card{padding:26px 24px;border:1px solid rgba(78,205,196,.14);border-radius:12px;background:var(--bg2);transition:border-color .25s,transform .25s}
+.card:hover{border-color:rgba(78,205,196,.34);transform:translateY(-2px)}
+.card .card-tag{font-family:var(--mono);font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
+.card h3{font-family:var(--display);font-size:23px;font-weight:400;color:var(--text);letter-spacing:.6px;margin-bottom:8px}
+.card p{color:var(--text2);font-size:14px;line-height:1.65}
+.card .card-cta{display:inline-block;margin-top:18px;padding:10px 22px;border:1px solid rgba(78,205,196,.3);border-radius:999px;background:transparent;color:var(--teal);font-family:var(--body);font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .25s}
+.card .card-cta:hover{background:var(--teal);color:var(--bg)}
+.why-list{list-style:none;margin-top:20px;display:grid;gap:10px;max-width:840px}
+.why-list li{position:relative;padding:14px 16px 14px 40px;border:1px solid rgba(78,205,196,.12);border-radius:10px;background:rgba(255,255,255,.02);color:var(--text2);font-size:14px;line-height:1.55}
+.why-list li::before{content:'◆';position:absolute;left:16px;top:14px;color:var(--teal);font-size:11px}
+.talk-row{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-top:34px}
+.talk-row .talk-line{font-family:var(--display);font-style:italic;font-size:19px;color:var(--text2)}
+/* partners */
+.partner-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:36px}
+.p-logo{display:flex;align-items:center;justify-content:center;min-height:86px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.92);border:1px solid rgba(78,205,196,.1)}
+.p-logo img{max-width:100%;max-height:58px;object-fit:contain}
+.p-logo.noimg{background:var(--bg2);border-color:rgba(78,205,196,.16)}
+.p-logo.noimg img{display:none}
+.p-logo.noimg::before{content:attr(data-name);color:var(--text2);font-size:12px;letter-spacing:1px;text-align:center;line-height:1.4}
+/* team */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:36px}
+.t-card{padding:26px 20px;border:1px solid rgba(78,205,196,.14);border-radius:12px;background:var(--bg2);text-align:center}
+.t-photo{position:relative;width:118px;height:118px;margin:0 auto 16px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 35%,rgba(78,205,196,.18),rgba(26,58,92,.35));border:1px solid rgba(78,205,196,.25)}
+.t-photo img{width:100%;height:100%;object-fit:cover;object-position:top center}
+.t-photo.noimg img{display:none}
+.t-photo.noimg::before{content:attr(data-initials);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:34px;color:var(--mint)}
+.t-card h3{font-family:var(--body);font-weight:500;font-size:16px;color:var(--text);letter-spacing:.4px}
+.t-card .t-role{margin-top:4px;font-family:var(--mono);font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--teal)}
+/* tribute */
+#tribute .trib-wrap{display:grid;grid-template-columns:1fr;gap:30px;margin-top:10px}
+@media(min-width:880px){#tribute .trib-wrap{grid-template-columns:minmax(0,1fr) 300px;align-items:start}}
+.trib-prose p{color:var(--text2);font-size:15px;line-height:1.8;margin-bottom:18px;max-width:70ch}
+.trib-prose p:first-of-type::first-letter{font-family:var(--display);font-size:46px;line-height:.9;color:var(--mint);float:left;padding:4px 8px 0 0}
+.trib-prose em{color:var(--text);font-style:italic}
+.trib-close{font-family:var(--display);font-style:italic;font-size:18px;color:var(--text);line-height:1.6;border-left:2px solid rgba(78,205,196,.35);padding-left:16px;margin-top:6px;max-width:60ch}
+.trib-aside figure{margin:0;border-radius:12px;overflow:hidden;border:1px solid rgba(78,205,196,.16)}
+.trib-aside img{width:100%;display:block}
+.trib-aside.noimg{display:none}
+.trib-aside figcaption{padding:10px 12px;font-size:11px;color:var(--text3);background:var(--bg2)}
+/* globe explainer */
+.globe-key{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.globe-key span{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid rgba(78,205,196,.14);border-radius:999px;background:var(--bg2);color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:.6px}
+.globe-key i{width:11px;height:11px;border-radius:3px;font-style:normal;flex:0 0 auto}
+.big-cta{margin-top:34px;padding:15px 32px!important;font-size:12px!important}
+.data-note{margin-top:24px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--text3);max-width:760px}
+.data-note a{color:var(--teal);text-decoration:none;border-bottom:1px dotted rgba(78,205,196,.4)}
+/* volunteer video (click-to-load; YouTube loads only on demand) */
+.video-block{margin-top:36px}
+.video-poster{position:relative;display:block;width:100%;max-width:760px;aspect-ratio:16/9;padding:0;border:1px solid rgba(78,205,196,.18);border-radius:12px;overflow:hidden;background:var(--bg2);cursor:pointer;transition:border-color .25s,transform .25s}
+.video-poster:hover{border-color:rgba(78,205,196,.4);transform:translateY(-2px)}
+.video-poster img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85;transition:opacity .25s}
+.video-poster:hover img{opacity:1}
+.video-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(5,5,9,.72);border:1px solid rgba(78,205,196,.5);color:var(--mint);backdrop-filter:blur(4px);transition:all .25s}
+.video-poster:hover .video-play{background:rgba(78,205,196,.25)}
+.video-frame{width:100%;max-width:760px;aspect-ratio:16/9;border:1px solid rgba(78,205,196,.18);border-radius:12px}
+.video-caption{margin-top:12px;font-size:12.5px;color:var(--text3);font-style:italic}
+/* contact */
+.contact-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+.contact-ctas a{display:inline-block;padding:14px 28px;border-radius:999px;font-family:var(--body);font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .25s}
+.contact-ctas .mail-main{border:1px solid var(--teal);background:var(--teal);color:var(--bg)}
+.contact-ctas .mail-main:hover{background:var(--mint);border-color:var(--mint)}
+.contact-ctas .mail-alt{border:1px solid rgba(78,205,196,.3);color:var(--teal)}
+.contact-ctas .mail-alt:hover{background:rgba(78,205,196,.08)}
+.section .sec-note{margin-top:22px;font-size:12.5px;color:var(--text3)}
+.sections .section:last-of-type{padding-bottom:96px}
+@media(max-width:720px){.section{padding:64px 20px 20px}#site-nav{padding:10px 14px}#site-nav .nav-links{gap:2px 12px}#site-nav .nav-links a{font-size:10px;letter-spacing:1.3px}#site-nav .nav-brand span{display:none}}
+/* responsive */
+@media(max-width:720px){.hero-inner{max-width:92%}.hero-stage{padding:0 0 28px}.hero-value{margin-bottom:24px;font-size:15px}.hero-actions{gap:10px;margin-top:26px}#hero .enter-btn{width:100%;max-width:320px;min-height:44px;padding:12px 18px;font-size:11px}.hero-telemetry{max-width:360px}#hero .memorial{margin-bottom:24px}}
+@media(max-width:900px),(orientation:portrait) and (max-width:1100px){body.globe-mode #topbar{padding:10px 12px 8px;background:linear-gradient(180deg,rgba(5,5,9,.96) 0%,rgba(5,5,9,.78) 64%,rgba(5,5,9,0) 100%)}body.globe-mode #topbar .logo{gap:8px;font-size:15px;letter-spacing:1px}body.globe-mode #topbar .brand-subtitle,body.globe-mode #topbar .brand-sep{display:none}body.globe-mode #topbar .stats{gap:8px}body.globe-mode #topbar .stat-block{display:none}.cc-topbar{max-width:168px}}
+@media(prefers-reduced-motion:reduce){#hero *,#hero *::before,#hero *::after{animation:none!important;transition:none!important}#hero .enter-btn:hover{transform:none}}
 </style>
 
 <!-- Non-critical CSS: deferred async load -->
-<link rel="stylesheet" href="css/widgets.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/components.css?v=edge001" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/responsive.css?v=quality003" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/carbon-clock.css?v=mission001b" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/delegation.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/pledge-wall.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/gaia-bubble.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/globe-overlay.css?v=4" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/gaia-presence.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/ndvi-verifier.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/registry-check.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/carbon-clock.css?v=v1" media="print" onload="this.media='all'">
 <noscript>
-  <link rel="stylesheet" href="css/widgets.css">
-  <link rel="stylesheet" href="css/components.css?v=edge001">
-  <link rel="stylesheet" href="css/responsive.css?v=quality003">
-  <link rel="stylesheet" href="css/carbon-clock.css?v=mission001b">
-  <link rel="stylesheet" href="css/delegation.css">
-  <link rel="stylesheet" href="css/pledge-wall.css">
-  <link rel="stylesheet" href="css/gaia-bubble.css">
-  <link rel="stylesheet" href="css/globe-overlay.css?v=4">
-  <link rel="stylesheet" href="css/gaia-presence.css">
-  <link rel="stylesheet" href="css/ndvi-verifier.css">
-  <link rel="stylesheet" href="css/registry-check.css">
+  <link rel="stylesheet" href="css/carbon-clock.css?v=v1">
 </noscript>
 
-<!-- Print stylesheet -->
-<link rel="stylesheet" href="css/print.css" media="print">
-
-<!-- Globe.gl — loaded on demand when entering globe mode (not at boot) -->
-<!-- Was: <script src="js/vendor/globe.gl.js"></script> -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%200%20100%20100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
+<!-- Globe.gl (1.8MB, vendored) is NOT loaded here — App.enterGlobe() lazy-loads it -->
 </head>
 <body><a href="#main-content" class="skip-nav">Skip to main content</a>
 
+<!-- ═══ SITE NAV (foundation mode; hidden in globe mode) ═══ -->
+<nav id="site-nav" aria-label="Site">
+  <a class="nav-brand" href="#top" aria-label="Earth Love United — back to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="13" cy="12" r="9" stroke="url(#lgn)" stroke-width="1.2"/>
+      <path d="M7 18C5 16 4 13.5 6 10c1.5-2.5 4-3 5.5-2.8C13 7.4 14 8 14 9.5s-1 2-2 2.5c-1.5.7-2 2-1.5 3.5.3 1 1 2 2 2.5" stroke="#7be8d0" stroke-width="1.2" stroke-linecap="round"/>
+      <defs><linearGradient id="lgn" x1="4" y1="4" x2="22" y2="22"><stop stop-color="#7be8d0"/><stop offset="1" stop-color="#2a8fa3"/></linearGradient></defs>
+    </svg>
+    <span>Earth Love United</span>
+  </a>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#projects">Projects</a>
+    <a href="#globe">Globe</a>
+    <a href="#carbon">Carbon</a>
+    <a href="#team">Team</a>
+    <a href="#tribute">Tribute</a>
+    <a href="#support">Support</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
 <!-- ═══ HERO ═══ -->
 <div id="hero">
+  <span id="top"></span>
   <div class="hero-inner">
     <div class="hero-stage">
-      <!-- Main heading -->
-      <h1>Earth Love United</h1>
-      <p class="hero-value">A public climate-science instrument for wonder, evidence, restoration, and planetary care.</p>
+      <h1>Earth Love United Foundation</h1>
+      <p class="hero-value">A global nonprofit established in 2020, dedicated to promoting environmental justice and driving climate action through innovative, nature-based solutions — reconnecting humanity with the Earth.</p>
 
-      <!-- Hero telemetry (carbon clock injected by JS; delegate insight kept out of the first viewport) -->
+      <!-- Hero telemetry (carbon clock injected by JS) -->
       <div id="hero-telemetry" class="hero-telemetry" aria-label="Planetary telemetry">
         <div id="hero-carbon-clock"></div>
-        <div id="hero-delegation"></div>
       </div>
       <!-- INSTANT BOOT CLOCK — zero dependencies, ticks at first paint.
            CARBON_CLOCK adopts this element + epoch when modules finish loading
@@ -472,7 +398,7 @@ body.globe-mode[data-globe-mode="ndvi"] #ndvi-prompt.visible{display:flex!import
           '<span class="cc-value" id="cc-hero-value">0</span>' +
           '<span class="cc-unit" id="cc-hero-unit">t</span></div>' +
           '<div class="cc-explainer">' +
-          '<span>Nature absorbs <strong>123 Gt</strong>. Humanity emits <strong>143 Gt</strong>.</span>' +
+          '<span>Nature absorbs <strong>~22 GtCO&#8322;/yr</strong>. Humanity emits <strong>~42 GtCO&#8322;/yr</strong>.</span>' +
           '<span>This is the gap. It grows every second.</span></div>' +
           '</div></div>';
         var v = document.getElementById('cc-hero-value');
@@ -486,37 +412,19 @@ body.globe-mode[data-globe-mode="ndvi"] #ndvi-prompt.visible{display:flex!import
       })();
       </script>
 
-      <!-- Primary actions -->
+      <!-- Primary action: the globe is the door -->
       <div class="hero-actions" aria-label="Arrival actions">
         <button class="enter-btn" data-action="enterGlobe">Enter the Living Globe</button>
-        <div class="hero-secondary-actions" aria-label="Secondary arrival actions">
-          <a class="hero-link hero-link-quiet" href="gaia.html#trust-layer">Ask GAIA</a>
-          <span class="hero-action-sep" aria-hidden="true">·</span>
-          <button class="hero-link hero-link-quiet" data-action="viewDatasets">View Datasets</button>
-        </div>
+        <a class="ghost-btn" href="#about">Explore the Foundation ↓</a>
       </div>
     </div>
 
-    <div class="memorial">In memory of Jean Missinhoun (1972–2024) · From oil to earth</div>
+    <div class="memorial"><a href="#tribute">In memory of Jean Missinhoun (1972–2024) · From oil to earth</a></div>
   </div>
 </div>
 
-<!-- ═══ SCROLL INDICATOR ═══ -->
-<div class="scroll-indicator" aria-hidden="true">
-  <span class="scroll-arrow">↓</span>
-  <span class="scroll-label">Scroll to explore</span>
-</div>
-
-<!-- ═══ HAMBURGER (mobile GLOBE_OVERLAY trigger) ═══ -->
-<button id="hamburger-btn" class="hamburger-btn" aria-label="Open menu" data-action="toggleGlobeOverlay">
-  <span class="hamburger-line"></span>
-  <span class="hamburger-line"></span>
-  <span class="hamburger-line"></span>
-</button>
-
 <!-- ═══ TOP BAR ═══ -->
 <div id="topbar">
-  <div class="hamburger-spacer"></div>
   <div class="logo">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       <circle cx="13" cy="12" r="9" stroke="url(#lg)" stroke-width="1.2"/>
@@ -532,35 +440,7 @@ body.globe-mode[data-globe-mode="ndvi"] #ndvi-prompt.visible{display:flex!import
       <div class="stat-label">Net Human Emissions</div>
       <div class="stat-value negative">+20 Gt CO₂/yr</div>
     </div>
-    <div class="stat-block">
-      <div class="stat-label">Your Restoration</div>
-      <div class="stat-value positive" id="user-total">0 t CO₂</div>
-    </div>
-    <a href="gaia.html#trust-layer" class="gaia-link" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;text-decoration:none;transition:all .2s;margin-left:8px">
-      <span style="font-size:14px">🌍</span>
-      <span style="font-size:12px;color:var(--teal);letter-spacing:.5px">Talk to GAIA</span>
-    </a>
   </div>
-</div>
-
-<!-- ═══ SCROLL PROGRESS ═══ -->
-<div id="scroll-progress"></div>
-
-<!-- ═══ GLOBE MODE SWITCHER ═══ -->
-<div id="globe-modes" class="globe-modes">
-  <button class="gm-btn active" data-mode="countries" aria-label="Countries mode">
-    <span class="gm-icon">🌍</span><span class="gm-label">Countries</span>
-  </button>
-  <button class="gm-btn" data-mode="ndvi" aria-label="Earth in Time mode">
-    <span class="gm-icon">🌿</span><span class="gm-label">Earth in Time</span>
-  </button>
-  <button class="gm-btn" data-mode="events" aria-label="Events mode">
-    <span class="gm-icon">📍</span><span class="gm-label">Events</span>
-  </button>
-  <div class="gm-divider"></div>
-  <button id="gm-toggle-nodes" class="gm-toggle active" aria-label="Toggle pledge nodes">
-    <span class="gm-toggle-icon">🔴</span><span class="gm-toggle-label">Nodes</span>
-  </button>
 </div>
 
 <!-- ── HEX LEGEND ── -->
@@ -571,349 +451,300 @@ body.globe-mode[data-globe-mode="ndvi"] #ndvi-prompt.visible{display:flex!import
   <div class="hex-legend-row"><span class="hex-legend-swatch" style="background:rgba(46,204,113,0.50)"></span> On track</div>
 </div>
 
-<!-- ═══ EVENTS FILTER (shown in Events mode only) ═══ -->
-<div id="events-filter" class="events-filter" style="display:none">
-  <div class="ef-group">
-    <button class="ef-btn active" data-filter="live">🔴 Live</button>
-    <button class="ef-btn active" data-filter="historic">📚 Historic</button>
-  </div>
-  <div class="ef-divider"></div>
-  <div class="ef-group">
-    <button class="ef-btn active" data-filter="fire">🔥 Wildfires</button>
-    <button class="ef-btn" data-filter="earthquake">💥 Earthquakes</button>
-    <button class="ef-btn active" data-filter="volcano">🌋 Volcanoes</button>
-    <button class="ef-btn active" data-filter="storm">🌩️ Storms</button>
-    <button class="ef-btn active" data-filter="flood">🌊 Floods</button>
-    <button class="ef-btn active" data-filter="drought">☀️ Droughts</button>
-    <button class="ef-btn active" data-filter="elu">🌿 ELU / COPs</button>
-  </div>
-</div>
-
-<!-- ═══ NDVI PROMPT ═══ -->
-<div id="ndvi-prompt" class="ndvi-prompt">
-  <span style="font-size:18px">🖌️</span>
-  Click anywhere on the globe to start restoring land
-</div>
-
 <!-- ═══ GLOBE ═══ -->
 <div id="globeViz"></div>
 
-<!-- ═══ NDVI TIMELINE (shown in Earth in Time mode only) ═══ -->
-<div id="ndvi-timeline" class="ndvi-timeline" style="display:none">
-  <span class="nt-label">2000</span>
-  <input type="range" id="ndvi-slider" min="2000" max="2024" step="1" value="2020" aria-label="Year selector">
-  <span class="nt-year" id="ndvi-year">2020</span>
-  <button id="ndvi-play" class="nt-play" aria-label="Play timeline">▶</button>
-  <span class="nt-attribution">Vegetation data: NASA MODIS · Public Domain</span>
-</div>
-
-<!-- ═══ EVENTS TIMELINE (shown in Events mode only) ═══ -->
-<div id="events-timeline" class="events-timeline" style="display:none">
-  <select id="events-year-select" class="et-year" aria-label="Select Year"></select>
-  <input type="range" id="events-slider" min="1" max="365" step="1" value="1" aria-label="Day of year selector">
-  <span class="et-date" id="events-date">Jan 1</span>
-  <button id="events-play" class="et-play" aria-label="Play timeline">▶</button>
-  <span class="et-attribution">Historical Events: 30-Year Dataset</span>
-</div>
-
-<!-- ═══ SECTIONS ═══ -->
+<!-- ═══ FOUNDATION SECTIONS (legacy site content, June 2025 archive) ═══ -->
 <div class="sections" id="main-content">
 
-  <!-- WONDER -->
-  <div class="section" id="quiz">
-    <div class="card reveal">
-      <div class="section-label">Wonder</div>
-      <div class="section-title">Begin with a Question</div>
-      <div class="section-body">Climate science starts with disciplined curiosity: what moves carbon, what stores it, and what changes when land is damaged or restored?</div>
-      <div class="quiz-widget" id="quiz-widget">
-        <div class="quiz-question" id="q-text"></div>
-        <div class="quiz-options" id="q-options"></div>
-        <div class="quiz-feedback" id="q-feedback"></div>
-        <div class="quiz-score" id="q-score"></div>
+  <!-- ── ABOUT ── -->
+  <section class="section" id="about" aria-labelledby="about-h">
+    <div class="sec-kicker">Who we are</div>
+    <h2 id="about-h">A Short Story About Us</h2>
+    <p class="sec-lead">Earth Love United Foundation (ELU) is a global nonprofit organization established in 2020, dedicated to promoting environmental justice and driving climate action through innovative, nature-based solutions. Our mission is to reconnect humanity with the Earth, emphasizing sustainable living and ecological balance.</p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-tag">Mission</div>
+        <p>To drive high-integrity climate solutions through research, education, and inclusive partnerships—harnessing nature, data, and innovation to remove carbon, restore ecosystems, and uplift the communities most affected by climate change.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">Vision</div>
+        <p>To create a just, climate-resilient world where science, innovation, and community action restore balance to the planet and empower every generation to thrive.</p>
       </div>
     </div>
-  </div>
+    <div class="video-block">
+      <button class="video-poster" id="elu-video" aria-label="Play video: What is Earth Love United?">
+        <img src="assets/legacy/video-what-is-elu.jpg" alt="" loading="lazy" decoding="async">
+        <span class="video-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+      </button>
+      <p class="video-caption">“What is Earth Love United?” — made by our volunteers.</p>
+    </div>
+    <script>
+    (function () {
+      var b = document.getElementById('elu-video');
+      if (!b) return;
+      b.addEventListener('click', function () {
+        var f = document.createElement('iframe');
+        f.src = 'https://www.youtube-nocookie.com/embed/PtF-imhEpUw?autoplay=1';
+        f.title = 'What is Earth Love United?';
+        f.className = 'video-frame';
+        f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        f.setAttribute('allowfullscreen', '');
+        f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+        b.replaceWith(f);
+      }, { once: true });
+    })();
+    </script>
+  </section>
 
-  <!-- ACADEMY / VISION -->
-  <div class="section" id="academy">
-    <div class="card reveal">
-      <div class="section-label">Open Planetary Knowledge Commons</div>
-      <div class="section-title">A Public Instrument, Not a Closed Platform</div>
-      <div class="section-body">Earth Love United connects five layers: a living atlas, a climate-science guide, an audit trail, restoration scenarios, and a pathway for people and institutions to help.</div>
-      <div class="instrument-layers" aria-label="Earth Love United public instrument layers">
-        <div class="instrument-layer">
-          <span class="instrument-index">01</span>
-          <div><strong>Living Globe</strong><p>Project sites, country pledges, NDVI context, and climate events share one planetary surface.</p></div>
-        </div>
-        <div class="instrument-layer">
-          <span class="instrument-index">02</span>
-          <div><strong>GAIA</strong><p>A grounded guide that answers from climate sources and points back toward inspectable evidence.</p></div>
-        </div>
-        <div class="instrument-layer">
-          <span class="instrument-index">03</span>
-          <div><strong>Dataset Audit</strong><p>Open files and public Hugging Face datasets make the knowledge layer reviewable.</p></div>
-        </div>
-        <div class="instrument-layer">
-          <span class="instrument-index">04</span>
-          <div><strong>Action Layer</strong><p>Volunteers, researchers, communities, and partners turn evidence into restoration work.</p></div>
-        </div>
+  <!-- ── WHAT WE DO ── -->
+  <section class="section" id="projects" aria-labelledby="projects-h">
+    <div class="sec-kicker">What we do</div>
+    <h2 id="projects-h">Projects</h2>
+    <p class="sec-lead">Earth Love United’s integrated model blends rigorous scientific methods, blockchain innovation, and market-oriented strategies to deliver high-integrity carbon solutions while uplifting communities most vulnerable to climate change.</p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-tag">Carbon Markets</div>
+        <h3>Access the Best. For the Best.</h3>
+        <p>Curated, verified carbon credits and consultancy for buyers who demand integrity.</p>
+        <a class="card-cta" href="#carbon">Learn more</a>
+      </div>
+      <div class="card">
+        <div class="card-tag">Climate Innovation &amp; Research</div>
+        <h3>Grounded in data. Powered by purpose. Built for a cooler planet.</h3>
+        <p>Our research now lives as an open instrument: a living globe of country pledges vs reality, with a carbon clock that never stops.</p>
+        <button class="card-cta" data-action="enterGlobe">Enter the Living Globe</button>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- CARBON CYCLE -->
-  <div class="section" id="carbon-cycle">
-    <div class="card reveal">
-      <div class="section-label">Climate Science Primer</div>
-      <div class="section-title">Where Does Carbon Go?</div>
-      <div class="section-body">Carbon moves through the atmosphere, oceans, vegetation, soils, and human systems. The problem is not that carbon moves; the problem is that human activity has pushed the exchange out of balance.</div>
-      <div class="cycle-widget">
-        <div class="cycle-title">The Carbon Cycle</div>
-        <div class="cycle-flow">
-          <div class="cycle-node atmosphere" data-action="showCycle" data-action-args='["atmosphere"]'>🌡️ Atmosphere</div>
-          <span class="cycle-arrow">⇄</span>
-          <div class="cycle-node vegetation" data-action="showCycle" data-action-args='["vegetation"]'>🌿 Vegetation</div>
-          <span class="cycle-arrow">⇄</span>
-          <div class="cycle-node ocean" data-action="showCycle" data-action-args='["ocean"]'>🌊 Ocean</div>
-          <span class="cycle-arrow">⇄</span>
-          <div class="cycle-node soil" data-action="showCycle" data-action-args='["soil"]'>🪱 Soil</div>
-        </div>
-        <div style="text-align:center;margin-bottom:12px"><span class="cycle-arrow" style="font-size:24px">⇅</span></div>
-        <div style="text-align:center"><div class="cycle-node human" data-action="showCycle" data-action-args='["human"]'>🏭 Human Activity</div></div>
-        <div class="cycle-detail" id="cycle-detail"></div>
+  <!-- ── THE LIVING GLOBE (key instrument explainer) ── -->
+  <section class="section" id="globe" aria-labelledby="globe-h">
+    <div class="sec-kicker">The key instrument</div>
+    <h2 id="globe-h">The Living Globe</h2>
+    <p class="sec-lead">What you enter from the top of this page is a living atlas of climate accountability: 123 countries, each colored by the distance between what it pledged and what it is actually doing. Island and micro nations appear as status dots. Spin it, tap a country, and read its record.</p>
+    <div class="globe-key" role="list" aria-label="Country status colors">
+      <span role="listitem"><i style="background:rgba(120,150,165,0.45)"></i> No pledge data</span>
+      <span role="listitem"><i style="background:rgba(212,165,116,0.45)"></i> No target</span>
+      <span role="listitem"><i style="background:rgba(255,84,58,0.55)"></i> Overshooting</span>
+      <span role="listitem"><i style="background:rgba(46,204,113,0.50)"></i> On track</span>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-tag">Pledges vs Reality</div>
+        <p>Every country card shows its stated target — how much, by when, against which baseline — next to its measured emissions trajectory. The gap between promise and reality is the number we care about.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">Country Cards</div>
+        <p>Tap a country for its full record: emissions and per-capita footprint, momentum, climate finance, the official pledge summary in plain words, and an independent rating where one exists.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">The Carbon Clock</div>
+        <p>Nature absorbs roughly 22 GtCO₂ a year; humanity emits roughly 42. The clock at the top of this page counts the gap — it has not stopped once since you arrived.</p>
       </div>
     </div>
-  </div>
+    <button class="card-cta big-cta" data-action="enterGlobe">Enter the Living Globe</button>
+    <p class="data-note">The pledge layer is versioned JSON, validated against a schema on every load — <a href="data/pledge-nodes.json">inspect the raw data</a> yourself.</p>
+  </section>
 
-  <!-- THE IMBALANCE -->
-  <div class="section" id="imbalance">
-    <div class="card reveal">
-      <div class="section-label">Climate Science Primer</div>
-      <div class="section-title">The Annual Imbalance</div>
-      <div class="section-body">Current global flows are uneven: natural sinks absorb a large share of human emissions, but not all of them. The remaining gap, roughly <strong style="color:var(--warn)">20 Gt CO₂ per year</strong> in this site model, accumulates in the atmosphere and ocean.</div>
-      <div class="big-counter" id="imbalance-counters">
-        <div class="counter-box"><div class="counter-num leaf" id="counter-absorb">0</div><div class="counter-label">Gt absorbed/yr</div></div>
-        <div class="counter-box"><div class="counter-num warn" id="counter-emit">0</div><div class="counter-label">Gt emitted/yr</div></div>
-        <div class="counter-box"><div class="counter-num teal" id="counter-gap">0</div><div class="counter-label">Gt excess/yr</div></div>
+  <!-- ── CARBON CREDITS & CONSULTANCY ── -->
+  <section class="section" id="carbon" aria-labelledby="carbon-h">
+    <div class="sec-kicker">Our solutions</div>
+    <h2 id="carbon-h">Carbon Credits &amp; Consultancy</h2>
+    <p class="sec-lead">At Earth Love United, we don’t just offer carbon credits. We offer curation, credibility, and connection. Our foundation serves as a high-integrity problem solver, linking elite buyers with the most impactful, verified projects from around the globe.</p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-tag">Carbon Credits</div>
+        <p>Flexible access to top-tier credits for buyers who want agility and precision.</p>
       </div>
-      <div class="section-body science-note">The exact number changes with inventories and methods. The durable lesson is simpler: climate stability depends on reducing fossil emissions while protecting and restoring the sinks that still carry part of the burden.</div>
-    </div>
-  </div>
-
-  <!-- BIOMES -->
-  <div class="section" id="biomes">
-    <div class="card reveal">
-      <div class="section-label">Climate Science Primer</div>
-      <div class="section-title">Not All Green Is Equal</div>
-      <div class="section-body">A forest, a mangrove, a grassland, and a plantation can all appear green from orbit. Their carbon stocks, recovery times, water relationships, and biodiversity value are very different.</div>
-      <div class="biome-cards" id="biome-cards"></div>
-      <div class="biome-detail" id="biome-detail"></div>
-      <div class="section-title" style="margin-top:32px;font-size:clamp(18px,2.5vw,28px)">Carbon Density (tC/ha)</div>
-      <div class="section-body">Restoration is not a generic tree count. It is a place-based decision about carbon, water, biodiversity, land tenure, and community benefit.</div>
-      <div class="compare-bars" id="compare-bars"></div>
-    </div>
-  </div>
-
-  <!-- CARBON SHADOW -->
-  <div class="section carbon-shadow-section" id="carbon-shadow">
-    <div class="carbon-shadow-surface reveal">
-      <div class="section-label">Your Carbon Shadow</div>
-      <div class="section-title">Where Do You Stand?</div>
-      <div class="section-body">Estimate your annual carbon shadow. Compare it to your country's average. See what restoration would look like.</div>
-      <div id="carbon-shadow-widget"></div>
-    </div>
-  </div>
-
-  <!-- RESTORATION ACTION -->
-  <div class="section" id="scenario">
-    <div class="card reveal">
-      <div class="section-label">Restoration Action</div>
-      <div class="section-title">Build a Scenario</div>
-      <div class="section-body">Choose a site, compare the current biome with a restoration pathway, and estimate carbon consequences over time. Treat the result as a transparent model, not a promise.</div>
-      <div class="scenario-builder">
-        <div class="sb-step"><div class="sb-step-label"><span class="step-num">1</span> Pick a site</div><div class="sb-options" id="sb-sites"></div></div>
-        <div class="sb-step"><div class="sb-step-label"><span class="step-num">2</span> Current biome</div><div class="sb-options" id="sb-from"></div></div>
-        <div class="sb-step"><div class="sb-step-label"><span class="step-num">3</span> Restoration pathway</div><div class="sb-options" id="sb-to"></div></div>
-        <div class="sb-step">
-          <div class="sb-step-label"><span class="step-num">4</span> Area (hectares)</div>
-          <div style="display:flex;align-items:center;gap:16px">
-            <input type="range" min="10" max="2500" value="100" id="sb-area" class="area-slider" style="flex:1">
-            <span id="sb-area-val" style="font-family:var(--mono);font-size:14px;color:var(--leaf);min-width:60px">100</span>
-          </div>
-        </div>
-        <div class="sb-result" id="sb-result">
-          <div class="sr-big" id="sb-result-num"></div>
-          <div class="sr-label" id="sb-result-label"></div>
-          <div class="sr-context" id="sb-result-context"></div>
-        </div>
+      <div class="card">
+        <div class="card-tag">Consultancy &amp; Due Diligence</div>
+        <p>We help clients pick the best from the best. Our team’s exposure to countless projects across Africa, South America, and Asia gives us a sharp edge.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">Carbon Literacy &amp; Strategic ESG Alignment</div>
+        <p>Let us help you align carbon strategies with SDGs, climate finance trends, and future-proofed procurement.</p>
       </div>
     </div>
-  </div>
+    <h2 style="margin-top:64px;font-size:clamp(24px,2.8vw,34px)">Why Work With Us?</h2>
+    <ul class="why-list">
+      <li>Access to over 100 million high-quality credits</li>
+      <li>Transparency, speed, and discretion</li>
+      <li>Regenerative economics — carbon is a bridge, and an emerging commodity</li>
+    </ul>
+    <div class="talk-row">
+      <span class="talk-line">You didn’t come this far to stop.</span>
+      <a class="card-cta" href="mailto:Carbon@earthloveunited.org">Let’s talk — send us an email</a>
+    </div>
+  </section>
 
-  <!-- VOLUNTEER / PARTNER -->
-  <div class="section" id="together">
-    <div class="card reveal">
-      <div class="section-label">Volunteer / Partner</div>
-      <div class="section-title">Turn the Commons into Work</div>
-      <div class="section-body">This foundation needs careful people: scientists, data reviewers, storytellers, educators, field partners, and institutions willing to make restoration visible and accountable.</div>
-      <div class="cta-grid">
-        <div class="cta-card">
-          <div class="cta-icon">🌍</div>
-          <div class="cta-title">Explore</div>
-          <div class="cta-body">Use the globe and GAIA to understand the foundation's climate-science layer before contacting the team.</div>
-          <button class="cta-btn" data-action="enterGlobe">Explore Globe</button>
-        </div>
-        <div class="cta-card">
-          <div class="cta-icon">🤝</div>
-          <div class="cta-title">Volunteer / Interview</div>
-          <div class="cta-body">Help review datasets, write learning material, interview field partners, or improve public evidence trails.</div>
-          <a href="mailto:hello@earthloveunited.org?subject=Volunteer%20Interview" class="cta-btn">Volunteer</a>
-        </div>
-        <div class="cta-card">
-          <div class="cta-icon">🌱</div>
-          <div class="cta-title">Partner / Book Meeting</div>
-          <div class="cta-body">Discuss restoration sites, transparent monitoring, climate education, and accountable carbon-project data.</div>
-          <a href="mailto:hello@earthloveunited.org?subject=Partner%20Meeting" class="cta-btn">Book Meeting</a>
-        </div>
+  <!-- ── PARTNERS ── -->
+  <section class="section" id="partners" aria-labelledby="partners-h">
+    <div class="sec-kicker">Network</div>
+    <h2 id="partners-h">Our Partners</h2>
+    <p class="sec-lead">We collaborate with a dynamic network of partners spanning inclusive education, environmental conservation, AI for climate, community empowerment, sustainable finance, and digital innovation. These partnerships strengthen our ability to deliver impact at scale—combining technical expertise, grassroots engagement, and financial tools to advance a just and climate-resilient future.</p>
+    <div class="partner-row">
+      <div class="p-logo" data-name="St. Vincent’s"><img src="assets/legacy/partner-st-vincents.png" alt="St. Vincent’s logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+      <div class="p-logo" data-name="GRND"><img src="assets/legacy/partner-grnd.png" alt="GRND logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+      <div class="p-logo" data-name="SPE"><img src="assets/legacy/partner-spe.png" alt="SPE logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+      <div class="p-logo" data-name="Connecticut Green Bank"><img src="assets/legacy/partner-connecticut-green-bank.png" alt="Connecticut Green Bank logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+      <div class="p-logo" data-name="Climate Change AI"><img src="assets/legacy/partner-climate-change-ai.png" alt="Climate Change AI logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+      <div class="p-logo" data-name="Avocademy"><img src="assets/legacy/partner-avocademy.png" alt="Avocademy logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+    </div>
+  </section>
+
+  <!-- ── OPEN BY DESIGN ── -->
+  <section class="section" id="open" aria-labelledby="open-h">
+    <div class="sec-kicker">Trust layer</div>
+    <h2 id="open-h">Open by Design</h2>
+    <p class="sec-lead">Most foundations ask you to trust them. We would rather you check. Everything this site claims can be traced to source — the code, the data, and the tests that hold them together.</p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-tag">Open Source</div>
+        <p>The entire site is readable classic scripts — no build step, no minified mystery. Every line is public and inspectable.</p>
+        <a class="card-cta" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Read the source</a>
+      </div>
+      <div class="card">
+        <div class="card-tag">Open Data</div>
+        <p>The globe's pledge layer ships as versioned JSON with a declared schema — country, target, baseline, emissions, finance. No number appears on the globe that is not in this file.</p>
+        <a class="card-cta" href="data/pledge-nodes.json">Inspect the data</a>
+      </div>
+      <div class="card">
+        <div class="card-tag">Auditable Claims</div>
+        <p>Built-in smoke tests, schema validation on every load, and a public-copy checker that fails the build on unresolved claims. The site polices its own honesty.</p>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- FOOTER -->
+  <!-- ── TEAM ── -->
+  <section class="section" id="team" aria-labelledby="team-h">
+    <div class="sec-kicker">People</div>
+    <h2 id="team-h">The Team</h2>
+    <div class="team-grid">
+      <div class="t-card">
+        <div class="t-photo" data-initials="EO"><img src="assets/legacy/ekmel.jpg" alt="Ekmel Ozdemir" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <h3>Ekmel Ozdemir</h3>
+        <div class="t-role">General Manager</div>
+      </div>
+      <div class="t-card">
+        <div class="t-photo" data-initials="BG"><img src="assets/legacy/brandon.jpg" alt="Brandon Garvey" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <h3>Brandon Garvey</h3>
+        <div class="t-role">Marketing</div>
+      </div>
+      <div class="t-card">
+        <div class="t-photo" data-initials="IK"><img src="assets/legacy/ishita.png" alt="Ishita Kumar" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <h3>Ishita Kumar</h3>
+        <div class="t-role">Legal Lead</div>
+      </div>
+      <div class="t-card">
+        <div class="t-photo" data-initials="MM"><img src="assets/legacy/mike.png" alt="Mike Mutai" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <h3>Mike Mutai</h3>
+        <div class="t-role">Lead Developer</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TRIBUTE ── -->
+  <section class="section" id="tribute" aria-labelledby="tribute-h">
+    <div class="sec-kicker">Tribute · 1972–2024</div>
+    <h2 id="tribute-h">Remembering Jean</h2>
+    <div class="trib-wrap">
+      <div class="trib-prose">
+        <p>With profound sadness, we announce the unexpected passing of Jean Missinhoun, founder and chairman of the Earth Love United Foundation, on June 1, 2024, at the age of 52. Jean’s unwavering dedication to environmental preservation has left a lasting mark on our world. Originally from Benin, Jean’s journey led him to London, where he thrived as a hedge fund investor focused on energy investments.</p>
+        <p>Recognizing the critical crossroads our planet is at, Jean committed to advocating for a shift toward green energy solutions. His book, <a href="https://www.amazon.com/Green-Energy-Boom-Global-Quest/dp/B08XFFFX45" target="_blank" rel="noopener" style="color:inherit"><em>The Green Energy Boom: A Global Quest for Money, Power and Energy</em></a>, has inspired countless individuals. Under Jean’s visionary leadership, Earth Love United Foundation forged partnerships with nearly a dozen organizations across the globe and initiated groundbreaking research into sustainable energy sources and natural carbon capture solutions such as hemp, mangroves, seagrass, and algae. His belief in inclusive policies and community empowerment resonates deeply within our ongoing initiatives.</p>
+        <p>Ekmel Ozdemir, who worked alongside Jean as General Manager since the founding of Earth Love United in 2020, serves as interim chairman. Though we mourn the loss of a visionary leader, we are comforted in knowing that Jean’s spirit will live on through the work of the Foundation. Together, we honor his memory by championing worldwide environmental stewardship and sustainable practices.</p>
+        <p>Jean’s legacy will be embodied by the advancements of the Foundation but also in the hearts of those he inspired to fight against climate change. We extend our deepest condolences to Jean Missinhoun’s family, friends, and all those whose lives he touched.</p>
+        <div class="trib-close">May your vision guide us toward a future of harmony with our planet’s precious ecosystems and drive us to never stop saving the world.</div>
+      </div>
+      <div class="trib-aside">
+        <figure>
+          <img src="assets/legacy/dove.jpg" alt="A dove in flight" loading="lazy" decoding="async" onerror="this.closest('.trib-aside').classList.add('noimg')">
+          <figcaption>From oil to earth — Jean Missinhoun, 1972–2024</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SUPPORT ── -->
+  <section class="section" id="support" aria-labelledby="support-h">
+    <div class="sec-kicker">Support</div>
+    <h2 id="support-h">Support the Foundation</h2>
+    <p class="sec-lead">Earth Love United is volunteer-powered and independent. We are designing our donation infrastructure in the open — deliberately, because how a climate foundation handles money is itself a climate claim. Until those rails are live, support starts with a conversation.</p>
+    <div class="contact-ctas">
+      <a class="mail-main" href="mailto:info@earthloveunited.org?subject=Supporting%20Earth%20Love%20United">Talk to us about supporting ELU</a>
+    </div>
+    <p class="sec-note">Time and expertise count as much as funding — researchers, ecologists, and engineers have shaped this foundation from the start.</p>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section class="section" id="contact" aria-labelledby="contact-h">
+    <div class="sec-kicker">Contact</div>
+    <h2 id="contact-h">Get in Touch</h2>
+    <p class="sec-lead">Whether you are a buyer, researcher, partner organization, or volunteer — write to us. We read everything.</p>
+    <div class="contact-ctas">
+      <a class="mail-main" href="mailto:info@earthloveunited.org">info@earthloveunited.org</a>
+      <a class="mail-alt" href="mailto:Carbon@earthloveunited.org">Carbon desk</a>
+    </div>
+    <p class="sec-note">Earth Love United is volunteer-powered. If you want to contribute — from ecology to code — the door is open.</p>
+  </section>
+
   <div class="footer">
     <div class="footer-logo">Earth Love United</div>
     <div class="footer-tagline">Restoring ecosystems. Rebalancing carbon. Reuniting with Earth.</div>
+    <div class="footer-social" aria-label="Social media">
+      <a href="https://www.facebook.com/EarthLoveUnited/" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8.2h2.8l.4-3.2h-3.2V7.5c0-.9.3-1.6 1.6-1.6h1.7V3.1c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.3H7.3v3.2h2.8V21h3.4z"/></svg>
+      </a>
+      <a href="https://www.instagram.com/earthloveunited/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2-.1-1.2-.1-1.6-.1-4.8s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4 1.2-.1 1.6-.1 4.8-.1zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.2.8-.4.4-.6.7-.8 1.2-.2.4-.3 1-.4 2.1-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.2.4.4.7.6 1.2.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.2-.8.4-.4.6-.7.8-1.2.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.7-.4-2.1-.2-.5-.4-.9-.8-1.2-.4-.4-.7-.6-1.2-.8-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8zm0 8.1a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zm6.2-8.3a1.1 1.1 0 1 1-2.3 0 1.1 1.1 0 0 1 2.3 0z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/company/earth-love-united" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 3H3.6C3.3 3 3 3.3 3 3.6v16.8c0 .3.3.6.6.6h16.8c.3 0 .6-.3.6-.6V3.6c0-.3-.3-.6-.6-.6zM8.3 18.4H5.7V9.9h2.6v8.5zM7 8.7a1.5 1.5 0 1 1 0-3.1 1.5 1.5 0 0 1 0 3.1zm11.4 9.7h-2.6v-4.1c0-1 0-2.3-1.4-2.3s-1.6 1.1-1.6 2.2v4.2h-2.6V9.9h2.5v1.2h.1c.3-.7 1.2-1.4 2.5-1.4 2.7 0 3.2 1.8 3.2 4v4.7z"/></svg>
+      </a>
+      <a href="https://twitter.com/EarthLoveUnited" target="_blank" rel="noopener" aria-label="X (Twitter)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 2.3h3.3l-7.3 8.3 8.6 11.1h-6.7l-5.3-6.8-6 6.8H1.5l7.8-8.9L1 2.3h6.9l4.8 6.2 5.5-6.2zm-1.2 17.5h1.8L7 4.1H5l12 15.7z"/></svg>
+      </a>
+      <a href="https://www.youtube.com/@earthloveunited502" target="_blank" rel="noopener" aria-label="YouTube">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 7.2s-.2-1.6-.9-2.3c-.9-.9-1.8-.9-2.3-1C16.6 3.6 12 3.6 12 3.6s-4.6 0-7.8.3c-.4.1-1.4.1-2.3 1-.7.7-.9 2.3-.9 2.3S.8 9.1.8 11v1.8c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.9.9 2 .9 2.5 1 1.8.2 7.6.3 7.6.3s4.6 0 7.8-.3c.4-.1 1.4-.1 2.3-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8zM9.7 15.1V8.5l6.1 3.3-6.1 3.3z"/></svg>
+      </a>
+    </div>
     <div class="footer-links">
-      <a href="#quiz">Wonder</a>
-      <a href="#academy">Academy</a>
-      <a href="#carbon-cycle">Science</a>
-      <a href="#biomes">Biomes</a>
-      <a href="#scenario">Restoration</a>
-      <a href="#datasets">Transparency</a>
-      <a href="#together">Volunteer / Partner</a>
-      <a href="mailto:hello@earthloveunited.org">Contact</a>
+      <a href="#about">About</a>
+      <a href="#globe">The Living Globe</a>
+      <a href="#carbon">Carbon Credits</a>
+      <a href="#partners">Partners</a>
+      <a href="#team">Team</a>
+      <a href="#tribute">Tribute</a>
+      <a href="#support">Support</a>
+      <a href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Source</a>
+      <a href="mailto:info@earthloveunited.org">Contact</a>
     </div>
     <div class="footer-copy">© 2026 Earth Love United Foundation · earthloveunited.org</div>
   </div>
-
-  <!-- ═══ TRANSPARENCY / DATASET AUDIT ═══ -->
-  <div class="section" id="datasets" style="padding-top:64px">
-    <div class="card reveal">
-      <div class="section-label">Transparency</div>
-      <div class="section-title">Inspect the Working Commons</div>
-      <div class="section-body">A climate foundation earns trust by letting people inspect the machinery. The site source, Hugging Face datasets, and raw runtime files are public so researchers, partners, volunteers, and critics can trace what the interface claims.</div>
-      <div class="dataset-platforms">
-        <a class="dataset-platform" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">
-          <strong>GitHub source</strong>
-          <span>Classic HTML, CSS, and JavaScript. No build step, no hidden bundle.</span>
-        </a>
-        <a class="dataset-platform" href="https://huggingface.co/ego0op" target="_blank" rel="noopener">
-          <strong>Hugging Face commons</strong>
-          <span>Public dataset profile for Earth Love United climate and carbon datasets.</span>
-        </a>
-        <a class="dataset-platform" href="data/provenance-registry.json" target="_blank" rel="noopener" data-provenance-id="provenance-registry">
-          <strong>Provenance registry</strong>
-          <span>Source of truth for readiness labels, intended use, and known limits.</span>
-        </a>
-      </div>
-      <div class="dataset-source-list" aria-label="Published Hugging Face datasets">
-        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-climate-knowledge" target="_blank" rel="noopener" data-provenance-id="climate-knowledge">
-          <span class="dataset-status">Production · derived educational data</span>
-          <strong>Climate Knowledge Dataset</strong>
-          <em>Curated climate-science chunks for GAIA retrieval, education, and public source trails.</em>
-        </a>
-        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/carbon-projects-unified" target="_blank" rel="noopener" data-provenance-id="carbon-projects-unified">
-          <span class="dataset-status">Review · processed audit data</span>
-          <strong>Carbon Projects Unified</strong>
-          <em>Normalized registry/project records for comparison and carbon-project audit workflows.</em>
-        </a>
-        <a class="dataset-provenance-card" href="https://huggingface.co/datasets/ego0op/earth-love-united-carbon-projects" target="_blank" rel="noopener" data-provenance-id="elu-carbon-projects">
-          <span class="dataset-status">Experimental · ELU release data</span>
-          <strong>Earth Love United Carbon Projects</strong>
-          <em>Foundation release layer for transparent review, future validation, and partner discussion.</em>
-        </a>
-      </div>
-      <div class="raw-data-label">Raw data</div>
-      <div class="dataset-links" data-provenance-id="runtime-globe-data">
-        <a href="data/sites.json" target="_blank" rel="noopener">Project Sites JSON</a>
-        <a href="data/biomes.json" target="_blank" rel="noopener">Biome Carbon JSON</a>
-        <a href="data/pledge-nodes.json" target="_blank" rel="noopener">Country Pledges JSON</a>
-        <a href="data/climate-events.json" target="_blank" rel="noopener">Climate Events JSON</a>
-        <a href="data/events-core.csv" target="_blank" rel="noopener">Events CSV</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ SITE PANEL ═══ -->
-<div id="panel-backdrop"></div>
-<div id="site-panel">
-  <button class="panel-close" id="panel-close-btn">✕</button>
-  <div id="panel-content"></div>
 </div>
 
 <!-- JS Modules — loaded in dependency order.
      NOTE: js/vendor/globe.gl.js (1.8MB) is NOT loaded here — App.enterGlobe()
-     lazy-loads it via loadGlobeGL(). A sync tag here blocks every module
-     below it and delays first paint by seconds on slow connections. -->
+     lazy-loads it via loadGlobeGL(). -->
 <script src="js/gaia-utils.js"></script>
 <script src="js/module-contracts.js"></script>
 <script src="js/event-bus.js"></script>
 <script src="js/storage-adapter.js"></script>
 <script src="js/storage.js"></script>
-<script src="js/data-schema.js?v=prod001"></script>
-<script src="js/data.js?v=prod001"></script>
-<script src="js/quiz.js"></script>
-<script src="js/cycle.js"></script>
-<script src="js/biomes.js"></script>
-<script src="js/counters.js"></script>
-<script src="js/scenario.js"></script>
-<script src="js/globe.js?v=edge005"></script>
-<script src="js/globe-modes.js?v=quality006"></script>
-<script src="js/globe-restore.js?v=1779401429"></script>
-<script src="js/globe-ndvi.js?v=1779401429"></script>
-<script src="js/climate-data-loader.js"></script>
-<script src="js/globe-events.js?v=quality002"></script>
-<script src="js/gaia-legacy/gaia-data.js"></script>
-<script src="js/gaia-legacy/gaia-charts.js"></script>
-<script src="js/gaia-voice.js"></script>
-<script src="js/gaia-engagement.js"></script>
-<script src="js/gaia-journal.js"></script>
-<script src="js/gaia-bubble.js"></script>
-<script src="js/globe-overlay.js?v=5"></script>
-<script src="js/site-panel.js"></script>
-<script src="js/carbon-clock.js?v=mission001b"></script>
-<script src="js/country-data.js"></script>
-<script src="js/delegation.js?v=mission001"></script>
-<script src="js/pledge-wall.js"></script>
-<script src="js/gaia-nodes.js"></script>
-<script src="js/gaia-legacy/gaia-knowledge.js"></script>
-<script src="js/gaia-overlay-knowledge.js"></script>
-<script src="js/ndvi-verifier.js"></script>
-<script src="js/gaia-presence.js"></script>
-<script src="js/registry-check.js"></script>
-<script src="js/pulse-dashboard.js?v=quality001"></script>
-<script src="js/carbon-shadow.js?v=quality002"></script>
-<script src="js/module-validator.js"></script>
-<script src="js/bridge-client.js"></script>
-<script src="js/app.js?v=edge003"></script>
+<script src="js/data-schema.js?v=v1"></script>
+<script src="js/data.js?v=v1"></script>
+<script src="js/globe.js?v=v1"></script>
+<script src="js/carbon-clock.js?v=v1"></script>
+<script src="js/app.js?v=v1"></script>
 
-<!-- Dev Tools — loaded only on localhost -->
+<!-- Dev Tools — loaded only on localhost (CI smoke test depends on these) -->
 <script>
-// Only load dev tools on localhost. Production gets zero tool overhead.
 (function() {
   var h = location.hostname;
   if (h !== 'localhost' && h !== '127.0.0.1' && h !== '::1') return;
   var tools = [
-    'tools/smoke-test.js',
-    'tools/stack-lint.js?v=mission001',
-    'tools/event-tracer.js',
-    'tools/page-state.js',
-    'tools/impact-analyzer.js',
-    'tools/design-tokens.js',
-    'tools/state-snapshot.js',
-    'tools/diff-guard.js',
-    'tools/dep-graph.js'
+    'tools/smoke-test.js?v=v1',
+    'tools/stack-lint.js?v=v1'
   ];
   tools.forEach(function(src) {
     var s = document.createElement('script');
@@ -924,21 +755,20 @@ body.globe-mode[data-globe-mode="ndvi"] #ndvi-prompt.visible{display:flex!import
 })();
 </script>
 
-
 <!-- Globe mode back button -->
 <button id="globe-back-btn" onclick="exitGlobe()" aria-label="Back to Foundation">
   ← Back to Foundation
 </button>
 
-<!-- Service Worker registration — deferred to window load so the ~50-file
-     precache never competes with first paint on slow connections -->
+<!-- Service Worker registration — deferred to window load -->
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=10').catch(function() {
+    navigator.serviceWorker.register('/sw.js?v=11').catch(function() {
       // SW registration failed — site still works without it
     });
   });
 }
 </script>
-</body></html>
+</body>
+</html>

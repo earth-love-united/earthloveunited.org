@@ -93,12 +93,12 @@ const GAIA_VOICE = (() => {
     DEPART_03: { text: "The planet will still be here when you return. The question is what shape it'll be in. You know that now.", tone: "urgent", state: "DEPARTURE" },
 
     // FACTS
-    FACT_01: { text: "Humanity emits about 143 gigatons of CO₂ per year. Nature absorbs about 123. That gap — 20 gigatons — is the problem. It accumulates. Every single year.", tone: "urgent", state: "FACT" },
+    FACT_01: { text: "Humanity emitted about 42 gigatons of CO₂ in 2025. About half stayed in the atmosphere — roughly 20 gigatons net increase per year. That gap accumulates. Every single year.", tone: "urgent", state: "FACT" },
     FACT_02: { text: "The CO₂ in the atmosphere today will affect climate for thousands of years. About 20% of what we emit right now will still be warming the planet in a hundred thousand years.", tone: "concerned", state: "FACT" },
     FACT_03: { text: "Coal is the single largest source of CO₂ emissions. Forty percent of fossil fuel emissions. Dead ancient forests, burned in decades.", tone: "fierce", state: "FACT" },
     FACT_04: { text: "The ocean has absorbed about 30% of all human CO₂ emissions. Six hundred billion tons. It's making me more acidic than I've been in 66 million years.", tone: "concerned", state: "FACT" },
     FACT_05: { text: "Methane. Eighty times more potent than CO₂ over twenty years. It breaks down faster, which means cutting methane is the fastest way to slow warming. Right now.", tone: "urgent", state: "FACT" },
-    FACT_06: { text: "The remaining carbon budget for 1.5°C? About 250 gigatons of CO₂. At current rates, that's gone by 2031. Six years. That's not a lot of time.", tone: "urgent", state: "FACT" },
+    FACT_06: { text: "The remaining carbon budget for 1.5°C? About 170 gigatons of CO₂. At current rates, that's gone by 2030. About four years. That's not a lot of time.", tone: "urgent", state: "FACT" },
   };
 
   // ── State ──

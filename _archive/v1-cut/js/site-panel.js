@@ -94,7 +94,7 @@ const SITE_PANEL = (() => {
     },
     benin: {
       story: {
-        guidance: "Ouidah, Benin. A man named Jean Missinhoun was from here. He carried this place in his heart. He wanted to bring the mangroves back — even after he was gone.",
+        guidance: "Ouidah, Benin. Jean Missinhoun carried this mangrove project in his heart until his passing (date unverified). His team continues the restoration — now the mangroves have a chance to return.",
         suggestions: [
           { label: "Read the full story", action: "SITE_PANEL.scrollToLayer('story')" },
           { label: "Who was Jean?", action: "SITE_PANEL.speakGAIA('ENTRY_BEN_01')" },
@@ -500,6 +500,7 @@ const SITE_PANEL = (() => {
       <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--text3)">
         <span>${points[0].year}: ${points[0].label}</span>
         <span>${points[points.length-1].year}: ${points[points.length-1].label}</span>
+        <span style="color:var(--warn);font-style:italic">simulated data</span>
       </div>`;
   }
 
@@ -512,12 +513,12 @@ const SITE_PANEL = (() => {
     const precipDelta = first.precip ? ((last.precip - first.precip) / first.precip * 100).toFixed(0) : '0';
     return `
       <div style="padding:10px;background:rgba(255,255,255,0.02);border-radius:6px;">
-        <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Temperature</div>
+        <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Temperature <span style="font-style:italic;opacity:0.6">(illustrative)</span></div>
         <div style="font-family:var(--mono);font-size:16px;color:var(--warn)">${last.temp.toFixed(1)}°C</div>
         <div style="font-size:9px;color:var(--warn);margin-top:2px">+${tempDelta}°C since ${first.year}</div>
       </div>
       <div style="padding:10px;background:rgba(255,255,255,0.02);border-radius:6px;">
-        <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Precipitation</div>
+        <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Precipitation <span style="font-style:italic;opacity:0.6">(illustrative)</span></div>
         <div style="font-family:var(--mono);font-size:16px;color:var(--teal)">${last.precip} mm</div>
         <div style="font-size:9px;color:var(--warn);margin-top:2px">${precipDelta}% since ${first.year}</div>
       </div>
