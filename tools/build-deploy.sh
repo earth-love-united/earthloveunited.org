@@ -45,7 +45,8 @@ fi
 echo "📋 Staging files..."
 
 # Entry-point HTML pages
-cp index.html gaia.html "$DEPLOY_DIR/"
+cp index.html "$DEPLOY_DIR/"
+[ -f gaia.html ] && cp gaia.html "$DEPLOY_DIR/" || true
 
 # PWA: service worker must live at the origin root; manifest is linked from index.html
 cp sw.js manifest.json "$DEPLOY_DIR/"
