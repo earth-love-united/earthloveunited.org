@@ -339,6 +339,9 @@ body.globe-mode #site-nav{display:none}
 @media(prefers-reduced-motion:reduce){#hero *,#hero *::before,#hero *::after{animation:none!important;transition:none!important}#hero .enter-btn:hover{transform:none}}
 </style>
 
+<!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
+<link rel="stylesheet" href="css/globe-system.css?v=v5">
+
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v1" media="print" onload="this.media='all'">
 <noscript>
@@ -435,11 +438,17 @@ body.globe-mode #site-nav{display:none}
     <span class="brand-sep">·</span>
     <span class="brand-subtitle">Living Climate Atlas</span>
   </div>
-  <div class="stats">
-    <div class="stat-block">
-      <div class="stat-label">Net Human Emissions</div>
-      <div class="stat-value negative">+20 Gt CO₂/yr</div>
+  <div class="topbar-actions">
+    <div class="stats">
+      <div class="stat-block">
+        <div class="stat-label">Net Human Emissions</div>
+        <div class="stat-value negative">+20 Gt CO₂/yr</div>
+      </div>
     </div>
+    <button id="globe-theme-toggle" aria-label="Toggle light / dark theme" title="Toggle theme">
+      <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg>
+      <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.4 14.2A8.4 8.4 0 0 1 9.8 3.6a8.4 8.4 0 1 0 10.6 10.6z"/></svg>
+    </button>
   </div>
 </div>
 
@@ -733,9 +742,69 @@ body.globe-mode #site-nav{display:none}
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v1"></script>
-<script src="js/globe.js?v=v1"></script>
+<script src="js/globe.js?v=v3"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
-<script src="js/app.js?v=v1"></script>
+<script src="js/app.js?v=v2"></script>
+
+<!-- Glass system behavior: scroll reveal + theme toggle (design handoff v1) -->
+<script>
+(function () {
+  // ── Scroll reveal: glass cards enter with stagger; reveal once ──
+  function setupReveal() {
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('.glass-card'));
+    if (!boxes.length) return;
+    // Ancient browsers without IntersectionObserver: reveal everything, no theatrics
+    if (!('IntersectionObserver' in window)) {
+      boxes.forEach(function (b) { b.classList.add('rv-in'); });
+      return;
+    }
+    boxes.forEach(function (b) {
+      var sibs = Array.prototype.filter.call(b.parentNode.children, function (c) {
+        return c.classList && c.classList.contains('glass-card');
+      });
+      var i = Math.max(0, sibs.indexOf(b));
+      b.style.transitionDelay = (i * 95) + 'ms';
+      b.addEventListener('transitionend', function te() {
+        b.style.transitionDelay = '';
+        b.removeEventListener('transitionend', te);
+      });
+    });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('rv-in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+    boxes.forEach(function (b) {
+      var r = b.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.92) {
+        setTimeout(function () { b.classList.add('rv-in'); }, 60);
+      } else {
+        io.observe(b);
+      }
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupReveal);
+  } else { setupReveal(); }
+
+  // ── Theme toggle: persists to localStorage; keeps browser chrome color in sync ──
+  var themeButtons = [document.getElementById('theme-toggle'), document.getElementById('globe-theme-toggle')].filter(Boolean);
+  var themeColor = { dark: '#0a1628', light: '#f3efe6' };
+  function syncMeta(theme) {
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', themeColor[theme] || themeColor.dark);
+  }
+  syncMeta(document.documentElement.dataset.theme);
+  function toggleTheme() {
+    var next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('elu-theme', next); } catch (e) {}
+    syncMeta(next);
+    if (hasModule('GlobeModule')) safeCall('GlobeModule', 'setTheme', next);
+  }
+  themeButtons.forEach(function (button) { button.addEventListener('click', toggleTheme); });
+})();
+</script>
 
 <!-- Dev Tools — loaded only on localhost (CI smoke test depends on these) -->
 <script>
@@ -756,6 +825,12 @@ body.globe-mode #site-nav{display:none}
 </script>
 
 <!-- Globe mode back button -->
+<div id="globe-loading" role="status" aria-live="polite" aria-label="Loading the living globe">
+  <div class="elu-loading-card">
+    <span class="elu-loading-mark" aria-hidden="true"></span>
+    <span data-globe-loading-message>Preparing the living globe</span>
+  </div>
+</div>
 <button id="globe-back-btn" onclick="exitGlobe()" aria-label="Back to Foundation">
   ← Back to Foundation
 </button>
@@ -764,7 +839,7 @@ body.globe-mode #site-nav{display:none}
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=11').catch(function() {
+    navigator.serviceWorker.register('/sw.js?v=19').catch(function() {
       // SW registration failed — site still works without it
     });
   });
