@@ -22,8 +22,17 @@ body.globe-mode {
   --hud-cell: rgba(255, 255, 255, .035);
   --hud-cell-hover: rgba(78, 205, 196, .09);
   --hud-border: rgba(123, 232, 208, .2);
+  --hud-border-strong: rgba(123, 232, 208, .42);
+  --hud-divider: rgba(255, 255, 255, .08);
+  --hud-divider-soft: rgba(255, 255, 255, .045);
   --hud-muted: rgba(210, 224, 224, .62);
   --hud-faint: rgba(210, 224, 224, .38);
+  --hud-shadow: 0 16px 42px rgba(0, 0, 0, .28);
+  --hud-shadow-strong: 0 18px 54px rgba(0, 0, 0, .42), 0 0 0 1px rgba(123, 232, 208, .025);
+  --hud-nav-bg: rgba(6, 11, 18, .9);
+  --hud-trajectory-bg: rgba(78, 205, 196, .035);
+  --hud-grid: rgba(255, 255, 255, .1);
+  --hud-today: rgba(255, 255, 255, .28);
 }
 
 /* The globe remains an instrument, but the shared theme control must still
@@ -49,13 +58,22 @@ html[data-theme="light"] body.globe-mode {
   --text3: #9a9584;
   --border: rgba(31, 94, 70, .20);
   --border-hi: rgba(31, 94, 70, .42);
-  --hud-bg: rgba(250, 247, 240, .86);
-  --hud-bg-strong: rgba(250, 247, 240, .97);
-  --hud-cell: rgba(255, 255, 255, .52);
-  --hud-cell-hover: rgba(31, 94, 70, .08);
-  --hud-border: rgba(31, 94, 70, .22);
-  --hud-muted: rgba(32, 48, 42, .68);
-  --hud-faint: rgba(32, 48, 42, .48);
+  --hud-bg: rgba(250, 247, 240, .94);
+  --hud-bg-strong: rgba(255, 253, 248, .98);
+  --hud-cell: rgba(237, 231, 217, .62);
+  --hud-cell-hover: rgba(31, 94, 70, .10);
+  --hud-border: rgba(31, 94, 70, .26);
+  --hud-border-strong: rgba(31, 94, 70, .46);
+  --hud-divider: rgba(31, 94, 70, .14);
+  --hud-divider-soft: rgba(31, 94, 70, .08);
+  --hud-muted: rgba(32, 48, 42, .78);
+  --hud-faint: rgba(32, 48, 42, .58);
+  --hud-shadow: 0 16px 38px rgba(62, 49, 25, .14);
+  --hud-shadow-strong: 0 18px 48px rgba(62, 49, 25, .16), 0 0 0 1px rgba(31, 94, 70, .04);
+  --hud-nav-bg: rgba(255, 253, 248, .96);
+  --hud-trajectory-bg: rgba(31, 94, 70, .04);
+  --hud-grid: rgba(31, 94, 70, .15);
+  --hud-today: rgba(32, 48, 42, .34);
   color-scheme: light;
 }
 
@@ -66,8 +84,7 @@ html[data-theme="light"] body.globe-mode #globeViz {
 html[data-theme="light"] body.globe-mode #topbar {
   opacity: 1;
   transition: none;
-  background-color: var(--bg);
-  background-image: var(--hero-glow), var(--hero-vignette);
+  background: linear-gradient(180deg, rgba(255, 253, 248, .98), rgba(243, 239, 230, .94));
   border-bottom: 1px solid rgba(31, 94, 70, .16);
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .58), 0 10px 26px rgba(62, 49, 25, .08);
   -webkit-backdrop-filter: none;
@@ -183,7 +200,7 @@ body:not(.globe-mode) #globe-loading {
   border: 1px solid var(--hud-border);
   border-radius: 3px;
   background: var(--hud-bg-strong);
-  box-shadow: 0 14px 44px rgba(0, 0, 0, .34);
+  box-shadow: var(--hud-shadow);
   color: var(--mint);
   font-family: var(--mono);
   font-size: 9px;
@@ -215,7 +232,7 @@ body:not(.globe-mode) #globe-loading {
   border: 1px solid var(--hud-border);
   border-radius: 3px;
   background: var(--hud-bg);
-  box-shadow: 0 16px 42px rgba(0, 0, 0, .28);
+  box-shadow: var(--hud-shadow);
   backdrop-filter: blur(12px);
   color: var(--text);
 }
@@ -226,7 +243,7 @@ body:not(.globe-mode) #globe-loading {
   justify-content: space-between;
   gap: 8px;
   padding: 10px 11px 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  border-bottom: 1px solid var(--hud-divider);
 }
 
 .elu-rank-title {
@@ -246,7 +263,7 @@ body:not(.globe-mode) #globe-loading {
 .elu-rank-toggle {
   width: 23px;
   height: 23px;
-  border: 1px solid rgba(123, 232, 208, .2);
+  border: 1px solid var(--hud-border);
   border-radius: 2px;
   background: transparent;
   color: var(--teal);
@@ -280,7 +297,7 @@ body:not(.globe-mode) #globe-loading {
   min-height: 31px;
   padding: 5px 10px;
   border: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, .045);
+  border-bottom: 1px solid var(--hud-divider-soft);
   background: transparent;
   color: var(--hud-muted);
   font-family: var(--body);
@@ -325,15 +342,16 @@ body:not(.globe-mode) #globe-loading {
   border-radius: 3px;
   background: var(--hud-bg);
   border-color: var(--hud-border);
-  box-shadow: 0 18px 54px rgba(0, 0, 0, .42), 0 0 0 1px rgba(123, 232, 208, .025);
+  box-shadow: var(--hud-shadow-strong);
 }
 
 #hex-country-tooltip.selected {
   width: min(461px, calc(100vw - 124px)) !important;
   max-height: min(78vh, 700px);
   padding: 14px 15px 13px;
-  border-color: rgba(123, 232, 208, .42);
+  border-color: var(--hud-border-strong);
   background: var(--hud-bg-strong);
+  box-shadow: var(--hud-shadow-strong);
 }
 
 #hex-country-tooltip.selected .tt-topline {
@@ -341,7 +359,7 @@ body:not(.globe-mode) #globe-loading {
   min-height: 27px;
   margin-bottom: 5px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  border-bottom: 1px solid var(--hud-divider);
 }
 
 #hex-country-tooltip.selected .tt-country {
@@ -464,21 +482,21 @@ body:not(.globe-mode) #globe-loading {
   width: 26px;
   height: 86px;
   border-radius: 2px;
-  background: rgba(6, 11, 18, .9);
+  background: var(--hud-nav-bg);
 }
 
 #hex-country-tooltip.selected .tt-hint {
   padding-top: 6px;
-  border-top: 1px solid rgba(255, 255, 255, .06);
+  border-top: 1px solid var(--hud-divider-soft);
 }
 
 /* v0.7 trajectory panel inserted by GlobeModule._renderCountryMetrics. */
 .elu-trajectory {
   margin-top: 10px;
   padding: 9px 10px 8px;
-  border: 1px solid rgba(123, 232, 208, .15);
+  border: 1px solid var(--hud-border);
   border-radius: 3px;
-  background: rgba(78, 205, 196, .035);
+  background: var(--hud-trajectory-bg);
 }
 
 .elu-trajectory-head {
@@ -510,7 +528,7 @@ body:not(.globe-mode) #globe-loading {
   shape-rendering: geometricPrecision;
 }
 
-.elu-trajectory-grid { stroke: rgba(255, 255, 255, .1); stroke-width: .7; }
+.elu-trajectory-grid { stroke: var(--hud-grid); stroke-width: .7; }
 .elu-trajectory-target { fill: none; stroke: var(--teal); stroke-width: 1.6; stroke-dasharray: 3 3; opacity: .65; }
 .elu-trajectory-current { fill: none; stroke: var(--st); stroke-width: 1.6; }
 .elu-trajectory-current.is-red { stroke: var(--warn); }
@@ -519,7 +537,7 @@ body:not(.globe-mode) #globe-loading {
 .elu-trajectory-marker { fill: var(--st); stroke: var(--hud-bg-strong); stroke-width: 1; }
 .elu-trajectory-marker.is-red { fill: var(--warn); }
 .elu-trajectory-marker.is-green { fill: var(--leaf); }
-.elu-trajectory-today { stroke: rgba(255, 255, 255, .28); stroke-width: .8; stroke-dasharray: 1.5 2; vector-effect: non-scaling-stroke; }
+.elu-trajectory-today { stroke: var(--hud-today); stroke-width: .8; stroke-dasharray: 1.5 2; vector-effect: non-scaling-stroke; }
 .elu-trajectory-years { display: flex; justify-content: space-between; margin-top: -1px; color: var(--hud-muted); font-family: var(--mono); font-size: 8px; letter-spacing: .55px; line-height: 1; }
 .elu-trajectory-empty { color: var(--hud-faint); font-size: 10px; line-height: 1.4; }
 .elu-trajectory-legend { display: flex; gap: 12px; flex-wrap: wrap; color: var(--hud-faint); font-size: 8px; }
@@ -528,7 +546,7 @@ body:not(.globe-mode) #globe-loading {
 .elu-trajectory-legend span:first-child::before { border-color: var(--warn); }
 .elu-trajectory-legend span:first-child.is-green::before { border-color: var(--leaf); }
 .elu-trajectory-legend span:last-child::before { border-top-style: dashed; border-color: var(--teal); }
-.elu-trajectory-today-key::before { border-top-style: dotted !important; border-color: rgba(255, 255, 255, .38) !important; }
+.elu-trajectory-today-key::before { border-top-style: dotted !important; border-color: var(--hud-today) !important; }
 .elu-trajectory-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
 .elu-trajectory-chip { padding: 4px 7px; border: 1px solid var(--cell-bd); border-radius: 20px; color: var(--hud-muted); font-family: var(--mono); font-size: 8px; line-height: 1; }
 .elu-trajectory-chip.is-red { border-color: var(--st-bd); background: var(--st-bg); color: var(--warn); }
@@ -546,8 +564,31 @@ body.globe-mode #globe-back-btn {
   z-index: 200;
   bottom: 18px;
   border-radius: 3px;
-  border-color: rgba(123, 232, 208, .25);
-  background: rgba(6, 11, 18, .9);
+  border-color: var(--hud-border);
+  background: var(--hud-nav-bg);
+}
+
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-close,
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-watch {
+  border-color: var(--hud-border);
+  background: var(--hud-cell);
+}
+
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-grid4 > div,
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-momentum > div,
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-chip,
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-proj {
+  border-color: var(--hud-divider);
+}
+
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-divergence,
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ndc,
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-proj {
+  background: var(--hud-cell);
+}
+
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
+  border-top-color: var(--hud-divider);
 }
 
 @media (max-width: 900px) {

@@ -1,9 +1,9 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for static assets, network-first for HTML and data.
- * Version bump (v20) — coherent foundation/globe themes and refreshed shell assets.
+ * Version bump (v21) — refresh the complete light HUD as one coherent release.
  */
-const CACHE_NAME = 'elu-v20';
+const CACHE_NAME = 'elu-v21';
 const STATIC_ASSETS = [
   // HTML
   '/',
