@@ -6,16 +6,6 @@
  * owned by js/globe.js; this file owns the instrument surface only.
  */
 
-body.globe-mode:not([data-theme="light"]) {
-  --hud-bg: rgba(7, 13, 22, .92);
-  --hud-bg-strong: rgba(6, 11, 18, .97);
-  --hud-cell: rgba(255, 255, 255, .035);
-  --hud-cell-hover: rgba(78, 205, 196, .09);
-  --hud-border: rgba(123, 232, 208, .2);
-  --hud-muted: rgba(210, 224, 224, .62);
-  --hud-faint: rgba(210, 224, 224, .38);
-}
-
 body.globe-mode {
   --hud-bg: rgba(7, 13, 22, .92);
   --hud-bg-strong: rgba(6, 11, 18, .97);
@@ -37,7 +27,8 @@ body.globe-mode {
 
 /* The globe remains an instrument, but the shared theme control must still
    have a real effect when the homepage is in its old-money light mode. */
-html[data-theme="light"] body.globe-mode {
+html[data-theme="light"] body.globe-mode,
+body.globe-mode[data-theme="light"] {
   --glow: rgba(31, 94, 70, .22);
   --glass-bg: rgba(255, 255, 255, .50);
   --glass-bg-hi: rgba(255, 255, 255, .72);
@@ -91,10 +82,6 @@ html[data-theme="light"] body.globe-mode #topbar {
   backdrop-filter: none;
 }
 
-html[data-theme="light"] body.globe-mode #globe-back-btn {
-  background: rgba(250, 247, 240, .92);
-}
-
 html[data-theme="light"] body.globe-mode .hex-legend {
   border-color: rgba(31, 94, 70, .22);
   background: rgba(250, 247, 240, .92);
@@ -107,6 +94,20 @@ body.globe-mode #topbar .topbar-actions {
   gap: 18px;
   min-width: 0;
 }
+
+@keyframes elu-hud-in {
+  from { opacity: 0; transform: translateY(14px); filter: blur(5px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes elu-card-in {
+  from { opacity: 0; transform: translateX(26px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+body.globe-mode #topbar { animation: elu-hud-in .7s cubic-bezier(.22,.61,.36,1) .15s both; }
+body.globe-mode #elu-country-rank-rail { animation: elu-hud-in .7s cubic-bezier(.22,.61,.36,1) .3s both; }
+body.globe-mode .hex-legend { animation: elu-hud-in .7s cubic-bezier(.22,.61,.36,1) .35s both; }
 
 #globe-theme-toggle {
   display: flex;
@@ -352,6 +353,7 @@ body:not(.globe-mode) #globe-loading {
   border-color: var(--hud-border-strong);
   background: var(--hud-bg-strong);
   box-shadow: var(--hud-shadow-strong);
+  animation: elu-card-in .5s cubic-bezier(.22,.61,.36,1);
 }
 
 #hex-country-tooltip.selected .tt-topline {
@@ -561,11 +563,11 @@ body.globe-mode .hex-legend {
 }
 
 body.globe-mode #globe-back-btn {
+  left: 24px;
   z-index: 200;
-  bottom: 18px;
-  border-radius: 3px;
-  border-color: var(--hud-border);
-  background: var(--hud-nav-bg);
+  bottom: 24px;
+  transform: none;
+  animation: elu-hud-in .7s cubic-bezier(.22,.61,.36,1) .55s both;
 }
 
 html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-close,
@@ -724,6 +726,11 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
 
 @media (prefers-reduced-motion: reduce) {
   .elu-loading-mark { animation: none; }
+  body.globe-mode #topbar,
+  body.globe-mode #elu-country-rank-rail,
+  body.globe-mode .hex-legend,
+  body.globe-mode #globe-back-btn,
+  #hex-country-tooltip.selected { animation: none; }
   #globe-loading,
   #hex-country-tooltip { transition: none !important; }
 }
