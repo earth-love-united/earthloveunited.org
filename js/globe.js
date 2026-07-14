@@ -436,6 +436,7 @@ const GlobeModule = {
   _countryCardWrap: null,
   _rankRailCollapsed: false,
   _defaultCountrySelected: false,
+  _countrySwipeCueShown: false,
 
   init() {
     // Guard: Globe constructor may not be loaded yet (lazy-loaded globe.gl.js)
@@ -1108,6 +1109,7 @@ const GlobeModule = {
       this.world.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: pov?.altitude || 2.2 }, opts.focus ? 500 : 0);
     }
     const tt = $('hex-country-tooltip');
+    this._queueCountrySwipeCue(tt);
     if (opts.focus && tt) {
       tt.setAttribute('tabindex', '-1');
       tt.focus({ preventScroll: true });
@@ -1121,6 +1123,29 @@ const GlobeModule = {
     if (!entry?.feature) return;
     this._defaultCountrySelected = true;
     this._selectCountryFeature(entry.feature, { focus: false });
+  },
+
+  _queueCountrySwipeCue(tt) {
+    if (this._countrySwipeCueShown || !tt || window.innerWidth > 720) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    this._countrySwipeCueShown = true;
+
+    // Wait until the selected card has been mounted and docked before showing
+    // the one-time horizontal affordance. Two frames keep the cue separate
+    // from the card's initial paint, so the movement reads as intentional.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (!tt.classList.contains('selected') || !tt.classList.contains('visible')) return;
+      tt.classList.add('tt-swipe-cue');
+      const finishCue = event => {
+        if (event.animationName !== 'elu-country-card-swipe-cue') return;
+        tt.removeEventListener('animationend', finishCue);
+        tt.removeEventListener('animationcancel', finishCue);
+        tt.classList.add('tt-motion-ready');
+        tt.classList.remove('tt-swipe-cue');
+      };
+      tt.addEventListener('animationend', finishCue);
+      tt.addEventListener('animationcancel', finishCue);
+    }));
   },
 
   _renderCountryInfoCard(feature, selected) {
@@ -1192,6 +1217,10 @@ const GlobeModule = {
       tt.addEventListener('pointerdown', (e) => {
         if (!tt.classList.contains('selected')) return;
         if (e.target.closest('.tt-close,.tt-nav,[data-country-stat],a')) return;
+        if (tt.classList.contains('tt-swipe-cue')) {
+          tt.classList.add('tt-motion-ready');
+          tt.classList.remove('tt-swipe-cue');
+        }
         _dragging = true; _dragEngaged = false;
         _dragStartX = e.clientX; _dragStartY = e.clientY;
         _dragPointerId = e.pointerId;
@@ -1323,6 +1352,9 @@ const GlobeModule = {
 
     this._navBusy = true;
     const tt = $('hex-country-tooltip');
+    const mobileMotion = window.innerWidth <= 720;
+    const exitDuration = mobileMotion ? 220 : (opts.fromDrag ? 300 : 260);
+    const enterDuration = mobileMotion ? 300 : 460;
     // Bumble semantics: advancing throws the card out to the RIGHT and the
     // next one enters from the left; going back mirrors it.
     const outClass = dir > 0 ? 'tt-fly-right' : 'tt-fly-left';
@@ -1353,16 +1385,17 @@ const GlobeModule = {
         tt.classList.add('tt-snap');
         tt.classList.remove(inClass);
         tt.style.transform = 'none';
-        setTimeout(() => { tt.classList.remove('tt-snap'); this._navBusy = false; }, 460);
+        setTimeout(() => { tt.classList.remove('tt-snap'); this._navBusy = false; }, enterDuration);
       } else {
         this._navBusy = false;
       }
     };
 
     if (tt) {
-      tt.classList.remove('tt-snap', 'tt-dragging');
+      tt.classList.add('tt-motion-ready');
+      tt.classList.remove('tt-snap', 'tt-dragging', 'tt-swipe-cue');
       tt.classList.add(outClass);
-      setTimeout(swap, opts.fromDrag ? 300 : 260);
+      setTimeout(swap, exitDuration);
     } else {
       swap();
     }

@@ -429,6 +429,13 @@ body:not(.globe-mode) #globe-loading {
   pointer-events: auto;
 }
 
+@keyframes elu-country-card-swipe-cue {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0); }
+  24% { transform: translate3d(-7px, 0, 0) rotate(-.35deg); }
+  50% { transform: translate3d(6px, 0, 0) rotate(.3deg); }
+  72% { transform: translate3d(-2px, 0, 0) rotate(-.1deg); }
+}
+
 #elu-country-card-wrap .tt-nav {
   position: relative !important;
   inset: auto !important;
@@ -672,7 +679,48 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
     max-height: none !important;
     height: auto;
     padding: 12px 12px 10px;
-    transform: none !important;
+    transform: none;
+  }
+
+  /* Mobile deck motion: a one-time affordance on entry, then short travel and
+     a soft settle when the user commits or cancels a horizontal swipe. */
+  #elu-country-card-wrap #hex-country-tooltip.tt-swipe-cue {
+    animation: elu-country-card-swipe-cue .72s cubic-bezier(.22,.61,.36,1) .38s 1 both;
+  }
+
+  #elu-country-card-wrap #hex-country-tooltip.tt-motion-ready {
+    animation: none !important;
+  }
+
+  #elu-country-card-wrap #hex-country-tooltip.tt-dragging,
+  #elu-country-card-wrap #hex-country-tooltip.tt-snap,
+  #elu-country-card-wrap #hex-country-tooltip.tt-fly-left,
+  #elu-country-card-wrap #hex-country-tooltip.tt-fly-right,
+  #elu-country-card-wrap #hex-country-tooltip.tt-enter-left,
+  #elu-country-card-wrap #hex-country-tooltip.tt-enter-right {
+    will-change: transform, opacity;
+  }
+
+  #elu-country-card-wrap #hex-country-tooltip.tt-snap {
+    transition: transform .28s cubic-bezier(.22,.61,.36,1), opacity .22s ease;
+  }
+
+  #elu-country-card-wrap #hex-country-tooltip.tt-fly-left {
+    transition: transform .22s cubic-bezier(.4,0,.2,1), opacity .18s ease;
+    transform: translate3d(-135px, 3px, 0) rotate(-2deg) !important;
+  }
+
+  #elu-country-card-wrap #hex-country-tooltip.tt-fly-right {
+    transition: transform .22s cubic-bezier(.4,0,.2,1), opacity .18s ease;
+    transform: translate3d(135px, 3px, 0) rotate(2deg) !important;
+  }
+
+  #elu-country-card-wrap #hex-country-tooltip.tt-enter-left {
+    transform: translate3d(-22px, 2px, 0) rotate(-.6deg) !important;
+  }
+
+  #elu-country-card-wrap #hex-country-tooltip.tt-enter-right {
+    transform: translate3d(22px, 2px, 0) rotate(.6deg) !important;
   }
 
   #hex-country-tooltip.selected .tt-country { font-size: 16px; }
@@ -735,4 +783,12 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   #hex-country-tooltip.selected { animation: none; }
   #globe-loading,
   #hex-country-tooltip { transition: none !important; }
+  #elu-country-card-wrap #hex-country-tooltip.tt-swipe-cue { animation: none !important; }
+  #elu-country-card-wrap #hex-country-tooltip.tt-fly-left,
+  #elu-country-card-wrap #hex-country-tooltip.tt-fly-right,
+  #elu-country-card-wrap #hex-country-tooltip.tt-enter-left,
+  #elu-country-card-wrap #hex-country-tooltip.tt-enter-right {
+    transform: none !important;
+    opacity: 1 !important;
+  }
 }
