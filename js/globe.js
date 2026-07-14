@@ -1525,7 +1525,7 @@ const GlobeModule = {
     }
 
     // ── The hook: free sourcing brief, ELU as the verification layer ──
-    html += '<a class="tt-brief-btn" href="' + _escapeHtml(this._briefMailto(node, cp, price)) + '">Request a sourcing brief for ' + _escapeHtml(node.country) + '</a>'
+    html += '<a class="tt-brief-btn glass-btn" href="' + _escapeHtml(this._briefMailto(node, cp, price)) + '">Request a sourcing brief for ' + _escapeHtml(node.country) + '</a>'
       + '<div class="tt-brief-sub">Free · registry records pulled + satellite ground-truth where possible · no obligation</div>';
 
     html += '</div>';

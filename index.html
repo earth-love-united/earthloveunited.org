@@ -107,7 +107,7 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root,[data-theme="dark"]{
   color-scheme:dark;
-  --glow:rgba(78,205,196,.32);--glass-bg:rgba(255,255,255,.035);--glass-bg-hi:rgba(255,255,255,.065);--glass-border:rgba(78,205,196,.18);--glass-hi:rgba(255,255,255,.06);
+  --glow:rgba(78,205,196,.32);--glass-bg:rgba(255,255,255,.035);--glass-bg-hi:rgba(255,255,255,.065);--glass-border:rgba(78,205,196,.18);--glass-hi:rgba(255,255,255,.06);--glass-edge:rgba(160,255,240,.55);
   --bg:#050509;--bg2:#0a0b12;--bg3:#0e1018;--teal:#4ecdc4;--mint:#7be8d0;--ocean:#2a8fa3;--deep:#1a3a5c;--leaf:#5bbf72;--amber:#d4a574;--warn:#c45c4a;
   --text:#e2dfd8;--text2:#9a9590;--text3:#5a5652;--border:rgba(78,205,196,.14);--border-hi:rgba(78,205,196,.34);
   --hero-glow:radial-gradient(circle at 50% 40%,rgba(196,92,74,.16),rgba(196,92,74,.04) 34%,transparent 58%),radial-gradient(circle at 50% 62%,rgba(78,205,196,.08),transparent 42%);
@@ -117,7 +117,7 @@
 }
 [data-theme="light"]{
   color-scheme:only light;
-  --glow:rgba(31,94,70,.22);--glass-bg:rgba(255,255,255,.5);--glass-bg-hi:rgba(255,255,255,.72);--glass-border:rgba(31,94,70,.18);--glass-hi:rgba(255,255,255,.6);
+  --glow:rgba(31,94,70,.22);--glass-bg:rgba(255,255,255,.5);--glass-bg-hi:rgba(255,255,255,.72);--glass-border:rgba(31,94,70,.18);--glass-hi:rgba(255,255,255,.6);--glass-edge:rgba(255,255,255,.95);
   --bg:#f3efe6;--bg2:#faf7f0;--bg3:#ede7d9;--teal:#1f5e46;--mint:#26694f;--ocean:#3a6d5c;--deep:#c9bfa6;--leaf:#3f7d54;--amber:#9a7b3f;--warn:#9a3b2c;
   --text:#20302a;--text2:#5a6158;--text3:#9a9584;--border:rgba(31,94,70,.2);--border-hi:rgba(31,94,70,.42);
   --hero-glow:radial-gradient(circle at 50% 40%,rgba(154,59,44,.07),transparent 52%),radial-gradient(circle at 50% 66%,rgba(31,94,70,.06),transparent 46%);
@@ -127,6 +127,14 @@
 html{scroll-behavior:smooth}
 body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--body);overflow-x:hidden}
 @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@property --arm-w{syntax:"<length-percentage>";inherits:true;initial-value:16px}
+@property --arm-h{syntax:"<length-percentage>";inherits:true;initial-value:10px}
+.glass-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:14px 28px;border:1px solid transparent;border-radius:2px;background:var(--glass-bg);color:var(--teal);font-family:var(--body);font-size:12px;line-height:1.2;letter-spacing:2px;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer;--arm-w:16px;--arm-h:10px;--cc:var(--border-hi);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:inset 0 1px 0 var(--glass-hi);transition:--arm-w .6s cubic-bezier(.22,.61,.36,1),--arm-h .6s cubic-bezier(.22,.61,.36,1),--cc .4s ease,transform .35s cubic-bezier(.22,.61,.36,1),box-shadow .35s ease,background .35s ease,color .25s ease}
+.glass-btn::before,.glass-btn::after{content:"";position:absolute;width:var(--arm-w);height:var(--arm-h);pointer-events:none;transition:inherit}
+.glass-btn::before{top:0;right:0;border-top:1px solid var(--cc);border-right:1px solid var(--cc)}
+.glass-btn::after{bottom:0;left:0;border-bottom:1px solid var(--cc);border-left:1px solid var(--cc)}
+.glass-btn:hover,.glass-btn:focus-visible{--arm-w:calc(100% - 18px);--arm-h:calc(100% - 12px);--cc:var(--teal);transform:translateY(-2px);background:var(--glass-bg-hi);color:var(--teal);box-shadow:inset 0 1px 0 var(--glass-hi),0 12px 30px -18px var(--glow);outline:none}
+.glass-btn:active{transform:translateY(0)}
 .skip-nav{position:absolute;top:-100%;left:0;z-index:9999;padding:8px 16px;background:var(--teal);color:var(--bg);font-size:14px;font-weight:600;text-decoration:none;border-radius:0 0 4px 0}
 .skip-nav:focus{top:0}
 /* hero */
@@ -140,8 +148,8 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 #hero h1{order:1;font-family:var(--display);font-size:clamp(34px,5vw,58px);font-weight:300;color:var(--mint);margin-bottom:10px;letter-spacing:3px;animation:fadeUp .8s ease-out .3s both}
 .hero-value{order:2;max-width:760px;margin:0 auto 36px;color:var(--text2);font-size:clamp(15px,2vw,21px);line-height:1.55;animation:fadeUp .8s ease-out .42s both}
 .hero-actions{order:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;margin-top:30px;margin-bottom:0;animation:fadeUp .8s ease-out .6s both}
-#hero .enter-btn{padding:16px 34px;border:1px solid var(--teal);border-radius:999px;background:var(--teal);color:var(--bg);font-family:var(--body);font-size:13px;letter-spacing:2.4px;text-transform:uppercase;cursor:pointer;transition:all .3s;box-shadow:0 0 24px rgba(78,205,196,.18)}
-#hero .enter-btn:hover{background:var(--mint);border-color:var(--mint);color:var(--bg);transform:translateY(-2px);box-shadow:0 0 28px rgba(123,232,208,.28)}
+#hero .hero-actions .glass-btn{min-width:min(100%,340px);padding:15px 32px}
+#hero .enter-btn{font-size:12px;letter-spacing:2.4px}
 #hero .memorial{position:relative;bottom:auto;order:5;margin:0 auto 24px;font-size:11px;color:var(--text3);font-style:italic;opacity:.72;animation:fadeUp .8s ease-out 1s both}
 .hero-telemetry{order:3;display:flex;align-items:center;justify-content:center;width:min(920px,100%);margin:0 auto;padding:0;color:var(--text2);animation:fadeUp .6s ease-out .15s both}
 #hero-carbon-clock{margin:0;min-width:0}
@@ -150,8 +158,7 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 body.globe-mode #hero,body.globe-mode .sections{display:none!important}
 body.globe-mode #globeViz{z-index:1;pointer-events:all}
 body.globe-mode #topbar{opacity:1;pointer-events:all}
-#globe-back-btn{display:none;position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:200;padding:10px 28px;border:1px solid rgba(78,205,196,.25);border-radius:999px;background:rgba(5,5,9,.85);backdrop-filter:blur(8px);color:var(--teal);font-family:var(--body);font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s}
-#globe-back-btn:hover{border-color:var(--teal);background:rgba(78,205,196,.1)}
+#globe-back-btn{display:none;position:fixed;bottom:24px;left:24px;z-index:200;padding:13px 30px;font-size:11px;letter-spacing:2.2px}
 body.globe-mode #globe-back-btn{display:block}
 /* topbar */
 #topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 28px;background:linear-gradient(180deg,rgba(5,5,9,.95),rgba(5,5,9,0));pointer-events:none;opacity:0;transition:opacity .6s}
@@ -232,8 +239,7 @@ body.globe-mode #globe-back-btn{display:block}
 #hex-country-tooltip .tt-proj-meta{color:var(--text3);font-family:var(--mono);font-size:8.5px;letter-spacing:.3px}
 #hex-country-tooltip .tt-ctg-note{margin-top:6px;color:var(--text3);font-size:9px;line-height:1.35}
 /* the hook: sourcing brief CTA + watchlist */
-#hex-country-tooltip .tt-brief-btn{display:block;margin-top:9px;padding:10px 12px;border:1px solid var(--teal);border-radius:6px;background:rgba(78,205,196,.08);color:var(--teal);font-family:var(--mono);font-size:10px;letter-spacing:1.2px;text-transform:uppercase;text-align:center;text-decoration:none;transition:all .2s}
-#hex-country-tooltip .tt-brief-btn:hover{background:var(--teal);color:var(--bg)}
+#hex-country-tooltip .tt-brief-btn{display:flex;margin-top:9px;padding:11px 12px;font-family:var(--mono);font-size:10px;letter-spacing:1.2px;text-align:center;white-space:normal}
 #hex-country-tooltip .tt-brief-sub{margin-top:5px;color:var(--text3);font-size:8.5px;letter-spacing:.3px;text-align:center;line-height:1.4}
 #hex-country-tooltip .tt-watch{flex:0 0 auto;width:26px;height:26px;margin:-2px 0 0 2px;border:1px solid rgba(255,255,255,.12);border-radius:50%;background:rgba(255,255,255,.03);color:var(--text2);font-size:12px;line-height:1;cursor:pointer;transition:all .15s}
 #hex-country-tooltip .tt-watch:hover{border-color:var(--amber);color:var(--amber)}
@@ -289,8 +295,7 @@ body:not(.globe-mode) .hex-legend{display:none}
 [data-theme="light"] #theme-toggle .ic-moon{display:block}
 body.globe-mode #site-nav{display:none}
 /* ── hero secondary action + memorial link ── */
-#hero .ghost-btn{display:inline-block;padding:15px 30px;border:1px solid rgba(78,205,196,.3);border-radius:999px;background:transparent;color:var(--teal);font-family:var(--body);font-size:12px;letter-spacing:2.2px;text-transform:uppercase;text-decoration:none;transition:all .3s}
-#hero .ghost-btn:hover{border-color:var(--teal);background:rgba(78,205,196,.07);transform:translateY(-2px)}
+#hero .ghost-btn{font-size:12px;letter-spacing:2.2px}
 #hero .memorial a{color:inherit;text-decoration:none;border-bottom:1px dotted rgba(154,149,144,.4)}
 #hero .memorial a:hover{color:var(--text2)}
 /* ── foundation sections ── */
@@ -304,8 +309,7 @@ body.globe-mode #site-nav{display:none}
 .card .card-tag{font-family:var(--mono);font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
 .card h3{font-family:var(--display);font-size:23px;font-weight:400;color:var(--text);letter-spacing:.6px;margin-bottom:8px}
 .card p{color:var(--text2);font-size:14px;line-height:1.65}
-.card .card-cta{display:inline-block;margin-top:18px;padding:10px 22px;border:1px solid rgba(78,205,196,.3);border-radius:999px;background:transparent;color:var(--teal);font-family:var(--body);font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .25s}
-.card .card-cta:hover{background:var(--teal);color:var(--bg)}
+.card .card-cta{margin-top:18px;padding:11px 22px;font-size:11px}
 .why-list{list-style:none;margin-top:20px;display:grid;gap:10px;max-width:840px}
 .why-list li{position:relative;padding:14px 16px 14px 40px;border:1px solid rgba(78,205,196,.12);border-radius:10px;background:rgba(255,255,255,.02);color:var(--text2);font-size:14px;line-height:1.55}
 .why-list li::before{content:'◆';position:absolute;left:16px;top:14px;color:var(--teal);font-size:11px}
@@ -357,23 +361,19 @@ body.globe-mode #site-nav{display:none}
 .video-caption{margin-top:12px;font-size:12.5px;color:var(--text3);font-style:italic}
 /* contact */
 .contact-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
-.contact-ctas a{display:inline-block;padding:14px 28px;border-radius:999px;font-family:var(--body);font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .25s}
-.contact-ctas .mail-main{border:1px solid var(--teal);background:var(--teal);color:var(--bg)}
-.contact-ctas .mail-main:hover{background:var(--mint);border-color:var(--mint)}
-.contact-ctas .mail-alt{border:1px solid rgba(78,205,196,.3);color:var(--teal)}
-.contact-ctas .mail-alt:hover{background:rgba(78,205,196,.08)}
+.contact-ctas .glass-btn{padding:14px 28px}
 .section .sec-note{margin-top:22px;font-size:12.5px;color:var(--text3)}
 .sections .section:last-of-type{padding-bottom:96px}
 @media(max-width:720px){.section{padding:64px 20px 20px}#site-nav{padding:10px 14px}#site-nav .nav-links{gap:2px 12px}#site-nav .nav-links a{font-size:10px;letter-spacing:1.3px}#site-nav .nav-brand span{display:none}}
 /* responsive */
-@media(max-width:720px){.hero-inner{max-width:92%}.hero-stage{padding:0 0 28px}.hero-value{margin-bottom:24px;font-size:15px}.hero-actions{gap:10px;margin-top:26px}#hero .enter-btn{width:100%;max-width:320px;min-height:44px;padding:12px 18px;font-size:11px}.hero-telemetry{max-width:360px}#hero .memorial{margin-bottom:24px}}
+@media(max-width:720px){.hero-inner{max-width:92%}.hero-stage{padding:0 0 28px}.hero-value{margin-bottom:24px;font-size:15px}.hero-actions{gap:10px;margin-top:26px}#hero .hero-actions .glass-btn{width:100%;max-width:320px;padding:12px 18px;font-size:11px}.hero-telemetry{max-width:360px}#hero .memorial{margin-bottom:24px}}
 @media(max-height:780px) and (min-width:721px){.hero-stage{padding-bottom:8px}#hero h1{font-size:clamp(34px,4.25vw,50px);margin-bottom:6px}.hero-value{margin-bottom:22px;line-height:1.45}.hero-actions{gap:8px;margin-top:18px}#hero .memorial{margin-bottom:10px}#hero .cc-label{margin-bottom:10px}#hero .cc-value{font-size:clamp(66px,11vw,132px)}#hero .cc-explainer{margin-top:14px;font-size:clamp(15px,1.7vw,19px)}}
 @media(max-width:900px),(orientation:portrait) and (max-width:1100px){body.globe-mode #topbar{padding:10px 12px 8px;background:linear-gradient(180deg,rgba(5,5,9,.96) 0%,rgba(5,5,9,.78) 64%,rgba(5,5,9,0) 100%)}body.globe-mode #topbar .logo{gap:8px;font-size:15px;letter-spacing:1px}body.globe-mode #topbar .brand-subtitle,body.globe-mode #topbar .brand-sep{display:none}body.globe-mode #topbar .stats{gap:8px}body.globe-mode #topbar .stat-block{display:none}.cc-topbar{max-width:168px}}
-@media(prefers-reduced-motion:reduce){#hero *,#hero *::before,#hero *::after{animation:none!important;transition:none!important}#hero .enter-btn:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){#hero *,#hero *::before,#hero *::after{animation:none!important;transition:none!important}.glass-btn{transition:--arm-w .4s ease,--arm-h .4s ease,--cc .3s ease}.glass-btn:hover,.glass-btn:focus-visible{transform:none}}
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v7">
+<link rel="stylesheet" href="css/globe-system.css?v=v8">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v1" media="print" onload="this.media='all'">
@@ -454,8 +454,8 @@ body.globe-mode #site-nav{display:none}
 
       <!-- Primary action: the globe is the door -->
       <div class="hero-actions" aria-label="Arrival actions">
-        <button class="enter-btn" data-action="enterGlobe">Enter the Living Globe</button>
-        <a class="ghost-btn" href="#about">Explore the Foundation ↓</a>
+        <button class="enter-btn glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
+        <a class="ghost-btn glass-btn" href="#about">Explore the Foundation ↓</a>
       </div>
     </div>
 
@@ -553,13 +553,13 @@ body.globe-mode #site-nav{display:none}
         <div class="card-tag">Carbon Markets</div>
         <h3>Access the Best. For the Best.</h3>
         <p>Curated, verified carbon credits and consultancy for buyers who demand integrity.</p>
-        <a class="card-cta" href="#carbon">Learn more</a>
+        <a class="card-cta glass-btn" href="#carbon">Learn more</a>
       </div>
       <div class="card">
         <div class="card-tag">Climate Innovation &amp; Research</div>
         <h3>Grounded in data. Powered by purpose. Built for a cooler planet.</h3>
         <p>Our research now lives as an open instrument: a living globe of country pledges vs reality, with a carbon clock that never stops.</p>
-        <button class="card-cta" data-action="enterGlobe">Enter the Living Globe</button>
+        <button class="card-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
       </div>
     </div>
   </section>
@@ -589,7 +589,7 @@ body.globe-mode #site-nav{display:none}
         <p>Nature absorbs roughly 22 GtCO₂ a year; humanity emits roughly 42. The clock at the top of this page counts the gap — it has not stopped once since you arrived.</p>
       </div>
     </div>
-    <button class="card-cta big-cta" data-action="enterGlobe">Enter the Living Globe</button>
+    <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
     <p class="data-note">The pledge layer is versioned JSON, validated against a schema on every load — <a href="data/pledge-nodes.json">inspect the raw data</a> yourself.</p>
   </section>
 
@@ -620,7 +620,7 @@ body.globe-mode #site-nav{display:none}
     </ul>
     <div class="talk-row">
       <span class="talk-line">You didn’t come this far to stop.</span>
-      <a class="card-cta" href="mailto:Carbon@earthloveunited.org">Let’s talk — send us an email</a>
+      <a class="card-cta glass-btn" href="mailto:Carbon@earthloveunited.org">Let’s talk — send us an email</a>
     </div>
   </section>
 
@@ -648,12 +648,12 @@ body.globe-mode #site-nav{display:none}
       <div class="card">
         <div class="card-tag">Open Source</div>
         <p>The entire site is readable classic scripts — no build step, no minified mystery. Every line is public and inspectable.</p>
-        <a class="card-cta" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Read the source</a>
+        <a class="card-cta glass-btn" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Read the source</a>
       </div>
       <div class="card">
         <div class="card-tag">Open Data</div>
         <p>The globe's pledge layer ships as versioned JSON with a declared schema — country, target, baseline, emissions, finance. No number appears on the globe that is not in this file.</p>
-        <a class="card-cta" href="data/pledge-nodes.json">Inspect the data</a>
+        <a class="card-cta glass-btn" href="data/pledge-nodes.json">Inspect the data</a>
       </div>
       <div class="card">
         <div class="card-tag">Auditable Claims</div>
@@ -717,7 +717,7 @@ body.globe-mode #site-nav{display:none}
     <h2 id="support-h">Support the Foundation</h2>
     <p class="sec-lead">Earth Love United is volunteer-powered and independent. We are designing our donation infrastructure in the open — deliberately, because how a climate foundation handles money is itself a climate claim. Until those rails are live, support starts with a conversation.</p>
     <div class="contact-ctas">
-      <a class="mail-main" href="mailto:info@earthloveunited.org?subject=Supporting%20Earth%20Love%20United">Talk to us about supporting ELU</a>
+      <a class="mail-main glass-btn" href="mailto:info@earthloveunited.org?subject=Supporting%20Earth%20Love%20United">Talk to us about supporting ELU</a>
     </div>
     <p class="sec-note">Time and expertise count as much as funding — researchers, ecologists, and engineers have shaped this foundation from the start.</p>
   </section>
@@ -728,8 +728,8 @@ body.globe-mode #site-nav{display:none}
     <h2 id="contact-h">Get in Touch</h2>
     <p class="sec-lead">Whether you are a buyer, researcher, partner organization, or volunteer — write to us. We read everything.</p>
     <div class="contact-ctas">
-      <a class="mail-main" href="mailto:info@earthloveunited.org">info@earthloveunited.org</a>
-      <a class="mail-alt" href="mailto:Carbon@earthloveunited.org">Carbon desk</a>
+      <a class="mail-main glass-btn" href="mailto:info@earthloveunited.org">info@earthloveunited.org</a>
+      <a class="mail-alt glass-btn" href="mailto:Carbon@earthloveunited.org">Carbon desk</a>
     </div>
     <p class="sec-note">Earth Love United is volunteer-powered. If you want to contribute — from ecology to code — the door is open.</p>
   </section>
@@ -831,10 +831,13 @@ body.globe-mode #site-nav{display:none}
     var m = document.querySelector('meta[name="theme-color"]');
     if (m) m.setAttribute('content', themeColor[theme] || themeColor.dark);
   }
+  function syncBodyTheme(theme) { document.body.dataset.theme = theme; }
   syncMeta(document.documentElement.dataset.theme);
+  syncBodyTheme(document.documentElement.dataset.theme);
   function toggleTheme() {
     var next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = next;
+    syncBodyTheme(next);
     try { localStorage.setItem('elu-theme', next); } catch (e) {}
     syncMeta(next);
     if (hasModule('GlobeModule')) safeCall('GlobeModule', 'setTheme', next);
@@ -868,8 +871,8 @@ body.globe-mode #site-nav{display:none}
     <span data-globe-loading-message>Preparing the living globe</span>
   </div>
 </div>
-<button id="globe-back-btn" onclick="exitGlobe()" aria-label="Back to Foundation">
-  ← Back to Foundation
+<button id="globe-back-btn" class="glass-btn" onclick="exitGlobe()" aria-label="Return to the Foundation">
+  ← Return to the Foundation
 </button>
 
 <!-- Service Worker registration — deferred to window load -->
@@ -882,7 +885,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=21').catch(function() {
+    navigator.serviceWorker.register('/sw.js?v=22').catch(function() {
       // SW registration failed — site still works without it
     });
   });
