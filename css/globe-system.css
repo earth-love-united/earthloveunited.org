@@ -65,7 +65,7 @@ body.globe-mode[data-theme="light"] {
   --hud-trajectory-bg: rgba(31, 94, 70, .04);
   --hud-grid: rgba(31, 94, 70, .15);
   --hud-today: rgba(32, 48, 42, .34);
-  color-scheme: light;
+  color-scheme: only light;
 }
 
 html[data-theme="light"] body.globe-mode #globeViz {

@@ -1,9 +1,9 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Version bump (v23) — keep HTML and release CSS/JS on the same deployment.
+ * Version bump (v24) — Chrome-safe light HUD compositing release.
  */
-const CACHE_NAME = 'elu-v23';
+const CACHE_NAME = 'elu-v24';
 const STATIC_ASSETS = [
   // HTML
   '/',
