@@ -65,6 +65,15 @@
   text-shadow: 0 0 24px rgba(196, 92, 74, 0.26);
 }
 
+/* Light mode should feel restorative rather than alarm-like. Keep the dark
+   clock's terracotta urgency, but let the daylight number carry a soft leaf
+   shadow drawn from the positive design token. */
+html[data-theme="light"] #hero .cc-value {
+  text-shadow:
+    0 4px 24px rgba(63, 125, 84, 0.16),
+    0 0 12px rgba(63, 125, 84, 0.10);
+}
+
 .cc-unit {
   transform: translateY(-0.08em);
   color: var(--warn);
