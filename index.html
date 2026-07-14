@@ -310,6 +310,8 @@ body.globe-mode #site-nav{display:none}
 .card h3{font-family:var(--display);font-size:23px;font-weight:400;color:var(--text);letter-spacing:.6px;margin-bottom:8px}
 .card p{color:var(--text2);font-size:14px;line-height:1.65}
 .card .card-cta{margin-top:18px;padding:11px 22px;font-size:11px}
+.card .card-link{display:inline-flex;align-items:center;margin-top:18px;color:var(--teal);font-family:var(--body);font-size:12px;font-weight:500;letter-spacing:.3px;text-decoration:none}
+.card .card-link:hover,.card .card-link:focus-visible{color:var(--mint);text-decoration:underline;text-underline-offset:4px;outline:none}
 .why-list{list-style:none;margin-top:20px;display:grid;gap:10px;max-width:840px}
 .why-list li{position:relative;padding:14px 16px 14px 40px;border:1px solid rgba(78,205,196,.12);border-radius:10px;background:rgba(255,255,255,.02);color:var(--text2);font-size:14px;line-height:1.55}
 .why-list li::before{content:'◆';position:absolute;left:16px;top:14px;color:var(--teal);font-size:11px}
@@ -402,8 +404,7 @@ body.globe-mode #site-nav{display:none}
     <a href="#carbon">Carbon</a>
     <a href="#team">Team</a>
     <a href="#tribute">Tribute</a>
-    <a href="#support">Support</a>
-    <a href="#contact">Contact</a>
+    <a href="#contact">Support &amp; Contact</a>
     <button id="theme-toggle" aria-label="Toggle light / dark theme" title="Toggle theme">
       <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg>
       <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.4 14.2A8.4 8.4 0 0 1 9.8 3.6a8.4 8.4 0 1 0 10.6 10.6z"/></svg>
@@ -507,7 +508,7 @@ body.globe-mode #site-nav{display:none}
   <section class="section" id="about" aria-labelledby="about-h">
     <div class="sec-kicker">Who we are</div>
     <h2 id="about-h">A Short Story About Us</h2>
-    <p class="sec-lead">Earth Love United Foundation (ELU) is a global nonprofit organization established in 2020, dedicated to promoting environmental justice and driving climate action through innovative, nature-based solutions. Our mission is to reconnect humanity with the Earth, emphasizing sustainable living and ecological balance.</p>
+    <p class="sec-lead">Founded in 2020, Earth Love United connects researchers, communities, and buyers around practical nature-based climate work. We pair open evidence with on-the-ground relationships—from restoration research to higher-integrity carbon procurement.</p>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Mission</div>
@@ -553,13 +554,13 @@ body.globe-mode #site-nav{display:none}
         <div class="card-tag">Carbon Markets</div>
         <h3>Access the Best. For the Best.</h3>
         <p>Curated, verified carbon credits and consultancy for buyers who demand integrity.</p>
-        <a class="card-cta glass-btn" href="#carbon">Learn more</a>
+        <a class="card-link" href="#carbon">Learn more →</a>
       </div>
       <div class="card">
         <div class="card-tag">Climate Innovation &amp; Research</div>
         <h3>Grounded in data. Powered by purpose. Built for a cooler planet.</h3>
-        <p>Our research now lives as an open instrument: a living globe of country pledges vs reality, with a carbon clock that never stops.</p>
-        <button class="card-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
+        <p>Our research now lives as an open instrument: a living atlas of country pledges, emissions pathways, and restoration context.</p>
+        <a class="card-link" href="#globe">Explore the atlas →</a>
       </div>
     </div>
   </section>
@@ -584,13 +585,8 @@ body.globe-mode #site-nav{display:none}
         <div class="card-tag">Country Cards</div>
         <p>Tap a country for its full record: emissions and per-capita footprint, momentum, climate finance, the official pledge summary in plain words, and an independent rating where one exists.</p>
       </div>
-      <div class="card">
-        <div class="card-tag">The Carbon Clock</div>
-        <p>Nature absorbs roughly 22 GtCO₂ a year; humanity emits roughly 42. The clock at the top of this page counts the gap — it has not stopped once since you arrived.</p>
-      </div>
     </div>
     <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
-    <p class="data-note">The pledge layer is versioned JSON, validated against a schema on every load — <a href="data/pledge-nodes.json">inspect the raw data</a> yourself.</p>
   </section>
 
   <!-- ── CARBON CREDITS & CONSULTANCY ── -->
@@ -711,27 +707,17 @@ body.globe-mode #site-nav{display:none}
     </div>
   </section>
 
-  <!-- ── SUPPORT ── -->
-  <section class="section" id="support" aria-labelledby="support-h">
-    <div class="sec-kicker">Support</div>
-    <h2 id="support-h">Support the Foundation</h2>
-    <p class="sec-lead">Earth Love United is volunteer-powered and independent. We are designing our donation infrastructure in the open — deliberately, because how a climate foundation handles money is itself a climate claim. Until those rails are live, support starts with a conversation.</p>
-    <div class="contact-ctas">
-      <a class="mail-main glass-btn" href="mailto:info@earthloveunited.org?subject=Supporting%20Earth%20Love%20United">Talk to us about supporting ELU</a>
-    </div>
-    <p class="sec-note">Time and expertise count as much as funding — researchers, ecologists, and engineers have shaped this foundation from the start.</p>
-  </section>
-
-  <!-- ── CONTACT ── -->
+  <!-- ── SUPPORT & CONTACT ── -->
   <section class="section" id="contact" aria-labelledby="contact-h">
-    <div class="sec-kicker">Contact</div>
-    <h2 id="contact-h">Get in Touch</h2>
-    <p class="sec-lead">Whether you are a buyer, researcher, partner organization, or volunteer — write to us. We read everything.</p>
+    <span id="support" aria-hidden="true"></span>
+    <div class="sec-kicker">Support &amp; contact</div>
+    <h2 id="contact-h">Talk with the Foundation</h2>
+    <p class="sec-lead">Whether you are a buyer, researcher, partner organization, volunteer, or prospective supporter—write to us. We are volunteer-powered and independent; support starts with a conversation.</p>
     <div class="contact-ctas">
-      <a class="mail-main glass-btn" href="mailto:info@earthloveunited.org">info@earthloveunited.org</a>
+      <a class="mail-main glass-btn" href="mailto:info@earthloveunited.org?subject=Supporting%20Earth%20Love%20United">Talk to us about ELU</a>
       <a class="mail-alt glass-btn" href="mailto:Carbon@earthloveunited.org">Carbon desk</a>
     </div>
-    <p class="sec-note">Earth Love United is volunteer-powered. If you want to contribute — from ecology to code — the door is open.</p>
+    <p class="sec-note">Time and expertise count as much as funding—from ecology to code, the door is open.</p>
   </section>
 
   <div class="footer">
@@ -761,9 +747,8 @@ body.globe-mode #site-nav{display:none}
       <a href="#partners">Partners</a>
       <a href="#team">Team</a>
       <a href="#tribute">Tribute</a>
-      <a href="#support">Support</a>
+      <a href="#contact">Support &amp; Contact</a>
       <a href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Source</a>
-      <a href="mailto:info@earthloveunited.org">Contact</a>
     </div>
     <div class="footer-copy">© 2026 Earth Love United Foundation · earthloveunited.org</div>
   </div>
