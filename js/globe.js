@@ -232,12 +232,14 @@ const GLOBE_THEME_CONFIG = Object.freeze({
     backgroundImage: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png',
     backgroundColor: '#050509',
     atmosphere: '#4ecdc4',
+    atmosphereAltitude: 0.25,
   }),
   light: Object.freeze({
     surface: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg',
-    backgroundImage: null,
+    backgroundImage: '/assets/globe/light-atmosphere.png?v=v2',
     backgroundColor: '#dfe9e3',
-    atmosphere: '#1f5e46',
+    atmosphere: '#2fa77f',
+    atmosphereAltitude: 0.33,
   }),
 });
 
@@ -457,7 +459,7 @@ const GlobeModule = {
       .bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
       .backgroundImageUrl(themeConfig.backgroundImage)
       .backgroundColor(themeConfig.backgroundColor)
-      .showAtmosphere(!this.isMobile).atmosphereColor(themeConfig.atmosphere).atmosphereAltitude(0.25)
+      .showAtmosphere(!this.isMobile).atmosphereColor(themeConfig.atmosphere).atmosphereAltitude(themeConfig.atmosphereAltitude)
       .pointsData(Data.sites || [])
       .pointLat('lat').pointLng('lng').pointAltitude(0.01).pointRadius(0.6)
       .pointColor(() => '#4ecdc4').pointResolution(this.isMobile ? 8 : 16)
@@ -806,7 +808,8 @@ const GlobeModule = {
       .globeImageUrl(themeConfig.surface)
       .backgroundImageUrl(themeConfig.backgroundImage)
       .backgroundColor(themeConfig.backgroundColor)
-      .atmosphereColor(themeConfig.atmosphere);
+      .atmosphereColor(themeConfig.atmosphere)
+      .atmosphereAltitude(themeConfig.atmosphereAltitude);
     return true;
   },
 

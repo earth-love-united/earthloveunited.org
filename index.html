@@ -373,7 +373,7 @@ body.globe-mode #site-nav{display:none}
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v10">
+<link rel="stylesheet" href="css/globe-system.css?v=v11">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v1" media="print" onload="this.media='all'">
@@ -779,7 +779,7 @@ body.globe-mode #site-nav{display:none}
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v1"></script>
-<script src="js/globe.js?v=v4"></script>
+<script src="js/globe.js?v=v5"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/app.js?v=v2"></script>
 
@@ -885,7 +885,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=24', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=25', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it
