@@ -1,9 +1,9 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Version bump (v23) — keep HTML and release CSS/JS on the same deployment.
+ * Version bump (v25) — light atmospheric background and globe halo.
  */
-const CACHE_NAME = 'elu-v23';
+const CACHE_NAME = 'elu-v25';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -11,6 +11,7 @@ const STATIC_ASSETS = [
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css',
   '/css/globe-system.css',
+  '/assets/globe/light-atmosphere.png?v=v2',
   // JS — v1 core
   '/js/gaia-utils.js',
   '/js/module-contracts.js',

@@ -65,11 +65,13 @@ body.globe-mode[data-theme="light"] {
   --hud-trajectory-bg: rgba(31, 94, 70, .04);
   --hud-grid: rgba(31, 94, 70, .15);
   --hud-today: rgba(32, 48, 42, .34);
-  color-scheme: light;
+  color-scheme: only light;
 }
 
 html[data-theme="light"] body.globe-mode #globeViz {
-  background: #dfe9e3;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(98, 203, 177, .28), transparent 42%),
+    radial-gradient(circle at 50% 42%, #f8f5eb, #dfe9e3 58%, #c4d7d0);
 }
 
 html[data-theme="light"] body.globe-mode #topbar {
