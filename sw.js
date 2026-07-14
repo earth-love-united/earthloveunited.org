@@ -1,9 +1,9 @@
 /**
  * Service Worker — Earth Love United
- * Cache-first for static assets, network-first for HTML and data.
- * Version bump (v22) — glass-button fidelity and synchronized light HUD release.
+ * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
+ * Version bump (v23) — keep HTML and release CSS/JS on the same deployment.
  */
-const CACHE_NAME = 'elu-v22';
+const CACHE_NAME = 'elu-v23';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -72,14 +72,15 @@ self.addEventListener('fetch', (event) => {
 
   // HTML documents should update immediately, with cached fallback offline.
   if (request.headers.get('accept')?.includes('text/html')) {
-    event.respondWith(networkFirst(request));
+    event.respondWith(networkFirst(request, true));
     return;
   }
 
-  // JS/CSS should update immediately too; stale scripts caused old modules to run.
+  // JS/CSS should update immediately too. Bypass the browser HTTP cache here:
+  // a deployment can otherwise pair fresh HTML with an older same-URL asset.
   if (request.destination === 'script' || request.destination === 'style' ||
       url.pathname.endsWith('.js') || url.pathname.endsWith('.css')) {
-    event.respondWith(networkFirst(request));
+    event.respondWith(networkFirst(request, true));
     return;
   }
 
@@ -106,9 +107,12 @@ async function cacheFirst(request) {
   }
 }
 
-async function networkFirst(request) {
+async function networkFirst(request, bypassHttpCache = false) {
   try {
-    const response = await fetch(request);
+    const networkRequest = bypassHttpCache
+      ? new Request(request, { cache: 'no-store' })
+      : request;
+    const response = await fetch(networkRequest);
     if (response.ok) {
       const cache = await caches.open(CACHE_NAME);
       cache.put(request, response.clone());
