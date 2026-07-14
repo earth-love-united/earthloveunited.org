@@ -139,10 +139,45 @@ function _getCountryDisplayData(feature) {
     onTrack: null,
     catRating: 'No pledge dataset record',
     catScore: null,
-    lat: null,
-    lng: null,
+    lat: _isFiniteNumber(Number(props.__lat)) ? Number(props.__lat) : null,
+    lng: _isFiniteNumber(Number(props.__lng)) ? Number(props.__lng) : null,
     hasData: false,
   };
+}
+
+// Pledge records contain a deliberate country focus point. Countries without
+// a record still need to be navigable from the full atlas, so use the small
+// nation's injected point, a Natural Earth label point, or a lightweight
+// geometry centroid in that order.
+function _getCountryFocus(feature, data) {
+  if (_isFiniteNumber(data?.lat) && _isFiniteNumber(data?.lng)) {
+    return { lat: data.lat, lng: data.lng };
+  }
+
+  const props = feature?.properties || {};
+  const labelLat = Number(props.LABEL_Y ?? props.label_y ?? props.latitude);
+  const labelLng = Number(props.LABEL_X ?? props.label_x ?? props.longitude);
+  if (_isFiniteNumber(labelLat) && _isFiniteNumber(labelLng)) {
+    return { lat: labelLat, lng: labelLng };
+  }
+
+  const points = [];
+  const collect = value => {
+    if (!Array.isArray(value)) return;
+    if (typeof value[0] === 'number' && typeof value[1] === 'number') {
+      points.push(value);
+      return;
+    }
+    value.forEach(collect);
+  };
+  collect(feature?.geometry?.coordinates);
+  if (!points.length) return null;
+
+  const anchorLng = points[0][0];
+  const normalizedLngs = points.map(point => anchorLng + ((((point[0] - anchorLng) + 540) % 360) - 180));
+  const lng = normalizedLngs.reduce((sum, value) => sum + value, 0) / normalizedLngs.length;
+  const lat = points.reduce((sum, point) => sum + point[1], 0) / points.length;
+  return { lat, lng: ((lng + 540) % 360) - 180 };
 }
 
 function _escapeHtml(value) {
@@ -173,6 +208,28 @@ function _getCountryStatusClass(d) {
   return COUNTRY_STATUS_BADGE_CLASSES[_getCountryStatusKey(d)];
 }
 
+function _getCountryStatusAttr(d) {
+  const key = _getCountryStatusKey(d);
+  if (key === COUNTRY_STATUS.OVERSHOOTING) return 'over';
+  if (key === COUNTRY_STATUS.ON_TRACK) return 'on';
+  if (key === COUNTRY_STATUS.NO_TARGET) return 'notarget';
+  return 'nodata';
+}
+
+function _getCatClass(node) {
+  const rating = String(node?.cat_rating || '').toLowerCase();
+  if (rating.includes('critically')) return 'cat-crit';
+  if (rating.includes('highly')) return 'cat-high';
+  if (rating.includes('insufficient')) return 'cat-insuf';
+  if (rating.includes('almost')) return 'cat-almost';
+  if (rating.includes('compatible')) return 'cat-compat';
+  return 'cat-unknown';
+}
+
+function _globeThemeAccent(theme) {
+  return theme === 'light' ? '#1f5e46' : '#4ecdc4';
+}
+
 function _getCountryEmissionsClass(d) {
   if (!d?.hasData || !_isFiniteNumber(d.perCapita)) return 'No emissions class';
   if (d.perCapita < 2) return 'Low emissions';
@@ -182,8 +239,13 @@ function _getCountryEmissionsClass(d) {
 }
 
 function _getCountryProjectCount(feature) {
-  if (!feature || !Array.isArray(Data.sites)) return null;
+  if (!feature) return null;
   const countryIso = _resolveCountryIso(feature);
+  if (hasModule('Data') && typeof Data.getCarbonProjects === 'function') {
+    const projects = Data.getCarbonProjects(countryIso);
+    if (projects && Number.isFinite(projects.c)) return projects.c;
+  }
+  if (!hasModule('Data') || !Array.isArray(Data.sites)) return null;
   return Data.sites.filter(site => (
     site?.countryIso === countryIso || (
     !site?.countryIso &&
@@ -191,6 +253,122 @@ function _getCountryProjectCount(feature) {
     Number.isFinite(site?.lng) &&
     _pointInFeature(site.lng, site.lat, feature))
   )).length;
+}
+
+function _countryStatusToken(d) {
+  const key = _getCountryStatusKey(d);
+  if (key === COUNTRY_STATUS.OVERSHOOTING) return 'red';
+  if (key === COUNTRY_STATUS.ON_TRACK) return 'green';
+  if (key === COUNTRY_STATUS.NO_TARGET) return 'amber';
+  return 'neutral';
+}
+
+function _formatCountryGap(node) {
+  if (!node || !Number.isFinite(node.reality_gap_mt)) return '—';
+  const sign = node.reality_gap_mt > 0 ? '+' : '';
+  const magnitude = Math.abs(node.reality_gap_mt);
+  return sign + (hasModule('Data') ? Data.fmt(magnitude) : magnitude.toFixed(0));
+}
+
+function _countryShortCode(feature, country, iso) {
+  const props = feature?.properties || {};
+  const alpha2 = [props.ISO_A2, props.ISO_A2_EH]
+    .find(code => code && code !== '-99');
+  if (alpha2) return String(alpha2).toUpperCase();
+
+  const words = String(country || '')
+    .trim()
+    .split(/\s+/)
+    .filter(word => word && !/^(and|of|the)$/i.test(word));
+  if (words.length > 1) return words.slice(0, 2).map(word => word[0]).join('').toUpperCase();
+  if (words[0]) return words[0].slice(0, 2).toUpperCase();
+  return String(iso || '').slice(0, 2).toUpperCase();
+}
+
+function _trajectoryPath(values, min, max) {
+  const left = 0, width = 300, top = 4, height = 32;
+  const span = Math.max(1, max - min);
+  return values.map((value, index) => {
+    const x = left + (index / Math.max(1, values.length - 1)) * width;
+    const y = top + height - ((value - min) / span) * height;
+    return (index ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+  }).join(' ');
+}
+
+function _trajectoryPoint(values, index, min, max) {
+  const span = Math.max(1, max - min);
+  return {
+    x: ((index / Math.max(1, values.length - 1)) * 300).toFixed(1),
+    y: (4 + 32 - ((values[index] - min) / span) * 32).toFixed(1),
+  };
+}
+
+function _renderCountryTrajectory(node) {
+  const startYear = 2015;
+  const targetYear = Number(node?.target_year);
+  const momentum = Number(node?.momentum_cagr);
+  const total = Number(node?.total_co2_mt);
+  const target = Number(node?.implied_target_mt);
+  const targetRatio = Number.isFinite(target) && target > 0 && Number.isFinite(total) && total > 0
+    ? target / total
+    : (Number.isFinite(Number(node.reduction_pct)) && Number(node.reduction_pct) > 0
+      ? 1 - (Number(node.reduction_pct) / 100)
+      : null);
+  if (!Number.isFinite(targetYear) || targetYear <= startYear || !Number.isFinite(momentum)
+    || !Number.isFinite(targetRatio) || targetRatio <= 0) {
+    return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">Trajectory</span><span class="elu-trajectory-note">No target path</span></div><div class="elu-trajectory-empty">A comparable target trajectory is not available for this country yet.</div></div>';
+  }
+
+  const years = Math.max(1, Math.round(targetYear - startYear));
+  const points = 11;
+  const current = [];
+  const pledge = [];
+  const targetEnd = targetRatio * 100;
+  for (let i = 0; i < points; i++) {
+    const progress = i / Math.max(1, points - 1);
+    const elapsed = years * progress;
+    const modeled = 100 * Math.pow(Math.max(.05, 1 + momentum / 100), elapsed);
+    current.push(modeled);
+    pledge.push(100 + (targetEnd - 100) * progress);
+  }
+
+  const allValues = current.concat(pledge);
+  const min = Math.min.apply(null, allValues) - 5;
+  const max = Math.max.apply(null, allValues) + 5;
+  const statusToken = Number.isFinite(Number(node.reality_gap_mt))
+    ? (Number(node.reality_gap_mt) > 0 ? 'red' : 'green')
+    : 'amber';
+  const statusClass = 'is-' + statusToken;
+  const lastCurrent = current[current.length - 1];
+  const lastTarget = pledge[pledge.length - 1];
+  const markerIndex = Math.max(0, Math.min(points - 1, Math.round(((2025 - startYear) / years) * (points - 1))));
+  const marker = _trajectoryPoint(current, markerIndex, min, max);
+  const divergence = Number(node.divergence);
+  const since2015 = Number(node.change_since_2015);
+  const targetLabel = Number.isFinite(Number(node.reduction_pct)) && Number(node.reduction_pct) > 0
+    ? 'Target: −' + Number(node.reduction_pct).toFixed(0) + '% by ' + Math.round(targetYear)
+    : 'Target path';
+  const chips = [];
+  if (Number.isFinite(divergence)) chips.push('<span class="elu-trajectory-chip ' + (divergence > 0 ? 'is-red' : 'is-green') + '">Divergence ' + (divergence > 0 ? '+' : '') + divergence.toFixed(2) + '%/yr</span>');
+  if (Number.isFinite(since2015)) chips.push('<span class="elu-trajectory-chip ' + (since2015 > 0 ? 'is-red' : 'is-green') + '">Since 2015 ' + (since2015 > 0 ? '+' : '') + since2015.toFixed(1) + '%</span>');
+  chips.push('<span class="elu-trajectory-chip">' + targetLabel + '</span>');
+  chips.push('<span class="elu-trajectory-chip ' + (Number(node.on_track) === 1 || node.on_track === true ? 'is-green' : 'is-red') + '">' + (Number(node.on_track) === 1 || node.on_track === true ? '✓ On track' : '✗ Off track') + '</span>');
+
+  return '<div class="elu-trajectory">'
+    + '<div class="elu-trajectory-head"><span class="elu-trajectory-title">Emissions trajectory</span><span class="elu-trajectory-note">2015 → ' + Math.round(targetYear) + '</span></div>'
+    + '<svg viewBox="0 0 300 42" preserveAspectRatio="none" role="img" aria-label="Modeled current trend compared with the pledge trajectory">'
+    + '<line class="elu-trajectory-grid" x1="0" y1="4" x2="300" y2="4"></line>'
+    + '<line class="elu-trajectory-grid" x1="0" y1="20" x2="300" y2="20"></line>'
+    + '<line class="elu-trajectory-grid" x1="0" y1="36" x2="300" y2="36"></line>'
+    + '<line class="elu-trajectory-today" x1="' + marker.x + '" y1="4" x2="' + marker.x + '" y2="36"></line>'
+    + '<path class="elu-trajectory-target" vector-effect="non-scaling-stroke" d="' + _trajectoryPath(pledge, min, max) + '"></path>'
+    + '<path class="elu-trajectory-current ' + statusClass + '" vector-effect="non-scaling-stroke" d="' + _trajectoryPath(current, min, max) + '"></path>'
+    + '<circle class="elu-trajectory-marker ' + statusClass + '" vector-effect="non-scaling-stroke" cx="' + marker.x + '" cy="' + marker.y + '" r="2.4"></circle>'
+    + '</svg>'
+    + '<div class="elu-trajectory-years" aria-hidden="true"><span>2015</span><span>' + Math.round(targetYear) + '</span></div>'
+    + '<div class="elu-trajectory-legend"><span class="is-' + statusToken + '">Current trend ' + (lastCurrent >= lastTarget ? 'above' : 'below') + ' pledge path</span><span>Pledge path</span><span class="elu-trajectory-today-key">Today · 2025</span></div>'
+    + '<div class="elu-trajectory-chips">' + chips.join('') + '</div>'
+    + '</div>';
 }
 
 function _getCountryGaiaComment(d, projectCount) {
@@ -236,6 +414,11 @@ const GlobeModule = {
   _selectedCountryFeature: null,
   _countryDataState: 'idle',
   _countryDataError: null,
+  _countryDeck: [],
+  _rankRail: null,
+  _countryCardWrap: null,
+  _rankRailCollapsed: false,
+  _defaultCountrySelected: false,
 
   init() {
     // Guard: Globe constructor may not be loaded yet (lazy-loaded globe.gl.js)
@@ -257,7 +440,7 @@ const GlobeModule = {
       .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg')
       .bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
       .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
-      .showAtmosphere(!this.isMobile).atmosphereColor('#4ecdc4').atmosphereAltitude(0.25)
+      .showAtmosphere(!this.isMobile).atmosphereColor(_globeThemeAccent(document.documentElement?.dataset?.theme)).atmosphereAltitude(0.25)
       .pointsData(Data.sites || [])
       .pointLat('lat').pointLng('lng').pointAltitude(0.01).pointRadius(0.6)
       .pointColor(() => '#4ecdc4').pointResolution(this.isMobile ? 8 : 16)
@@ -325,6 +508,7 @@ const GlobeModule = {
     // safeChain returns a Proxy — unwrap to get the real Globe instance
     // (the Proxy target IS the Globe, so direct property access still works)
     console.log('[Globe] init — ' + (this.world.pointsData()?.length || 0) + ' points loaded');
+    if (hasModule('EventBus')) EventBus.emit('globe:render-ready', { timestamp: Date.now() });
 
     // ── Pledge vs Reality country nodes ──
     // v1: point layer disabled — the bare countries globe carries pledge data
@@ -349,6 +533,8 @@ const GlobeModule = {
         // point-in-polygon scan (it iterates back-to-front).
         this._appendSmallNationFeatures();
         this._countryDataState = 'ready';
+        this._buildCountryDeck();
+        this._renderRankRail();
         // Only build the H3 hex layer when the solid polygon-border layer is
         // NOT available (old globe.gl builds). Building world-wide hexes just
         // to clear them two calls later (applyCountryHexColors) blocked the
@@ -477,12 +663,7 @@ const GlobeModule = {
           }
           const d = _getCountryDisplayData(feature);
           if (!d) return;
-          this._selectedCountryFeature = feature;
-          this._countryHoverFeature = feature;
-          this._renderCountryInfoCard(feature, true);
-          this._positionCountryInfoCard(e);
-          this._refreshCountryBorders();
-          this._showCountryProjects(_resolveCountryIso(feature));
+          this._selectCountryFeature(feature, { focus: true, event: e });
         };
 
         // Attach to the globe canvas
@@ -493,11 +674,20 @@ const GlobeModule = {
           this._canvasEl.addEventListener('click', this._onCanvasClick);
         }
 
+        this.selectDefaultCountry();
+
         // Notify mode modules that country data are ready
         safeCall('GLOBE_MODES', 'onCountryDataReady');
+        if (hasModule('EventBus')) {
+          EventBus.emit('globe:country-data-ready', {
+            featureCount: this._countryFeatures.length,
+            deckCount: this._countryDeck.length,
+          });
+        }
       })
       .catch(e => {
         this._handleCountryGeoJsonFailure(e);
+        if (hasModule('EventBus')) EventBus.emit('globe:data-error', { message: 'Country layer unavailable' });
       });
 
     // ── Hex country tooltip mouse tracking ──
@@ -590,6 +780,12 @@ const GlobeModule = {
     // v1: pledge point tooltip disabled along with initPledgeNodes() — the
     // country tooltip (#hex-country-tooltip) covers pledge data instead.
     // this._initPledgeTooltip();
+  },
+
+  setTheme(theme) {
+    if (!this.world) return false;
+    safeChain(this.world, 'Globe.theme').atmosphereColor(_globeThemeAccent(theme));
+    return true;
   },
 
   // ── Pledge nodes layer ──
@@ -742,6 +938,166 @@ const GlobeModule = {
     return 0.003 + t * 0.022;
   },
 
+  // ── ELU 0.7 country deck + ranked rail ──
+  // The production data order is intentionally left untouched. The HUD gets
+  // its own view of the complete mapped atlas: measurable gaps first, then
+  // pledge records without a target, then countries awaiting pledge data.
+  _buildCountryDeck() {
+    const featureByIso = this._featureByIso || {};
+    const entries = Object.keys(featureByIso)
+      .filter(iso => iso && iso !== 'UNK' && iso !== '-99' && iso !== 'ATA')
+      .map(iso => {
+        const feature = featureByIso[iso];
+        const data = _getCountryDisplayData(feature);
+        const node = hasModule('Data') && typeof Data.getPledgeNode === 'function'
+          ? Data.getPledgeNode(iso)
+          : null;
+        const country = data?.country || iso;
+        return {
+          iso,
+          feature,
+          data,
+          node,
+          country,
+          shortCode: _countryShortCode(feature, country, iso),
+        };
+      })
+      .filter(entry => entry.feature && entry.data);
+    const ranked = entries
+      .filter(entry => Number.isFinite(entry.node?.reality_gap_mt))
+      .sort((a, b) => b.node.reality_gap_mt - a.node.reality_gap_mt);
+    const noTarget = entries
+      .filter(entry => entry.data.hasData && !Number.isFinite(entry.node?.reality_gap_mt))
+      .sort((a, b) => String(a.country).localeCompare(String(b.country)));
+    const missing = entries
+      .filter(entry => !entry.data.hasData)
+      .sort((a, b) => String(a.country).localeCompare(String(b.country)));
+    this._countryDeck = ranked.concat(noTarget, missing);
+  },
+
+  _renderRankRail() {
+    if (!document.body || !this._countryDeck.length) return;
+    const previous = $('elu-country-rank-rail');
+    if (previous) previous.remove();
+
+    const rail = document.createElement('aside');
+    rail.id = 'elu-country-rank-rail';
+    rail.setAttribute('aria-label', 'Country reality gap ranking');
+    rail.innerHTML = '<div class="elu-rank-head">'
+      + '<div><div class="elu-rank-title">Reality gap</div><div class="elu-rank-subtitle">Gap first · ' + this._countryDeck.length + ' mapped countries</div></div>'
+      + '<button type="button" class="elu-rank-toggle" data-rank-toggle aria-label="Collapse country ranking">−</button>'
+      + '</div><div class="elu-rank-list">'
+      + this._countryDeck.map((entry, index) => {
+        const node = entry.node;
+        const token = _countryStatusToken(entry.data);
+        const gap = _formatCountryGap(node);
+        const summary = entry.data.hasData ? 'gap ' + gap : 'no pledge data';
+        return '<button type="button" class="elu-rank-row" data-country-rail-iso="' + _escapeHtml(entry.iso) + '" aria-label="Open ' + _escapeHtml(entry.country) + ', ' + _escapeHtml(summary) + '">'
+          + '<span class="elu-rank-number">' + String(index + 1).padStart(2, '0') + '</span>'
+          + '<span class="elu-rank-dot is-' + token + '" aria-hidden="true"></span>'
+          + '<span class="elu-rank-name">' + _escapeHtml(entry.country) + '</span>'
+          + '<span class="elu-rank-code" aria-hidden="true">' + _escapeHtml(entry.shortCode) + '</span>'
+          + '<span class="elu-rank-gap">' + _escapeHtml(gap) + '</span>'
+          + '</button>';
+      }).join('')
+      + '</div>';
+
+    rail.addEventListener('click', event => {
+      const toggle = event.target.closest('[data-rank-toggle]');
+      if (toggle) {
+        this._rankRailCollapsed = !this._rankRailCollapsed;
+        rail.classList.toggle('is-collapsed', this._rankRailCollapsed);
+        toggle.textContent = this._rankRailCollapsed ? '+' : '−';
+        toggle.setAttribute('aria-label', this._rankRailCollapsed ? 'Expand country ranking' : 'Collapse country ranking');
+        return;
+      }
+      const row = event.target.closest('[data-country-rail-iso]');
+      if (!row) return;
+      const feature = this._featureByIso?.[row.getAttribute('data-country-rail-iso')];
+      if (feature) this._selectCountryFeature(feature, { focus: true });
+    });
+
+    document.body.appendChild(rail);
+    this._rankRail = rail;
+    this._updateRankRail();
+  },
+
+  _updateRankRail() {
+    if (!this._rankRail) return;
+    const activeIso = this._selectedCountryFeature ? _resolveCountryIso(this._selectedCountryFeature) : '';
+    this._rankRail.querySelectorAll('[data-country-rail-iso]').forEach(row => {
+      const active = row.getAttribute('data-country-rail-iso') === activeIso;
+      row.classList.toggle('is-active', active);
+      if (active) row.setAttribute('aria-current', 'true');
+      else row.removeAttribute('aria-current');
+    });
+  },
+
+  _ensureCountryCardWrap(tt) {
+    if (!tt || !document.body) return null;
+    let wrap = $('elu-country-card-wrap');
+    if (!wrap) {
+      wrap = document.createElement('div');
+      wrap.id = 'elu-country-card-wrap';
+      wrap.setAttribute('role', 'group');
+      wrap.setAttribute('aria-label', 'Country dashboard navigation');
+      wrap.innerHTML = '<button type="button" class="tt-nav tt-nav-prev" data-country-nav="-1" aria-label="Previous country" title="Previous country">◀</button>'
+        + '<button type="button" class="tt-nav tt-nav-next" data-country-nav="1" aria-label="Next country" title="Next country">▶</button>';
+      wrap.addEventListener('click', (event) => {
+        const nav = event.target.closest('[data-country-nav]');
+        if (!nav) return;
+        event.preventDefault();
+        event.stopPropagation();
+        this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
+      });
+      document.body.appendChild(wrap);
+    }
+    if (!wrap.contains(tt)) wrap.insertBefore(tt, wrap.querySelector('.tt-nav-next'));
+    this._countryCardWrap = wrap;
+    return wrap;
+  },
+
+  _unmountCountryCard() {
+    const tt = $('hex-country-tooltip');
+    const wrap = this._countryCardWrap || $('elu-country-card-wrap');
+    if (tt && wrap && wrap.contains(tt) && document.body) document.body.appendChild(tt);
+    if (wrap) wrap.remove();
+    this._countryCardWrap = null;
+  },
+
+  _selectCountryFeature(feature, opts = {}) {
+    const d = _getCountryDisplayData(feature);
+    if (!d) return;
+    this._selectedCountryFeature = feature;
+    this._countryHoverFeature = feature;
+    this._renderCountryInfoCard(feature, true);
+    if (opts.event) this._positionCountryInfoCard(opts.event);
+    else this._dockCountryCard();
+    this._refreshCountryBorders();
+    this._showCountryProjects(_resolveCountryIso(feature));
+    this._updateRankRail();
+
+    const focus = _getCountryFocus(feature, d);
+    if (this.world && focus) {
+      const pov = this.world.pointOfView();
+      this.world.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: pov?.altitude || 2.2 }, opts.focus ? 500 : 0);
+    }
+    const tt = $('hex-country-tooltip');
+    if (opts.focus && tt) {
+      tt.setAttribute('tabindex', '-1');
+      tt.focus({ preventScroll: true });
+    }
+    if (hasModule('EventBus')) EventBus.emit('globe:country-selected', { iso: d.iso, country: d.country });
+  },
+
+  selectDefaultCountry() {
+    if (this._selectedCountryFeature || this._defaultCountrySelected || !this._countryDeck.length) return;
+    const entry = this._countryDeck[0];
+    if (!entry?.feature) return;
+    this._defaultCountrySelected = true;
+    this._selectCountryFeature(entry.feature, { focus: false });
+  },
+
   _renderCountryInfoCard(feature, selected) {
     const d = _getCountryDisplayData(feature);
     if (!d) return;
@@ -879,11 +1235,18 @@ const GlobeModule = {
       : projectCount + ' site' + (projectCount === 1 ? '' : 's');
     const statusText = _getCountryStatusText(d);
     const statusClass = _getCountryStatusClass(d);
+    const statusAttr = _getCountryStatusAttr(d);
     const emissions = d.emissions ? d.emissions.toLocaleString() + ' MtCO₂/yr' : 'No emissions data';
     const perCapita = d.perCapita ? d.perCapita + ' t/person' : 'No per-person data';
     const comment = _getCountryGaiaComment(d, projectCount);
 
+    if (selected) this._ensureCountryCardWrap(tt);
+    else this._unmountCountryCard();
     tt.classList.toggle('selected', !!selected);
+    tt.dataset.status = statusAttr;
+    tt.setAttribute('role', selected ? 'region' : 'tooltip');
+    tt.setAttribute('aria-label', selected ? d.country + ' climate dashboard' : d.country + ' country summary');
+    if (!selected) tt.removeAttribute('tabindex');
 
     const watched = selected && this._getWatchlist().includes(d.iso);
     let html = '<div class="tt-topline">'
@@ -904,8 +1267,6 @@ const GlobeModule = {
     } else {
       // ── Pinned card: full pledge-vs-reality metrics ──
       html += this._renderCountryMetrics(d);
-      html += '<button type="button" class="tt-nav tt-nav-prev" data-country-nav="-1" aria-label="Previous country">◀</button>'
-        + '<button type="button" class="tt-nav tt-nav-next" data-country-nav="1" aria-label="Next country">▶</button>';
     }
 
     tt.innerHTML = html;
@@ -913,25 +1274,25 @@ const GlobeModule = {
   },
 
   // ── Card deck navigation (Bumble-style) ──
-  // Cycles Data.pledgeNodes order (emissions-ranked). Card stays where it
-  // was pinned; the globe flies to each country underneath.
+  // Cycles the v0.7 deck order. Card stays where it was pinned; the globe
+  // flies to each country underneath.
   navigateCountry(dir, opts = {}) {
     if (this._navBusy) return;
-    const nodes = (hasModule('Data') && Array.isArray(Data.pledgeNodes)) ? Data.pledgeNodes : [];
-    if (!nodes.length || !this._featureByIso) return;
+    const deck = Array.isArray(this._countryDeck) ? this._countryDeck : [];
+    if (!deck.length || !this._featureByIso) return;
     const cur = this._selectedCountryFeature;
     if (!cur) return;
 
     const curIso = _resolveCountryIso(cur);
-    const len = nodes.length;
-    let idx = nodes.findIndex(n => n.iso === curIso);
+    const len = deck.length;
+    let idx = deck.findIndex(entry => entry.iso === curIso);
+    if (idx < 0) idx = 0;
 
     // Find the next node that has a renderable feature
     let target = null;
     for (let step = 1; step <= len; step++) {
-      const cand = nodes[((idx + dir * step) % len + len) % len];
-      const f = this._featureByIso[cand.iso];
-      if (f) { target = { node: cand, feature: f }; break; }
+      const cand = deck[((idx + dir * step) % len + len) % len];
+      if (cand?.feature) { target = cand; break; }
     }
     if (!target) return;
 
@@ -948,12 +1309,15 @@ const GlobeModule = {
       this._renderCountryInfoCard(target.feature, true);
       this._dockCountryCard();
       this._refreshCountryBorders();
-      this._showCountryProjects(target.node.iso);
+      this._showCountryProjects(target.iso);
+      this._updateRankRail();
+      if (hasModule('EventBus')) EventBus.emit('globe:country-selected', { iso: target.iso, country: target.country });
 
       // Fly the globe to the new country, keeping the current zoom
       if (this.world) {
         const pov = this.world.pointOfView();
-        this.world.pointOfView({ lat: target.node.lat, lng: target.node.lng, altitude: pov.altitude }, 650);
+        const focus = _getCountryFocus(target.feature, target.data);
+        if (focus) this.world.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: pov.altitude }, 650);
       }
 
       if (tt) {
@@ -996,9 +1360,9 @@ const GlobeModule = {
 
     // CAT rating badge
     if (node.cat_rating) {
-      const c = node.globe_color || '#95a5a6';
-      html += '<div class="tt-cat" style="border-color:' + c + '55;background:' + c + '18">'
-        + '<span class="tt-cat-dot" style="background:' + c + '"></span>'
+      const catClass = _getCatClass(node);
+      html += '<div class="tt-cat ' + catClass + '" data-cat-rating="' + _escapeHtml(node.cat_rating) + '">'
+        + '<span class="tt-cat-dot" aria-hidden="true"></span>'
         + _escapeHtml(node.cat_rating) + ' <span class="tt-cat-src">· Climate Action Tracker</span></div>';
     }
 
@@ -1020,8 +1384,13 @@ const GlobeModule = {
       + '<div><span>t/person</span><strong>' + pc + '</strong></div>'
       + '</div>';
 
+    // Designer handoff: keep the pledge path legible without replacing the
+    // production metrics. The chart is explicitly modeled, not presented as
+    // a new data source.
+    html += _renderCountryTrajectory(node);
+
     // Momentum: actual vs required velocity
-    const mom = node.momentum_cagr, req = node.required_cagr, div = node.divergence;
+    const mom = node.momentum_cagr, req = node.required_cagr;
     if (typeof mom === 'number') {
       html += '<div class="tt-momentum">'
         + '<div class="' + (mom > 0 ? 'tt-red' : 'tt-green') + '"><span>Actual</span><strong>' + (mom > 0 ? '+' : '') + mom.toFixed(2) + '%/yr</strong></div>'
@@ -1029,22 +1398,7 @@ const GlobeModule = {
             ? '<em>vs</em><div class="tt-teal"><span>Required</span><strong>−' + req.toFixed(2) + '%/yr</strong></div>'
             : '')
         + '</div>';
-      if (typeof div === 'number' && div !== 0) {
-        html += '<div class="tt-divergence ' + (div > 0 ? 'tt-red' : 'tt-green') + '">Divergence: ' + (div > 0 ? '+' : '') + div.toFixed(2) + '%/yr</div>';
-      }
     }
-
-    // Chips: since 2015 · target · on/off track
-    const chips = [];
-    if (typeof node.change_since_2015 === 'number') {
-      chips.push('<span class="tt-chip ' + (node.change_since_2015 > 0 ? 'tt-red' : 'tt-green') + '">Since 2015: ' + (node.change_since_2015 > 0 ? '+' : '') + node.change_since_2015.toFixed(1) + '%</span>');
-    }
-    if (node.reduction_pct > 0) {
-      chips.push('<span class="tt-chip">Target: −' + node.reduction_pct + '% by ' + Math.round(node.target_year) + '</span>');
-    }
-    if (node.on_track === true) chips.push('<span class="tt-chip tt-green">✓ On track</span>');
-    else if (node.on_track === false) chips.push('<span class="tt-chip tt-red">✗ Off track</span>');
-    if (chips.length) html += '<div class="tt-chips">' + chips.join('') + '</div>';
 
     // Climate finance
     if (typeof node.finance_total_bn === 'number' && node.finance_total_bn > 0) {
@@ -1107,7 +1461,9 @@ const GlobeModule = {
     const fmt = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '—'
       : (hasModule('Data') ? Data.fmt(n) : String(n));
 
-    let html = '<div class="tt-ctg"><span class="tt-ctg-label">Close the gap</span>';
+    const gapIsFinite = typeof node.reality_gap_mt === 'number' && Number.isFinite(node.reality_gap_mt);
+    const gapHeading = gapIsFinite && node.reality_gap_mt <= 0 ? 'Extend the lead' : 'Close the gap';
+    let html = '<div class="tt-ctg"><span class="tt-ctg-label">' + gapHeading + '</span>';
 
     // Demand side: the pledge gap priced in credits
     const gap = node.reality_gap_mt;
@@ -1243,20 +1599,44 @@ const GlobeModule = {
   // the cursor as before.
   _dockCountryCard() {
     const tt = $('hex-country-tooltip');
-    if (!tt) return;
-    const w = tt.offsetWidth || 340;
-    const h = tt.offsetHeight || 320;
-    let x, y;
-    if (window.innerWidth <= 900) {
-      x = Math.max(14, (window.innerWidth - w) / 2);
-      y = 64; // just below the topbar
-    } else {
-      x = window.innerWidth - w - 28;
-      y = Math.max(80, Math.min((window.innerHeight - h) / 2, window.innerHeight - h - 24));
-    }
-    tt.style.left = x + 'px';
-    tt.style.top = y + 'px';
+    const wrap = this._countryCardWrap || $('elu-country-card-wrap');
+    if (!tt || !wrap) return;
+
+    wrap.style.position = 'fixed';
+    wrap.style.zIndex = '50';
+    wrap.style.right = '24px';
+    wrap.style.left = 'auto';
+    wrap.style.top = '64px';
+    wrap.style.bottom = '96px';
+    wrap.style.width = 'auto';
+    wrap.style.alignItems = 'center';
+    wrap.style.justifyContent = 'center';
+    wrap.style.pointerEvents = 'none';
+
+    // The tooltip is a fixed hover card when unselected, but becomes a normal
+    // flex child inside the dock wrapper when pinned.
+    tt.style.position = 'relative';
+    tt.style.zIndex = 'auto';
+    tt.style.left = 'auto';
+    tt.style.right = 'auto';
+    tt.style.top = 'auto';
+    tt.style.bottom = 'auto';
+    tt.style.width = '';
+    tt.style.maxHeight = '100%';
+    tt.style.overflowY = 'auto';
     tt.style.transform = 'none';
+
+    if (window.innerWidth <= 720) {
+      // The mobile HUD reserves a top band for the topbar and a bottom band
+      // for the return control, plus a left gutter for the ranked country rail.
+      // JS mirrors the CSS breakpoints because docking uses inline positioning.
+      const phoneRail = window.innerWidth <= 480;
+      wrap.style.left = phoneRail ? '64px' : '90px';
+      wrap.style.right = phoneRail ? '8px' : '10px';
+      wrap.style.top = '60px';
+      wrap.style.bottom = '78px';
+      wrap.style.alignItems = 'flex-end';
+    }
   },
 
   _positionCountryInfoCard(event) {
@@ -1491,13 +1871,19 @@ const GlobeModule = {
   clearCountrySelection() {
     this._selectedCountryFeature = null;
     this._countryHoverFeature = null;
+    this._defaultCountrySelected = false;
     const tt = $('hex-country-tooltip');
     if (tt) {
       if (tt.contains(document.activeElement)) document.activeElement.blur();
       tt.classList.remove('visible', 'selected');
+      tt.removeAttribute('tabindex');
+      delete tt.dataset.status;
     }
+    this._unmountCountryCard();
+    this._updateRankRail();
     this._clearCountryProjects();
     this._refreshCountryBorders();
+    if (hasModule('EventBus')) EventBus.emit('globe:country-closed', { timestamp: Date.now() });
   },
 
   // ── Toggle pledge node cylinders on/off ──
@@ -1854,6 +2240,18 @@ const GlobeModule = {
 
     // Nullify country features (large GeoJSON)
     this._countryFeatures = null;
+    this._countryDeck = [];
+    this._defaultCountrySelected = false;
+
+    if (this._rankRail) {
+      this._rankRail.remove();
+      this._rankRail = null;
+    }
+
+    this._unmountCountryCard();
+    const countryTooltip = $('hex-country-tooltip');
+    if (countryTooltip) countryTooltip.remove();
+    this._countryTooltipBound = false;
 
     // Nullify DOM references
     if (this._tooltip) {
@@ -1872,6 +2270,8 @@ const GlobeModule = {
       countryDataState: this._countryDataState,
       countryDataError: this._countryDataError,
       countryFeatureCount: this._countryFeatures?.length || 0,
+      countryDeckCount: this._countryDeck.length,
+      selectedCountryIso: this._selectedCountryFeature ? _resolveCountryIso(this._selectedCountryFeature) : null,
     };
   },
 };
@@ -2021,7 +2421,8 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['init', 'initPledgeNodes', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountryHexColors', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'togglePledgeNodes', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'setTheme', 'initPledgeNodes', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountryHexColors', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'togglePledgeNodes', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
     requires: ['Data'],
+    emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed'],
   });
 }

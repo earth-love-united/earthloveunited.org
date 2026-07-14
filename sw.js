@@ -1,16 +1,17 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for static assets, network-first for HTML and data.
- * Version bump (v13) — Close the Gap: per-country carbon project slice
- * (data/carbon-projects.json) + credit-market strip on country cards.
+ * Version bump (v19) — race-safe globe loader dismissal, responsive country rail, full atlas deck,
+ * crisp trajectory rendering, and the stable light-mode instrument bar.
  */
-const CACHE_NAME = 'elu-v13';
+const CACHE_NAME = 'elu-v19';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css',
+  '/css/globe-system.css',
   // JS — v1 core
   '/js/gaia-utils.js',
   '/js/module-contracts.js',

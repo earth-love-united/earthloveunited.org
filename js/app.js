@@ -9,6 +9,7 @@
 const App = {
   async init() {
     syncHeroScrollState();
+    _bindGlobeLoadingEvents();
 
     // ── Carbon Clock — zero data dependencies; must start BEFORE any network
     //    waits. On slow connections Data.init() can take seconds, and the hero
@@ -63,6 +64,7 @@ const App = {
     }
 
     this._bindStaticActions();
+
   },
 
   _bindStaticActions() {
@@ -100,25 +102,46 @@ const App = {
   },
 
   async enterGlobe() {
+    _setGlobeLoading(true, 'Preparing the living globe');
     document.body.classList.add('globe-mode');
     document.body.classList.remove('hero-active');
+    document.body.setAttribute('aria-busy', 'true');
     $('topbar')?.classList.add('visible');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     // Load globe.gl if not already loaded, then init GlobeModule
     if (!_globeGLLoaded && !_globeGLLoading) {
-      await loadGlobeGL().catch(() => reportWarn('App', 'globe.gl failed to load'));
+      await loadGlobeGL().catch(err => {
+        reportWarn('App', 'globe.gl failed to load');
+        _setGlobeLoading(true, 'The globe could not be loaded');
+        setTimeout(() => _setGlobeLoading(false), 1800);
+        return err;
+      });
     }
     if (hasModule('GlobeModule') && !GlobeModule._initialized) {
       try { GlobeModule.init(); GlobeModule._initialized = true; } catch (err) { reportError('GlobeModule.init()', err); }
+    } else if (hasModule('GlobeModule')) {
+      safeCall('GlobeModule', 'selectDefaultCountry');
     }
+    // GlobeModule emits readiness during init. If someone enters while the
+    // application is still awaiting its bootstrap data, that event can precede
+    // the subscription. The rendered canvas is now present, so always close
+    // the HUD loader on the next paint as the final, race-safe handoff.
+    if (hasModule('GlobeModule') && GlobeModule._initialized) {
+      requestAnimationFrame(() => _setGlobeLoading(false));
+    }
+    if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { timestamp: Date.now() });
     document.addEventListener('keydown', _onGlobeKeyDown);
   },
 
   exitGlobe() {
+    _setGlobeLoading(false);
     document.body.classList.remove('globe-mode');
+    document.body.removeAttribute('aria-busy');
     $('topbar')?.classList.remove('visible');
+    safeCall('GlobeModule', 'clearCountrySelection');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     syncHeroScrollState();
+    if (hasModule('EventBus')) EventBus.emit('app:globe-exited', { timestamp: Date.now() });
     document.removeEventListener('keydown', _onGlobeKeyDown);
   },
 
@@ -144,6 +167,7 @@ function _onGlobeKeyDown(e) {
   if (e.key === 'Escape' && document.body.classList.contains('globe-mode')) {
     const countryTooltip = $('hex-country-tooltip');
     if (countryTooltip?.classList.contains('visible') && countryTooltip.classList.contains('selected')) {
+      safeCall('GlobeModule', 'clearCountrySelection');
       return;
     }
     App.exitGlobe();
@@ -157,6 +181,27 @@ function syncHeroScrollState() {
   } else {
     document.body.classList.remove('hero-active');
   }
+}
+
+function _setGlobeLoading(visible, message) {
+  const loader = $('globe-loading');
+  if (!loader) return;
+  const label = loader.querySelector('[data-globe-loading-message]');
+  if (label && message) label.textContent = message;
+  loader.classList.toggle('is-visible', !!visible);
+  loader.setAttribute('aria-hidden', visible ? 'false' : 'true');
+}
+
+let _globeLoadingEventsBound = false;
+function _bindGlobeLoadingEvents() {
+  if (_globeLoadingEventsBound || !hasModule('EventBus')) return;
+  _globeLoadingEventsBound = true;
+  EventBus.on('globe:render-ready', () => _setGlobeLoading(false));
+  EventBus.on('globe:country-data-ready', () => _setGlobeLoading(false));
+  EventBus.on('globe:data-error', payload => {
+    _setGlobeLoading(true, payload?.message || 'Country layer unavailable');
+    setTimeout(() => _setGlobeLoading(false), 1800);
+  });
 }
 
 // Lazy-load globe.gl — returns Promise that resolves when loaded
@@ -210,7 +255,7 @@ if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('App', {
     provides: ['init', 'enterGlobe', 'exitGlobe', 'reset', 'destroy', 'getState'],
     requires: ['MODULE_CONTRACTS', 'CARBON_CLOCK'],
-    emits: ['app:ready'],
-    listens: [],
+    emits: ['app:ready', 'app:globe-entered', 'app:globe-exited'],
+    listens: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error'],
   });
 }
