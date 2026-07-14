@@ -27,6 +27,7 @@ The earth surface, bump, specular, and night-sky textures used by globe.gl.
 - **Author:** Vasco Asturiano
 - **License:** MIT
 - **Assets used (loaded from jsdelivr CDN):**
+  - `earth-blue-marble.jpg`
   - `earth-night.jpg`
   - `earth-topology.png`
   - `earth-water.png`

@@ -1,10 +1,9 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for static assets, network-first for HTML and data.
- * Version bump (v19) — race-safe globe loader dismissal, responsive country rail, full atlas deck,
- * crisp trajectory rendering, and the stable light-mode instrument bar.
+ * Version bump (v20) — coherent foundation/globe themes and refreshed shell assets.
  */
-const CACHE_NAME = 'elu-v19';
+const CACHE_NAME = 'elu-v20';
 const STATIC_ASSETS = [
   // HTML
   '/',
