@@ -226,8 +226,23 @@ function _getCatClass(node) {
   return 'cat-unknown';
 }
 
-function _globeThemeAccent(theme) {
-  return theme === 'light' ? '#1f5e46' : '#4ecdc4';
+const GLOBE_THEME_CONFIG = Object.freeze({
+  dark: Object.freeze({
+    surface: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg',
+    backgroundImage: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png',
+    backgroundColor: '#050509',
+    atmosphere: '#4ecdc4',
+  }),
+  light: Object.freeze({
+    surface: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg',
+    backgroundImage: null,
+    backgroundColor: '#dfe9e3',
+    atmosphere: '#1f5e46',
+  }),
+});
+
+function _getGlobeThemeConfig(theme) {
+  return theme === 'light' ? GLOBE_THEME_CONFIG.light : GLOBE_THEME_CONFIG.dark;
 }
 
 function _getCountryEmissionsClass(d) {
@@ -433,14 +448,16 @@ const GlobeModule = {
     }
     const el = $('globeViz');
     if (!el) { reportError('GlobeModule', 'globeViz element not found'); return; }
+    const themeConfig = _getGlobeThemeConfig(document.documentElement?.dataset?.theme);
 
     // safeChain: if any method doesn't exist, it's skipped with a dev
     // warning instead of crashing the entire init.
     this.world = safeChain(new Globe(el, { animateIn: true, waitForGlobeReady: true }), 'Globe')
-      .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg')
+      .globeImageUrl(themeConfig.surface)
       .bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
-      .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
-      .showAtmosphere(!this.isMobile).atmosphereColor(_globeThemeAccent(document.documentElement?.dataset?.theme)).atmosphereAltitude(0.25)
+      .backgroundImageUrl(themeConfig.backgroundImage)
+      .backgroundColor(themeConfig.backgroundColor)
+      .showAtmosphere(!this.isMobile).atmosphereColor(themeConfig.atmosphere).atmosphereAltitude(0.25)
       .pointsData(Data.sites || [])
       .pointLat('lat').pointLng('lng').pointAltitude(0.01).pointRadius(0.6)
       .pointColor(() => '#4ecdc4').pointResolution(this.isMobile ? 8 : 16)
@@ -784,7 +801,12 @@ const GlobeModule = {
 
   setTheme(theme) {
     if (!this.world) return false;
-    safeChain(this.world, 'Globe.theme').atmosphereColor(_globeThemeAccent(theme));
+    const themeConfig = _getGlobeThemeConfig(theme);
+    safeChain(this.world, 'Globe.theme')
+      .globeImageUrl(themeConfig.surface)
+      .backgroundImageUrl(themeConfig.backgroundImage)
+      .backgroundColor(themeConfig.backgroundColor)
+      .atmosphereColor(themeConfig.atmosphere);
     return true;
   },
 
@@ -1925,12 +1947,11 @@ const GlobeModule = {
     }
   },
 
-  /**
-   * Restore the default night earth texture.
-   */
+  /** Restore the default surface for the active theme. */
   restoreDefaultTexture() {
     if (!this.world) return;
-    this.world.globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg');
+    const themeConfig = _getGlobeThemeConfig(document.documentElement?.dataset?.theme);
+    safeChain(this.world, 'Globe.restoreDefaultTexture').globeImageUrl(themeConfig.surface);
   },
 
   /**
