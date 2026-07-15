@@ -81,7 +81,7 @@ function rehearsalFiles(root, current = root, found = []) {
     const stat = fs.lstatSync(absolute);
     if (stat.isSymbolicLink()) found.push(`symlink:${relative}`);
     else if (stat.isDirectory()) rehearsalFiles(root, absolute, found);
-    else if (stat.isFile() && relative !== '.rollback.patch') found.push(relative);
+    else if (stat.isFile()) found.push(relative);
   }
   return found.sort();
 }
@@ -173,12 +173,11 @@ function validateReviewedRollbackProof(root, proof, options = {}) {
         fs.mkdirSync(path.dirname(destination), { recursive: true });
         fs.copyFileSync(path.join(root, control.path), destination);
       }
-      const patchPath = path.join(rehearsalRoot, '.rollback.patch');
-      fs.writeFileSync(patchPath, patchBytes);
-      const check = childProcess.spawnSync('git', ['apply', '--check', '--no-index', patchPath], { cwd: rehearsalRoot, encoding: 'utf8' });
+      const applyOptions = { cwd: rehearsalRoot, encoding: 'utf8', input: patchBytes };
+      const check = childProcess.spawnSync('git', ['apply', '--check', '--no-index'], applyOptions);
       if (check.status !== 0) add(errors, 'rollback_patch_preflight_failed', (check.stderr || check.stdout || '').trim());
       if (!errors.length) {
-        const apply = childProcess.spawnSync('git', ['apply', '--no-index', patchPath], { cwd: rehearsalRoot, encoding: 'utf8' });
+        const apply = childProcess.spawnSync('git', ['apply', '--no-index'], applyOptions);
         if (apply.status !== 0) add(errors, 'rollback_patch_apply_failed', (apply.stderr || apply.stdout || '').trim());
       }
       const outputHashes = {};

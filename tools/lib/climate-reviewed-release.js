@@ -172,17 +172,18 @@ function exactPins(root, actual, expectedPaths, errors, code) {
   return pass;
 }
 
-function extractRecords(payload, key) {
-  if (Array.isArray(payload)) return payload;
-  return payload && Array.isArray(payload[key]) ? payload[key] : [];
-}
-
 function publishedRecords(root, files, key, idKey, errors) {
   const records = [];
   const ids = [];
   for (const relative of files || []) {
     try {
-      const payloadRecords = extractRecords(readJson(root, relative), key);
+      const payload = readJson(root, relative);
+      const exactEnvelope = exactKeys(payload, [key]) && Array.isArray(payload[key]);
+      if (!exactEnvelope) {
+        add(errors, `${key}_artifact_envelope_invalid`, relative,
+          `Published ${key} artifact must have the exact canonical {${key}: [...]} envelope.`);
+      }
+      const payloadRecords = payload && Array.isArray(payload[key]) ? payload[key] : [];
       if (!payloadRecords.length) add(errors, `${key}_artifact_empty`, relative, `Published ${key} artifact has no records.`);
       payloadRecords.forEach(record => {
         records.push(record);

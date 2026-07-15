@@ -26,6 +26,8 @@
     { "id": "runtime-path-type-confusion", "document": "runtimeManifest", "path": "runtime.file_paths", "value": "js/fixture-runtime.js", "expected_code": "runtimeManifest_schema_invalid" },
     { "id": "published-fact-content-substitution", "filesystem": "published_fact_content_drift", "expected_code": "published_fact_record_mismatch" },
     { "id": "published-profile-content-substitution", "filesystem": "published_profile_content_drift", "expected_code": "published_profile_record_mismatch" },
+    { "id": "published-fact-envelope-extra-key", "filesystem": "published_fact_envelope_extra_key", "expected_code": "facts_artifact_envelope_invalid" },
+    { "id": "published-profile-envelope-extra-key", "filesystem": "published_profile_envelope_extra_key", "expected_code": "profiles_artifact_envelope_invalid" },
     { "id": "published-fact-reordered", "filesystem": "published_fact_reordered", "expected_code": "published_fact_record_mismatch" },
     { "id": "published-profile-reordered", "filesystem": "published_profile_reordered", "expected_code": "published_profile_record_mismatch" },
     { "id": "published-fact-duplicate", "filesystem": "published_fact_duplicate", "expected_code": "facts_ids_invalid" },
@@ -49,6 +51,7 @@
     { "id": "rollback-package-pin-drift", "document": "rollbackProof", "path": "release_package_pins.0.sha256", "value": "6666666666666666666666666666666666666666666666666666666666666666", "expected_code": "rollback_release_package_pin_mismatch" },
     { "id": "rollback-control-pin-drift", "document": "rollbackProof", "path": "rollback.controls.0.release_sha256", "value": "7777777777777777777777777777777777777777777777777777777777777777", "expected_code": "rollback_release_pin_mismatch" },
     { "id": "rollback-unlisted-extra-file", "filesystem": "patch_creates_extra_file", "expected_code": "rollback_patch_file_set_mismatch" },
+    { "id": "rollback-in-tree-patch-target", "filesystem": "patch_edits_rehearsal_patch", "expected_code": "rollback_patch_file_set_mismatch" },
     { "id": "partial-release-package", "filesystem": "remove_allow_manifest", "expected_code": "release_artifact_missing" },
     { "id": "release-schema-symlink", "filesystem": "symlink_release_schema", "expected_code": "releaseInput_schema_unavailable" },
     { "id": "runtime-manifest-symlink", "filesystem": "symlink_runtime_manifest", "expected_code": "release_artifact_not_regular" }

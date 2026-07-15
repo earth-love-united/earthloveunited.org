@@ -125,7 +125,8 @@ full output of `evaluateRelease()` recomputed from the separately pinned
 schemas, contain non-empty facts and profiles, profile every released fact,
 recompute derived-fact and profile hashes, and match every published fact and
 profile record exactly (including order and every field) to the reviewed CT-40
-candidate. Every source must match the pinned canonical registry and an
+candidate. Published files have exact `{facts: [...]}` / `{profiles: [...]}`
+envelopes, so wrapper metadata cannot bypass review. Every source must match the pinned canonical registry and an
 independent redistribution/scoring rights decision. Every top-20 document ID
 must resolve through that registry to one unique same-country/same-role regular
 non-symlink artifact with an exact digest. The linked, canonically hashed
@@ -146,8 +147,10 @@ or byte-drifted diffs fail.
 
 The production rollback proof is a separate reviewed artifact. Its package
 pins, schema, calculation hash, patch bytes, current control-file hashes, and
-baseline Git bytes are checked before the patch is applied in a temporary
-tree. Every restored hash and JavaScript syntax check must pass. Mere existence
+baseline Git bytes are checked before the patch is streamed to `git apply` for
+a temporary tree; the patch artifact itself never exists inside that tree.
+Every undeclared target, restored-hash mismatch, and JavaScript syntax failure
+must fail. Mere existence
 of `reviewed-rollback-proof.json` never satisfies release readiness. The same
 shared package validator runs from strict truth CI and production readiness;
 the signed release-authority reviewed-commit binding covers the validator,
@@ -190,12 +193,12 @@ regressions, ambiguous missing-target treatment, composite scores, unsourced
 rankings, denied releases, invalid/self-reviewed diffs, missing licence/review/
 lineage, empty facts/profile data, canonical diff hashes, canonical-enum
 divergence, and generated drift. The reviewed production-package checker adds
-50 adversarial cases for malformed/empty facts and profiles, synthetic ALLOWs,
+53 adversarial cases for malformed/empty facts and profiles, synthetic ALLOWs,
 invented source rights, placeholder reviewers, shape-only calculation hashes,
-pin drift, partial/symlinked artifacts, published-record substitution,
+pin drift, partial/symlinked artifacts, published-record/envelope substitution,
 reordering, duplication and omission, nonexistent/traversing/symlinked/
 duplicated/cross-entity/unpinned top-20 evidence, and executable rollback
-tampering.
+tampering, including an attempted in-tree patch-artifact target.
 
 Run:
 

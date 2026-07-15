@@ -229,6 +229,16 @@ function makeFixture(mutation = null) {
       "+const unreviewed = 'created';",
       '',
     ].join('\n'))]);
+  } else if (mutation?.filesystem === 'patch_edits_rehearsal_patch') {
+    patchBytes = Buffer.concat([patchBytes, Buffer.from([
+      'diff --git a/.rollback.patch b/.rollback.patch',
+      'new file mode 100644',
+      '--- /dev/null',
+      '+++ b/.rollback.patch',
+      '@@ -0,0 +1 @@',
+      "+unreviewed in-tree patch target",
+      '',
+    ].join('\n'))]);
   }
   const patchPath = 'data/climate/operations/fixture-reviewed-rollback.patch.b64';
   write(root, patchPath, canonicalBase64(patchBytes));
@@ -274,6 +284,10 @@ function makeFixture(mutation = null) {
     } else if (mutation.filesystem === 'published_profile_content_drift') {
       profiles.profiles[0].calculation_hash = 'f'.repeat(64);
       profiles.profiles[0].unreviewed_runtime_score = 100;
+    } else if (mutation.filesystem === 'published_fact_envelope_extra_key') {
+      facts.unreviewed_runtime_score = 100;
+    } else if (mutation.filesystem === 'published_profile_envelope_extra_key') {
+      profiles.unreviewed_runtime_score = 100;
     } else if (mutation.filesystem === 'published_fact_reordered') {
       facts.facts.reverse();
     } else if (mutation.filesystem === 'published_profile_reordered') {
