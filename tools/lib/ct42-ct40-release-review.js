@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const { evaluateRelease } = require('./climate-release-gate');
 const { REQUIRED_UI_REVIEW_PIN_PATHS } = require('./globe-runtime-assets');
 
-const ADAPTER_VERSION = '1.3.0';
+const ADAPTER_VERSION = '1.4.0';
 const METHODOLOGY_VERSION = '0.1.0';
 const EVALUATED_AT = '2026-07-15T13:00:00Z';
 const COMMIT_SHA_PATTERN = /^[0-9a-f]{40}$/;
@@ -150,9 +150,40 @@ function validateInputs(input) {
     fact.allowed_uses?.factual_display === true && fact.allowed_uses?.magnitude_comparison === true &&
     fact.allowed_uses?.commitment === false && fact.allowed_uses?.performance === false &&
     fact.allowed_uses?.scoring === false), 'published facts crossed the reviewed factual-use boundary');
+  const referenceFact = facts.facts[0];
+  assert(referenceFact && facts.facts.every(fact => JSON.stringify(stable(fact.review)) === JSON.stringify(stable(referenceFact.review))), 'published facts do not share one exact batch attestation');
+  assert(facts.facts.every(fact => JSON.stringify(stable(fact.allowed_uses)) === JSON.stringify(stable(referenceFact.allowed_uses))), 'published facts do not share one exact allowed-use boundary');
+  assert(fileHashes['data/climate/releases/primap-hist-2.6.1-factual-display-2026-07-15.json'] === referenceFact.review.batch_artifact_sha256, 'batch artifact digest is not bound to the reviewed promotion bytes');
+  assert(fileHashes['data/climate/reviews/primap-hist-2.6.1-factual-display-ct10c-review.json'] === referenceFact.review.batch_attestation_sha256, 'batch attestation digest is not bound to the independent review bytes');
   assert(!source.licence?.decision_id, 'CT-40 licence decision ID must not be inferred from the source registry');
   assert(source.licence?.redistribution_approved !== true && source.licence?.scoring_approved !== true, 'CT-40 approval booleans must not be inferred from the source registry');
   return { source, reviewEvidence };
+}
+
+function publicationAuthority(input, source) {
+  const referenceFact = input.facts.facts[0];
+  return {
+    source_id: source.id,
+    source_checksum_sha256: source.artifact.sha256,
+    methodology_version: METHODOLOGY_VERSION,
+    factual_use: {
+      status: 'approved',
+      basis: 'pinned_source_registry_and_ct10c_batch_attestation',
+      licence_identifier: source.licence.identifier,
+      terms_url: source.licence.terms_url,
+      attribution: source.licence.attribution,
+      redistribution_approved: source.redistribution.normalized_values === true,
+      normalized_values_approved: source.redistribution.normalized_values === true,
+    },
+    publication_review: structuredClone(referenceFact.review),
+    fact_allowed_uses: structuredClone(referenceFact.allowed_uses),
+    allowed_uses: ['factual_display', 'magnitude_comparison'],
+    evidence_file_sha256: {
+      source_registry: input.fileHashes['data/climate/source-registry.json'],
+      batch_artifact: input.fileHashes['data/climate/releases/primap-hist-2.6.1-factual-display-2026-07-15.json'],
+      batch_attestation: input.fileHashes['data/climate/reviews/primap-hist-2.6.1-factual-display-ct10c-review.json'],
+    },
+  };
 }
 
 function buildGateCandidate(input, source, reviewEvidence) {
@@ -300,6 +331,7 @@ function summarizeGate(inputArtifact, gateOutput) {
 
 function compile(input) {
   const { source, reviewEvidence } = validateInputs(input);
+  const trustedPublicationAuthority = publicationAuthority(input, source);
   const gateCandidate = buildGateCandidate(input, source, reviewEvidence);
   const inputArtifact = {
     schema_version: '1.0.0',
@@ -319,9 +351,10 @@ function compile(input) {
       infer_release_review: false,
       create_production_artifacts: false,
     },
+    adapter_bound_publication_authorities: [trustedPublicationAuthority],
     ct40_candidate: gateCandidate,
   };
-  const gateOutput = evaluateRelease(gateCandidate);
+  const gateOutput = evaluateRelease(gateCandidate, { publicationAuthorities: [trustedPublicationAuthority] });
   assert(gateOutput.decision === 'deny' && gateOutput.eligible === false, 'real CT-42 release-review candidate must remain denied');
   assert(gateOutput.decision_scope === 'assessed_climate_release', 'CT-40 decision scope drift');
   assert(gateOutput.publication_tiers.factual_display.status === 'eligible' &&

@@ -135,6 +135,13 @@ derived metrics, performance assessment, and scoring. The manifest also
 identifies individually eligible assessed-release facts and profiles and has
 a deterministic SHA-256 over the entire decision structure.
 
+Batch-reviewed factual publication requires an external authority object
+assembled from the pinned source registry, exact promotion bytes, and exact
+independent-attestation bytes. Candidate-supplied SHA-shaped identifiers,
+licence URLs, attribution, basis strings, or allowed-use flags cannot authorize
+themselves. Any mismatch blocks the factual tier even when the field shapes are
+valid.
+
 Every blocked fact, profile, or release review emits a stable queue item:
 
 ```text
@@ -155,7 +162,9 @@ describes or accepts a real licence. One fully reviewed release is allowed; 37
 failing cases cover self-review, timestamps, checksums, field-level lineage,
 redistribution versus scoring approval, unresolved conflicts, every blocking
 evidence state, high-impact transformation lineage, profile provenance, and
-release review.
+release review. Additional direct probes reject self-asserted batch evidence
+and changes to the attestation digest, licence terms, factual basis, or
+allowed-use boundary.
 
 Run:
 

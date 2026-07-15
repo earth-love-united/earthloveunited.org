@@ -2,8 +2,8 @@
 
 const crypto = require('node:crypto');
 
-const SCHEMA_VERSION = '1.0.0';
-const ROUTING_MODEL_VERSION = '2.0.0';
+const SCHEMA_VERSION = '1.1.0';
+const ROUTING_MODEL_VERSION = '2.1.0';
 const CREATED_AT = '2026-07-15T14:00:00Z';
 const POLICY_ID = 'ct-16-source-routing-policy-v2-2026-07-15';
 const QUEUE_ID = 'ct-16-top20-source-routing-queue-v2-2026-07-15';
@@ -114,7 +114,8 @@ function route({
   };
 }
 
-function compilePolicy(sourceRegistry, inputPins) {
+function compilePolicy(sourceRegistry, inputPins, publicationBoundary) {
+  assert(publicationBoundary?.state === 'eligible_unchanged' && publicationBoundary.factual_facts === 2060, 'CT-15 factual publication boundary is absent');
   const sources = sourceMap(sourceRegistry);
   const nir = requireSource(sources, SOURCE_IDS.nir);
   const btr = requireSource(sources, SOURCE_IDS.btr);
@@ -225,7 +226,9 @@ function compilePolicy(sourceRegistry, inputPins) {
       source_registry_modified: false,
       rights_decisions_made: false,
       ct40_decision_modified: false,
-      normalized_facts_authorized: false,
+      preexisting_factual_tier_state: publicationBoundary.state,
+      preexisting_factual_facts: publicationBoundary.factual_facts,
+      new_normalized_fact_uses_authorized: false,
       scoring_authorized: false,
       release_authority: false,
       production_runtime_release: false,
@@ -430,7 +433,10 @@ function validatePolicy(policy, { sourceRegistry, inputPins }) {
   assert(policy.status === 'blocked_pending_governance', 'source-routing policy must remain blocked');
   validateInputPins(policy.immutable_inputs, inputPins, 'source-routing policy');
   const boundary = policy.governance_boundary;
-  assert(boundary && Object.values(boundary).every(value => value === false), 'source-routing policy granted governance, rights, scoring, runtime, or release authority');
+  assert(boundary?.preexisting_factual_tier_state === 'eligible_unchanged' && boundary.preexisting_factual_facts === 2060, 'source-routing policy hid or changed the pre-existing factual tier');
+  for (const field of ['source_registry_modified', 'rights_decisions_made', 'ct40_decision_modified', 'new_normalized_fact_uses_authorized', 'scoring_authorized', 'release_authority', 'production_runtime_release']) {
+    assert(boundary[field] === false, `source-routing policy leaked authority through ${field}`);
+  }
   assert(policy.routes.length === 5, 'source-routing policy must contain five routes');
   assert(new Set(policy.routes.map(item => item.route_id)).size === 5, 'source-routing route IDs must be unique');
   assert(JSON.stringify(policy.reason_vocabulary.map(item => item.code)) === JSON.stringify(REASON_CODES), 'source-routing reason vocabulary drift');
@@ -533,9 +539,13 @@ function compile({ sourceRegistry, ct14, ct15, policyInputPins, queueInputPins }
   assert(ct14.review_status === 'not_reviewed' && ct14.release_eligible === false && ct14.production_runtime_release === false, 'CT-14 immutable deny boundary drift');
   assert(ct14.entities.length === 20 && ct14.coverage.official_inventory_documents_available === 0, 'CT-14 immutable coverage drift');
   assert(ct15.status === 'blocked' && ct15.release_authority === false && ct15.production_runtime_release === false, 'CT-15 immutable deny boundary drift');
+  const ct15Tracks = new Map(ct15.readiness_tracks.map(item => [item.track_id, item]));
+  assert(ct15Tracks.get('factual_display_and_magnitude_comparison')?.status === 'eligible', 'CT-15 factual publication eligibility drift');
+  assert(ct15Tracks.get('factual_display_and_magnitude_comparison')?.current?.eligible_facts === 2060, 'CT-15 factual publication count drift');
+  assert(ct15Tracks.get('assessed_runtime_and_scoring')?.status === 'blocked' && ct15Tracks.get('top20_country_assessment')?.status === 'blocked', 'CT-15 assessed boundary drift');
   const mismatch = ct15.audit_findings?.routing_mismatches?.find(item => item.id === 'btr-official-inventory-domain');
   assert(mismatch?.status === 'unresolved', 'CT-15 BTR routing mismatch must remain an immutable unresolved finding');
-  const policy = compilePolicy(sourceRegistry, policyInputPins);
+  const policy = compilePolicy(sourceRegistry, policyInputPins, { state: 'eligible_unchanged', factual_facts: 2060 });
   const resolvedQueuePins = structuredClone(queueInputPins);
   assert(resolvedQueuePins.source_routing_policy?.calculation_hash === null, 'queue policy input must begin unresolved');
   resolvedQueuePins.source_routing_policy.calculation_hash = policy.calculation_hash;

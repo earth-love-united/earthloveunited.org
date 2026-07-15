@@ -2,7 +2,7 @@
 
 **Snapshot:** 2026-07-15
 
-**Routing model:** 2.0.0
+**Routing model:** 2.1.0
 
 **Status:** blocked governance contract; no rights or release authority
 
@@ -41,9 +41,11 @@ role. A failed download does not establish that a target is absent.
 ## Preserved boundaries
 
 - CT-14 and CT-15 remain byte-identical inputs.
+- CT-15's eligible factual-display and magnitude-comparison state is preserved
+  explicitly for all 2,060 PRIMAP facts; CT-16 cannot silently demote it.
 - The source registry and every source approval remain unchanged.
-- No rights, normalized-value, scoring, CT-40, runtime, or release decision is
-  created.
+- No new rights or normalized-value use, scoring, assessed CT-40, runtime, or
+  release decision is created.
 - All 20 successor queue entries remain unreviewed and release-ineligible.
 - Production runtime manifest, reviewed release diff, and CT-40 allow manifest
   remain absent.
@@ -68,7 +70,8 @@ node tools/check-climate-evidence-licensing-readiness.js
 ```
 
 The CT-16 checker validates both JSON schemas, rebuilds both artifacts
-byte-for-byte, pins CT-14/CT-15/source-registry checksums, proves the artifacts
+byte-for-byte, pins CT-14/CT-15/source-registry checksums, enforces the existing
+factual tier and blocked assessment tiers, proves the artifacts
 are absent from runtime loaders, and rejects role, domain, rights, scoring,
 runtime, and release mutations after recalculating their hashes.
 `tools/climate-truth-ci.js` treats CT-16 as a required component.

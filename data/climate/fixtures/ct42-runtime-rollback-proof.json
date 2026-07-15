@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.2.0",
+  "schema_version": "2.3.0",
   "fixture_id": "ct-42-neutral-runtime-rollback-proof-adversarial-2026-07-15",
   "mutations": [
     { "id": "proof-authorizes-release", "phase": "proof", "path": "release_authority", "value": true },
@@ -7,6 +7,7 @@
     { "id": "proof-fabricates-independent-review", "phase": "proof", "path": "review.status", "value": "reviewed" },
     { "id": "proof-fabricates-allow", "phase": "proof", "path": "candidate.decision", "value": "allow" },
     { "id": "proof-widens-deny-scope", "phase": "proof", "path": "candidate.decision_scope", "value": "all_climate_information" },
+    { "id": "proof-review-chain-tree-pin-drift", "phase": "proof", "path": "candidate.review_chain_ct40_sha256", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
     { "id": "proof-hides-factual-eligibility", "phase": "proof", "path": "candidate.publication_tiers.factual_display.status", "value": "blocked" },
     { "id": "proof-invents-score-tier", "phase": "proof", "path": "candidate.publication_tiers.score.status", "value": "eligible" },
     { "id": "proof-restores-ancient-baseline", "phase": "proof", "path": "rollback.baseline_commit", "value": "4f94b218c460d2d452dc3fd1354b9e1c3ddc25cc" },

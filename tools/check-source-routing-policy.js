@@ -28,7 +28,7 @@ const PATHS = Object.freeze({
 const EXPECTED_IMMUTABLE_SHA256 = Object.freeze({
   sourceRegistry: 'ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d',
   ct14: 'fb1bbc050b7ba791893b7751dd4f916ecd01885557b272cb025f8c0e4b64452d',
-  ct15: 'b56813d8054a2a39ea72e1142e1f02e0b6534169e08895a10cf711f7a1b2ad47',
+  ct15: 'bd1234b7e90d0bcf12940b0ee944d92bf64c42740b596efd26f88c66d98b22bb',
 });
 const EXPECTED_TOP20 = Object.freeze(['CHN', 'USA', 'IND', 'RUS', 'IDN', 'BRA', 'JPN', 'IRN', 'SAU', 'CAN', 'MEX', 'KOR', 'DEU', 'AUS', 'TUR', 'ZAF', 'VNM', 'PAK', 'THA', 'NGA']);
 const PROHIBITED_RELEASE_FILES = Object.freeze([
@@ -204,11 +204,12 @@ for (const mutation of json(PATHS.fixtures).mutations) {
 
 process.stdout.write([
   'CT-16 source-routing policy: PASS (release remains blocked)',
+  '  existing PRIMAP factual display and magnitude comparison: eligible and unchanged (2,060 facts)',
   '  NIR/CRT: primary only after rights, checksum, governance, and independent review',
   '  BTR: conditional explicit component only; family-level inventory authorization false',
   '  TER: corroboration-only; never sufficient as primary inventory evidence',
   '  NDC Registry: active-NDC and target-methodology routes only',
   `  successor queue: ${queue.entities.length} entities; 0 primary inventory routes satisfied; 0 release eligible`,
   `  adversarial mutations rejected after hash recomputation: ${rejected}`,
-  '  source approvals / CT-40 / runtime / scoring / release authority: unchanged',
+  '  new source approvals / assessed CT-40 / runtime / scoring / release authority: unchanged',
 ].join('\n') + '\n');

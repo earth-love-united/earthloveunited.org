@@ -1,7 +1,7 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "policy_id": "ct-16-source-routing-policy-v2-2026-07-15",
-  "routing_model_version": "2.0.0",
+  "routing_model_version": "2.1.0",
   "created_at": "2026-07-15T14:00:00Z",
   "status": "blocked_pending_governance",
   "purpose": "Versioned successor to CT-14 flat source-family routing; separates primary, conditional-component, and corroborating evidence roles without granting rights or release authority.",
@@ -16,14 +16,16 @@
     },
     "ct15_immutable_snapshot": {
       "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
-      "sha256": "b56813d8054a2a39ea72e1142e1f02e0b6534169e08895a10cf711f7a1b2ad47"
+      "sha256": "bd1234b7e90d0bcf12940b0ee944d92bf64c42740b596efd26f88c66d98b22bb"
     }
   },
   "governance_boundary": {
     "source_registry_modified": false,
     "rights_decisions_made": false,
     "ct40_decision_modified": false,
-    "normalized_facts_authorized": false,
+    "preexisting_factual_tier_state": "eligible_unchanged",
+    "preexisting_factual_facts": 2060,
+    "new_normalized_fact_uses_authorized": false,
     "scoring_authorized": false,
     "release_authority": false,
     "production_runtime_release": false
@@ -289,5 +291,5 @@
     "production runtime facts",
     "release authority"
   ],
-  "calculation_hash": "c64b3db662ee6f6644b7ba5f1de572688f035ef5d5fd28afa4f2e13a92447646"
+  "calculation_hash": "18af02de1db1b53d548c20e34534d9b102b9e472fcf9acf8ad0ebc68f10065c6"
 }

@@ -5,6 +5,9 @@
     { "id": "policy-release-authority", "target": "policy", "path": "governance_boundary.release_authority", "value": true },
     { "id": "policy-runtime-authority", "target": "policy", "path": "governance_boundary.production_runtime_release", "value": true },
     { "id": "policy-scoring-authority", "target": "policy", "path": "governance_boundary.scoring_authorized", "value": true },
+    { "id": "policy-hides-factual-tier", "target": "policy", "path": "governance_boundary.preexisting_factual_tier_state", "value": "blocked" },
+    { "id": "policy-factual-count-drift", "target": "policy", "path": "governance_boundary.preexisting_factual_facts", "value": 2059 },
+    { "id": "policy-authorizes-new-normalized-use", "target": "policy", "path": "governance_boundary.new_normalized_fact_uses_authorized", "value": true },
     { "id": "policy-status-promoted", "target": "policy", "path": "status", "value": "ready" },
     { "id": "nir-demoted-to-corroboration", "target": "policy", "path": "routes.0.source_role", "value": "corroboration_only" },
     { "id": "btr-domain-mismatch-hidden", "target": "policy", "path": "routes.1.current_gate.registry_domain_present", "value": true },
@@ -34,6 +37,9 @@
     { "id": "registry-nir-normalized-values-invented", "target": "sourceRegistry", "path": "sources.4.redistribution.normalized_values", "value": true },
     { "id": "registry-ndc-inventory-domain-invented", "target": "sourceRegistry", "path": "sources.2.domains", "operation": "push", "value": "official_inventory" },
     { "id": "ct14-release-invented", "target": "ct14", "path": "release_eligible", "value": true },
-    { "id": "ct15-routing-mismatch-resolved-without-review", "target": "ct15", "path": "audit_findings.routing_mismatches.0.status", "value": "resolved" }
+    { "id": "ct15-routing-mismatch-resolved-without-review", "target": "ct15", "path": "audit_findings.routing_mismatches.0.status", "value": "resolved" },
+    { "id": "ct15-factual-tier-hidden", "target": "ct15", "path": "readiness_tracks.0.status", "value": "blocked" },
+    { "id": "ct15-factual-count-drift", "target": "ct15", "path": "readiness_tracks.0.current.eligible_facts", "value": 2059 },
+    { "id": "ct15-assessment-enabled", "target": "ct15", "path": "readiness_tracks.1.status", "value": "eligible" }
   ]
 }

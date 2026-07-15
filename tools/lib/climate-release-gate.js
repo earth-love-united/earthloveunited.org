@@ -72,6 +72,22 @@ function hash(value) {
   return crypto.createHash('sha256').update(JSON.stringify(stable(value))).digest('hex');
 }
 
+function sameStable(left, right) {
+  return JSON.stringify(stable(left)) === JSON.stringify(stable(right));
+}
+
+function publicationAuthorityMap(authorities) {
+  const map = new Map();
+  const duplicates = new Set();
+  for (const authority of Array.isArray(authorities) ? authorities : []) {
+    if (!authority || !isText(authority.source_id)) continue;
+    if (map.has(authority.source_id)) duplicates.add(authority.source_id);
+    else map.set(authority.source_id, authority);
+  }
+  for (const sourceId of duplicates) map.delete(sourceId);
+  return map;
+}
+
 function stateReason(state) {
   return {
     not_reported: 'value_not_reported',
@@ -205,20 +221,29 @@ function batchPublicationReasons(fact, context, useFlag) {
 
   const source = fact ? context.sources.get(fact.source_id) : null;
   const factualUse = source && source.factual_use;
+  const authority = fact ? context.publicationAuthorities.get(fact.source_id) : null;
   if (!source || !isSha256(source.checksum_sha256) || source.checksum_sha256 !== fact.source_checksum_sha256) {
     reasons.push('source_missing');
   }
   if (!factualUse || factualUse.status !== 'approved' || factualUse.redistribution_approved !== true ||
       factualUse.normalized_values_approved !== true || !isText(factualUse.licence_identifier) ||
-      !isText(factualUse.terms_url) || !isText(factualUse.attribution)) {
+      !isText(factualUse.terms_url) || !isText(factualUse.attribution) || !isText(factualUse.basis) ||
+      !authority || authority.source_checksum_sha256 !== fact.source_checksum_sha256 ||
+      !sameStable(factualUse, authority.factual_use)) {
     reasons.push('licence_not_approved');
   }
 
   const review = fact && fact.publication_review;
   if (!review || review.status !== 'reviewed' || review.mode !== 'batch_attestation' ||
       !isText(review.batch_attestation_id) || !isSha256(review.batch_artifact_sha256) ||
-      !isSha256(review.batch_attestation_sha256) || review.methodology_version !== context.methodologyVersion) {
+      !isSha256(review.batch_attestation_sha256) || review.methodology_version !== context.methodologyVersion ||
+      !authority || authority.methodology_version !== context.methodologyVersion ||
+      !sameStable(review, authority.publication_review)) {
     reasons.push('climate_evidence_not_reviewed');
+  }
+  if (!authority || !Array.isArray(authority.allowed_uses) || !authority.allowed_uses.includes(useFlag) ||
+      !sameStable(fact && fact.allowed_uses, authority.fact_allowed_uses)) {
+    reasons.push('assessment_eligibility_not_reviewed');
   }
   reasons.push(...conflictReasons(fact && fact.fact_id, context.conflicts, context.factIds));
   return uniqueSorted(reasons.filter(Boolean));
@@ -292,7 +317,7 @@ function deterministicSort(items, key) {
   });
 }
 
-function evaluateRelease(candidate) {
+function evaluateRelease(candidate, options = {}) {
   if (!candidate || typeof candidate !== 'object') throw new TypeError('candidate must be an object');
   if (!isTimestamp(candidate.evaluated_at)) throw new TypeError('candidate.evaluated_at must be an explicit UTC timestamp');
   if (!isVersion(candidate.methodology_version)) throw new TypeError('candidate.methodology_version must be semantic version');
@@ -309,7 +334,8 @@ function evaluateRelease(candidate) {
     sources,
     reviews,
     conflicts: candidate.conflicts || [],
-    factIds: new Set(facts.map((fact) => fact.fact_id))
+    factIds: new Set(facts.map((fact) => fact.fact_id)),
+    publicationAuthorities: publicationAuthorityMap(options.publicationAuthorities),
   };
 
   const factReleaseDecisions = facts.map((fact) => factDecision(fact, context, false));

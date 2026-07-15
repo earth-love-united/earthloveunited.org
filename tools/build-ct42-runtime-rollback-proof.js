@@ -51,6 +51,15 @@ function gitFile(commit, relative) {
   return git(['show', `${commit}:${relative}`]);
 }
 
+function assertReviewChainCommit(commit, relative, expectedBytes) {
+  if (commit === null) return;
+  const object = childProcess.spawnSync('git', ['cat-file', '-e', `${commit}^{commit}`], { cwd: ROOT, encoding: 'utf8' });
+  assert.equal(object.status, 0, '--review-chain-head must identify an existing commit object');
+  const ancestry = childProcess.spawnSync('git', ['merge-base', '--is-ancestor', commit, 'HEAD'], { cwd: ROOT, encoding: 'utf8' });
+  assert.equal(ancestry.status, 0, '--review-chain-head must be an ancestor of the current builder HEAD');
+  assert.deepEqual(gitFile(commit, relative), expectedBytes, `--review-chain-head does not contain the exact ${relative} bytes`);
+}
+
 function write(root, relative, bytes) {
   const destination = path.join(root, relative);
   fs.mkdirSync(path.dirname(destination), { recursive: true });
@@ -1026,7 +1035,9 @@ const manifestPath = 'data/climate/runtime/candidate-manifest.json';
 const runtimePath = 'data/climate/runtime/country-factual-candidate.json';
 const rollbackPlanPath = 'data/climate/runtime/rollback-plan.json';
 const ct40 = JSON.parse(fs.readFileSync(path.join(ROOT, ct40Path)));
+const ct40Bytes = fs.readFileSync(path.join(ROOT, ct40Path));
 const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, manifestPath)));
+assertReviewChainCommit(reviewChainHead, ct40Path, ct40Bytes);
 assert.equal(ct40.decision, 'deny');
 assert.equal(ct40.decision_scope, 'assessed_climate_release');
 assert.equal(ct40.eligible, false);
@@ -1054,7 +1065,7 @@ const roles = {
 };
 
 const proof = {
-  schema_version: '2.2.0',
+  schema_version: '2.3.0',
   proof_id: 'ct-42-neutral-runtime-rollback-rehearsal-2026-07-15',
   status: 'built_not_reviewed_browser_gate_required',
   release_authority: false,
@@ -1071,6 +1082,7 @@ const proof = {
     runtime_control_commit: RUNTIME_CONTROL_COMMIT,
     review_chain_head: reviewChainHead,
     review_chain_late_bound: reviewChainHead === null,
+    review_chain_ct40_sha256: reviewChainHead === null ? null : sha256(ct40Bytes),
     candidate_id: 'ct-42-factual-runtime-candidate-2026-07-15',
     decision: 'deny',
     decision_scope: 'assessed_climate_release',

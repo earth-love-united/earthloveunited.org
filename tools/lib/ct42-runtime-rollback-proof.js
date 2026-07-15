@@ -180,17 +180,28 @@ function assertRegularTree(root) {
   walk(root);
 }
 
-function assertCommitOrLateBound(proof) {
+function gitCheck(root, args) {
+  return childProcess.spawnSync('git', args, { cwd: root, encoding: 'utf8' });
+}
+
+function assertCommitOrLateBound(root, proof) {
   const value = proof.candidate.review_chain_head;
   if (proof.candidate.review_chain_late_bound) {
     assert.equal(value, null, 'late-bound review chain must remain null');
+    assert.equal(proof.candidate.review_chain_ct40_sha256, null, 'late-bound review chain must not claim CT-40 tree bytes');
     return;
   }
   assert.match(value, /^[a-f0-9]{40}$/, 'review chain head must be a full Git SHA');
+  assert.equal(gitCheck(root, ['cat-file', '-e', `${value}^{commit}`]).status, 0, 'review chain head must identify an existing commit object');
+  assert.equal(gitCheck(root, ['merge-base', '--is-ancestor', value, 'HEAD']).status, 0, 'review chain head must be an ancestor of the current HEAD');
+  const ct40AtCommit = gitCheck(root, ['show', `${value}:${proof.candidate.ct40_result.path}`]);
+  assert.equal(ct40AtCommit.status, 0, 'review chain head must contain the pinned CT-40 result path');
+  assert.equal(sha256(Buffer.from(ct40AtCommit.stdout)), proof.candidate.review_chain_ct40_sha256, 'review chain CT-40 tree digest drift');
+  assert.equal(proof.candidate.review_chain_ct40_sha256, proof.candidate.ct40_result.sha256, 'review chain head does not contain the candidate CT-40 result');
 }
 
 function validateProofDocument(root, proof, options = {}) {
-  assert.equal(proof.schema_version, '2.2.0');
+  assert.equal(proof.schema_version, '2.3.0');
   assert.equal(proof.proof_id, 'ct-42-neutral-runtime-rollback-rehearsal-2026-07-15');
   assert.equal(proof.status, 'built_not_reviewed_browser_gate_required');
   assert.equal(proof.release_authority, false);
@@ -208,7 +219,7 @@ function validateProofDocument(root, proof, options = {}) {
   }
 
   assert.equal(proof.candidate.runtime_control_commit, RUNTIME_CONTROL_COMMIT);
-  assertCommitOrLateBound(proof);
+  assertCommitOrLateBound(root, proof);
   assert.equal(proof.candidate.candidate_id, 'ct-42-factual-runtime-candidate-2026-07-15');
   assert.equal(proof.candidate.decision, 'deny');
   assert.equal(proof.candidate.decision_scope, 'assessed_climate_release');

@@ -147,6 +147,12 @@ comparison while commitment display is absent and derived metrics, performance
 assessment, and scores remain absent or blocked. These tier results do not
 create production or deployment authority.
 
+The factual tier is cryptographically bound outside the candidate payload: the
+adapter matches the embedded batch artifact and attestation digests to the
+exact CT-42-reviewed files, then passes a separate trusted authority object to
+CT-40. Well-shaped but fabricated candidate hashes or licence metadata remain
+blocked.
+
 The reviewed release diff records the current and previous release (or marks an
 initial release), change summary, changed entity IDs, source revision IDs,
 exact input/runtime/output artifact pins, a recomputed canonical hash, and an
@@ -160,7 +166,10 @@ a temporary tree; the patch artifact itself never exists inside that tree.
 Every undeclared target, restored-hash mismatch, and JavaScript syntax failure
 must fail. The baseline must precede the reviewed head, every control must
 restore byte- and digest-distinct content, and identical remove/add hunks are
-rejected as non-executable no-ops. Mere existence
+rejected as non-executable no-ops. The candidate rollback rehearsal also
+requires its review-chain SHA to resolve to a real commit, be an ancestor of
+the current builder HEAD, and contain the exact pinned CT-40 result bytes; a
+40-hex string alone is never a binding. Mere existence
 of `reviewed-rollback-proof.json` never satisfies release readiness. The same
 shared package validator runs from strict truth CI and production readiness;
 the signed release-authority reviewed-commit binding covers the validator,

@@ -21,7 +21,7 @@
     "calculation_hash"
   ],
   "properties": {
-    "schema_version": { "const": "1.0.0" },
+    "schema_version": { "const": "1.1.0" },
     "queue_id": { "const": "ct-16-top20-source-routing-queue-v2-2026-07-15" },
     "routing_policy_id": { "const": "ct-16-source-routing-policy-v2-2026-07-15" },
     "routing_policy_calculation_hash": { "$ref": "#/$defs/sha256" },

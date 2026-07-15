@@ -9,11 +9,11 @@
   "inputs": {
     "ct40Result": {
       "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
-      "sha256": "e37314cdfc6863f26811c28429c14c57c109c2a0be0140fe7447f0d4aaaf77bd"
+      "sha256": "59e0229d58f42616a39546cc731d0ed2a24feef3726e10bda58bba515491abeb"
     },
     "ct40Input": {
       "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
-      "sha256": "78b7cc69241b6d3679c9a611649dab7c7bba6707d174247bd6d5372ce2631b1e"
+      "sha256": "0408841e302333c3bac8ae781f1a9864d5a238e7b63313b1501c614a327563e4"
     },
     "ct14Queue": {
       "path": "data/climate/releases/top20-primary-source-gap-queue-2026-07-15.json",
@@ -41,11 +41,11 @@
     },
     "releaseGate": {
       "path": "tools/lib/climate-release-gate.js",
-      "sha256": "05f4a64dc5b7f66a075c9dc7e5e58f91f6380754393412e637542a01a928a40c"
+      "sha256": "1b8b8c3ed11d2dc446f2caf955061345fddfa9d8b5d35df74a7cbbd9b9aa9292"
     },
     "ct40Adapter": {
       "path": "tools/lib/ct42-ct40-release-review.js",
-      "sha256": "bb9ca986f4410e174e83cde604e92dfd0be708942a4fe4bf609d2a26385228f2"
+      "sha256": "b03f304ab1df6c03f1f9c0b78c62b793313b73c98035fe4d2b7900fa89b5cad3"
     },
     "ct14Compiler": {
       "path": "tools/lib/top20-primary-source-gap-queue.js",
@@ -4211,5 +4211,5 @@
     "fill missing country fields from legacy pledge data",
     "create a production runtime manifest or allow manifest from this package"
   ],
-  "calculation_hash": "92d4afb18f03a7eedcf918055a26e92ff71d5facd3ff5bd98ba978e250556b58"
+  "calculation_hash": "6a78e1fa1154938d5875f3a1baef9d84e03fa8000115a65cc83bac55c667c1ca"
 }

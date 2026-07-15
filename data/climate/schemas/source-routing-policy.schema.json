@@ -20,9 +20,9 @@
     "calculation_hash"
   ],
   "properties": {
-    "schema_version": { "const": "1.0.0" },
+    "schema_version": { "const": "1.1.0" },
     "policy_id": { "const": "ct-16-source-routing-policy-v2-2026-07-15" },
-    "routing_model_version": { "const": "2.0.0" },
+    "routing_model_version": { "const": "2.1.0" },
     "created_at": { "type": "string", "pattern": "Z$" },
     "status": { "const": "blocked_pending_governance" },
     "purpose": { "type": "string", "minLength": 1 },
@@ -43,7 +43,9 @@
         "source_registry_modified",
         "rights_decisions_made",
         "ct40_decision_modified",
-        "normalized_facts_authorized",
+        "preexisting_factual_tier_state",
+        "preexisting_factual_facts",
+        "new_normalized_fact_uses_authorized",
         "scoring_authorized",
         "release_authority",
         "production_runtime_release"
@@ -52,7 +54,9 @@
         "source_registry_modified": { "const": false },
         "rights_decisions_made": { "const": false },
         "ct40_decision_modified": { "const": false },
-        "normalized_facts_authorized": { "const": false },
+        "preexisting_factual_tier_state": { "const": "eligible_unchanged" },
+        "preexisting_factual_facts": { "const": 2060 },
+        "new_normalized_fact_uses_authorized": { "const": false },
         "scoring_authorized": { "const": false },
         "release_authority": { "const": false },
         "production_runtime_release": { "const": false }

@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0.0",
   "review_candidate_id": "ct-42-to-ct-40-real-release-review-2026-07-15",
-  "adapter_version": "1.3.0",
-  "evaluated_input_sha256": "42334ea83685af76e654684afc0c4022ec66854975a40160ea7d4de3eee1beaf",
+  "adapter_version": "1.4.0",
+  "evaluated_input_sha256": "2fd9298d529d4d8d20e637c650e02d1f4121bd1891c3c372054673db39edceb9",
   "ct40_gate_version": "2.0.0",
   "decision_scope": "assessed_climate_release",
   "ct40_manifest_calculation_hash": "0349e269ad4f3caf815ed8836b25a1702b1cf6f577b3a9528bc6a1c994b7e0bd",

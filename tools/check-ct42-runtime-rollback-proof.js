@@ -10,6 +10,7 @@ const {
   PROHIBITED_OUTPUTS,
   RUNTIME_DEPENDENCY_FILES,
   RUNTIME_EXCLUSIONS,
+  calculationHash,
   materializeRollbackSite,
   rehearse,
   validateProofDocument,
@@ -64,6 +65,19 @@ const pins = {
   allowMissingVendor: !vendorEntryPresent,
 };
 validateProofDocument(ROOT, proof, pins);
+for (const [label, commit] of [
+  ['nonexistent review-chain commit', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'],
+  ['ancestor with stale CT-40 tree', 'd3f5818d81f877dbb7217cff38a7a00644fc09e3'],
+]) {
+  const changed = clone(proof);
+  changed.candidate.review_chain_head = commit;
+  changed.candidate.review_chain_late_bound = false;
+  changed.calculation_hash = calculationHash(changed);
+  assert.throws(() => validateProofDocument(ROOT, changed, {
+    expectedPatchSha256: EXPECTED_PATCH_SHA256,
+    allowMissingVendor: !vendorEntryPresent,
+  }), undefined, `${label} was accepted`);
+}
 const result = rehearse(ROOT, proof, pins);
 assert.equal(result.workspace_mutation, false);
 assert.equal(result.changed_files, 6);

@@ -106,10 +106,69 @@ assert.deepStrictEqual(duplicateForward, duplicateReverse, 'duplicate rejection 
 assert.strictEqual(duplicateForward.decision, 'deny');
 assert(duplicateForward.reason_codes.includes('evidence_insufficient'));
 
+const batchCandidate = structuredClone(fixtures.base_candidate);
+batchCandidate.facts = [batchCandidate.facts[0]];
+batchCandidate.fact_reviews = [];
+batchCandidate.profiles = [];
+batchCandidate.conflicts = [];
+batchCandidate.review = { status: 'not_reviewed', builder_id: 'fixture-batch-builder', reviewer_ids: [], reviewed_at: null };
+batchCandidate.facts[0].evidence_state = 'not_reviewed';
+batchCandidate.facts[0].publication_evidence_state = 'available';
+batchCandidate.facts[0].publication_review = {
+  status: 'reviewed',
+  mode: 'batch_attestation',
+  batch_attestation_id: 'fixture-batch-attestation',
+  batch_artifact_sha256: '3'.repeat(64),
+  batch_attestation_sha256: '4'.repeat(64),
+  methodology_version: batchCandidate.methodology_version,
+};
+batchCandidate.facts[0].allowed_uses = {
+  factual_display: true,
+  magnitude_comparison: true,
+  commitment: false,
+  performance: false,
+  scoring: false,
+};
+batchCandidate.sources[0].licence = { decision_id: null, redistribution_approved: null, scoring_approved: null };
+batchCandidate.sources[0].factual_use = {
+  status: 'approved',
+  basis: 'fixture-pinned-source-and-attestation',
+  licence_identifier: 'CC-BY-4.0',
+  terms_url: 'https://licence.invalid/fixture',
+  attribution: 'Fixture attribution',
+  redistribution_approved: true,
+  normalized_values_approved: true,
+};
+const batchAuthority = {
+  source_id: batchCandidate.sources[0].source_id,
+  source_checksum_sha256: batchCandidate.sources[0].checksum_sha256,
+  methodology_version: batchCandidate.methodology_version,
+  factual_use: structuredClone(batchCandidate.sources[0].factual_use),
+  publication_review: structuredClone(batchCandidate.facts[0].publication_review),
+  fact_allowed_uses: structuredClone(batchCandidate.facts[0].allowed_uses),
+  allowed_uses: ['factual_display', 'magnitude_comparison'],
+};
+const noAuthority = evaluateRelease(batchCandidate);
+assert.strictEqual(noAuthority.publication_tiers.factual_display.status, 'blocked', 'self-asserted batch evidence must not authorize factual publication');
+const authorizedBatch = evaluateRelease(batchCandidate, { publicationAuthorities: [batchAuthority] });
+assert.strictEqual(authorizedBatch.publication_tiers.factual_display.status, 'eligible', 'externally pinned batch evidence should authorize the exact factual use');
+assert.strictEqual(authorizedBatch.publication_tiers.magnitude_comparison.status, 'eligible', 'externally pinned batch evidence should authorize exact magnitude comparison');
+for (const [label, mutateBatch] of [
+  ['attestation digest', candidate => { candidate.facts[0].publication_review.batch_attestation_sha256 = 'a'.repeat(64); }],
+  ['licence terms', candidate => { candidate.sources[0].factual_use.terms_url = 'https://attacker.invalid/fake'; }],
+  ['factual basis', candidate => { candidate.sources[0].factual_use.basis = 'fabricated'; }],
+  ['allowed-use boundary', candidate => { candidate.facts[0].allowed_uses.scoring = true; }],
+]) {
+  const changed = structuredClone(batchCandidate);
+  mutateBatch(changed);
+  assert.strictEqual(evaluateRelease(changed, { publicationAuthorities: [batchAuthority] }).publication_tiers.factual_display.status, 'blocked', `${label} drift must block factual publication`);
+}
+
 process.stdout.write([
   'CT-40 independent review and release gate: PASS',
   `  canonical reason codes: ${REASON_CODES.length}`,
   `  fictional cases: ${fixtures.cases.length}`,
   `  allowed / denied: ${allow} / ${deny}`,
+  '  external batch-authority binding and four fabrication probes: verified',
   '  deterministic timestamp, ordering, hash, and review queue: verified'
 ].join('\n') + '\n');
