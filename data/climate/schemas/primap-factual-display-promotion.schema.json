@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/primap-factual-display-promotion-1.0.0.json",
+  "title": "CT-10C independently attested factual emissions display promotion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "schema_ref", "promotion_id", "created_at", "calculation_hash", "inputs", "metric", "release_use_flags", "interpretation_guardrails", "promotion_review", "coverage", "series", "forbidden_outputs"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "schema_ref": { "const": "data/climate/schemas/primap-factual-display-promotion.schema.json" },
+    "promotion_id": { "const": "ct-10c:primap-hist-2.6.1:economy-wide:2014-2023" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "calculation_hash": { "$ref": "#/$defs/sha256" },
+    "inputs": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate", "independent_attestation"],
+      "properties": {
+        "candidate": {
+          "type": "object", "additionalProperties": false,
+          "required": ["path", "sha256", "calculation_hash"],
+          "properties": {
+            "path": { "const": "data/climate/evidence/primap-hist-2.6.1-histtp-m0el-2014-2023.json" },
+            "sha256": { "const": "e242e5a49ba963eaeafe472c8c6702a193e79f60cf6762083f4ba72e9aa239b6" },
+            "calculation_hash": { "const": "8182081d7ef30e24731aac43e28f5f2b1b1316dd4721100bb8c069972cd1be49" }
+          }
+        },
+        "independent_attestation": {
+          "type": "object", "additionalProperties": false,
+          "required": ["path", "sha256", "calculation_hash", "review_id", "reviewer_id", "builder_id", "independent_of_builder", "decision"],
+          "properties": {
+            "path": { "const": "data/climate/reviews/primap-hist-2.6.1-economy-wide-ct10b-review.json" },
+            "sha256": { "const": "e0c17b4191a0e62a0c91076f054d14df49325c867763f5f9f9907dddff421c84" },
+            "calculation_hash": { "const": "4494782a4e968e8826b192e04fe8dcafdc4c089f9ac87bff7261f04628b7bc20" },
+            "review_id": { "type": "string", "minLength": 1 },
+            "reviewer_id": { "type": "string", "minLength": 1 },
+            "builder_id": { "type": "string", "minLength": 1 },
+            "independent_of_builder": { "const": true },
+            "decision": { "const": "pass" }
+          }
+        }
+      }
+    },
+    "metric": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "plane", "evidence_class", "unit", "period", "gas_basket", "gwp_convention", "lulucf", "international_bunkers", "uncertainty_status"],
+      "properties": {
+        "id": { "const": "annual_economy_wide_ghg_excluding_lulucf" },
+        "plane": { "const": "harmonized" },
+        "evidence_class": { "const": "harmonized_estimate" },
+        "unit": { "const": "MtCO2e/yr" },
+        "period": { "const": { "start_year": 2014, "end_year": 2023, "latest_year": 2023 } },
+        "gas_basket": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+        "gwp_convention": { "const": "AR6GWP100" },
+        "lulucf": { "const": "excluded" },
+        "international_bunkers": { "const": "not_specified_for_selected_category" },
+        "uncertainty_status": { "const": "not_provided_in_selected_rows" }
+      }
+    },
+    "release_use_flags": { "$ref": "#/$defs/useFlags" },
+    "interpretation_guardrails": {
+      "type": "object", "additionalProperties": false,
+      "required": ["ranking_definition", "ranking_is_performance_judgment", "missing_target_implies_good_performance", "missing_target_implies_bad_performance", "required_label", "required_caveats"],
+      "properties": {
+        "ranking_definition": { "type": "string", "minLength": 1 },
+        "ranking_is_performance_judgment": { "const": false },
+        "missing_target_implies_good_performance": { "const": false },
+        "missing_target_implies_bad_performance": { "const": false },
+        "required_label": { "type": "string", "minLength": 1 },
+        "required_caveats": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "promotion_review": {
+      "const": { "status": "not_reviewed", "builder_id": "ct-10c-display-promotion", "reviewer_id": null, "reviewed_at": null, "independent_review_required": true, "production_runtime_release_allowed": false }
+    },
+    "coverage": {
+      "const": { "registry_entities": 249, "promoted_country_series": 206, "source_unavailable": 43, "promoted_observations": 2060, "latest_year_values": 206 }
+    },
+    "series": { "type": "array", "minItems": 206, "maxItems": 206, "items": { "$ref": "#/$defs/series" } },
+    "forbidden_outputs": {
+      "const": { "target_assigned": false, "commitment_status_assigned": false, "delivery_assigned": false, "performance_assigned": false, "impact_band_assigned": false, "composite_score_assigned": false, "normative_climate_score_assigned": false, "performance_rank_assigned": false }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "useFlags": {
+      "const": {
+        "factual_emissions_display": true,
+        "emissions_time_series_display": true,
+        "annual_emissions_magnitude_comparison": true,
+        "annual_emissions_magnitude_ranking": true,
+        "target_or_commitment_assessment": false,
+        "delivery_assessment": false,
+        "performance_assessment": false,
+        "assessed_country_status": false,
+        "impact_band_assignment": false,
+        "composite_score": false,
+        "normative_climate_score": false,
+        "production_runtime_release": false
+      }
+    },
+    "value": {
+      "type": "object", "additionalProperties": false,
+      "required": ["year", "value_mtco2e", "normalized_value_decimal", "fact_id", "source_fact_id"],
+      "properties": {
+        "year": { "type": "integer", "minimum": 2014, "maximum": 2023 },
+        "value_mtco2e": { "type": "number" },
+        "normalized_value_decimal": { "type": "string", "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$" },
+        "fact_id": { "type": "string", "pattern": "^fact:primap-hist-2\\.6\\.1:normalized:" },
+        "source_fact_id": { "type": "string", "pattern": "^fact:primap-hist-2\\.6\\.1:source:" }
+      }
+    },
+    "series": {
+      "type": "object", "additionalProperties": false,
+      "required": ["country_id", "iso_alpha3", "source_locator", "values"],
+      "properties": {
+        "country_id": { "type": "string", "pattern": "^iso3166-1:[A-Z]{3}$" },
+        "iso_alpha3": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "source_locator": { "type": "object" },
+        "values": { "type": "array", "minItems": 10, "maxItems": 10, "items": { "$ref": "#/$defs/value" } }
+      }
+    }
+  }
+}
