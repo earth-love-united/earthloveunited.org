@@ -1,0 +1,2556 @@
+{
+  "schema_version": "1.0.0",
+  "queue_id": "ct-16-top20-source-routing-queue-v2-2026-07-15",
+  "routing_policy_id": "ct-16-source-routing-policy-v2-2026-07-15",
+  "routing_policy_calculation_hash": "8c494f1de6bc3d62dcf2629942c38c4c3dae9073669abd44df4e53bb11326b53",
+  "created_at": "2026-07-15T14:00:00Z",
+  "review_status": "not_reviewed",
+  "release_eligible": false,
+  "scoring_authorized": false,
+  "production_runtime_release": false,
+  "inputs": {
+    "ct14_immutable_snapshot": {
+      "path": "data/climate/releases/top20-primary-source-gap-queue-2026-07-15.json",
+      "sha256": "fb1bbc050b7ba791893b7751dd4f916ecd01885557b272cb025f8c0e4b64452d"
+    },
+    "source_routing_policy": {
+      "path": "data/climate/releases/source-routing-policy-v2-2026-07-15.json",
+      "calculation_hash": "8c494f1de6bc3d62dcf2629942c38c4c3dae9073669abd44df4e53bb11326b53"
+    }
+  },
+  "coverage": {
+    "ranked_entities": 20,
+    "primary_inventory_routes_satisfied": 0,
+    "btr_components_governance_approved": 0,
+    "ter_only_inventory_packages_eligible": 0,
+    "active_ndc_or_reviewed_absence_routes_complete": 0,
+    "release_eligible_entities": 0
+  },
+  "entities": [
+    {
+      "priority": 1,
+      "country_id": "iso3166-1:CHN",
+      "iso_alpha3": "CHN",
+      "name": "China",
+      "reviewed_2023_factual_rank": 1,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "metadata_only_in_review",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [
+            "unfccc-ndc-chn-2035-2025-11-03"
+          ],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "document_checksum_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "field_presence_in_review",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [
+            "unfccc-ndc-chn-2035-2025-11-03"
+          ],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "document_checksum_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 2,
+      "country_id": "iso3166-1:USA",
+      "iso_alpha3": "USA",
+      "name": "United States",
+      "reviewed_2023_factual_rank": 2,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 3,
+      "country_id": "iso3166-1:IND",
+      "iso_alpha3": "IND",
+      "name": "India",
+      "reviewed_2023_factual_rank": 3,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "metadata_only_in_review",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [
+            "unfccc-ndc-ind-2031-2035-2026-04-24"
+          ],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "document_checksum_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "field_presence_in_review",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [
+            "unfccc-ndc-ind-2031-2035-2026-04-24"
+          ],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "document_checksum_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 4,
+      "country_id": "iso3166-1:RUS",
+      "iso_alpha3": "RUS",
+      "name": "Russian Federation",
+      "reviewed_2023_factual_rank": 4,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 5,
+      "country_id": "iso3166-1:IDN",
+      "iso_alpha3": "IDN",
+      "name": "Indonesia",
+      "reviewed_2023_factual_rank": 5,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "metadata_only_in_review",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [
+            "unfccc-ndc-idn-enhanced-2022-09-23",
+            "unfccc-ndc-idn-second-2025-10-27"
+          ],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "document_checksum_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "field_presence_in_review",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [
+            "unfccc-ndc-idn-enhanced-2022-09-23",
+            "unfccc-ndc-idn-second-2025-10-27"
+          ],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "document_checksum_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 6,
+      "country_id": "iso3166-1:BRA",
+      "iso_alpha3": "BRA",
+      "name": "Brazil",
+      "reviewed_2023_factual_rank": 6,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 7,
+      "country_id": "iso3166-1:JPN",
+      "iso_alpha3": "JPN",
+      "name": "Japan",
+      "reviewed_2023_factual_rank": 7,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 8,
+      "country_id": "iso3166-1:IRN",
+      "iso_alpha3": "IRN",
+      "name": "Iran",
+      "reviewed_2023_factual_rank": 8,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "legacy_indc_only",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "field_presence_in_review",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [
+            "unfccc-indc-irn-2015-11-21"
+          ],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "document_checksum_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 9,
+      "country_id": "iso3166-1:SAU",
+      "iso_alpha3": "SAU",
+      "name": "Saudi Arabia",
+      "reviewed_2023_factual_rank": 9,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 10,
+      "country_id": "iso3166-1:CAN",
+      "iso_alpha3": "CAN",
+      "name": "Canada",
+      "reviewed_2023_factual_rank": 10,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 11,
+      "country_id": "iso3166-1:MEX",
+      "iso_alpha3": "MEX",
+      "name": "Mexico",
+      "reviewed_2023_factual_rank": 11,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 12,
+      "country_id": "iso3166-1:KOR",
+      "iso_alpha3": "KOR",
+      "name": "South Korea",
+      "reviewed_2023_factual_rank": 12,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 13,
+      "country_id": "iso3166-1:DEU",
+      "iso_alpha3": "DEU",
+      "name": "Germany",
+      "reviewed_2023_factual_rank": 13,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 14,
+      "country_id": "iso3166-1:AUS",
+      "iso_alpha3": "AUS",
+      "name": "Australia",
+      "reviewed_2023_factual_rank": 14,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 15,
+      "country_id": "iso3166-1:TUR",
+      "iso_alpha3": "TUR",
+      "name": "Türkiye",
+      "reviewed_2023_factual_rank": 15,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 16,
+      "country_id": "iso3166-1:ZAF",
+      "iso_alpha3": "ZAF",
+      "name": "South Africa",
+      "reviewed_2023_factual_rank": 16,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 17,
+      "country_id": "iso3166-1:VNM",
+      "iso_alpha3": "VNM",
+      "name": "Vietnam",
+      "reviewed_2023_factual_rank": 17,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 18,
+      "country_id": "iso3166-1:PAK",
+      "iso_alpha3": "PAK",
+      "name": "Pakistan",
+      "reviewed_2023_factual_rank": 18,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 19,
+      "country_id": "iso3166-1:THA",
+      "iso_alpha3": "THA",
+      "name": "Thailand",
+      "reviewed_2023_factual_rank": 19,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    },
+    {
+      "priority": 20,
+      "country_id": "iso3166-1:NGA",
+      "iso_alpha3": "NGA",
+      "name": "Nigeria",
+      "reviewed_2023_factual_rank": 20,
+      "routing": {
+        "official_inventory": {
+          "status": "blocked_primary_source_missing",
+          "primary_requirement_satisfied": false,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "primary_candidates": [
+            {
+              "route_id": "official-inventory:nir-crt:primary",
+              "source_registry_id": "unfccc-nir-crt-2026-cycle",
+              "source_role": "primary_value_source",
+              "route_state": "blocked_pending_rights_and_review",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            },
+            {
+              "route_id": "official-inventory:btr-component:conditional-primary",
+              "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+              "source_role": "conditional_primary_component",
+              "route_state": "blocked_role_domain_mismatch",
+              "source_document_ids": [],
+              "explicit_component_id": null,
+              "document_checksum_sha256": null,
+              "governance_decision_id": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "family_level_authorized": false,
+              "primary_requirement_satisfied": false
+            }
+          ],
+          "corroboration_candidates": [
+            {
+              "route_id": "official-inventory:ter:corroboration-only",
+              "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+              "source_role": "corroboration_only",
+              "route_state": "blocked_normalized_findings_pending",
+              "source_document_ids": [],
+              "document_checksum_sha256": null,
+              "rights_decision_id": null,
+              "independent_review_id": null,
+              "sufficient_as_primary": false
+            }
+          ],
+          "reason_codes": [
+            "corroboration_not_primary",
+            "document_checksum_missing",
+            "explicit_component_identity_missing",
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending",
+            "source_role_domain_mismatch"
+          ]
+        },
+        "active_ndc": {
+          "status": "source_missing",
+          "route_id": "active-ndc:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        },
+        "target_methodology": {
+          "status": "source_missing",
+          "route_id": "target-methodology:ndc-registry:primary-document",
+          "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+          "source_role": "primary_document_source",
+          "source_document_ids": [],
+          "exact_artifacts_acquired": 0,
+          "exact_artifact_checksums_sha256": [],
+          "active_or_reviewed_absence_status_verified": false,
+          "governance_decision_id": null,
+          "rights_decision_id": null,
+          "independent_review_id": null,
+          "normalized_values_eligible": false,
+          "scoring_eligible": false,
+          "reason_codes": [
+            "independent_review_missing",
+            "normalized_values_not_authorized",
+            "primary_value_source_missing",
+            "scoring_not_authorized",
+            "source_governance_pending",
+            "source_rights_pending"
+          ]
+        }
+      },
+      "gates": {
+        "primary_sources_complete": false,
+        "rights_complete": false,
+        "independent_review_complete": false,
+        "assessment_eligible": false,
+        "scoring_eligible": false,
+        "release_eligible": false,
+        "production_runtime_release": false
+      }
+    }
+  ],
+  "prohibited_outputs": [
+    "normalized official inventory values",
+    "normalized target values",
+    "commitment status",
+    "delivery or performance status",
+    "climate scores",
+    "production runtime facts"
+  ],
+  "calculation_hash": "af8b7d160f272b66e42acfa88e18ac361548bc7ec927a4d15368da2447760619"
+}
