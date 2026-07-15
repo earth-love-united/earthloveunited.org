@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/delivery-result-1.0.0.json",
+  "title": "Country climate delivery assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "evidence_reason_codes", "assessment_basis_codes", "observed_pace", "required_pace", "level_comparison", "policy_projection", "illustrative_required_path", "lineage"],
+  "properties": {
+    "status": { "enum": ["ahead", "on_pace", "uncertain", "off_course", "not_assessed"] },
+    "evidence_reason_codes": { "$ref": "#/$defs/evidenceReasons" },
+    "assessment_basis_codes": { "$ref": "#/$defs/assessmentReasons" },
+    "observed_pace": {
+      "type": ["object", "null"],
+      "properties": {
+        "evidence_reason_codes": { "$ref": "#/$defs/evidenceReasons" },
+        "assessment_basis_codes": { "$ref": "#/$defs/assessmentReasons" }
+      }
+    },
+    "required_pace": { "type": ["object", "null"] },
+    "level_comparison": { "type": ["object", "null"] },
+    "policy_projection": {
+      "type": ["object", "null"],
+      "properties": {
+        "status": { "enum": ["on_pace", "uncertain", "off_course", "not_assessed"] },
+        "eligible": { "type": "boolean" },
+        "evidence_reason_codes": { "$ref": "#/$defs/evidenceReasons" },
+        "assessment_basis_codes": { "$ref": "#/$defs/assessmentReasons" }
+      }
+    },
+    "illustrative_required_path": {
+      "type": ["object", "null"],
+      "properties": {
+        "data_role": { "const": "illustrative_required_path" },
+        "is_observation": { "const": false },
+        "label": { "const": "Illustrative required pathway" }
+      }
+    },
+    "lineage": {
+      "type": ["object", "null"],
+      "properties": {
+        "formula_version": { "const": "1.0.0" },
+        "methodology_version": { "const": "0.1.0" },
+        "input_fact_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^fact:" } },
+        "calculation_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  },
+  "$defs": {
+    "evidenceReasons": {
+      "type": "array", "uniqueItems": true,
+      "items": {
+        "enum": [
+          "climate_evidence_not_reviewed", "source_not_reviewed", "source_missing", "source_unavailable",
+          "licence_not_approved", "value_not_reported", "value_withheld", "reporting_not_yet_due",
+          "reporting_optional", "not_applicable", "stale_source", "unresolved_source_conflict",
+          "target_not_found", "target_expired", "target_scope_missing", "target_year_missing",
+          "reference_year_missing", "reference_value_missing", "gas_basket_missing", "gwp_convention_missing",
+          "sector_coverage_missing", "geographic_coverage_missing", "lulucf_treatment_missing",
+          "conditionality_missing", "article6_treatment_missing", "bau_scenario_missing",
+          "bau_vintage_missing", "bau_target_value_missing", "intensity_denominator_missing",
+          "intensity_denominator_projection_missing", "fixed_level_missing", "trajectory_missing",
+          "peaking_year_missing", "qualitative_target", "sectoral_target", "net_zero_details_missing",
+          "scope_mismatch", "gas_basket_mismatch", "gwp_mismatch", "sector_mismatch",
+          "geographic_boundary_mismatch", "lulucf_mismatch", "year_mismatch", "evidence_insufficient",
+          "uncertainty_too_large", "independent_review_required", "membership_not_reviewed",
+          "party_status_not_reviewed", "territory_status_not_reviewed", "geometry_not_reviewed",
+          "region_not_reviewed", "ldc_status_not_reviewed", "lldc_status_not_reviewed",
+          "sids_status_not_reviewed", "assessment_eligibility_not_reviewed"
+        ]
+      }
+    },
+    "assessmentReasons": {
+      "type": "array", "uniqueItems": true,
+      "items": {
+        "enum": [
+          "calculation_time_missing", "assessment_year_missing", "country_mismatch",
+          "target_non_comparable", "target_endpoint_missing", "target_endpoint_invalid_range", "target_endpoint_contract_invalid",
+          "unit_mismatch", "observed_series_incomplete", "observed_series_invalid", "observation_fact_id_missing",
+          "projection_rejected_as_observation", "projection_point_rejected_as_observation",
+          "observed_pace_at_least_required", "target_level_already_met_and_pace_sufficient",
+          "observed_pace_slower_than_required", "observed_required_intervals_overlap",
+          "projection_role_invalid", "projection_target_year_missing", "projection_invalid",
+          "policy_projection_meets_target", "policy_projection_misses_target",
+          "projection_target_intervals_overlap", "delivery_signals_disagree"
+        ]
+      }
+    }
+  }
+}
