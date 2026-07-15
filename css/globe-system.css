@@ -445,8 +445,8 @@ body:not(.globe-mode) #globe-loading {
   position: relative !important;
   inset: auto !important;
   flex: 0 0 auto;
-  width: 28px !important;
-  height: 28px !important;
+  width: 44px !important;
+  height: 44px !important;
   padding: 0 !important;
   border: 1px solid var(--cell-bd);
   border-radius: 50% !important;
@@ -622,6 +622,17 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-proj {
   background: var(--hud-cell);
 }
 
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-status-magnitude,
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-candidate,
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-factual-value strong {
+  color: #6b3d00;
+}
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-candidate {
+  border-color: #81521d;
+  background: #f4e7d4;
+}
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .elu-trajectory-current.is-magnitude { stroke: #7a4300; }
+
 html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   border-top-color: var(--hud-divider);
 }
@@ -663,7 +674,7 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   .elu-rank-row {
     grid-template-columns: 15px 6px minmax(0, 1fr);
     gap: 4px;
-    min-height: 32px;
+    min-height: 44px;
     padding: 5px;
   }
 
@@ -778,7 +789,7 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
 
   .elu-rank-title { font-size: 0; }
   .elu-rank-title::after {
-    content: 'GAP';
+    content: '2023';
     font-size: 7px;
     letter-spacing: .8px;
   }

@@ -51,7 +51,8 @@ assert.ok(manifest.compiler_files.includes('js/country-ranking-compiler.js') && 
 assert.ok(!data.includes('pledge-nodes.json') && !globe.includes('pledge-nodes.json'));
 ['Candidate preview', 'not reviewed', 'Annual harmonized emissions estimates', 'Source gaps · unnumbered', 'not a performance score'].forEach(text => assert.ok(globe.includes(text) || index.includes(text), `missing candidate disclosure: ${text}`));
 assert.ok(globe.includes('elu-trajectory-point') && globe.includes('elu-chart-axis') && globe.includes('Show chart data'));
-assert.ok(globe.includes("selected ? 'dialog'") && globe.includes('aria-modal') && globe.includes('country-card-heading'));
+assert.ok(globe.includes("wrap.setAttribute('role', 'dialog')") && globe.includes("wrap.setAttribute('aria-modal', 'true')") && globe.includes('country-card-heading'));
+assert.ok(globe.includes("tt.removeAttribute('aria-modal')") && globe.includes("tt.setAttribute('aria-hidden', 'true')"), 'closed modal must leave the accessibility tree');
 assert.ok(css.includes('.elu-rank-dot.is-magnitude') && css.includes('.elu-rank-dot.is-gap') && css.includes('.tt-candidate'));
 assert.ok(!/Measured \/ harmonized emissions|Measured annual observations/.test(JSON.stringify(output.runtime) + globe));
 assert.ok(!/Math\.log10\((?:0\.00334|15000)/.test(globe), 'hard-coded visual magnitude bounds leaked');

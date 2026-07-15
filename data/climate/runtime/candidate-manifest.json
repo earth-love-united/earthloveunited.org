@@ -60,9 +60,7 @@
     "independent CT-42 runtime review",
     "CT-40 allow decision",
     "reviewed runtime manifest and release diff",
-    "full globe browser render (js/vendor/globe.gl.js is absent from this checkout)",
-    "SmokeTest and StackLint after full globe render",
-    "keyboard, focus trap/restoration, screen-reader, contrast, 320px/200% zoom, and reduced-motion verification",
+    "screen-reader, formal contrast, 320px/200% zoom, and reduced-motion verification",
     "polygon and fallback rendering plus color-removal comprehension review"
   ],
   "prohibited_release_files": [

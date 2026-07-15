@@ -533,7 +533,8 @@ const GlobeModule = {
           this._canvasEl.addEventListener('click', this._onCanvasClick);
         }
 
-        this.selectDefaultCountry();
+        // Do not auto-open a modal card. A country card is a user-triggered
+        // dialog so it always has a real opener for focus restoration.
 
         // Notify mode modules that country data are ready
         safeCall('GLOBE_MODES', 'onCountryDataReady');
@@ -815,8 +816,6 @@ const GlobeModule = {
     if (!wrap) {
       wrap = document.createElement('div');
       wrap.id = 'elu-country-card-wrap';
-      wrap.setAttribute('role', 'group');
-      wrap.setAttribute('aria-label', 'Country dashboard navigation');
       wrap.innerHTML = '<button type="button" class="tt-nav tt-nav-prev" data-country-nav="-1" aria-label="Previous country" title="Previous country">◀</button>'
         + '<button type="button" class="tt-nav tt-nav-next" data-country-nav="1" aria-label="Next country" title="Next country">▶</button>';
       wrap.addEventListener('click', (event) => {
@@ -825,6 +824,15 @@ const GlobeModule = {
         event.preventDefault();
         event.stopPropagation();
         this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
+      });
+      wrap.addEventListener('keydown', event => {
+        if (event.key !== 'Tab') return;
+        const heading = wrap.querySelector('#country-card-heading');
+        const tabbable = Array.from(wrap.querySelectorAll('button,a[href],summary,[tabindex="0"]')).filter(node => !node.disabled);
+        if (!heading || !tabbable.length) return;
+        const last = tabbable[tabbable.length - 1];
+        if (event.shiftKey && document.activeElement === heading) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); heading.focus(); }
       });
       document.body.appendChild(wrap);
     }
@@ -931,14 +939,6 @@ const GlobeModule = {
           return;
         }
       });
-      tt.addEventListener('keydown', event => {
-        if (!tt.classList.contains('selected') || event.key !== 'Tab') return;
-        const focusable = Array.from(tt.querySelectorAll('button,a[href],summary,[tabindex="0"]')).filter(node => !node.disabled);
-        if (!focusable.length) return;
-        const first = focusable[0], last = focusable[focusable.length - 1];
-        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-      });
 
       // ── Swipe physics (ported from agent/designer/swipeable-hover-card) ──
       // Drag the pinned card like a deck: card follows the pointer with a
@@ -1024,18 +1024,22 @@ const GlobeModule = {
       : 'No reviewed factual emissions series in this candidate';
     const comment = _getCountryGaiaComment(d);
 
-    if (selected) this._ensureCountryCardWrap(tt);
+    if (selected) {
+      const wrap = this._ensureCountryCardWrap(tt);
+      if (wrap) {
+        wrap.setAttribute('role', 'dialog');
+        wrap.setAttribute('aria-modal', 'true');
+        wrap.setAttribute('aria-labelledby', 'country-card-heading');
+      }
+    }
     else this._unmountCountryCard();
     tt.classList.toggle('selected', !!selected);
+    tt.setAttribute('aria-hidden', 'false');
     tt.dataset.status = statusAttr;
-    tt.setAttribute('role', selected ? 'dialog' : 'tooltip');
-    if (selected) {
-      tt.setAttribute('aria-modal', 'true');
-      tt.setAttribute('aria-labelledby', 'country-card-heading');
-    } else {
-      tt.removeAttribute('aria-modal'); tt.removeAttribute('aria-labelledby');
-    }
-    tt.setAttribute('aria-label', selected ? d.country + ' factual emissions candidate' : d.country + (d.hasData ? ' emissions facts' : ' emissions data gap'));
+    if (selected) tt.removeAttribute('role');
+    else tt.setAttribute('role', 'tooltip');
+    if (selected) tt.removeAttribute('aria-label');
+    else tt.setAttribute('aria-label', d.country + (d.hasData ? ' emissions facts' : ' emissions data gap'));
     if (!selected) tt.removeAttribute('tabindex');
 
     let html = '<div class="tt-topline">'
@@ -1431,6 +1435,11 @@ const GlobeModule = {
       if (tt.contains(document.activeElement)) document.activeElement.blur();
       tt.classList.remove('visible', 'selected');
       tt.removeAttribute('tabindex');
+      tt.removeAttribute('role');
+      tt.removeAttribute('aria-modal');
+      tt.removeAttribute('aria-labelledby');
+      tt.removeAttribute('aria-label');
+      tt.setAttribute('aria-hidden', 'true');
       delete tt.dataset.status;
     }
     this._unmountCountryCard();
