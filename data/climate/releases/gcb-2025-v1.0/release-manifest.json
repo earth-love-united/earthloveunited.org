@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "release_id": "gcb-2025-v1.0",
+  "release_status": "blocked_source_unavailable",
+  "methodology_version": "0.1.0",
+  "compiled_on": null,
+  "source_release": "Global Carbon Budget 2025 v1.0",
+  "artifacts": [],
+  "publication_gate": "user_licence_acceptance_required",
+  "excluded_inputs": [
+    {
+      "description": "GCB-hosted National fossil carbon emissions v2025 workbook retrieved 2026-07-15",
+      "bytes": 739007,
+      "sha256": "a0edc6560fb0c0d974eff994b146ad1be87c79f158831732692c688a46ec55c0",
+      "reason": "Does not match the ICOS v1.0 object size or checksum; workbook metadata predates v1.0 publication."
+    }
+  ]
+}
+

@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "release_id": "gcb-2025-v1.0",
+  "release_status": "blocked_source_unavailable",
+  "year_span": null,
+  "source_entities": 0,
+  "canonical_identities_linked": 0,
+  "observations": {"estimated": 0, "missing": 0, "total": 0},
+  "excluded_aggregate_columns": [],
+  "anomalies": [],
+  "blocker": "Exact source workbook requires user acceptance of the ICOS CC BY 4.0 download terms. No older or differently checksummed workbook is substituted."
+}
