@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0.0",
+  "review_candidate_id": "ct-42-to-ct-40-real-release-review-2026-07-15",
+  "adapter_version": "1.0.0",
+  "evaluated_input_sha256": "f5c06b91054a68ecd5b31b866e51a60d83e35ad71a437d5bd7196fd51e55d12e",
+  "ct40_gate_version": "1.0.0",
+  "ct40_manifest_calculation_hash": "ac6d58c1c34186abcb4379eecc8416de2459fc5fba84da73dfd5585f431ca32c",
+  "full_gate_output_sha256": "60c48efe6a32b6814ca2337387b2a008b4c7b9ae88a8e3a6029494c388a48f87",
+  "decision": "deny",
+  "eligible": false,
+  "reason_codes": [
+    "climate_evidence_not_reviewed",
+    "source_not_reviewed",
+    "licence_not_approved",
+    "evidence_insufficient",
+    "independent_review_required"
+  ],
+  "counts": {
+    "facts_evaluated": 2060,
+    "facts_eligible": 0,
+    "profiles_evaluated": 0,
+    "review_queue_items": 2061,
+    "review_queue_by_subject": {
+      "fact": 2060,
+      "release": 1
+    }
+  },
+  "fact_decision_groups": [
+    {
+      "count": 2060,
+      "reason_codes": [
+        "climate_evidence_not_reviewed",
+        "source_not_reviewed",
+        "licence_not_approved",
+        "evidence_insufficient",
+        "independent_review_required"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "gap": "top20_primary_source_review",
+      "canonical_reason_codes": [
+        "source_not_reviewed",
+        "climate_evidence_not_reviewed"
+      ],
+      "status": "missing"
+    },
+    {
+      "gap": "explicit_ct40_licence_decision",
+      "canonical_reason_codes": [
+        "licence_not_approved"
+      ],
+      "status": "missing"
+    },
+    {
+      "gap": "ct40_field_level_fact_reviews",
+      "canonical_reason_codes": [
+        "climate_evidence_not_reviewed",
+        "source_not_reviewed",
+        "evidence_insufficient",
+        "independent_review_required"
+      ],
+      "status": "missing"
+    },
+    {
+      "gap": "independent_ct40_release_review",
+      "canonical_reason_codes": [
+        "climate_evidence_not_reviewed",
+        "independent_review_required"
+      ],
+      "status": "missing"
+    },
+    {
+      "gap": "reviewed_runtime_manifest_release_diff_and_rollback_proof",
+      "canonical_reason_codes": [
+        "climate_evidence_not_reviewed"
+      ],
+      "status": "missing"
+    }
+  ],
+  "prohibited_outputs_absent": [
+    "data/climate/runtime-manifest.json",
+    "data/climate/releases/reviewed-release-diff.json",
+    "data/climate/releases/ct40-allow-manifest.json"
+  ],
+  "release_authority": false
+}
