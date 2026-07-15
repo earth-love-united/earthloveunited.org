@@ -123,9 +123,14 @@ The referenced CT-40 manifest is not trusted as a claim. It must be the exact
 full output of `evaluateRelease()` recomputed from the separately pinned
 `ct40-reviewed-release-input.json`. The input and output must pass their frozen
 schemas, contain non-empty facts and profiles, profile every released fact,
-recompute derived-fact and profile hashes, match every source to the pinned
-canonical registry and an independent redistribution/scoring rights decision,
-and record independently reviewed, document-pinned, canonically hashed primary-source records for the exact required top-20 country set. An
+recompute derived-fact and profile hashes, and match every published fact and
+profile record exactly (including order and every field) to the reviewed CT-40
+candidate. Every source must match the pinned canonical registry and an
+independent redistribution/scoring rights decision. Every top-20 document ID
+must resolve through that registry to one unique same-country/same-role regular
+non-symlink artifact with an exact digest and the linked approved source-rights
+decision. The package records independently reviewed, canonically hashed
+primary-source records for the exact required top-20 country set. An
 extra `release_authority` field, a shape-only hash, or any output drift fails.
 Successful content validation reports eligibility only and never mints release
 authority; authority still requires the detached signed production approval.
@@ -148,11 +153,12 @@ schemas, and five release-package artifacts.
 The production artifacts have a deliberate acyclic generation order:
 
 1. Write the reviewed CT-40 input, including source-rights decisions and the
-   20 hashed primary-source review records; recompute derived fact/profile
-   hashes.
+   20 hashed primary-source review records; register every referenced evidence
+   document with its country, role, source/right decision, path, and digest;
+   recompute derived fact/profile hashes.
 2. Run `evaluateRelease()` and write its exact full output as the ALLOW file.
 3. Write the runtime manifest with exact pins for runtime/data/fact/profile,
-   source-registry, reviewed-input, and ALLOW bytes.
+   every evidence artifact, source-registry, reviewed-input, and ALLOW bytes.
 4. Write and canonically hash the release diff, pinning the manifest, input,
    and ALLOW.
 5. Build the rollback patch and proof, pinning those four earlier artifacts;
@@ -181,9 +187,12 @@ regressions, ambiguous missing-target treatment, composite scores, unsourced
 rankings, denied releases, invalid/self-reviewed diffs, missing licence/review/
 lineage, empty facts/profile data, canonical diff hashes, canonical-enum
 divergence, and generated drift. The reviewed production-package checker adds
-30 adversarial cases for malformed/empty facts and profiles, synthetic ALLOWs, invented
-source rights, placeholder reviewers, shape-only calculation hashes, pin drift, partial/symlinked
-artifacts, and executable rollback tampering.
+49 adversarial cases for malformed/empty facts and profiles, synthetic ALLOWs,
+invented source rights, placeholder reviewers, shape-only calculation hashes,
+pin drift, partial/symlinked artifacts, published-record substitution,
+reordering, duplication and omission, nonexistent/traversing/symlinked/
+duplicated/cross-entity/unpinned top-20 evidence, and executable rollback
+tampering.
 
 Run:
 

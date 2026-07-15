@@ -10,6 +10,7 @@ const {
   PATHS,
   REQUIRED_TOP20_COUNTRY_IDS,
   SCHEMAS,
+  TOP20_DOCUMENT_ROLES,
   inspectReviewedClimateRelease,
   factCalculationHash,
   profileCalculationHash,
@@ -46,23 +47,67 @@ function set(target, dotted, value) {
   owner[key] = structuredClone(value);
 }
 
+function refreshReleaseChain(root) {
+  const read = relative => JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8'));
+  const present = relative => fs.existsSync(path.join(root, relative));
+  const runtime = read(PATHS.runtimeManifest);
+  runtime.artifact_pins.forEach(item => {
+    if (present(item.path)) item.sha256 = filePin(root, item.path).sha256;
+  });
+  write(root, PATHS.runtimeManifest, runtime);
+
+  const releaseDiff = read(PATHS.releaseDiff);
+  releaseDiff.artifact_pins.forEach(item => { item.sha256 = filePin(root, item.path).sha256; });
+  releaseDiff.diff_hash = null;
+  releaseDiff.diff_hash = releaseDiffCalculationHash(releaseDiff);
+  write(root, PATHS.releaseDiff, releaseDiff);
+
+  const rollbackProof = read(PATHS.rollbackProof);
+  rollbackProof.release_package_pins.forEach(item => { item.sha256 = filePin(root, item.path).sha256; });
+  rollbackProof.calculation_hash = null;
+  rollbackProof.calculation_hash = rollbackCalculationHash(rollbackProof);
+  write(root, PATHS.rollbackProof, rollbackProof);
+}
+
 function makeFixture(mutation = null) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-reviewed-release-fixture-'));
   const documents = {};
   for (const relative of Object.values(SCHEMAS)) write(root, relative, fs.readFileSync(path.join(ROOT, relative)));
 
   const candidate = structuredClone(GATE_FIXTURE.base_candidate);
+  const secondProfile = structuredClone(candidate.profiles[0]);
+  secondProfile.profile_id = 'profile:fixture:climate-2099-secondary';
+  secondProfile.review.compiler_id = 'fixture-profile-secondary-compiler';
+  secondProfile.review.reviewer_id = 'fixture-profile-secondary-reviewer';
+  candidate.profiles.push(secondProfile);
   candidate.facts.forEach(fact => {
     if (fact.derivation) fact.derivation.calculation_hash = factCalculationHash(fact);
   });
   candidate.profiles.forEach(profile => { profile.calculation_hash = profileCalculationHash(profile); });
+  const evidenceDocuments = [];
   const top20Reviews = REQUIRED_TOP20_COUNTRY_IDS.map(countryId => {
+    const documentLists = {};
+    for (const [field, role] of Object.entries(TOP20_DOCUMENT_ROLES)) {
+      const countryCode = countryId.split(':').pop();
+      const documentId = `fixture-doc-${countryCode}-${role}`;
+      const artifactPath = `data/climate/evidence/fixture/${countryCode.toLowerCase()}-${role}.json`;
+      const source = role === 'target_methodology' ? candidate.sources[1] : candidate.sources[0];
+      write(root, artifactPath, { document_id: documentId, country_id: countryId, document_role: role });
+      evidenceDocuments.push({
+        artifact: filePin(root, artifactPath),
+        country_id: countryId,
+        document_id: documentId,
+        document_role: role,
+        rights_decision_id: source.licence.decision_id,
+        source_id: source.source_id,
+        source_version: 'fixture-source-v1',
+      });
+      documentLists[field] = [documentId];
+    }
     const review = {
       country_id: countryId,
       status: 'reviewed',
-      official_inventory_document_ids: [`fixture-inventory-${countryId}`],
-      active_ndc_document_ids: [`fixture-ndc-${countryId}`],
-      target_methodology_document_ids: [`fixture-method-${countryId}`],
+      ...documentLists,
       extractor_id: `fixture-extractor-${countryId}`,
       reviewer_id: 'fixture-top20-reviewer',
       reviewed_at: '2099-01-01T11:58:00Z',
@@ -110,7 +155,7 @@ function makeFixture(mutation = null) {
     id: source.source_id,
     version: 'fixture-source-v1',
     artifact: { sha256: source.checksum_sha256 },
-  })) });
+  })), evidence_documents: evidenceDocuments.sort((a, b) => a.document_id.localeCompare(b.document_id)) });
   write(root, PATHS.releaseInput, documents.releaseInput);
   write(root, PATHS.allowManifest, documents.allowManifest);
 
@@ -119,6 +164,7 @@ function makeFixture(mutation = null) {
     'data/climate/releases/fixture-profiles.json',
     'data/climate/source-registry.json',
     'data/climate/runtime/fixture-runtime.json',
+    ...evidenceDocuments.map(document => document.artifact.path),
     PATHS.releaseInput,
     PATHS.allowManifest,
     'js/fixture-runtime.js',
@@ -201,6 +247,9 @@ function makeFixture(mutation = null) {
   if (mutation && mutation.document) {
     if (mutation.path) set(documents[mutation.document], mutation.path, mutation.value);
     else documents[mutation.document] = structuredClone(mutation.value);
+    if (mutation.id === 'orphaned-fact') {
+      documents.releaseInput.candidate.profiles[1].input_fact_ids = [...mutation.value];
+    }
   }
   Object.entries(PATHS).forEach(([id, relative]) => write(root, relative, documents[id]));
   if (mutation?.filesystem === 'symlink_runtime_manifest') {
@@ -211,6 +260,91 @@ function makeFixture(mutation = null) {
   } else if (mutation?.filesystem === 'symlink_release_schema') {
     fs.unlinkSync(path.join(root, SCHEMAS.releaseInput));
     fs.symlinkSync(path.join(root, SCHEMAS.allowManifest), path.join(root, SCHEMAS.releaseInput));
+  } else if (mutation?.filesystem?.startsWith('published_')) {
+    const factsPath = 'data/climate/releases/fixture-facts.json';
+    const profilesPath = 'data/climate/releases/fixture-profiles.json';
+    const facts = JSON.parse(fs.readFileSync(path.join(root, factsPath), 'utf8'));
+    const profiles = JSON.parse(fs.readFileSync(path.join(root, profilesPath), 'utf8'));
+    if (mutation.filesystem === 'published_fact_content_drift') {
+      facts.facts[0].metric = 'emissions.unreviewed_substitution';
+      facts.facts[0].value = 987654321;
+    } else if (mutation.filesystem === 'published_profile_content_drift') {
+      profiles.profiles[0].calculation_hash = 'f'.repeat(64);
+      profiles.profiles[0].unreviewed_runtime_score = 100;
+    } else if (mutation.filesystem === 'published_fact_reordered') {
+      facts.facts.reverse();
+    } else if (mutation.filesystem === 'published_profile_reordered') {
+      profiles.profiles.reverse();
+    } else if (mutation.filesystem === 'published_fact_duplicate') {
+      facts.facts.push(structuredClone(facts.facts[0]));
+    } else if (mutation.filesystem === 'published_profile_duplicate') {
+      profiles.profiles.push(structuredClone(profiles.profiles[0]));
+    } else if (mutation.filesystem === 'published_fact_missing') {
+      facts.facts.pop();
+    } else if (mutation.filesystem === 'published_profile_missing') {
+      profiles.profiles.pop();
+    }
+    write(root, factsPath, facts);
+    write(root, profilesPath, profiles);
+    refreshReleaseChain(root);
+  } else if (mutation?.filesystem?.startsWith('evidence_')) {
+    const registryPath = 'data/climate/source-registry.json';
+    const registry = JSON.parse(fs.readFileSync(path.join(root, registryPath), 'utf8'));
+    const releaseInput = JSON.parse(fs.readFileSync(path.join(root, PATHS.releaseInput), 'utf8'));
+    const first = registry.evidence_documents.find(item => item.document_role === 'official_inventory');
+    const second = registry.evidence_documents.find(item =>
+      item.document_role === first.document_role && item.country_id !== first.country_id);
+    if (mutation.filesystem === 'evidence_nonexistent_reference') {
+      const review = releaseInput.review_context.top20_primary_source_reviews[0];
+      review.official_inventory_document_ids = ['fixture-doc-does-not-exist'];
+      review.review_hash = null;
+      review.review_hash = top20ReviewCalculationHash(review);
+      write(root, PATHS.releaseInput, releaseInput);
+    } else if (mutation.filesystem === 'evidence_path_as_id') {
+      const review = releaseInput.review_context.top20_primary_source_reviews[0];
+      review.official_inventory_document_ids = ['evidence/missing/not-a-document-id.pdf'];
+      review.review_hash = null;
+      review.review_hash = top20ReviewCalculationHash(review);
+      write(root, PATHS.releaseInput, releaseInput);
+    } else if (mutation.filesystem === 'evidence_traversal_path') {
+      first.artifact.path = '../outside-evidence.json';
+      write(root, registryPath, registry);
+    } else if (mutation.filesystem === 'evidence_symlink_artifact') {
+      const target = registry.evidence_documents[1].artifact.path;
+      fs.unlinkSync(path.join(root, first.artifact.path));
+      fs.symlinkSync(path.join(root, target), path.join(root, first.artifact.path));
+    } else if (mutation.filesystem === 'evidence_duplicate_registry_id') {
+      second.document_id = first.document_id;
+      registry.evidence_documents.sort((left, right) => left.document_id.localeCompare(right.document_id));
+      write(root, registryPath, registry);
+    } else if (mutation.filesystem === 'evidence_cross_entity_substitution') {
+      const review = releaseInput.review_context.top20_primary_source_reviews
+        .find(item => item.country_id === first.country_id);
+      review[`${first.document_role}_document_ids`] = [second.document_id];
+      if (first.document_role === 'target_methodology') review.target_methodology_document_ids = [second.document_id];
+      review.review_hash = null;
+      review.review_hash = top20ReviewCalculationHash(review);
+      write(root, PATHS.releaseInput, releaseInput);
+    } else if (mutation.filesystem === 'evidence_duplicate_reference') {
+      const review = releaseInput.review_context.top20_primary_source_reviews
+        .find(item => item.country_id === first.country_id);
+      review.active_ndc_document_ids = [first.document_id];
+      review.review_hash = null;
+      review.review_hash = top20ReviewCalculationHash(review);
+      write(root, PATHS.releaseInput, releaseInput);
+    } else if (mutation.filesystem === 'evidence_unpinned_digest') {
+      first.artifact.sha256 = '0'.repeat(64);
+      write(root, registryPath, registry);
+    } else if (mutation.filesystem === 'evidence_extra_registry_key') {
+      first.unreviewed_runtime_use = true;
+      write(root, registryPath, registry);
+    } else if (mutation.filesystem === 'evidence_rights_substitution') {
+      first.rights_decision_id = candidate.sources[1].licence.decision_id;
+      write(root, registryPath, registry);
+    } else if (mutation.filesystem === 'evidence_content_drift') {
+      write(root, first.artifact.path, { tampered: true, document_id: first.document_id });
+    }
+    if (mutation.filesystem !== 'evidence_symlink_artifact') refreshReleaseChain(root);
   }
   return { root, baselineBytes };
 }

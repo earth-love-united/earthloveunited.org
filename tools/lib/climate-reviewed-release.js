@@ -34,6 +34,17 @@ const REQUIRED_TOP20_COUNTRY_IDS = Object.freeze([
   'iso3166-1:THA', 'iso3166-1:TUR', 'iso3166-1:USA', 'iso3166-1:VNM', 'iso3166-1:ZAF',
 ]);
 
+const TOP20_DOCUMENT_ROLES = Object.freeze({
+  official_inventory_document_ids: 'official_inventory',
+  active_ndc_document_ids: 'active_ndc',
+  target_methodology_document_ids: 'target_methodology',
+});
+
+const EVIDENCE_DOCUMENT_KEYS = Object.freeze([
+  'artifact', 'country_id', 'document_id', 'document_role',
+  'rights_decision_id', 'source_id', 'source_version',
+]);
+
 function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
@@ -117,6 +128,17 @@ function exactSortedPaths(values) {
     values.length === new Set(values).size && JSON.stringify(values) === JSON.stringify([...values].sort());
 }
 
+function exactSortedDocumentIds(values) {
+  return Array.isArray(values) && values.every(value =>
+    typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9._:-]*$/.test(value)) &&
+    values.length === new Set(values).size && JSON.stringify(values) === JSON.stringify([...values].sort());
+}
+
+function exactKeys(value, keys) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value) &&
+    JSON.stringify(Object.keys(value).sort()) === JSON.stringify([...keys].sort());
+}
+
 function validateSchema(root, id, value, errors) {
   try {
     if (!regularNonSymlink(root, SCHEMAS[id])) {
@@ -155,13 +177,17 @@ function extractRecords(payload, key) {
   return payload && Array.isArray(payload[key]) ? payload[key] : [];
 }
 
-function recordIds(root, files, key, idKey, errors) {
+function publishedRecords(root, files, key, idKey, errors) {
+  const records = [];
   const ids = [];
   for (const relative of files || []) {
     try {
-      const records = extractRecords(readJson(root, relative), key);
-      if (!records.length) add(errors, `${key}_artifact_empty`, relative, `Published ${key} artifact has no records.`);
-      records.forEach(record => ids.push(record && record[idKey]));
+      const payloadRecords = extractRecords(readJson(root, relative), key);
+      if (!payloadRecords.length) add(errors, `${key}_artifact_empty`, relative, `Published ${key} artifact has no records.`);
+      payloadRecords.forEach(record => {
+        records.push(record);
+        ids.push(record && record[idKey]);
+      });
     } catch (error) {
       add(errors, `${key}_artifact_invalid`, relative, error.message);
     }
@@ -169,7 +195,7 @@ function recordIds(root, files, key, idKey, errors) {
   if (ids.some(id => typeof id !== 'string' || !id) || new Set(ids).size !== ids.length) {
     add(errors, `${key}_ids_invalid`, key, `Published ${key} IDs are missing or duplicated.`);
   }
-  return ids.filter(id => typeof id === 'string' && id).sort();
+  return { records, ids: ids.filter(id => typeof id === 'string' && id) };
 }
 
 function inspectReviewedClimateRelease(root, options = {}) {
@@ -257,10 +283,18 @@ function inspectReviewedClimateRelease(root, options = {}) {
     }
   }
 
+  let registry = {};
   let registrySources = [];
+  let evidenceDocuments = [];
   try {
-    const registry = readJson(root, runtime.source_registry);
+    registry = readJson(root, runtime.source_registry);
     registrySources = objectItems(registry.sources);
+    if (!Array.isArray(registry.evidence_documents) || !registry.evidence_documents.length) {
+      add(errors, 'evidence_document_registry_missing', runtime.source_registry || PATHS.runtimeManifest,
+        'The canonical source registry must contain reviewed evidence_documents.');
+    } else {
+      evidenceDocuments = registry.evidence_documents;
+    }
   } catch (error) {
     add(errors, 'source_registry_invalid', runtime.source_registry || PATHS.runtimeManifest, error.message);
   }
@@ -269,6 +303,7 @@ function inspectReviewedClimateRelease(root, options = {}) {
     add(errors, 'source_registry_duplicate_id', runtime.source_registry || PATHS.runtimeManifest, 'Source registry IDs must be unique.');
   }
   const candidateSources = objectItems(candidate.sources);
+  const candidateBySource = new Map(candidateSources.map(source => [source && source.source_id, source]));
   const factSourceIds = sortedUnique(facts.map(fact => fact && fact.source_id).filter(Boolean));
   const candidateSourceIds = candidateSources.map(source => source && source.source_id).filter(Boolean).sort();
   if (!same(factSourceIds, candidateSourceIds) || new Set(candidateSourceIds).size !== candidateSourceIds.length) {
@@ -299,6 +334,40 @@ function inspectReviewedClimateRelease(root, options = {}) {
     }
   }
 
+  const evidenceDocumentIds = evidenceDocuments.map(document => document && document.document_id);
+  const evidenceArtifactPaths = evidenceDocuments.map(document => document?.artifact?.path).filter(value => typeof value === 'string');
+  if (evidenceDocumentIds.some(id => typeof id !== 'string' || !id) ||
+      new Set(evidenceDocumentIds).size !== evidenceDocumentIds.length ||
+      JSON.stringify(evidenceDocumentIds) !== JSON.stringify([...evidenceDocumentIds].sort())) {
+    add(errors, 'evidence_document_registry_invalid', runtime.source_registry || PATHS.runtimeManifest,
+      'Evidence document IDs must be non-empty, unique, and canonically sorted.');
+  }
+  if (new Set(evidenceArtifactPaths).size !== evidenceArtifactPaths.length) {
+    add(errors, 'evidence_document_registry_invalid', runtime.source_registry || PATHS.runtimeManifest,
+      'Evidence document artifact paths must be unique.');
+  }
+  const evidenceById = new Map(evidenceDocuments.map(document => [document && document.document_id, document]));
+  for (const document of evidenceDocuments) {
+    const artifact = document?.artifact;
+    const decision = decisionsBySource.get(document?.source_id);
+    const registered = registryById.get(document?.source_id);
+    const candidateSource = candidateBySource.get(document?.source_id);
+    const documentIdValid = exactSortedDocumentIds([document?.document_id]);
+    const artifactValid = exactKeys(artifact, ['path', 'sha256']) &&
+      typeof artifact.path === 'string' && artifact.path.startsWith('data/climate/evidence/') && isSafeRelative(artifact.path) &&
+      regularNonSymlink(root, artifact.path) && pin(root, artifact.path).sha256 === artifact.sha256;
+    const rightsValid = decision && registered && candidateSource &&
+      decision.status === 'reviewed' && decision.redistribution_approved === true && decision.scoring_approved === true &&
+      decision.decision_id === document?.rights_decision_id && decision.source_version === document?.source_version;
+    if (!exactKeys(document, EVIDENCE_DOCUMENT_KEYS) || !documentIdValid ||
+        !REQUIRED_TOP20_COUNTRY_IDS.includes(document?.country_id) ||
+        !Object.values(TOP20_DOCUMENT_ROLES).includes(document?.document_role) ||
+        !artifactValid || !rightsValid) {
+      add(errors, 'evidence_document_registry_invalid', document?.document_id || runtime.source_registry || PATHS.runtimeManifest,
+        'Every evidence document must be exact, source/right-linked, regular, digest-pinned, and approved for reviewed use.');
+    }
+  }
+
   const requiredTop20 = Array.isArray(context.required_country_ids) ? [...context.required_country_ids].sort() : [];
   const reviewedTop20 = Array.isArray(context.independently_reviewed_country_ids) ? [...context.independently_reviewed_country_ids].sort() : [];
   const top20Reviews = objectItems(context.top20_primary_source_reviews);
@@ -311,15 +380,34 @@ function inspectReviewedClimateRelease(root, options = {}) {
       !same(top20ReviewerIds, sortedUnique(stringItems(context.reviewer_ids)))) {
     add(errors, 'top20_review_record_set_mismatch', PATHS.releaseInput, 'Top-20 review records and reviewer identities must be the exact canonical sets.');
   }
+  const referencedDocumentIds = [];
   for (const review of top20Reviews) {
-    const documentLists = [review.official_inventory_document_ids, review.active_ndc_document_ids, review.target_methodology_document_ids];
+    const documentLists = Object.keys(TOP20_DOCUMENT_ROLES).map(field => review[field]);
     if (review.status !== 'reviewed' || review.extractor_id === review.reviewer_id ||
         !validReviewIdentity(review.extractor_id, options.allowFixtureIdentities) ||
         !validReviewIdentity(review.reviewer_id, options.allowFixtureIdentities) ||
-        documentLists.some(items => !exactSortedPaths(items)) || review.review_hash !== top20ReviewCalculationHash(review)) {
+        documentLists.some(items => !exactSortedDocumentIds(items)) || review.review_hash !== top20ReviewCalculationHash(review)) {
       add(errors, 'top20_review_record_invalid', review.country_id || PATHS.releaseInput,
         'Top-20 primary-source review must be independent, document-pinned, sorted, and canonically hashed.');
     }
+    for (const [field, role] of Object.entries(TOP20_DOCUMENT_ROLES)) {
+      for (const documentId of stringItems(review[field])) {
+        referencedDocumentIds.push(documentId);
+        const document = evidenceById.get(documentId);
+        if (!document || document.country_id !== review.country_id || document.document_role !== role) {
+          add(errors, 'top20_evidence_reference_invalid', `${review.country_id}:${field}`,
+            'Every review reference must resolve to the same country and evidence role in the canonical registry.');
+        }
+      }
+    }
+  }
+  if (new Set(referencedDocumentIds).size !== referencedDocumentIds.length) {
+    add(errors, 'top20_evidence_reference_duplicate', PATHS.releaseInput,
+      'An evidence document may appear in exactly one top-20 review role.');
+  }
+  if (!same([...referencedDocumentIds].sort(), [...evidenceDocumentIds].sort())) {
+    add(errors, 'top20_evidence_document_set_mismatch', 'evidence_documents',
+      'The canonical evidence registry must contain exactly the documents referenced by the top-20 reviews.');
   }
   if ((context.reviewer_ids || []).includes(candidate.review?.builder_id)) {
     add(errors, 'top20_review_not_independent', PATHS.releaseInput, 'The release builder cannot be a top-20 reviewer.');
@@ -336,18 +424,28 @@ function inspectReviewedClimateRelease(root, options = {}) {
   const runtimePaths = [
     ...stringItems(runtime.runtime?.file_paths), ...stringItems(runtime.runtime?.data_files),
     ...stringItems(runtime.published_fact_files), ...stringItems(runtime.published_profile_files),
-    ...stringItems(runtime.batch_attestation_files), runtime.source_registry,
+    ...stringItems(runtime.batch_attestation_files), ...evidenceArtifactPaths, runtime.source_registry,
     PATHS.releaseInput, PATHS.allowManifest,
   ];
   if (!runtimePaths.every(isSafeRelative)) add(errors, 'runtime_path_invalid', PATHS.runtimeManifest, 'Runtime artifact paths must be normalized repository-relative paths.');
   exactPins(root, runtime.artifact_pins, runtimePaths, errors, 'runtime_artifact_pin_mismatch');
 
-  const publishedFactIds = recordIds(root, stringItems(runtime.published_fact_files), 'facts', 'fact_id', errors);
-  const publishedProfileIds = recordIds(root, stringItems(runtime.published_profile_files), 'profiles', 'profile_id', errors);
+  const publishedFacts = publishedRecords(root, stringItems(runtime.published_fact_files), 'facts', 'fact_id', errors);
+  const publishedProfiles = publishedRecords(root, stringItems(runtime.published_profile_files), 'profiles', 'profile_id', errors);
+  const publishedFactIds = [...publishedFacts.ids].sort();
+  const publishedProfileIds = [...publishedProfiles.ids].sort();
   const candidateFactIds = facts.map(item => item && item.fact_id).filter(Boolean).sort();
   const candidateProfileIds = profiles.map(item => item && item.profile_id).filter(Boolean).sort();
   if (!same(publishedFactIds, candidateFactIds)) add(errors, 'published_fact_set_mismatch', 'facts', 'Published and CT-40 fact IDs differ.');
   if (!same(publishedProfileIds, candidateProfileIds)) add(errors, 'published_profile_set_mismatch', 'profiles', 'Published and CT-40 profile IDs differ.');
+  if (!same(publishedFacts.records, facts)) {
+    add(errors, 'published_fact_record_mismatch', 'facts',
+      'Published fact records must be the exact reviewed CT-40 fact records in canonical order.');
+  }
+  if (!same(publishedProfiles.records, profiles)) {
+    add(errors, 'published_profile_record_mismatch', 'profiles',
+      'Published profile records must be the exact reviewed CT-40 profile records in canonical order.');
+  }
 
   if (releaseDiff.initial_release === true ? releaseDiff.previous_release_id !== null :
       typeof releaseDiff.previous_release_id !== 'string' || releaseDiff.previous_release_id === releaseDiff.data_release_id) {
@@ -415,9 +513,11 @@ function failed(errors, artifacts) {
 }
 
 module.exports = {
+  EVIDENCE_DOCUMENT_KEYS,
   PATHS,
   REQUIRED_TOP20_COUNTRY_IDS,
   SCHEMAS,
+  TOP20_DOCUMENT_ROLES,
   inspectReviewedClimateRelease,
   factCalculationHash,
   profileCalculationHash,
