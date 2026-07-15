@@ -26,6 +26,7 @@ const COMPONENTS = Object.freeze([
   { id: 'CT-13', script: 'tools/check-country-coverage-gap-queue.js', required: true },
   { id: 'CT-14', script: 'tools/check-top20-primary-source-gap-queue.js', required: false },
   { id: 'CT-16', script: 'tools/check-source-routing-policy.js', required: true },
+  { id: 'CT-17', script: 'tools/check-source-rights-review-packets.js', required: true },
   { id: 'CT-20', script: 'tools/check-target-comparability.js', required: true },
   { id: 'CT-21', script: 'tools/check-country-delivery-engine.js', required: true },
   { id: 'CT-22', script: 'tools/check-country-profile-compiler.js', required: true },

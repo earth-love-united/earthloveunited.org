@@ -1,0 +1,780 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "ct-17-source-rights-review-packets-2026-07-15",
+  "created_at": "2026-07-15T18:00:00Z",
+  "retrieved_on": "2026-07-15",
+  "status": "requires_authorized_review",
+  "purpose": "Decision-ready official evidence packets for independent source-rights review. This package records evidence and questions only and never grants approval.",
+  "immutable_inputs": {
+    "source_registry": {
+      "path": "data/climate/source-registry.json",
+      "sha256": "ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d"
+    },
+    "ct15_readiness": {
+      "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
+      "sha256": "6b1aeb481ae71a6bd12c38febcc933363564062f6913a1dda6b939bb30f7bd43"
+    },
+    "ct16_policy": {
+      "path": "data/climate/releases/source-routing-policy-v2-2026-07-15.json",
+      "sha256": "e560c4847f1fca61d03713c28e2a2018c61712a540e1bed12b6e71a807278217"
+    },
+    "ct16_queue": {
+      "path": "data/climate/releases/top20-source-routing-queue-v2-2026-07-15.json",
+      "sha256": "c6bf873557a434ea1851190e0db7a8620e0d6289617e3bbc56b3ca53e21cfd16"
+    },
+    "ct40_result": {
+      "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
+      "sha256": "0cfd2e1c1429c59f6fa073c9f35b3bcd17a7f3d4770979bdbe6b1049a202f2e9"
+    }
+  },
+  "governance_boundary": {
+    "source_registry_modified": false,
+    "rights_decisions_made": false,
+    "ct40_decision_modified": false,
+    "normalized_facts_authorized": false,
+    "scoring_authorized": false,
+    "release_authority": false,
+    "production_runtime_release": false
+  },
+  "evidence_method": {
+    "official_fact_label": "official_primary_page",
+    "project_analysis_label": "project_inference_for_authorized_review",
+    "live_page_capture_state": "urls_and_retrieval_dates_recorded_no_raw_page_copies",
+    "raw_or_large_downloads_committed": false,
+    "rule": "Official page metadata and factual summaries are evidence; rights interpretation, applicability and authorization remain questions for an authorized independent reviewer."
+  },
+  "required_decision_fields": [
+    "decision_id",
+    "decision_outcome",
+    "source_registry_id",
+    "reviewer_id",
+    "reviewer_role",
+    "reviewer_independence_confirmed",
+    "reviewed_at",
+    "decision_by",
+    "decision_at",
+    "reviewed_scope_confirmed",
+    "reviewed_source_version",
+    "reviewed_source_checksum_sha256_or_per_document_checksums",
+    "licence_identifier",
+    "terms_url",
+    "licence_evidence_url_or_written_clarification_reference",
+    "rights_holder_or_licensor_authority_confirmed",
+    "conflicting_terms_resolved",
+    "document_specific_exceptions_reviewed",
+    "source_files_approved",
+    "metadata_and_links_approved",
+    "normalized_values_approved",
+    "redistribution_approved",
+    "derivative_database_use_approved",
+    "commercial_use_approved",
+    "transformation_approved",
+    "scoring_approved",
+    "attribution_approved",
+    "attribution_template",
+    "required_change_notice",
+    "restrictions",
+    "decision_scope",
+    "source_registry_change_required",
+    "expires_or_recheck_at",
+    "decision_notes"
+  ],
+  "prohibited_inferences": [
+    "permission from public availability",
+    "permission from a download link or registry listing",
+    "normalized-extraction permission from unchanged-document language",
+    "scoring permission from factual-use permission",
+    "family-wide permission from one document or component",
+    "release authority from a source-registry state or this packet"
+  ],
+  "packets": [
+    {
+      "packet_id": "ct17-rights-primap-v2.6.1-final",
+      "source_registry_id": "primap-hist-2.6.1-final",
+      "source_title": "The PRIMAP-hist national historical emissions time series (1750–2023)",
+      "status": "requires_authorized_review",
+      "purpose": "Review the exact frozen PRIMAP v2.6.1 CSV and normalized factual values used by the factual runtime candidate.",
+      "source_registry_snapshot": {
+        "snapshot_kind": "pre_existing_registry_state_not_a_ct17_decision",
+        "record_hash_sha256": "ac8789f4a513217ffe9bc3307d384b2a7d3dda08fe6386d119d1714924fe197b",
+        "approval_state": "approved",
+        "licence_status": "confirmed",
+        "licence_identifier": "CC-BY-4.0",
+        "redistribution_status": "permitted",
+        "source_files_state": "recorded_allowed",
+        "normalized_values_state": "recorded_allowed"
+      },
+      "exact_scope": {
+        "scope_kind": "frozen_file",
+        "source_version": "v2.6.1 final, published 13 March 2025",
+        "doi": "10.5281/zenodo.15016289",
+        "artifact_filename": "Guetschow_et_al_2025-PRIMAP-hist_v2.6.1_final_13-Mar-2025.csv",
+        "artifact_sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9",
+        "publisher_checksum_algorithm": "md5",
+        "publisher_checksum_value": "09b9c61629f87e16012222e5b303bc36",
+        "captured_document_ids": [],
+        "captured_document_checksums_sha256": [],
+        "acquisition_state": "exact_sha256_pinned_no_raw_file_committed",
+        "scope_note": "The SHA-256 is the exact project pin supplied for the named CSV. The official Zenodo record exposes the matching filename and an MD5, not this SHA-256; independent byte verification remains a reviewer task."
+      },
+      "official_evidence": [
+        {
+          "evidence_id": "primap-zenodo-record-15016289",
+          "evidence_type": "repository_record",
+          "authority": "Zenodo / record depositors",
+          "title": "The PRIMAP-hist national historical emissions time series (1750-2023) v2.6.1",
+          "url": "https://zenodo.org/records/15016289",
+          "retrieved_on": "2026-07-15",
+          "page_state": "versioned_record_metadata_modified_2025-09-10",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The record identifies version v2.6.1, publication date 13 March 2025 and DOI 10.5281/zenodo.15016289.",
+            "The record labels the dataset Creative Commons Attribution 4.0 International.",
+            "The file list names the exact main CSV, reports a size of 74.7 MB and publishes MD5 09b9c61629f87e16012222e5b303bc36.",
+            "The record asks users to cite the precise dataset version and the data-description article and to consider citing relevant original sources."
+          ]
+        },
+        {
+          "evidence_id": "cc-by-4.0-legal-code",
+          "evidence_type": "licence_legal_code",
+          "authority": "Creative Commons",
+          "title": "Attribution 4.0 International legal code",
+          "url": "https://creativecommons.org/licenses/by/4.0/legalcode.en",
+          "retrieved_on": "2026-07-15",
+          "page_state": "canonical_legal_code",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The legal code grants reproduction, sharing and adaptation of licensed material subject to its conditions.",
+            "Sharing requires retention of supplied attribution and licence information and an indication of modifications.",
+            "The licence covers only rights the licensor has authority to grant and does not license patent or trademark rights.",
+            "The legal code addresses extraction and reuse where sui generis database rights apply."
+          ]
+        }
+      ],
+      "review_analysis": {
+        "analysis_origin": "project_inference_for_authorized_review",
+        "ambiguities": [
+          "The official record publishes an MD5 for the named CSV, while the project pins a SHA-256; the exact-byte correspondence has not been independently attested in this packet.",
+          "The dataset combines multiple underlying sources. The record-level CC BY statement does not by itself answer whether any source-specific rights or attribution duties survive for Earth Love United use.",
+          "Zenodo flags a newer version; this packet intentionally covers only frozen v2.6.1 and must not be read as covering v2.7 or later releases."
+        ],
+        "restrictions_and_conditions_to_evaluate": [
+          "Retain dataset authors, precise DOI, licence reference and modification notice in any approved use.",
+          "Do not imply endorsement by authors, Zenodo or underlying data providers.",
+          "Keep scenario, gas, sector, GWP, LULUCF, rounding and extrapolation choices visible in the transformation record."
+        ],
+        "attribution_questions": [
+          "What exact public attribution template is sufficient for cards, globe tooltips, downloadable data and machine-readable metadata?",
+          "Which underlying sources, if any, must also be credited for the selected rows and series?"
+        ],
+        "transformation_questions": [
+          "Do selection, normalization, CO2e conversion, aggregation, rounding and visual scoring create adapted material or a derivative database, and how must changes be marked?",
+          "May normalized values and derived scores be redistributed commercially under the record-level licence and the relevant underlying-source terms?"
+        ],
+        "questions_for_authorized_reviewer": [
+          "Does an independent checksum verification confirm that the pinned SHA-256 belongs to the exact named v2.6.1 CSV whose Zenodo MD5 is recorded?",
+          "Does CC BY 4.0 cover source-file redistribution, normalized-value redistribution, derivative-database use and scoring for this exact artifact?",
+          "What attribution, change notice and re-review cadence must the production release enforce?"
+        ],
+        "questions_requiring_counsel_or_human_rights_review": [
+          "Does the record-level licence grant sufficient authority over the composite dataset for the planned transformations and commercial public-site context?",
+          "Do any incorporated-source notices require additional attribution or restrict downstream normalization or redistribution?"
+        ]
+      },
+      "blank_decision_record": {
+        "decision_id": null,
+        "decision_outcome": null,
+        "source_registry_id": "primap-hist-2.6.1-final",
+        "reviewer_id": null,
+        "reviewer_role": null,
+        "reviewer_independence_confirmed": false,
+        "reviewed_at": null,
+        "decision_by": null,
+        "decision_at": null,
+        "reviewed_scope_confirmed": false,
+        "reviewed_source_version": null,
+        "reviewed_source_checksum_sha256_or_per_document_checksums": [],
+        "licence_identifier": null,
+        "terms_url": null,
+        "licence_evidence_url_or_written_clarification_reference": null,
+        "rights_holder_or_licensor_authority_confirmed": false,
+        "conflicting_terms_resolved": false,
+        "document_specific_exceptions_reviewed": false,
+        "source_files_approved": false,
+        "metadata_and_links_approved": false,
+        "normalized_values_approved": false,
+        "redistribution_approved": false,
+        "derivative_database_use_approved": false,
+        "commercial_use_approved": false,
+        "transformation_approved": false,
+        "scoring_approved": false,
+        "attribution_approved": false,
+        "attribution_template": null,
+        "required_change_notice": null,
+        "restrictions": [],
+        "decision_scope": null,
+        "source_registry_change_required": null,
+        "expires_or_recheck_at": null,
+        "decision_notes": null
+      }
+    },
+    {
+      "packet_id": "ct17-rights-unfccc-ndc-registry",
+      "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+      "source_title": "Nationally Determined Contributions Registry",
+      "status": "requires_authorized_review",
+      "purpose": "Review registry metadata, Party NDC files and normalized target extraction for active-NDC and target-methodology uses only.",
+      "source_registry_snapshot": {
+        "snapshot_kind": "pre_existing_registry_state_not_a_ct17_decision",
+        "record_hash_sha256": "d8138ffa64d833620d1c6ccca01b83011df63462a09860e4212499b921afbfc8",
+        "approval_state": "pending",
+        "licence_status": "uncertain",
+        "licence_identifier": "UNFCCC-terms-and-party-document-rights",
+        "redistribution_status": "metadata_only",
+        "source_files_state": "recorded_blocked",
+        "normalized_values_state": "recorded_blocked"
+      },
+      "exact_scope": {
+        "scope_kind": "live_registry_family",
+        "source_version": "continuous NDC Registry snapshot retrieved 2026-07-15",
+        "doi": null,
+        "artifact_filename": null,
+        "artifact_sha256": null,
+        "publisher_checksum_algorithm": null,
+        "publisher_checksum_value": null,
+        "captured_document_ids": [],
+        "captured_document_checksums_sha256": [],
+        "acquisition_state": "live_family_only_no_party_documents_acquired",
+        "scope_note": "This packet covers the registry family and terms evidence only. Each Party submission, translation, annex and superseded version requires its own identity, rights-notice and checksum record."
+      },
+      "official_evidence": [
+        {
+          "evidence_id": "unfccc-ndc-registry-2026-07-15",
+          "evidence_type": "source_landing_page",
+          "authority": "UNFCCC secretariat",
+          "title": "Nationally Determined Contributions Registry",
+          "url": "https://unfccc.int/NDCREG",
+          "retrieved_on": "2026-07-15",
+          "page_state": "mutable_live_registry_no_local_copy",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The page identifies the service as the public NDC registry maintained by the secretariat under Article 4, paragraph 12 of the Paris Agreement.",
+            "Registry entries expose Party, title, language, version, status, submission date and links to submitted files or additional documents.",
+            "The registry includes both active and archived status values, so current-document selection requires version and status review rather than presence alone."
+          ]
+        },
+        {
+          "evidence_id": "unfccc-terms-2026-07-15",
+          "evidence_type": "terms_page",
+          "authority": "UNFCCC secretariat",
+          "title": "UNFCCC Terms of Use",
+          "url": "https://unfccc.int/this-site/terms-of-use",
+          "retrieved_on": "2026-07-15",
+          "page_state": "mutable_live_page_no_local_copy",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The copyright section describes official texts, data and documents as public domain and permits downloading, copying and printing only when content is unchanged and the source is acknowledged.",
+            "The website-use section separately describes permission for personal, non-commercial downloading and copying, with no resale, redistribution, compilation or derivative works, and makes that permission subject to content-specific restrictions.",
+            "The terms state that site content from UNFCCC and users is subject to the terms.",
+            "The terms direct requests for exceptions or licensing information to the UNFCCC secretariat and state that exceptions require written permission."
+          ]
+        }
+      ],
+      "review_analysis": {
+        "analysis_origin": "project_inference_for_authorized_review",
+        "ambiguities": [
+          "The terms do not expressly reconcile the unchanged public-domain statement with the personal non-commercial, no-redistribution and no-derivatives website-use language.",
+          "The registry hosts Party-submitted documents, and the reviewed pages do not establish that every Party submission, translation or annex has identical downstream rights.",
+          "A live registry page is not an immutable snapshot and does not identify exact bytes for every active and superseded document."
+        ],
+        "restrictions_and_conditions_to_evaluate": [
+          "Preserve Party authorship, document title, version/status, submission date, direct URL and retrieval date.",
+          "Do not treat an archived, superseded or legacy INDC as an active NDC.",
+          "Do not alter or republish Party files unless an authorized decision expressly covers that use."
+        ],
+        "attribution_questions": [
+          "What acknowledgement is required for registry metadata versus each Party-authored document and official translation?",
+          "Must citations identify both the Party and UNFCCC, and how must superseded versions be labelled?"
+        ],
+        "transformation_questions": [
+          "Is extracting target percentages, years, scope fields, conditionality and methodology into normalized records a prohibited derivative or a permissible factual extraction?",
+          "May extracted target facts be combined into comparisons, rankings or scores and redistributed as a database?"
+        ],
+        "questions_for_authorized_reviewer": [
+          "Which terms control registry metadata, unchanged Party files and normalized target facts respectively?",
+          "Must every Party document and annex receive a document-specific rights review and checksum before extraction?",
+          "Are normalized target facts, comparison outputs and scoring authorized for public and commercial reuse?"
+        ],
+        "questions_requiring_counsel_or_human_rights_review": [
+          "How should the conflicting UNFCCC terms clauses be interpreted for Party-submitted NDCs and factual extraction?",
+          "Is written UNFCCC or Party clarification required, and who has authority to grant it for submissions, translations and annexes?"
+        ]
+      },
+      "blank_decision_record": {
+        "decision_id": null,
+        "decision_outcome": null,
+        "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+        "reviewer_id": null,
+        "reviewer_role": null,
+        "reviewer_independence_confirmed": false,
+        "reviewed_at": null,
+        "decision_by": null,
+        "decision_at": null,
+        "reviewed_scope_confirmed": false,
+        "reviewed_source_version": null,
+        "reviewed_source_checksum_sha256_or_per_document_checksums": [],
+        "licence_identifier": null,
+        "terms_url": null,
+        "licence_evidence_url_or_written_clarification_reference": null,
+        "rights_holder_or_licensor_authority_confirmed": false,
+        "conflicting_terms_resolved": false,
+        "document_specific_exceptions_reviewed": false,
+        "source_files_approved": false,
+        "metadata_and_links_approved": false,
+        "normalized_values_approved": false,
+        "redistribution_approved": false,
+        "derivative_database_use_approved": false,
+        "commercial_use_approved": false,
+        "transformation_approved": false,
+        "scoring_approved": false,
+        "attribution_approved": false,
+        "attribution_template": null,
+        "required_change_notice": null,
+        "restrictions": [],
+        "decision_scope": null,
+        "source_registry_change_required": null,
+        "expires_or_recheck_at": null,
+        "decision_notes": null
+      }
+    },
+    {
+      "packet_id": "ct17-rights-unfccc-nir-crt",
+      "source_registry_id": "unfccc-nir-crt-2026-cycle",
+      "source_title": "National Inventory Documents and Common Reporting Tables",
+      "status": "requires_authorized_review",
+      "purpose": "Review Party NID/NIR documents, CRT attachments and normalized official-inventory facts.",
+      "source_registry_snapshot": {
+        "snapshot_kind": "pre_existing_registry_state_not_a_ct17_decision",
+        "record_hash_sha256": "4ff5251074498f8842ade290a7e69e1381d5f1c7251cfee9f6bcbd6d913bc256",
+        "approval_state": "pending",
+        "licence_status": "uncertain",
+        "licence_identifier": "UNFCCC-terms-and-party-document-rights",
+        "redistribution_status": "metadata_only",
+        "source_files_state": "recorded_blocked",
+        "normalized_values_state": "recorded_blocked"
+      },
+      "exact_scope": {
+        "scope_kind": "live_document_family",
+        "source_version": "2026 NIR/CRT submission cycle; reports snapshot retrieved 2026-07-15",
+        "doi": null,
+        "artifact_filename": null,
+        "artifact_sha256": null,
+        "publisher_checksum_algorithm": null,
+        "publisher_checksum_value": null,
+        "captured_document_ids": [],
+        "captured_document_checksums_sha256": [],
+        "acquisition_state": "live_family_only_no_submission_packages_acquired",
+        "scope_note": "No Party NID/NIR, CRT, annex or recalculation file is captured by this family packet. Every selected package needs exact document IDs and per-attachment SHA-256 values."
+      },
+      "official_evidence": [
+        {
+          "evidence_id": "unfccc-reports-catalogue-2026-07-15",
+          "evidence_type": "source_catalogue",
+          "authority": "UNFCCC secretariat",
+          "title": "UNFCCC Reports catalogue",
+          "url": "https://unfccc.int/reports",
+          "retrieved_on": "2026-07-15",
+          "page_state": "mutable_live_catalogue_no_local_copy",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The catalogue lists document name, document type, Party or author, submission date and detail links for reporting artifacts.",
+            "The catalogue includes National Inventory Documents and Common Reporting Tables as distinct document types and versions.",
+            "The catalogue is continuously updated and therefore does not supply an immutable package checksum by itself."
+          ]
+        },
+        {
+          "evidence_id": "unfccc-btr-overview-nir-components-2026-07-15",
+          "evidence_type": "source_landing_page",
+          "authority": "UNFCCC secretariat",
+          "title": "Biennial Transparency Reports overview",
+          "url": "https://unfccc.int/biennial-transparency-reports",
+          "retrieved_on": "2026-07-15",
+          "page_state": "mutable_live_page_no_local_copy",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The page states that a national inventory report may be submitted separately and describes the NIR as a National Inventory Document plus Common Reporting Tables.",
+            "The page identifies CRTs as the electronic tables for inventory information and explains that report components are submitted through the UNFCCC submission portal."
+          ]
+        },
+        {
+          "evidence_id": "unfccc-terms-2026-07-15",
+          "evidence_type": "terms_page",
+          "authority": "UNFCCC secretariat",
+          "title": "UNFCCC Terms of Use",
+          "url": "https://unfccc.int/this-site/terms-of-use",
+          "retrieved_on": "2026-07-15",
+          "page_state": "mutable_live_page_no_local_copy",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The copyright section describes official texts, data and documents as public domain and permits downloading, copying and printing only when content is unchanged and the source is acknowledged.",
+            "The website-use section separately describes permission for personal, non-commercial downloading and copying, with no resale, redistribution, compilation or derivative works, and makes that permission subject to content-specific restrictions.",
+            "The terms state that site content from UNFCCC and users is subject to the terms.",
+            "The terms direct requests for exceptions or licensing information to the UNFCCC secretariat and state that exceptions require written permission."
+          ]
+        }
+      ],
+      "review_analysis": {
+        "analysis_origin": "project_inference_for_authorized_review",
+        "ambiguities": [
+          "The UNFCCC terms conflict is unresolved for Party submissions and normalized extraction.",
+          "A reports-catalogue entry is not the complete NIR package; annexes, recalculation material and machine-readable CRT attachments may have separate notices and bytes.",
+          "The reviewed pages do not provide a family-wide licence identifier for altered or normalized inventory data."
+        ],
+        "restrictions_and_conditions_to_evaluate": [
+          "Preserve Party, submission cycle, document type, inventory year, gas, sector, GWP convention, LULUCF treatment, recalculation status and direct URLs.",
+          "Do not republish altered source files or silently combine vintages and accounting frames.",
+          "Keep the source package and every attachment checksum tied to each extracted fact."
+        ],
+        "attribution_questions": [
+          "What acknowledgement is required for Party-authored NIDs, CRTs, annexes and UNFCCC catalogue metadata?",
+          "Must normalized rows retain a citation to every attachment used in the calculation?"
+        ],
+        "transformation_questions": [
+          "Is parsing CRT cells, unit conversion, gas aggregation, GWP conversion, LULUCF separation and recalculation reconciliation permissible transformation?",
+          "May normalized official-inventory facts be redistributed and used in delivery metrics or scores?"
+        ],
+        "questions_for_authorized_reviewer": [
+          "Which exact files constitute a complete, current inventory package for each Party and reporting obligation?",
+          "Do the terms authorize source-file archiving, normalized fact extraction, redistribution and scoring?",
+          "Which document-specific exceptions or notices must be recorded before use?"
+        ],
+        "questions_requiring_counsel_or_human_rights_review": [
+          "Does the unchanged-document permission permit factual extraction and transformed databases from Party NIR/CRT submissions?",
+          "Is written clarification required for commercial redistribution and scoring, and should it come from UNFCCC, each Party or both?"
+        ]
+      },
+      "blank_decision_record": {
+        "decision_id": null,
+        "decision_outcome": null,
+        "source_registry_id": "unfccc-nir-crt-2026-cycle",
+        "reviewer_id": null,
+        "reviewer_role": null,
+        "reviewer_independence_confirmed": false,
+        "reviewed_at": null,
+        "decision_by": null,
+        "decision_at": null,
+        "reviewed_scope_confirmed": false,
+        "reviewed_source_version": null,
+        "reviewed_source_checksum_sha256_or_per_document_checksums": [],
+        "licence_identifier": null,
+        "terms_url": null,
+        "licence_evidence_url_or_written_clarification_reference": null,
+        "rights_holder_or_licensor_authority_confirmed": false,
+        "conflicting_terms_resolved": false,
+        "document_specific_exceptions_reviewed": false,
+        "source_files_approved": false,
+        "metadata_and_links_approved": false,
+        "normalized_values_approved": false,
+        "redistribution_approved": false,
+        "derivative_database_use_approved": false,
+        "commercial_use_approved": false,
+        "transformation_approved": false,
+        "scoring_approved": false,
+        "attribution_approved": false,
+        "attribution_template": null,
+        "required_change_notice": null,
+        "restrictions": [],
+        "decision_scope": null,
+        "source_registry_change_required": null,
+        "expires_or_recheck_at": null,
+        "decision_notes": null
+      }
+    },
+    {
+      "packet_id": "ct17-rights-unfccc-btr-ctf",
+      "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+      "source_title": "Biennial Transparency Reports and common tabular formats",
+      "status": "requires_authorized_review",
+      "purpose": "Review BTR textual reports, explicit CTF/CRT components and normalized progress, policy, finance or conditionally routed inventory facts.",
+      "source_registry_snapshot": {
+        "snapshot_kind": "pre_existing_registry_state_not_a_ct17_decision",
+        "record_hash_sha256": "2c5bc4f2cb49b83ca1135df43494a6107e934a4d4fa84d57f078f79317ca07de",
+        "approval_state": "pending",
+        "licence_status": "uncertain",
+        "licence_identifier": "UNFCCC-terms-and-party-document-rights",
+        "redistribution_status": "metadata_only",
+        "source_files_state": "recorded_blocked",
+        "normalized_values_state": "recorded_blocked"
+      },
+      "exact_scope": {
+        "scope_kind": "live_document_family",
+        "source_version": "first BTR cycle; continuous reports snapshot retrieved 2026-07-15",
+        "doi": null,
+        "artifact_filename": null,
+        "artifact_sha256": null,
+        "publisher_checksum_algorithm": null,
+        "publisher_checksum_value": null,
+        "captured_document_ids": [],
+        "captured_document_checksums_sha256": [],
+        "acquisition_state": "live_family_only_no_btr_component_packages_acquired",
+        "scope_note": "This family packet grants no BTR-wide inventory role. CT-16 requires explicit component identity and governance for any conditionally routed CRT/CTF component."
+      },
+      "official_evidence": [
+        {
+          "evidence_id": "unfccc-btr-overview-components-2026-07-15",
+          "evidence_type": "source_landing_page",
+          "authority": "UNFCCC secretariat",
+          "title": "Biennial Transparency Reports overview",
+          "url": "https://unfccc.int/biennial-transparency-reports",
+          "retrieved_on": "2026-07-15",
+          "page_state": "mutable_live_page_no_local_copy",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The page describes a BTR submission as a textual report plus CRTs for inventory information and CTFs for NDC progress and support information.",
+            "The page distinguishes information on finance, technology transfer and capacity-building that is provided, mobilized, needed or received.",
+            "The page states that submitted BTRs undergo technical expert review."
+          ]
+        },
+        {
+          "evidence_id": "unfccc-reports-catalogue-btr-2026-07-15",
+          "evidence_type": "source_catalogue",
+          "authority": "UNFCCC secretariat",
+          "title": "UNFCCC Reports catalogue",
+          "url": "https://unfccc.int/reports",
+          "retrieved_on": "2026-07-15",
+          "page_state": "mutable_live_catalogue_no_local_copy",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The catalogue lists BTRs, CRTs, NIDs and related attachments as distinct records with Party and submission metadata.",
+            "The catalogue is a discovery interface and does not itself establish exact package completeness or immutable bytes."
+          ]
+        },
+        {
+          "evidence_id": "unfccc-terms-2026-07-15",
+          "evidence_type": "terms_page",
+          "authority": "UNFCCC secretariat",
+          "title": "UNFCCC Terms of Use",
+          "url": "https://unfccc.int/this-site/terms-of-use",
+          "retrieved_on": "2026-07-15",
+          "page_state": "mutable_live_page_no_local_copy",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The copyright section describes official texts, data and documents as public domain and permits downloading, copying and printing only when content is unchanged and the source is acknowledged.",
+            "The website-use section separately describes permission for personal, non-commercial downloading and copying, with no resale, redistribution, compilation or derivative works, and makes that permission subject to content-specific restrictions.",
+            "The terms state that site content from UNFCCC and users is subject to the terms.",
+            "The terms direct requests for exceptions or licensing information to the UNFCCC secretariat and state that exceptions require written permission."
+          ]
+        }
+      ],
+      "review_analysis": {
+        "analysis_origin": "project_inference_for_authorized_review",
+        "ambiguities": [
+          "The UNFCCC terms conflict is unresolved for Party BTRs, CTFs, CRTs and normalized extraction.",
+          "BTR is a multi-component family; rights and routing cannot be inferred once for the whole family.",
+          "The current source registry does not declare the official_inventory domain for BTR; a rights packet cannot cure that routing and governance mismatch."
+        ],
+        "restrictions_and_conditions_to_evaluate": [
+          "Identify every textual report, CRT, CTF, annex and revision separately with checksum and document role.",
+          "Do not merge provided, mobilized, needed and received support or finance categories.",
+          "Do not use a BTR family label to bypass CT-16 explicit-component governance."
+        ],
+        "attribution_questions": [
+          "What attribution is required for Party-authored text, tables, annexes and UNFCCC catalogue records?",
+          "How must revisions, translations and component-level citations appear in normalized facts?"
+        ],
+        "transformation_questions": [
+          "Are table parsing, terminology normalization, currency conversion, category mapping and derived progress indicators permissible?",
+          "May normalized policy, progress and finance facts be redistributed and used for country evaluation or scoring?"
+        ],
+        "questions_for_authorized_reviewer": [
+          "Which BTR component and exact checksum supports each proposed fact?",
+          "Do terms authorize source-file archiving, normalized extraction, redistribution, transformation and scoring for that component?",
+          "Does any proposed inventory use also have the required CT-16 domain and explicit-component governance decision?"
+        ],
+        "questions_requiring_counsel_or_human_rights_review": [
+          "Does unchanged-document permission extend to normalized facts from Party BTR/CTF/CRT components?",
+          "Who can authorize commercial derivative-database and scoring uses when UNFCCC hosts Party-authored submissions?"
+        ]
+      },
+      "blank_decision_record": {
+        "decision_id": null,
+        "decision_outcome": null,
+        "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+        "reviewer_id": null,
+        "reviewer_role": null,
+        "reviewer_independence_confirmed": false,
+        "reviewed_at": null,
+        "decision_by": null,
+        "decision_at": null,
+        "reviewed_scope_confirmed": false,
+        "reviewed_source_version": null,
+        "reviewed_source_checksum_sha256_or_per_document_checksums": [],
+        "licence_identifier": null,
+        "terms_url": null,
+        "licence_evidence_url_or_written_clarification_reference": null,
+        "rights_holder_or_licensor_authority_confirmed": false,
+        "conflicting_terms_resolved": false,
+        "document_specific_exceptions_reviewed": false,
+        "source_files_approved": false,
+        "metadata_and_links_approved": false,
+        "normalized_values_approved": false,
+        "redistribution_approved": false,
+        "derivative_database_use_approved": false,
+        "commercial_use_approved": false,
+        "transformation_approved": false,
+        "scoring_approved": false,
+        "attribution_approved": false,
+        "attribution_template": null,
+        "required_change_notice": null,
+        "restrictions": [],
+        "decision_scope": null,
+        "source_registry_change_required": null,
+        "expires_or_recheck_at": null,
+        "decision_notes": null
+      }
+    },
+    {
+      "packet_id": "ct17-rights-unfccc-ter-findings",
+      "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+      "source_title": "Technical expert review reports under the enhanced transparency framework",
+      "status": "requires_authorized_review",
+      "purpose": "Review unchanged Technical Expert Review reports and separately review normalized TER findings for corroboration only.",
+      "source_registry_snapshot": {
+        "snapshot_kind": "pre_existing_registry_state_not_a_ct17_decision",
+        "record_hash_sha256": "0e199052623f2dbf05d7f641ae3420640e0c01c88a5ead54f38b8fc3ca5c65e5",
+        "approval_state": "pending",
+        "licence_status": "confirmed",
+        "licence_identifier": "UNFCCC-official-document-public-domain",
+        "redistribution_status": "metadata_only",
+        "source_files_state": "recorded_allowed",
+        "normalized_values_state": "recorded_blocked"
+      },
+      "exact_scope": {
+        "scope_kind": "live_document_family",
+        "source_version": "continuous TER publication set retrieved 2026-07-15",
+        "doi": null,
+        "artifact_filename": null,
+        "artifact_sha256": null,
+        "publisher_checksum_algorithm": null,
+        "publisher_checksum_value": null,
+        "captured_document_ids": [],
+        "captured_document_checksums_sha256": [],
+        "acquisition_state": "live_family_only_no_ter_documents_acquired",
+        "scope_note": "This packet distinguishes unchanged official TER documents from normalized findings. It never makes TER a primary inventory value source and captures no report bytes."
+      },
+      "official_evidence": [
+        {
+          "evidence_id": "unfccc-reporting-review-etf-2026-07-15",
+          "evidence_type": "source_landing_page",
+          "authority": "UNFCCC secretariat",
+          "title": "Reporting and Review",
+          "url": "https://unfccc.int/reporting-and-review",
+          "retrieved_on": "2026-07-15",
+          "page_state": "mutable_live_page_no_local_copy",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The page states that the secretariat is requested to publish Party BTRs, stand-alone NIRs, technical expert review reports and FMCP records on the UNFCCC website.",
+            "The page describes technical expert review as part of the Enhanced Transparency Framework."
+          ]
+        },
+        {
+          "evidence_id": "unfccc-first-btr-ter-table-2026-07-15",
+          "evidence_type": "source_catalogue",
+          "authority": "UNFCCC secretariat",
+          "title": "First Biennial Transparency Reports",
+          "url": "https://unfccc.int/first-biennial-transparency-reports",
+          "retrieved_on": "2026-07-15",
+          "page_state": "mutable_live_table_last_update_2026-06-19",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The page provides a Party table linking BTR/NIR submissions, annexes, technical expert review report symbols and FMCP outputs as they become available.",
+            "The page identifies the NIR as a National Inventory Document plus Common Reporting Tables and separates TERR records from Party submissions."
+          ]
+        },
+        {
+          "evidence_id": "unfccc-terms-2026-07-15",
+          "evidence_type": "terms_page",
+          "authority": "UNFCCC secretariat",
+          "title": "UNFCCC Terms of Use",
+          "url": "https://unfccc.int/this-site/terms-of-use",
+          "retrieved_on": "2026-07-15",
+          "page_state": "mutable_live_page_no_local_copy",
+          "evidence_origin": "official_primary_page",
+          "official_factual_summary": [
+            "The copyright section describes official texts, data and documents as public domain and permits downloading, copying and printing only when content is unchanged and the source is acknowledged.",
+            "The website-use section separately describes permission for personal, non-commercial downloading and copying, with no resale, redistribution, compilation or derivative works, and makes that permission subject to content-specific restrictions.",
+            "The terms state that site content from UNFCCC and users is subject to the terms.",
+            "The terms direct requests for exceptions or licensing information to the UNFCCC secretariat and state that exceptions require written permission."
+          ]
+        }
+      ],
+      "review_analysis": {
+        "analysis_origin": "project_inference_for_authorized_review",
+        "ambiguities": [
+          "The public-domain statement is limited to unchanged official documents, while normalized findings alter context and structure and are also exposed to the broader website-use restrictions.",
+          "A TER publication table does not pin the exact report, addendum, language version or checksum used for a finding.",
+          "Even if reuse is authorized, CT-16 makes TER corroboration-only and never a primary inventory value source."
+        ],
+        "restrictions_and_conditions_to_evaluate": [
+          "Keep report symbol, Party, report/addendum identity, publication date, direct URL, locator and exact checksum with every normalized finding.",
+          "Do not paraphrase a review finding as a Party-reported value or use TER to replace the primary submission.",
+          "Preserve qualifiers, issue status, recommendation language and later addenda or corrections."
+        ],
+        "attribution_questions": [
+          "What acknowledgement is required for unchanged official TER reports and for normalized finding records?",
+          "How should report symbols, team authorship and UNFCCC publication be represented?"
+        ],
+        "transformation_questions": [
+          "Is extracting and normalizing findings, recommendations, inconsistencies and resolved issues a permissible factual transformation?",
+          "May normalized findings be indexed, compared across Parties or used as corroborating inputs to country evaluation and scoring?"
+        ],
+        "questions_for_authorized_reviewer": [
+          "Does the unchanged official-document basis authorize archiving exact TER files with attribution?",
+          "What separate authority covers normalized findings, derivative databases and any scoring use?",
+          "How will the release enforce the corroboration-only boundary independently of rights approval?"
+        ],
+        "questions_requiring_counsel_or_human_rights_review": [
+          "Does the official-document public-domain statement permit normalized extraction despite the unchanged-content condition and broader website-use clause?",
+          "Is written UNFCCC clarification required for commercial normalized findings and scoring?"
+        ]
+      },
+      "blank_decision_record": {
+        "decision_id": null,
+        "decision_outcome": null,
+        "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+        "reviewer_id": null,
+        "reviewer_role": null,
+        "reviewer_independence_confirmed": false,
+        "reviewed_at": null,
+        "decision_by": null,
+        "decision_at": null,
+        "reviewed_scope_confirmed": false,
+        "reviewed_source_version": null,
+        "reviewed_source_checksum_sha256_or_per_document_checksums": [],
+        "licence_identifier": null,
+        "terms_url": null,
+        "licence_evidence_url_or_written_clarification_reference": null,
+        "rights_holder_or_licensor_authority_confirmed": false,
+        "conflicting_terms_resolved": false,
+        "document_specific_exceptions_reviewed": false,
+        "source_files_approved": false,
+        "metadata_and_links_approved": false,
+        "normalized_values_approved": false,
+        "redistribution_approved": false,
+        "derivative_database_use_approved": false,
+        "commercial_use_approved": false,
+        "transformation_approved": false,
+        "scoring_approved": false,
+        "attribution_approved": false,
+        "attribution_template": null,
+        "required_change_notice": null,
+        "restrictions": [],
+        "decision_scope": null,
+        "source_registry_change_required": null,
+        "expires_or_recheck_at": null,
+        "decision_notes": null
+      }
+    }
+  ],
+  "calculation_hash": "228c4c8c204fbe4b068b55d286d51520300e326e69bf48ff334454b3aba4b484"
+}
