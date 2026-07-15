@@ -1223,6 +1223,41 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
     left: 64px;
     right: 8px;
   }
+
+  /* Keep the essential country name and Close control on their own row.
+     The review-status badge moves below them so its intrinsic text width
+     cannot collapse the heading at the 320/375px production breakpoints. */
+  #hex-country-tooltip.selected .tt-topline {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    align-items: start;
+    gap: 6px 8px;
+  }
+
+  #hex-country-tooltip.selected .tt-country {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  #hex-country-tooltip.selected .tt-pill {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  #hex-country-tooltip.selected .tt-close {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

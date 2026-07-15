@@ -425,6 +425,8 @@ const GlobeModule = {
   _fallbackEntries: [],
   _fallbackBound: false,
   _fallbackSelectedIso: null,
+  _reducedMotionMedia: null,
+  _onReducedMotionChange: null,
   _prepared: false,
   _preparationPromise: null,
   _preparationFailure: null,
@@ -869,10 +871,11 @@ const GlobeModule = {
     }
 
     this.world.pointOfView({ lat: 20, lng: 40, altitude: 2.2 });
-    this.world.controls().autoRotate = true;
     this.world.controls().autoRotateSpeed = 0.4;
     this.world.controls().enableDamping = true;
     this.world.controls().dampingFactor = 0.1;
+    this._bindReducedMotionPreference();
+    this._syncAutoRotation();
 
     const m = this.world.globeMaterial();
     // Low shininess + dark specular: the vendored globe.gl build has no
@@ -925,7 +928,39 @@ const GlobeModule = {
     }
   },
 
+  _syncAutoRotation() {
+    const controls = typeof this.world?.controls === 'function' ? this.world.controls() : null;
+    if (!controls) return false;
+    const reducedMotion = this._reducedMotionMedia?.matches === true ||
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+    const panelOpen = $('site-panel')?.classList.contains('open') === true;
+    controls.autoRotate = !reducedMotion && !panelOpen && !this._selectedCountryFeature;
+    return controls.autoRotate;
+  },
+
+  _bindReducedMotionPreference() {
+    this._unbindReducedMotionPreference();
+    const media = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    if (!media) return;
+    this._reducedMotionMedia = media;
+    this._onReducedMotionChange = () => this._syncAutoRotation();
+    if (typeof media.addEventListener === 'function') media.addEventListener('change', this._onReducedMotionChange);
+    else if (typeof media.addListener === 'function') media.addListener(this._onReducedMotionChange);
+  },
+
+  _unbindReducedMotionPreference() {
+    const media = this._reducedMotionMedia;
+    const listener = this._onReducedMotionChange;
+    if (media && listener) {
+      if (typeof media.removeEventListener === 'function') media.removeEventListener('change', listener);
+      else if (typeof media.removeListener === 'function') media.removeListener(listener);
+    }
+    this._reducedMotionMedia = null;
+    this._onReducedMotionChange = null;
+  },
+
   _teardownFailedRenderer() {
+    this._unbindReducedMotionPreference();
     if (this._canvasEl) {
       if (this._onCanvasPointerMove) this._canvasEl.removeEventListener('pointermove', this._onCanvasPointerMove);
       if (this._onCanvasClick) this._canvasEl.removeEventListener('click', this._onCanvasClick);
@@ -1405,6 +1440,7 @@ const GlobeModule = {
       this._countryOpener = document.activeElement;
     }
     this._selectedCountryFeature = feature;
+    this._syncAutoRotation();
     this._countryHoverFeature = feature;
     this._renderCountryInfoCard(feature, true);
     if (opts.event) this._positionCountryInfoCard(opts.event);
@@ -2014,6 +2050,7 @@ const GlobeModule = {
     this._updateRankRail();
     this._clearCountryProjects();
     this._refreshCountryBorders();
+    this._syncAutoRotation();
     if (this._countryOpener && document.contains(this._countryOpener) && typeof this._countryOpener.focus === 'function') this._countryOpener.focus();
     this._countryOpener = null;
     if (hasModule('EventBus')) EventBus.emit('globe:country-closed', { timestamp: Date.now() });
@@ -2256,6 +2293,7 @@ const GlobeModule = {
     document.removeEventListener('mousemove', this._onMouseMove);
     document.removeEventListener('keydown', this._onCountryKeydown);
     this._countryKeydownBound = false;
+    this._unbindReducedMotionPreference();
 
     // Remove canvas listeners
     if (this._canvasEl) {
@@ -2454,7 +2492,7 @@ const Panel = {
     $('panel-backdrop').classList.remove('show');
     $('globeViz').style.transform = '';
     this.currentSite = null;
-    GlobeModule.world.controls().autoRotate = true;
+    GlobeModule._syncAutoRotation();
     GlobeModule.world.pointOfView({ lat: 20, lng: 40, altitude: 2.2 }, 400);
   },
 

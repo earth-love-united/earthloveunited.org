@@ -1,16 +1,17 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Candidate cache (v30) — pin the denied CT-42 preview and remediated globe assets.
+ * Candidate cache (v32) — pin the denied CT-42 preview, remediated globe assets,
+ * narrow-screen card reflow, and reduced-motion globe controls.
  */
-const CACHE_NAME = 'elu-v30-texture-provenance';
+const CACHE_NAME = 'elu-v32-motion-reflow';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v14',
+  '/css/globe-system.css?v=v15',
   '/assets/globe/runtime/manifest.json',
   '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75',
   '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3',
@@ -25,7 +26,7 @@ const STATIC_ASSETS = [
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v2',
-  '/js/globe.js?v=v8',
+  '/js/globe.js?v=v9',
   '/js/carbon-clock.js?v=v1',
   '/js/app.js?v=v3',
   '/js/vendor/globe.gl.js',

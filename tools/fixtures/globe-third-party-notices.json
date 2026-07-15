@@ -565,8 +565,24 @@
       "id": "build-final-aggregate-check-removed",
       "kind": "replace_file",
       "file": "build_deploy",
-      "from": "node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
+      "from": "exec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
       "to": "true",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "build-success-exit-tamper",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "exec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
+      "to": "trap 'printf %s forged > \"$DEPLOY_DIR/THIRD_PARTY_NOTICES.txt\"' EXIT\nnode tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "build-background-post-check-writer",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "exec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
+      "to": "(sleep 1; printf %s forged > \"$DEPLOY_DIR/THIRD_PARTY_NOTICES.txt\") &\nexec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
       "expected_failure": "deploy_notice_verification"
     },
     {

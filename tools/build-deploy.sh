@@ -178,8 +178,8 @@ fi
 echo "📜 Verifying final staged third-party notices..."
 node tools/check-globe-third-party-notices.js --staged "$DEPLOY_DIR"
 
-# This must remain the final executable command. It reruns CT-45 and the notice
-# checker, then rehashes every notice/trust artifact, the footer, and any future
-# signed approval bundle after every copy, cleanup, report, and earlier check.
+# Replace the shell with the aggregate verifier so successful shell EXIT
+# handlers cannot write after verification. The verifier removes failed staged
+# output; if exec itself cannot start, the existing shell EXIT trap removes it.
 echo "🔐 Verifying final staged production integrity..."
-node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"
+exec node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"

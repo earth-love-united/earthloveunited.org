@@ -365,10 +365,12 @@ jobs:
               matches: matchMedia('(prefers-reduced-motion: reduce)').matches,
               loadingAnimation: loadingMark.animationName,
               loadingTransitionsZero: allZero(loadingOverlay.transitionDuration),
+              autoRotate: window.GlobeModule?.world?.controls?.().autoRotate,
             };
           });
-          assert(reducedMotion.matches && reducedMotion.loadingAnimation === 'none' && reducedMotion.loadingTransitionsZero,
-            'reduced-motion preference must disable globe loading motion');
+          assert(reducedMotion.matches && reducedMotion.loadingAnimation === 'none' &&
+            reducedMotion.loadingTransitionsZero && reducedMotion.autoRotate === false,
+            'reduced-motion preference must disable globe loading motion and auto-rotation');
           await page.emulateMedia({ reducedMotion: 'no-preference' });
 
           await cdp.send('Emulation.setPageScaleFactor', { pageScaleFactor: 2 });

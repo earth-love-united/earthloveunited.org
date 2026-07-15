@@ -682,6 +682,10 @@ function activeShellLines(value) {
   });
 }
 
+function hasBackgroundOperator(line) {
+  return /(^|[^&>])&(?=\s|$)/.test(String(line || ''));
+}
+
 function exactUnresolvedAssetRights(rows) {
   if (!Array.isArray(rows) || rows.length !== EXPECTED_ASSET_RIGHTS_ROWS.length) return false;
   return rows.every(function (row, index) {
@@ -856,7 +860,8 @@ function evaluateNoticeIntegration(input) {
   const sourceCommand = 'node tools/check-globe-third-party-notices.js';
   const copyCommand = 'cp THIRD_PARTY_NOTICES.txt "$DEPLOY_DIR/"';
   const stagedCommand = 'node tools/check-globe-third-party-notices.js --staged "$DEPLOY_DIR"';
-  const finalAggregateCommand = 'node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"';
+  const finalAggregateVerifier = 'node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"';
+  const finalAggregateCommand = 'exec ' + finalAggregateVerifier;
   const sourceIndex = buildLines.indexOf(sourceCommand);
   const copyIndex = buildLines.indexOf(copyCommand);
   const stagedIndex = buildLines.indexOf(stagedCommand);
@@ -867,9 +872,12 @@ function evaluateNoticeIntegration(input) {
       buildLines.filter(function (line) { return line === stagedCommand; }).length === 1 &&
       buildLines.filter(function (line) { return line === finalAggregateCommand; }).length === 1 &&
       sourceIndex !== -1 && copyIndex > sourceIndex && stagedIndex > copyIndex &&
-      finalIndex > stagedIndex && finalIndex === buildLines.length - 1,
+      finalIndex > stagedIndex &&
+      buildLines[buildLines.length - 1] === finalAggregateCommand &&
+      !buildLines.some(hasBackgroundOperator) &&
+      !/trap\s+[^\n]*\b(?:DEBUG|RETURN)\b/.test(files.build_deploy),
     'deploy_notice_verification',
-    'Build staging must verify source notices, copy the root notice, verify staged notice bytes, then run the aggregate verifier as the final executable command.'
+    'Build staging must verify source notices, copy the root notice, verify staged notice bytes, then exec the aggregate verifier as the exact tail with no direct shell background operator.'
   );
 
   const activeIndex = stripHtmlComments(files.index);

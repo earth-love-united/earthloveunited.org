@@ -296,6 +296,19 @@ function inspectDeployBehavior(source) {
   }
 }
 
+function inspectFinalVerifierCleanup() {
+  const stagedRoot = fs.mkdtempSync(path.join(ROOT, '.ct45-final-failure-'));
+  try {
+    const requested = path.relative(ROOT, stagedRoot);
+    const result = childProcess.spawnSync(process.execPath, [
+      'tools/check-staged-production-integrity.js', '--staged', requested,
+    ], { cwd: ROOT, encoding: 'utf8' });
+    return result.status !== 0 && !fs.existsSync(stagedRoot);
+  } finally {
+    fs.rmSync(stagedRoot, { recursive: true, force: true });
+  }
+}
+
 async function refreshDerived(input, mutation = null) {
   const sourceChanged = key => !mutation || mutation.path === `files.${key}`;
   if (!mutation || mutation.path?.startsWith('manifest')) {
@@ -305,7 +318,13 @@ async function refreshDerived(input, mutation = null) {
   if (sourceChanged('globe')) input.runtime_config = parseRuntimeConfig(input.files.globe);
   if (sourceChanged('sw')) input.service_worker = await inspectServiceWorker(input.files.sw);
   if (sourceChanged('index')) input.index_runtime_requests = parseIndexRuntimeRequests(input.files.index);
-  if (sourceChanged('build_deploy')) input.deploy_behavior = inspectDeployBehavior(input.files.build_deploy);
+  if (sourceChanged('build_deploy')) {
+    const finalCleanupPassed = input.deploy_behavior?.final_integrity_failure_removed_output === true;
+    input.deploy_behavior = {
+      ...inspectDeployBehavior(input.files.build_deploy),
+      final_integrity_failure_removed_output: finalCleanupPassed,
+    };
+  }
   return input;
 }
 
@@ -340,6 +359,9 @@ async function loadInput(root = ROOT) {
       ui_pins: [...ACTUAL_UI_REVIEW_PINS],
       runtime_fixed: [...FIXED_RUNTIME_PATHS],
       runtime_prefixes: [...RUNTIME_PATH_PREFIXES],
+    },
+    deploy_behavior: {
+      final_integrity_failure_removed_output: inspectFinalVerifierCleanup(),
     },
     files,
   };
@@ -518,6 +540,33 @@ function assertSafeStagedPath(root, relative, expectedType = 'file') {
   return current;
 }
 
+function resolveStagedRoot(repoRoot, requested) {
+  assert.equal(typeof requested, 'string', '--staged requires a staged directory');
+  assert.ok(requested && !requested.includes('\0'), '--staged requires a safe staged directory');
+  const lexicalRoot = path.resolve(repoRoot);
+  const lexicalCandidate = path.resolve(lexicalRoot, requested);
+  const lexicalRelative = path.relative(lexicalRoot, lexicalCandidate);
+  assert.ok(lexicalRelative && !lexicalRelative.startsWith('..') && !path.isAbsolute(lexicalRelative),
+    '--staged must be a directory inside the repository');
+
+  const rootStat = fs.lstatSync(lexicalRoot);
+  assert.ok(rootStat.isDirectory() && !rootStat.isSymbolicLink(), 'repository root must be a real directory');
+  let current = lexicalRoot;
+  lexicalRelative.split(path.sep).forEach(part => {
+    current = path.join(current, part);
+    const stat = fs.lstatSync(current);
+    assert.equal(stat.isSymbolicLink(), false, '--staged path must not contain symbolic links');
+    assert.equal(stat.isDirectory(), true, '--staged path components must be directories');
+  });
+
+  const realRoot = fs.realpathSync.native(lexicalRoot);
+  const realCandidate = fs.realpathSync.native(lexicalCandidate);
+  const realRelative = path.relative(realRoot, realCandidate);
+  assert.ok(realRelative && !realRelative.startsWith('..') && !path.isAbsolute(realRelative),
+    '--staged real path must remain inside the repository');
+  return realCandidate;
+}
+
 function runStagedSymlinkSelfTests() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-ct45-stage-'));
   try {
@@ -533,7 +582,16 @@ function runStagedSymlinkSelfTests() {
     fs.writeFileSync(path.join(temp, 'real-runtime', 'asset.bin'), 'x');
     assert.throws(() => assertSafeStagedPath(temp, 'runtime-link/asset.bin'), /symbolic link/,
       'runtime directory symlink must be rejected');
-    return 2;
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-ct45-outside-'));
+    try {
+      fs.mkdirSync(path.join(outside, '_deploy'));
+      fs.symlinkSync(outside, path.join(temp, 'escape'), 'dir');
+      assert.throws(() => resolveStagedRoot(temp, 'escape/_deploy'), /symbolic links/,
+        'intermediate staged-root symlink must be rejected');
+    } finally {
+      fs.rmSync(outside, { recursive: true, force: true });
+    }
+    return 3;
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
@@ -573,9 +631,7 @@ async function main() {
   if (STAGED_INDEX !== -1) {
     const requested = process.argv[STAGED_INDEX + 1];
     if (!requested) throw new Error('--staged requires a staged directory');
-    const stagedRoot = path.resolve(ROOT, requested);
-    const relative = path.relative(ROOT, stagedRoot);
-    assert.ok(relative && !relative.startsWith('..') && !path.isAbsolute(relative), '--staged must be a directory inside the repository');
+    const stagedRoot = resolveStagedRoot(ROOT, requested);
     const result = verifyStaged(stagedRoot);
     process.stdout.write(`CT-45 staged globe runtime assets: PASS (${result.assets} exact files; ${svgSafetyPayloads} hostile SVG payload classes rejected; release authority ${result.releaseAuthority})\n`);
     return;
@@ -608,4 +664,4 @@ if (require.main === module) main().catch(error => {
   process.exitCode = 1;
 });
 
-module.exports = { assetRecord, assertSafeStagedPath, inspectServiceWorker, loadInput, parseIndexRuntimeRequests, parseNavigationPoints, parseRuntimeConfig, runSvgSafetySelfTests, verifyStaged };
+module.exports = { assetRecord, assertSafeStagedPath, inspectServiceWorker, loadInput, parseIndexRuntimeRequests, parseNavigationPoints, parseRuntimeConfig, resolveStagedRoot, runSvgSafetySelfTests, verifyStaged };

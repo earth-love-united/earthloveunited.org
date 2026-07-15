@@ -230,6 +230,19 @@ function verifyFinalStagedIntegrity(options) {
   return { status: 'pass', pinned_file_count: PINNED_FILES.length };
 }
 
+function verifyFinalStagedIntegrityWithCleanup(options) {
+  try {
+    return verifyFinalStagedIntegrity(options);
+  } catch (error) {
+    try {
+      fs.rmSync(options.stagedRoot, { recursive: true, force: true });
+    } catch (cleanupError) {
+      throw new Error(error.message + '; failed staged-output cleanup: ' + cleanupError.message, { cause: error });
+    }
+    throw error;
+  }
+}
+
 function copyFixtureFile(sourceRoot, targetRoot, relative) {
   const destination = path.join(targetRoot, relative);
   fs.mkdirSync(path.dirname(destination), { recursive: true });
@@ -330,7 +343,20 @@ function runSelfTest() {
     fs.rmSync(symlinkFixture.root, { recursive: true, force: true });
     fs.rmSync(outside, { recursive: true, force: true });
   }
-  process.stdout.write('Final staged production integrity self-test: PASS (9 fail-closed filesystem/tamper cases)\n');
+
+  const cleanupFixture = makeSelfTestFixture();
+  try {
+    fs.appendFileSync(path.join(cleanupFixture.staged, notices.NOTICE_PATH), '\ninvalid staged bytes\n');
+    assert.throws(() => verifyFinalStagedIntegrityWithCleanup({
+      sourceRoot: cleanupFixture.root,
+      stagedRoot: cleanupFixture.staged,
+      skipChildChecks: true,
+    }), undefined, 'failed final verification must throw');
+    assert.equal(fs.existsSync(cleanupFixture.staged), false, 'failed final verification must remove staged output');
+  } finally {
+    fs.rmSync(cleanupFixture.root, { recursive: true, force: true });
+  }
+  process.stdout.write('Final staged production integrity self-test: PASS (10 fail-closed filesystem/tamper/cleanup cases)\n');
 }
 
 function runCli(argv) {
@@ -342,7 +368,7 @@ function runCli(argv) {
     throw new Error('usage: node tools/check-staged-production-integrity.js --staged <directory> | --self-test');
   }
   const stagedRoot = resolveStagedRoot(ROOT, argv[1]);
-  const report = verifyFinalStagedIntegrity({ sourceRoot: ROOT, stagedRoot });
+  const report = verifyFinalStagedIntegrityWithCleanup({ sourceRoot: ROOT, stagedRoot });
   process.stdout.write('Final staged production integrity: PASS (' + report.pinned_file_count +
     ' pinned notice/trust files, footer parity, approval boundary)\n');
 }

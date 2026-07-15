@@ -130,7 +130,7 @@ const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
 ]);
 const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v14',
+  '/css/globe-system.css?v=v15',
   '/js/gaia-utils.js',
   '/js/module-contracts.js',
   '/js/event-bus.js',
@@ -138,7 +138,7 @@ const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v2',
-  '/js/globe.js?v=v8',
+  '/js/globe.js?v=v9',
   '/js/carbon-clock.js?v=v1',
   '/js/app.js?v=v3',
 ]);
@@ -181,6 +181,14 @@ function digest(value) {
 
 function occurrences(value, needle) {
   return String(value || '').split(needle).length - 1;
+}
+
+function activeShellLines(value) {
+  return String(value || '').split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#'));
+}
+
+function hasBackgroundOperator(line) {
+  return /(^|[^&>])&(?=\s|$)/.test(String(line || ''));
 }
 
 function stripComments(value) {
@@ -448,7 +456,7 @@ function evaluateRuntimeAssets(input) {
       .every(token => index.includes(token)),
     'Public copy must credit NASA and identify the historical surface and synthetic sky as decorative, non-current, non-assessment evidence.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v30-texture-provenance';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=30-texture-provenance'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v32-motion-reflow';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=32-motion-reflow'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&
@@ -468,14 +476,16 @@ function evaluateRuntimeAssets(input) {
     occurrences(sw, 'caches.match(request)') >= 2 && !sw.includes('ignoreSearch'),
     'Runtime data remain network-first with exact versioned precache keys and exact-request fallback.');
 
-  const stagedBuildCommand = 'node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"';
-  const stagedBuildIndex = buildDeploy.indexOf(stagedBuildCommand);
-  const afterStagedVerification = stagedBuildIndex === -1 ? '' : buildDeploy.slice(stagedBuildIndex + stagedBuildCommand.length);
-  check('deploy-staged-verification', buildDeploy.split('\n').filter(line => line.trim() === stagedBuildCommand).length === 1 &&
-    !/\|\|\s*true|;\s*true/.test(buildDeploy.slice(stagedBuildIndex, stagedBuildIndex + stagedBuildCommand.length + 40)) &&
+  const stagedVerifier = 'node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"';
+  const stagedBuildCommand = `exec ${stagedVerifier}`;
+  const buildLines = activeShellLines(buildDeploy);
+  const trustedTail = [stagedBuildCommand];
+  check('deploy-staged-verification', buildLines.filter(line => line === stagedBuildCommand).length === 1 &&
+    JSON.stringify(buildLines.slice(-trustedTail.length)) === JSON.stringify(trustedTail) &&
+    !buildLines.some(hasBackgroundOperator) &&
     !/(?:^|\n)\s*(?:exit|return)\s+0(?:\s|$)/.test(buildDeploy) &&
-    afterStagedVerification.split('\n').every(line => !line.trim() || line.trimStart().startsWith('#')),
-    'Deployment staging must finish with the aggregate verifier, which rechecks the exact copied asset bytes.');
+    !/trap\s+[^\n]*\b(?:DEBUG|RETURN)\b/.test(buildDeploy),
+    'Deployment staging must exec the aggregate verifier as the exact tail and contain no direct shell background operator.');
   const releaseGuard = buildDeploy.indexOf('if [ "$DEPLOY_MODE" = "release" ]; then');
   const readinessCommand = buildDeploy.indexOf('node tools/check-climate-production-readiness.js --release');
   const stagingStart = buildDeploy.indexOf('mkdir -p "$DEPLOY_DIR"');
@@ -487,10 +497,11 @@ function evaluateRuntimeAssets(input) {
     'Release mode must be explicit, strictly validated, forced for every externally reachable Cloudflare build, and pass readiness before staging starts.');
   check('deploy-failure-cleanup', input?.deploy_behavior?.denied_release_removed_output === true &&
     input?.deploy_behavior?.later_failure_removed_output === true &&
+    input?.deploy_behavior?.final_integrity_failure_removed_output === true &&
     input?.deploy_behavior?.unknown_environment_rejected === true &&
     input?.deploy_behavior?.conflicting_selectors_rejected === true &&
     input?.deploy_behavior?.cloudflare_preview_forces_release === true,
-    'Denied releases, Cloudflare previews, later staging failures, unknown environment modes, and conflicting selectors must fail closed without a publishable output directory.');
+    'Denied releases, Cloudflare previews, final verification failures, later staging failures, unknown environment modes, and conflicting selectors must fail closed without a publishable output directory.');
   check('candidate-publication-marker', buildDeploy.includes('CANDIDATE-NOT-FOR-PUBLICATION.txt') &&
     buildDeploy.includes('LOCAL QA CANDIDATE — DO NOT PUBLISH') &&
     buildDeploy.includes('production_use_approved=false') && buildDeploy.includes('release_authority=false') &&
@@ -522,6 +533,7 @@ function evaluateRuntimeAssets(input) {
     'countryFeatureCount === 201',
     'browserCounts.factual === 206 && browserCounts.gaps === 43',
     "new Event('webglcontextlost', { cancelable: true })",
+    'reducedMotion.autoRotate === false',
     'rendererCanvasCount === 0',
     'for (const width of [320, 375])',
     'rects.browse.height >= 44 && rects.theme.height >= 44',
