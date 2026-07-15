@@ -1,0 +1,41 @@
+{
+  "_meta": {
+    "fixture_set": "ct-10b-primap-ingestion",
+    "fixture_version": "1.0.0",
+    "fictional_entities": true
+  },
+  "csv_lines": [
+    {
+      "line": "\"PRIMAP-fictional\",\"HISTTP\",\"derived\",\"AAA\",\"KYOTOGHG (AR6GWP100)\",\"CO2 * gigagram / yr\",\"M.0.EL\",\"1,000\",\"said \"\"review\"\"\"",
+      "expected": ["PRIMAP-fictional", "HISTTP", "derived", "AAA", "KYOTOGHG (AR6GWP100)", "CO2 * gigagram / yr", "M.0.EL", "1,000", "said \"review\""]
+    }
+  ],
+  "unit_cases": [
+    { "source_ggco2e": 0, "expected_mtco2e": 0 },
+    { "source_ggco2e": 1000, "expected_mtco2e": 1 },
+    { "source_ggco2e": -250, "expected_mtco2e": -0.25 },
+    { "source_ggco2e": null, "expected_mtco2e": null }
+  ],
+  "classification": {
+    "registry_iso3": ["AAA", "BBB"],
+    "cases": [
+      { "area": "AAA", "expected": "mapped_country" },
+      { "area": "EARTH", "expected": "aggregate" },
+      { "area": "ANT", "expected": "obsolete" },
+      { "area": "ZZQ", "expected": "unmapped" }
+    ]
+  },
+  "coverage": {
+    "registry": [
+      { "country_id": "iso3166-1:AAA", "iso_alpha3": "AAA" },
+      { "country_id": "iso3166-1:BBB", "iso_alpha3": "BBB" }
+    ],
+    "mapped_series": [
+      { "series_id": "series:fictional:aaa", "country_id": "iso3166-1:AAA" }
+    ],
+    "expected_states": {
+      "iso3166-1:AAA": "not_reviewed",
+      "iso3166-1:BBB": "source_unavailable"
+    }
+  }
+}
