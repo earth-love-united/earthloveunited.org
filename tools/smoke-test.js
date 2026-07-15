@@ -73,15 +73,15 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'Data module loaded with pledge nodes',
+        name: 'Data module is live with country evidence fail-closed',
         critical: true,
         test: () => {
-          const ok = typeof Data !== 'undefined' && Data.pledgeNodes && Data.pledgeNodes.length > 0;
+          const ok = typeof Data !== 'undefined'
+            && Array.isArray(Data.smallNations)
+            && Data.carbonProjects && typeof Data.carbonProjects === 'object';
           return {
             pass: ok,
-            detail: ok
-              ? `${Data.pledgeNodes.length} pledge nodes, ${Data.countryHexColors ? Object.keys(Data.countryHexColors).length : 0} country colors`
-              : 'Data.pledgeNodes is empty or Data not loaded',
+            detail: ok ? 'active non-climate data loaded; country evidence remains fail-closed' : 'active Data inputs missing',
           };
         },
       },
@@ -299,14 +299,15 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'Data files loaded successfully',
+        name: 'Active data files loaded successfully',
         critical: true,
         test: () => {
           if (typeof Data === 'undefined') return { pass: false, detail: 'Data module not loaded' };
-          const pledges = Data.pledgeNodes ? Data.pledgeNodes.length : 0;
+          const smallNations = Array.isArray(Data.smallNations) ? Data.smallNations.length : 0;
+          const carbonProjects = Data.carbonProjects && typeof Data.carbonProjects === 'object';
           return {
-            pass: pledges > 0,
-            detail: `${pledges} pledge nodes`,
+            pass: smallNations > 0 && carbonProjects,
+            detail: `${smallNations} small nations; carbon projects ${carbonProjects ? 'loaded' : 'missing'}`,
           };
         },
       },

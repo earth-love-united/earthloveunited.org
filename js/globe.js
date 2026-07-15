@@ -82,17 +82,14 @@ const COUNTRY_ISO_FALLBACKS = {
 
 const COUNTRY_STATUS = {
   MISSING: 'missing',
-  LEGACY: 'legacy-unverified',
 };
 
 const COUNTRY_STATUS_LABELS = {
   [COUNTRY_STATUS.MISSING]: 'Country data being re-sourced',
-  [COUNTRY_STATUS.LEGACY]: 'Legacy evidence — not yet verified',
 };
 
 const COUNTRY_STATUS_BADGE_CLASSES = {
   [COUNTRY_STATUS.MISSING]: 'neutral',
-  [COUNTRY_STATUS.LEGACY]: 'neutral',
 };
 
 function _resolveCountryIso(feature) {
@@ -111,16 +108,7 @@ function _getCountryDisplayData(feature) {
   if (!feature) return null;
   const props = feature.properties || {};
   const iso = _resolveCountryIso(feature);
-  const data = Data.countryHexColors?.[iso];
-  const country = data?.country || props.ADMIN || props.NAME || props.name || iso;
-
-  if (data) {
-    return Object.assign({}, data, {
-      iso,
-      country,
-      hasData: true,
-    });
-  }
+  const country = props.ADMIN || props.NAME || props.name || iso;
 
   return {
     iso,
@@ -182,8 +170,7 @@ function _isFiniteNumber(value) {
 }
 
 function _getCountryStatusKey(d) {
-  if (!d?.hasData) return COUNTRY_STATUS.MISSING;
-  return COUNTRY_STATUS.LEGACY;
+  return COUNTRY_STATUS.MISSING;
 }
 
 function _getCountryStatusText(d) {
@@ -195,7 +182,7 @@ function _getCountryStatusClass(d) {
 }
 
 function _getCountryStatusAttr(d) {
-  return _getCountryStatusKey(d) === COUNTRY_STATUS.MISSING ? 'nodata' : 'legacy';
+  return 'nodata';
 }
 
 const GLOBE_THEME_CONFIG = Object.freeze({
@@ -224,9 +211,7 @@ function _renderCountryTrajectory() {
 }
 
 function _getCountryGaiaComment(d, projectCount) {
-  const statusKey = _getCountryStatusKey(d);
-  if (statusKey === COUNTRY_STATUS.MISSING) return 'Country evidence is being re-sourced; the border remains navigable.';
-  return 'Legacy evidence is visible only as provisional context while country facts are re-sourced.';
+  return 'Country evidence is being re-sourced; the border remains navigable.';
 }
 
 function _isCountryModeActive() {
@@ -362,11 +347,8 @@ const GlobeModule = {
     console.log('[Globe] init — ' + (this.world.pointsData()?.length || 0) + ' points loaded');
     if (hasModule('EventBus')) EventBus.emit('globe:render-ready', { timestamp: Date.now() });
 
-    // ── Pledge vs Reality country nodes ──
-    // v1: point layer disabled — the bare countries globe carries pledge data
-    // via colored hex polygons + the country tooltip instead of dot markers.
-    // Re-enable by uncommenting when the nodes toggle returns.
-    // this.initPledgeNodes();
+    // Country climate point layers remain disabled until reviewed evidence is
+    // explicitly released. Country polygons stay navigable without values.
 
     // ── Country hex polygons — shared between modes ──
     // Default: empty wireframe grid (visible edges, transparent fill)
@@ -389,7 +371,7 @@ const GlobeModule = {
         this._renderRankRail();
         // Only build the H3 hex layer when the solid polygon-border layer is
         // NOT available (old globe.gl builds). Building world-wide hexes just
-        // to clear them two calls later (applyCountryHexColors) blocked the
+        // to clear them two calls later (applyCountrySurface) blocked the
         // main thread for seconds-to-minutes on real GPUs/DPR-2 screens.
         if (!this._supportsCountryBorders()) {
           const hexRes = this.isMobile ? 2 : 3;
@@ -407,7 +389,7 @@ const GlobeModule = {
         // can resolve after a fast mode switch into NDVI/events.
         const currentMode = safeGet('GLOBE_MODES', 'getMode', document.body.dataset.globeMode || 'countries');
         if (currentMode === 'countries') {
-          this.applyCountryHexColors();
+          this.applyCountrySurface();
           this.applyCountryBorders();
         } else {
           this.clearCountryBorders();
@@ -629,9 +611,7 @@ const GlobeModule = {
     // Apply initial node visual states
     this.updateNodeVisuals();
 
-    // v1: pledge point tooltip disabled along with initPledgeNodes() — the
-    // country tooltip (#hex-country-tooltip) covers pledge data instead.
-    // this._initPledgeTooltip();
+    // Country climate point tooltips remain disabled.
   },
 
   setTheme(theme) {
@@ -646,27 +626,19 @@ const GlobeModule = {
     return true;
   },
 
-  // ── Pledge nodes layer ──
-  initPledgeNodes() {
-    if (!Data.pledgeNodes || !Data.pledgeNodes.length) return;
-    const pledgeNodes = Data.pledgeNodes;
-
-    // Combine site points + pledge nodes into a single pointsData call
-    // Sites get type='site', pledge nodes get type='pledge'
-    const allPoints = [
-      ...(Data.sites || []).map(s => ({ ...s, _type: 'site' })),
-      ...pledgeNodes.map(n => ({ ...n, _type: 'pledge' })),
-    ];
-
-    this.world
-      .pointsData(allPoints)
+  // Compatibility entry point retained for callers that restore point layers.
+  // Until reviewed country evidence is released, it restores restoration-site
+  // points only and never synthesizes country climate points.
+  initSitePoints() {
+    if (!this.world) return;
+    const sitePoints = (Data.sites || []).map(s => ({ ...s, _type: 'site' }));
+    safeChain(this.world, 'Globe.sitePoints')
+      .pointsData(sitePoints)
       .pointLat('lat')
       .pointLng('lng')
-      .pointAltitude(p => p._type === 'pledge' ? this.pledgePointAltitude(p) : 0.01)
-      .pointRadius(p => p._type === 'pledge' ? this.pledgePointRadius(p) : 0.6)
+      .pointAltitude(() => 0.01)
+      .pointRadius(() => 0.6)
       .pointColor(p => {
-        if (p._type === 'pledge') return this.pledgePointColor(p);
-        // Site color logic
         const suggestedIds = hasModule('GAIA_NODES') ? GAIA_NODES.getSuggestedSiteIds('') : [];
         if (suggestedIds.includes(p.id)) return '#ffd700';
         return 'rgba(78,205,196,0.6)';
@@ -687,22 +659,12 @@ const GlobeModule = {
           _globeClickHandler(p.lat, p.lng);
           return;
         }
-        if (p._type === 'pledge') {
-          if (hasModule('PLEDGE_PANEL')) {
-            PLEDGE_PANEL.open(p);
-          } else {
-            console.warn('[Globe] PLEDGE_PANEL not available — falling back to Panel.open');
-            Panel.open({ ...p, name: p.country, subtitle: 'Pledge vs Reality', narrative: p.country + ' — ' + (p.fossil_co2_mt || 0) + ' MtCO₂' });
-          }
+        if (hasModule('GAIA_NODES')) {
+          GAIA_NODES.onNodeClick(p.id);
+        } else if (hasModule('SITE_PANEL')) {
+          SITE_PANEL.open(p);
         } else {
-          // Site click
-          if (hasModule('GAIA_NODES')) {
-            GAIA_NODES.onNodeClick(p.id);
-          } else if (hasModule('SITE_PANEL')) {
-            SITE_PANEL.open(p);
-          } else {
-            Panel.open(p);
-          }
+          Panel.open(p);
         }
       })
       .onPointHover(p => {
@@ -710,71 +672,28 @@ const GlobeModule = {
           window.dispatchEvent(new CustomEvent('pledgeHover', { detail: null }));
           return;
         }
-        if (p._type === 'pledge') {
-          window.dispatchEvent(new CustomEvent('pledgeHover', {
-            detail: { node: p, tooltip: p.country + ' | Provisional fossil CO2 magnitude | Performance withheld' }
-          }));
+        if (hasModule('GAIA_NODES')) {
+          GAIA_NODES.onNodeHover(p.id);
+        } else if (hasModule('GAIA_PRESENCE')) {
+          GAIA_PRESENCE.speakTeaser(p.id);
+          safeCall('GAIA_ENGAGEMENT', 'interact');
         } else {
-          // Site hover
-          if (hasModule('GAIA_NODES')) {
-            GAIA_NODES.onNodeHover(p.id);
-          } else if (hasModule('GAIA_PRESENCE')) {
-            GAIA_PRESENCE.speakTeaser(p.id);
-            safeCall('GAIA_ENGAGEMENT', 'interact');
-          }
           window.dispatchEvent(new CustomEvent('pledgeHover', { detail: null }));
         }
       });
   },
 
-  pledgePointColor() {
-    return '#6f91a8';
-  },
-
-  pledgePointAltitude(n) {
-    const co2 = n.fossil_co2_mt || 0;
-    return 0.01 + Math.min(co2 / 50000, 0.15);
-  },
-
-  pledgePointRadius(n) {
-    const co2 = n.fossil_co2_mt || 0;
-    return 0.3 + Math.min(co2 / 20000, 0.8);
-  },
-
-  // Provisional magnitude channel: neutral blue-grey only. Legacy emissions
-  // affect prominence, never favorable/adverse performance semantics.
+  // Uniform neutral country surface: no climate magnitude or performance
+  // channel is available until a reviewed runtime release replaces it.
   _countryHexColorFn(feature) {
-    const d = _getCountryDisplayData(feature);
-    if (!d) return 'rgba(149,165,166,0.22)';
-
-    const statusKey = _getCountryStatusKey(d);
-    if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(149,165,166,0.28)';
-
-    const te = Math.min(Math.log(Math.max(d.emissions || 0, 1)) / Math.log(12000), 1);
-    const sat = 22 + te * 16;
-    const lum = 52 - te * 15;
-    const alpha = 0.35 + te * 0.40;
-
-    return 'hsla(205,' + Math.round(sat) + '%,' + Math.round(lum) + '%,' + alpha.toFixed(2) + ')';
+    return 'rgba(149,165,166,0.28)';
   },
 
-  // ── Elevation function: total emissions → hex altitude ──
-  // High emitters rise up (mountains), low emitters sink (valleys)
   _countryHexAltitudeFn(feature) {
-    const d = _getCountryDisplayData(feature);
-    if (!d?.hasData) return 0.003;
-
-    const emissions = d.emissions || 0;
-    // Log scale: 1 Mt → 0.003, 10000 Mt → 0.025
-    const logEm = Math.log(Math.max(emissions, 1));
-    const minLog = Math.log(1);
-    const maxLog = Math.log(12000);
-    const t = Math.min(Math.max((logEm - minLog) / (maxLog - minLog), 0), 1);
-    return 0.003 + t * 0.022;
+    return 0.003;
   },
 
-  // Navigation order keeps large provisional fossil values prominent without
-  // presenting a numbered or performance-based ranking.
+  // With no reviewed scoring or magnitude evidence, navigation is alphabetical.
   _buildCountryDeck() {
     const featureByIso = this._featureByIso || {};
     const entries = Object.keys(featureByIso)
@@ -782,26 +701,16 @@ const GlobeModule = {
       .map(iso => {
         const feature = featureByIso[iso];
         const data = _getCountryDisplayData(feature);
-        const node = hasModule('Data') && typeof Data.getPledgeNode === 'function'
-          ? Data.getPledgeNode(iso)
-          : null;
         const country = data?.country || iso;
         return {
           iso,
           feature,
           data,
-          node,
           country,
         };
       })
       .filter(entry => entry.feature && entry.data);
-    const provisional = entries
-      .filter(entry => entry.data.hasData)
-      .sort((a, b) => (b.data.emissions || 0) - (a.data.emissions || 0));
-    const missing = entries
-      .filter(entry => !entry.data.hasData)
-      .sort((a, b) => String(a.country).localeCompare(String(b.country)));
-    this._countryDeck = provisional.concat(missing);
+    this._countryDeck = entries.sort((a, b) => String(a.country).localeCompare(String(b.country)));
   },
 
   _renderRankRail() {
@@ -1020,9 +929,7 @@ const GlobeModule = {
     const statusText = _getCountryStatusText(d);
     const statusClass = _getCountryStatusClass(d);
     const statusAttr = _getCountryStatusAttr(d);
-    const emissions = d.emissions
-      ? 'Provisional fossil CO₂ magnitude: ' + d.emissions.toLocaleString() + ' MtCO₂/yr · legacy, unverified'
-      : 'Country facts are being re-sourced';
+    const evidenceSummary = 'Country facts are being re-sourced';
     const comment = _getCountryGaiaComment(d);
 
     if (selected) this._ensureCountryCardWrap(tt);
@@ -1030,7 +937,7 @@ const GlobeModule = {
     tt.classList.toggle('selected', !!selected);
     tt.dataset.status = statusAttr;
     tt.setAttribute('role', selected ? 'region' : 'tooltip');
-    tt.setAttribute('aria-label', selected ? d.country + ' evidence review' : d.country + ' provisional evidence summary');
+    tt.setAttribute('aria-label', selected ? d.country + ' evidence review' : d.country + ' evidence unavailable');
     if (!selected) tt.removeAttribute('tabindex');
 
     let html = '<div class="tt-topline">'
@@ -1038,12 +945,12 @@ const GlobeModule = {
       + '<div class="tt-pill tt-status-' + statusClass + '">' + _escapeHtml(statusText) + '</div>'
       + (selected ? '<button type="button" class="tt-close" data-country-close aria-label="Close">✕</button>' : '')
       + '</div>'
-      + '<div class="tt-detail">' + _escapeHtml(emissions) + '</div>';
+      + '<div class="tt-detail">' + _escapeHtml(evidenceSummary) + '</div>';
 
     if (!selected) {
       html += '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
     } else {
-      // Pinned card: quarantine disclosure + provisional magnitude only.
+      // Pinned card: explicit fail-closed disclosure only.
       html += this._renderCountryMetrics(d);
     }
 
@@ -1125,23 +1032,8 @@ const GlobeModule = {
     }
   },
 
-  // Interim quarantine: legacy rows may support neutral, provisional fossil
-  // prominence only. Performance, target, finance, CAT, and market claims are
-  // withheld until reviewed evidence replaces this payload.
   _renderCountryMetrics(d) {
-    const node = (hasModule('Data') && typeof Data.getPledgeNode === 'function') ? Data.getPledgeNode(d.iso) : null;
-    const fmt = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '—'
-      : (hasModule('Data') ? Data.fmt(n) : String(n));
-
-    if (!node) {
-      return '<div class="tt-comment" style="margin-top:8px">Country facts are being re-sourced. Performance is withheld until reviewed evidence is available.</div>'
-        + '<div class="tt-hint">esc or ✕ to close</div>';
-    }
-
-    return '<div class="tt-gap">'
-      + '<div class="tt-gap-big">' + fmt(node.fossil_co2_mt) + ' <span>MtCO₂/yr fossil · provisional legacy value</span></div>'
-      + '<div class="tt-gap-line">Unverified magnitude context only. Performance, targets, ratings, finance, and market inferences are withheld while sources are reviewed.</div>'
-      + '</div>'
+    return '<div class="tt-comment" style="margin-top:8px">Country facts are being re-sourced. Performance is withheld until reviewed evidence is available.</div>'
       + _renderCountryTrajectory()
       + '<div class="tt-hint">← → or swipe to browse countries · esc closes</div>';
   },
@@ -1228,53 +1120,23 @@ const GlobeModule = {
     if (feature === this._countryHoverFeature) return 'rgba(221,238,247,0.96)';
     if (feature === this._selectedCountryFeature) return 'rgba(141,184,208,0.90)';
 
-    const d = _getCountryDisplayData(feature);
     const small = !!feature?.properties?.__smallNation;
-    if (!d) return small ? 'rgba(200,230,235,0.7)' : 'rgba(180,215,218,0.34)';
-    const statusKey = _getCountryStatusKey(d);
-    if (statusKey === COUNTRY_STATUS.MISSING) {
-      return small ? 'rgba(205,225,235,0.82)' : 'rgba(145,170,184,0.32)';
-    }
-
-    const emissions = d.emissions || 0;
-    const magnitude = Math.min(Math.log(Math.max(emissions, 1)) / Math.log(12000), 1);
-    const alpha = small ? 0.82 + magnitude * 0.12 : 0.30 + magnitude * 0.18;
-    return small
-      ? 'rgba(151,188,210,' + Math.min(alpha, 0.96).toFixed(2) + ')'
-      : 'rgba(111,145,168,' + Math.min(alpha, 0.48).toFixed(2) + ')';
+    return small ? 'rgba(205,225,235,0.82)' : 'rgba(145,170,184,0.32)';
   },
 
   _countryPolygonPaintColorFn(feature) {
     const hovered = feature === this._countryHoverFeature;
     const selected = feature === this._selectedCountryFeature;
-    const d = _getCountryDisplayData(feature);
     const hoverBoost = hovered ? 0.12 : (selected ? 0.08 : 0);
 
     // Small-nation dot markers: a few pixels wide, so the usual low-alpha
     // country wash would vanish. Paint them near-solid for contrast.
     if (feature?.properties?.__smallNation) {
       const boost = hovered ? 0.10 : (selected ? 0.08 : 0);
-      const statusKey = d ? _getCountryStatusKey(d) : COUNTRY_STATUS.MISSING;
-      if (statusKey === COUNTRY_STATUS.MISSING) {
-        return 'rgba(150,182,196,' + Math.min(0.85 + boost, 0.98).toFixed(2) + ')';
-      }
-      const emissions = d?.emissions || 0;
-      const magnitude = Math.min(Math.log(Math.max(emissions, 1)) / Math.log(12000), 1);
-      const alpha = Math.min(0.84 + magnitude * 0.08 + boost, 0.98).toFixed(2);
-      return 'rgba(111,145,168,' + alpha + ')';
+      return 'rgba(150,182,196,' + Math.min(0.85 + boost, 0.98).toFixed(2) + ')';
     }
 
-    if (!d) return 'rgba(120,150,165,' + (0.14 + hoverBoost).toFixed(2) + ')';
-    const statusKey = _getCountryStatusKey(d);
-    if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(120,150,165,' + (0.14 + hoverBoost).toFixed(2) + ')';
-
-    const emissions = d.emissions || 0;
-    const te = Math.min(Math.log(Math.max(emissions, 1)) / Math.log(12000), 1);
-    const alpha = Math.min(0.28, 0.16 + te * 0.12) + hoverBoost;
-    const cappedAlpha = Math.min(alpha, 0.42).toFixed(2);
-
-    // Legacy evidence always uses one neutral hue; magnitude affects opacity.
-    return 'rgba(111,145,168,' + cappedAlpha + ')';
+    return 'rgba(120,150,165,' + (0.14 + hoverBoost).toFixed(2) + ')';
   },
 
   _supportsCountryBorders() {
@@ -1347,8 +1209,8 @@ const GlobeModule = {
     }
   },
 
-  // ── Apply country-colored hex map ──
-  applyCountryHexColors() {
+  // ── Apply uniform neutral country surface ──
+  applyCountrySurface() {
     if (!this.world) return;
     if (this._supportsCountryBorders()) {
       if (typeof this.world.hexPolygonsTransitionDuration === 'function') {
@@ -1448,17 +1310,14 @@ const GlobeModule = {
     if (hasModule('EventBus')) EventBus.emit('globe:country-closed', { timestamp: Date.now() });
   },
 
-  // ── Toggle pledge node cylinders on/off ──
-  togglePledgeNodes(show) {
+  // Historical compatibility API: only restoration-site points can be shown.
+  toggleSitePoints(show) {
     if (!this.world) return;
     if (show) {
-      this.initPledgeNodes();
+      this.initSitePoints();
       this.updateNodeVisuals();
     } else {
-      // Remove only pledge-type points, keep site points
-      const currentPoints = this.world.pointsData() || [];
-      const sitePoints = currentPoints.filter(p => p._type !== 'pledge');
-      this.world.pointsData(sitePoints);
+      this.world.pointsData([]);
     }
   },
 
@@ -1622,15 +1481,7 @@ const GlobeModule = {
   // ── Lens switching ──
   setLens(lens) {
     this.currentLens = lens;
-    this.updatePledgeVisuals();
-  },
-
-  updatePledgeVisuals() {
-    if (!Data.pledgeNodes) return;
-    // Every former lens is temporarily the same neutral provisional magnitude
-    // view. No legacy field can switch the globe into a performance judgment.
-    this.world.pointColor(() => '#6f91a8');
-    this.world.pointAltitude(n => 0.01 + Math.min((n.fossil_co2_mt || 0) / 50000, 0.15));
+    this.updateNodeVisuals();
   },
 
   // ── Update node visual states based on engagement ──
@@ -1643,9 +1494,6 @@ const GlobeModule = {
       : [];
 
     this.world.pointColor(p => {
-      if (p._type === 'pledge') {
-        return '#6f91a8';
-      }
       // Site nodes: use engagement state color
       if (suggestedIds.includes(p.id)) return '#ffd700';
       const s = states[p.id];
@@ -1657,10 +1505,6 @@ const GlobeModule = {
     });
 
     this.world.pointRadius(p => {
-      if (p._type === 'pledge') {
-        const co2 = p.fossil_co2_mt || 0;
-        return 0.3 + Math.min(co2 / 20000, 0.8);
-      }
       if (suggestedIds.includes(p.id)) return 0.9;
       const s = states[p.id];
       if (!s || s.state === 'locked') return 0.4;
@@ -1678,45 +1522,15 @@ const GlobeModule = {
 
   restoreNodeVisuals() {
     if (!this.world) return;
-    this.initPledgeNodes();
+    this.initSitePoints();
     this.world.labelsData(Data.sites).ringsData(Data.sites);
     this.updateNodeVisuals();
   },
 
-  // ── Pledge tooltip (was incorrectly on PanelSlider) ──
+  // Historical compatibility hook. Country climate point tooltips remain
+  // disabled until a reviewed runtime evidence release is available.
   _initPledgeTooltip() {
-    let tooltip = $('pledge-tooltip');
-    if (!tooltip) {
-      tooltip = document.createElement('div');
-      tooltip.id = 'pledge-tooltip';
-      document.body.appendChild(tooltip);
-    }
-    this._tooltip = tooltip;
-
-    this._onPledgeHover = (e) => {
-      const detail = e.detail;
-      if (!detail || !detail.node) {
-        tooltip.classList.remove('visible');
-        return;
-      }
-      const n = detail.node;
-      const magnitude = n.fossil_co2_mt ? n.fossil_co2_mt.toFixed(1) + ' MtCO₂/yr' : 'Magnitude unavailable';
-      tooltip.innerHTML = '<div class="tt-country">' + _escapeHtml(n.country) + '</div>'
-        + '<div class="tt-detail">Provisional fossil CO₂ magnitude: ' + magnitude + ' · legacy, unverified</div>'
-        + '<div>Performance withheld</div>';
-      tooltip.classList.add('visible');
-    };
-    window.addEventListener('pledgeHover', this._onPledgeHover);
-
-    this._onMouseMove = (e) => {
-      if (tooltip.classList.contains('visible')) {
-        const x = Math.min(e.clientX + 16, window.innerWidth - 320);
-        const y = Math.min(e.clientY - 12, window.innerHeight - 80);
-        tooltip.style.left = x + 'px';
-        tooltip.style.top = y + 'px';
-      }
-    };
-    document.addEventListener('mousemove', this._onMouseMove);
+    return false;
   },
 
   // ── Standard Module Lifecycle (SML) ──
@@ -1942,7 +1756,7 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['init', 'setTheme', 'initPledgeNodes', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountryHexColors', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'togglePledgeNodes', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
     requires: ['Data'],
     emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed'],
   });

@@ -1,9 +1,9 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Version bump (v25) — light atmospheric background and globe halo.
+ * Version bump (v26) — remove the retired legacy country payload.
  */
-const CACHE_NAME = 'elu-v25';
+const CACHE_NAME = 'elu-v26';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -24,7 +24,6 @@ const STATIC_ASSETS = [
   '/js/carbon-clock.js',
   '/js/app.js',
   // Data (small, cacheable)
-  '/data/pledge-nodes.json',
   '/data/small-nations.json',
   '/data/carbon-projects.json',
 ];
