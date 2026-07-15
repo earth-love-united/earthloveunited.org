@@ -1,0 +1,255 @@
+{
+  "_meta": {
+    "fixture_set": "country-climate-visual-truth",
+    "fixture_version": "0.1.0",
+    "visual_contract_version": "0.1.0",
+    "methodology_version": "0.1.0",
+    "generated": "2026-07-15",
+    "fictional_entities": true,
+    "purpose": "Semantic golden cases for country climate profile visualization; values are illustrative and must not be published as real-country facts."
+  },
+  "invariants": {
+    "persistent_impact_encoding": "Impact height does not change across lenses or because target, ambition, delivery, evidence, finance, or project data are missing.",
+    "no_favorable_unknown": "Missing, stale, conflicting, or non-comparable evidence never produces positive delivery treatment.",
+    "separate_axes": "Impact, target integrity, ambition, delivery, fair contribution, and evidence remain distinct.",
+    "observed_means_observed": "Only observed annual facts render as observed chart points.",
+    "projects_excluded": "Projects and markets never alter the national climate profile."
+  },
+  "cases": [
+    {
+      "id": "high-impact-target-non-comparable",
+      "entity_label": "Fixture A",
+      "scenario": "Very high annual emissions with a documented trajectory-style target that cannot be normalized to a scope-matched absolute endpoint.",
+      "input": {
+        "entity_context": { "sids": false, "ldc": false, "reporting_state": "available" },
+        "impact": { "band": "very_high", "state": "available", "plane": "harmonized", "metric": "economy_wide_ghg", "latest_year": 2024 },
+        "target": { "type": "trajectory", "integrity": "non_comparable", "reason_codes": ["baseline_not_quantified", "scope_mismatch"] },
+        "ambition": { "state": "not_assessed", "value": null },
+        "delivery": { "state": "not_assessed", "value": null, "level_gap": null },
+        "evidence": { "grade": "C", "flags": ["not_reviewed"] },
+        "planes": { "official": "available", "harmonized": "available", "conflict": false },
+        "projects": { "state": "available", "count_band": "many" },
+        "observed_series": { "state": "available", "point_count": 10, "scope_compatible": true }
+      },
+      "expected": {
+        "headline": "Very high impact · Target not comparable · Progress not assessed · Evidence C",
+        "impact_height": "very_high",
+        "default_face": "impact_sequential_very_high",
+        "delivery_treatment": "unknown_open_circle",
+        "positive_treatment_allowed": false,
+        "emissions_ranking": { "eligible": true },
+        "overshoot_ranking": { "eligible": false, "reason": "target_non_comparable" },
+        "chart": { "observed_points": true, "absolute_target_endpoint": false, "required_path": false, "modeled_as_observed": false },
+        "required_card_sections": ["responsibility", "commitment", "ambition", "delivery", "fair_contribution", "evidence", "projects_separate"],
+        "projects_affect_profile": false,
+        "accessible_summary_contains": ["very high impact", "target not comparable", "progress not assessed", "Evidence C"]
+      }
+    },
+    {
+      "id": "high-impact-intensity-target",
+      "entity_label": "Fixture B",
+      "scenario": "Very high annual emissions and an intensity target whose target-year denominator is unavailable.",
+      "input": {
+        "entity_context": { "sids": false, "ldc": false, "reporting_state": "available" },
+        "impact": { "band": "very_high", "state": "available", "plane": "harmonized", "metric": "economy_wide_ghg", "latest_year": 2024 },
+        "target": { "type": "intensity", "integrity": "non_comparable", "reason_codes": ["denominator_missing"] },
+        "ambition": { "state": "not_assessed", "value": null },
+        "delivery": { "state": "not_assessed", "value": null, "level_gap": null },
+        "evidence": { "grade": "B", "flags": [] },
+        "planes": { "official": "available", "harmonized": "available", "conflict": false },
+        "projects": { "state": "not_assessed", "count_band": null },
+        "observed_series": { "state": "available", "point_count": 10, "scope_compatible": true }
+      },
+      "expected": {
+        "headline": "Very high impact · Target not comparable · Progress not assessed · Evidence B",
+        "impact_height": "very_high",
+        "default_face": "impact_sequential_very_high",
+        "delivery_treatment": "unknown_open_circle",
+        "positive_treatment_allowed": false,
+        "emissions_ranking": { "eligible": true },
+        "overshoot_ranking": { "eligible": false, "reason": "denominator_missing" },
+        "chart": { "observed_points": true, "absolute_target_endpoint": false, "required_path": false, "modeled_as_observed": false },
+        "required_card_sections": ["responsibility", "commitment", "ambition", "delivery", "fair_contribution", "evidence", "projects_separate"],
+        "projects_affect_profile": false,
+        "accessible_summary_contains": ["very high impact", "intensity target", "denominator missing", "progress not assessed"]
+      }
+    },
+    {
+      "id": "positive-level-gap-on-pace",
+      "entity_label": "Fixture C",
+      "scenario": "A comparable target with current emissions above the target level while the uncertainty-bounded recent pace is fast enough.",
+      "input": {
+        "entity_context": { "sids": false, "ldc": false, "reporting_state": "available" },
+        "impact": { "band": "high", "state": "available", "plane": "harmonized", "metric": "economy_wide_ghg", "latest_year": 2024 },
+        "target": { "type": "base_year", "integrity": "comparable", "reason_codes": [] },
+        "ambition": { "state": "available", "value": "insufficient" },
+        "delivery": { "state": "available", "value": "on_pace", "level_gap": "positive" },
+        "evidence": { "grade": "A", "flags": [] },
+        "planes": { "official": "available", "harmonized": "available", "conflict": false },
+        "projects": { "state": "available", "count_band": "few" },
+        "observed_series": { "state": "available", "point_count": 10, "scope_compatible": true }
+      },
+      "expected": {
+        "headline": "High impact · Insufficient ambition · On pace · Evidence A",
+        "impact_height": "high",
+        "default_face": "impact_sequential_high",
+        "delivery_treatment": "positive_checkmark",
+        "positive_treatment_allowed": true,
+        "level_gap_label": "Current level above target endpoint",
+        "emissions_ranking": { "eligible": true },
+        "overshoot_ranking": { "eligible": true },
+        "chart": { "observed_points": true, "absolute_target_endpoint": true, "required_path": true, "modeled_as_observed": false },
+        "required_card_sections": ["responsibility", "commitment", "ambition", "delivery", "fair_contribution", "evidence", "projects_separate"],
+        "projects_affect_profile": false,
+        "accessible_summary_contains": ["high impact", "insufficient ambition", "on pace", "current level above target endpoint"]
+      }
+    },
+    {
+      "id": "comparable-off-course",
+      "entity_label": "Fixture D",
+      "scenario": "A fully comparable target with an observed-rate interval slower than the required pace.",
+      "input": {
+        "entity_context": { "sids": false, "ldc": false, "reporting_state": "available" },
+        "impact": { "band": "medium", "state": "available", "plane": "harmonized", "metric": "economy_wide_ghg", "latest_year": 2024 },
+        "target": { "type": "fixed_level", "integrity": "comparable", "reason_codes": [] },
+        "ambition": { "state": "available", "value": "almost_sufficient" },
+        "delivery": { "state": "available", "value": "off_course", "level_gap": "positive" },
+        "evidence": { "grade": "A", "flags": [] },
+        "planes": { "official": "available", "harmonized": "available", "conflict": false },
+        "projects": { "state": "available", "count_band": "many" },
+        "observed_series": { "state": "available", "point_count": 8, "scope_compatible": true }
+      },
+      "expected": {
+        "headline": "Medium impact · Almost sufficient ambition · Off course · Evidence A",
+        "impact_height": "medium",
+        "default_face": "impact_sequential_medium",
+        "delivery_treatment": "warning_triangle",
+        "positive_treatment_allowed": false,
+        "emissions_ranking": { "eligible": true },
+        "overshoot_ranking": { "eligible": true },
+        "chart": { "observed_points": true, "absolute_target_endpoint": true, "required_path": true, "modeled_as_observed": false },
+        "required_card_sections": ["responsibility", "commitment", "ambition", "delivery", "fair_contribution", "evidence", "projects_separate"],
+        "projects_affect_profile": false,
+        "accessible_summary_contains": ["medium impact", "almost sufficient ambition", "off course", "Evidence A"]
+      }
+    },
+    {
+      "id": "reporting-optional-sids",
+      "entity_label": "Fixture E",
+      "scenario": "A small-island context with reporting flexibility and harmonized emissions evidence but insufficient delivery evidence.",
+      "input": {
+        "entity_context": { "sids": true, "ldc": false, "reporting_state": "reporting_optional" },
+        "impact": { "band": "low", "state": "available", "plane": "harmonized", "metric": "economy_wide_ghg", "latest_year": 2024 },
+        "target": { "type": "qualitative", "integrity": "qualitative_or_sectoral", "reason_codes": [] },
+        "ambition": { "state": "not_assessed", "value": null },
+        "delivery": { "state": "not_assessed", "value": null, "level_gap": null },
+        "evidence": { "grade": "B", "flags": ["reporting_optional"] },
+        "planes": { "official": "not_yet_due", "harmonized": "available", "conflict": false },
+        "projects": { "state": "available", "count_band": "few" },
+        "observed_series": { "state": "available", "point_count": 5, "scope_compatible": true }
+      },
+      "expected": {
+        "headline": "Low impact · Qualitative or sectoral target · Progress not assessed · Evidence B",
+        "impact_height": "low",
+        "default_face": "impact_sequential_low",
+        "delivery_treatment": "unknown_open_circle",
+        "positive_treatment_allowed": false,
+        "reporting_flexibility_is_failure": false,
+        "emissions_ranking": { "eligible": true },
+        "overshoot_ranking": { "eligible": false, "reason": "target_not_absolute" },
+        "chart": { "observed_points": true, "absolute_target_endpoint": false, "required_path": false, "modeled_as_observed": false },
+        "required_card_sections": ["responsibility", "commitment", "ambition", "delivery", "fair_contribution", "evidence", "projects_separate"],
+        "projects_affect_profile": false,
+        "accessible_summary_contains": ["low impact", "reporting optional", "progress not assessed", "not a performance failure"]
+      }
+    },
+    {
+      "id": "official-harmonized-conflict",
+      "entity_label": "Fixture F",
+      "scenario": "Official and harmonized emissions evidence materially disagree and the conflict remains unresolved.",
+      "input": {
+        "entity_context": { "sids": false, "ldc": false, "reporting_state": "available" },
+        "impact": { "band": "high", "state": "conflicting", "plane": "harmonized", "metric": "economy_wide_ghg", "latest_year": 2023 },
+        "target": { "type": "base_year", "integrity": "partially_comparable", "reason_codes": ["scope_mismatch"] },
+        "ambition": { "state": "not_assessed", "value": null },
+        "delivery": { "state": "not_assessed", "value": null, "level_gap": null },
+        "evidence": { "grade": "C", "flags": ["conflicting"] },
+        "planes": { "official": "available", "harmonized": "available", "conflict": true },
+        "projects": { "state": "available", "count_band": "many" },
+        "observed_series": { "state": "conflicting", "point_count": 9, "scope_compatible": false }
+      },
+      "expected": {
+        "headline": "High impact · Target partly comparable · Progress not assessed · Evidence C · Evidence conflict",
+        "impact_height": "high",
+        "default_face": "impact_sequential_high",
+        "delivery_treatment": "unknown_open_circle",
+        "evidence_treatment": "split_plane_conflict",
+        "positive_treatment_allowed": false,
+        "emissions_ranking": { "eligible": true, "plane_must_be_named": true },
+        "overshoot_ranking": { "eligible": false, "reason": "scope_mismatch" },
+        "chart": { "observed_points": true, "show_both_planes": true, "reconciled_value": false, "absolute_target_endpoint": false, "required_path": false, "modeled_as_observed": false },
+        "required_card_sections": ["responsibility", "commitment", "ambition", "delivery", "fair_contribution", "evidence", "projects_separate"],
+        "projects_affect_profile": false,
+        "accessible_summary_contains": ["high impact", "official and harmonized values conflict", "progress not assessed", "Evidence C"]
+      }
+    },
+    {
+      "id": "fully-missing-evidence",
+      "entity_label": "Fixture G",
+      "scenario": "The mapped entity has no approved country climate evidence beyond identity and geometry.",
+      "input": {
+        "entity_context": { "sids": false, "ldc": false, "reporting_state": "source_unavailable" },
+        "impact": { "band": "not_assessed", "state": "source_unavailable", "plane": null, "metric": null, "latest_year": null },
+        "target": { "type": null, "integrity": "not_assessed", "reason_codes": ["source_unavailable"] },
+        "ambition": { "state": "not_assessed", "value": null },
+        "delivery": { "state": "not_assessed", "value": null, "level_gap": null },
+        "evidence": { "grade": "D", "flags": ["source_unavailable", "not_reviewed"] },
+        "planes": { "official": "source_unavailable", "harmonized": "source_unavailable", "conflict": false },
+        "projects": { "state": "not_assessed", "count_band": null },
+        "observed_series": { "state": "source_unavailable", "point_count": 0, "scope_compatible": false }
+      },
+      "expected": {
+        "headline": "Impact not assessed · Target not assessed · Progress not assessed · Evidence D",
+        "impact_height": "geographic_minimum_unknown",
+        "default_face": "unknown_visible_pattern",
+        "delivery_treatment": "unknown_open_circle",
+        "positive_treatment_allowed": false,
+        "emissions_ranking": { "eligible": false, "ordinal": null, "group": "not_ranked" },
+        "overshoot_ranking": { "eligible": false, "reason": "source_unavailable" },
+        "chart": { "observed_points": false, "empty_state": "No approved observed emissions series", "absolute_target_endpoint": false, "required_path": false, "modeled_as_observed": false },
+        "required_card_sections": ["responsibility", "commitment", "ambition", "delivery", "fair_contribution", "evidence", "projects_separate"],
+        "projects_affect_profile": false,
+        "accessible_summary_contains": ["impact not assessed", "target not assessed", "progress not assessed", "Evidence D"]
+      }
+    },
+    {
+      "id": "high-impact-no-documented-target",
+      "entity_label": "Fixture H",
+      "scenario": "Very high annual emissions are documented, but no active target is found in the approved official evidence release.",
+      "input": {
+        "entity_context": { "sids": false, "ldc": false, "reporting_state": "not_reported" },
+        "impact": { "band": "very_high", "state": "available", "plane": "harmonized", "metric": "economy_wide_ghg", "latest_year": 2024 },
+        "target": { "type": null, "integrity": "no_active_target_found", "reason_codes": ["not_reported"] },
+        "ambition": { "state": "not_assessed", "value": null },
+        "delivery": { "state": "not_assessed", "value": null, "level_gap": null },
+        "evidence": { "grade": "B", "flags": ["not_reported"] },
+        "planes": { "official": "available", "harmonized": "available", "conflict": false },
+        "projects": { "state": "available", "count_band": "many" },
+        "observed_series": { "state": "available", "point_count": 10, "scope_compatible": true }
+      },
+      "expected": {
+        "headline": "Very high impact · No documented active target · Progress not assessed · Evidence B",
+        "impact_height": "very_high",
+        "default_face": "impact_sequential_very_high",
+        "delivery_treatment": "unknown_open_circle",
+        "positive_treatment_allowed": false,
+        "emissions_ranking": { "eligible": true },
+        "overshoot_ranking": { "eligible": false, "reason": "no_active_target_found" },
+        "chart": { "observed_points": true, "absolute_target_endpoint": false, "required_path": false, "modeled_as_observed": false },
+        "required_card_sections": ["responsibility", "commitment", "ambition", "delivery", "fair_contribution", "evidence", "projects_separate"],
+        "projects_affect_profile": false,
+        "accessible_summary_contains": ["very high impact", "no documented active target", "progress not assessed", "Evidence B"]
+      }
+    }
+  ]
+}
