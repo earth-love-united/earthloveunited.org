@@ -16,7 +16,7 @@
     },
     "ct15_immutable_snapshot": {
       "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
-      "sha256": "bd1234b7e90d0bcf12940b0ee944d92bf64c42740b596efd26f88c66d98b22bb"
+      "sha256": "8b29a6b6eec99f49d8e0c88cce0bae4f26f03b3310151f4fb049505fc58e954a"
     }
   },
   "governance_boundary": {
@@ -291,5 +291,5 @@
     "production runtime facts",
     "release authority"
   ],
-  "calculation_hash": "18af02de1db1b53d548c20e34534d9b102b9e472fcf9acf8ad0ebc68f10065c6"
+  "calculation_hash": "02f0ddd949d52f37d1e49072f4fe6230a40f872d9b099b741ab30870f01f8d09"
 }

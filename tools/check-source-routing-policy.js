@@ -28,7 +28,7 @@ const PATHS = Object.freeze({
 const EXPECTED_IMMUTABLE_SHA256 = Object.freeze({
   sourceRegistry: 'ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d',
   ct14: 'fb1bbc050b7ba791893b7751dd4f916ecd01885557b272cb025f8c0e4b64452d',
-  ct15: 'bd1234b7e90d0bcf12940b0ee944d92bf64c42740b596efd26f88c66d98b22bb',
+  ct15: '8b29a6b6eec99f49d8e0c88cce0bae4f26f03b3310151f4fb049505fc58e954a',
 });
 const EXPECTED_TOP20 = Object.freeze(['CHN', 'USA', 'IND', 'RUS', 'IDN', 'BRA', 'JPN', 'IRN', 'SAU', 'CAN', 'MEX', 'KOR', 'DEU', 'AUS', 'TUR', 'ZAF', 'VNM', 'PAK', 'THA', 'NGA']);
 const PROHIBITED_RELEASE_FILES = Object.freeze([

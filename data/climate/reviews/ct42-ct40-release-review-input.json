@@ -49,7 +49,7 @@
     },
     {
       "path": "data/climate/reviews/climate-factual-runtime-ct42-ui-review.json",
-      "sha256": "5c1e3dd78cb670a9fb5d650cce5863b657b0f30a32c6711a744449acb2789975"
+      "sha256": "e8beae7b1f83b15f41f00dad77e1b21f098a8d31fae0b147fa4b1023803862e3"
     },
     {
       "path": "data/climate/reviews/primap-hist-2.6.1-factual-display-ct10c-review.json",
@@ -85,7 +85,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "21bd6bcd857879c6924f8b76b2a9cfb0afbe9697e7304d8eaa1eae8f6e8cd403"
+      "sha256": "6cd73740d5b21e942d45c0107dcbd052b3d47bce0647e0681c279c86ae73f4d5"
     },
     {
       "path": "js/app.js",
@@ -113,7 +113,7 @@
     },
     {
       "path": "js/globe.js",
-      "sha256": "70d3e838c7301e711df633de641fbdeb56b303cd2001401b33cf0d924c3af688"
+      "sha256": "1a61f2ea364f590754b386503941567a4549de4dc289437353afc78119d36bde"
     },
     {
       "path": "js/module-contracts.js",
@@ -129,7 +129,7 @@
     },
     {
       "path": "sw.js",
-      "sha256": "9c239fd3a53248388b963b702b8e08035371059bed1f0ef94ebe754dbc72e8ee"
+      "sha256": "afdf908dc6b0faf183c5bf83a44659925140bc1306068592517fd78e429d9613"
     },
     {
       "path": "tools/smoke-test.js",
@@ -154,8 +154,8 @@
       "declared_pin_count": 9
     },
     "ui_review": {
-      "review_id": "ct-42-independent-runtime-ui-review-2026-07-15",
-      "commit_sha": "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a",
+      "review_id": "ct-42-truth-copy-independent-ui-review-2026-07-15T232047Z",
+      "commit_sha": "bd5b6ef63df2ba17103e78351aedf677fb2d339f",
       "required_pin_paths": [
         "index.html",
         "css/globe-system.css",
@@ -82688,7 +82688,7 @@
     },
     "review_context": {
       "data_attestation_id": "ct-42-r-factual-runtime-data-2026-07-15",
-      "ui_attestation_id": "ct-42-independent-runtime-ui-review-2026-07-15",
+      "ui_attestation_id": "ct-42-truth-copy-independent-ui-review-2026-07-15T232047Z",
       "scoped_review_evidence": {
         "data_review": {
           "review_id": "ct-42-r-factual-runtime-data-2026-07-15",
@@ -82707,8 +82707,8 @@
           "declared_pin_count": 9
         },
         "ui_review": {
-          "review_id": "ct-42-independent-runtime-ui-review-2026-07-15",
-          "commit_sha": "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a",
+          "review_id": "ct-42-truth-copy-independent-ui-review-2026-07-15T232047Z",
+          "commit_sha": "bd5b6ef63df2ba17103e78351aedf677fb2d339f",
           "required_pin_paths": [
             "index.html",
             "css/globe-system.css",
