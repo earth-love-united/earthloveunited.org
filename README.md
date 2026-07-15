@@ -24,7 +24,7 @@ is nothing in here we wouldn't want a partner, donor, or researcher to read.
 ## Quick start
 
 ```bash
-git clone https://github.com/gke0op/earthloveunited.org.git
+git clone https://github.com/earth-love-united/earthloveunited.org.git
 cd earthloveunited.org
 
 # Re-fetch the vendored globe.gl (gitignored — see CREDITS.md)
