@@ -10,7 +10,7 @@ const { REQUIRED_UI_REVIEW_PIN_PATHS } = require('./lib/globe-runtime-assets');
 
 const ROOT = path.resolve(__dirname, '..');
 const REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
-const EXPECTED_COMMIT = 'c7ba0560b164e5f3b67c01e96abf75720ad3fd7a';
+const EXPECTED_COMMIT = 'bd5b6ef63df2ba17103e78351aedf677fb2d339f';
 const REQUIRED_GATES = [
   'runtime-boundary', 'truth-language', 'magnitude-and-gaps', 'chart-table-source',
   'screen-reader-semantics', 'keyboard-focus', 'touch-targets', 'responsive-320',
@@ -39,9 +39,9 @@ const EXPECTED_RUNTIME_EVIDENCE = {
   stack_lint_issues: 0,
   delivery_versions: {
     globe_system_css: 'v15',
-    globe_script: 'v10',
-    service_worker_registration: '33-focus-trap',
-    service_worker_cache: 'elu-v33-focus-trap',
+    globe_script: 'v11',
+    service_worker_registration: '34-truth-copy',
+    service_worker_cache: 'elu-v34-truth-copy',
   },
   browser_qa: {
     mobile: {
@@ -93,9 +93,9 @@ const EXPECTED_RUNTIME_EVIDENCE = {
     cache: {
       controller_reload_verified: true,
       css_key: '/css/globe-system.css?v=v15',
-      globe_key: '/js/globe.js?v=v10',
-      service_worker_key: '/sw.js?v=33-focus-trap',
-      cache_name: 'elu-v33-focus-trap',
+      globe_key: '/js/globe.js?v=v11',
+      service_worker_key: '/sw.js?v=34-truth-copy',
+      cache_name: 'elu-v34-truth-copy',
     },
   },
 };
@@ -235,11 +235,11 @@ assert.match(boundary.required_next_gate, /CT-40 independent allow decision/);
 const index = read('index.html');
 const serviceWorker = read('sw.js');
 assert.ok(index.includes('href="css/globe-system.css?v=v15"'), 'index CSS cache key drift');
-assert.ok(index.includes('src="js/globe.js?v=v10"'), 'index globe cache key drift');
-assert.ok(index.includes("register('/sw.js?v=33-focus-trap'"), 'service-worker registration key drift');
-assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v33-focus-trap';"), 'service-worker cache name drift');
+assert.ok(index.includes('src="js/globe.js?v=v11"'), 'index globe cache key drift');
+assert.ok(index.includes("register('/sw.js?v=34-truth-copy'"), 'service-worker registration key drift');
+assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v34-truth-copy';"), 'service-worker cache name drift');
 assert.ok(serviceWorker.includes("'/css/globe-system.css?v=v15'"), 'service-worker CSS cache key drift');
-assert.ok(serviceWorker.includes("'/js/globe.js?v=v10'"), 'service-worker globe cache key drift');
+assert.ok(serviceWorker.includes("'/js/globe.js?v=v11'"), 'service-worker globe cache key drift');
 
 const geometry = readJson('assets/globe/runtime/ne_110m_admin_0_countries.geojson');
 assert.equal(geometry.type, 'FeatureCollection');

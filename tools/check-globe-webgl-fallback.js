@@ -110,16 +110,16 @@ function compile() {
       production_runtime_release: candidate.production_runtime_release,
     },
     truth: {
-      durable_public_copy: fallbackHtml.includes('shows factual emissions records and explicit source gaps only') &&
+      durable_public_copy: fallbackHtml.includes('This view shows emissions records and source gaps') &&
         !/CT-\d|\bdeny|\bdenied/i.test(fallbackHtml),
       no_public_review_claim: !/\breviewed\b/i.test(fallbackHtml) &&
         !fallbackRuntime.includes('reviewed factual series'),
       no_assessment_field_reads: !/country\.assessment|assessment\?\.|\.score\b/.test(detailRuntime),
-      performance_disclaimer: fallbackHtml.includes('does not assess commitments, targets, delivery, performance, impact bands, or climate scores') &&
+      performance_disclaimer: fallbackHtml.includes('Climate performance is not scored in this view') &&
         fallbackRuntime.includes('not a performance score'),
       gaps_unranked: fallbackRuntime.includes('explicit source gap, unranked') &&
-        fallbackRuntime.includes('Missing data does not indicate better or worse climate performance.'),
-      source_and_limits: fallbackRuntime.includes('Source and limits') &&
+        fallbackRuntime.includes('missing data does not indicate better climate performance.'),
+      source_and_limits: fallbackRuntime.includes('Source &amp; methodology') &&
         fallbackRuntime.includes('emissions.limitations') && fallbackRuntime.includes('emissions.source_url'),
     },
     validation: {

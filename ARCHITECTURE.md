@@ -291,7 +291,7 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v33 precaches the public page, core CSS/JS, verified local
+`sw.js` cache epoch v34 precaches the concise public truth-copy page, core CSS/JS, verified local
 globe.gl, the CT-45 manifest and five localized assets, and exact-version
 candidate/carbon data requests. It applies:
 
