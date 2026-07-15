@@ -6,7 +6,15 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const { evaluateRelease } = require('./lib/climate-release-gate');
-const { REQUIRED_REASON_CODES, compile, hash } = require('./lib/ct42-ct40-release-review');
+const {
+  REQUIRED_DATA_REVIEW_PIN_PATHS,
+  REQUIRED_REASON_CODES,
+  REQUIRED_UI_REVIEW_PIN_PATHS,
+  compile,
+  hash,
+  reviewPinPaths,
+  validateReviewScopes,
+} = require('./lib/ct42-ct40-release-review');
 
 const ROOT = path.resolve(__dirname, '..');
 const PATHS = Object.freeze({
@@ -33,13 +41,13 @@ function sha256(value) { return crypto.createHash('sha256').update(value).digest
 function clone(value) { return structuredClone(value); }
 function get(target, dotted) { return dotted.split('.').reduce((node, key) => node[Number.isInteger(Number(key)) ? Number(key) : key], target); }
 function set(target, dotted, value) { const parts = dotted.split('.'); const key = parts.pop(); const owner = parts.length ? get(target, parts.join('.')) : target; owner[key] = value; }
+function hashPaths(paths) { return Object.fromEntries([...new Set(paths)].sort().map(relative => [relative, sha256(bytes(relative))])); }
 
 function loadInputs() {
   const dataReview = json(PATHS.dataReview);
   const uiReview = json(PATHS.uiReview);
   const referenced = new Set([
-    ...Object.keys(dataReview.reviewed_input_sha256 || {}),
-    ...(uiReview.reviewed_file_pins || []).map(item => item.path),
+    ...reviewPinPaths(dataReview, uiReview),
     PATHS.dataReview,
     PATHS.uiReview,
     PATHS.primarySourcePilot,
@@ -52,8 +60,69 @@ function loadInputs() {
     dataReview,
     uiReview,
     primarySourcePilot: json(PATHS.primarySourcePilot),
-    fileHashes: Object.fromEntries([...referenced].sort().map(relative => [relative, sha256(bytes(relative))])),
+    fileHashes: hashPaths(referenced),
   };
+}
+
+function scopeFixtureInputs() {
+  const dataReview = clone(json(PATHS.dataReview));
+  const uiReview = clone(json(PATHS.uiReview));
+  const requiredPaths = [...new Set([...REQUIRED_DATA_REVIEW_PIN_PATHS, ...REQUIRED_UI_REVIEW_PIN_PATHS])];
+  const fileHashes = hashPaths(requiredPaths);
+  dataReview.reviewed_input_sha256 = Object.fromEntries(REQUIRED_DATA_REVIEW_PIN_PATHS.map(path => [path, fileHashes[path]]));
+  uiReview.reviewed_commit = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+  uiReview.reviewed_file_pins = REQUIRED_UI_REVIEW_PIN_PATHS.map(path => ({ path, sha256: fileHashes[path] }));
+  return { dataReview, uiReview, fileHashes };
+}
+
+function applyScopeMutation(input, mutation) {
+  if (mutation.operation === 'delete-data-pin') delete input.dataReview.reviewed_input_sha256[mutation.path];
+  else if (mutation.operation === 'set-data-pin') input.dataReview.reviewed_input_sha256[mutation.path] = mutation.value;
+  else if (mutation.operation === 'clear-data-pins') input.dataReview.reviewed_input_sha256 = {};
+  else if (mutation.operation === 'remove-ui-pin') input.uiReview.reviewed_file_pins = input.uiReview.reviewed_file_pins.filter(pin => pin.path !== mutation.path);
+  else if (mutation.operation === 'set-ui-pin') input.uiReview.reviewed_file_pins.find(pin => pin.path === mutation.path).sha256 = mutation.value;
+  else if (mutation.operation === 'clear-ui-pins') input.uiReview.reviewed_file_pins = [];
+  else if (mutation.operation === 'duplicate-ui-pin') input.uiReview.reviewed_file_pins.push(clone(input.uiReview.reviewed_file_pins.find(pin => pin.path === mutation.path)));
+  else if (mutation.operation === 'set-current-hash') input.fileHashes[mutation.path] = mutation.value;
+  else throw new Error(`unknown scoped review mutation: ${mutation.operation}`);
+}
+
+function runScopeFixtures(fixture) {
+  const baseline = scopeFixtureInputs();
+  const evidence = validateReviewScopes(baseline);
+  assert.notEqual(evidence.data_review.commit_sha, evidence.ui_review.commit_sha, 'fixture must prove independent review commits are accepted');
+  assert.equal(evidence.commit_relationship.common_commit_required, false);
+  assert.equal(evidence.commit_relationship.ancestry_evaluated, false);
+  assert.deepEqual(evidence.data_review.required_pin_paths, REQUIRED_DATA_REVIEW_PIN_PATHS);
+  assert.deepEqual(evidence.ui_review.required_pin_paths, REQUIRED_UI_REVIEW_PIN_PATHS);
+  const compiled = compile({
+    runtime: json(PATHS.runtime),
+    facts: json(PATHS.facts),
+    sourceRegistry: json(PATHS.sourceRegistry),
+    candidateManifest: json(PATHS.candidateManifest),
+    primarySourcePilot: json(PATHS.primarySourcePilot),
+    ...baseline,
+  });
+  assert.equal(compiled.gateOutput.decision, 'deny', 'independent scoped review commits changed the fail-closed CT-40 result');
+  assert.equal(compiled.inputArtifact.review_evidence.data_review.commit_sha, baseline.dataReview.reviewed_commit_sha);
+  assert.equal(compiled.inputArtifact.review_evidence.ui_review.commit_sha, baseline.uiReview.reviewed_commit);
+  assert.equal(compiled.resultArtifact.review_commits.common_commit_required, false);
+
+  let rejected = 0;
+  for (const mutation of fixture.scope_mutations) {
+    const changed = clone(baseline);
+    applyScopeMutation(changed, mutation);
+    assert.throws(() => validateReviewScopes(changed), undefined, `${mutation.id}: invalid scoped review evidence was accepted`);
+    rejected += 1;
+  }
+  return rejected;
+}
+
+const fixture = json(PATHS.fixture);
+const scopeRejected = runScopeFixtures(fixture);
+if (process.argv.includes('--scope-fixtures-only')) {
+  process.stdout.write(`CT-42→CT-40 scoped review pins: PASS (independent commits accepted; ${scopeRejected} adversarial mutations rejected; ancestry not inferred)\n`);
+  process.exit(0);
 }
 
 const actual = compile(loadInputs());
@@ -93,7 +162,6 @@ reversed.facts.facts.reverse();
 const reversedOutput = compile(reversed);
 assert.deepEqual(reversedOutput.gateOutput, actual.gateOutput, 'CT-40 decision changed when factual input order reversed');
 
-const fixture = json(PATHS.fixture);
 let rejected = 0;
 let drifted = 0;
 let stable = 0;
@@ -133,6 +201,7 @@ process.stdout.write([
   'CT-42→CT-40 real release-review candidate: PASS (truthful DENY)',
   `  actual facts evaluated: ${actual.gateOutput.fact_decisions.length}`,
   `  canonical deny reasons: ${actual.gateOutput.reason_codes.join(', ')}`,
+  `  scoped review pin mutations: ${scopeRejected} rejected; independent commits retained`,
   `  adversarial mutations: ${rejected} rejected; ${drifted} artifact drifts detected; ${stable} deterministic reorder`,
   '  runtime manifest / release diff / CT-40 allow manifest: absent',
 ].join('\n') + '\n');
