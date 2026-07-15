@@ -51,11 +51,19 @@ Official Party-reported evidence and harmonized scientific estimates remain
 separate. Each derived metric declares the plane and accounting scope it uses.
 Disagreement becomes a visible quality flag.
 
-### 3. Use UN M49 as the registry base
+### 3. Use an openly redistributable ISO-compatible identity seed
 
-The canonical entity registry begins with UN M49 and carries membership,
-UNFCCC Party, LDC/SIDS, territory, ISO, and geometry flags. Comparisons declare
-their eligible universe.
+The canonical entity registry begins with all 249 rows in the pinned Debian
+`iso-codes` 4.20.1-1 `data/iso_3166-1.json` artifact, licensed
+LGPL-2.1-or-later. It is described as ISO 3166-1-compatible data sourced from
+Debian, not as an official ISO or UN registry, and remains a separable asset
+with its required notices, source/version, checksum, and transformation log.
+
+UN membership, UNFCCC Party status, LDC/LLDC/SIDS groups, territory treatment,
+assessment eligibility, geometry, and any optional M49 mapping are separate
+reviewed overlays. They default to unknown until an approved source supports
+them. Comparisons declare their eligible universe; no row is silently deleted
+to force a preferred count.
 
 ### 4. Keep accounting frames explicit
 
@@ -117,6 +125,13 @@ profile data path.
   missions rather than one large rewrite.
 
 ## Rejected alternatives
+
+### Redistribute a registry copied directly from the UN M49 website
+
+Rejected for the reviewed release while the source registry records only
+general UN website terms and no M49-specific permission for normalized database
+redistribution. “Official” does not mean “openly reusable.” M49 remains an
+optional reviewed overlay if source-specific reuse approval is later recorded.
 
 ### Treat missing gap as “No target”
 

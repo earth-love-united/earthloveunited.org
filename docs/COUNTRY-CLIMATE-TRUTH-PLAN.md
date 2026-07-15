@@ -39,7 +39,7 @@ The architect mission will recommend defaults, but these choices require explici
 
 | Decision | Recommended starting position |
 |---|---|
-| Country universe | All UN M49 entities, with ISO, UN membership, UNFCCC Party, LDC, SIDS, territory, and geometry flags |
+| Country universe | All 249 ISO 3166-1-compatible rows from pinned Debian `iso-codes`; membership, Party, development group, territory, eligibility, M49, and geometry are separately reviewed overlays |
 | Public result | Multi-axis categorical profile; no 0–100 composite in the first release |
 | Comparative emissions | Harmonized economy-wide GHG series, with fossil CO2 and LULUCF shown separately |
 | Accountability record | Official UNFCCC inventory alongside, never overwriting the harmonized series |
@@ -58,7 +58,7 @@ There is also an architecture gate: the current runtime has been reduced to a sm
 flowchart LR
     O["Official plane<br/>NDC · BTR · NIR · CRT/CTF · TER"] --> E["Country evidence store"]
     H["Harmonized plane<br/>GCB · PRIMAP · approved EDGAR"] --> E
-    C["Context<br/>UN M49 · population · GDP"] --> E
+    C["Context<br/>open identity seed · population · GDP"] --> E
     E --> Q["Comparability and quality gates"]
     Q --> P["Versioned country profiles"]
     P --> G["Bare-metal globe runtime artifact"]
@@ -72,7 +72,7 @@ flowchart LR
 
 | Domain | Source of record | Comparison or fallback layer |
 |---|---|---|
-| Identity | [UN M49](https://unstats.un.org/unsd/methodology/m49/) | Reviewed local geometry and name aliases |
+| Identity | Pinned Debian [`iso-codes`](https://sources.debian.org/src/iso-codes/) `data/iso_3166-1.json` under LGPL-2.1-or-later | UN M49 only after reuse approval; reviewed geometry, aliases, membership, Party, development-group, territory, and eligibility overlays |
 | Official inventories and progress | [UNFCCC BTR submissions](https://unfccc.int/biennial-transparency-reports) and [UNFCCC Reports](https://unfccc.int/reports) | Older BURs, National Communications, and official national inventories |
 | NDC commitments | [UNFCCC NDC Registry](https://unfccc.int/NDCREG) | BTR tracking tables; Climate Watch may assist discovery/translation but not replace the original document |
 | Comparable fossil and land-use CO2 | [Global Carbon Budget 2025](https://globalcarbonbudget.org/datahub/the-latest-gcb-data-2025/) | Source-specific uncertainty retained |
@@ -89,7 +89,7 @@ Each observation must carry at least:
 
 ```text
 fact_id
-country_id / M49 / ISO3
+country_id / ISO3 / optional reviewed M49
 metric, value, unit, period
 gas basket and GWP basis
 sector coverage and LULUCF treatment

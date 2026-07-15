@@ -66,11 +66,17 @@ capacity and climate exposure do not become mitigation penalties.
 
 ## Country universe
 
-The canonical registry will begin with UN M49 areas and carry flags for ISO3,
-UN membership, UNFCCC Party status, LDC, SIDS, territory, and geometry support.
+The canonical registry begins with all 249 ISO 3166-1-compatible rows from the
+pinned, redistributable Debian `iso-codes` source package. It is an identity
+seed, not proof of sovereignty, UN membership, UNFCCC Party status, development
+group, territory treatment, reporting obligation, or map eligibility. Those
+claims remain separately sourced flags and default to `not_reviewed`.
+
 The map may display states and territories, but comparisons must declare the
 eligible universe and never imply that every area has identical reporting
-obligations.
+obligations. UN M49 codes and groupings may be added only from a source whose
+normalized redistribution terms have been approved; they are not silently
+copied from the UN website.
 
 ## Evidence planes
 
