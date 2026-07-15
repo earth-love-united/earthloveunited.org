@@ -828,7 +828,11 @@ const GlobeModule = {
       wrap.addEventListener('keydown', event => {
         if (event.key !== 'Tab') return;
         const heading = wrap.querySelector('#country-card-heading');
-        const tabbable = Array.from(wrap.querySelectorAll('button,a[href],summary,[tabindex="0"]')).filter(node => !node.disabled);
+        const tabbable = Array.from(wrap.querySelectorAll('button,a[href],summary,[tabindex="0"]')).filter(node => {
+          if (node.disabled || node.hidden || node.getAttribute('aria-hidden') === 'true') return false;
+          const style = window.getComputedStyle(node);
+          return node.getClientRects().length > 0 && style.visibility !== 'hidden';
+        });
         if (!heading || !tabbable.length) return;
         const last = tabbable[tabbable.length - 1];
         if (event.shiftKey && document.activeElement === heading) { event.preventDefault(); last.focus(); }
