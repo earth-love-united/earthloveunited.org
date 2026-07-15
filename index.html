@@ -318,12 +318,29 @@ body.globe-mode #site-nav{display:none}
 .talk-row{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-top:34px}
 .talk-row .talk-line{font-family:var(--display);font-style:italic;font-size:19px;color:var(--text2)}
 /* partners */
-.partner-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:36px}
-.p-logo{display:flex;align-items:center;justify-content:center;min-height:86px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.92);border:1px solid rgba(78,205,196,.1)}
-.p-logo img{max-width:100%;max-height:58px;object-fit:contain}
-.p-logo.noimg{background:var(--bg2);border-color:rgba(78,205,196,.16)}
-.p-logo.noimg img{display:none}
-.p-logo.noimg::before{content:attr(data-name);color:var(--text2);font-size:12px;letter-spacing:1px;text-align:center;line-height:1.4}
+.partners-copy{max-width:720px}
+.partner-logo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(30px,5vw,68px);align-items:center;margin-top:42px}
+.partner-logo-cell{display:flex;align-items:center;justify-content:center;min-width:0;min-height:96px;padding:8px;color:#aaa;text-decoration:none;transition:opacity .2s ease,transform .2s ease}
+a.partner-logo-cell:hover{opacity:1;transform:translateY(-2px)}
+a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:8px}
+.partner-logo-cell img{display:block;max-width:82%;max-height:70px;object-fit:contain;filter:grayscale(1) brightness(0) invert(.66)}
+[data-theme="light"] .partner-logo-cell{color:#3d3d3d}
+[data-theme="light"] .partner-logo-cell img{filter:grayscale(1) brightness(0) invert(.24)}
+.partner-logo-cell--st img{max-width:100%;max-height:68px}
+.partner-logo-cell--wide img{max-width:90%;max-height:58px}
+.partner-logo-cell--spe{gap:11px}
+.partner-logo-cell--spe img{width:42px;height:60px;flex:0 0 auto}
+.partner-spe-name{font-family:var(--body);font-size:clamp(16px,2.1vw,23px);font-weight:500;letter-spacing:-.04em;white-space:nowrap}
+.partner-logo-cell--climate{gap:10px}
+.partner-logo-cell--climate img{width:58px;max-width:none}
+.partner-climate-name{font-family:var(--body);font-size:clamp(17px,2.2vw,24px);font-weight:500;letter-spacing:-.03em;white-space:nowrap}
+.partner-wordmark{font-family:var(--body);font-size:clamp(24px,3vw,32px);font-weight:500;letter-spacing:8px;text-indent:8px}
+.partner-logo-fallback{display:none;color:#aaa;font-size:15px;font-weight:500;text-align:center}
+.partner-logo-cell.noimg img{display:none}
+.partner-logo-cell.noimg .partner-logo-fallback{display:block}
+.partner-logo-cell--spe.noimg .partner-spe-name{display:none}
+.partner-logo-cell--climate.noimg .partner-climate-name{display:none}
+@media(max-width:620px){.partner-logo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 22px}.partner-logo-cell{min-height:78px;padding:6px}.partner-logo-cell--spe{gap:7px}.partner-logo-cell--spe img{width:31px;height:45px}.partner-spe-name{font-size:15px}.partner-logo-cell--climate{gap:7px}.partner-logo-cell--climate img{width:39px}.partner-climate-name{font-size:16px}}
 /* team */
 .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:36px}
 .t-card{padding:26px 20px;border:1px solid rgba(78,205,196,.14);border-radius:12px;background:var(--bg2);text-align:center}
@@ -371,7 +388,7 @@ body.globe-mode #site-nav{display:none}
 @media(max-width:720px){.hero-inner{max-width:92%}.hero-stage{padding:0 0 28px}.hero-value{margin-bottom:24px;font-size:15px}.hero-actions{gap:10px;margin-top:26px}#hero .hero-actions .glass-btn{width:100%;max-width:320px;padding:12px 18px;font-size:11px}.hero-telemetry{max-width:360px}#hero .memorial{margin-bottom:24px}}
 @media(max-height:780px) and (min-width:721px){.hero-stage{padding-bottom:8px}#hero h1{font-size:clamp(34px,4.25vw,50px);margin-bottom:6px}.hero-value{margin-bottom:22px;line-height:1.45}.hero-actions{gap:8px;margin-top:18px}#hero .memorial{margin-bottom:10px}#hero .cc-label{margin-bottom:10px}#hero .cc-value{font-size:clamp(66px,11vw,132px)}#hero .cc-explainer{margin-top:14px;font-size:clamp(15px,1.7vw,19px)}}
 @media(max-width:900px),(orientation:portrait) and (max-width:1100px){body.globe-mode #topbar{padding:10px 12px 8px;background:linear-gradient(180deg,rgba(5,5,9,.96) 0%,rgba(5,5,9,.78) 64%,rgba(5,5,9,0) 100%)}body.globe-mode #topbar .logo{gap:8px;font-size:15px;letter-spacing:1px}body.globe-mode #topbar .brand-subtitle,body.globe-mode #topbar .brand-sep{display:none}body.globe-mode #topbar .stats{gap:8px}body.globe-mode #topbar .stat-block{display:none}.cc-topbar{max-width:168px}}
-@media(prefers-reduced-motion:reduce){#hero *,#hero *::before,#hero *::after{animation:none!important;transition:none!important}.glass-btn{transition:--arm-w .4s ease,--arm-h .4s ease,--cc .3s ease}.glass-btn:hover,.glass-btn:focus-visible{transform:none}}
+@media(prefers-reduced-motion:reduce){#hero *,#hero *::before,#hero *::after{animation:none!important;transition:none!important}.glass-btn{transition:--arm-w .4s ease,--arm-h .4s ease,--cc .3s ease}.partner-logo-cell{transition:none!important}}
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
@@ -618,16 +635,35 @@ body.globe-mode #site-nav{display:none}
 
   <!-- ── PARTNERS ── -->
   <section class="section" id="partners" aria-labelledby="partners-h">
-    <div class="sec-kicker">Network</div>
-    <h2 id="partners-h">Our Partners</h2>
-    <p class="sec-lead">We collaborate with a dynamic network of partners spanning inclusive education, environmental conservation, AI for climate, community empowerment, sustainable finance, and digital innovation. These partnerships strengthen our ability to deliver impact at scale—combining technical expertise, grassroots engagement, and financial tools to advance a just and climate-resilient future.</p>
-    <div class="partner-row">
-      <div class="p-logo" data-name="St. Vincent’s"><img src="assets/legacy/partner-st-vincents.png" alt="St. Vincent’s logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
-      <div class="p-logo" data-name="GRND"><img src="assets/legacy/partner-grnd.png" alt="GRND logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
-      <div class="p-logo" data-name="SPE"><img src="assets/legacy/partner-spe.png" alt="SPE logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
-      <div class="p-logo" data-name="Connecticut Green Bank"><img src="assets/legacy/partner-connecticut-green-bank.png" alt="Connecticut Green Bank logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
-      <div class="p-logo" data-name="Climate Change AI"><img src="assets/legacy/partner-climate-change-ai.png" alt="Climate Change AI logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
-      <div class="p-logo" data-name="Avocademy"><img src="assets/legacy/partner-avocademy.png" alt="Avocademy logo" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+    <div class="partners-copy">
+      <div class="sec-kicker">Partner ecosystem</div>
+      <h2 id="partners-h">Our Partners</h2>
+      <p class="sec-lead">Organizations helping move climate action forward.</p>
+    </div>
+    <div class="partner-logo-grid" role="list" aria-label="Earth Love United partners">
+      <a class="partner-logo-cell partner-logo-cell--st" href="https://www.stvin.com/" target="_blank" rel="noopener" role="listitem" aria-label="Visit St Vincent’s School">
+        <img src="assets/partners/st-vincents-wordmark.png" alt="St Vincent’s School" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <span class="partner-logo-fallback">St Vincent’s School</span>
+      </a>
+      <div class="partner-logo-cell" role="listitem" aria-label="GRND"><span class="partner-wordmark">GRND</span></div>
+      <a class="partner-logo-cell partner-logo-cell--spe" href="https://www.saveplanetearth.io/" target="_blank" rel="noopener" role="listitem" aria-label="Visit SavePlanetEarth">
+        <img src="assets/partners/save-planet-earth.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <span class="partner-spe-name" aria-hidden="true">SavePlanetEarth</span>
+        <span class="partner-logo-fallback">SavePlanetEarth</span>
+      </a>
+      <a class="partner-logo-cell partner-logo-cell--wide" href="https://www.ctgreenbank.com/" target="_blank" rel="noopener" role="listitem" aria-label="Visit Connecticut Green Bank">
+        <img src="assets/partners/connecticut-green-bank.png" alt="Connecticut Green Bank" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <span class="partner-logo-fallback">Connecticut Green Bank</span>
+      </a>
+      <a class="partner-logo-cell partner-logo-cell--climate" href="https://www.climatechange.ai/" target="_blank" rel="noopener" role="listitem" aria-label="Visit Climate Change AI">
+        <img src="assets/partners/climate-change-ai.png" alt="" aria-hidden="true" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <span class="partner-climate-name" aria-hidden="true">Climate AI</span>
+        <span class="partner-logo-fallback">Climate Change AI</span>
+      </a>
+      <a class="partner-logo-cell partner-logo-cell--wide" href="https://www.avocademy.com/" target="_blank" rel="noopener" role="listitem" aria-label="Visit Avocademy">
+        <img src="assets/partners/avocademy.svg" alt="Avocademy" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <span class="partner-logo-fallback">Avocademy</span>
+      </a>
     </div>
   </section>
 
