@@ -10,7 +10,7 @@
     "builder_id": "ct-42-factual-runtime-builder"
   },
   "reviewed_branch": "agent/generalist/climate-factual-runtime-candidate",
-  "reviewed_commit_sha": "35680c2a86baa0ffc49d6fb2e7e1fc512b548a6b",
+  "reviewed_commit_sha": "793eade295ae3fa787749e4d6ee112cf374a7634",
   "reviewed_input_sha256": {
     "data/climate/country-registry.json": "51fb321661684a88e80254cd5721ee70d0f52d95587222727fb9e9722e86b075",
     "data/climate/releases/primap-hist-2.6.1-factual-display-2026-07-15.json": "129cc563cbad1fa5c71d6953430a8eba510f4c26106d4f6e76cb7cbd11a7e76d",
