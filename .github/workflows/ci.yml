@@ -51,6 +51,14 @@ jobs:
           CLIMATE_RUNTIME_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node tools/check-climate-runtime-diff-boundary.js --base "$CLIMATE_RUNTIME_BASE_SHA" --head "$CLIMATE_RUNTIME_HEAD_SHA"
 
+      - name: Climate denied-candidate production readiness
+        if: ${{ hashFiles('data/climate/runtime-manifest.json') == '' }}
+        run: node tools/check-climate-production-readiness.js --candidate
+
+      - name: Climate reviewed-release production readiness
+        if: ${{ hashFiles('data/climate/runtime-manifest.json') != '' }}
+        run: node tools/check-climate-production-readiness.js --release
+
       - name: Climate truth CI (explicit partial stack)
         run: node tools/climate-truth-ci.js --allow-incomplete
 

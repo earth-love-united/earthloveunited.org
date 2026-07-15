@@ -34,14 +34,21 @@ function mutate(target, mutation) {
 function verifyWorkflowWiring() {
   const workflow = fs.readFileSync(path.join(ROOT, CI_WORKFLOW_PATH), 'utf8');
   const boundaryCommand = 'node tools/check-climate-runtime-diff-boundary.js --base "$CLIMATE_RUNTIME_BASE_SHA" --head "$CLIMATE_RUNTIME_HEAD_SHA"';
+  const candidateCommand = 'node tools/check-climate-production-readiness.js --candidate';
+  const releaseCommand = 'node tools/check-climate-production-readiness.js --release';
   const strictCommand = 'node tools/climate-truth-ci.js --strict';
   assert.match(workflow, /pull_request:\s*\n\s+branches: \[main\]/, 'runtime boundary must run for main-target pull requests');
   assert.match(workflow, /fetch-depth: 0/, 'runtime boundary requires full history for a trustworthy base/head diff');
   assert.ok(workflow.includes('node tools/check-climate-runtime-diff-boundary.js --self-test'), 'runtime boundary fixture step is absent');
   assert.ok(workflow.includes(boundaryCommand), 'runtime boundary live diff step is absent');
+  assert.ok(workflow.includes("hashFiles('data/climate/runtime-manifest.json') == ''"), 'denied candidate does not select candidate-readiness policy');
+  assert.ok(workflow.includes(candidateCommand), 'candidate-readiness policy step is absent');
   assert.ok(workflow.includes("hashFiles('data/climate/runtime-manifest.json') != ''"), 'reviewed runtime manifest does not trigger strict policy');
+  assert.ok(workflow.includes(releaseCommand), 'reviewed runtime manifest does not trigger release-readiness policy');
   assert.ok(workflow.includes(strictCommand), 'strict climate truth policy step is absent');
-  assert.ok(workflow.indexOf(boundaryCommand) < workflow.indexOf(strictCommand), 'runtime boundary must run before strict policy');
+  assert.ok(workflow.indexOf(boundaryCommand) < workflow.indexOf(candidateCommand), 'runtime boundary must run before candidate-readiness policy');
+  assert.ok(workflow.indexOf(boundaryCommand) < workflow.indexOf(releaseCommand), 'runtime boundary must run before release-readiness policy');
+  assert.ok(workflow.indexOf(releaseCommand) < workflow.indexOf(strictCommand), 'release-readiness policy must run before the final strict policy step');
 }
 
 function runFixtures() {
