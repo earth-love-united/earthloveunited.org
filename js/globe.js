@@ -397,6 +397,7 @@ function _preloadImageAsset(asset, timeoutMs) {
 }
 
 const GlobeModule = {
+  _initialized: false,
   world: null,
   userTotal: 0,
   currentLens: 'gap', // 'gap' | 'forest' | 'cat'

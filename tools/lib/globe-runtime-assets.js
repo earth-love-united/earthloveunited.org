@@ -312,6 +312,8 @@ function evaluateRuntimeAssets(input) {
     'Readiness events must follow prepared country-deck activation.');
   check('retry-single-renderer', app.includes("safeCall('GlobeModule', 'teardownFailedRenderer')") && app.includes('forcePrepare: true, reloadCandidate: true') && globe.includes('this._canvasDragGuardBound = false') && globe.includes("if (!this._canvasEl) throw new Error('Prepared renderer did not expose a canvas')"),
     'Retry must tear down stale renderer state, force revalidation, and retain a single canvas/listener set.');
+  check('explicit-renderer-state', globe.includes('const GlobeModule = {\n  _initialized: false,'),
+    'GlobeModule must expose an explicit false renderer invariant before the first preparation attempt.');
   check('activation-cancellation', app.includes('const activationAttempt = ++this._globeActivationAttempt;') && occurrences(app, 'if (!isCurrentActivation()) return false;') >= 4 && app.includes('this._globeActivationAttempt += 1;'),
     'Leaving or superseding an asynchronous globe entry must invalidate every later renderer continuation.');
   check('preparation-rejection-recovery', globe.includes("this._failPreparation('globe_construction_failed', error)") && globe.includes('this._preparationPromise === promise') && globe.includes('this._preparationPromise = null;'),
