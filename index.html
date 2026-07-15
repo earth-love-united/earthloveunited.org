@@ -365,7 +365,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 .globe-key{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
 .globe-key span{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid rgba(78,205,196,.14);border-radius:999px;background:var(--bg2);color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:.6px}
 .globe-key i{width:11px;height:11px;border-radius:3px;font-style:normal;flex:0 0 auto}
-.big-cta{margin-top:34px;padding:15px 32px!important;font-size:12px!important}
+.big-cta{max-width:100%;margin-top:34px;padding:15px 32px!important;font-size:12px!important;white-space:normal}@media(max-width:360px){.big-cta{width:100%;padding:14px 12px!important}}
 .data-note{margin-top:24px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--text3);max-width:760px}
 .data-note a{color:var(--teal);text-decoration:none;border-bottom:1px dotted rgba(78,205,196,.4)}
 /* volunteer video (click-to-load; YouTube loads only on demand) */
@@ -586,18 +586,19 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <section class="section" id="globe" aria-labelledby="globe-h">
     <div class="sec-kicker">The key instrument</div>
     <h2 id="globe-h">The Living Globe</h2>
-    <p class="sec-lead">The globe remains navigable while its country evidence is rebuilt from reviewed sources. Neutral, uniform height and shading indicate that climate facts and performance are unavailable. Target, ambition, delivery, finance, rating, and emissions claims are withheld during this review.</p>
+    <p class="sec-lead">This CT-42 candidate previews reviewed PRIMAP annual harmonized emissions estimates for 206 registry entities and keeps 43 source gaps explicitly visible. The preview is not a production release: commitments and targets are not reviewed, while delivery, performance, impact bands, and climate scores are not assessed.</p>
     <div class="globe-key" role="list" aria-label="Country evidence availability legend">
-      <span role="listitem"><i style="background:rgba(120,150,165,0.28)"></i> Country facts being re-sourced · performance unavailable</span>
+      <span role="listitem"><i style="background:linear-gradient(135deg,#5b4a97,#f6913a)"></i> Non-green sequential color · log-scaled 2023 emissions magnitude, not performance</span>
+      <span role="listitem"><i style="background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1"></i> Neutral pattern · source gap, visible and unranked</span>
     </div>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Evidence Review</div>
-        <p>Country cards now disclose the evidence quarantine directly. Performance judgments remain unavailable until target scope and observed emissions can be compared on a reviewed basis.</p>
+        <p>The factual series passed CT-10C / CT-10C-R review, but this runtime candidate has not. Performance judgments remain unavailable until target scope and independently reviewed assessment evidence can be compared.</p>
       </div>
       <div class="card">
         <div class="card-tag">Country Cards</div>
-        <p>Tap a country to navigate the atlas and see the explicit evidence-unavailable state. Climate values and modeled trajectories are not shown until reviewed replacements are released.</p>
+        <p>Tap a mapped entity to inspect its source-labelled 2014–2023 annual harmonized estimates, exact unit, accessible data table, and limitations. Source gaps remain neutral, unnumbered, and equally navigable.</p>
       </div>
     </div>
     <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>

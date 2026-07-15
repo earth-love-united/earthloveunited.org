@@ -39,6 +39,13 @@ const manifest = {
   outputs: [paths.runtime, paths.facts, paths.batch].map(file => ({ path: file, sha256: hashBytes(bytes(file)) })),
   runtime_files: ['index.html', 'css/globe-system.css', 'js/data.js', 'js/globe.js', 'sw.js', paths.runtime],
   compiler_files: ['js/country-ranking-compiler.js', 'js/country-climate-view-model.js', 'tools/lib/country-card-evidence-model.js', 'tools/lib/country-accessibility-model.js'],
+  unpassed_gates: [
+    'independent CT-42 runtime review',
+    'CT-40 allow decision',
+    'reviewed runtime manifest and release diff',
+    'screen-reader, formal contrast, 320px/200% zoom, and reduced-motion verification',
+    'polygon and fallback rendering plus color-removal comprehension review',
+  ],
   prohibited_release_files: ['data/climate/runtime-manifest.json', 'data/climate/releases/reviewed-release-diff.json', 'data/climate/releases/ct40-allow-manifest.json'],
 };
 write(paths.manifest, manifest);

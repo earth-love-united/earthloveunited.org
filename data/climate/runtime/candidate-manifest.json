@@ -56,6 +56,13 @@
     "tools/lib/country-card-evidence-model.js",
     "tools/lib/country-accessibility-model.js"
   ],
+  "unpassed_gates": [
+    "independent CT-42 runtime review",
+    "CT-40 allow decision",
+    "reviewed runtime manifest and release diff",
+    "screen-reader, formal contrast, 320px/200% zoom, and reduced-motion verification",
+    "polygon and fallback rendering plus color-removal comprehension review"
+  ],
   "prohibited_release_files": [
     "data/climate/runtime-manifest.json",
     "data/climate/releases/reviewed-release-diff.json",

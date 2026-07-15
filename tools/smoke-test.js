@@ -73,15 +73,25 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'Data module is live with country evidence fail-closed',
+        name: 'CT-42 factual candidate is loaded inside its denied boundary',
         critical: true,
         test: () => {
-          const ok = typeof Data !== 'undefined'
-            && Array.isArray(Data.smallNations)
-            && Data.carbonProjects && typeof Data.carbonProjects === 'object';
+          const candidate = window.Data?.climateCandidate;
+          const ranking = window.Data?.getClimateRanking?.();
+          const factualCount = candidate?.countries?.filter(country => country.emissions?.status === 'reviewed_factual').length || 0;
+          const gapCount = candidate?.countries?.filter(country => country.emissions?.status !== 'reviewed_factual').length || 0;
+          const ok = candidate?.review_status === 'not_reviewed'
+            && candidate?.production_runtime_release === false
+            && candidate?.countries?.length === 249
+            && factualCount === 206
+            && gapCount === 43
+            && ranking?.disclosure?.eligible_count === 206
+            && ranking?.disclosure?.unranked_count === 43;
           return {
             pass: ok,
-            detail: ok ? 'active non-climate data loaded; country evidence remains fail-closed' : 'active Data inputs missing',
+            detail: ok
+              ? 'candidate not_reviewed/production false; registry 249 = 206 factual + 43 gaps; ranking 206 + 43; CT-04 separately guards legacy absence'
+              : `boundary/count mismatch (registry ${candidate?.countries?.length || 0}, factual ${factualCount}, gaps ${gapCount}, ranking ${ranking?.disclosure?.eligible_count || 0} + ${ranking?.disclosure?.unranked_count || 0})`,
           };
         },
       },
@@ -252,6 +262,17 @@ const SmokeTest = (() => {
     // INTERACTION TESTS
     // ═══════════════════════════════════════════
     interactions: [
+      {
+        name: 'Country card is not open by default',
+        critical: true,
+        test: () => {
+          const dialogs = document.querySelectorAll('#elu-country-card-wrap[role="dialog"][aria-modal="true"]');
+          return {
+            pass: dialogs.length === 0,
+            detail: dialogs.length === 0 ? 'No default country dialog' : `${dialogs.length} country dialog(s) open before user selection`,
+          };
+        },
+      },
       {
         name: 'Hero enter button is wired (data-action="enterGlobe")',
         critical: true,
