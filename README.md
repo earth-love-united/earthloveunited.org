@@ -27,10 +27,9 @@ is nothing in here we wouldn't want a partner, donor, or researcher to read.
 git clone https://github.com/earth-love-united/earthloveunited.org.git
 cd earthloveunited.org
 
-# Re-fetch the vendored globe.gl (gitignored — see CREDITS.md)
-mkdir -p js/vendor
-curl -L https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js \
-  -o js/vendor/globe.gl.js
+# Fetch or verify the pinned globe.gl browser dependency.
+# The file stays gitignored; URL, HTTPS transport, and SHA-256 are enforced.
+./tools/fetch-globe-vendor.sh
 
 # Serve. That's it.
 python3 -m http.server 8000
@@ -123,7 +122,9 @@ comparability gates pass.
 
 The interactive globe is built on
 [`globe.gl`](https://github.com/vasturiano/globe.gl) by Vasco Asturiano (MIT).
-We re-fetch it from the upstream CDN rather than vendoring a permanent copy.
+We reproducibly fetch its pinned browser build from the upstream CDN rather
+than committing a permanent 1.8 MB copy. The canonical fetcher refuses any
+bytes that do not match the reviewed SHA-256 in [CREDITS.md](CREDITS.md).
 
 All third-party code, data, and visual assets are listed in
 [CREDITS.md](CREDITS.md) with their original sources and licenses preserved.
@@ -144,6 +145,7 @@ the browser console on any page:
 | `Impact.check('globe.js')` | Blast radius — who calls it, what breaks |
 | `DepGraph.mermaid()` | Dependency graph as Mermaid diagram |
 | `node tools/check-public-copy.js` | Static scan for unresolved draft copy and dummy links |
+| `node tools/check-globe-vendor-integrity.js` | Validate the pinned globe.gl delivery policy and any local copy |
 | `python3 scripts/verify_load_order.py` | Validate module dependency and script load order |
 
 `App.init()` runs `MODULE_CONTRACTS.validate()` at startup and reports the

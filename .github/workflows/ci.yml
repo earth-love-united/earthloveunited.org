@@ -36,6 +36,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: globe.gl vendor delivery policy
+        run: node tools/check-globe-vendor-integrity.js
+
       - name: Verify script load-order DAG
         run: python3 scripts/verify_load_order.py
 
@@ -97,11 +100,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Re-fetch vendored globe.gl (it's gitignored)
-        run: |
-          mkdir -p js/vendor
-          curl -fsSL https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js \
-            -o js/vendor/globe.gl.js
+      - name: Fetch verified globe.gl runtime dependency
+        run: ./tools/fetch-globe-vendor.sh
+
+      - name: Verify browser-test dependency bytes
+        run: node tools/check-globe-vendor-integrity.js --require-file
 
       - name: Install Playwright + Chromium
         run: |

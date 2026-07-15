@@ -104,6 +104,12 @@
       "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
     },
     {
+      "id": "vendor-delivery-change-is-runtime-affecting",
+      "changed_paths": ["tools/fetch-globe-vendor.sh"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
       "id": "windows-separator-cannot-bypass-runtime-path",
       "changed_paths": ["data\\climate\\runtime\\country-factual-candidate.json"],
       "candidate": "$base_denied_candidate",

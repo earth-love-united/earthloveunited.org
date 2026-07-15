@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "fixture_set": "globe-vendor-integrity-fail-closed",
+  "mutations": [
+    { "id": "version-drift", "operation": "set", "path": "spec.version", "value": "latest", "expected_failure": "canonical-spec" },
+    { "id": "http-source", "operation": "set", "path": "spec.url", "value": "http://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js", "expected_failure": "https-source" },
+    { "id": "https-source-drift", "operation": "set", "path": "spec.url", "value": "https://unpkg.com/globe.gl/dist/globe.gl.min.js", "expected_failure": "canonical-spec" },
+    { "id": "digest-drift", "operation": "set", "path": "spec.sha256", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "expected_failure": "canonical-spec" },
+    { "id": "destination-drift", "operation": "set", "path": "spec.destination", "value": "js/vendor/globe-latest.js", "expected_failure": "canonical-spec" },
+    { "id": "atomic-temp-removed", "operation": "replace", "path": "files.fetch_script", "from": "TEMP_FILE=\"$(mktemp \"$DEST_DIR/.globe.gl.js.download.XXXXXX\")\"", "to": "TEMP_FILE=\"$DEST_PATH\"", "expected_failure": "atomic-temp-download" },
+    { "id": "https-redirect-guard-removed", "operation": "replace", "path": "files.fetch_script", "from": "--proto-redir '=https'", "to": "--proto-redir '=all'", "expected_failure": "https-only-curl" },
+    { "id": "preinstall-verification-removed", "operation": "replace", "path": "files.fetch_script", "from": "verify_digest \"$TEMP_FILE\"", "to": "verify_digest_after_install \"$TEMP_FILE\"", "expected_failure": "verify-before-install" },
+    { "id": "deploy-direct-download", "operation": "append", "path": "files.build_deploy", "value": "\ncurl https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js\n", "expected_failure": "deploy-uses-canonical-fetcher" },
+    { "id": "ci-fetcher-removed", "operation": "replace", "path": "files.ci", "from": "./tools/fetch-globe-vendor.sh", "to": "echo vendor-fetch-disabled", "expected_failure": "ci-policy-wired" },
+    { "id": "ci-direct-download", "operation": "append", "path": "files.ci", "value": "\ncurl https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js\n", "expected_failure": "ci-no-direct-download" },
+    { "id": "fetcher-codeowner-removed", "operation": "replace", "path": "files.codeowners", "from": "/tools/fetch-globe-vendor.sh          @earth-love-united/maintainers", "to": "# fetcher owner removed", "expected_failure": "control-files-owned" },
+    { "id": "readme-manual-download", "operation": "replace", "path": "files.readme", "from": "./tools/fetch-globe-vendor.sh", "to": "curl globe.gl", "expected_failure": "readme-canonical-command" },
+    { "id": "credits-digest-drift", "operation": "replace", "path": "files.credits", "from": "2ab6767f47e2be0ac346cd7a5eb55d259ea3da06d479dc22f1820ddd698f496a", "to": "unknown", "expected_failure": "credits-pin" },
+    { "id": "cloudflare-build-disabled", "operation": "replace", "path": "files.deployment_guide", "from": "Build command:** `./tools/build-deploy.sh`", "to": "Build command:** *(leave empty)*", "expected_failure": "deployment-contract" },
+    { "id": "vendor-ignore-removed", "operation": "replace", "path": "files.gitignore", "from": "js/vendor/", "to": "# js/vendor tracking changed", "expected_failure": "vendor-remains-ignored" },
+    { "id": "runtime-cdn-bypass", "operation": "replace", "path": "files.app", "from": "script.src = 'js/vendor/globe.gl.js';", "to": "script.src = 'https://cdn.example/globe.js';", "expected_failure": "runtime-local-path" },
+    { "id": "fallback-event-removed", "operation": "replace", "path": "files.globe", "from": "EventBus.emit('globe:fallback-shown'", "to": "EventBus.emit('globe:fallback-disabled'", "expected_failure": "runtime-fallback-preserved" },
+    { "id": "local-vendor-mismatch", "operation": "set", "path": "vendor.exists", "value": true, "then": { "path": "vendor.sha256", "value": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" }, "expected_failure": "local-file-integrity" },
+    { "id": "required-vendor-absent", "operation": "set", "path": "require_vendor", "value": true, "then": { "path": "vendor.exists", "value": false }, "expected_failure": "local-file-integrity" }
+  ]
+}
