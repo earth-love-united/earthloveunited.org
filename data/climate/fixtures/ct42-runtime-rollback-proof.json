@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0.0",
+  "fixture_id": "ct-42-runtime-rollback-proof-adversarial-2026-07-15",
+  "mutations": [
+    {
+      "id": "proof-authorizes-release",
+      "phase": "proof",
+      "path": "release_authority",
+      "value": true
+    },
+    {
+      "id": "proof-authorizes-deploy",
+      "phase": "proof",
+      "path": "deploy_authority",
+      "value": true
+    },
+    {
+      "id": "proof-fabricates-independent-review",
+      "phase": "proof",
+      "path": "review.status",
+      "value": "reviewed"
+    },
+    {
+      "id": "proof-fabricates-allow",
+      "phase": "proof",
+      "path": "candidate.decision",
+      "value": "allow"
+    },
+    {
+      "id": "proof-regresses-cache-epoch",
+      "phase": "proof",
+      "path": "rollback.cache_name",
+      "value": "elu-v27-ct42-candidate"
+    },
+    {
+      "id": "proof-output-pin-drift",
+      "phase": "proof",
+      "path": "rollback.controls.0.rollback_sha256",
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "id": "candidate-data-pointer-drift",
+      "phase": "candidate",
+      "target": "js/data.js",
+      "operation": "append",
+      "value": "\n// unexpected candidate drift\n"
+    },
+    {
+      "id": "rollback-patch-byte-drift",
+      "phase": "patch",
+      "operation": "append",
+      "value": "\n# unexpected patch drift\n"
+    },
+    {
+      "id": "post-runtime-pointer-restored",
+      "phase": "post",
+      "target": "js/data.js",
+      "operation": "append",
+      "value": "\nfetch('data/climate/runtime/country-factual-candidate.json');\n"
+    },
+    {
+      "id": "post-candidate-globe-copy-restored",
+      "phase": "post",
+      "target": "js/globe.js",
+      "operation": "append",
+      "value": "\nconst unexpected = 'Candidate preview';\n"
+    },
+    {
+      "id": "post-magnitude-style-restored",
+      "phase": "post",
+      "target": "css/globe-system.css",
+      "operation": "append",
+      "value": "\n.elu-rank-dot.is-magnitude { color: red; }\n"
+    },
+    {
+      "id": "post-public-candidate-copy-restored",
+      "phase": "post",
+      "target": "index.html",
+      "operation": "append",
+      "value": "\n<p>CT-42 candidate</p>\n"
+    },
+    {
+      "id": "post-superseded-source-url-restored",
+      "phase": "post",
+      "target": "index.html",
+      "operation": "append",
+      "value": "\n<a href=\"https://github.com/gke0op/earthloveunited.org\">stale source</a>\n"
+    },
+    {
+      "id": "post-service-registration-regressed",
+      "phase": "post",
+      "target": "index.html",
+      "operation": "replace",
+      "from": "/sw.js?v=28-ct42-rollback",
+      "value": "/sw.js?v=27-ct42-candidate"
+    },
+    {
+      "id": "post-cache-epoch-regressed",
+      "phase": "post",
+      "target": "sw.js",
+      "operation": "replace",
+      "from": "elu-v28-ct42-rollback",
+      "value": "elu-v27-ct42-candidate"
+    },
+    {
+      "id": "post-candidate-precache-restored",
+      "phase": "post",
+      "target": "sw.js",
+      "operation": "append",
+      "value": "\nconst leaked = '/data/climate/runtime/country-factual-candidate.json';\n"
+    },
+    {
+      "id": "post-production-runtime-manifest-created",
+      "phase": "post",
+      "target": "data/climate/runtime-manifest.json",
+      "operation": "create",
+      "value": "{}\n"
+    },
+    {
+      "id": "post-reviewed-release-diff-created",
+      "phase": "post",
+      "target": "data/climate/releases/reviewed-release-diff.json",
+      "operation": "create",
+      "value": "{}\n"
+    },
+    {
+      "id": "post-ct40-allow-manifest-created",
+      "phase": "post",
+      "target": "data/climate/releases/ct40-allow-manifest.json",
+      "operation": "create",
+      "value": "{}\n"
+    }
+  ]
+}

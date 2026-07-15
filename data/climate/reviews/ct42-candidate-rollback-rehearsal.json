@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0.0",
+  "proof_id": "ct-42-runtime-rollback-rehearsal-2026-07-15",
+  "status": "rehearsed_not_reviewed",
+  "release_authority": false,
+  "deploy_authority": false,
+  "review": {
+    "status": "not_reviewed",
+    "builder_id": "ct-42-runtime-rollback-builder",
+    "reviewer_id": null,
+    "reviewed_at": null,
+    "independent_review_required": true
+  },
+  "candidate": {
+    "builder_commit": "793eade295ae3fa787749e4d6ee112cf374a7634",
+    "review_chain_head": "9089b1f34cad985464c6d77f486b05f415496586",
+    "production_control_head": "225873f6a78889ef9395b0862e30ecf759c9608f",
+    "candidate_id": "ct-42-factual-runtime-candidate-2026-07-15",
+    "decision": "deny",
+    "release_eligible": false,
+    "production_runtime_release": false,
+    "candidate_manifest": {
+      "path": "data/climate/runtime/candidate-manifest.json",
+      "sha256": "96e74966e40a65c838d7030de07c8cead4c05fe28d49876814c8e0cd4b8c7a1c"
+    },
+    "runtime_data": {
+      "path": "data/climate/runtime/country-factual-candidate.json",
+      "sha256": "7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664"
+    },
+    "ct40_result": {
+      "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
+      "sha256": "0cfd2e1c1429c59f6fa073c9f35b3bcd17a7f3d4770979bdbe6b1049a202f2e9"
+    }
+  },
+  "rollback": {
+    "strategy": "candidate_to_fail_closed_baseline",
+    "baseline_commit": "4f94b218c460d2d452dc3fd1354b9e1c3ddc25cc",
+    "cache_name": "elu-v28-ct42-rollback",
+    "service_worker_registration": "/sw.js?v=28-ct42-rollback",
+    "workspace_mutation": false,
+    "patch": {
+      "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
+      "encoding": "base64",
+      "sha256": "c0f2ae6953dc9a79197348ea4849d009787fbe3996d9f654eaeb0a7dd6e5b771",
+      "decoded_sha256": "4c144f64b430cbda10557c68e04144eeb693e726178b45d2f5c4f250387be4a1",
+      "changed_files": [
+        "index.html",
+        "css/globe-system.css",
+        "js/data.js",
+        "js/globe.js",
+        "sw.js"
+      ]
+    },
+    "controls": [
+      {
+        "path": "index.html",
+        "role": "public_copy_and_service_worker_registration",
+        "candidate_sha256": "a95aa1b18800ba3cba70865680cf24c1e43e1675d6f8d0c026d15208784fd725",
+        "rollback_sha256": "26fd5ee1a4710ab09a58c00794f0a79995a62609691ce52425ca457710b96ced"
+      },
+      {
+        "path": "css/globe-system.css",
+        "role": "candidate_visual_presentation",
+        "candidate_sha256": "50e577d2302e8990f2885830011ce65581c915915d55e8d7508c14acd8928bfb",
+        "rollback_sha256": "59c04ddb34429c736601468fbbb3c065892bef1937b2f8dda6148e24f99977b1"
+      },
+      {
+        "path": "js/data.js",
+        "role": "runtime_data_pointer",
+        "candidate_sha256": "9d7c517115e875da46e2a583d3f397b4a491d15425c7d95bae852a614e07563d",
+        "rollback_sha256": "92da0d5aa3d19f67534240183ded691e88cac2cd4c880d07111fb1d4ce17b399"
+      },
+      {
+        "path": "js/globe.js",
+        "role": "candidate_globe_and_card_logic",
+        "candidate_sha256": "c60d58cba0471885975b0ca3db0af0f9f1c38570ddea4a935cad2f6fc6bf6059",
+        "rollback_sha256": "5b243f48321db5d31cc4d2bdeca81c2ce2947a8bb0fc0057aea177aaf81d3f27"
+      },
+      {
+        "path": "sw.js",
+        "role": "cache_epoch_and_candidate_precache",
+        "candidate_sha256": "ec4f6c1e07f43c524b3493732758bc4ba7e38b1054a8bbd084b9028c12568bc6",
+        "rollback_sha256": "7967c5d9d2c4f03ce3731d939a9a1f7877dc10a846c42255c2983d98b3ba55cc"
+      }
+    ],
+    "assertions": [
+      "candidate runtime data pointer absent",
+      "candidate magnitude, ranking, trajectory, and card presentation absent",
+      "neutral evidence-withheld public copy restored",
+      "reviewed dialog, focus, target-size, narrow-layout, and reduced-motion safeguards preserved",
+      "service-worker cache advanced and candidate JSON removed from pre-cache",
+      "production runtime manifest, reviewed release diff, and CT-40 allow manifest absent"
+    ]
+  },
+  "prohibited_outputs": [
+    "data/climate/runtime-manifest.json",
+    "data/climate/releases/reviewed-release-diff.json",
+    "data/climate/releases/ct40-allow-manifest.json"
+  ],
+  "execution": {
+    "builder": "node tools/build-ct42-runtime-rollback-proof.js",
+    "command": "node tools/rehearse-ct42-runtime-rollback.js",
+    "checker": "node tools/check-ct42-runtime-rollback-proof.js",
+    "builder_requires_git_objects": [
+      "793eade295ae3fa787749e4d6ee112cf374a7634",
+      "9089b1f34cad985464c6d77f486b05f415496586",
+      "225873f6a78889ef9395b0862e30ecf759c9608f",
+      "4f94b218c460d2d452dc3fd1354b9e1c3ddc25cc"
+    ],
+    "mode": "temporary_copy_only",
+    "writes_workspace": false,
+    "deploys": false
+  },
+  "calculation_hash": "c66b05a3fdccb3f220c4dada1324da8a4e594faf35a6c131b8e5f1f7e85088b6"
+}
