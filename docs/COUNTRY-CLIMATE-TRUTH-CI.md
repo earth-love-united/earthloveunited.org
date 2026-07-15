@@ -128,8 +128,9 @@ profile record exactly (including order and every field) to the reviewed CT-40
 candidate. Every source must match the pinned canonical registry and an
 independent redistribution/scoring rights decision. Every top-20 document ID
 must resolve through that registry to one unique same-country/same-role regular
-non-symlink artifact with an exact digest and the linked approved source-rights
-decision. The package records independently reviewed, canonically hashed
+non-symlink artifact with an exact digest. The linked, canonically hashed
+source-rights decision must repeat the exact document ID/path/digest pin and
+approve redistribution and scoring. The package records independently reviewed, canonically hashed
 primary-source records for the exact required top-20 country set. An
 extra `release_authority` field, a shape-only hash, or any output drift fails.
 Successful content validation reports eligibility only and never mints release
@@ -187,7 +188,7 @@ regressions, ambiguous missing-target treatment, composite scores, unsourced
 rankings, denied releases, invalid/self-reviewed diffs, missing licence/review/
 lineage, empty facts/profile data, canonical diff hashes, canonical-enum
 divergence, and generated drift. The reviewed production-package checker adds
-49 adversarial cases for malformed/empty facts and profiles, synthetic ALLOWs,
+50 adversarial cases for malformed/empty facts and profiles, synthetic ALLOWs,
 invented source rights, placeholder reviewers, shape-only calculation hashes,
 pin drift, partial/symlinked artifacts, published-record substitution,
 reordering, duplication and omission, nonexistent/traversing/symlinked/

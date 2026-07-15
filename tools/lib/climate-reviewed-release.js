@@ -320,6 +320,12 @@ function inspectReviewedClimateRelease(root, options = {}) {
     const decision = decisionsBySource.get(source.source_id);
     const registered = registryById.get(source.source_id);
     const registeredChecksum = registered?.artifact?.sha256 || registered?.checksum_sha256;
+    const expectedDocumentPins = evidenceDocuments.filter(document => document?.source_id === source.source_id)
+      .sort((left, right) => String(left?.document_id).localeCompare(String(right?.document_id)))
+      .map(document => ({ document_id: document.document_id, path: document?.artifact?.path, sha256: document?.artifact?.sha256 }));
+    const documentPinsValid = Array.isArray(decision?.evidence_document_pins) &&
+      decision.evidence_document_pins.every(item => exactKeys(item, ['document_id', 'path', 'sha256'])) &&
+      same(decision.evidence_document_pins, expectedDocumentPins);
     const independent = decision && decision.decision_by !== decision.reviewer_id &&
       validReviewIdentity(decision.decision_by, options.allowFixtureIdentities) &&
       validReviewIdentity(decision.reviewer_id, options.allowFixtureIdentities);
@@ -328,9 +334,9 @@ function inspectReviewedClimateRelease(root, options = {}) {
         decision.decision_id !== source.licence?.decision_id || decision.status !== 'reviewed' ||
         decision.redistribution_approved !== true || decision.scoring_approved !== true ||
         source.licence?.redistribution_approved !== true || source.licence?.scoring_approved !== true || !independent ||
-        decision.decision_hash !== sourceRightsDecisionCalculationHash(decision)) {
+        !documentPinsValid || decision.decision_hash !== sourceRightsDecisionCalculationHash(decision)) {
       add(errors, 'source_rights_decision_invalid', source.source_id || PATHS.releaseInput,
-        'Source registry pin, independent decision, redistribution approval, or scoring approval does not match CT-40.');
+        'Source registry/document pins, independent decision, redistribution approval, or scoring approval does not match CT-40.');
     }
   }
 
@@ -358,7 +364,9 @@ function inspectReviewedClimateRelease(root, options = {}) {
       regularNonSymlink(root, artifact.path) && pin(root, artifact.path).sha256 === artifact.sha256;
     const rightsValid = decision && registered && candidateSource &&
       decision.status === 'reviewed' && decision.redistribution_approved === true && decision.scoring_approved === true &&
-      decision.decision_id === document?.rights_decision_id && decision.source_version === document?.source_version;
+      decision.decision_id === document?.rights_decision_id && decision.source_version === document?.source_version &&
+      Array.isArray(decision.evidence_document_pins) && decision.evidence_document_pins.some(item =>
+        same(item, { document_id: document.document_id, path: artifact?.path, sha256: artifact?.sha256 }));
     if (!exactKeys(document, EVIDENCE_DOCUMENT_KEYS) || !documentIdValid ||
         !REQUIRED_TOP20_COUNTRY_IDS.includes(document?.country_id) ||
         !Object.values(TOP20_DOCUMENT_ROLES).includes(document?.document_role) ||

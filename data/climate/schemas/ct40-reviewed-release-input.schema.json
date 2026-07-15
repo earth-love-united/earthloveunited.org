@@ -40,12 +40,24 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["decision_id", "source_id", "source_version", "source_checksum_sha256", "status", "redistribution_approved", "scoring_approved", "decision_by", "reviewer_id", "reviewed_at", "decision_hash"],
+        "required": ["decision_id", "source_id", "source_version", "source_checksum_sha256", "evidence_document_pins", "status", "redistribution_approved", "scoring_approved", "decision_by", "reviewer_id", "reviewed_at", "decision_hash"],
         "properties": {
           "decision_id": { "type": "string", "minLength": 5 },
           "source_id": { "type": "string", "minLength": 1 },
           "source_version": { "type": "string", "minLength": 1 },
           "source_checksum_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "evidence_document_pins": {
+            "type": "array", "uniqueItems": true,
+            "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["document_id", "path", "sha256"],
+              "properties": {
+                "document_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+                "path": { "type": "string", "pattern": "^data/climate/evidence/" },
+                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              }
+            }
+          },
           "status": { "const": "reviewed" },
           "redistribution_approved": { "const": true },
           "scoring_approved": { "const": true },

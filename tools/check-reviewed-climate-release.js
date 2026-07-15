@@ -125,6 +125,9 @@ function makeFixture(mutation = null) {
         source_id: source.source_id,
         source_version: 'fixture-source-v1',
         source_checksum_sha256: source.checksum_sha256,
+        evidence_document_pins: evidenceDocuments.filter(document => document.source_id === source.source_id)
+          .sort((left, right) => left.document_id.localeCompare(right.document_id))
+          .map(document => ({ document_id: document.document_id, ...document.artifact })),
         status: 'reviewed', redistribution_approved: true, scoring_approved: true,
         decision_by: `fixture-rights-decider-${source.source_id}`,
         reviewer_id: `fixture-rights-reviewer-${source.source_id}`,
@@ -341,6 +344,13 @@ function makeFixture(mutation = null) {
     } else if (mutation.filesystem === 'evidence_rights_substitution') {
       first.rights_decision_id = candidate.sources[1].licence.decision_id;
       write(root, registryPath, registry);
+    } else if (mutation.filesystem === 'evidence_rights_pin_drift') {
+      const decision = releaseInput.source_rights_decisions.find(item => item.source_id === first.source_id);
+      const decisionPin = decision.evidence_document_pins.find(item => item.document_id === first.document_id);
+      decisionPin.sha256 = '1'.repeat(64);
+      decision.decision_hash = null;
+      decision.decision_hash = sourceRightsDecisionCalculationHash(decision);
+      write(root, PATHS.releaseInput, releaseInput);
     } else if (mutation.filesystem === 'evidence_content_drift') {
       write(root, first.artifact.path, { tampered: true, document_id: first.document_id });
     }

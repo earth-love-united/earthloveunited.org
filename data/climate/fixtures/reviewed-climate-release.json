@@ -42,6 +42,7 @@
     { "id": "top20-evidence-unpinned-digest", "filesystem": "evidence_unpinned_digest", "expected_code": "evidence_document_registry_invalid" },
     { "id": "top20-evidence-extra-registry-key", "filesystem": "evidence_extra_registry_key", "expected_code": "evidence_document_registry_invalid" },
     { "id": "top20-evidence-rights-substitution", "filesystem": "evidence_rights_substitution", "expected_code": "evidence_document_registry_invalid" },
+    { "id": "top20-evidence-rights-pin-drift", "filesystem": "evidence_rights_pin_drift", "expected_code": "source_rights_decision_invalid" },
     { "id": "top20-evidence-content-drift", "filesystem": "evidence_content_drift", "expected_code": "evidence_document_registry_invalid" },
     { "id": "rollback-self-review", "document": "rollbackProof", "path": "review.reviewer_id", "value": "fixture-rollback-builder", "expected_code": "rollback_self_review" },
     { "id": "shape-only-rollback-hash", "document": "rollbackProof", "path": "calculation_hash", "value": "5555555555555555555555555555555555555555555555555555555555555555", "expected_code": "rollback_calculation_hash_mismatch" },
