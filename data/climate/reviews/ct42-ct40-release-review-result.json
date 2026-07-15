@@ -1,11 +1,17 @@
 {
   "schema_version": "1.0.0",
   "review_candidate_id": "ct-42-to-ct-40-real-release-review-2026-07-15",
-  "adapter_version": "1.0.0",
-  "evaluated_input_sha256": "f5c06b91054a68ecd5b31b866e51a60d83e35ad71a437d5bd7196fd51e55d12e",
+  "adapter_version": "1.2.0",
+  "evaluated_input_sha256": "a16999d836f7657bde0e75a6c4cbd87b11b23d894ef81665b5fcffcbb1c0dc26",
   "ct40_gate_version": "1.0.0",
   "ct40_manifest_calculation_hash": "ac6d58c1c34186abcb4379eecc8416de2459fc5fba84da73dfd5585f431ca32c",
   "full_gate_output_sha256": "60c48efe6a32b6814ca2337387b2a008b4c7b9ae88a8e3a6029494c388a48f87",
+  "review_commits": {
+    "data_review_commit_sha": "793eade295ae3fa787749e4d6ee112cf374a7634",
+    "ui_review_commit_sha": "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a",
+    "common_commit_required": false,
+    "ancestry_evaluated": false
+  },
   "decision": "deny",
   "eligible": false,
   "reason_codes": [
