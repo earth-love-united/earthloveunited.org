@@ -110,6 +110,12 @@
       "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
     },
     {
+      "id": "committed-vendor-blob-is-runtime-affecting",
+      "changed_paths": ["js/vendor/globe.gl.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
       "id": "windows-separator-cannot-bypass-runtime-path",
       "changed_paths": ["data\\climate\\runtime\\country-factual-candidate.json"],
       "candidate": "$base_denied_candidate",

@@ -38,6 +38,7 @@ sha256_file() {
 verify_digest() {
   local file="$1"
   local actual
+  [ ! -L "$file" ] || fail "required file must not be a symbolic link: $GLOBE_GL_DESTINATION"
   [ -f "$file" ] || fail "required file is absent: $GLOBE_GL_DESTINATION"
   actual="$(sha256_file "$file")"
   if [ "$actual" != "$GLOBE_GL_SHA256" ]; then
@@ -83,7 +84,9 @@ case "${1:-ensure}" in
     ;;
 esac
 
-if [ -e "$DEST_PATH" ]; then
+[ ! -L "$DEST_DIR" ] || fail "destination directory must not be a symbolic link: $(dirname "$GLOBE_GL_DESTINATION")"
+
+if [ -e "$DEST_PATH" ] || [ -L "$DEST_PATH" ]; then
   [ -f "$DEST_PATH" ] || fail "destination exists but is not a regular file: $GLOBE_GL_DESTINATION"
   if verify_digest "$DEST_PATH"; then
     echo "globe.gl vendor integrity: verified existing $GLOBE_GL_DESTINATION ($GLOBE_GL_VERSION)"

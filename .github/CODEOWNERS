@@ -56,6 +56,7 @@
 /tools/check-globe-vendor-integrity.js @earth-love-united/maintainers
 /tools/lib/globe-vendor-integrity.js  @earth-love-united/maintainers
 /tools/fixtures/globe-vendor-integrity.json @earth-love-united/maintainers
+/tools/climate-truth-ci.js            @earth-love-united/maintainers
 
 # ─── CI / GitHub config ─────────────────────────────────────────
 /.github/                             @earth-love-united/maintainers

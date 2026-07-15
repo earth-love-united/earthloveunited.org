@@ -36,6 +36,7 @@ const COMPONENTS = Object.freeze([
   { id: 'CT-42-DATA-R', script: 'tools/check-climate-factual-runtime-data-review.js', required: true },
   { id: 'CT-42-UI-R', script: 'tools/check-climate-factual-runtime-ui-review.js', required: true },
   { id: 'CT-43-FALLBACK', script: 'tools/check-globe-webgl-fallback.js', required: true },
+  { id: 'CT-44-VENDOR', script: 'tools/check-globe-vendor-integrity.js', required: true },
   { id: 'CT-42-CT-40', script: 'tools/check-ct42-ct40-release-review-candidate.js', required: true },
   { id: 'CT-42-ROLLBACK', script: 'tools/check-ct42-runtime-rollback-proof.js', required: true },
   { id: 'CT-40', script: 'tools/check-climate-release-gate.js', required: true },
