@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "review_id": "ct-10b-r-primap-hist-2.6.1-economy-wide-2026-07-15",
   "reviewed_at": "2026-07-15T00:00:00Z",
-  "calculation_hash": "ceb246700220dfc26bb50460668417f15dea1e7c4b2ffec1fdaf228aaea56135",
+  "calculation_hash": "4494782a4e968e8826b192e04fe8dcafdc4c089f9ac87bff7261f04628b7bc20",
   "decision": "pass",
   "reviewer": {
     "reviewer_id": "ct-10b-independent-reviewer",
@@ -39,7 +39,8 @@
     "Global normalized and combined source/normalized fact-ID uniqueness audit",
     "Independent isolated rebuild with byte-for-byte artifact and manifest comparison",
     "Same-size one-byte source tamper rejection",
-    "Publication-gate and forbidden-assessment-output audit"
+    "Publication-gate and forbidden-assessment-output audit",
+    "Adversarial rejection tests for a mutated CSV row locator and a mutated non-latest source value"
   ],
   "selection": {
     "source": "PRIMAP-hist_v2.6.1_final",
@@ -61,7 +62,8 @@
     "normalized_observations": 2060,
     "unique_normalized_fact_ids": 2060,
     "unique_combined_source_and_normalized_fact_ids": 4120,
-    "long_binary_tail_tokens": 0
+    "long_binary_tail_tokens": 0,
+    "adversarial_sample_mutations_rejected": 2
   },
   "sample": [
     { "iso_alpha3": "USA", "csv_row": 45606, "source_2014_ggco2e": "6530000.0", "normalized_2014_mtco2e": "6530.0000", "source_2023_ggco2e": "6060000.0", "normalized_2023_mtco2e": "6060.0000" },
@@ -76,7 +78,7 @@
     { "iso_alpha3": "LIE", "csv_row": 35881, "source_2014_ggco2e": "187.0", "normalized_2014_mtco2e": "0.1870", "source_2023_ggco2e": "152.0", "normalized_2023_mtco2e": "0.1520" },
     { "iso_alpha3": "NRU", "csv_row": 39710, "source_2014_ggco2e": "53.7", "normalized_2014_mtco2e": "0.0537", "source_2023_ggco2e": "56.4", "normalized_2023_mtco2e": "0.0564" },
     { "iso_alpha3": "TUV", "csv_row": 44814, "source_2014_ggco2e": "19.2", "normalized_2014_mtco2e": "0.0192", "source_2023_ggco2e": "20.0", "normalized_2023_mtco2e": "0.0200" },
-    { "iso_alpha3": "ATA", "csv_row": 24259, "source_2014_ggco2e": "3.74", "normalized_2014_mtco2e": "0.00374", "source_2023_ggco2e": "3.34", "normalized_2023_mtco2e": "0.00334" }
+    { "iso_alpha3": "ATA", "csv_row": 24735, "source_2014_ggco2e": "4.52", "normalized_2014_mtco2e": "0.00452", "source_2022_ggco2e": "3.47", "normalized_2022_mtco2e": "0.00347", "source_2023_ggco2e": "3.34", "normalized_2023_mtco2e": "0.00334" }
   ],
   "prior_blockers": {
     "typed_batch_schema_and_ct02_boundary": "resolved",
