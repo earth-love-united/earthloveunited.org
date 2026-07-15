@@ -148,7 +148,7 @@ const COUNTRY_STATUS_BADGE_CLASSES = {
 
 const GLOBE_FALLBACK_REASONS = Object.freeze({
   evidence_browse_requested: 'All 249 registry entities are available here, including those without reliable 1:110m geometry. This is an evidence browser, not a 3D failure state.',
-  candidate_data_unavailable: 'The country evidence candidate is missing or did not pass its runtime boundary checks. No climate values or assessments are being inferred.',
+  candidate_data_unavailable: 'Country emissions data are unavailable or invalid. No climate values or assessments are being inferred.',
   country_geometry_unavailable: 'The navigational country geometry is unavailable or invalid. The country evidence remains available below.',
   visual_assets_unavailable: 'One or more verified globe images could not be loaded. The country evidence remains available below.',
   library_load_failed: 'The 3D globe library could not be loaded. The country evidence remains available below.',
@@ -1102,7 +1102,7 @@ const GlobeModule = {
       list.replaceChildren();
       summary.textContent = 'Country evidence is unavailable. No climate values or assessments are being inferred.';
       $text('globe-fallback-results', '0 entities available');
-      detail.innerHTML = '<h3>Evidence unavailable</h3><p>The country evidence candidate did not pass its runtime boundary checks. Return to the Foundation and try again later.</p>';
+      detail.innerHTML = '<h3>Evidence unavailable</h3><p>Country emissions data could not be verified for display. Return to the Foundation and try again later.</p>';
       return false;
     }
 

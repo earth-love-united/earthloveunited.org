@@ -56,7 +56,7 @@ assert.ok(index.includes('country-factual-candidate') || data.includes('country-
 assert.ok(manifest.compiler_files.includes('js/country-ranking-compiler.js') && manifest.compiler_files.includes('js/country-climate-view-model.js'));
 assert.ok(!data.includes('pledge-nodes.json') && !globe.includes('pledge-nodes.json'));
 ['Reviewed emissions data', 'Climate performance', 'not reviewed', 'Annual harmonized emissions estimates', 'Source gaps · unnumbered', 'not a performance score', 'excludes LULUCF', 'No emissions estimate · visible and unranked', 'Source &amp; methodology'].forEach(text => assert.ok(globe.includes(text) || index.includes(text), `missing public truth disclosure: ${text}`));
-['CT-42 candidate preview', 'runtime and release not reviewed', 'facts reviewed through CT-10C / CT-10C-R'].forEach(text => assert.ok(!globe.includes(text) && !index.includes(text), `internal governance language leaked into public copy: ${text}`));
+['CT-42 candidate preview', 'runtime and release not reviewed', 'facts reviewed through CT-10C / CT-10C-R', 'did not pass its runtime boundary checks'].forEach(text => assert.ok(!globe.includes(text) && !index.includes(text), `internal governance language leaked into public copy: ${text}`));
 assert.ok(globe.includes('elu-trajectory-point') && globe.includes('elu-chart-axis') && globe.includes('Show chart data'));
 assert.ok(globe.includes("wrap.setAttribute('role', 'dialog')") && globe.includes("wrap.setAttribute('aria-modal', 'true')") && globe.includes('country-card-heading'));
 assert.ok(globe.includes("tt.removeAttribute('aria-modal')") && globe.includes("tt.setAttribute('aria-hidden', 'true')"), 'closed modal must leave the accessibility tree');
