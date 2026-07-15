@@ -28,17 +28,11 @@ echo "🧹 Cleaning $DEPLOY_DIR/ ..."
 rm -rf "$DEPLOY_DIR"
 mkdir -p "$DEPLOY_DIR"
 
-# ── Re-fetch the vendored globe.gl (it's gitignored, so working tree
-#    may or may not have it).
-echo "📦 Ensuring js/vendor/globe.gl.js is present..."
-mkdir -p js/vendor
-if [ ! -f js/vendor/globe.gl.js ]; then
-  curl -fsSL https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js \
-    -o js/vendor/globe.gl.js
-  echo "   ✓ fetched globe.gl@2.46.1"
-else
-  echo "   ✓ already present"
-fi
+# ── Fetch or verify the gitignored globe.gl runtime dependency. The helper
+#    refuses an existing mismatch and installs new bytes by atomic rename only
+#    after the pinned SHA-256 passes.
+echo "📦 Verifying js/vendor/globe.gl.js..."
+"$REPO_ROOT/tools/fetch-globe-vendor.sh"
 
 # ── Copy ONLY what the browser needs.
 #    Order: HTML pages first, then code, then assets, then runtime data.

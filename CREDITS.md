@@ -17,8 +17,12 @@ Interactive 3D globe rendering — the visual centerpiece of the site.
 - **Project:** https://github.com/vasturiano/globe.gl
 - **Author:** Vasco Asturiano ([@vasturiano](https://github.com/vasturiano))
 - **License:** MIT
-- **Version vendored:** 2.46.1
-- **Location in repo:** `js/vendor/globe.gl.js` (gitignored — re-fetch from upstream CDN)
+- **Version:** 2.46.1
+- **Pinned SHA-256:** `2ab6767f47e2be0ac346cd7a5eb55d259ea3da06d479dc22f1820ddd698f496a`
+- **Delivery:** `./tools/fetch-globe-vendor.sh` fetches the exact HTTPS source,
+  verifies the digest, and atomically installs the generated local copy
+- **Generated location:** `js/vendor/globe.gl.js` (gitignored; never commit the
+  1.8 MB generated file)
 
 ### three-globe (textures + geometry)
 The earth surface, bump, specular, and night-sky textures used by globe.gl.
