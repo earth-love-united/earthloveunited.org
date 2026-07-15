@@ -50,6 +50,10 @@ function hash(value) {
   return crypto.createHash('sha256').update(JSON.stringify(stable(value))).digest('hex');
 }
 
+function fileSha256(relative) {
+  return crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, relative))).digest('hex');
+}
+
 function gitClimateStatus() {
   const run = childProcess.spawnSync('git', ['status', '--porcelain=v1', '--', 'data/climate'], { cwd: ROOT, encoding: 'utf8' });
   return run.status === 0 ? run.stdout.split('\n').filter(Boolean).sort() : [];
@@ -113,8 +117,22 @@ function runtimeInput(missing) {
       continue;
     }
     const payload = readJson(factPath);
-    if (Array.isArray(payload)) facts.push(...payload);
-    else if (Array.isArray(payload.facts)) facts.push(...payload.facts);
+    const payloadFacts = Array.isArray(payload) ? payload : Array.isArray(payload.facts) ? payload.facts : [];
+    const artifactSha256 = fileSha256(factPath);
+    facts.push(...payloadFacts.map((fact) => ({
+      ...fact,
+      _artifact_path: factPath,
+      _artifact_sha256: artifactSha256
+    })));
+  }
+  const batchAttestations = [];
+  for (const attestationPath of manifest.batch_attestation_files || []) {
+    if (!isRelativeJson(attestationPath) || !exists(attestationPath)) {
+      missing.push(`batch-attestation:${attestationPath}`);
+      continue;
+    }
+    const payload = readJson(attestationPath);
+    batchAttestations.push({ ...payload, _path: attestationPath, _file_sha256: fileSha256(attestationPath) });
   }
   let sources = [];
   if (isRelativeJson(manifest.source_registry) && exists(manifest.source_registry)) {
@@ -128,6 +146,7 @@ function runtimeInput(missing) {
     release_manifest: isRelativeJson(releaseManifestPath) && exists(releaseManifestPath) ? readJson(releaseManifestPath) : null,
     release_diff: isRelativeJson(releaseDiffPath) && exists(releaseDiffPath) ? readJson(releaseDiffPath) : null,
     facts,
+    batch_attestations: batchAttestations,
     sources,
     canonical_reason_codes: readJson('data/climate/schemas/enums.json').reason_codes,
     embedded_reason_enums: embeddedEnums(),
