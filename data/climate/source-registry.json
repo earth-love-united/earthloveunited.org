@@ -225,6 +225,35 @@
       "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
     },
     {
+      "id": "primap-hist-2.6.1-final",
+      "publisher": "Potsdam Institute for Climate Impact Research / PRIMAP team",
+      "title": "The PRIMAP-hist national historical emissions time series (1750–2023)",
+      "version": "2.6.1 final, 13 March 2025",
+      "evidence_plane": "harmonized",
+      "domains": ["economy_wide_ghg"],
+      "primary": false,
+      "source_url": "https://doi.org/10.5281/zenodo.15016289",
+      "retrieval_url": "https://zenodo.org/records/15016289/files/Guetschow_et_al_2025-PRIMAP-hist_v2.6.1_final_13-Mar-2025.csv?download=1",
+      "cadence": {"frequency": "frozen_pilot", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-4.0",
+        "status": "confirmed",
+        "terms_url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidence_url": "https://zenodo.org/records/15016289",
+        "summary": "The versioned v2.6.1 release and its data description explicitly make the dataset available under CC BY 4.0. The later v2.7 licence does not retroactively replace this frozen release's terms.",
+        "attribution": "Gütschow, Busch and Pflüger (2025), PRIMAP-hist v2.6.1 final, https://doi.org/10.5281/zenodo.15016289, retrieved 2026-07-15. Earth Love United transformations and selected scenario, gases, sectors, GWP and LULUCF treatment must be identified.",
+        "restrictions": ["Credit the dataset authors and DOI", "Identify transformations", "Do not imply v2.6.1 is the latest release", "Keep HISTCR and HISTTP scenarios distinct"]
+      },
+      "artifact": {
+        "format": "csv",
+        "sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9"
+      },
+      "limitations": ["Frozen at 2023 rather than the v2.7 2024 endpoint", "Harmonized estimates are not a substitute for official Party inventories", "LULUCF requires separate treatment and additional caution"],
+      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
+      "approval": {"state": "approved", "decision": "Approved as the openly licensed frozen economy-wide GHG pilot while v2.7 remains separately gated by its non-commercial share-alike terms.", "required_action": "Pin the reviewed artifact checksum, publish full attribution, and re-review before changing release or scenario."},
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
       "id": "primap-hist-2.7-final",
       "publisher": "Potsdam Institute for Climate Impact Research / PRIMAP team",
       "title": "The PRIMAP-hist national historical emissions time series (1750–2024)",

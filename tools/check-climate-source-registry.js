@@ -245,6 +245,16 @@ function validateSource(source, index, configuredDomains, errors) {
     }
   }
 
+  if (source.id === 'primap-hist-2.6.1-final') {
+    if (source.version !== '2.6.1 final, 13 March 2025') errors.push(`${source.id} must remain on the frozen reviewed release.`);
+    if (source.licence?.identifier !== 'CC-BY-4.0' || source.approval?.state !== 'approved') {
+      errors.push(`${source.id} must retain its reviewed CC BY 4.0 approval.`);
+    }
+    if (source.artifact?.sha256 !== '7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9') {
+      errors.push(`${source.id} does not match the downloaded Zenodo artifact.`);
+    }
+  }
+
   if (source.id === 'legacy-pledge-nodes-climate-watch-wri-family-2025-07-18') {
     if (source.approval?.state !== 'pending' || source.licence?.status !== 'uncertain') {
       errors.push(`${source.id} must remain pending with uncertain mixed-source terms.`);
