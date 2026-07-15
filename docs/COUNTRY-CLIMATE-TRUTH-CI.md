@@ -154,8 +154,13 @@ external source CSV. They are run without `--committed-only`, followed by
 `tools/check-primap-factual-display-review.js /path/to/PRIMAP.csv`, when that
 reviewed raw input is available.
 
-The current asset manifest also keeps runtime image rights and the composite
-bundle notice review explicitly `not_reviewed`. Production readiness therefore
+The current asset manifest pins a byte-for-byte NASA Earth Observatory Black
+Marble 2012 JPEG and a deterministic repository-authored synthetic SVG
+starfield, including exact provenance, dimensions, hashes, acknowledgement,
+and no-endorsement limits. The historical surface and synthetic background are
+decorative and are not current performance or astronomical evidence. Runtime
+rights and the composite bundle notice review remain explicitly `not_reviewed`.
+Production readiness therefore
 remains blocked even if later climate evidence becomes complete. A public
 candidate preview must not be published until the exact readable and machine
 third-party notices are deployed and independently reviewed.

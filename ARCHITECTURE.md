@@ -160,8 +160,12 @@ data are noncritical; candidate failure blocks 3D rendering and exposes no
 inferred climate values.
 
 Before loading globe.gl, `GlobeModule.prepare()` must preload and validate the
-local 177-feature GeoJSON plus all four local globe images. It validates exact
-image dimensions and strong Polygon/MultiPolygon structure. The 28 approximate
+local 177-feature GeoJSON plus all four local globe visuals. The dark surface is
+a byte-for-byte 3600×1800 NASA Earth Observatory Black Marble 2012 JPEG; the
+4096×2048 sky is a deterministic repository-authored SVG made only from safe,
+seam-twinned geometric primitives and explicitly is not astronomical evidence.
+Preparation validates exact image dimensions and strong Polygon/MultiPolygon
+structure. The 28 approximate
 small-state points are embedded navigation affordances pinned to a hashed
 manual source; disputed subfeatures and non-registry entities are excluded.
 The interactive candidate deck must resolve exactly 201 registry entities

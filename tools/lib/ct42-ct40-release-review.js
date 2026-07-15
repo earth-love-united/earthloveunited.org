@@ -33,7 +33,7 @@ const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
   'assets/globe/runtime/manifest.json',
   'assets/globe/runtime/ne_110m_admin_0_countries.geojson',
   'assets/globe/runtime/earth-night.jpg',
-  'assets/globe/runtime/night-sky.png',
+  'assets/globe/runtime/night-sky.svg',
   'assets/globe/runtime/earth-blue-marble.jpg',
   'assets/globe/runtime/earth-topology.png',
 ]);

@@ -298,9 +298,7 @@ body.globe-fallback-active #globe-back-btn {
   overflow: auto;
   overscroll-behavior: contain;
   padding: 26px clamp(12px, 3vw, 38px) 96px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(78, 205, 196, .11), transparent 36%),
-    var(--bg);
+  background: var(--bg);
   color: var(--text);
   pointer-events: auto;
 }

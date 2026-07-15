@@ -1,20 +1,20 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Candidate cache (v29) — pin the denied CT-42 preview and localized globe assets.
+ * Candidate cache (v30) — pin the denied CT-42 preview and remediated globe assets.
  */
-const CACHE_NAME = 'elu-v29-ct42-runtime-assets';
+const CACHE_NAME = 'elu-v30-texture-provenance';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v13',
+  '/css/globe-system.css?v=v14',
   '/assets/globe/runtime/manifest.json',
   '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75',
-  '/assets/globe/runtime/earth-night.jpg?v=355ab23dd132',
-  '/assets/globe/runtime/night-sky.png?v=7e1d5e780301',
+  '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3',
+  '/assets/globe/runtime/night-sky.svg?v=233713fa6ed8',
   '/assets/globe/runtime/earth-blue-marble.jpg?v=228deba2e4b6',
   '/assets/globe/runtime/earth-topology.png?v=839b12da2e4d',
   // JS — v1 core
@@ -25,7 +25,7 @@ const STATIC_ASSETS = [
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v2',
-  '/js/globe.js?v=v7',
+  '/js/globe.js?v=v8',
   '/js/carbon-clock.js?v=v1',
   '/js/app.js?v=v3',
   '/js/vendor/globe.gl.js',

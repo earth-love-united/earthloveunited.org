@@ -128,6 +128,18 @@
       "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
     },
     {
+      "id": "starfield-generator-is-runtime-affecting",
+      "changed_paths": ["tools/authoring/generate-globe-starfield.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "nasa-fetcher-is-runtime-affecting",
+      "changed_paths": ["tools/authoring/fetch-nasa-black-marble.sh"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
       "id": "windows-separator-cannot-bypass-runtime-path",
       "changed_paths": ["data\\climate\\runtime\\country-factual-candidate.json"],
       "candidate": "$base_denied_candidate",

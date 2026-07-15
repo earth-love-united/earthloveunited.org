@@ -29,6 +29,8 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'tools/check-globe-runtime-assets.js',
   'tools/lib/globe-runtime-assets.js',
   'tools/fixtures/globe-runtime-assets.json',
+  'tools/authoring/generate-globe-starfield.js',
+  'tools/authoring/fetch-nasa-black-marble.sh',
   'tools/climate-truth-ci.js',
   'tools/lib/country-accessibility-model.js',
   'tools/lib/country-card-evidence-model.js',

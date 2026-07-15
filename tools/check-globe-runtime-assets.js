@@ -8,6 +8,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const vm = require('node:vm');
+const { inspectCanonicalSvg } = require('./authoring/generate-globe-starfield');
 const {
   EXPECTED_ASSETS,
   EXPECTED_INDEX_SW_KEYS,
@@ -51,6 +52,8 @@ const PATHS = Object.freeze({
   credits: 'CREDITS.md',
   architecture: 'ARCHITECTURE.md',
   codeowners: '.github/CODEOWNERS',
+  starfield_generator: 'tools/authoring/generate-globe-starfield.js',
+  nasa_fetcher: 'tools/authoring/fetch-nasa-black-marble.sh',
 });
 
 function absolute(root, relative) { return path.join(root, relative); }
@@ -111,6 +114,11 @@ function assetRecord(root, expected) {
   const bytes = fs.readFileSync(destination);
   const record = { exists: true, regular_file: true, bytes: bytes.length, sha256: sha256(bytes) };
   if (expected.kind === 'image') {
+    if (expected.path.endsWith('.svg')) {
+      const source = bytes.toString('utf8');
+      const svgSafety = inspectCanonicalSvg(bytes);
+      return { ...record, width: svgSafety.width, height: svgSafety.height, svg_source: source, svg_safety: svgSafety };
+    }
     const dimensions = expected.path.endsWith('.png') ? pngDimensions(bytes) : jpegDimensions(bytes);
     return { ...record, width: dimensions?.width ?? null, height: dimensions?.height ?? null };
   }
@@ -354,6 +362,19 @@ function applyMutation(input, mutation) {
     input.assets[mutation.asset][mutation.field] = structuredClone(mutation.value);
     return;
   }
+  if (mutation.operation === 'asset-text-replace') {
+    const record = input.assets[mutation.asset];
+    assert.equal(typeof record?.svg_source, 'string', `${mutation.id}: SVG asset source missing`);
+    assert.ok(record.svg_source.includes(mutation.from), `${mutation.id}: SVG replacement anchor missing`);
+    record.svg_source = record.svg_source.replace(mutation.from, mutation.to);
+    const bytes = Buffer.from(record.svg_source, 'utf8');
+    record.bytes = bytes.length;
+    record.sha256 = sha256(bytes);
+    record.svg_safety = inspectCanonicalSvg(bytes);
+    record.width = record.svg_safety.width;
+    record.height = record.svg_safety.height;
+    return;
+  }
   if (mutation.operation === 'set') {
     set(input, mutation.path, structuredClone(mutation.value));
     return;
@@ -396,7 +417,7 @@ function applyMutation(input, mutation) {
 
 async function runFixtures(input) {
   const fixture = json(ROOT, FIXTURE_PATH);
-  assert.equal(fixture._meta.policy_version, '1.0.0', 'CT-45 fixture/policy version drift');
+  assert.equal(fixture._meta.policy_version, '1.1.0', 'CT-45 fixture/policy version drift');
   let rejected = 0;
   for (const mutation of fixture.mutations) {
     const changed = structuredClone(input);
@@ -409,6 +430,70 @@ async function runFixtures(input) {
     rejected += 1;
   }
   return rejected;
+}
+
+function runSvgSafetySelfTests() {
+  const canonical = read(ROOT, 'assets/globe/runtime/night-sky.svg');
+  const root = '<svg xmlns="http://www.w3.org/2000/svg" width="4096" height="2048" viewBox="0 0 4096 2048">';
+  const background = '<rect x="0" y="0" width="4096" height="2048" fill="#02040a"/>';
+  const firstCircle = canonical.match(/^<circle[^\n]+$/m)?.[0];
+  const seamCircle = canonical.split('\n').find(line => {
+    const match = line.match(/^<circle cx="(-?\d+)"/);
+    return match && (Number(match[1]) < 0 || Number(match[1]) >= 4096);
+  });
+  assert.ok(firstCircle && seamCircle, 'canonical SVG self-test anchors missing');
+
+  const afterRoot = payload => canonical.replace(root, `${root}\n${payload}`);
+  const afterBackground = payload => canonical.replace(background, `${background}\n${payload}`);
+  const rootAttribute = attribute => canonical.replace(' viewBox="0 0 4096 2048">', ` viewBox="0 0 4096 2048" ${attribute}>`);
+  const cases = [
+    { id: 'doctype', expected: 'active_or_noncanonical_declaration', source: `<!DOCTYPE svg>\n${canonical}` },
+    { id: 'entity', expected: 'active_or_noncanonical_declaration', source: `<!ENTITY star "x">\n${canonical}` },
+    { id: 'xml-declaration', expected: 'active_or_noncanonical_declaration', source: `<?xml version="1.0"?>\n${canonical}` },
+    { id: 'cdata', expected: 'active_or_noncanonical_declaration', source: afterRoot('<![CDATA[unreviewed]]>') },
+    { id: 'comment', expected: 'active_or_noncanonical_declaration', source: afterRoot('<!-- unreviewed -->') },
+    { id: 'processing-instruction', expected: 'active_or_noncanonical_declaration', source: afterRoot('<?elu unreviewed?>') },
+    { id: 'style-element', expected: 'forbidden_element', source: afterBackground('<style>circle{fill:red}</style>') },
+    { id: 'use-element', expected: 'forbidden_element', source: afterBackground('<use href="#star"/>') },
+    { id: 'anchor-element', expected: 'forbidden_element', source: afterBackground('<a href="https://example.invalid/"></a>') },
+    { id: 'image-element', expected: 'forbidden_element', source: afterBackground('<image href="https://example.invalid/sky.png"/>') },
+    { id: 'script-element', expected: 'forbidden_element', source: afterBackground('<script>alert(1)</script>') },
+    { id: 'foreign-object', expected: 'forbidden_element', source: afterBackground('<foreignObject width="1" height="1"></foreignObject>') },
+    { id: 'animate-element', expected: 'forbidden_element', source: afterBackground('<animate attributeName="opacity"/>') },
+    { id: 'filter-element', expected: 'forbidden_element', source: afterBackground('<filter></filter>') },
+    { id: 'mask-element', expected: 'forbidden_element', source: afterBackground('<mask></mask>') },
+    { id: 'pattern-element', expected: 'forbidden_element', source: afterBackground('<pattern></pattern>') },
+    { id: 'gradient-element', expected: 'forbidden_element', source: afterBackground('<linearGradient></linearGradient>') },
+    { id: 'filter-primitive', expected: 'forbidden_element', source: afterBackground('<feGaussianBlur stdDeviation="1"/>') },
+    { id: 'href-attribute', expected: 'forbidden_reference_or_attribute', source: rootAttribute('href="#star"') },
+    { id: 'xlink-attribute', expected: 'forbidden_reference_or_attribute', source: rootAttribute('xlink:href="#star"') },
+    { id: 'event-attribute', expected: 'forbidden_reference_or_attribute', source: rootAttribute('onload="alert(1)"') },
+    { id: 'style-attribute', expected: 'forbidden_reference_or_attribute', source: rootAttribute('style="opacity:1"') },
+    { id: 'class-attribute', expected: 'forbidden_reference_or_attribute', source: rootAttribute('class="sky"') },
+    { id: 'id-attribute', expected: 'forbidden_reference_or_attribute', source: rootAttribute('id="sky"') },
+    { id: 'transform-attribute', expected: 'forbidden_reference_or_attribute', source: rootAttribute('transform="scale(1)"') },
+    { id: 'url-reference', expected: 'forbidden_reference_or_attribute', source: canonical.replace('fill="#02040a"', 'fill="url(#paint)"') },
+    { id: 'data-reference', expected: 'forbidden_reference_or_attribute', source: rootAttribute('data-source="data:image/png;base64,AA=="') },
+    { id: 'http-reference', expected: 'forbidden_reference_or_attribute', source: rootAttribute('source="https://example.invalid/sky"') },
+    { id: 'wrong-root-dimensions', expected: 'root_dimensions_or_attributes', source: canonical.replace('width="4096"', 'width="4000"') },
+    { id: 'wrong-nesting', expected: 'generated_bytes_drift', source: canonical.replace(firstCircle, `<g>\n${firstCircle}\n</g>`) },
+    { id: 'coordinate-range', expected: 'circle_sequence:', source: canonical.replace(firstCircle, firstCircle.replace(/cx="-?\d+"/, 'cx="99999"')) },
+    { id: 'seam-twin-drift', expected: 'circle_sequence:', source: canonical.replace(seamCircle, seamCircle.replace(/cx="(-?\d+)"/, (_, value) => `cx="${Number(value) + 1}"`)) },
+    { id: 'noncanonical-line-endings', expected: 'noncanonical_line_endings', source: canonical.replaceAll('\n', '\r\n') },
+    { id: 'control-character', expected: 'control_character', source: canonical.replace(background, `${background}\u0001`) },
+  ];
+
+  assert.ok(cases.length >= 20, 'SVG safety matrix must retain at least 20 hostile payload classes');
+  assert.equal(new Set(cases.map(test => test.id)).size, cases.length, 'SVG safety payload ids must be unique');
+  assert.equal(inspectCanonicalSvg(Buffer.from(canonical, 'utf8')).ok, true, 'canonical SVG must pass its direct parser self-test');
+  cases.forEach(test => {
+    assert.notEqual(test.source, canonical, `${test.id}: hostile SVG payload did not mutate source`);
+    const inspection = inspectCanonicalSvg(Buffer.from(test.source, 'utf8'));
+    assert.equal(inspection.ok, false, `${test.id}: hostile SVG payload was accepted`);
+    assert.ok(inspection.failures.some(failure => failure === test.expected || failure.startsWith(test.expected)),
+      `${test.id}: expected parser failure ${test.expected}, got ${inspection.failures.join(', ')}`);
+  });
+  return cases.length;
 }
 
 function assertSafeStagedPath(root, relative, expectedType = 'file') {
@@ -484,6 +569,7 @@ function verifyStaged(root) {
 }
 
 async function main() {
+  const svgSafetyPayloads = runSvgSafetySelfTests();
   if (STAGED_INDEX !== -1) {
     const requested = process.argv[STAGED_INDEX + 1];
     if (!requested) throw new Error('--staged requires a staged directory');
@@ -491,7 +577,7 @@ async function main() {
     const relative = path.relative(ROOT, stagedRoot);
     assert.ok(relative && !relative.startsWith('..') && !path.isAbsolute(relative), '--staged must be a directory inside the repository');
     const result = verifyStaged(stagedRoot);
-    process.stdout.write(`CT-45 staged globe runtime assets: PASS (${result.assets} exact files; release authority ${result.releaseAuthority})\n`);
+    process.stdout.write(`CT-45 staged globe runtime assets: PASS (${result.assets} exact files; ${svgSafetyPayloads} hostile SVG payload classes rejected; release authority ${result.releaseAuthority})\n`);
     return;
   }
   const input = await loadInput();
@@ -499,7 +585,7 @@ async function main() {
   const rejected = await runFixtures(input);
   const stagedSymlinkCases = runStagedSymlinkSelfTests();
   if (JSON_ONLY) {
-    process.stdout.write(`${JSON.stringify({ ...report, adversarial_mutations_rejected: rejected, staged_symlink_cases_rejected: stagedSymlinkCases }, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify({ ...report, adversarial_mutations_rejected: rejected, svg_safety_payloads_rejected: svgSafetyPayloads, staged_symlink_cases_rejected: stagedSymlinkCases }, null, 2)}\n`);
   } else {
     process.stdout.write([
       `CT-45 globe runtime assets: ${report.status.toUpperCase()}`,
@@ -507,6 +593,7 @@ async function main() {
       `  manifest SHA-256: ${input.manifest_sha256}`,
       `  policy checks: ${report.checks.filter(item => item.pass).length}/${report.checks.length}`,
       `  adversarial mutations rejected: ${rejected}`,
+      `  hostile SVG payload classes rejected: ${svgSafetyPayloads}`,
       `  staged symlink cases rejected: ${stagedSymlinkCases}`,
       '  rights / notices review: not reviewed',
       '  production use / release authority: false',
@@ -521,4 +608,4 @@ if (require.main === module) main().catch(error => {
   process.exitCode = 1;
 });
 
-module.exports = { assetRecord, assertSafeStagedPath, inspectServiceWorker, loadInput, parseIndexRuntimeRequests, parseNavigationPoints, parseRuntimeConfig, verifyStaged };
+module.exports = { assetRecord, assertSafeStagedPath, inspectServiceWorker, loadInput, parseIndexRuntimeRequests, parseNavigationPoints, parseRuntimeConfig, runSvgSafetySelfTests, verifyStaged };

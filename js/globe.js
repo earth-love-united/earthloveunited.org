@@ -18,8 +18,8 @@ const EXPECTED_INTERACTIVE_FACTUAL_COUNT = 194;
 const EXPECTED_INTERACTIVE_GAP_COUNT = 7;
 const GLOBE_VISUAL_ASSET_TIMEOUT_MS = 8000;
 const GLOBE_VISUAL_ASSETS = Object.freeze({
-  darkSurface: Object.freeze({ url: '/assets/globe/runtime/earth-night.jpg?v=355ab23dd132', width: 4096, height: 2048 }),
-  darkBackground: Object.freeze({ url: '/assets/globe/runtime/night-sky.png?v=7e1d5e780301', width: 4096, height: 2048 }),
+  darkSurface: Object.freeze({ url: '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3', width: 3600, height: 1800 }),
+  darkBackground: Object.freeze({ url: '/assets/globe/runtime/night-sky.svg?v=233713fa6ed8', width: 4096, height: 2048 }),
   lightSurface: Object.freeze({ url: '/assets/globe/runtime/earth-blue-marble.jpg?v=228deba2e4b6', width: 4096, height: 2048 }),
   bump: Object.freeze({ url: '/assets/globe/runtime/earth-topology.png?v=839b12da2e4d', width: 2048, height: 1024 }),
 });
@@ -2340,6 +2340,36 @@ const GlobeModule = {
       rendererCanvasCount: $('globeViz')?.querySelectorAll('canvas').length || 0,
     };
   },
+
+  getRuntimeTextureState() {
+    const describe = texture => {
+      const image = texture?.image;
+      return image ? {
+        src: image.currentSrc || image.src || '',
+        width: image.naturalWidth || image.width || 0,
+        height: image.naturalHeight || image.height || 0,
+        flipY: texture.flipY === true,
+      } : null;
+    };
+    let sky = null;
+    try {
+      this.world?.scene?.().traverse(object => {
+        const materials = Array.isArray(object?.material) ? object.material : [object?.material];
+        materials.filter(Boolean).forEach(material => {
+          const candidate = describe(material.map);
+          if (candidate?.src.includes('/assets/globe/runtime/night-sky.svg')) {
+            sky = { ...candidate, materialSide: material.side, mesh: object.isMesh === true };
+          }
+        });
+      });
+    } catch (error) {
+      reportWarn('GlobeModule', 'Unable to inspect live background texture: ' + (error?.message || 'unknown error'));
+    }
+    return {
+      surface: describe(this.world?.globeMaterial?.()?.map),
+      sky,
+    };
+  },
 };
 
 // ═══════════════════════════════════════════════
@@ -2487,7 +2517,7 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['prepare', 'init', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
+    provides: ['prepare', 'init', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState'],
     requires: ['Data'],
     emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown'],
   });

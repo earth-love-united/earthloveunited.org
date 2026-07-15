@@ -80,6 +80,8 @@
   img-src 'self' data:;
   font-src 'self' https://fonts.gstatic.com;
   frame-src https://www.youtube-nocookie.com;
+  object-src 'none';
+  base-uri 'self';
 ">
 <title>Earth Love United | Global Sustainability Nonprofit</title>
 
@@ -391,7 +393,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v13">
+<link rel="stylesheet" href="css/globe-system.css?v=v14">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -592,6 +594,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <span role="listitem"><i style="background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1"></i> Neutral pattern · source gap, visible and unranked</span>
     </div>
     <p class="data-note">Map boundaries use generalized Natural Earth 1:110m geometry for navigation only. Twenty-eight small states absent from that dataset use manually curated approximate navigation points, not boundaries or precise centroids. Disputed subfeatures including Northern Cyprus and Somaliland are excluded from the assessed overlay and never inherit a parent entity’s evidence. None of these representations expresses a position on sovereignty or legal boundaries or assesses climate performance.</p>
+    <p class="data-note">Visual context: the dark globe surface is the byte-for-byte <a href="https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/" target="_blank" rel="noopener">NASA Earth Observatory Black Marble 2012</a> composite (image by Robert Simmon; Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center). NASA is acknowledged as the source and no endorsement is implied. This historical surface is decorative context, not current emissions, commitments, delivery, performance, or scoring evidence. The surrounding starfield is a deterministic Earth Love United synthetic illustration—not astronomical data or observation.</p>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Evidence Review</div>
@@ -784,6 +787,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <a href="#tribute">Tribute</a>
       <a href="#contact">Support &amp; Contact</a>
       <a href="https://github.com/earth-love-united/earthloveunited.org" target="_blank" rel="noopener">Source</a>
+      <a href="https://github.com/earth-love-united/earthloveunited.org/blob/main/CREDITS.md" target="_blank" rel="noopener">Credits</a>
     </div>
     <div class="footer-copy">© 2026 Earth Love United Foundation · earthloveunited.org</div>
   </div>
@@ -799,7 +803,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v2"></script>
-<script src="js/globe.js?v=v7"></script>
+<script src="js/globe.js?v=v8"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/app.js?v=v3"></script>
 
@@ -946,7 +950,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=29-ct42-runtime-assets', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=30-texture-provenance', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

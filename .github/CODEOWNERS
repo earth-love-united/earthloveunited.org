@@ -59,6 +59,8 @@
 /tools/check-globe-runtime-assets.js  @earth-love-united/maintainers
 /tools/lib/globe-runtime-assets.js    @earth-love-united/maintainers
 /tools/fixtures/globe-runtime-assets.json @earth-love-united/maintainers
+/tools/authoring/generate-globe-starfield.js @earth-love-united/maintainers
+/tools/authoring/fetch-nasa-black-marble.sh @earth-love-united/maintainers
 /tools/build-deploy.sh                @earth-love-united/maintainers
 /tools/check-climate-production-readiness.js @earth-love-united/maintainers
 /tools/check-climate-production-readiness-policy.js @earth-love-united/maintainers

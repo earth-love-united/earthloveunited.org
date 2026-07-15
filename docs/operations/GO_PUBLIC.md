@@ -252,6 +252,12 @@ other production input is unresolved. Use
 `CANDIDATE-NOT-FOR-PUBLICATION.txt` marker and must not be uploaded or shared as
 a public preview.
 
+CT-45 now pins the dark surface to the byte-for-byte NASA Earth Observatory
+Black Marble 2012 JPEG and the sky to a deterministic repository-authored SVG.
+This closes the previous origin ambiguity and records NASA acknowledgement and
+no-endorsement terms, but it is provenance remediation only. Human runtime
+rights review, production approval, and release authority remain false.
+
 The existing crypto-token site on `elu-website.pages.dev` is untouched.
 
 ---
