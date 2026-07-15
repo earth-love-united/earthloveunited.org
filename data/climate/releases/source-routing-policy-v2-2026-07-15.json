@@ -1,0 +1,293 @@
+{
+  "schema_version": "1.0.0",
+  "policy_id": "ct-16-source-routing-policy-v2-2026-07-15",
+  "routing_model_version": "2.0.0",
+  "created_at": "2026-07-15T14:00:00Z",
+  "status": "blocked_pending_governance",
+  "purpose": "Versioned successor to CT-14 flat source-family routing; separates primary, conditional-component, and corroborating evidence roles without granting rights or release authority.",
+  "immutable_inputs": {
+    "source_registry": {
+      "path": "data/climate/source-registry.json",
+      "sha256": "ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d"
+    },
+    "ct14_immutable_snapshot": {
+      "path": "data/climate/releases/top20-primary-source-gap-queue-2026-07-15.json",
+      "sha256": "fb1bbc050b7ba791893b7751dd4f916ecd01885557b272cb025f8c0e4b64452d"
+    },
+    "ct15_immutable_snapshot": {
+      "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
+      "sha256": "6b1aeb481ae71a6bd12c38febcc933363564062f6913a1dda6b939bb30f7bd43"
+    }
+  },
+  "governance_boundary": {
+    "source_registry_modified": false,
+    "rights_decisions_made": false,
+    "ct40_decision_modified": false,
+    "normalized_facts_authorized": false,
+    "scoring_authorized": false,
+    "release_authority": false,
+    "production_runtime_release": false
+  },
+  "route_rules": {
+    "official_inventory": {
+      "required_primary_source_roles": [
+        "primary_value_source",
+        "conditional_primary_component"
+      ],
+      "corroboration_never_satisfies_primary": true,
+      "btr_family_authorization_forbidden": true,
+      "btr_component_identity_and_governance_required": true,
+      "ter_primary_values_forbidden": true
+    },
+    "ndc_and_target": {
+      "required_source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+      "official_inventory_use_forbidden": true,
+      "active_or_reviewed_absence_status_required": true
+    }
+  },
+  "routes": [
+    {
+      "route_id": "official-inventory:nir-crt:primary",
+      "evidence_role": "official_inventory",
+      "source_registry_id": "unfccc-nir-crt-2026-cycle",
+      "source_role": "primary_value_source",
+      "required_registry_domain": "official_inventory",
+      "structural_sufficiency": "primary_only_after_all_gates",
+      "family_level_inventory_authorization": false,
+      "explicit_component": {
+        "required": false,
+        "permitted_types": [],
+        "component_id": null,
+        "document_checksum_sha256": null
+      },
+      "prohibited_evidence_roles": [],
+      "current_gate": {
+        "state": "blocked_pending_rights_and_review",
+        "registry_domain_present": true,
+        "registry_approval_state": "pending",
+        "registry_redistribution_state": "metadata_only",
+        "registry_normalized_values_allowed": false,
+        "governance_decision_id": null,
+        "rights_decision_id": null,
+        "independent_review_id": null,
+        "normalized_fact_eligible": false,
+        "scoring_eligible": false
+      },
+      "reason_codes": [
+        "document_checksum_missing",
+        "independent_review_missing",
+        "normalized_values_not_authorized",
+        "scoring_not_authorized",
+        "source_governance_pending",
+        "source_rights_pending"
+      ]
+    },
+    {
+      "route_id": "official-inventory:btr-component:conditional-primary",
+      "evidence_role": "official_inventory",
+      "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+      "source_role": "conditional_primary_component",
+      "required_registry_domain": "official_inventory",
+      "structural_sufficiency": "primary_only_for_explicit_governance_approved_component",
+      "family_level_inventory_authorization": false,
+      "explicit_component": {
+        "required": true,
+        "permitted_types": [
+          "ctf_inventory_table",
+          "inventory_chapter",
+          "national_inventory_document"
+        ],
+        "component_id": null,
+        "document_checksum_sha256": null
+      },
+      "prohibited_evidence_roles": [],
+      "current_gate": {
+        "state": "blocked_role_domain_mismatch",
+        "registry_domain_present": false,
+        "registry_approval_state": "pending",
+        "registry_redistribution_state": "metadata_only",
+        "registry_normalized_values_allowed": false,
+        "governance_decision_id": null,
+        "rights_decision_id": null,
+        "independent_review_id": null,
+        "normalized_fact_eligible": false,
+        "scoring_eligible": false
+      },
+      "reason_codes": [
+        "document_checksum_missing",
+        "explicit_component_identity_missing",
+        "independent_review_missing",
+        "normalized_values_not_authorized",
+        "scoring_not_authorized",
+        "source_governance_pending",
+        "source_rights_pending",
+        "source_role_domain_mismatch"
+      ]
+    },
+    {
+      "route_id": "official-inventory:ter:corroboration-only",
+      "evidence_role": "official_inventory_corroboration",
+      "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+      "source_role": "corroboration_only",
+      "required_registry_domain": "official_inventory",
+      "structural_sufficiency": "never_sufficient_as_primary_value_source",
+      "family_level_inventory_authorization": false,
+      "explicit_component": {
+        "required": false,
+        "permitted_types": [
+          "technical_expert_review_report"
+        ],
+        "component_id": null,
+        "document_checksum_sha256": null
+      },
+      "prohibited_evidence_roles": [],
+      "current_gate": {
+        "state": "blocked_normalized_findings_pending",
+        "registry_domain_present": true,
+        "registry_approval_state": "pending",
+        "registry_redistribution_state": "metadata_only",
+        "registry_normalized_values_allowed": false,
+        "governance_decision_id": null,
+        "rights_decision_id": null,
+        "independent_review_id": null,
+        "normalized_fact_eligible": false,
+        "scoring_eligible": false
+      },
+      "reason_codes": [
+        "corroboration_not_primary",
+        "independent_review_missing",
+        "normalized_values_not_authorized",
+        "primary_value_source_missing",
+        "scoring_not_authorized",
+        "source_governance_pending",
+        "source_rights_pending"
+      ]
+    },
+    {
+      "route_id": "active-ndc:ndc-registry:primary-document",
+      "evidence_role": "active_ndc",
+      "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+      "source_role": "primary_document_source",
+      "required_registry_domain": "ndc_target",
+      "structural_sufficiency": "primary_only_after_all_gates",
+      "family_level_inventory_authorization": false,
+      "explicit_component": {
+        "required": true,
+        "permitted_types": [
+          "active_party_ndc"
+        ],
+        "component_id": null,
+        "document_checksum_sha256": null
+      },
+      "prohibited_evidence_roles": [
+        "official_inventory"
+      ],
+      "current_gate": {
+        "state": "blocked_pending_rights_and_review",
+        "registry_domain_present": true,
+        "registry_approval_state": "pending",
+        "registry_redistribution_state": "metadata_only",
+        "registry_normalized_values_allowed": false,
+        "governance_decision_id": null,
+        "rights_decision_id": null,
+        "independent_review_id": null,
+        "normalized_fact_eligible": false,
+        "scoring_eligible": false
+      },
+      "reason_codes": [
+        "document_checksum_missing",
+        "independent_review_missing",
+        "normalized_values_not_authorized",
+        "scoring_not_authorized",
+        "source_governance_pending",
+        "source_rights_pending"
+      ]
+    },
+    {
+      "route_id": "target-methodology:ndc-registry:primary-document",
+      "evidence_role": "target_methodology",
+      "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+      "source_role": "primary_document_source",
+      "required_registry_domain": "ndc_target",
+      "structural_sufficiency": "primary_only_after_all_gates",
+      "family_level_inventory_authorization": false,
+      "explicit_component": {
+        "required": true,
+        "permitted_types": [
+          "active_party_ndc",
+          "ictu_or_methodology_annex"
+        ],
+        "component_id": null,
+        "document_checksum_sha256": null
+      },
+      "prohibited_evidence_roles": [
+        "official_inventory"
+      ],
+      "current_gate": {
+        "state": "blocked_pending_rights_and_review",
+        "registry_domain_present": true,
+        "registry_approval_state": "pending",
+        "registry_redistribution_state": "metadata_only",
+        "registry_normalized_values_allowed": false,
+        "governance_decision_id": null,
+        "rights_decision_id": null,
+        "independent_review_id": null,
+        "normalized_fact_eligible": false,
+        "scoring_eligible": false
+      },
+      "reason_codes": [
+        "document_checksum_missing",
+        "independent_review_missing",
+        "normalized_values_not_authorized",
+        "scoring_not_authorized",
+        "source_governance_pending",
+        "source_rights_pending"
+      ]
+    }
+  ],
+  "reason_vocabulary": [
+    {
+      "code": "source_rights_pending"
+    },
+    {
+      "code": "source_governance_pending"
+    },
+    {
+      "code": "source_role_domain_mismatch"
+    },
+    {
+      "code": "explicit_component_identity_missing"
+    },
+    {
+      "code": "document_checksum_missing"
+    },
+    {
+      "code": "independent_review_missing"
+    },
+    {
+      "code": "primary_value_source_missing"
+    },
+    {
+      "code": "corroboration_not_primary"
+    },
+    {
+      "code": "normalized_values_not_authorized"
+    },
+    {
+      "code": "scoring_not_authorized"
+    },
+    {
+      "code": "release_not_authorized"
+    }
+  ],
+  "prohibited_outputs": [
+    "source licence approval",
+    "normalized official inventory facts",
+    "normalized target facts",
+    "commitment or performance claims",
+    "climate scoring",
+    "production runtime facts",
+    "release authority"
+  ],
+  "calculation_hash": "8c494f1de6bc3d62dcf2629942c38c4c3dae9073669abd44df4e53bb11326b53"
+}
