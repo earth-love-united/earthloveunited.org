@@ -14,6 +14,7 @@ const candidate = {
   javascript_syntax_passed: true,
   ct40: { decision: 'deny', eligible: false, release_authority: false, reason_codes: ['evidence_insufficient'] },
   top20_queue: { coverage: { ranked_entities: 20, release_eligible_entities: 0 } },
+  evidence_readiness: { status: 'blocked', release_authority: false, required_next_compiler: { status: 'not_implemented' } },
   artifacts: { runtime_manifest: false, release_diff: false, allow_manifest: false, rollback_proof: false },
   truth_ci: { status: 'incomplete', missing_required_components: ['reviewed-release-diff', 'reviewed-runtime-manifest'] },
 };
@@ -48,6 +49,7 @@ const candidateMutations = [
   input => { input.ct40.reason_codes = []; },
   input => { input.top20_queue.coverage.ranked_entities = 19; },
   input => { input.top20_queue.coverage.release_eligible_entities = 1; },
+  input => { input.evidence_readiness.release_authority = true; },
   input => { input.artifacts.runtime_manifest = true; },
   input => { input.artifacts.release_diff = true; },
   input => { input.artifacts.allow_manifest = true; },

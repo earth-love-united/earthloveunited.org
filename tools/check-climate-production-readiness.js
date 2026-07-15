@@ -14,6 +14,7 @@ const P = Object.freeze({
   uiReview: 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json',
   ct40Deny: 'data/climate/reviews/ct42-ct40-release-review-result.json',
   top20Queue: 'data/climate/releases/top20-primary-source-gap-queue-2026-07-15.json',
+  evidenceReadiness: 'data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json',
   runtimeManifest: 'data/climate/runtime-manifest.json',
   releaseDiff: 'data/climate/releases/reviewed-release-diff.json',
   allowManifest: 'data/climate/releases/ct40-allow-manifest.json',
@@ -64,6 +65,7 @@ function runTruthCi() {
 const dataReview = required(P.dataReview);
 const uiReview = required(P.uiReview);
 const top20Queue = required(P.top20Queue);
+const evidenceReadiness = required(P.evidenceReadiness);
 const denyResult = required(P.ct40Deny);
 const allowManifest = exists(P.allowManifest) ? read(P.allowManifest) : null;
 const ct40 = mode === 'release' && allowManifest ? allowManifest : denyResult;
@@ -95,6 +97,7 @@ const report = evaluateReadiness({
     reason_codes: ct40.reason_codes || [],
   },
   top20_queue: top20Queue,
+  evidence_readiness: evidenceReadiness,
   top20_primary_source_review_complete: reviewContext.top20_primary_source_review_complete === true,
   licence_decisions_complete: reviewContext.licence_decisions_complete === true,
   field_level_fact_reviews_complete: reviewContext.field_level_fact_reviews_complete === true,

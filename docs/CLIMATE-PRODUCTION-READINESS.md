@@ -18,6 +18,8 @@ This mode must prove all of the following:
   pass;
 - the real CT-40 evaluation remains `deny` and has canonical reasons;
 - the top-20 primary-source queue covers 20 entities and authorizes zero;
+- the evidence/licensing work package remains blocked and points to a separate
+  future reviewed-candidate compiler;
 - no runtime manifest, reviewed release diff, or CT-40 allow manifest exists;
 - partial climate truth CI is incomplete only for the two prohibited release
   artifacts.

@@ -40,6 +40,8 @@ function evaluateReadiness(input) {
       'A denied candidate must disclose canonical reason codes.');
     check('top20-queue-fail-closed', coverage.ranked_entities === 20 && coverage.release_eligible_entities === 0,
       'The top-20 acquisition queue must cover 20 entities and authorize none.');
+    check('evidence-plan-fail-closed', input.evidence_readiness?.status === 'blocked' && input.evidence_readiness?.release_authority === false && input.evidence_readiness?.required_next_compiler?.status === 'not_implemented',
+      'The evidence work package must remain blocked and require a new reviewed production-candidate compiler.');
     check('release-artifacts-absent', !artifacts.runtime_manifest && !artifacts.release_diff && !artifacts.allow_manifest,
       'Runtime manifest, reviewed release diff, and CT-40 allow manifest must be absent while denied.');
     check('truth-ci-incomplete-only', truthCi.status === 'incomplete' && JSON.stringify(missing) === JSON.stringify(CANDIDATE_MISSING),
