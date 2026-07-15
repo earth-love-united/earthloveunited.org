@@ -102,6 +102,9 @@ const App = {
   },
 
   async enterGlobe() {
+    if (!document.body.classList.contains('globe-mode')) {
+      safeCall('GlobeModule', 'rememberFallbackOpener', document.activeElement);
+    }
     _setGlobeLoading(true, 'Preparing the living globe');
     document.body.classList.add('globe-mode');
     document.body.classList.remove('hero-active');
@@ -109,28 +112,62 @@ const App = {
     $('topbar')?.classList.add('visible');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     // Load globe.gl if not already loaded, then init GlobeModule
-    if (!_globeGLLoaded && !_globeGLLoading) {
-      await loadGlobeGL().catch(err => {
-        reportWarn('App', 'globe.gl failed to load');
-        _setGlobeLoading(true, 'The globe could not be loaded');
-        setTimeout(() => _setGlobeLoading(false), 1800);
-        return err;
-      });
+    if (!_globeGLLoaded) {
+      try {
+        await loadGlobeGL();
+      } catch (err) {
+        reportWarn('App', 'globe.gl failed to load: ' + (err?.message || 'unknown error'));
+        _setGlobeLoading(false);
+        document.body.removeAttribute('aria-busy');
+        safeCall('GlobeModule', 'showFallback', 'library_load_failed');
+        if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { fallback: true, reason: 'library_load_failed', timestamp: Date.now() });
+        document.addEventListener('keydown', _onGlobeKeyDown);
+        return false;
+      }
     }
     if (hasModule('GlobeModule') && !GlobeModule._initialized) {
-      try { GlobeModule.init(); GlobeModule._initialized = true; } catch (err) { reportError('GlobeModule.init()', err); }
+      try {
+        GlobeModule._initialized = GlobeModule.init() === true;
+      } catch (err) {
+        GlobeModule._initialized = false;
+        reportError('GlobeModule.init()', err);
+        safeCall('GlobeModule', 'showFallback', 'globe_construction_failed');
+      }
     } else if (hasModule('GlobeModule')) {
       safeCall('GlobeModule', 'selectDefaultCountry');
+    }
+    if (!hasModule('GlobeModule') || !GlobeModule._initialized) {
+      _setGlobeLoading(false);
+      document.body.removeAttribute('aria-busy');
+      if (!$('globe-fallback') || $('globe-fallback').hidden) {
+        safeCall('GlobeModule', 'showFallback', 'globe_construction_failed');
+      }
+      if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { fallback: true, reason: window.GlobeModule?._fallbackReasonCode || 'globe_construction_failed', timestamp: Date.now() });
+      document.addEventListener('keydown', _onGlobeKeyDown);
+      return false;
     }
     // GlobeModule emits readiness during init. If someone enters while the
     // application is still awaiting its bootstrap data, that event can precede
     // the subscription. The rendered canvas is now present, so always close
     // the HUD loader on the next paint as the final, race-safe handoff.
     if (hasModule('GlobeModule') && GlobeModule._initialized) {
-      requestAnimationFrame(() => _setGlobeLoading(false));
+      requestAnimationFrame(() => {
+        _setGlobeLoading(false);
+        document.body.removeAttribute('aria-busy');
+      });
     }
-    if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { timestamp: Date.now() });
+    if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { fallback: false, timestamp: Date.now() });
     document.addEventListener('keydown', _onGlobeKeyDown);
+    return true;
+  },
+
+  async retryGlobe() {
+    safeCall('GlobeModule', 'hideFallback', { restoreFocus: false, preserveOpener: true });
+    if (hasModule('GlobeModule')) GlobeModule._initialized = false;
+    if (typeof window.Globe !== 'function') _resetGlobeGLLoader();
+    const started = await this.enterGlobe();
+    if (started) $('globe-back-btn')?.focus({ preventScroll: true });
+    return started;
   },
 
   exitGlobe() {
@@ -139,6 +176,7 @@ const App = {
     document.body.removeAttribute('aria-busy');
     $('topbar')?.classList.remove('visible');
     safeCall('GlobeModule', 'clearCountrySelection');
+    safeCall('GlobeModule', 'hideFallback', { restoreFocus: true, preserveOpener: false });
     window.scrollTo({ top: 0, behavior: 'smooth' });
     syncHeroScrollState();
     if (hasModule('EventBus')) EventBus.emit('app:globe-exited', { timestamp: Date.now() });
@@ -202,6 +240,10 @@ function _bindGlobeLoadingEvents() {
     _setGlobeLoading(true, payload?.message || 'Country layer unavailable');
     setTimeout(() => _setGlobeLoading(false), 1800);
   });
+  EventBus.on('globe:fallback-shown', () => {
+    _setGlobeLoading(false);
+    document.body.removeAttribute('aria-busy');
+  });
 }
 
 // Lazy-load globe.gl — returns Promise that resolves when loaded
@@ -214,12 +256,35 @@ function loadGlobeGL() {
   _globeGLLoading = true;
   _globeGLPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
+    script.id = 'globe-gl-runtime';
     script.src = 'js/vendor/globe.gl.js';
-    script.onload = () => { _globeGLLoaded = true; _globeGLLoading = false; resolve(); };
-    script.onerror = () => { _globeGLLoading = false; _globeGLPromise = null; reject(new Error('Failed to load globe.gl')); };
+    script.onload = () => {
+      _globeGLLoading = false;
+      if (typeof window.Globe !== 'function') {
+        script.remove();
+        _globeGLPromise = null;
+        reject(new Error('globe.gl loaded without a Globe constructor'));
+        return;
+      }
+      _globeGLLoaded = true;
+      resolve();
+    };
+    script.onerror = () => {
+      script.remove();
+      _globeGLLoading = false;
+      _globeGLPromise = null;
+      reject(new Error('Failed to load globe.gl'));
+    };
     document.head.appendChild(script);
   });
   return _globeGLPromise;
+}
+
+function _resetGlobeGLLoader() {
+  $('globe-gl-runtime')?.remove();
+  _globeGLLoading = false;
+  _globeGLLoaded = typeof window.Globe === 'function';
+  _globeGLPromise = _globeGLLoaded ? Promise.resolve() : null;
 }
 
 // Start — modules load synchronously, but Data may register a tick late
@@ -253,9 +318,9 @@ syncHeroScrollState();
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('App', {
-    provides: ['init', 'enterGlobe', 'exitGlobe', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'enterGlobe', 'retryGlobe', 'exitGlobe', 'reset', 'destroy', 'getState'],
     requires: ['MODULE_CONTRACTS', 'CARBON_CLOCK'],
     emits: ['app:ready', 'app:globe-entered', 'app:globe-exited'],
-    listens: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error'],
+    listens: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:fallback-shown'],
   });
 }

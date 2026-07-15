@@ -95,6 +95,14 @@ const COUNTRY_STATUS_BADGE_CLASSES = {
   [COUNTRY_STATUS.MISSING]: 'neutral',
 };
 
+const GLOBE_FALLBACK_REASONS = Object.freeze({
+  library_load_failed: 'The 3D globe library could not be loaded. The country evidence remains available below.',
+  library_unavailable: 'The 3D globe library is unavailable. The country evidence remains available below.',
+  webgl_unavailable: 'This browser or device could not start WebGL. The country evidence remains available below.',
+  globe_construction_failed: 'The 3D globe could not start safely. The country evidence remains available below.',
+  globe_container_missing: 'The 3D globe container is unavailable. The country evidence remains available below.',
+});
+
 function _resolveCountryIso(feature) {
   const props = feature?.properties || {};
   if (props.ISO_A3 && props.ISO_A3 !== '-99') return props.ISO_A3;
@@ -279,25 +287,46 @@ const GlobeModule = {
   _rankRailCollapsed: false,
   _defaultCountrySelected: false,
   _countrySwipeCueShown: false,
+  _fallbackReasonCode: null,
+  _fallbackOpener: null,
+  _fallbackEntries: [],
+  _fallbackBound: false,
+  _fallbackSelectedIso: null,
 
   init() {
-    // Guard: Globe constructor may not be loaded yet (lazy-loaded globe.gl.js)
-    if (typeof Globe === 'undefined') {
-      this._globeLoadRetries++;
-      if (this._globeLoadRetries > 60) {
-        reportError('GlobeModule', 'Globe.gl failed to load after 60 retries (~30s). Check CDN/network.');
-        return;
-      }
-      setTimeout(() => GlobeModule.init(), 500);
-      return;
+    // App lazy-loads the vendored renderer before calling init. If that load
+    // failed, fail immediately into the evidence view instead of retrying a
+    // missing global for 30 seconds.
+    if (typeof window.Globe !== 'function') {
+      reportWarn('GlobeModule', 'Globe constructor unavailable; showing the non-WebGL evidence view.');
+      this.showFallback('library_unavailable');
+      return false;
     }
     const el = $('globeViz');
-    if (!el) { reportError('GlobeModule', 'globeViz element not found'); return; }
+    if (!el) {
+      reportError('GlobeModule.init()', new Error('globeViz element not found'));
+      this.showFallback('globe_container_missing');
+      return false;
+    }
+    if (!this.hasWebGLSupport()) {
+      reportWarn('GlobeModule', 'WebGL unavailable; showing the non-WebGL evidence view.');
+      this.showFallback('webgl_unavailable');
+      return false;
+    }
     const themeConfig = _getGlobeThemeConfig(document.documentElement?.dataset?.theme);
 
     // safeChain: if any method doesn't exist, it's skipped with a dev
     // warning instead of crashing the entire init.
-    this.world = safeChain(new Globe(el, { animateIn: true, waitForGlobeReady: true }), 'Globe')
+    let renderer;
+    try {
+      renderer = new window.Globe(el, { animateIn: true, waitForGlobeReady: true });
+    } catch (error) {
+      reportError('GlobeModule.init()', error);
+      this._teardownFailedRenderer();
+      this.showFallback('globe_construction_failed');
+      return false;
+    }
+    this.world = safeChain(renderer, 'Globe')
       .globeImageUrl(themeConfig.surface)
       .bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
       .backgroundImageUrl(themeConfig.backgroundImage)
@@ -638,6 +667,224 @@ const GlobeModule = {
     this.updateNodeVisuals();
 
     // Country climate point tooltips remain disabled.
+    this.hideFallback({ restoreFocus: false, preserveOpener: true });
+    return true;
+  },
+
+  hasWebGLSupport() {
+    try {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('webgl2') ||
+        canvas.getContext('webgl') ||
+        canvas.getContext('experimental-webgl');
+      if (!context) return false;
+      const loseContext = typeof context.getExtension === 'function'
+        ? context.getExtension('WEBGL_lose_context')
+        : null;
+      if (loseContext && typeof loseContext.loseContext === 'function') loseContext.loseContext();
+      return true;
+    } catch (error) {
+      reportWarn('GlobeModule', 'WebGL capability check failed: ' + (error?.message || 'unknown error'));
+      return false;
+    }
+  },
+
+  _teardownFailedRenderer() {
+    if (this.world && typeof this.world.destroy === 'function') {
+      try { this.world.destroy(); } catch (error) {
+        reportWarn('GlobeModule', 'Failed renderer cleanup was incomplete.');
+      }
+    }
+    this.world = null;
+    this._initialized = false;
+    const el = $('globeViz');
+    if (el) el.replaceChildren();
+  },
+
+  rememberFallbackOpener(element) {
+    if (element instanceof HTMLElement && element !== document.body && !element.closest('#globe-fallback')) {
+      this._fallbackOpener = element;
+      return true;
+    }
+    return false;
+  },
+
+  showFallback(reasonCode) {
+    const panel = $('globe-fallback');
+    if (!panel || !document.body) {
+      reportError('GlobeModule.showFallback()', new Error('globe fallback region not found'));
+      return false;
+    }
+
+    if (!this._fallbackOpener) {
+      const active = document.activeElement;
+      if (active instanceof HTMLElement && active !== document.body && !panel.contains(active)) {
+        this._fallbackOpener = active;
+      }
+    }
+
+    const stableReason = Object.prototype.hasOwnProperty.call(GLOBE_FALLBACK_REASONS, reasonCode)
+      ? reasonCode
+      : 'globe_construction_failed';
+    this._fallbackReasonCode = stableReason;
+    panel.dataset.reason = stableReason;
+    panel.hidden = false;
+    panel.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('globe-fallback-active');
+    $text('globe-fallback-reason', GLOBE_FALLBACK_REASONS[stableReason]);
+    this._bindFallbackControls();
+    this._renderFallbackEvidence();
+
+    if (hasModule('EventBus')) {
+      EventBus.emit('globe:fallback-shown', { reason: stableReason, timestamp: Date.now() });
+    }
+    requestAnimationFrame(() => $('globe-fallback-title')?.focus({ preventScroll: true }));
+    return true;
+  },
+
+  _bindFallbackControls() {
+    if (this._fallbackBound) return;
+    const panel = $('globe-fallback');
+    const search = $('globe-fallback-search');
+    if (!panel || !search) return;
+    this._fallbackBound = true;
+
+    panel.addEventListener('click', event => {
+      const action = event.target.closest('[data-globe-fallback-action]');
+      if (action) {
+        const name = action.getAttribute('data-globe-fallback-action');
+        if (name === 'retry') safeCall('App', 'retryGlobe');
+        if (name === 'exit') safeCall('App', 'exitGlobe');
+        if (name === 'list') {
+          const row = panel.querySelector('[data-fallback-country-iso="' + this._fallbackSelectedIso + '"]');
+          if (row) row.focus({ preventScroll: true });
+        }
+        return;
+      }
+      const country = event.target.closest('[data-fallback-country-iso]');
+      if (!country) return;
+      this._renderFallbackCountry(country.getAttribute('data-fallback-country-iso'), true);
+    });
+
+    search.addEventListener('input', () => this._filterFallbackEntries(search.value));
+  },
+
+  _renderFallbackEvidence() {
+    const list = $('globe-fallback-country-list');
+    const summary = $('globe-fallback-summary');
+    const detail = $('globe-fallback-country-detail');
+    const candidate = Data.climateCandidate;
+    const ranking = Data.getClimateRanking ? Data.getClimateRanking() : null;
+    if (!list || !summary || !detail) return false;
+
+    const candidateReady = candidate && candidate.review_status === 'not_reviewed' &&
+      candidate.production_runtime_release === false && Array.isArray(candidate.countries) && ranking;
+    if (!candidateReady) {
+      this._fallbackEntries = [];
+      list.replaceChildren();
+      summary.textContent = 'Country evidence is unavailable. No climate values or assessments are being inferred.';
+      $text('globe-fallback-results', '0 entities available');
+      detail.innerHTML = '<h3>Evidence unavailable</h3><p>The country evidence candidate did not pass its runtime boundary checks. Return to the Foundation and try again later.</p>';
+      return false;
+    }
+
+    const rankById = new Map((ranking.ranked || []).map(entry => [entry.country_id, entry]));
+    this._fallbackEntries = candidate.countries.map(country => ({
+      country,
+      rank: rankById.get(country.country_id) || null,
+      factual: country.emissions?.status === 'reviewed_factual',
+    })).sort((a, b) => {
+      if (a.rank && b.rank) return a.rank.ordinal - b.rank.ordinal || a.country.iso_alpha3.localeCompare(b.country.iso_alpha3);
+      if (a.rank) return -1;
+      if (b.rank) return 1;
+      return String(a.country.name).localeCompare(String(b.country.name));
+    });
+
+    const factualCount = this._fallbackEntries.filter(entry => entry.factual).length;
+    const gapCount = this._fallbackEntries.length - factualCount;
+    summary.textContent = this._fallbackEntries.length + ' registry entities · ' + factualCount +
+      ' factual series in this candidate dataset · ' + gapCount +
+      ' explicit source gaps. The 2023 order uses one harmonized magnitude metric and is not a performance score.';
+
+    list.innerHTML = this._fallbackEntries.map(entry => {
+      const country = entry.country;
+      const iso = _escapeHtml(country.iso_alpha3);
+      const name = _escapeHtml(country.name);
+      const flag = _escapeHtml(country.flag_emoji || '');
+      if (entry.factual) {
+        const latest = country.emissions.latest;
+        const value = Number(latest.value).toLocaleString('en-US', { maximumFractionDigits: 4 });
+        const rank = entry.rank ? entry.rank.ordinal : '—';
+        return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="factual" aria-label="' + name + ', factual series in the candidate dataset, 2023 ' + value + ' ' + _escapeHtml(country.emissions.unit) + ', magnitude rank ' + rank + ', not a performance score"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · magnitude rank ' + rank + '</small></span><span class="elu-fallback-country-state">' + value + '<small>' + _escapeHtml(country.emissions.unit) + '</small></span></button></li>';
+      }
+      return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="gap" aria-label="' + name + ', explicit source gap, unranked"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · unranked</small></span><span class="elu-fallback-country-state is-gap">Source gap</span></button></li>';
+    }).join('');
+    this._filterFallbackEntries($('globe-fallback-search')?.value || '');
+    return true;
+  },
+
+  _filterFallbackEntries(value) {
+    const list = $('globe-fallback-country-list');
+    if (!list) return;
+    const query = String(value || '').trim().toLowerCase();
+    let shown = 0;
+    list.querySelectorAll('li[data-fallback-search]').forEach(item => {
+      const visible = !query || item.dataset.fallbackSearch.includes(query);
+      item.hidden = !visible;
+      if (visible) shown++;
+    });
+    $text('globe-fallback-results', shown + ' of ' + this._fallbackEntries.length + ' entities shown');
+  },
+
+  _renderFallbackCountry(iso, focusDetail) {
+    const entry = this._fallbackEntries.find(item => item.country.iso_alpha3 === iso);
+    const detail = $('globe-fallback-country-detail');
+    const list = $('globe-fallback-country-list');
+    if (!entry || !detail || !list) return false;
+    this._fallbackSelectedIso = iso;
+    list.querySelectorAll('[data-fallback-country-iso]').forEach(row => {
+      if (row.getAttribute('data-fallback-country-iso') === iso) row.setAttribute('aria-current', 'true');
+      else row.removeAttribute('aria-current');
+    });
+
+    const country = entry.country;
+    const name = _escapeHtml(country.name);
+    const code = _escapeHtml(country.iso_alpha3);
+    const flag = _escapeHtml(country.flag_emoji || '');
+    const boundary = '<h4>Assessment boundary</h4><p>Commitments, targets, delivery, performance, impact bands, and climate scores are not assessed in this view.</p>';
+    if (!entry.factual) {
+      detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3><span class="elu-fallback-detail-badge">' + code + ' · explicit source gap</span><p class="elu-fallback-detail-value"><strong>No emissions value shown</strong></p><p>This registry entity is unranked because the candidate dataset has no factual series for it. Missing data does not indicate better or worse climate performance.</p>' + boundary + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
+    } else {
+      const emissions = country.emissions;
+      const latestValue = Number(emissions.latest.value).toLocaleString('en-US', { maximumFractionDigits: 4 });
+      const rankText = entry.rank ? 'Magnitude rank ' + entry.rank.ordinal + ' of 206 for the same 2023 metric; not a performance score.' : 'Not present in the candidate magnitude order.';
+      const rows = emissions.series.map(point => '<tr><th scope="row">' + point.year + '</th><td>' + Number(point.value).toLocaleString('en-US', { maximumFractionDigits: 4 }) + '</td><td>' + _escapeHtml(emissions.unit) + '</td></tr>').join('');
+      const limitations = (emissions.limitations || []).map(item => '<li>' + _escapeHtml(item) + '</li>').join('');
+      const safeSource = /^https:\/\//.test(emissions.source_url || '') ? emissions.source_url : '';
+      const source = safeSource
+        ? '<a href="' + _escapeHtml(safeSource) + '" target="_blank" rel="noopener">' + _escapeHtml(emissions.source_id) + '</a>'
+        : _escapeHtml(emissions.source_id || 'Source unavailable');
+      detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3><span class="elu-fallback-detail-badge">' + code + ' · factual candidate series</span><p class="elu-fallback-detail-value"><strong>' + latestValue + '</strong> ' + _escapeHtml(emissions.unit) + ' · ' + emissions.latest.year + '</p><p>' + _escapeHtml(emissions.label) + '. ' + _escapeHtml(rankText) + '</p><div class="elu-fallback-table-wrap"><table><caption>' + name + ' annual factual series in the candidate dataset</caption><thead><tr><th scope="col">Year</th><th scope="col">Value</th><th scope="col">Unit</th></tr></thead><tbody>' + rows + '</tbody></table></div><h4>Source and limits</h4><p class="elu-fallback-source">Source: ' + source + '</p><ul>' + limitations + '</ul>' + boundary + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
+    }
+    if (focusDetail) detail.focus({ preventScroll: true });
+    return true;
+  },
+
+  hideFallback(options = {}) {
+    const panel = $('globe-fallback');
+    const opener = this._fallbackOpener;
+    document.body?.classList.remove('globe-fallback-active');
+    if (panel) {
+      panel.hidden = true;
+      panel.setAttribute('aria-hidden', 'true');
+      panel.removeAttribute('data-reason');
+    }
+    this._fallbackReasonCode = null;
+    if (!options.preserveOpener) this._fallbackOpener = null;
+    if (options.restoreFocus && opener && document.contains(opener) && typeof opener.focus === 'function') {
+      requestAnimationFrame(() => opener.focus({ preventScroll: true }));
+    }
+    return true;
   },
 
   setTheme(theme) {
@@ -1751,6 +1998,9 @@ const GlobeModule = {
 
     // Nullify click handler
     _globeClickHandler = null;
+    this.hideFallback({ restoreFocus: false, preserveOpener: false });
+    this._fallbackEntries = [];
+    this._fallbackSelectedIso = null;
 
     return true;
   },
@@ -1762,6 +2012,9 @@ const GlobeModule = {
       countryFeatureCount: this._countryFeatures?.length || 0,
       countryDeckCount: this._countryDeck.length,
       selectedCountryIso: this._selectedCountryFeature ? _resolveCountryIso(this._selectedCountryFeature) : null,
+      fallbackActive: document.body?.classList.contains('globe-fallback-active') || false,
+      fallbackReasonCode: this._fallbackReasonCode,
+      fallbackEntityCount: this._fallbackEntries.length,
     };
   },
 };
@@ -1911,8 +2164,8 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['init', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'hasWebGLSupport', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
     requires: ['Data'],
-    emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed'],
+    emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown'],
   });
 }

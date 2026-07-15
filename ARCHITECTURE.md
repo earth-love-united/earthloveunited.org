@@ -188,7 +188,9 @@ are publication tasks, not a frontend build.
 App.enterGlobe()
   → show loading state and enter globe mode
   → lazy-load js/vendor/globe.gl.js
+      └─ load failure → show body-level #globe-fallback evidence view
   → GlobeModule.init()
+      ├─ missing WebGL / constructor failure → show #globe-fallback; return false
       → create globe.gl instance through safeChain()
       → fetch country GeoJSON
       → join Data.countryHexColors by ISO3
@@ -217,6 +219,7 @@ Escape / close / App.exitGlobe()
 | `globe:render-ready` | `GlobeModule` | `App` loading state |
 | `globe:country-data-ready` | `GlobeModule` | `App` loading state |
 | `globe:data-error` | `GlobeModule` | `App` user-visible loading/error state |
+| `globe:fallback-shown` | `GlobeModule` | `App` loading and `aria-busy` state |
 | `globe:country-selected` | `GlobeModule` | External/optional listeners |
 | `globe:country-closed` | `GlobeModule` | External/optional listeners |
 
@@ -234,7 +237,7 @@ Top to bottom:
  200  #hero, #globe-back-btn
  110  .globe-status
  100  #topbar
-  60  .hex-legend
+  60  #globe-fallback (failure only), .hex-legend
   50  .country-atlas-rail
   20  .country-atlas-scrim
   10  .sections, .footer
@@ -248,6 +251,9 @@ Rules:
 3. A transformed element creates a stacking context.
 4. `#globeViz` becomes interactive only in `body.globe-mode`.
 5. Any z-index change requires `StackLint.audit()` and an update to this table.
+6. `#globe-fallback` is a direct child of `body`; while active it disables the
+   globe canvas, country rail/card, legend, loader, and duplicate global back
+   control. Its own retry/Foundation controls and factual/gap list stay usable.
 
 ## Service worker and freshness
 
