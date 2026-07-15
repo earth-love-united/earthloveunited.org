@@ -183,7 +183,7 @@ const candidate = {
   public_copy_passed: true,
   load_order_passed: true,
   javascript_syntax_passed: true,
-  ct40: { decision: 'deny', eligible: false, release_authority: false, reason_codes: ['evidence_insufficient'] },
+  ct40: { decision: 'deny', eligible: false, content_eligible: false, release_authority: false, reason_codes: ['evidence_insufficient'] },
   reviewed_release: { status: 'absent', pass: true, content_eligible: false, release_authority: false, rollback_proof_passed: false },
   top20_queue: { coverage: { ranked_entities: 20, release_eligible_entities: 0 } },
   evidence_readiness: { status: 'blocked', release_authority: false, required_next_compiler: { status: 'not_implemented' } },
@@ -220,7 +220,7 @@ const release = {
   public_copy_passed: true,
   load_order_passed: true,
   javascript_syntax_passed: true,
-  ct40: { decision: 'allow', eligible: true, release_authority: true, reason_codes: [] },
+  ct40: { decision: 'allow', eligible: true, content_eligible: true, release_authority: false, reason_codes: [] },
   reviewed_release: { status: 'validated', pass: true, content_eligible: true, release_authority: false, rollback_proof_passed: true },
   top20_primary_source_review_complete: true,
   licence_decisions_complete: true,
@@ -299,6 +299,8 @@ const candidateMutations = [
   input => { input.load_order_passed = false; },
   input => { input.javascript_syntax_passed = false; },
   input => { input.ct40.decision = 'allow'; },
+  input => { input.ct40.content_eligible = true; },
+  input => { input.ct40.release_authority = true; },
   input => { input.ct40.reason_codes = []; },
   input => { input.top20_queue.coverage.ranked_entities = 19; },
   input => { input.top20_queue.coverage.release_eligible_entities = 1; },
@@ -326,7 +328,8 @@ for (const mutate of candidateMutations) {
 }
 
 const releaseMutations = [
-  input => { input.ct40.release_authority = false; },
+  input => { input.ct40.content_eligible = false; },
+  input => { input.ct40.release_authority = true; },
   input => { input.reviewed_release.pass = false; },
   input => { input.reviewed_release.content_eligible = false; },
   input => { input.reviewed_release.release_authority = true; },

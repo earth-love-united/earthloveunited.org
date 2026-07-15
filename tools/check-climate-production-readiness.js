@@ -214,7 +214,8 @@ const report = evaluateReadiness({
   ct40: {
     decision: ct40.decision,
     eligible: ct40.eligible ?? ct40.release_eligible,
-    release_authority: reviewedRelease.content_eligible === true,
+    content_eligible: reviewedRelease.content_eligible === true,
+    release_authority: false,
     reason_codes: ct40.reason_codes || [],
   },
   reviewed_release: reviewedRelease,

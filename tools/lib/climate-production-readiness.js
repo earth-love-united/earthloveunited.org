@@ -284,7 +284,8 @@ function evaluateReadiness(input, options = {}) {
   if (input.mode === 'candidate') {
     const coverage = input.top20_queue?.coverage || {};
     const missing = [...(truthCi.missing_required_components || [])].sort();
-    check('real-ct40-deny', ct40.decision === 'deny' && ct40.eligible === false && ct40.release_authority === false,
+    check('real-ct40-deny', ct40.decision === 'deny' && ct40.eligible === false &&
+      ct40.content_eligible === false && ct40.release_authority === false,
       'The current real CT-40 result must remain a non-authoritative DENY.');
     check('deny-reasons-present', Array.isArray(ct40.reason_codes) && ct40.reason_codes.length > 0,
       'A denied candidate must disclose canonical reason codes.');
@@ -308,8 +309,9 @@ function evaluateReadiness(input, options = {}) {
       'Candidate integrity may pass only with exact notice bytes while all five asset rights decisions, counsel questions, production use, and release authority remain explicitly blocked.');
   } else {
     check('real-ct40-allow', reviewedRelease.status === 'validated' && reviewedRelease.pass === true &&
-      ct40.decision === 'allow' && ct40.eligible === true && ct40.release_authority === true,
-      'Release requires an authentic, independently reviewed CT-40 ALLOW.');
+      ct40.decision === 'allow' && ct40.eligible === true && ct40.content_eligible === true &&
+      ct40.release_authority === false,
+      'Release requires an authentic, independently reviewed CT-40 ALLOW that grants content eligibility only.');
     check('canonical-reviewed-release-package', reviewedRelease.status === 'validated' && reviewedRelease.pass === true &&
       reviewedRelease.content_eligible === true && reviewedRelease.release_authority === false,
       'The shared release-package validator must recompute CT-40, schemas, artifact pins, release diff, and rollback proof.');

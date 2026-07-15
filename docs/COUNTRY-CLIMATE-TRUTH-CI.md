@@ -134,7 +134,9 @@ approve redistribution and scoring. The package records independently reviewed, 
 primary-source records for the exact required top-20 country set. An
 extra `release_authority` field, a shape-only hash, or any output drift fails.
 Successful content validation reports eligibility only and never mints release
-authority; authority still requires the detached signed production approval.
+authority. Production readiness preserves `ct40.content_eligible=true` with
+`ct40.release_authority=false`; authority still requires the detached signed
+production approval.
 
 The reviewed release diff records the current and previous release (or marks an
 initial release), change summary, changed entity IDs, source revision IDs,
