@@ -40,6 +40,7 @@ tool happens to exist:
 | CT-02 evidence contract | `tools/check-country-evidence.js` |
 | CT-03 visual truth contract | `tools/validate-visual-truth-fixtures.js` |
 | CT-04 legacy runtime exit | `tools/verify-legacy-country-exit.js` |
+| CT-04-R independent exit review | `tools/check-legacy-country-exit-review.js` |
 | CT-10 GCB evidence boundary | `tools/check-country-emissions-evidence.js` |
 | CT-10B PRIMAP candidates | `tools/check-primap-economy-wide.js --committed-only` |
 | CT-10B-R PRIMAP source review | `tools/check-primap-review-attestation.js --committed-only` |
