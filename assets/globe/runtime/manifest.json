@@ -50,7 +50,8 @@
     },
     "nasa_earth_observatory": {
       "publisher": "NASA Earth Observatory",
-      "record_url": "https://science.nasa.gov/earth/earth-observatory/out-of-the-blue-and-into-the-black/",
+      "record_url": "https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/",
+      "feature_context_url": "https://science.nasa.gov/earth/earth-observatory/out-of-the-blue-and-into-the-black/",
       "flat_maps_url": "https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/",
       "media_terms_url": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
       "fetch_helper_path": "tools/authoring/fetch-nasa-black-marble.sh",
@@ -107,7 +108,7 @@
       "source_url": "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/79000/79765/dnb_land_ocean_ice.2012.3600x1800.jpg",
       "source_asset_id": "dnb_land_ocean_ice.2012.3600x1800.jpg",
       "publisher": "NASA Earth Observatory",
-      "published_at": "2012-11-27",
+      "source_record_published_at": "2012-11-27",
       "acquisition_period": {
         "start": "2012-04-18",
         "end": "2012-10-23"
@@ -115,7 +116,8 @@
       "instrument": "Suomi NPP Visible Infrared Imaging Radiometer Suite (VIIRS) day-night band",
       "creator": "NASA Earth Observatory image by Robert Simmon",
       "data_credit": "Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center",
-      "record_url": "https://science.nasa.gov/earth/earth-observatory/out-of-the-blue-and-into-the-black/",
+      "record_url": "https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/",
+      "feature_context_url": "https://science.nasa.gov/earth/earth-observatory/out-of-the-blue-and-into-the-black/",
       "flat_maps_url": "https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/",
       "media_terms_url": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
       "source_sha256": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124",
@@ -125,7 +127,7 @@
       "height": 1800,
       "media_type": "image/jpeg",
       "byte_for_byte_source": true,
-      "derivative": false,
+      "elu_transform_applied": false,
       "acknowledgement": "NASA Earth Observatory",
       "endorsement_implied": false,
       "rights_basis": "Byte-for-byte NASA Earth Observatory Black Marble 2012 JPEG. NASA media guidelines require source acknowledgement and prohibit implied endorsement. This provenance remediation is not human rights review or production approval.",

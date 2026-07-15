@@ -23,10 +23,16 @@ Interactive 3D globe rendering — the visual centerpiece of the site.
   verifies the digest, and atomically installs the generated local copy
 - **Generated location:** `js/vendor/globe.gl.js` (gitignored; never commit the
   1.8 MB generated file)
-- **Notice boundary:** the exact minified file is a composite bundle. Its full
-  dependency notice inventory has not yet been independently reviewed or
-  deployed, so this pin does not by itself establish production redistribution
-  readiness.
+- **Readable notices:** [THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt)
+  reproduces the full pinned bundle notices and is linked from the public footer.
+- **Machine inventory:**
+  [globe-gl-2.46.1-notices.json](data/governance/vendor/globe-gl-2.46.1-notices.json)
+  records the exact 44-component inventory, 37 source-mapped packages, 223
+  matched third-party sources, hashes, and unresolved counsel questions.
+- **Notice boundary:** deterministic inventory integrity is verified in source
+  and staged output, but the inventory remains not reviewed. The checker and
+  notice files do not grant redistribution, production use, or release
+  authority.
 
 ### Globe runtime assets
 The country navigation geometry and four decorative globe visuals are committed
@@ -46,7 +52,7 @@ content-versioned query keys; they are not loaded from a CDN.
   climate-performance judgment.
 - **NASA Earth-at-night surface:** `earth-night.jpg` is the byte-for-byte
   3600×1800 Black Marble 2012 JPEG published by
-  [NASA Earth Observatory](https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/).
+  [NASA Earth Observatory map record](https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/).
   Image by Robert Simmon; Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA
   National Geophysical Data Center. The exact source URL, source/output SHA-256,
   byte size, acquisition period, and
@@ -66,6 +72,20 @@ content-versioned query keys; they are not loaded from a CDN.
   NASA/source provenance and repository authorship are now explicit, but human
   runtime rights review and applicable deployed notice sections remain **not reviewed**;
   `production_use_approved` and `release_authority` remain `false`.
+  The integration record contains five separate unresolved rows: one for the
+  Natural Earth geometry and one for each of the four visual assets. Origin,
+  redistribution, attribution/notice, reviewer, date, and decision references
+  remain **not reviewed** or null; production use and release authority remain
+  false.
+- **Integration record:**
+  [globe-gl-2.46.1-notices-integration.json](data/governance/vendor/globe-gl-2.46.1-notices-integration.json)
+  distinguishes the later deploy/footer/control changes from the immutable
+  inventory-only core. It is an implementation record, not a rights decision.
+- **Approval authority boundary:** The protected Ed25519 trust registry is
+  empty and `unprovisioned`; no approval or detached signature bundle is
+  committed. A future release needs distinct verified signatures from the
+  asset-rights reviewer, licensing counsel, and release authorizer. Integrity
+  and public-key provisioning alone grant no rights or release authority.
 - **Small-state navigation points:** 28 manually curated approximate point
   affordances are pinned to `data/small-nations.json` and normalized to the
   candidate registry names by ISO. They are not Natural Earth polygons,

@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "registry_id": "elu-globe-runtime-approval-trust-v1",
+  "status": "unprovisioned",
+  "repository": "earth-love-united/earthloveunited.org",
+  "required_roles": [
+    "asset_rights_reviewer",
+    "licensing_counsel",
+    "release_authorizer"
+  ],
+  "authorities": []
+}

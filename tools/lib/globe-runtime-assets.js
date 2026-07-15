@@ -5,8 +5,8 @@ const { hasActiveCiJob, hasExactCiStep } = require('./globe-vendor-integrity');
 
 const POLICY_VERSION = '1.1.0';
 const MANIFEST_PATH = 'assets/globe/runtime/manifest.json';
-const EXPECTED_MANIFEST_SHA256 = '07f7fadfc23f4cf632f00df948a629e83bef4aed02d7d8ae72cff00238d338d2';
-const EXPECTED_MANIFEST_SEMANTIC_SHA256 = '98a40b2c4a9623f0bfd2b1b9b98c5c15c5cb894a68b446640267749f5291c3bb';
+const EXPECTED_MANIFEST_SHA256 = '6f03e630512982f2edfd40097881bae73bbc49110ca79c6fdbb49dc7b44b7da4';
+const EXPECTED_MANIFEST_SEMANTIC_SHA256 = '687e6ba28c5ffe422be5a4579f6ebfb910f54598782ddb4702b54cdd0ad3c3d2';
 const EXPECTED_STARFIELD_GENERATOR_SHA256 = '4097bcbcb2bf0a9279ae0c8eeab7c0393b54fd72b4ea9fcf141e8fc6b1f55a25';
 const EXPECTED_NASA_FETCHER_SHA256 = 'ade65419169d17404506d2dee5cfdbacb8f2c0c6a76d3d59b34482892edd4466';
 const EXPECTED_NATURAL_EARTH_SOURCES = Object.freeze({
@@ -16,7 +16,8 @@ const EXPECTED_NATURAL_EARTH_SOURCES = Object.freeze({
 });
 const EXPECTED_NASA_SOURCES = Object.freeze({
   publisher: 'NASA Earth Observatory',
-  record_url: 'https://science.nasa.gov/earth/earth-observatory/out-of-the-blue-and-into-the-black/',
+  record_url: 'https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/',
+  feature_context_url: 'https://science.nasa.gov/earth/earth-observatory/out-of-the-blue-and-into-the-black/',
   flat_maps_url: 'https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/',
   media_terms_url: 'https://www.nasa.gov/nasa-brand-center/images-and-media/',
   fetch_helper_path: 'tools/authoring/fetch-nasa-black-marble.sh',
@@ -42,18 +43,19 @@ const EXPECTED_ASSET_MANIFEST_EXTRAS = Object.freeze({
   'earth-night': Object.freeze({
     source_asset_id: 'dnb_land_ocean_ice.2012.3600x1800.jpg',
     publisher: 'NASA Earth Observatory',
-    published_at: '2012-11-27',
+    source_record_published_at: '2012-11-27',
     acquisition_period: Object.freeze({ start: '2012-04-18', end: '2012-10-23' }),
     instrument: 'Suomi NPP Visible Infrared Imaging Radiometer Suite (VIIRS) day-night band',
     creator: 'NASA Earth Observatory image by Robert Simmon',
     data_credit: 'Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center',
     record_url: EXPECTED_NASA_SOURCES.record_url,
+    feature_context_url: EXPECTED_NASA_SOURCES.feature_context_url,
     flat_maps_url: EXPECTED_NASA_SOURCES.flat_maps_url,
     media_terms_url: EXPECTED_NASA_SOURCES.media_terms_url,
     source_sha256: '373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124',
     media_type: 'image/jpeg',
     byte_for_byte_source: true,
-    derivative: false,
+    elu_transform_applied: false,
     acknowledgement: 'NASA Earth Observatory',
     endorsement_implied: false,
     rights_basis: 'Byte-for-byte NASA Earth Observatory Black Marble 2012 JPEG. NASA media guidelines require source acknowledgement and prohibit implied endorsement. This provenance remediation is not human rights review or production approval.',
@@ -146,6 +148,7 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/fixtures/globe-runtime-assets.json',
   '/tools/authoring/generate-globe-starfield.js',
   '/tools/authoring/fetch-nasa-black-marble.sh',
+  '/tools/check-staged-production-integrity.js',
   '/tools/build-deploy.sh',
   '/tools/check-climate-production-readiness.js',
   '/tools/check-climate-production-readiness-policy.js',
@@ -309,8 +312,8 @@ function evaluateRuntimeAssets(input) {
   check('nasa-black-marble-provenance', nasa?.source_url === EXPECTED_ASSETS[1].source_url &&
     nasa?.source_asset_id === 'dnb_land_ocean_ice.2012.3600x1800.jpg' &&
     nasa?.source_sha256 === EXPECTED_ASSETS[1].sha256 && nasa?.sha256 === EXPECTED_ASSETS[1].sha256 &&
-    nasa?.byte_for_byte_source === true && nasa?.derivative === false && nasa?.media_type === 'image/jpeg' &&
-    nasa?.publisher === 'NASA Earth Observatory' && nasa?.published_at === '2012-11-27' &&
+    nasa?.byte_for_byte_source === true && nasa?.elu_transform_applied === false && nasa?.media_type === 'image/jpeg' &&
+    nasa?.publisher === 'NASA Earth Observatory' && nasa?.source_record_published_at === '2012-11-27' &&
     nasa?.creator === 'NASA Earth Observatory image by Robert Simmon' &&
     nasa?.data_credit === 'Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center' &&
     nasa?.acknowledgement === 'NASA Earth Observatory' && nasa?.endorsement_implied === false &&
@@ -465,14 +468,14 @@ function evaluateRuntimeAssets(input) {
     occurrences(sw, 'caches.match(request)') >= 2 && !sw.includes('ignoreSearch'),
     'Runtime data remain network-first with exact versioned precache keys and exact-request fallback.');
 
-  const stagedBuildCommand = 'node tools/check-globe-runtime-assets.js --staged "$DEPLOY_DIR"';
+  const stagedBuildCommand = 'node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"';
   const stagedBuildIndex = buildDeploy.indexOf(stagedBuildCommand);
   const afterStagedVerification = stagedBuildIndex === -1 ? '' : buildDeploy.slice(stagedBuildIndex + stagedBuildCommand.length);
   check('deploy-staged-verification', buildDeploy.split('\n').filter(line => line.trim() === stagedBuildCommand).length === 1 &&
     !/\|\|\s*true|;\s*true/.test(buildDeploy.slice(stagedBuildIndex, stagedBuildIndex + stagedBuildCommand.length + 40)) &&
     !/(?:^|\n)\s*(?:exit|return)\s+0(?:\s|$)/.test(buildDeploy) &&
     afterStagedVerification.split('\n').every(line => !line.trim() || line.trimStart().startsWith('#')),
-    'Deployment staging must verify the exact copied asset bytes.');
+    'Deployment staging must finish with the aggregate verifier, which rechecks the exact copied asset bytes.');
   const releaseGuard = buildDeploy.indexOf('if [ "$DEPLOY_MODE" = "release" ]; then');
   const readinessCommand = buildDeploy.indexOf('node tools/check-climate-production-readiness.js --release');
   const stagingStart = buildDeploy.indexOf('mkdir -p "$DEPLOY_DIR"');
@@ -546,7 +549,7 @@ function evaluateRuntimeAssets(input) {
   check('ui-review-pin-scope', JSON.stringify(input?.review_scope?.ui_pins) === JSON.stringify(REQUIRED_UI_REVIEW_PIN_PATHS),
   'Independent UI review must pin the existing runtime scope plus SW, manifest, and all five committed assets.');
   check('runtime-diff-boundary', input?.review_scope?.runtime_prefixes?.includes('assets/globe/runtime/') &&
-    ['tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/generate-globe-starfield.js', 'tools/authoring/fetch-nasa-black-marble.sh', 'data/small-nations.json']
+    ['tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/generate-globe-starfield.js', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'data/small-nations.json']
       .every(item => input?.review_scope?.runtime_fixed?.includes(item)),
     'Runtime-diff policy must classify localized assets and CT-45 controls as runtime-affecting.');
   check('control-files-owned', REQUIRED_CONTROL_OWNERS.every(required =>

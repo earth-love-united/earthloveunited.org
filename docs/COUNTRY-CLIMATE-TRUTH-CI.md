@@ -58,6 +58,7 @@ tool happens to exist:
 | CT-33 accessibility | `tools/check-country-accessibility.js` |
 | CT-44 vendor delivery | `tools/check-globe-vendor-integrity.js` |
 | CT-45 localized globe runtime assets | `tools/check-globe-runtime-assets.js` |
+| CT-45 notices | `tools/check-globe-third-party-notices.js` |
 | CT-40 release gate | `tools/check-climate-release-gate.js` |
 
 `tools/build-major-emitter-ndc-release.js --check` is also run when present as
@@ -66,11 +67,24 @@ required. Every component is marked `PASS`, `FAIL`, or `MISS` in stable order.
 
 CT-45 pins the five localized globe files, content-versioned runtime and
 service-worker URLs, 177-feature geometry validation, 28 approximate point
-affordances, pre-render image validation, the 201-entity mapped deck, and the
+affordances, pre-render visual-asset validation, the 201-entity mapped deck, and the
 first-class 249-entity evidence browser. It also verifies the final staged
 copy. CT-45 does not grant texture rights, third-party-notice completeness,
 production use, legal approval, deploy authority, or release authority; those
 remain independent release inputs.
+
+CT-45 notices independently pins the readable root notice, machine inventory,
+integration record, future approval schema, and empty protected trust registry;
+rejects tampering, omission,
+symlinks, commented/optional CI, and public-link spoofing; and verifies the
+final staged copy. Notice integrity does not confer rights approval. The inventory
+core's unchanged-state flags are historical inventory-only properties, while
+the later integration is recorded separately. Production still requires five
+asset-specific rights dispositions, four resolved counsel questions, an exact
+reviewed-commit binding, and one verified detached Ed25519 signature from each
+of the asset-rights reviewer, licensing counsel, and release authorizer. The
+current registry contains no keys, so it is `unprovisioned` and cannot authorize
+a release.
 
 ## Reviewed runtime manifest
 
@@ -160,7 +174,8 @@ starfield, including exact provenance, dimensions, hashes, acknowledgement,
 and no-endorsement limits. The historical surface and synthetic background are
 decorative and are not current performance or astronomical evidence. Runtime
 rights and the composite bundle notice review remain explicitly `not_reviewed`.
-Production readiness therefore
-remains blocked even if later climate evidence becomes complete. A public
-candidate preview must not be published until the exact readable and machine
-third-party notices are deployed and independently reviewed.
+Production readiness therefore remains blocked even if later climate evidence
+becomes complete. The exact notice inventory passes source and staged integrity,
+but that does not approve redistribution. Public candidate output remains
+local-only until the five asset rows and counsel questions receive authorized
+review and the detached role signatures verify.

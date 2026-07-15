@@ -78,6 +78,9 @@ esac
 echo "🧹 Cleaning $DEPLOY_DIR/ ..."
 rm -rf "$DEPLOY_DIR"
 
+echo "📜 Verifying source third-party notices..."
+node tools/check-globe-third-party-notices.js
+
 if [ "$DEPLOY_MODE" = "release" ]; then
   echo "🔐 Enforcing production release readiness..."
   node tools/check-climate-production-readiness.js --release
@@ -100,6 +103,7 @@ echo "📋 Staging files..."
 # Entry-point HTML pages
 cp index.html "$DEPLOY_DIR/"
 [ -f gaia.html ] && cp gaia.html "$DEPLOY_DIR/" || true
+cp THIRD_PARTY_NOTICES.txt "$DEPLOY_DIR/"
 
 # PWA: service worker must live at the origin root; manifest is linked from index.html
 cp sw.js manifest.json "$DEPLOY_DIR/"
@@ -169,8 +173,13 @@ else
   echo "LOCAL QA ONLY. Do not upload, deploy, or expose this candidate as a public preview."
 fi
 
-# This must remain the final executable command. The source-tree policy runs
-# before staging in CI; this last step re-verifies the exact runtime consumers
-# and asset bytes after every copy, cleanup, and report operation.
-echo "🔐 Verifying final staged globe runtime assets..."
-node tools/check-globe-runtime-assets.js --staged "$DEPLOY_DIR"
+# Verify the readable notice, machine inventory, integration record, and future
+# approval schema after copy and cleanup. Integrity does not grant approval.
+echo "📜 Verifying final staged third-party notices..."
+node tools/check-globe-third-party-notices.js --staged "$DEPLOY_DIR"
+
+# This must remain the final executable command. It reruns CT-45 and the notice
+# checker, then rehashes every notice/trust artifact, the footer, and any future
+# signed approval bundle after every copy, cleanup, report, and earlier check.
+echo "🔐 Verifying final staged production integrity..."
+node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"

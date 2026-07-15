@@ -1,11 +1,27 @@
 'use strict';
 
 const crypto = require('crypto');
+const { hasActiveCiJob, hasExactCiStep, stripJsComments } = require('./globe-vendor-integrity');
+const { EXPECTED_MANIFEST_SHA256: EXPECTED_RUNTIME_MANIFEST_SHA256 } = require('./globe-runtime-assets');
+const {
+  APPROVAL_PATH,
+  EXPECTED_TRUST_REGISTRY_SHA256: EXPECTED_APPROVAL_TRUST_SHA256,
+  SIGNATURE_BUNDLE_PATH: APPROVAL_SIGNATURE_BUNDLE_PATH,
+  TRUST_REGISTRY_PATH: APPROVAL_TRUST_PATH,
+  exactUnprovisionedTrust,
+} = require('./globe-runtime-approval');
 
 const POLICY_VERSION = '1.0.0';
+const NOTICE_PATH = 'THIRD_PARTY_NOTICES.txt';
+const MANIFEST_PATH = 'data/governance/vendor/globe-gl-2.46.1-notices.json';
+const INTEGRATION_PATH = 'data/governance/vendor/globe-gl-2.46.1-notices-integration.json';
+const APPROVAL_SCHEMA_PATH = 'data/climate/schemas/globe-runtime-assets-production-review.schema.json';
 const EXPECTED_MANIFEST_SHA256 = '542e9bf2043f1c670200be9c9b0455b93048514dfb8b602301ca1245918660c2';
 const EXPECTED_MANIFEST_CALCULATION_HASH = '5b671c6e7357d35863b5bcd390a976939a279adc230ae84d43a702566413a66d';
 const EXPECTED_NOTICE_SHA256 = '741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2';
+const EXPECTED_INTEGRATION_SHA256 = '5faec989558a53787fa4c75f70a544348add64516d4ebf1db18f0710905e393e';
+const EXPECTED_INTEGRATION_CALCULATION_HASH = 'daa2de1dc17a991c3251ca3a5c7709bbba39081a70d1416de5872c927a3f85cf';
+const EXPECTED_APPROVAL_SCHEMA_SHA256 = '4e5b5e6360b280da9055c72daa84e2a3644f308a80c3f4f4c6e24bb92b6447f2';
 
 const EXPECTED_BUNDLE = Object.freeze({
   name: 'globe.gl',
@@ -132,6 +148,77 @@ const EXPECTED_COUNSEL_QUESTIONS = Object.freeze([
   'Is Unlicense acceptable in every jurisdiction in which the foundation distributes the site, including jurisdictions that may not recognize public-domain dedication?',
   'Does including the complete Emscripten 1.38.43 and musl notice corpora fully satisfy any obligations arising from generated or linked runtime code inside h3-js?',
   'Does the H3 treatment require any notice beyond the full Apache-2.0 licence, H3 NOTICE, and DGGRID attribution recorded here?'
+]);
+
+const EXPECTED_ASSET_RIGHTS_ROWS = Object.freeze([
+  Object.freeze({
+    asset_id: 'country-geometry',
+    path: 'assets/globe/runtime/ne_110m_admin_0_countries.geojson',
+    sha256: 'a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0',
+    source_url: 'https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/example/datasets/ne_110m_admin_0_countries.geojson',
+    source_path: null,
+    source_asset_id: 'ne_110m_admin_0_countries.geojson',
+    source_type: 'third_party_package_asset',
+    origin_evidence_status: 'primary_terms_identified_review_pending'
+  }),
+  Object.freeze({
+    asset_id: 'earth-night',
+    path: 'assets/globe/runtime/earth-night.jpg',
+    sha256: '373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124',
+    source_url: 'https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/79000/79765/dnb_land_ocean_ice.2012.3600x1800.jpg',
+    source_path: null,
+    source_asset_id: 'dnb_land_ocean_ice.2012.3600x1800.jpg',
+    source_type: 'official_publisher_asset',
+    origin_evidence_status: 'official_nasa_source_pinned_review_pending'
+  }),
+  Object.freeze({
+    asset_id: 'night-sky',
+    path: 'assets/globe/runtime/night-sky.svg',
+    sha256: '233713fa6ed8a495ed49deb97b89f46228aa49a83460e1379a60b3cee57c5688',
+    source_url: null,
+    source_path: 'tools/authoring/generate-globe-starfield.js',
+    source_asset_id: 'elu-night-sky-v1',
+    source_type: 'repo_authored_original',
+    origin_evidence_status: 'repo_authored_original_review_pending'
+  }),
+  Object.freeze({
+    asset_id: 'earth-blue-marble',
+    path: 'assets/globe/runtime/earth-blue-marble.jpg',
+    sha256: '228deba2e4b600146bdcb6cfa359b8ead6aacc2b1c13550a29cd82824cfa1c01',
+    source_url: 'https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-blue-marble.jpg',
+    source_path: null,
+    source_asset_id: 'earth-blue-marble.jpg',
+    source_type: 'third_party_package_asset',
+    origin_evidence_status: 'package_provenance_only_nasa_trace_unreviewed'
+  }),
+  Object.freeze({
+    asset_id: 'earth-topology',
+    path: 'assets/globe/runtime/earth-topology.png',
+    sha256: '839b12da2e4dd346b256cebae72e10c479a102c8980a22084c41275e4b9a0e12',
+    source_url: 'https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-topology.png',
+    source_path: null,
+    source_asset_id: 'earth-topology.png',
+    source_type: 'third_party_package_asset',
+    origin_evidence_status: 'package_provenance_only_gebco_trace_unreviewed'
+  })
+]);
+
+const REQUIRED_INTEGRATION_OWNERS = Object.freeze([
+  '/THIRD_PARTY_NOTICES.txt',
+  '/' + MANIFEST_PATH,
+  '/' + INTEGRATION_PATH,
+  '/' + APPROVAL_SCHEMA_PATH,
+  '/' + APPROVAL_PATH,
+  '/' + APPROVAL_TRUST_PATH,
+  '/' + APPROVAL_SIGNATURE_BUNDLE_PATH,
+  '/tools/check-globe-third-party-notices.js',
+  '/tools/lib/globe-third-party-notices.js',
+  '/tools/fixtures/globe-third-party-notices.json',
+  '/tools/check-globe-runtime-approval.js',
+  '/tools/lib/globe-runtime-approval.js',
+  '/tools/check-staged-production-integrity.js',
+  '/tools/build-deploy.sh',
+  '/tools/climate-truth-ci.js'
 ]);
 
 function sha256(value) {
@@ -577,16 +664,322 @@ function evaluateThirdPartyNotices(input) {
   };
 }
 
+function integrationCalculationHash(integration) {
+  const copy = JSON.parse(JSON.stringify(integration));
+  copy.calculation_hash = null;
+  return sha256(JSON.stringify(stable(copy)));
+}
+
+function stripHtmlComments(value) {
+  return String(value || '').replace(/<!--[\s\S]*?-->/g, '');
+}
+
+function activeShellLines(value) {
+  return String(value || '').split('\n').map(function (line) {
+    return line.trim();
+  }).filter(function (line) {
+    return line && !line.startsWith('#');
+  });
+}
+
+function exactUnresolvedAssetRights(rows) {
+  if (!Array.isArray(rows) || rows.length !== EXPECTED_ASSET_RIGHTS_ROWS.length) return false;
+  return rows.every(function (row, index) {
+    const expected = EXPECTED_ASSET_RIGHTS_ROWS[index];
+    return Object.keys(expected).every(function (key) { return row[key] === expected[key]; }) &&
+      typeof row.origin_evidence === 'string' && row.origin_evidence.length >= 20 &&
+      row.rights_review_status === 'not_reviewed' &&
+      row.notice_disposition_status === 'not_reviewed' &&
+      row.redistribution_decision === null &&
+      row.attribution_notice_obligation === null &&
+      row.reviewer_identity === null &&
+      row.reviewed_at === null &&
+      row.decision_reference === null &&
+      row.production_use_approved === false &&
+      row.release_authority === false;
+  });
+}
+
+function evaluateNoticeIntegration(input) {
+  const integration = input.integration || {};
+  const files = input.files || {};
+  const records = input.source_records || {};
+  const approvalBoundary = integration.approval_boundary || {};
+  const changes = integration.integration_changes || {};
+  const checks = [];
+  const check = function (pass, id, detail) {
+    checks.push({ id: id, pass: Boolean(pass), detail: detail });
+  };
+
+  check(
+    integration.schema_version === '1.0.0' &&
+      integration.integration_id === 'elu-globe-notices-integration-2026-07-15' &&
+      integration.status === 'implemented_unreviewed',
+    'integration_identity',
+    'The integration record must identify the exact unreviewed implementation boundary.'
+  );
+  check(
+    sha256(input.integrationText || '') === EXPECTED_INTEGRATION_SHA256,
+    'integration_file_sha256',
+    'The integration record bytes must match the pinned reviewed candidate.'
+  );
+  check(
+    integration.calculation_hash === EXPECTED_INTEGRATION_CALCULATION_HASH &&
+      integrationCalculationHash(integration) === EXPECTED_INTEGRATION_CALCULATION_HASH,
+    'integration_calculation_hash',
+    'The canonical integration record calculation hash must be valid and pinned.'
+  );
+
+  const coreGovernance = input.coreManifest && input.coreManifest.governance_boundary;
+  check(
+    coreGovernance &&
+      coreGovernance.runtime_modified === false &&
+      coreGovernance.deployment_modified === false &&
+      coreGovernance.public_ui_modified === false &&
+      integration.inventory_core &&
+      integration.inventory_core.sha256 === EXPECTED_MANIFEST_SHA256 &&
+      /historical artifact properties, not assertions about the later repository integration/.test(integration.inventory_core.governance_scope || ''),
+    'historical_core_scope',
+    'The immutable core booleans must be explicitly scoped as historical inventory-only properties.'
+  );
+  check(
+    changes.deployment_modified === true &&
+      changes.public_ui_modified === true &&
+      changes.control_plane_modified === true &&
+      changes.runtime_asset_bytes_modified === false &&
+      changes.notice_payload_modified === false &&
+      changes.inventory_core_modified === false,
+    'integration_changes',
+    'The integration record must truthfully record deploy, public-link, and control changes without claiming asset or notice-payload changes.'
+  );
+
+  check(
+    records[NOTICE_PATH] && records[NOTICE_PATH].regular_file === true &&
+      records[NOTICE_PATH].sha256 === EXPECTED_NOTICE_SHA256 &&
+      records[MANIFEST_PATH] && records[MANIFEST_PATH].regular_file === true &&
+      records[MANIFEST_PATH].sha256 === EXPECTED_MANIFEST_SHA256 &&
+      records[INTEGRATION_PATH] && records[INTEGRATION_PATH].regular_file === true &&
+      records[INTEGRATION_PATH].sha256 === EXPECTED_INTEGRATION_SHA256 &&
+      records[APPROVAL_SCHEMA_PATH] && records[APPROVAL_SCHEMA_PATH].regular_file === true &&
+      records[APPROVAL_SCHEMA_PATH].sha256 === EXPECTED_APPROVAL_SCHEMA_SHA256 &&
+      records[APPROVAL_TRUST_PATH] && records[APPROVAL_TRUST_PATH].regular_file === true &&
+      records[APPROVAL_TRUST_PATH].sha256 === EXPECTED_APPROVAL_TRUST_SHA256,
+    'source_regular_file_integrity',
+    'Notice, inventory, integration record, approval schema, and empty trust root must be regular source files with exact hashes.'
+  );
+
+  check(
+    exactUnresolvedAssetRights(integration.asset_rights_dispositions),
+    'asset_rights_unresolved',
+    'Natural Earth geometry and all four texture rows must remain individually unresolved, unapproved, and non-authoritative.'
+  );
+  check(
+    sha256(input.approvalTrustText || '') === EXPECTED_APPROVAL_TRUST_SHA256 &&
+      exactUnprovisionedTrust(input.approvalTrust),
+    'approval_trust_empty',
+    'The protected approval trust registry must remain exact and unprovisioned until real role authorities are supplied.'
+  );
+  check(
+    approvalBoundary.review_status === 'not_reviewed' &&
+      approvalBoundary.rights_review_status === 'not_reviewed' &&
+      approvalBoundary.third_party_notices_review_status === 'not_reviewed' &&
+      approvalBoundary.counsel_review_complete === false &&
+      approvalBoundary.production_use_approved === false &&
+      approvalBoundary.release_authority === false &&
+      approvalBoundary.approval_artifact_path === APPROVAL_PATH &&
+      approvalBoundary.approval_artifact_present === false &&
+      approvalBoundary.approval_schema_path === APPROVAL_SCHEMA_PATH &&
+      approvalBoundary.trust_registry_path === APPROVAL_TRUST_PATH &&
+      approvalBoundary.trust_registry_sha256 === EXPECTED_APPROVAL_TRUST_SHA256 &&
+      approvalBoundary.trust_registry_status === 'unprovisioned' &&
+      approvalBoundary.signature_bundle_path === APPROVAL_SIGNATURE_BUNDLE_PATH &&
+      approvalBoundary.signature_bundle_present === false &&
+      approvalBoundary.authority_model === 'detached_ed25519_role_signatures' &&
+      approvalBoundary.approval_hash_pinned === false &&
+      approvalBoundary.detached_signatures_verified === false &&
+      approvalBoundary.integrity_is_not_approval === true &&
+      input.approval_artifact_present === false &&
+      input.signature_bundle_present === false &&
+      sameValue(integration.unresolved_counsel_question_ids, [
+        'helvetiker-mgopen',
+        'unlicense-jurisdiction',
+        'emscripten-musl-runtime',
+        'h3-notice-scope'
+      ]),
+    'approval_boundary',
+    'Integrity remains separate from absent human approval, unresolved counsel questions, production use, and release authority.'
+  );
+
+  const approvalSchema = input.approvalSchema || {};
+  const approvalNotice = approvalSchema.properties && approvalSchema.properties.third_party_notice_inventory;
+  const approvalRows = approvalSchema.properties && approvalSchema.properties.asset_rights_dispositions;
+  const approvalBindings = approvalSchema.properties && approvalSchema.properties.authority_bindings;
+  const approvalManifest = approvalSchema.properties && approvalSchema.properties.runtime_asset_manifest;
+  const schemaRequired = Array.isArray(approvalSchema.required) ? approvalSchema.required : [];
+  const skyDisposition = approvalSchema.$defs && approvalSchema.$defs.nightSkyDisposition;
+  const skyProperties = skyDisposition && skyDisposition.allOf && skyDisposition.allOf[1] &&
+    skyDisposition.allOf[1].properties;
+  check(
+    sha256(input.approvalSchemaText || '') === EXPECTED_APPROVAL_SCHEMA_SHA256 &&
+      approvalSchema.properties &&
+      approvalSchema.properties.schema_version && approvalSchema.properties.schema_version.const === '2.0.0' &&
+      approvalSchema.properties.review_id && approvalSchema.properties.review_id.const === 'elu-globe-runtime-assets-production-review-v2' &&
+      approvalNotice && approvalNotice.properties &&
+      approvalNotice.properties.notice_sha256.const === EXPECTED_NOTICE_SHA256 &&
+      approvalNotice.properties.manifest_sha256.const === EXPECTED_MANIFEST_SHA256 &&
+      approvalNotice.properties.integration_sha256.const === EXPECTED_INTEGRATION_SHA256 &&
+      approvalManifest && approvalManifest.properties &&
+      approvalManifest.properties.sha256.const === EXPECTED_RUNTIME_MANIFEST_SHA256 &&
+      ['authority_bindings', 'counsel_reviewer_identity', 'release_authority_identity'].every(function (key) {
+        return schemaRequired.includes(key);
+      }) &&
+      approvalBindings && approvalBindings.properties &&
+      approvalBindings.properties.trust_registry_path.const === APPROVAL_TRUST_PATH &&
+      approvalBindings.properties.trust_registry_sha256.const === EXPECTED_APPROVAL_TRUST_SHA256 &&
+      approvalBindings.properties.key_ids && approvalBindings.properties.key_ids.properties &&
+      ['asset_rights_reviewer', 'licensing_counsel', 'release_authorizer'].every(function (role) {
+        return approvalBindings.properties.key_ids.required.includes(role) &&
+          approvalBindings.properties.key_ids.properties[role].pattern === '^ed25519:[0-9a-f]{64}$';
+      }) &&
+      approvalRows && approvalRows.minItems === 5 && approvalRows.maxItems === 5 &&
+      Array.isArray(approvalRows.prefixItems) && approvalRows.prefixItems.length === 5 &&
+      skyProperties && skyProperties.path.const === 'assets/globe/runtime/night-sky.svg' &&
+      skyProperties.source_url.const === null &&
+      skyProperties.source_path.const === 'tools/authoring/generate-globe-starfield.js' &&
+      approvalSchema.properties.counsel_resolutions.minItems === 4 &&
+      approvalSchema.properties.counsel_resolutions.maxItems === 4,
+    'approval_schema',
+    'The future approval schema must pin the notice pair, integration record, five non-blanket asset decisions, and four counsel resolutions.'
+  );
+
+  const buildLines = activeShellLines(files.build_deploy);
+  const sourceCommand = 'node tools/check-globe-third-party-notices.js';
+  const copyCommand = 'cp THIRD_PARTY_NOTICES.txt "$DEPLOY_DIR/"';
+  const stagedCommand = 'node tools/check-globe-third-party-notices.js --staged "$DEPLOY_DIR"';
+  const finalAggregateCommand = 'node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"';
+  const sourceIndex = buildLines.indexOf(sourceCommand);
+  const copyIndex = buildLines.indexOf(copyCommand);
+  const stagedIndex = buildLines.indexOf(stagedCommand);
+  const finalIndex = buildLines.indexOf(finalAggregateCommand);
+  check(
+    buildLines.filter(function (line) { return line === sourceCommand; }).length === 1 &&
+      buildLines.filter(function (line) { return line === copyCommand; }).length === 1 &&
+      buildLines.filter(function (line) { return line === stagedCommand; }).length === 1 &&
+      buildLines.filter(function (line) { return line === finalAggregateCommand; }).length === 1 &&
+      sourceIndex !== -1 && copyIndex > sourceIndex && stagedIndex > copyIndex &&
+      finalIndex > stagedIndex && finalIndex === buildLines.length - 1,
+    'deploy_notice_verification',
+    'Build staging must verify source notices, copy the root notice, verify staged notice bytes, then run the aggregate verifier as the final executable command.'
+  );
+
+  const activeIndex = stripHtmlComments(files.index);
+  const publicLink = '<a href="/THIRD_PARTY_NOTICES.txt">Third-party notices</a>';
+  check(
+    activeIndex.split(publicLink).length - 1 === 1 &&
+      integration.public_notice &&
+      integration.public_notice.same_origin_url === '/THIRD_PARTY_NOTICES.txt' &&
+      /THIRD_PARTY_NOTICES\.txt/.test(files.credits || '') &&
+      /globe-gl-2\.46\.1-notices\.json/.test(files.credits || ''),
+    'public_notice_link',
+    'The public footer and Credits must expose the exact same-origin readable notice and machine inventory.'
+  );
+
+  check(
+    hasActiveCiJob(files.ci, 'static') &&
+      hasActiveCiJob(files.ci, 'smoke') &&
+      hasExactCiStep(files.ci, 'Globe third-party notices integrity', sourceCommand) &&
+      hasExactCiStep(files.ci, 'Globe runtime approval cryptographic policy', 'node tools/check-globe-runtime-approval.js') &&
+      hasExactCiStep(files.ci, 'Final staged production integrity policy self-test', 'node tools/check-staged-production-integrity.js --self-test') &&
+      hasExactCiStep(files.ci, 'Verify final staged production integrity independently', 'node tools/check-staged-production-integrity.js --staged _deploy'),
+    'ci_notice_wiring',
+    'Active CI must run both the source and staged notice checkers without optional or commented bypasses.'
+  );
+  const truthLine = "{ id: 'CT-45-NOTICES', script: 'tools/check-globe-third-party-notices.js', required: true }";
+  check(
+    stripJsComments(files.climate_truth_ci).split('\n').filter(function (line) {
+      return line.trim().replace(/,$/, '') === truthLine;
+    }).length === 1,
+    'truth_ci_notice_required',
+    'Climate truth CI must contain exactly one active required CT-45 notice component.'
+  );
+  check(
+    [
+      NOTICE_PATH,
+      MANIFEST_PATH,
+      INTEGRATION_PATH,
+      APPROVAL_SCHEMA_PATH,
+      APPROVAL_PATH,
+      APPROVAL_TRUST_PATH,
+      APPROVAL_SIGNATURE_BUNDLE_PATH,
+      'tools/check-globe-third-party-notices.js',
+      'tools/lib/globe-third-party-notices.js',
+      'tools/fixtures/globe-third-party-notices.json',
+      'tools/check-globe-runtime-approval.js',
+      'tools/lib/globe-runtime-approval.js',
+      'tools/check-staged-production-integrity.js'
+    ].every(function (required) {
+      return Array.isArray(input.runtime_fixed_paths) && input.runtime_fixed_paths.includes(required);
+    }),
+    'runtime_diff_notice_scope',
+    'Runtime-diff policy must classify the notice pair, integration record, approval contract, and enforcement controls as runtime-affecting.'
+  );
+  check(
+    REQUIRED_INTEGRATION_OWNERS.every(function (required) {
+      return String(files.codeowners || '').split('\n').some(function (line) {
+        return line.trim().startsWith(required + ' ') && line.includes('@earth-love-united/maintainers');
+      });
+    }),
+    'notice_control_owners',
+    'Every notice, approval, deployment, truth, and enforcement path must require maintainer review.'
+  );
+  check(
+    /inventory integrity is not rights approval/i.test(files.production_docs || '') &&
+      /historical inventory-only properties/i.test(files.production_docs || '') &&
+      /five asset-specific rights dispositions/i.test(files.production_docs || ''),
+    'notice_integration_docs',
+    'Production documentation must distinguish integrity from approval, scope historical core flags, and require five asset-specific rights decisions.'
+  );
+
+  const failures = checks.filter(function (item) { return !item.pass; });
+  return {
+    policy_version: POLICY_VERSION,
+    status: failures.length === 0 ? 'pass' : 'fail',
+    integrity_passed: failures.length === 0,
+    review_status: 'not_reviewed',
+    production_use_approved: false,
+    release_authority: false,
+    checks: checks,
+    failures: failures,
+    failure_ids: failures.map(function (item) { return item.id; })
+  };
+}
+
 module.exports = {
+  APPROVAL_PATH: APPROVAL_PATH,
+  APPROVAL_SCHEMA_PATH: APPROVAL_SCHEMA_PATH,
+  APPROVAL_SIGNATURE_BUNDLE_PATH: APPROVAL_SIGNATURE_BUNDLE_PATH,
+  APPROVAL_TRUST_PATH: APPROVAL_TRUST_PATH,
+  EXPECTED_APPROVAL_SCHEMA_SHA256: EXPECTED_APPROVAL_SCHEMA_SHA256,
+  EXPECTED_APPROVAL_TRUST_SHA256: EXPECTED_APPROVAL_TRUST_SHA256,
+  EXPECTED_ASSET_RIGHTS_ROWS: EXPECTED_ASSET_RIGHTS_ROWS,
   POLICY_VERSION: POLICY_VERSION,
   EXPECTED_BUNDLE: EXPECTED_BUNDLE,
   EXPECTED_COMPONENTS: EXPECTED_COMPONENTS,
+  EXPECTED_INTEGRATION_CALCULATION_HASH: EXPECTED_INTEGRATION_CALCULATION_HASH,
+  EXPECTED_INTEGRATION_SHA256: EXPECTED_INTEGRATION_SHA256,
   EXPECTED_MANIFEST_SHA256: EXPECTED_MANIFEST_SHA256,
   EXPECTED_MANIFEST_CALCULATION_HASH: EXPECTED_MANIFEST_CALCULATION_HASH,
   EXPECTED_NOTICE_HASHES: EXPECTED_NOTICE_HASHES,
   EXPECTED_NOTICE_SHA256: EXPECTED_NOTICE_SHA256,
+  INTEGRATION_PATH: INTEGRATION_PATH,
+  MANIFEST_PATH: MANIFEST_PATH,
+  NOTICE_PATH: NOTICE_PATH,
   calculationHash: calculationHash,
+  evaluateNoticeIntegration: evaluateNoticeIntegration,
   evaluateThirdPartyNotices: evaluateThirdPartyNotices,
+  exactUnresolvedAssetRights: exactUnresolvedAssetRights,
+  exactUnprovisionedTrust: exactUnprovisionedTrust,
+  integrationCalculationHash: integrationCalculationHash,
   parseNoticeFile: parseNoticeFile,
   sha256: sha256,
   stable: stable

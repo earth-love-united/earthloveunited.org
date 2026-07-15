@@ -140,6 +140,60 @@
       "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
     },
     {
+      "id": "public-notice-is-runtime-affecting",
+      "changed_paths": ["THIRD_PARTY_NOTICES.txt"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "notice-inventory-is-runtime-affecting",
+      "changed_paths": ["data/governance/vendor/globe-gl-2.46.1-notices.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "notice-integration-is-runtime-affecting",
+      "changed_paths": ["data/governance/vendor/globe-gl-2.46.1-notices-integration.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "notice-checker-is-runtime-affecting",
+      "changed_paths": ["tools/check-globe-third-party-notices.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "future-approval-schema-is-runtime-affecting",
+      "changed_paths": ["data/climate/schemas/globe-runtime-assets-production-review.schema.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "approval-trust-registry-is-runtime-affecting",
+      "changed_paths": ["data/climate/governance/globe-runtime-approval-trust.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "detached-approval-signatures-are-runtime-affecting",
+      "changed_paths": ["data/climate/reviews/globe-runtime-assets-production-review.signatures.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "approval-crypto-checker-is-runtime-affecting",
+      "changed_paths": ["tools/check-globe-runtime-approval.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "final-staged-integrity-checker-is-runtime-affecting",
+      "changed_paths": ["tools/check-staged-production-integrity.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
       "id": "windows-separator-cannot-bypass-runtime-path",
       "changed_paths": ["data\\climate\\runtime\\country-factual-candidate.json"],
       "candidate": "$base_denied_candidate",

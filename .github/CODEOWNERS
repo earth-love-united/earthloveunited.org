@@ -19,6 +19,7 @@
 # ─── Legal & governance (require maintainer review) ─────────────
 /LICENSE                              @earth-love-united/maintainers
 /CREDITS.md                           @earth-love-united/maintainers
+/THIRD_PARTY_NOTICES.txt                @earth-love-united/maintainers
 /CODE_OF_CONDUCT.md                   @earth-love-united/maintainers
 /CONTRIBUTING.md                      @earth-love-united/maintainers
 /README.md                            @earth-love-united/maintainers
@@ -61,6 +62,12 @@
 /tools/fixtures/globe-runtime-assets.json @earth-love-united/maintainers
 /tools/authoring/generate-globe-starfield.js @earth-love-united/maintainers
 /tools/authoring/fetch-nasa-black-marble.sh @earth-love-united/maintainers
+/tools/check-globe-third-party-notices.js @earth-love-united/maintainers
+/tools/lib/globe-third-party-notices.js @earth-love-united/maintainers
+/tools/fixtures/globe-third-party-notices.json @earth-love-united/maintainers
+/tools/check-globe-runtime-approval.js @earth-love-united/maintainers
+/tools/lib/globe-runtime-approval.js @earth-love-united/maintainers
+/tools/check-staged-production-integrity.js @earth-love-united/maintainers
 /tools/build-deploy.sh                @earth-love-united/maintainers
 /tools/check-climate-production-readiness.js @earth-love-united/maintainers
 /tools/check-climate-production-readiness-policy.js @earth-love-united/maintainers
@@ -78,7 +85,12 @@
 /data/climate/fixtures/globe-webgl-fallback.json @earth-love-united/maintainers
 /assets/globe/runtime/                @earth-love-united/maintainers
 /data/small-nations.json              @earth-love-united/maintainers
+/data/governance/vendor/globe-gl-2.46.1-notices.json @earth-love-united/maintainers
+/data/governance/vendor/globe-gl-2.46.1-notices-integration.json @earth-love-united/maintainers
+/data/climate/schemas/globe-runtime-assets-production-review.schema.json @earth-love-united/maintainers
+/data/climate/governance/globe-runtime-approval-trust.json @earth-love-united/maintainers
 /data/climate/reviews/globe-runtime-assets-production-review.json @earth-love-united/maintainers
+/data/climate/reviews/globe-runtime-assets-production-review.signatures.json @earth-love-united/maintainers
 /tools/climate-truth-ci.js            @earth-love-united/maintainers
 
 # ─── CI / GitHub config ─────────────────────────────────────────

@@ -7,6 +7,17 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { evaluateReadiness, parseReadinessArgs, releaseWorktreeCleanPasses } = require('./lib/climate-production-readiness');
 const { EXPECTED_ASSETS, REQUIRED_UI_REVIEW_PIN_PATHS } = require('./lib/globe-runtime-assets');
+const {
+  APPROVAL_SCHEMA_PATH,
+  INTEGRATION_PATH: NOTICE_INTEGRATION_PATH,
+  MANIFEST_PATH: NOTICE_MANIFEST_PATH,
+  NOTICE_PATH,
+} = require('./lib/globe-third-party-notices');
+const {
+  APPROVAL_PATH: RUNTIME_ASSET_APPROVAL_PATH,
+  SIGNATURE_BUNDLE_PATH,
+  TRUST_REGISTRY_PATH,
+} = require('./lib/globe-runtime-approval');
 
 const ROOT = path.resolve(__dirname, '..');
 const { mode, jsonOnly } = parseReadinessArgs(process.argv.slice(2));
@@ -21,7 +32,10 @@ const P = Object.freeze({
   allowManifest: 'data/climate/releases/ct40-allow-manifest.json',
   rollbackProof: 'data/climate/releases/reviewed-rollback-proof.json',
   runtimeAssets: 'assets/globe/runtime/manifest.json',
-  runtimeAssetApproval: 'data/climate/reviews/globe-runtime-assets-production-review.json',
+  noticeIntegration: NOTICE_INTEGRATION_PATH,
+  runtimeAssetApproval: RUNTIME_ASSET_APPROVAL_PATH,
+  runtimeAssetSignatureBundle: SIGNATURE_BUNDLE_PATH,
+  runtimeAssetTrustRegistry: TRUST_REGISTRY_PATH,
 });
 
 function exists(relative) { return fs.existsSync(path.join(ROOT, relative)); }
@@ -30,6 +44,20 @@ function read(relative) { return JSON.parse(fs.readFileSync(path.join(ROOT, rela
 function required(relative) {
   if (!exists(relative)) throw new Error(`required readiness input missing: ${relative}`);
   return read(relative);
+}
+
+function entryPresent(relative) {
+  try { fs.lstatSync(path.join(ROOT, relative)); return true; }
+  catch (error) {
+    if (error.code === 'ENOENT') return false;
+    throw error;
+  }
+}
+
+function readRegularJson(relative) {
+  if (!regularNonSymlink(relative)) return { value: null, text: null };
+  const text = fs.readFileSync(path.join(ROOT, relative), 'utf8');
+  return { value: JSON.parse(text), text };
 }
 
 function run(command, args) {
@@ -68,8 +96,20 @@ function runTruthCi() {
 
 function regularNonSymlink(relative) {
   try {
-    const stat = fs.lstatSync(path.join(ROOT, relative));
-    return stat.isFile() && !stat.isSymbolicLink();
+    const normalized = path.posix.normalize(String(relative).replaceAll(path.sep, '/'));
+    if (!normalized || normalized === '..' || normalized.startsWith('../') || path.posix.isAbsolute(normalized)) return false;
+    const rootStat = fs.lstatSync(ROOT);
+    if (!rootStat.isDirectory() || rootStat.isSymbolicLink()) return false;
+    let current = ROOT;
+    const parts = normalized.split('/');
+    for (let index = 0; index < parts.length; index += 1) {
+      current = path.join(current, parts[index]);
+      const stat = fs.lstatSync(current);
+      if (stat.isSymbolicLink()) return false;
+      if (index < parts.length - 1 && !stat.isDirectory()) return false;
+      if (index === parts.length - 1 && !stat.isFile()) return false;
+    }
+    return true;
   } catch {
     return false;
   }
@@ -88,9 +128,29 @@ function reviewedCommitBindingPasses(approval) {
   if (ancestor.status !== 0) return false;
   const reviewedPaths = [...new Set([
     ...REQUIRED_UI_REVIEW_PIN_PATHS,
+    NOTICE_PATH,
+    NOTICE_MANIFEST_PATH,
+    NOTICE_INTEGRATION_PATH,
+    APPROVAL_SCHEMA_PATH,
+    TRUST_REGISTRY_PATH,
+    'index.html',
+    'CREDITS.md',
+    '.github/workflows/ci.yml',
     'tools/check-globe-runtime-assets.js',
     'tools/lib/globe-runtime-assets.js',
     'tools/fixtures/globe-runtime-assets.json',
+    'tools/check-globe-third-party-notices.js',
+    'tools/lib/globe-third-party-notices.js',
+    'tools/fixtures/globe-third-party-notices.json',
+    'tools/check-globe-runtime-approval.js',
+    'tools/lib/globe-runtime-approval.js',
+    'tools/check-staged-production-integrity.js',
+    'tools/build-deploy.sh',
+    'tools/climate-truth-ci.js',
+    'tools/lib/climate-runtime-diff-boundary.js',
+    'tools/lib/climate-production-readiness.js',
+    'tools/check-climate-production-readiness.js',
+    'tools/check-climate-production-readiness-policy.js',
   ])];
   const diff = childProcess.spawnSync('git', ['diff', '--quiet', reviewed, 'HEAD', '--', ...reviewedPaths], { cwd: ROOT, encoding: 'utf8' });
   return diff.status === 0;
@@ -107,10 +167,20 @@ const truthCi = runTruthCi();
 const canonicalLinks = run(process.execPath, ['tools/check-canonical-source-links.js']);
 const publicCopy = run(process.execPath, ['tools/check-public-copy.js']);
 const ct45 = run(process.execPath, ['tools/check-globe-runtime-assets.js']);
+const notices = run(process.execPath, ['tools/check-globe-third-party-notices.js']);
 const loadOrder = run('python3', ['scripts/verify_load_order.py']);
 const reviewContext = allowManifest?.review_context || {};
 const releaseReview = allowManifest?.review || {};
-const runtimeAssetApproval = exists(P.runtimeAssetApproval) ? read(P.runtimeAssetApproval) : null;
+const runtimeAssetApprovalPresent = entryPresent(P.runtimeAssetApproval);
+const runtimeAssetApprovalRegular = regularNonSymlink(P.runtimeAssetApproval);
+const runtimeAssetApprovalRecord = readRegularJson(P.runtimeAssetApproval);
+const runtimeAssetApproval = runtimeAssetApprovalRecord.value;
+const runtimeAssetSignatureBundlePresent = entryPresent(P.runtimeAssetSignatureBundle);
+const runtimeAssetSignatureBundleRegular = regularNonSymlink(P.runtimeAssetSignatureBundle);
+const runtimeAssetSignatureBundleRecord = readRegularJson(P.runtimeAssetSignatureBundle);
+const runtimeAssetTrustRegistryRegular = regularNonSymlink(P.runtimeAssetTrustRegistry);
+const runtimeAssetTrustRegistryRecord = readRegularJson(P.runtimeAssetTrustRegistry);
+const noticeIntegration = required(P.noticeIntegration);
 
 const report = evaluateReadiness({
   mode,
@@ -148,17 +218,25 @@ const report = evaluateReadiness({
   truth_ci: truthCi,
   runtime_assets: {
     integrity_passed: ct45.pass,
+    notices_integrity_passed: notices.pass,
     manifest: required(P.runtimeAssets),
+    notice_integration: noticeIntegration,
+    asset_rights_dispositions: noticeIntegration.asset_rights_dispositions,
     manifest_sha256: sha256(P.runtimeAssets),
     asset_pins: EXPECTED_ASSETS.map(asset => ({ path: asset.path, sha256: sha256(asset.path) })),
     current_commit_sha: currentCommitSha(),
     reviewed_commit_binding_passed: reviewedCommitBindingPasses(runtimeAssetApproval),
-    approval_review_present: exists(P.runtimeAssetApproval),
-    approval_file_regular: regularNonSymlink(P.runtimeAssetApproval),
+    approval_review_present: runtimeAssetApprovalPresent,
+    approval_file_regular: runtimeAssetApprovalRegular,
     approval: runtimeAssetApproval,
-    // A separate notices mission must replace this fail-closed boundary with
-    // exact source/staged notice verification; reviewer booleans are not proof.
-    notices_integrity_passed: false,
+    approval_text: runtimeAssetApprovalRecord.text,
+    trust_registry_file_regular: runtimeAssetTrustRegistryRegular,
+    trust_registry: runtimeAssetTrustRegistryRecord.value,
+    trust_registry_text: runtimeAssetTrustRegistryRecord.text,
+    signature_bundle_present: runtimeAssetSignatureBundlePresent,
+    signature_bundle_file_regular: runtimeAssetSignatureBundleRegular,
+    signature_bundle: runtimeAssetSignatureBundleRecord.value,
+    signature_bundle_text: runtimeAssetSignatureBundleRecord.text,
   },
 });
 

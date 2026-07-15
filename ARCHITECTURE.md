@@ -174,6 +174,17 @@ to all 249 entities. CT-45 proves byte integrity and these fail-closed runtime
 boundaries; it does not grant texture rights, third-party-notice completeness,
 production approval, or release authority.
 
+The deploy surface also exposes `/THIRD_PARTY_NOTICES.txt` from the origin
+root and retains its machine inventory under `data/governance/vendor/`. The
+notice checker pins the source and final staged bytes, integration record, and
+future approval schema. A protected, exact-hash trust registry is currently
+empty and `unprovisioned`; approval and detached signature artifacts are absent.
+Notice integrity does not confer rights approval: the inventory core flags are
+historical inventory-only properties, and production requires five
+asset-specific rights dispositions plus four counsel resolutions in an exact
+commit approval, followed by distinct verified Ed25519 signatures from the
+asset-rights reviewer, licensing counsel, and release authorizer.
+
 ### Target country-truth flow
 
 The approved direction is documented in:
@@ -280,13 +291,13 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v29 precaches the public page, core CSS/JS, verified local
+`sw.js` cache epoch v30 precaches the public page, core CSS/JS, verified local
 globe.gl, the CT-45 manifest and five localized assets, and exact-version
 candidate/carbon data requests. It applies:
 
 - network-first for `/data/`;
 - network-first with browser-cache bypass for HTML, JS, and CSS;
-- cache-first for other same-origin static assets. Geometry and image requests
+- cache-first for other same-origin static assets. Geometry and visual-asset requests
   use digest-versioned query keys coupled to the precache entries.
 
 Any runtime data filename or script addition requires a service-worker asset
@@ -304,6 +315,9 @@ an old profile artifact.
 | Stacking | `StackLint.audit()` | No known invisible blockers/z-index regressions |
 | Country truth | `tools/verify-globe-country-truth.js` | Intended country-status invariants; currently requires repair for v1 |
 | Public copy | `node tools/check-public-copy.js` | No unresolved draft markers; not scientific fact-checking |
+| Third-party notices | `node tools/check-globe-third-party-notices.js` | Exact notice/inventory/integration bytes and active deploy/CI controls; no rights approval |
+| Approval authority | `node tools/check-globe-runtime-approval.js` | Empty trust is fail closed; future detached three-role Ed25519 signatures and bindings verify |
+| Final staged aggregate | `node tools/check-staged-production-integrity.js --staged _deploy` | Last-write rehash of CT-45, notices, trust, footer, and any signed approval pair |
 
 The existing CI runs syntax, static load order, SmokeTest, and StackLint. It
 does not yet prove country-source truth, target comparability, or scientific
@@ -328,6 +342,7 @@ lineage; those gates are part of the country-truth plan.
 python3 scripts/verify_load_order.py
 node --check js/changed-file.js
 node tools/check-public-copy.js
+node tools/check-globe-third-party-notices.js
 ```
 
 Then serve the site and run:

@@ -6,10 +6,15 @@
     "manifest_sha256": "542e9bf2043f1c670200be9c9b0455b93048514dfb8b602301ca1245918660c2",
     "manifest_calculation_hash": "5b671c6e7357d35863b5bcd390a976939a279adc230ae84d43a702566413a66d",
     "notice_sha256": "741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2",
+    "integration_sha256": "5faec989558a53787fa4c75f70a544348add64516d4ebf1db18f0710905e393e",
+    "integration_calculation_hash": "daa2de1dc17a991c3251ca3a5c7709bbba39081a70d1416de5872c927a3f85cf",
+    "approval_schema_sha256": "4e5b5e6360b280da9055c72daa84e2a3644f308a80c3f4f4c6e24bb92b6447f2",
+    "approval_trust_sha256": "9bb47c15abef171c340b9389edf680f5a2d01cac5a505ca3d208281fef63cf73",
     "component_count": 44,
     "source_mapped_package_count": 37,
     "third_party_source_count": 223,
-    "notice_section_count": 35
+    "notice_section_count": 35,
+    "asset_rights_disposition_count": 5
   },
   "mutations": [
     {
@@ -433,6 +438,326 @@
       "kind": "invalid_calculation_hash",
       "value": "8888888888888888888888888888888888888888888888888888888888888888",
       "expected_failure": "manifest_calculation_hash"
+    }
+  ],
+  "integration_mutations": [
+    {
+      "id": "historical-core-scope-removed",
+      "kind": "set_integration",
+      "path": "inventory_core.governance_scope",
+      "value": "These booleans describe current repository state.",
+      "expected_failure": "historical_core_scope"
+    },
+    {
+      "id": "deployment-change-hidden",
+      "kind": "set_integration",
+      "path": "integration_changes.deployment_modified",
+      "value": false,
+      "expected_failure": "integration_changes"
+    },
+    {
+      "id": "public-ui-change-hidden",
+      "kind": "set_integration",
+      "path": "integration_changes.public_ui_modified",
+      "value": false,
+      "expected_failure": "integration_changes"
+    },
+    {
+      "id": "texture-rights-review-invented",
+      "kind": "set_integration",
+      "path": "asset_rights_dispositions.1.rights_review_status",
+      "value": "reviewed",
+      "expected_failure": "asset_rights_unresolved"
+    },
+    {
+      "id": "texture-production-approval-invented",
+      "kind": "set_integration",
+      "path": "asset_rights_dispositions.2.production_use_approved",
+      "value": true,
+      "expected_failure": "asset_rights_unresolved"
+    },
+    {
+      "id": "geometry-redistribution-decision-invented",
+      "kind": "set_integration",
+      "path": "asset_rights_dispositions.0.redistribution_decision",
+      "value": "approved_for_redistribution",
+      "expected_failure": "asset_rights_unresolved"
+    },
+    {
+      "id": "approval-artifact-state-invented",
+      "kind": "set_integration",
+      "path": "approval_boundary.approval_artifact_present",
+      "value": true,
+      "expected_failure": "approval_boundary"
+    },
+    {
+      "id": "signature-bundle-state-invented",
+      "kind": "set_integration",
+      "path": "approval_boundary.signature_bundle_present",
+      "value": true,
+      "expected_failure": "approval_boundary"
+    },
+    {
+      "id": "trust-registry-status-invented",
+      "kind": "set_integration",
+      "path": "approval_boundary.trust_registry_status",
+      "value": "provisioned",
+      "expected_failure": "approval_boundary"
+    },
+    {
+      "id": "integration-production-approval-invented",
+      "kind": "set_integration",
+      "path": "approval_boundary.production_use_approved",
+      "value": true,
+      "expected_failure": "approval_boundary"
+    },
+    {
+      "id": "approval-file-spoofed-present",
+      "kind": "approval_present",
+      "expected_failure": "approval_boundary"
+    },
+    {
+      "id": "approval-schema-notice-hash-drift",
+      "kind": "set_schema",
+      "path": "properties.third_party_notice_inventory.properties.notice_sha256.const",
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expected_failure": "approval_schema"
+    },
+    {
+      "id": "approval-schema-blanket-four-assets",
+      "kind": "set_schema",
+      "path": "properties.asset_rights_dispositions.maxItems",
+      "value": 4,
+      "expected_failure": "approval_schema"
+    },
+    {
+      "id": "approval-schema-counsel-bypass",
+      "kind": "set_schema",
+      "path": "properties.counsel_resolutions.minItems",
+      "value": 0,
+      "expected_failure": "approval_schema"
+    },
+    {
+      "id": "build-source-check-removed",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "node tools/check-globe-third-party-notices.js",
+      "to": "true",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "build-notice-copy-removed",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "cp THIRD_PARTY_NOTICES.txt \"$DEPLOY_DIR/\"",
+      "to": "true",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "build-staged-notice-check-removed",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "node tools/check-globe-third-party-notices.js --staged \"$DEPLOY_DIR\"",
+      "to": "true",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "build-final-aggregate-check-removed",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
+      "to": "true",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "public-notice-link-removed",
+      "kind": "replace_file",
+      "file": "index",
+      "from": "<a href=\"/THIRD_PARTY_NOTICES.txt\">Third-party notices</a>",
+      "to": "<span>Third-party notices unavailable</span>",
+      "expected_failure": "public_notice_link"
+    },
+    {
+      "id": "public-notice-link-comment-spoof",
+      "kind": "replace_file",
+      "file": "index",
+      "from": "<a href=\"/THIRD_PARTY_NOTICES.txt\">Third-party notices</a>",
+      "to": "<!-- <a href=\"/THIRD_PARTY_NOTICES.txt\">Third-party notices</a> -->",
+      "expected_failure": "public_notice_link"
+    },
+    {
+      "id": "ci-static-notice-step-disabled",
+      "kind": "replace_file",
+      "file": "ci",
+      "from": "- name: Globe third-party notices integrity\n        run: node tools/check-globe-third-party-notices.js",
+      "to": "- name: Globe third-party notices integrity\n        run: node tools/check-globe-third-party-notices.js\n        continue-on-error: true",
+      "expected_failure": "ci_notice_wiring"
+    },
+    {
+      "id": "ci-static-notice-comment-spoof",
+      "kind": "replace_file",
+      "file": "ci",
+      "from": "      - name: Globe third-party notices integrity\n        run: node tools/check-globe-third-party-notices.js",
+      "to": "      # - name: Globe third-party notices integrity\n      #   run: node tools/check-globe-third-party-notices.js",
+      "expected_failure": "ci_notice_wiring"
+    },
+    {
+      "id": "ci-final-aggregate-step-disabled",
+      "kind": "replace_file",
+      "file": "ci",
+      "from": "- name: Verify final staged production integrity independently\n        run: node tools/check-staged-production-integrity.js --staged _deploy",
+      "to": "- name: Verify final staged production integrity independently\n        run: node tools/check-staged-production-integrity.js --staged _deploy\n        if: false",
+      "expected_failure": "ci_notice_wiring"
+    },
+    {
+      "id": "ci-approval-crypto-step-disabled",
+      "kind": "replace_file",
+      "file": "ci",
+      "from": "- name: Globe runtime approval cryptographic policy\n        run: node tools/check-globe-runtime-approval.js",
+      "to": "- name: Globe runtime approval cryptographic policy\n        run: node tools/check-globe-runtime-approval.js\n        continue-on-error: true",
+      "expected_failure": "ci_notice_wiring"
+    },
+    {
+      "id": "truth-component-optional",
+      "kind": "replace_file",
+      "file": "climate_truth_ci",
+      "from": "{ id: 'CT-45-NOTICES', script: 'tools/check-globe-third-party-notices.js', required: true }",
+      "to": "{ id: 'CT-45-NOTICES', script: 'tools/check-globe-third-party-notices.js', required: false }",
+      "expected_failure": "truth_ci_notice_required"
+    },
+    {
+      "id": "truth-component-comment-spoof",
+      "kind": "replace_file",
+      "file": "climate_truth_ci",
+      "from": "  { id: 'CT-45-NOTICES', script: 'tools/check-globe-third-party-notices.js', required: true },",
+      "to": "  // { id: 'CT-45-NOTICES', script: 'tools/check-globe-third-party-notices.js', required: true },",
+      "expected_failure": "truth_ci_notice_required"
+    },
+    {
+      "id": "runtime-diff-notice-path-removed",
+      "kind": "remove_runtime_path",
+      "path": "THIRD_PARTY_NOTICES.txt",
+      "expected_failure": "runtime_diff_notice_scope"
+    },
+    {
+      "id": "runtime-diff-trust-path-removed",
+      "kind": "remove_runtime_path",
+      "path": "data/climate/governance/globe-runtime-approval-trust.json",
+      "expected_failure": "runtime_diff_notice_scope"
+    },
+    {
+      "id": "notice-codeowner-removed",
+      "kind": "replace_file",
+      "file": "codeowners",
+      "from": "/THIRD_PARTY_NOTICES.txt                @earth-love-united/maintainers",
+      "to": "# notice owner removed",
+      "expected_failure": "notice_control_owners"
+    },
+    {
+      "id": "integrity-approval-doc-boundary-removed",
+      "kind": "replace_file",
+      "file": "production_docs",
+      "from": "Inventory integrity is not rights approval",
+      "to": "Inventory integrity grants rights approval",
+      "expected_failure": "notice_integration_docs"
+    }
+  ],
+  "filesystem_cases": [
+    {
+      "id": "source-notice-symlink",
+      "scope": "source",
+      "operation": "symlink",
+      "path": "THIRD_PARTY_NOTICES.txt"
+    },
+    {
+      "id": "source-manifest-symlink",
+      "scope": "source",
+      "operation": "symlink",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "staged-notice-symlink",
+      "scope": "staged",
+      "operation": "symlink",
+      "path": "THIRD_PARTY_NOTICES.txt"
+    },
+    {
+      "id": "staged-manifest-symlink",
+      "scope": "staged",
+      "operation": "symlink",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "source-notice-omitted",
+      "scope": "source",
+      "operation": "omit",
+      "path": "THIRD_PARTY_NOTICES.txt"
+    },
+    {
+      "id": "source-manifest-omitted",
+      "scope": "source",
+      "operation": "omit",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "staged-notice-omitted",
+      "scope": "staged",
+      "operation": "omit",
+      "path": "THIRD_PARTY_NOTICES.txt"
+    },
+    {
+      "id": "staged-manifest-omitted",
+      "scope": "staged",
+      "operation": "omit",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "staged-notice-tamper",
+      "scope": "staged",
+      "operation": "tamper",
+      "path": "THIRD_PARTY_NOTICES.txt"
+    },
+    {
+      "id": "staged-manifest-tamper",
+      "scope": "staged",
+      "operation": "tamper",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "staged-integration-tamper",
+      "scope": "staged",
+      "operation": "tamper",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices-integration.json"
+    },
+    {
+      "id": "staged-schema-symlink",
+      "scope": "staged",
+      "operation": "symlink",
+      "path": "data/climate/schemas/globe-runtime-assets-production-review.schema.json"
+    },
+    {
+      "id": "source-trust-registry-symlink",
+      "scope": "source",
+      "operation": "symlink",
+      "path": "data/climate/governance/globe-runtime-approval-trust.json"
+    },
+    {
+      "id": "staged-trust-registry-tamper",
+      "scope": "staged",
+      "operation": "tamper",
+      "path": "data/climate/governance/globe-runtime-approval-trust.json"
+    },
+    {
+      "id": "staged-vendor-directory-symlink",
+      "scope": "staged",
+      "operation": "directory_symlink",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "staged-root-intermediate-symlink-escape",
+      "scope": "staged_root",
+      "operation": "intermediate_symlink_escape",
+      "path": "escape/staged"
     }
   ]
 }
