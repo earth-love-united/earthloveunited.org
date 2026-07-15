@@ -12,6 +12,7 @@ const RETIRED_IDENTIFIERS = [
   'pledgeNodes',
   'countryHexColors',
   'getPledgeNode',
+  'getCountryHexData',
 ];
 
 const RETIRED_CLIMATE_FIELDS = [
@@ -35,6 +36,9 @@ const RETIRED_CLIMATE_FIELDS = [
   'change_since_2015',
   'finance_total_bn',
   'ndc_summary',
+  'divergence',
+  'conditionality',
+  'population',
 ];
 
 // Compact semantic signatures catch exact strings and common computed-string
@@ -74,6 +78,22 @@ function compact(source) {
     .replace(/[^a-z0-9]/g, '');
 }
 
+function usesRetiredClimateField(executable, field) {
+  if (field.includes('_')) {
+    return new RegExp(`(^|[^A-Za-z0-9_])${field}([^A-Za-z0-9_]|$)`).test(executable);
+  }
+
+  // Plain-language field names may legitimately occur in labels, prose, and
+  // navigation CSS. Treat them as legacy data only when used as a JavaScript
+  // property/key, rather than banning the word itself.
+  const propertyPatterns = [
+    new RegExp(`\\.${field}\\b`),
+    new RegExp(`\\[\\s*['\"\\\`]${field}['\"\\\`]\\s*\\]`),
+    new RegExp(`(^|[,{])\\s*['\"\\\`]?${field}['\"\\\`]?\\s*:`, 'm'),
+  ];
+  return propertyPatterns.some(pattern => pattern.test(executable));
+}
+
 function inspectLiveSource(relativePath, source) {
   const findings = [];
   const executable = stripComments(source);
@@ -91,8 +111,7 @@ function inspectLiveSource(relativePath, source) {
   }
 
   for (const field of RETIRED_CLIMATE_FIELDS) {
-    const pattern = new RegExp(`(^|[^A-Za-z0-9_])${field}([^A-Za-z0-9_]|$)`);
-    if (pattern.test(executable)) findings.push(`${relativePath}: retired climate field ${field}`);
+    if (usesRetiredClimateField(executable, field)) findings.push(`${relativePath}: retired climate field ${field}`);
   }
 
   for (const signature of PROHIBITED_PUBLIC_CLAIMS) {
@@ -107,6 +126,11 @@ function assertMutationDetected(name, source, expectedText) {
   if (!findings.some(finding => finding.includes(expectedText))) {
     failures.push(`guard self-test ${name}: mutation escaped (${findings.join('; ') || 'no findings'})`);
   }
+}
+
+function assertLegitimateUseAllowed(name, source) {
+  const findings = inspectLiveSource(`allowed/${name}`, source);
+  if (findings.length) failures.push(`guard self-test ${name}: legitimate use blocked (${findings.join('; ')})`);
 }
 
 // Adversarial regressions: these run on every invocation and prove the guard is
@@ -135,6 +159,30 @@ assertMutationDetected(
   'retired-field.js',
   "const value = row['reality_gap_mt'];",
   'retired climate field reality_gap_mt'
+);
+assertMutationDetected(
+  'computed-country-data-alias.js',
+  "const country = Data['getCountry' + 'HexData']('USA');",
+  'retired runtime alias getCountryHexData'
+);
+assertMutationDetected(
+  'divergence-field.js',
+  'const value = row.divergence;',
+  'retired climate field divergence'
+);
+assertMutationDetected(
+  'conditionality-field.js',
+  "const value = row['conditionality'];",
+  'retired climate field conditionality'
+);
+assertMutationDetected(
+  'population-field.js',
+  'const legacy = { population: 1234 };',
+  'retired climate field population'
+);
+assertLegitimateUseAllowed(
+  'identity-navigation-language.html',
+  '<style>.tt-divergence{display:block}</style><p>Population label; conditionality is under review.</p>'
 );
 
 const runtimeFiles = [
@@ -178,4 +226,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`legacy country exit: PASS (${fields.length} fields ledgered; ${runtimeFiles.length} live files clean; 5 mutation guards)`);
+console.log(`legacy country exit: PASS (${fields.length} fields ledgered; ${runtimeFiles.length} live files clean; 9 mutation guards; 1 legitimate-use guard)`);
