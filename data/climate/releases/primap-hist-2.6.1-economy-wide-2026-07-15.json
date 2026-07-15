@@ -3,13 +3,14 @@
   "release_id": "primap-hist-2.6.1-economy-wide-candidates-2026-07-15",
   "created_at": "2026-07-15T00:00:00Z",
   "input_hash_sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9",
-  "calculation_hash": "4fa35fc093acb8f8ce1a27ea85bb72f3a3fc9db438b89de3d24178382643e394",
+  "calculation_hash": "ab9371d12cc8bd1637038e490756c1123aa0c53a6d6824ac68ee687e9e088305",
   "source_release_id": "primap-hist-2.6.1-final",
   "artifact": {
     "path": "data/climate/evidence/primap-hist-2.6.1-histtp-m0el-2014-2023.json",
+    "schema_ref": "data/climate/schemas/primap-batch-candidate.schema.json",
     "media_type": "application/json",
-    "checksum_sha256": "3778206c4de011c55969da5717b67af7da7a60539d67dfa3650e823c2991c411",
-    "size_bytes": 1047363,
+    "checksum_sha256": "e242e5a49ba963eaeafe472c8c6702a193e79f60cf6762083f4ba72e9aa239b6",
+    "size_bytes": 1234678,
     "series_count": 206,
     "fact_count": 2060
   },

@@ -94,7 +94,27 @@ function parseSourceNumber(value, label) {
 function gigagramToMegatonne(value) {
   if (value === null) return null;
   if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('gigagram value must be finite or null');
-  return value / 1000;
+  return Number(gigagramTextToMegatonneDecimal(String(value)));
+}
+
+function gigagramTextToMegatonneDecimal(valueText) {
+  if (typeof valueText !== 'string' || valueText.length === 0) throw new TypeError('gigagram decimal text is required');
+  const match = /^([+-]?)(\d+)(?:\.(\d*))?(?:[eE]([+-]?\d+))?$/.exec(valueText);
+  if (!match) throw new TypeError(`invalid gigagram decimal text: ${valueText}`);
+  const sign = match[1] === '-' ? '-' : '';
+  const integer = match[2];
+  const fraction = match[3] || '';
+  const exponent = Number(match[4] || 0);
+  const digits = integer + fraction;
+  const decimalIndex = integer.length + exponent - 3;
+  let shifted;
+  if (decimalIndex <= 0) shifted = '0.' + '0'.repeat(-decimalIndex) + digits;
+  else if (decimalIndex >= digits.length) shifted = digits + '0'.repeat(decimalIndex - digits.length);
+  else shifted = digits.slice(0, decimalIndex) + '.' + digits.slice(decimalIndex);
+  const parts = shifted.split('.');
+  parts[0] = parts[0].replace(/^0+(?=\d)/, '') || '0';
+  shifted = parts.join('.');
+  return /^0(?:\.0*)?$/.test(shifted) ? shifted : sign + shifted;
 }
 
 function classifyArea(area, registryIso3) {
@@ -203,11 +223,14 @@ function buildArtifact(registry, selectedRows, createdAt) {
     const values = [];
     for (let year = CONFIG.start_year; year <= CONFIG.end_year; year += 1) {
       const sourceValue = parseSourceNumber(row[String(year)], `${area} ${year}`);
+      const normalizedDecimal = sourceValue === null ? null : gigagramTextToMegatonneDecimal(row[String(year)]);
       const sourceFactId = `fact:primap-hist-2.6.1:source:histtp:m0el:${area.toLowerCase()}:${year}`;
       values.push({
         year,
+        source_value_text: row[String(year)] === '' ? null : row[String(year)],
         source_value_ggco2e: sourceValue,
-        value_mtco2e: gigagramToMegatonne(sourceValue),
+        normalized_value_decimal: normalizedDecimal,
+        value_mtco2e: normalizedDecimal === null ? null : Number(normalizedDecimal),
         source_fact_id: sourceFactId,
         fact_id: `fact:primap-hist-2.6.1:normalized:histtp:m0el:${area.toLowerCase()}:${year}`,
         input_fact_ids: [sourceFactId],
@@ -234,12 +257,14 @@ function buildArtifact(registry, selectedRows, createdAt) {
 
   const artifact = {
     schema_version: '1.0.0',
+    schema_ref: 'data/climate/schemas/primap-batch-candidate.schema.json',
     artifact_id: 'primap-hist-2.6.1-histtp-m0el-2014-2023-candidates',
     created_at: createdAt,
     calculation_hash: null,
     source: {
       source_registry_id: CONFIG.source_id,
-      source_decision_commit: 'd49b7d0',
+      source_decision_introducing_commit_sha: 'd49b7d062e3805fd50c158bfa3b8f31a0115ff2f',
+      source_registry_reviewed_state_commit_sha: '8b99e70829ea5d6182fc1c05ec6d8c6ffa3eb8f2',
       source_approval_state: 'approved',
       publisher: 'Potsdam Institute for Climate Impact Research / PRIMAP team',
       title: 'The PRIMAP-hist national historical emissions time series (1750–2023)',
@@ -271,6 +296,9 @@ function buildArtifact(registry, selectedRows, createdAt) {
       output_unit: CONFIG.output_unit,
       period: { start_year: CONFIG.start_year, end_year: CONFIG.end_year },
       formula: 'value_mtco2e = source_value_ggco2e / 1000',
+      decimal_conversion: 'Move the source decimal point three places left using source text; no binary arithmetic and no rounding.',
+      rounding: 'none',
+      source_precision: 'source_value_text and normalized_value_decimal retain the source digits, including trailing fractional zeros',
       formula_version: '1.0.0',
       methodology_version: '0.1.0',
       official_plane_claimed: false,
@@ -334,6 +362,7 @@ module.exports = {
   OBSOLETE_CODES,
   parseCsvLine,
   gigagramToMegatonne,
+  gigagramTextToMegatonneDecimal,
   classifyArea,
   buildCoverage,
   fileHashes,

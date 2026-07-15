@@ -11,10 +11,12 @@
     }
   ],
   "unit_cases": [
-    { "source_ggco2e": 0, "expected_mtco2e": 0 },
-    { "source_ggco2e": 1000, "expected_mtco2e": 1 },
-    { "source_ggco2e": -250, "expected_mtco2e": -0.25 },
-    { "source_ggco2e": null, "expected_mtco2e": null }
+    { "id": "zero", "source_text": "0", "source_ggco2e": 0, "expected_decimal": "0.000", "expected_mtco2e": 0 },
+    { "id": "tonne-shift", "source_text": "1000", "source_ggco2e": 1000, "expected_decimal": "1.000", "expected_mtco2e": 1 },
+    { "id": "negative", "source_text": "-250", "source_ggco2e": -250, "expected_decimal": "-0.250", "expected_mtco2e": -0.25 },
+    { "id": "nru-microstate-2014", "source_text": "53.7", "source_ggco2e": 53.7, "expected_decimal": "0.0537", "expected_mtco2e": 0.0537 },
+    { "id": "ata-microstate-2023", "source_text": "3.34", "source_ggco2e": 3.34, "expected_decimal": "0.00334", "expected_mtco2e": 0.00334 },
+    { "id": "missing", "source_text": null, "source_ggco2e": null, "expected_decimal": null, "expected_mtco2e": null }
   ],
   "classification": {
     "registry_iso3": ["AAA", "BBB"],

@@ -3,7 +3,9 @@
 **Status:** Reproducible normalized evidence candidates; assessed use denied
 
 This mission ingests the frozen PRIMAP-hist v2.6.1 final CSV selected by the
-CT-01 source decision `d49b7d0`. It does not commit the 74.7MB raw file. The
+CT-01 source decision
+`d49b7d062e3805fd50c158bfa3b8f31a0115ff2f`. The reviewed registry state is
+pinned separately at `8b99e70829ea5d6182fc1c05ec6d8c6ffa3eb8f2`. It does not commit the 74.7MB raw file. The
 compact normalized artifact is redistributable under CC BY 4.0 with the source
 attribution and transformation disclosure embedded in the artifact.
 
@@ -17,7 +19,7 @@ category:        M.0.EL
 years:           2014–2023
 source unit:     gigagram CO2 equivalent / year
 output unit:     MtCO2e / year
-formula:         value_mtco2e = source_value_ggco2e / 1000
+formula:         exact decimal-point shift three places left; no rounding
 evidence plane:  harmonized
 LULUCF:          excluded
 ```
@@ -33,6 +35,30 @@ bunker memo items are inside or outside the selected total. The artifact stores
 accounting frame that makes a bunker treatment claim. The selected rows also do
 not provide uncertainty bounds; this absence is recorded explicitly and must
 not be presented as zero uncertainty.
+
+Unit conversion operates on the original CSV decimal text, never binary
+floating-point division. The batch retains `source_value_text` and the exact
+`normalized_value_decimal`; the JSON number is created from that decimal. For
+example, NRU 2014 is retained as `53.7` Gg and serializes exactly as `0.0537`
+Mt, without a `0.053700000000000005` tail. No digits are rounded away.
+
+## Typed batch and CT-02 boundary
+
+The compact artifact is a batch transport format, not a CT-02 observation
+array. Its mandatory `schema_ref` is:
+
+```text
+data/climate/schemas/primap-batch-candidate.schema.json
+```
+
+`tools/lib/primap-observation-boundary.js` is the only documented boundary to
+CT-02. It expands the 206 series into 2,060 objects that validate against
+`observation.schema.json`, retain the harmonized plane and row/fact lineage,
+and remain `review.status: not_reviewed`. The batch must never be passed to a
+consumer expecting CT-02 observations without this compiler.
+
+All 2,060 normalized fact IDs are unique. Their 2,060 source input fact IDs are
+also unique, producing 4,120 unique identifiers across both namespaces.
 
 ## Pinned source
 

@@ -36,6 +36,7 @@ async function main() {
     source_release_id: 'primap-hist-2.6.1-final',
     artifact: {
       path: 'data/climate/evidence/primap-hist-2.6.1-histtp-m0el-2014-2023.json',
+      schema_ref: 'data/climate/schemas/primap-batch-candidate.schema.json',
       media_type: 'application/json',
       checksum_sha256: artifactHash,
       size_bytes: Buffer.byteLength(artifactJson),
