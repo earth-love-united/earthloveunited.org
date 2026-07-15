@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.2.0",
+  "schema_version": "2.3.0",
   "proof_id": "ct-42-neutral-runtime-rollback-rehearsal-2026-07-15",
   "status": "built_not_reviewed_browser_gate_required",
   "release_authority": false,
@@ -14,8 +14,9 @@
   "candidate": {
     "builder_commit": "793eade295ae3fa787749e4d6ee112cf374a7634",
     "runtime_control_commit": "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a",
-    "review_chain_head": "11611c793b145ac8ed11cde100781dd8bfef0baf",
+    "review_chain_head": "4496783c3636d100111c9b409291b6daec757f93",
     "review_chain_late_bound": false,
+    "review_chain_ct40_sha256": "59e0229d58f42616a39546cc731d0ed2a24feef3726e10bda58bba515491abeb",
     "candidate_id": "ct-42-factual-runtime-candidate-2026-07-15",
     "decision": "deny",
     "decision_scope": "assessed_climate_release",
@@ -63,7 +64,7 @@
     },
     "ct40_result": {
       "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
-      "sha256": "e37314cdfc6863f26811c28429c14c57c109c2a0be0140fe7447f0d4aaaf77bd"
+      "sha256": "59e0229d58f42616a39546cc731d0ed2a24feef3726e10bda58bba515491abeb"
     },
     "rollback_plan": {
       "path": "data/climate/runtime/rollback-plan.json",
@@ -337,5 +338,5 @@
     "writes_workspace": false,
     "deploys": false
   },
-  "calculation_hash": "15e57d49730cb75d981dd75f683bed09b65ab0a68fe58a1b0869fee616248ccb"
+  "calculation_hash": "15c656d38d5fb590018ce18fa6ccbb20d0267b302b5220c1245e19565cde5123"
 }
