@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/country-coverage-gap-queue.schema.json",
+  "title": "Country climate evidence coverage matrix and acquisition queue",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_id", "compiler_version", "generated_at", "inputs", "domains", "acquisition_route_types", "priority_policy", "source_candidate_policy", "counts", "matrix", "queue", "forbidden_outputs", "calculation_hash"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "artifact_id": { "const": "country-climate-coverage-gap-queue-2026-07-15" },
+    "compiler_version": { "const": "1.0.0" },
+    "generated_at": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "inputs": {
+      "type": "object", "additionalProperties": false,
+      "required": ["registry_release_id", "registry_rows_hash", "primap_artifact_id", "primap_calculation_hash", "primap_release_id", "primap_release_calculation_hash"],
+      "properties": {
+        "registry_release_id": { "type": "string", "minLength": 1 },
+        "registry_rows_hash": { "$ref": "#/$defs/hash" },
+        "primap_artifact_id": { "type": "string", "minLength": 1 },
+        "primap_calculation_hash": { "$ref": "#/$defs/hash" },
+        "primap_release_id": { "type": "string", "minLength": 1 },
+        "primap_release_calculation_hash": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "domains": { "const": ["identity", "harmonized_emissions", "official_inventory", "active_ndc_target", "target_comparability", "policy_projection", "finance", "ambition_assessment", "delivery", "profile_review"] },
+    "acquisition_route_types": { "const": ["official_unfccc_national_discovery", "harmonized_source_gap_investigation", "identity_status_review", "licence_review", "independent_interpretation_review"] },
+    "priority_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "bands", "high_impact_priority_allowed", "missing_target_or_data_is_positive", "performance_used", "score_used", "rank_used", "explanation"],
+      "properties": {
+        "type": { "const": "evidence_coverage_only" },
+        "bands": { "const": ["mapped_visibility_and_status", "critical_evidence_coverage", "dependent_assessment_coverage"] },
+        "high_impact_priority_allowed": { "const": false },
+        "missing_target_or_data_is_positive": { "const": false },
+        "performance_used": { "const": false },
+        "score_used": { "const": false },
+        "rank_used": { "const": false },
+        "explanation": { "type": "string", "minLength": 1 }
+      }
+    },
+    "source_candidate_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["metadata_only", "copied_claims_allowed", "approval_or_review_required_before_use"],
+      "properties": {
+        "metadata_only": { "const": true },
+        "copied_claims_allowed": { "const": false },
+        "approval_or_review_required_before_use": { "const": true }
+      }
+    },
+    "counts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["registry_entities", "primap_candidates_not_reviewed", "primap_source_gaps", "reviewed_harmonized_emissions", "reviewed_active_targets", "reviewed_profiles", "queue_tasks", "mapped_visibility_and_status_tasks", "critical_evidence_coverage_tasks", "dependent_assessment_coverage_tasks"],
+      "properties": {
+        "registry_entities": { "const": 249 },
+        "primap_candidates_not_reviewed": { "const": 206 },
+        "primap_source_gaps": { "const": 43 },
+        "reviewed_harmonized_emissions": { "const": 0 },
+        "reviewed_active_targets": { "const": 0 },
+        "reviewed_profiles": { "const": 0 },
+        "queue_tasks": { "const": 2490 },
+        "mapped_visibility_and_status_tasks": { "const": 249 },
+        "critical_evidence_coverage_tasks": { "const": 747 },
+        "dependent_assessment_coverage_tasks": { "const": 1494 }
+      }
+    },
+    "matrix": { "type": "array", "minItems": 249, "maxItems": 249, "items": { "$ref": "#/$defs/matrixRow" } },
+    "queue": { "type": "array", "minItems": 2490, "maxItems": 2490, "items": { "$ref": "#/$defs/task" } },
+    "forbidden_outputs": {
+      "type": "object", "additionalProperties": false,
+      "required": ["performance_assigned", "impact_priority_assigned", "missing_data_rewarded", "score_assigned", "rank_assigned", "inferred_status_overlay"],
+      "properties": {
+        "performance_assigned": { "const": false }, "impact_priority_assigned": { "const": false },
+        "missing_data_rewarded": { "const": false }, "score_assigned": { "const": false },
+        "rank_assigned": { "const": false }, "inferred_status_overlay": { "const": false }
+      }
+    },
+    "calculation_hash": { "$ref": "#/$defs/hash" }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "nullableText": { "type": ["string", "null"] },
+    "overlay": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reason_code", "source_id", "status", "value"],
+      "properties": {
+        "reason_code": { "type": "string", "minLength": 1 }, "source_id": { "type": "null" },
+        "status": { "const": "not_reviewed" }, "value": { "type": "null" }
+      }
+    },
+    "eligibility": {
+      "type": "object", "additionalProperties": false,
+      "required": ["eligible", "reason_codes", "reviewed_at", "source_id", "status"],
+      "properties": {
+        "eligible": { "type": "null" }, "reason_codes": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "reviewed_at": { "type": "null" }, "source_id": { "type": "null" }, "status": { "const": "not_reviewed" }
+      }
+    },
+    "domainRecord": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "review_status", "value", "fact_ids", "source_ids", "reason_codes", "acquisition_required"],
+      "properties": {
+        "state": { "enum": ["available", "not_reviewed", "source_missing", "source_unavailable"] },
+        "review_status": { "enum": ["not_reviewed", "reviewed_source_registry"] },
+        "value": {},
+        "fact_ids": { "type": "array", "maxItems": 0 },
+        "source_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "reason_codes": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "acquisition_required": { "type": "boolean" },
+        "candidate": {
+          "type": ["object", "null"],
+          "required": ["series_id", "period", "source_id", "value_count", "values_published_to_profile"],
+          "properties": {
+            "series_id": { "type": "string", "minLength": 1 },
+            "period": { "type": "object", "required": ["start_year", "end_year"], "properties": { "start_year": { "const": 2014 }, "end_year": { "const": 2023 } } },
+            "source_id": { "type": "string", "minLength": 1 }, "value_count": { "const": 10 },
+            "values_published_to_profile": { "const": false }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "matrixRow": {
+      "type": "object", "additionalProperties": false,
+      "required": ["country_id", "iso_alpha3", "identity_label", "status_overlays", "domains", "performance_status", "score", "rank"],
+      "properties": {
+        "country_id": { "type": "string", "pattern": "^iso3166-1:[A-Z]{3}$" },
+        "iso_alpha3": { "type": "string", "pattern": "^[A-Z]{3}$" }, "identity_label": { "type": "string", "minLength": 1 },
+        "status_overlays": {
+          "type": "object", "additionalProperties": false,
+          "required": ["region", "subregion", "un_membership", "unfccc_party", "territory_status", "geometry", "groups", "assessment_eligibility"],
+          "properties": {
+            "region": { "$ref": "#/$defs/overlay" }, "subregion": { "$ref": "#/$defs/overlay" },
+            "un_membership": { "$ref": "#/$defs/overlay" }, "unfccc_party": { "$ref": "#/$defs/overlay" },
+            "territory_status": { "$ref": "#/$defs/overlay" }, "geometry": { "$ref": "#/$defs/overlay" },
+            "groups": { "type": "object", "additionalProperties": false, "required": ["ldc", "lldc", "sids"], "properties": { "ldc": { "$ref": "#/$defs/overlay" }, "lldc": { "$ref": "#/$defs/overlay" }, "sids": { "$ref": "#/$defs/overlay" } } },
+            "assessment_eligibility": { "$ref": "#/$defs/eligibility" }
+          }
+        },
+        "domains": {
+          "type": "object", "additionalProperties": false,
+          "required": ["identity", "harmonized_emissions", "official_inventory", "active_ndc_target", "target_comparability", "policy_projection", "finance", "ambition_assessment", "delivery", "profile_review"],
+          "properties": {
+            "identity": { "$ref": "#/$defs/domainRecord" }, "harmonized_emissions": { "$ref": "#/$defs/domainRecord" },
+            "official_inventory": { "$ref": "#/$defs/domainRecord" }, "active_ndc_target": { "$ref": "#/$defs/domainRecord" },
+            "target_comparability": { "$ref": "#/$defs/domainRecord" }, "policy_projection": { "$ref": "#/$defs/domainRecord" },
+            "finance": { "$ref": "#/$defs/domainRecord" }, "ambition_assessment": { "$ref": "#/$defs/domainRecord" },
+            "delivery": { "$ref": "#/$defs/domainRecord" }, "profile_review": { "$ref": "#/$defs/domainRecord" }
+          }
+        },
+        "performance_status": { "type": "null" }, "score": { "type": "null" }, "rank": { "type": "null" }
+      }
+    },
+    "sourceCandidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_id", "title", "url", "status", "metadata_only"],
+      "properties": {
+        "source_id": { "type": "string", "minLength": 1 }, "title": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "pattern": "^https://" }, "status": { "type": "string", "minLength": 1 },
+        "metadata_only": { "const": true }
+      }
+    },
+    "task": {
+      "type": "object", "additionalProperties": false,
+      "required": ["task_id", "country_id", "domain", "priority_band", "priority_basis", "state", "route_types", "reason_codes", "source_candidates", "fact_ids", "value", "claims_copied", "performance_priority_used", "score_or_rank_assigned", "queue_sequence"],
+      "properties": {
+        "task_id": { "type": "string", "pattern": "^coverage:[A-Z]{3}:" },
+        "country_id": { "type": "string", "pattern": "^iso3166-1:[A-Z]{3}$" },
+        "domain": { "enum": ["identity", "harmonized_emissions", "official_inventory", "active_ndc_target", "target_comparability", "policy_projection", "finance", "ambition_assessment", "delivery", "profile_review"] },
+        "priority_band": { "enum": ["mapped_visibility_and_status", "critical_evidence_coverage", "dependent_assessment_coverage"] },
+        "priority_basis": { "const": "mapped visibility and missing critical evidence only" },
+        "state": { "enum": ["status_overlays_not_reviewed", "not_reviewed", "source_missing", "source_unavailable"] },
+        "route_types": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["official_unfccc_national_discovery", "harmonized_source_gap_investigation", "identity_status_review", "licence_review", "independent_interpretation_review"] } },
+        "reason_codes": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "source_candidates": { "type": "array", "items": { "$ref": "#/$defs/sourceCandidate" } },
+        "fact_ids": { "type": "array", "maxItems": 0 }, "value": { "type": "null" },
+        "claims_copied": { "const": false }, "performance_priority_used": { "const": false },
+        "score_or_rank_assigned": { "const": false }, "queue_sequence": { "type": "integer", "minimum": 1, "maximum": 2490 }
+      }
+    }
+  }
+}
