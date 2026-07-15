@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.1.0",
+  "schema_version": "2.2.0",
   "proof_id": "ct-42-neutral-runtime-rollback-rehearsal-2026-07-15",
   "status": "built_not_reviewed_browser_gate_required",
   "release_authority": false,
@@ -14,10 +14,43 @@
   "candidate": {
     "builder_commit": "793eade295ae3fa787749e4d6ee112cf374a7634",
     "runtime_control_commit": "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a",
-    "review_chain_head": null,
-    "review_chain_late_bound": true,
+    "review_chain_head": "11611c793b145ac8ed11cde100781dd8bfef0baf",
+    "review_chain_late_bound": false,
     "candidate_id": "ct-42-factual-runtime-candidate-2026-07-15",
     "decision": "deny",
+    "decision_scope": "assessed_climate_release",
+    "publication_tiers": {
+      "factual_display": {
+        "status": "eligible",
+        "eligible_count": 2060,
+        "blocked_count": 0
+      },
+      "magnitude_comparison": {
+        "status": "eligible",
+        "eligible_count": 2060,
+        "blocked_count": 0
+      },
+      "commitment_display": {
+        "status": "not_present",
+        "eligible_count": 0,
+        "blocked_count": 0
+      },
+      "derived_metrics": {
+        "status": "not_present",
+        "eligible_count": 0,
+        "blocked_count": 0
+      },
+      "performance_assessment": {
+        "status": "not_present",
+        "eligible_count": 0,
+        "blocked_count": 0
+      },
+      "score": {
+        "status": "not_present",
+        "eligible_count": 0,
+        "blocked_count": 0
+      }
+    },
     "release_eligible": false,
     "production_runtime_release": false,
     "candidate_manifest": {
@@ -30,7 +63,7 @@
     },
     "ct40_result": {
       "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
-      "sha256": "0cfd2e1c1429c59f6fa073c9f35b3bcd17a7f3d4770979bdbe6b1049a202f2e9"
+      "sha256": "e37314cdfc6863f26811c28429c14c57c109c2a0be0140fe7447f0d4aaaf77bd"
     },
     "rollback_plan": {
       "path": "data/climate/runtime/rollback-plan.json",
@@ -281,7 +314,7 @@
     "builder_requires_git_objects": [
       "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a"
     ],
-    "late_bound_regeneration": "rerun builder with --review-chain-head <final exact review-chain commit>, then refresh checker pins after final CT-40 DENY regeneration",
+    "late_bound_regeneration": null,
     "browser_rehearsal": [
       "serve the materialized temporary site from localhost with service workers blocked or a fresh origin",
       "await App and Data.climateCandidateState === withheld",
@@ -304,5 +337,5 @@
     "writes_workspace": false,
     "deploys": false
   },
-  "calculation_hash": "4df15a954054a4c733a00d35cec57a4c1f4cb902cca7a5f07c17387bd04d3c2f"
+  "calculation_hash": "15e57d49730cb75d981dd75f683bed09b65ab0a68fe58a1b0869fee616248ccb"
 }
