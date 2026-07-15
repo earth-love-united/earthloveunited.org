@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/observation-2.0.0.json",
+  "title": "Country climate observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "fact_id", "country_id", "metric", "value_type", "value", "unit", "period", "scope", "source", "evidence", "review", "derivation"],
+  "properties": {
+    "schema_version": { "const": "2.0.0" },
+    "fact_id": { "type": "string", "pattern": "^fact:[a-z0-9][a-z0-9._:-]+$" },
+    "country_id": { "type": "string", "pattern": "^iso3166-1:[A-Z]{3}$" },
+    "metric": { "type": "string", "pattern": "^[a-z][a-z0-9_.]+$" },
+    "value_type": { "enum": ["number", "boolean", "string"] },
+    "value": { "type": ["number", "boolean", "string", "null"] },
+    "unit": { "type": ["string", "null"] },
+    "period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end", "precision"],
+      "properties": {
+        "start": { "type": ["string", "null"], "format": "date" },
+        "end": { "type": ["string", "null"], "format": "date" },
+        "precision": { "enum": ["day", "month", "year", "range", "not_applicable", "not_reported"] }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plane", "accounting_frame", "gases", "sectors", "geography", "lulucf", "gwp_convention"],
+      "properties": {
+        "plane": { "enum": ["official", "harmonized", "independent", "context", "derived"] },
+        "accounting_frame": { "enum": ["fossil_co2", "economy_wide_ghg", "lulucf", "sectoral", "population", "economic", "other"] },
+        "gases": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "sectors": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "geography": { "type": "string", "minLength": 1 },
+        "lulucf": { "enum": ["included", "excluded", "separate", "not_applicable", "not_reported"] },
+        "gwp_convention": { "type": ["string", "null"] }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "publisher", "title", "version", "url", "locator", "publication_date", "retrieved_at", "checksum_sha256", "licence_id", "attribution"],
+      "properties": {
+        "source_id": { "type": "string", "minLength": 1 },
+        "publisher": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "version": { "type": ["string", "null"] },
+        "url": { "type": "string", "pattern": "^https://" },
+        "locator": { "type": "string", "minLength": 1 },
+        "publication_date": { "type": ["string", "null"], "format": "date" },
+        "retrieved_at": { "type": "string", "format": "date" },
+        "checksum_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "licence_id": { "type": "string", "minLength": 1 },
+        "attribution": { "type": "string", "minLength": 1 }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "state", "reason_codes", "uncertainty"],
+      "properties": {
+        "class": { "enum": ["official_reported", "harmonized_estimate", "independent_assessment", "context", "derived", "modeled"] },
+        "state": { "enum": ["available", "estimated", "modeled", "not_reported", "not_assessed", "non_comparable", "not_applicable", "not_yet_due", "reporting_optional", "stale", "conflicting", "withheld", "source_unavailable", "not_reviewed"] },
+        "reason_codes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "uncertainty": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["lower", "upper", "confidence", "method"],
+          "properties": {
+            "lower": { "type": "number" },
+            "upper": { "type": "number" },
+            "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "method": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reviewer_id", "reviewed_at", "notes"],
+      "properties": {
+        "status": { "enum": ["not_reviewed", "in_review", "reviewed", "rejected", "superseded"] },
+        "reviewer_id": { "type": ["string", "null"] },
+        "reviewed_at": { "type": ["string", "null"], "format": "date-time" },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "derivation": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["input_fact_ids", "transformation", "formula_version", "methodology_version", "calculated_at", "calculation_hash"],
+      "properties": {
+        "input_fact_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^fact:" } },
+        "transformation": { "type": "string", "minLength": 1 },
+        "formula_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "methodology_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "calculated_at": { "type": "string", "format": "date-time" },
+        "calculation_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}
