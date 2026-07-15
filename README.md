@@ -80,10 +80,10 @@ earthloveunited.org/
 │   ├── app.js              Init entry point, hero ⇄ globe navigation
 │   ├── globe.js            Globe.gl-backed 3D earth (pledge vs reality)
 │   ├── carbon-clock.js     Live emissions counter
-│   ├── data.js             Loads data/pledge-nodes.json
+│   ├── data.js             Loads active non-climate context; country evidence withheld
 │   └── ...                 10 IIFE modules total
 ├── css/carbon-clock.css    (critical CSS is inlined in index.html)
-├── data/pledge-nodes.json  Country pledge + emissions data
+├── data/pledge-nodes.json  Historical retired payload (not loaded by runtime)
 ├── _archive/v1-cut/        Everything cut for v1 (restorable, see its README)
 ├── dis/                    Gaia knowledge index + climate facts (runtime data)
 ├── docs/                   Architecture, research, operations, and agent notes

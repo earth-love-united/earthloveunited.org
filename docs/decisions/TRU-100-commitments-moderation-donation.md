@@ -18,7 +18,7 @@ This decision record covers:
 - **Key Gate** (`dis/gaia-key-gate.js`): gates LLM API access behind user-provided key
 - **Quest System** (`dis/gaia-quest-system.js`): tracks user progress through educational tasks
 - **Engagement Score** (`gaia-engagement.js`): tracks user activity tier (COLD → WARM → HOT)
-- **Pledge Wall** (`js/pledge-wall.js`): currently displays static data from `data/pledge-nodes.json`
+- **Pledge Wall** (historical module, absent from the current runtime): does not load or display the retired country payload
   - NO user submission capability
   - NO moderation queue
   - NO server-side storage
@@ -29,7 +29,7 @@ This decision record covers:
 ```
 User ←→ GAIA Chat (client-side) ←→ OpenRouter (with key gate)
      ←→ Live APIs (NOAA, Carbonmark) ←→ Static fallback data
-     ←→ Pledge Wall (static display) ←→ pledge-nodes.json
+     ←→ Living Globe (country evidence withheld pending a reviewed runtime release)
 ```
 
 No user-generated content currently stored or displayed from other users.

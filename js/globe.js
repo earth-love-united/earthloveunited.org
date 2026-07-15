@@ -371,7 +371,7 @@ const GlobeModule = {
         this._renderRankRail();
         // Only build the H3 hex layer when the solid polygon-border layer is
         // NOT available (old globe.gl builds). Building world-wide hexes just
-        // to clear them two calls later (applyCountryHexColors) blocked the
+        // to clear them two calls later (applyCountrySurface) blocked the
         // main thread for seconds-to-minutes on real GPUs/DPR-2 screens.
         if (!this._supportsCountryBorders()) {
           const hexRes = this.isMobile ? 2 : 3;
@@ -389,7 +389,7 @@ const GlobeModule = {
         // can resolve after a fast mode switch into NDVI/events.
         const currentMode = safeGet('GLOBE_MODES', 'getMode', document.body.dataset.globeMode || 'countries');
         if (currentMode === 'countries') {
-          this.applyCountryHexColors();
+          this.applyCountrySurface();
           this.applyCountryBorders();
         } else {
           this.clearCountryBorders();
@@ -1209,8 +1209,8 @@ const GlobeModule = {
     }
   },
 
-  // ── Apply country-colored hex map ──
-  applyCountryHexColors() {
+  // ── Apply uniform neutral country surface ──
+  applyCountrySurface() {
     if (!this.world) return;
     if (this._supportsCountryBorders()) {
       if (typeof this.world.hexPolygonsTransitionDuration === 'function') {
@@ -1756,7 +1756,7 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['init', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountryHexColors', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
     requires: ['Data'],
     emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed'],
   });

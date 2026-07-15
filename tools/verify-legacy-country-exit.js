@@ -7,10 +7,44 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const failures = [];
 const historicalPath = ['data', 'pledge-nodes.json'].join('/');
-const retiredAliases = [
-  ['pledge', 'Nodes'].join(''),
-  ['country', 'HexColors'].join(''),
-  ['get', 'PledgeNode'].join(''),
+
+const RETIRED_IDENTIFIERS = [
+  'pledgeNodes',
+  'countryHexColors',
+  'getPledgeNode',
+];
+
+const RETIRED_CLIMATE_FIELDS = [
+  'fossil_co2_mt',
+  'lulucf_co2_mt',
+  'total_co2_mt',
+  'co2_per_capita',
+  'cat_rating',
+  'cat_score',
+  'globe_color',
+  'target_type',
+  'reduction_pct',
+  'reduction_pct_upper',
+  'target_year',
+  'baseline_year',
+  'implied_target_mt',
+  'reality_gap_mt',
+  'momentum_cagr',
+  'required_cagr',
+  'on_track',
+  'change_since_2015',
+  'finance_total_bn',
+  'ndc_summary',
+];
+
+// Compact semantic signatures catch exact strings and common computed-string
+// bypasses such as ['Provisional fossil CO2', ' magnitude'].join('').
+const PROHIBITED_PUBLIC_CLAIMS = [
+  'provisionalfossilco2magnitude',
+  'fossilco2magnitudelegacy',
+  'provisionalmagnitudecontext',
+  'legacymagnitude',
+  'legacyunverified',
 ];
 
 function read(relativePath) {
@@ -26,6 +60,83 @@ function listJs(relativeDir) {
   });
 }
 
+function stripComments(source) {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1');
+}
+
+function compact(source) {
+  return stripComments(source)
+    .normalize('NFKD')
+    .replace(/₂/g, '2')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+}
+
+function inspectLiveSource(relativePath, source) {
+  const findings = [];
+  const executable = stripComments(source);
+  const compacted = compact(source);
+
+  // This catches literal paths and lexical composition with quotes, +, arrays,
+  // template fragments, or join(), because punctuation is removed first.
+  if (compacted.includes('pledgenodesjson')) {
+    findings.push(`${relativePath}: retired payload path or computed path`);
+  }
+
+  for (const identifier of RETIRED_IDENTIFIERS) {
+    const token = identifier.toLowerCase();
+    if (compacted.includes(token)) findings.push(`${relativePath}: retired runtime alias ${identifier}`);
+  }
+
+  for (const field of RETIRED_CLIMATE_FIELDS) {
+    const pattern = new RegExp(`(^|[^A-Za-z0-9_])${field}([^A-Za-z0-9_]|$)`);
+    if (pattern.test(executable)) findings.push(`${relativePath}: retired climate field ${field}`);
+  }
+
+  for (const signature of PROHIBITED_PUBLIC_CLAIMS) {
+    if (compacted.includes(signature)) findings.push(`${relativePath}: prohibited public magnitude semantics ${signature}`);
+  }
+
+  return findings;
+}
+
+function assertMutationDetected(name, source, expectedText) {
+  const findings = inspectLiveSource(`mutation/${name}`, source);
+  if (!findings.some(finding => finding.includes(expectedText))) {
+    failures.push(`guard self-test ${name}: mutation escaped (${findings.join('; ') || 'no findings'})`);
+  }
+}
+
+// Adversarial regressions: these run on every invocation and prove the guard is
+// testing semantics rather than only the current formatting of production files.
+assertMutationDetected(
+  'entered-globe-legend.html',
+  '<div>Provisional fossil CO₂ magnitude · legacy, unverified</div>',
+  'prohibited public magnitude semantics'
+);
+assertMutationDetected(
+  'computed-path.js',
+  "fetch(['data', 'pledge-' + 'nodes.json'].join('/'))",
+  'retired payload path or computed path'
+);
+assertMutationDetected(
+  'computed-alias.js',
+  "const rows = Data['pledge' + 'Nodes'];",
+  'retired runtime alias pledgeNodes'
+);
+assertMutationDetected(
+  'computed-legend.js',
+  "const label = ['Provisional fossil CO2', ' magnitude'].join('');",
+  'prohibited public magnitude semantics'
+);
+assertMutationDetected(
+  'retired-field.js',
+  "const value = row['reality_gap_mt'];",
+  'retired climate field reality_gap_mt'
+);
+
 const runtimeFiles = [
   'index.html',
   'sw.js',
@@ -35,24 +146,19 @@ const runtimeFiles = [
 ];
 
 for (const relativePath of runtimeFiles) {
-  const source = read(relativePath);
-  if (source.includes(historicalPath)) {
-    failures.push(`${relativePath}: live historical payload path`);
-  }
-  for (const alias of retiredAliases) {
-    if (source.includes(alias)) failures.push(`${relativePath}: retired runtime alias ${alias}`);
-  }
+  failures.push(...inspectLiveSource(relativePath, read(relativePath)));
 }
 
 const dataSource = read('js/data.js');
 if (/fetch\s*\([^)]*pledge/i.test(dataSource)) failures.push('js/data.js: legacy country fetch detected');
 
 const serviceWorker = read('sw.js');
-if (serviceWorker.includes(historicalPath)) failures.push('sw.js: legacy payload remains in cache manifest');
+if (compact(serviceWorker).includes('pledgenodesjson')) failures.push('sw.js: legacy payload remains in cache behavior');
 if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'")) failures.push('sw.js: cache version was not advanced to elu-v26');
 
 const index = read('index.html');
 if (!index.includes('docs/LEGACY-COUNTRY-DATA-EXIT.md')) failures.push('index.html: public exit-ledger link missing');
+if (!index.includes('Uniform neutral surface · country evidence withheld')) failures.push('index.html: neutral entered-globe legend missing');
 if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'")) failures.push('index.html: service-worker registration is not v26');
 
 const ledger = read('docs/LEGACY-COUNTRY-DATA-EXIT.md');
@@ -72,4 +178,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`legacy country exit: PASS (${fields.length} fields ledgered; ${runtimeFiles.length} live files clean)`);
+console.log(`legacy country exit: PASS (${fields.length} fields ledgered; ${runtimeFiles.length} live files clean; 5 mutation guards)`);
