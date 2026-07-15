@@ -1,0 +1,438 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Adversarial mutations that the globe third-party notice evidence checker must reject.",
+  "baseline": {
+    "artifact_id": "globe-gl-2.46.1-third-party-notices-2026-07-15",
+    "manifest_sha256": "542e9bf2043f1c670200be9c9b0455b93048514dfb8b602301ca1245918660c2",
+    "manifest_calculation_hash": "5b671c6e7357d35863b5bcd390a976939a279adc230ae84d43a702566413a66d",
+    "notice_sha256": "741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2",
+    "component_count": 44,
+    "source_mapped_package_count": 37,
+    "third_party_source_count": 223,
+    "notice_section_count": 35
+  },
+  "mutations": [
+    {
+      "id": "schema-version-drift",
+      "kind": "set_manifest",
+      "path": "schema_version",
+      "value": "2.0.0",
+      "expected_failure": "artifact_identity"
+    },
+    {
+      "id": "artifact-id-drift",
+      "kind": "set_manifest",
+      "path": "artifact_id",
+      "value": "globe-gl-unpinned",
+      "expected_failure": "artifact_identity"
+    },
+    {
+      "id": "artifact-status-invented-review",
+      "kind": "set_manifest",
+      "path": "status",
+      "value": "approved",
+      "expected_failure": "artifact_identity"
+    },
+    {
+      "id": "bundle-version-drift",
+      "kind": "set_manifest",
+      "path": "bundle.version",
+      "value": "2.46.0",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "bundle-blob-drift",
+      "kind": "set_manifest",
+      "path": "bundle.blob_sha256",
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "bundle-integrity-drift",
+      "kind": "set_manifest",
+      "path": "bundle.npm_integrity",
+      "value": "sha512-invented",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "bundle-tarball-hash-drift",
+      "kind": "set_manifest",
+      "path": "bundle.npm_tarball_sha256",
+      "value": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "bundle-lockfile-drift",
+      "kind": "set_manifest",
+      "path": "bundle.release_lockfile_sha256",
+      "value": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "bundle-source-map-drift",
+      "kind": "set_manifest",
+      "path": "bundle.source_map_sha256",
+      "value": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "source-count-drift",
+      "kind": "set_manifest",
+      "path": "source_inventory.third_party_source_count",
+      "value": 222,
+      "expected_failure": "source_inventory"
+    },
+    {
+      "id": "source-mismatch-invented",
+      "kind": "set_manifest",
+      "path": "source_inventory.source_content_mismatch_count",
+      "value": 1,
+      "expected_failure": "source_inventory"
+    },
+    {
+      "id": "component-count-field-drift",
+      "kind": "set_manifest",
+      "path": "component_count",
+      "value": 43,
+      "expected_failure": "component_inventory"
+    },
+    {
+      "id": "component-removed",
+      "kind": "remove_component",
+      "component_id": "npm:three@0.183.2",
+      "expected_failure": "component_inventory"
+    },
+    {
+      "id": "component-duplicated",
+      "kind": "duplicate_component",
+      "component_id": "npm:d3-array@3.2.4",
+      "expected_failure": "component_inventory"
+    },
+    {
+      "id": "component-version-drift",
+      "kind": "set_component",
+      "component_id": "npm:d3-geo@3.1.1",
+      "path": "version",
+      "value": "3.1.0",
+      "expected_failure": "component_metadata"
+    },
+    {
+      "id": "component-licence-drift",
+      "kind": "set_component",
+      "component_id": "npm:robust-predicates@3.0.3",
+      "path": "licence_expression",
+      "value": "MIT",
+      "expected_failure": "component_metadata"
+    },
+    {
+      "id": "component-source-count-drift",
+      "kind": "set_component",
+      "component_id": "npm:d3-selection@3.0.0",
+      "path": "source_map_source_count",
+      "value": 47,
+      "expected_failure": "component_metadata"
+    },
+    {
+      "id": "component-review-required-cleared",
+      "kind": "set_component",
+      "component_id": "npm:globe.gl@2.46.1",
+      "path": "review_required",
+      "value": false,
+      "expected_failure": "component_metadata"
+    },
+    {
+      "id": "component-notice-reference-removed",
+      "kind": "set_component",
+      "component_id": "npm:h3-js@4.4.0",
+      "path": "notice_ids",
+      "value": [],
+      "expected_failure": "notice_references"
+    },
+    {
+      "id": "insecure-component-url",
+      "kind": "set_component",
+      "component_id": "npm:three@0.183.2",
+      "path": "npm_tarball_url",
+      "value": "http://registry.npmjs.org/three/-/three-0.183.2.tgz",
+      "expected_failure": "source_urls"
+    },
+    {
+      "id": "mutable-default-branch-url",
+      "kind": "set_component",
+      "component_id": "npm:three@0.183.2",
+      "path": "repository_url",
+      "value": "https://github.com/mrdoob/three/main/",
+      "expected_failure": "source_urls"
+    },
+    {
+      "id": "h3-core-version-drift",
+      "kind": "set_component",
+      "component_id": "embedded:h3-core@4.4.1",
+      "path": "version",
+      "value": "4.4.0",
+      "expected_failure": "component_metadata"
+    },
+    {
+      "id": "h3-core-evidence-drift",
+      "kind": "set_component",
+      "component_id": "embedded:h3-core@4.4.1",
+      "path": "source_version_evidence.value",
+      "value": "4.4.0",
+      "expected_failure": "h3_evidence"
+    },
+    {
+      "id": "h3-licence-hash-drift",
+      "kind": "set_component",
+      "component_id": "npm:h3-js@4.4.0",
+      "path": "licence_file_sha256",
+      "value": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "expected_failure": "h3_evidence"
+    },
+    {
+      "id": "dggrid-attribution-hash-drift",
+      "kind": "set_component",
+      "component_id": "attribution:dggrid@2015",
+      "path": "licence_file_sha256",
+      "value": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "expected_failure": "h3_evidence"
+    },
+    {
+      "id": "babel-lockfile-evidence-drift",
+      "kind": "set_component",
+      "component_id": "embedded:@babel/helpers@7.29.2:regenerator",
+      "path": "embedded_evidence.three_globe_lockfile_sha256",
+      "value": "1111111111111111111111111111111111111111111111111111111111111111",
+      "expected_failure": "babel_helper_evidence"
+    },
+    {
+      "id": "babel-licence-hash-drift",
+      "kind": "set_component",
+      "component_id": "embedded:@babel/helpers@7.29.2:regenerator",
+      "path": "licence_file_sha256",
+      "value": "2222222222222222222222222222222222222222222222222222222222222222",
+      "expected_failure": "babel_helper_evidence"
+    },
+    {
+      "id": "font-artifact-hash-drift",
+      "kind": "set_component",
+      "component_id": "embedded:helvetiker-regular@2004",
+      "path": "artifact_sha256",
+      "value": "3333333333333333333333333333333333333333333333333333333333333333",
+      "expected_failure": "font_evidence"
+    },
+    {
+      "id": "font-unmodified-cleared",
+      "kind": "set_component",
+      "component_id": "embedded:helvetiker-regular@2004",
+      "path": "unmodified",
+      "value": false,
+      "expected_failure": "font_evidence"
+    },
+    {
+      "id": "font-notice-removed",
+      "kind": "set_component",
+      "component_id": "embedded:helvetiker-regular@2004",
+      "path": "notice_ids",
+      "value": [
+        "font-license-35e8279356d78908"
+      ],
+      "expected_failure": "font_evidence"
+    },
+    {
+      "id": "emscripten-licence-hash-drift",
+      "kind": "set_component",
+      "component_id": "toolchain:emscripten@1.38.43",
+      "path": "licence_file_sha256",
+      "value": "4444444444444444444444444444444444444444444444444444444444444444",
+      "expected_failure": "toolchain_evidence"
+    },
+    {
+      "id": "emscripten-version-evidence-drift",
+      "kind": "set_component",
+      "component_id": "toolchain:emscripten@1.38.43",
+      "path": "version_evidence",
+      "value": "unknown toolchain",
+      "expected_failure": "toolchain_evidence"
+    },
+    {
+      "id": "musl-notice-hash-drift",
+      "kind": "set_component",
+      "component_id": "linked:musl@emscripten-1.38.43",
+      "path": "licence_file_sha256",
+      "value": "5555555555555555555555555555555555555555555555555555555555555555",
+      "expected_failure": "toolchain_evidence"
+    },
+    {
+      "id": "review-status-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.review_status",
+      "value": "approved",
+      "expected_failure": "rights_review_boundary"
+    },
+    {
+      "id": "reviewer-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.reviewer_id",
+      "value": "agent",
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "decision-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.decision",
+      "value": "approve",
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "notices-approval-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.notices_approved",
+      "value": true,
+      "expected_failure": "rights_review_boundary"
+    },
+    {
+      "id": "redistribution-approval-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.redistribution_approved",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "commercial-approval-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.commercial_use_approved",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "production-approval-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.production_approved",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "release-approval-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.release_approved",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "counsel-review-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.counsel_review_complete",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "rights-decision-governance-invented",
+      "kind": "set_manifest",
+      "path": "governance_boundary.rights_decision_made",
+      "value": true,
+      "expected_failure": "governance_boundary"
+    },
+    {
+      "id": "production-authority-invented",
+      "kind": "set_manifest",
+      "path": "governance_boundary.production_authority",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "release-authority-invented",
+      "kind": "set_manifest",
+      "path": "governance_boundary.release_authority",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "runtime-modification-invented",
+      "kind": "set_manifest",
+      "path": "governance_boundary.runtime_modified",
+      "value": true,
+      "expected_failure": "governance_boundary"
+    },
+    {
+      "id": "counsel-question-removed",
+      "kind": "set_manifest",
+      "path": "counsel_questions",
+      "value": [],
+      "expected_failure": "counsel_questions"
+    },
+    {
+      "id": "notice-count-field-drift",
+      "kind": "set_manifest",
+      "path": "notice_section_count",
+      "value": 34,
+      "expected_failure": "notice_inventory"
+    },
+    {
+      "id": "notice-section-removed",
+      "kind": "remove_notice_section",
+      "notice_id": "package-notice-aa869183968dc017",
+      "expected_failure": "notice_inventory"
+    },
+    {
+      "id": "notice-section-duplicated",
+      "kind": "duplicate_notice_section",
+      "notice_id": "package-license-c71d239df91726fc",
+      "expected_failure": "notice_inventory"
+    },
+    {
+      "id": "notice-section-hash-drift",
+      "kind": "set_notice_section",
+      "notice_id": "package-license-c71d239df91726fc",
+      "path": "payload_sha256",
+      "value": "6666666666666666666666666666666666666666666666666666666666666666",
+      "expected_failure": "notice_payloads"
+    },
+    {
+      "id": "notice-payload-resigned-drift",
+      "kind": "replace_notice_text",
+      "from": "DGGRID\nCopyright (c) 2015 Southern Oregon University\n",
+      "to": "DGGRID (altered)\nCopyright (c) 2015 Southern Oregon University\n",
+      "sync_notice_id": "attribution-114bd21151f748d5",
+      "expected_failure": "notice_payloads"
+    },
+    {
+      "id": "notice-block-removed",
+      "kind": "remove_notice_block",
+      "notice_id": "attribution-114bd21151f748d5",
+      "expected_failure": "notice_inventory"
+    },
+    {
+      "id": "notice-block-appended",
+      "kind": "append_notice_block",
+      "notice_id": "invented-notice",
+      "expected_failure": "notice_inventory"
+    },
+    {
+      "id": "durable-disclaimer-removed",
+      "kind": "replace_notice_text",
+      "from": "This notice file itself does not grant redistribution, commercial-use, production, or release authority.",
+      "to": "Rights granted.",
+      "expected_failure": "notice_disclaimer"
+    },
+    {
+      "id": "notice-path-drift",
+      "kind": "set_manifest",
+      "path": "notice_file.path",
+      "value": "NOTICES.txt",
+      "expected_failure": "notice_file_sha256"
+    },
+    {
+      "id": "notice-hash-drift",
+      "kind": "set_manifest",
+      "path": "notice_file.sha256",
+      "value": "7777777777777777777777777777777777777777777777777777777777777777",
+      "expected_failure": "notice_file_sha256"
+    },
+    {
+      "id": "calculation-hash-invalid",
+      "kind": "invalid_calculation_hash",
+      "value": "8888888888888888888888888888888888888888888888888888888888888888",
+      "expected_failure": "manifest_calculation_hash"
+    }
+  ]
+}
