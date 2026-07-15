@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "review_id": "ct-42-independent-runtime-ui-review-2026-07-15",
-  "reviewed_at": "2026-07-15T12:25:00Z",
-  "reviewed_commit": "793eade295ae3fa787749e4d6ee112cf374a7634",
+  "reviewed_at": "2026-07-15T17:13:22Z",
+  "reviewed_commit": "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a",
   "reviewer_id": "ct-42-independent-ui-reviewer",
   "builder_id": "ct-42-runtime-candidate-builder",
   "independent": true,
@@ -11,37 +11,130 @@
   "data_lineage_reviewed": false,
   "data_lineage_boundary": "Displayed source pins and factual-use labels were checked for presence and consistency; upstream data lineage was not independently re-reviewed by CT-42.",
   "reviewed_file_pins": [
-    { "path": "index.html", "sha256": "ee0a0cdd3eba85ffbe2fc0b5fc74f8f50a392558845960ada766f98539decc2e" },
-    { "path": "css/globe-system.css", "sha256": "50e577d2302e8990f2885830011ce65581c915915d55e8d7508c14acd8928bfb" },
-    { "path": "js/globe.js", "sha256": "c60d58cba0471885975b0ca3db0af0f9f1c38570ddea4a935cad2f6fc6bf6059" },
-    { "path": "js/data.js", "sha256": "9d7c517115e875da46e2a583d3f397b4a491d15425c7d95bae852a614e07563d" },
-    { "path": "tools/smoke-test.js", "sha256": "37042fd6da00d01ad2cda55512b2e448dcb075416958f370bbf37b8fb8d461e4" },
+    { "path": "index.html", "sha256": "21bd6bcd857879c6924f8b76b2a9cfb0afbe9697e7304d8eaa1eae8f6e8cd403" },
+    { "path": "css/globe-system.css", "sha256": "25ba293a9dd7c23826f768cac21b55380a76d1cfae5f377bde16bf4bd23da1af" },
+    { "path": "js/app.js", "sha256": "6c0c387c74d31441bdc85be515b15a01cd1c421b6c2b601fc7971f97ce057b9c" },
+    { "path": "js/globe.js", "sha256": "70d3e838c7301e711df633de641fbdeb56b303cd2001401b33cf0d924c3af688" },
+    { "path": "js/data.js", "sha256": "4e691d4ebdad821e85ba70c1db10f961b7211ac487e59df10dc835647fe7d82b" },
+    { "path": "tools/smoke-test.js", "sha256": "f02e9f75b2d0034648570a4c637f5cfdb4d7c89ad8493426f5c285d260be7d3f" },
     { "path": "data/climate/runtime/country-factual-candidate.json", "sha256": "7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664" },
-    { "path": "data/climate/runtime/candidate-manifest.json", "sha256": "96e74966e40a65c838d7030de07c8cead4c05fe28d49876814c8e0cd4b8c7a1c" }
+    { "path": "data/climate/runtime/candidate-manifest.json", "sha256": "96e74966e40a65c838d7030de07c8cead4c05fe28d49876814c8e0cd4b8c7a1c" },
+    { "path": "data/small-nations.json", "sha256": "81086c45ee1a2d10a2859c2bdd1737db4e74be8f50aaad037307dda44cfe670a" },
+    { "path": "sw.js", "sha256": "9c239fd3a53248388b963b702b8e08035371059bed1f0ef94ebe754dbc72e8ee" },
+    { "path": "assets/globe/runtime/manifest.json", "sha256": "6f03e630512982f2edfd40097881bae73bbc49110ca79c6fdbb49dc7b44b7da4" },
+    { "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson", "sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0" },
+    { "path": "assets/globe/runtime/earth-night.jpg", "sha256": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124" },
+    { "path": "assets/globe/runtime/night-sky.svg", "sha256": "233713fa6ed8a495ed49deb97b89f46228aa49a83460e1379a60b3cee57c5688" },
+    { "path": "assets/globe/runtime/earth-blue-marble.jpg", "sha256": "228deba2e4b600146bdcb6cfa359b8ead6aacc2b1c13550a29cd82824cfa1c01" },
+    { "path": "assets/globe/runtime/earth-topology.png", "sha256": "839b12da2e4dd346b256cebae72e10c479a102c8980a22084c41275e4b9a0e12" }
   ],
   "local_runtime_dependency": {
     "name": "globe.gl",
+    "path": "js/vendor/globe.gl.js",
     "version": "2.46.1",
     "sha256": "2ab6767f47e2be0ac346cd7a5eb55d259ea3da06d479dc22f1820ddd698f496a",
     "committed": false,
-    "purpose": "Ignored local browser-QA dependency only."
+    "staged_for_candidate_deploy": true,
+    "purpose": "Pinned, gitignored runtime dependency verified by CT-44 and staged into the candidate deployment."
+  },
+  "runtime_evidence": {
+    "source_geometry_features": 177,
+    "interactive_entities": {
+      "total": 201,
+      "reviewed_factual": 194,
+      "source_gaps": 7
+    },
+    "evidence_browser_entities": {
+      "total": 249,
+      "reviewed_factual": 206,
+      "source_gaps": 43
+    },
+    "renderer_canvases": 1,
+    "smoke_test": {
+      "passed": 22,
+      "total": 22,
+      "failed": 0,
+      "critical_failed": 0
+    },
+    "stack_lint_issues": 0,
+    "delivery_versions": {
+      "globe_system_css": "v15",
+      "globe_script": "v10",
+      "service_worker_registration": "33-focus-trap",
+      "service_worker_cache": "elu-v33-focus-trap"
+    },
+    "browser_qa": {
+      "mobile": {
+        "viewports_css_px": ["320x720", "375x720"],
+        "horizontal_overflow_px": 0,
+        "card_header_overlaps": 0,
+        "minimum_control_target_px": 44
+      },
+      "reflow": {
+        "css_viewport_px": "640x400",
+        "device_scale_factor": 2,
+        "horizontal_overflow_px": 0,
+        "card_fully_visible": true
+      },
+      "reduced_motion": {
+        "entry_auto_rotate": false,
+        "selected_auto_rotate": false,
+        "closed_auto_rotate": false,
+        "dynamic_preference_auto_rotate": false,
+        "animations_disabled": true
+      },
+      "keyboard": {
+        "backward_focus_cycle": "heading -> Close -> Previous country -> Next country",
+        "forward_wrap_returns_to_heading": true,
+        "arrow_navigation_retains_heading_focus": true,
+        "escape_and_close_restore_opener": true
+      },
+      "textures": {
+        "surface": {
+          "path": "assets/globe/runtime/earth-night.jpg",
+          "width": 3600,
+          "height": 1800,
+          "mime": "image/jpeg",
+          "flip_y": true
+        },
+        "sky": {
+          "path": "assets/globe/runtime/night-sky.svg",
+          "width": 4096,
+          "height": 2048,
+          "mime": "image/svg+xml",
+          "flip_y": true,
+          "mesh": true
+        }
+      },
+      "security": {
+        "content_security_policy_violations": 0,
+        "svg_initiated_subrequests": 0
+      },
+      "cache": {
+        "controller_reload_verified": true,
+        "css_key": "/css/globe-system.css?v=v15",
+        "globe_key": "/js/globe.js?v=v10",
+        "service_worker_key": "/sw.js?v=33-focus-trap",
+        "cache_name": "elu-v33-focus-trap"
+      }
+    }
   },
   "gates": [
-    { "id": "runtime-boundary", "result": "pass", "evidence": "249 registry entities render as 206 reviewed factual series plus 43 explicit source gaps; candidate review_status remains not_reviewed and production_runtime_release remains false." },
-    { "id": "truth-language", "result": "pass", "evidence": "No target, commitment, delivery, performance, impact-band, or climate-score conclusion is implied; cards state not reviewed/not assessed." },
-    { "id": "magnitude-and-gaps", "result": "pass", "evidence": "China remains rank 1 at 15,000 MtCO2e/yr; competition ties are preserved; source gaps are neutral, unnumbered, visible, and excluded from ranking." },
-    { "id": "chart-table-source", "result": "pass", "evidence": "Card exposes ten labelled 2014-2023 points, a ten-row Year/Value/Unit table, PRIMAP-hist v2.6.1 source link, unit, accounting-frame label, and limitations." },
-    { "id": "screen-reader-semantics", "result": "pass", "evidence": "Accessible tree exposes labelled ranking controls, a wrapper-owned modal dialog, named chart image and points, table caption/headers, source, limitations, and assessment boundary." },
-    { "id": "keyboard-focus", "result": "pass", "evidence": "No default dialog; user opener focuses heading; desktop and 320px Tab loops remain inside; ArrowRight retains focus on the replacement heading; Escape closes, hides tooltip from the accessibility tree, and restores the original rank control." },
-    { "id": "touch-targets", "result": "pass", "evidence": "Visible rank rows, close, chart disclosure, source link, and desktop previous/next controls are at least 44px in the tested dimension." },
-    { "id": "responsive-320", "result": "pass", "evidence": "Real 320x640 browser viewport has document scrollWidth=clientWidth=320 in foundation and globe modes; card is 248px wide and vertically scrollable; mobile rail title is 2023." },
-    { "id": "zoom-200", "result": "pass", "evidence": "Real browser rendered CSS zoom=2 without horizontal overflow; independent 655x334 CSS-pixel viewport (1310x667 baseline at 200% reflow equivalent) had document widths 655/655 and an on-screen scrollable card." },
-    { "id": "reduced-motion", "result": "pass", "evidence": "Browser CSSOM found three reduced-motion media rules disabling animation and transition; emulated prefers-reduced-motion suppressed the mobile swipe cue." },
-    { "id": "contrast", "result": "pass", "evidence": "Formal contrast checks: repaired light banner 7.514:1, light text minimum tested 6.287:1, dark text minimum tested 6.648:1; focus indicators remain explicit." },
-    { "id": "color-removal", "result": "pass", "evidence": "With candidate swatches forced to grayscale, rank/value/unit labels, explicit source-gap/not-ranked label, three legend texts, and assessment-boundary copy remain available." },
-    { "id": "polygon-render", "result": "pass", "evidence": "Pinned globe.gl rendered one WebGL canvas and 204 country polygon features; SmokeTest reported polygon presence." },
-    { "id": "fallback-render", "result": "pass", "evidence": "Forced no-polygon facade rendered 204 hex features; China retained orange magnitude color and altitude 0.026 while a source gap retained neutral color and altitude 0.004." },
-    { "id": "smoke-and-stack", "result": "pass", "evidence": "SmokeTest 18/18 passed with zero critical failures; StackLint returned zero issues." }
+    { "id": "runtime-boundary", "result": "pass", "evidence": "The pinned 177-feature source geometry produces one 201-entity interactive deck: 194 reviewed factual entities plus 7 mapped source gaps. The accessible browser retains all 249 registry entities as 206 factual series plus 43 explicit gaps; review_status remains not_reviewed and production_runtime_release remains false." },
+    { "id": "truth-language", "result": "pass", "evidence": "No target, commitment, delivery, performance, impact-band, or climate-score conclusion is implied; cards and the evidence browser state not reviewed/not assessed, while magnitude is explicitly not a performance score." },
+    { "id": "magnitude-and-gaps", "result": "pass", "evidence": "China remains magnitude rank 1 at 15,000 MtCO2e/yr; competition ties are preserved; mapped and browser-only source gaps are neutral, unnumbered, visible, and excluded from ranking." },
+    { "id": "chart-table-source", "result": "pass", "evidence": "The factual card exposes ten labelled 2014-2023 points, a ten-row Year/Value/Unit table, the pinned PRIMAP-hist v2.6.1 source link, accounting-frame label, and factual-use limitations." },
+    { "id": "screen-reader-semantics", "result": "pass", "evidence": "The accessible tree exposes labelled ranking controls, a wrapper-owned modal dialog, named chart and points, table caption and headers, source, limitations, assessment boundary, and a complete 249-record evidence view." },
+    { "id": "keyboard-focus", "result": "pass", "evidence": "On the exact reviewed runtime, opener activation focuses the card heading; Tab reaches Close; reverse Tab reaches Previous then wraps to Next without background escape; forward wrap returns to the heading; ArrowRight retains replacement-heading focus; Escape and Close restore the original opener." },
+    { "id": "touch-targets", "result": "pass", "evidence": "At 320px and 375px, the evidence-browser and theme controls and card Close control measured 44px in both dimensions; ranking rows and card navigation remain operable by keyboard and pointer." },
+    { "id": "responsive-320", "result": "pass", "evidence": "Exact 320x720 and 375x720 browser viewports had zero document horizontal overflow and zero heading/pill/Close overlap. The cards measured 248px and 303px wide respectively, headings retained usable width, and visible controls remained on-screen." },
+    { "id": "zoom-200", "result": "pass", "evidence": "A 640x400 CSS-pixel viewport at device scale factor 2 had zero horizontal overflow; the 540x262 card remained fully on-screen with no heading, pill, or Close overlap." },
+    { "id": "reduced-motion", "result": "pass", "evidence": "With prefers-reduced-motion active, CSS animation and transition were disabled and globe auto-rotation remained false on entry, while selected, after close, and after a dynamic preference change; no-preference correctly restored rotation only when no card was selected." },
+    { "id": "contrast", "result": "pass", "evidence": "Formal light and dark text contrast checks remained above 6.28:1, the repaired light banner measured 7.51:1, and explicit focus indicators remained visible in normal and forced-color rendering." },
+    { "id": "color-removal", "result": "pass", "evidence": "Forced-colors and blocked-font runs retained rank/value/unit labels, explicit source-gap/not-ranked text, assessment-boundary copy, visible focus outlines, one canvas, and non-overlapping cards without relying on color alone." },
+    { "id": "polygon-render", "result": "pass", "evidence": "The exact runtime rendered one WebGL canvas with a 201-entity deck from the validated 177-feature source geometry. Dark surface and sky textures matched the pinned 3600x1800 JPEG and 4096x2048 SVG, with correct MIME, dimensions, flipY state, and sky mesh." },
+    { "id": "fallback-render", "result": "pass", "evidence": "Vendor, WebGL, and constructor failures fail closed to the 249-record evidence browser. Corrupt candidate, geometry, JPEG, SVG, timeout, retry, and WebGL-context-loss routes preserved truthful status and zero-or-one-canvas lifecycle behavior." },
+    { "id": "smoke-and-stack", "result": "pass", "evidence": "SmokeTest passed 22 of 22 with zero failed and zero critical failures; StackLint returned zero issues; CSP reported zero violations and the vendored SVG initiated zero subrequests." }
   ],
   "publication_boundary": {
     "runtime_ui_review_passed": true,
@@ -53,6 +146,10 @@
     "ct40_allow_decision": false,
     "release_eligible": false,
     "production_runtime_release": false,
+    "candidate_release_decision": "deny",
+    "production_use_approved": false,
+    "release_authority": false,
+    "climate_claim_authority": false,
     "required_next_gate": "CT-40 independent allow decision plus reviewed runtime manifest and release diff"
   }
 }
