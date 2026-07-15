@@ -78,6 +78,10 @@ node tools/check-country-evidence.js --require-assessment-overlays
   denominator evidence.
 - `schemas/profile.schema.json` keeps the six public axes separate and has no
   composite score.
+- `schemas/compiled-profile.schema.json` defines the richer CT-22 runtime
+  envelope with per-axis availability, lineage, method versions, and separate
+  CT-21 assessment-basis codes. `tools/lib/country-profile-compiler.js` can
+  project this envelope back to the CT-02 profile contract.
 - `schemas/release.schema.json` describes immutable release artifacts,
   coverage, checksums, and independent review.
 - `schemas/enums.json` is the canonical evidence and reason vocabulary.

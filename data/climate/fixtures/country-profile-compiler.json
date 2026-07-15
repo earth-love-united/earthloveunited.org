@@ -1,0 +1,61 @@
+{
+  "_meta": {
+    "fixture_set": "ct22-country-profile-compiler",
+    "fixture_version": "1.0.0",
+    "fictional_entities": true,
+    "country_id": "iso3166-1:ZZZ",
+    "warning": "All values and assessments are synthetic contract tests, not production country evidence."
+  },
+  "cases": [
+    {
+      "id": "major-emitter-no-target",
+      "patch": { "axes": { "impact": { "status": "very_high", "value": { "amount": 1000, "unit": "fictional-MtCO2/yr" } }, "target_integrity": { "result": { "comparability": "no_active_target_found", "eligible": false, "reason_codes": ["target_not_found"], "normalized_endpoint": null } }, "delivery": null } },
+      "expected": { "headline_status": "available", "headline_classification": "high_impact_without_comparable_target", "impact_status": "very_high", "target_status": "no_active_target_found", "delivery_status": "not_assessed" }
+    },
+    {
+      "id": "small-emitter-no-target",
+      "patch": { "axes": { "impact": { "status": "low", "value": { "amount": 1, "unit": "fictional-MtCO2/yr" } }, "target_integrity": { "result": { "comparability": "no_active_target_found", "eligible": false, "reason_codes": ["target_not_found"], "normalized_endpoint": null } }, "delivery": null } },
+      "expected": { "headline_status": "available", "headline_classification": "without_comparable_target", "impact_status": "low", "target_status": "no_active_target_found" }
+    },
+    {
+      "id": "comparable-on-pace",
+      "patch": {},
+      "expected": { "headline_status": "available", "headline_classification": "core_axes_available", "target_status": "comparable", "delivery_status": "on_pace" }
+    },
+    {
+      "id": "incompatible-evidence",
+      "patch": { "axes": { "target_integrity": { "result": { "comparability": "non_comparable", "eligible": false, "reason_codes": ["scope_mismatch", "gas_basket_mismatch"], "normalized_endpoint": null } }, "delivery": { "result": { "status": "not_assessed", "evidence_reason_codes": ["scope_mismatch", "gas_basket_mismatch"], "assessment_basis_codes": ["target_non_comparable"] } } } },
+      "expected": { "headline_status": "available", "headline_classification": "high_impact_without_comparable_target", "target_status": "non_comparable", "delivery_status": "not_assessed", "reasons_include": ["scope_mismatch", "gas_basket_mismatch"] }
+    },
+    {
+      "id": "pending-licence",
+      "patch": { "axes": { "impact": { "eligible": false, "evidence_reason_codes": ["licence_not_approved"], "state": "withheld" } } },
+      "expected": { "headline_status": "withheld", "headline_classification": "evidence_withheld", "impact_status": "not_assessed", "impact_availability": "withheld", "reasons_include": ["licence_not_approved"] }
+    },
+    {
+      "id": "source-conflict",
+      "patch": { "axes": { "impact": { "eligible": false, "evidence_reason_codes": ["unresolved_source_conflict"], "state": "conflicting" } } },
+      "expected": { "headline_status": "not_assessed", "headline_classification": "insufficient_evidence", "impact_status": "not_assessed", "reasons_include": ["unresolved_source_conflict"] }
+    },
+    {
+      "id": "real-zero-is-preserved",
+      "patch": { "axes": { "impact": { "status": "low", "value": { "amount": 0, "unit": "fictional-MtCO2/yr" } } } },
+      "expected": { "headline_status": "available", "headline_classification": "core_axes_available", "impact_status": "low", "impact_value": 0 }
+    },
+    {
+      "id": "null-is-not-zero",
+      "patch": { "axes": { "impact": { "status": "low", "value": null } } },
+      "expected": { "headline_status": "not_assessed", "headline_classification": "insufficient_evidence", "impact_status": "not_assessed", "impact_value": null, "reasons_include": ["value_not_reported"] }
+    },
+    {
+      "id": "reviewed-ambition-and-fair-context",
+      "patch": { "axes": { "ambition": { "status": "insufficient", "eligible": true, "method_id": "fictional-reviewed-ambition", "methodology_version": "9.9.9", "fact_ids": ["fact:fixture.zzz.ambition"], "review": { "status": "reviewed", "passed": true, "extractor_id": "fixture-extractor", "reviewer_id": "fixture-reviewer", "reviewed_at": "2026-07-15T00:00:00Z" } }, "fair_contribution": { "status": "context_only", "eligible": true, "method_id": "fictional-reviewed-fairness-context", "methodology_version": "9.9.9", "fact_ids": ["fact:fixture.zzz.fairness"], "review": { "status": "reviewed", "passed": true, "extractor_id": "fixture-extractor", "reviewer_id": "fixture-reviewer", "reviewed_at": "2026-07-15T00:00:00Z" } } } },
+      "expected": { "headline_status": "available", "ambition_status": "insufficient", "ambition_availability": "available", "fair_status": "context_only", "fair_availability": "context_only" }
+    },
+    {
+      "id": "deterministic-hash",
+      "patch": {},
+      "expected": { "headline_status": "available", "headline_classification": "core_axes_available", "assert_deterministic": true, "calculation_hash": "b1ae50543f0bce14b4a1024e94bb3ebd4bd6dc940baa675882a96bbcf0da3fc3" }
+    }
+  ]
+}

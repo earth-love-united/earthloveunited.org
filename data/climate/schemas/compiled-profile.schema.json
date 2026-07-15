@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/compiled-profile-2.0.0.json",
+  "title": "CT-22 compiled country climate profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "profile_id", "country_id", "data_release_id", "compiler_version", "methodology_versions", "generated_at", "headline", "axes", "calculation_hash"],
+  "properties": {
+    "schema_version": { "const": "2.0.0" },
+    "profile_id": { "type": "string", "pattern": "^profile:iso3166-1:[A-Z]{3}:[a-z0-9._-]+$" },
+    "country_id": { "type": "string", "pattern": "^iso3166-1:[A-Z]{3}$" },
+    "data_release_id": { "type": "string", "minLength": 1 },
+    "compiler_version": { "$ref": "#/$defs/version" },
+    "methodology_versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "impact", "target_integrity", "ambition", "delivery", "fair_contribution", "evidence_quality"],
+      "properties": {
+        "profile": { "$ref": "#/$defs/version" },
+        "impact": { "$ref": "#/$defs/nullableVersion" },
+        "target_integrity": { "$ref": "#/$defs/nullableVersion" },
+        "ambition": { "$ref": "#/$defs/nullableVersion" },
+        "delivery": { "$ref": "#/$defs/nullableVersion" },
+        "fair_contribution": { "$ref": "#/$defs/nullableVersion" },
+        "evidence_quality": { "$ref": "#/$defs/nullableVersion" }
+      }
+    },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "headline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "classification", "evidence_reason_codes", "fact_ids", "axis_availability"],
+      "properties": {
+        "status": { "enum": ["available", "withheld", "not_assessed"] },
+        "classification": { "enum": ["high_impact_without_comparable_target", "without_comparable_target", "core_axes_available", "evidence_withheld", "insufficient_evidence"] },
+        "evidence_reason_codes": { "$ref": "#/$defs/evidenceReasons" },
+        "fact_ids": { "$ref": "#/$defs/facts" },
+        "axis_availability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["impact", "target_integrity", "ambition", "delivery", "fair_contribution", "evidence_quality"],
+          "properties": {
+            "impact": { "$ref": "#/$defs/availability" },
+            "target_integrity": { "$ref": "#/$defs/availability" },
+            "ambition": { "$ref": "#/$defs/availability" },
+            "delivery": { "$ref": "#/$defs/availability" },
+            "fair_contribution": { "$ref": "#/$defs/availability" },
+            "evidence_quality": { "$ref": "#/$defs/availability" }
+          }
+        }
+      }
+    },
+    "axes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["impact", "target_integrity", "ambition", "delivery", "fair_contribution", "evidence_quality"],
+      "properties": {
+        "impact": { "allOf": [{ "$ref": "#/$defs/axis" }, { "properties": { "status": { "enum": ["very_high", "high", "medium", "low", "not_assessed"] } } }] },
+        "target_integrity": { "allOf": [{ "$ref": "#/$defs/axis" }, { "properties": { "status": { "enum": ["comparable", "partially_comparable", "non_comparable", "qualitative_or_sectoral", "no_active_target_found", "not_assessed"] } } }] },
+        "ambition": { "allOf": [{ "$ref": "#/$defs/axis" }, { "properties": { "status": { "enum": ["aligned", "almost_sufficient", "insufficient", "highly_insufficient", "critically_insufficient", "not_assessed"] } } }] },
+        "delivery": { "allOf": [{ "$ref": "#/$defs/axis" }, { "properties": { "status": { "enum": ["ahead", "on_pace", "uncertain", "off_course", "not_assessed"] } } }] },
+        "fair_contribution": { "allOf": [{ "$ref": "#/$defs/axis" }, { "properties": { "status": { "enum": ["context_only", "not_assessed"] } } }] },
+        "evidence_quality": { "allOf": [{ "$ref": "#/$defs/axis" }, { "properties": { "status": { "enum": ["A", "B", "C", "D"] } } }] }
+      }
+    },
+    "calculation_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "nullableVersion": { "type": ["string", "null"], "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "availability": { "enum": ["available", "withheld", "not_assessed", "context_only"] },
+    "evidenceReasons": { "type": "array", "uniqueItems": true, "items": { "enum": ["climate_evidence_not_reviewed", "source_not_reviewed", "source_missing", "source_unavailable", "licence_not_approved", "value_not_reported", "value_withheld", "reporting_not_yet_due", "reporting_optional", "not_applicable", "stale_source", "unresolved_source_conflict", "target_not_found", "target_expired", "target_scope_missing", "target_year_missing", "reference_year_missing", "reference_value_missing", "gas_basket_missing", "gwp_convention_missing", "sector_coverage_missing", "geographic_coverage_missing", "lulucf_treatment_missing", "conditionality_missing", "article6_treatment_missing", "bau_scenario_missing", "bau_vintage_missing", "bau_target_value_missing", "intensity_denominator_missing", "intensity_denominator_projection_missing", "fixed_level_missing", "trajectory_missing", "peaking_year_missing", "qualitative_target", "sectoral_target", "net_zero_details_missing", "scope_mismatch", "gas_basket_mismatch", "gwp_mismatch", "sector_mismatch", "geographic_boundary_mismatch", "lulucf_mismatch", "year_mismatch", "evidence_insufficient", "uncertainty_too_large", "independent_review_required", "membership_not_reviewed", "party_status_not_reviewed", "territory_status_not_reviewed", "geometry_not_reviewed", "region_not_reviewed", "ldc_status_not_reviewed", "lldc_status_not_reviewed", "sids_status_not_reviewed", "assessment_eligibility_not_reviewed"] } },
+    "assessmentBases": { "type": "array", "uniqueItems": true, "items": { "enum": ["calculation_time_missing", "assessment_year_missing", "country_mismatch", "target_non_comparable", "target_endpoint_missing", "target_endpoint_invalid_range", "target_endpoint_contract_invalid", "unit_mismatch", "observed_series_incomplete", "observed_series_invalid", "observation_fact_id_missing", "projection_rejected_as_observation", "projection_point_rejected_as_observation", "observed_pace_at_least_required", "target_level_already_met_and_pace_sufficient", "observed_pace_slower_than_required", "observed_required_intervals_overlap", "projection_role_invalid", "projection_target_year_missing", "projection_invalid", "policy_projection_meets_target", "policy_projection_misses_target", "projection_target_intervals_overlap", "delivery_signals_disagree"] } },
+    "facts": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^fact:" } },
+    "axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "availability", "evidence_reason_codes", "assessment_basis_codes", "fact_ids", "method_id", "methodology_version", "value", "lineage"],
+      "properties": {
+        "status": { "type": "string" },
+        "availability": { "$ref": "#/$defs/availability" },
+        "evidence_reason_codes": { "$ref": "#/$defs/evidenceReasons" },
+        "assessment_basis_codes": { "$ref": "#/$defs/assessmentBases" },
+        "fact_ids": { "$ref": "#/$defs/facts" },
+        "method_id": { "type": ["string", "null"] },
+        "methodology_version": { "$ref": "#/$defs/nullableVersion" },
+        "value": {},
+        "lineage": { "type": ["object", "null"] }
+      }
+    }
+  }
+}
