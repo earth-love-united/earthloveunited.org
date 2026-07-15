@@ -116,6 +116,18 @@
       "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
     },
     {
+      "id": "localized-globe-asset-is-runtime-affecting",
+      "changed_paths": ["assets/globe/runtime/earth-night.jpg"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "ct45-checker-is-runtime-affecting",
+      "changed_paths": ["tools/check-globe-runtime-assets.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
       "id": "windows-separator-cannot-bypass-runtime-path",
       "changed_paths": ["data\\climate\\runtime\\country-factual-candidate.json"],
       "candidate": "$base_denied_candidate",

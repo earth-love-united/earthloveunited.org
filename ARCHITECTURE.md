@@ -139,25 +139,36 @@ view model.
 
 ```mermaid
 flowchart LR
-    P["data/pledge-nodes.json"] --> D["Data.init()"]
-    S["data/small-nations.json"] --> D
     C["data/carbon-projects.json"] --> D
-    D --> L["country lookups"]
-    L --> G["GlobeModule"]
-    N["Natural Earth 110m<br/>remote GeoJSON"] --> G
+    F["CT-42 factual candidate<br/>exact SHA-256"] --> D["Data.init()"]
+    D --> L["candidate country lookups"]
+    L --> P["GlobeModule.prepare()"]
+    N["Pinned local Natural Earth 110m<br/>177-feature GeoJSON"] --> P
+    I["Four pinned local images<br/>exact dimensions"] --> P
+    S["28 embedded approximate<br/>navigation points"] --> P
+    P --> G["GlobeModule.init()"]
     G --> R["atlas rail"]
     G --> K["country card"]
     G --> V["polygon visuals"]
+    D --> B["searchable 249-entity<br/>evidence browser"]
 ```
 
-`Data.init()` fetches all three runtime files concurrently and unwraps the
-`{ _meta, data }` envelope when present. `DATA_SCHEMA` currently validates the
-pledge-node array only at a structural level.
+`Data.init()` applies an eight-second deadline to carbon-project and critical
+candidate reads. The CT-42 candidate is parsed only after WebCrypto verifies
+its exact SHA-256 and its 249 / 206 factual / 43 gap boundary. Carbon-project
+data are noncritical; candidate failure blocks 3D rendering and exposes no
+inferred climate values.
 
-`GlobeModule` fetches Natural Earth 110m country geometry from the globe.gl
-example repository and adds synthetic small polygons for countries missing
-from that geometry. The URL is not yet pinned or vendored; this is a known
-availability/provenance risk.
+Before loading globe.gl, `GlobeModule.prepare()` must preload and validate the
+local 177-feature GeoJSON plus all four local globe images. It validates exact
+image dimensions and strong Polygon/MultiPolygon structure. The 28 approximate
+small-state points are embedded navigation affordances pinned to a hashed
+manual source; disputed subfeatures and non-registry entities are excluded.
+The interactive candidate deck must resolve exactly 201 registry entities
+(194 factual and 7 gaps). The first-class evidence browser remains the route
+to all 249 entities. CT-45 proves byte integrity and these fail-closed runtime
+boundaries; it does not grant texture rights, third-party-notice completeness,
+production approval, or release authority.
 
 ### Target country-truth flow
 
@@ -187,16 +198,24 @@ are publication tasks, not a frontend build.
 ```text
 App.enterGlobe()
   → show loading state and enter globe mode
-  → lazy-load js/vendor/globe.gl.js
+  → GlobeModule.prepare()
+      ├─ candidate unavailable → #globe-fallback (candidate_data_unavailable)
+      ├─ geometry invalid/unavailable → #globe-fallback (country_geometry_unavailable)
+      └─ image invalid/unavailable → #globe-fallback (visual_assets_unavailable)
+  → lazy-load verified local js/vendor/globe.gl.js
       └─ load failure → show body-level #globe-fallback evidence view
   → GlobeModule.init()
       ├─ missing WebGL / constructor failure → show #globe-fallback; return false
       → create globe.gl instance through safeChain()
-      → fetch country GeoJSON
-      → join Data.countryHexColors by ISO3
-      → build atlas deck
+      → activate prepared geometry and exact 201-entity deck
       → emit globe:render-ready / globe:country-data-ready
   → selectDefaultCountry()
+
+Browse all 249 evidence records
+  → requires initialized renderer + exactly one live canvas
+  → show #globe-fallback in evidence_browse_requested mode
+  → search/select factual series or explicit source gaps
+  → Close/Escape validates the renderer again before returning
 
 pointer or keyboard selection
   → select country feature
@@ -237,7 +256,7 @@ Top to bottom:
  200  #hero, #globe-back-btn
  110  .globe-status
  100  #topbar
-  60  #globe-fallback (failure only), .hex-legend
+  60  #globe-fallback (failure or user-invoked evidence browser), .hex-legend
   50  .country-atlas-rail
   20  .country-atlas-scrim
   10  .sections, .footer
@@ -257,12 +276,14 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` precaches the public page, core CSS/JS, globe atmosphere, and three
-runtime data files. It applies:
+`sw.js` cache epoch v29 precaches the public page, core CSS/JS, verified local
+globe.gl, the CT-45 manifest and five localized assets, and exact-version
+candidate/carbon data requests. It applies:
 
 - network-first for `/data/`;
 - network-first with browser-cache bypass for HTML, JS, and CSS;
-- cache-first for other same-origin static assets.
+- cache-first for other same-origin static assets. Geometry and image requests
+  use digest-versioned query keys coupled to the precache entries.
 
 Any runtime data filename or script addition requires a service-worker asset
 and cache-version review. A reviewed data release must not pair new HTML with

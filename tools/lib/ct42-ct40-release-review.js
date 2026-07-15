@@ -3,7 +3,7 @@
 const crypto = require('node:crypto');
 const { evaluateRelease } = require('./climate-release-gate');
 
-const ADAPTER_VERSION = '1.1.0';
+const ADAPTER_VERSION = '1.2.0';
 const METHODOLOGY_VERSION = '0.1.0';
 const EVALUATED_AT = '2026-07-15T13:00:00Z';
 const COMMIT_SHA_PATTERN = /^[0-9a-f]{40}$/;
@@ -28,6 +28,14 @@ const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
   'tools/smoke-test.js',
   'data/climate/runtime/country-factual-candidate.json',
   'data/climate/runtime/candidate-manifest.json',
+  'data/small-nations.json',
+  'sw.js',
+  'assets/globe/runtime/manifest.json',
+  'assets/globe/runtime/ne_110m_admin_0_countries.geojson',
+  'assets/globe/runtime/earth-night.jpg',
+  'assets/globe/runtime/night-sky.png',
+  'assets/globe/runtime/earth-blue-marble.jpg',
+  'assets/globe/runtime/earth-topology.png',
 ]);
 const ANCESTRY_BOUNDARY = 'This pure adapter does not inspect Git history. It accepts independent review commits only when every declared scoped file hash matches the assembled candidate; any ancestry assertion belongs in CI with explicitly fetched refs.';
 const REQUIRED_REASON_CODES = Object.freeze([

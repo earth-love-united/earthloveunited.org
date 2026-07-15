@@ -20,10 +20,15 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'js/country-climate-view-model.js',
   'js/country-ranking-compiler.js',
   'js/vendor/globe.gl.js',
+  'data/small-nations.json',
+  'data/climate/reviews/globe-runtime-assets-production-review.json',
   'tools/build-deploy.sh',
   'tools/fetch-globe-vendor.sh',
   'tools/check-globe-vendor-integrity.js',
   'tools/lib/globe-vendor-integrity.js',
+  'tools/check-globe-runtime-assets.js',
+  'tools/lib/globe-runtime-assets.js',
+  'tools/fixtures/globe-runtime-assets.json',
   'tools/climate-truth-ci.js',
   'tools/lib/country-accessibility-model.js',
   'tools/lib/country-card-evidence-model.js',
@@ -32,6 +37,7 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
 
 const RUNTIME_PATH_PREFIXES = Object.freeze([
   'data/climate/runtime/',
+  'assets/globe/runtime/',
 ]);
 
 function stable(value) {

@@ -56,11 +56,21 @@ tool happens to exist:
 | CT-31 ranking | `tools/check-country-ranking.js` |
 | CT-32 card evidence | `tools/check-country-card-evidence-model.js` |
 | CT-33 accessibility | `tools/check-country-accessibility.js` |
+| CT-44 vendor delivery | `tools/check-globe-vendor-integrity.js` |
+| CT-45 localized globe runtime assets | `tools/check-globe-runtime-assets.js` |
 | CT-40 release gate | `tools/check-climate-release-gate.js` |
 
 `tools/build-major-emitter-ndc-release.js --check` is also run when present as
 an optional generated-artifact verification. Public-copy validation is always
 required. Every component is marked `PASS`, `FAIL`, or `MISS` in stable order.
+
+CT-45 pins the five localized globe files, content-versioned runtime and
+service-worker URLs, 177-feature geometry validation, 28 approximate point
+affordances, pre-render image validation, the 201-entity mapped deck, and the
+first-class 249-entity evidence browser. It also verifies the final staged
+copy. CT-45 does not grant texture rights, third-party-notice completeness,
+production use, legal approval, deploy authority, or release authority; those
+remain independent release inputs.
 
 ## Reviewed runtime manifest
 
@@ -143,3 +153,9 @@ external source CSV. They are run without `--committed-only`, followed by
 `tools/check-primap-review-attestation.js /path/to/PRIMAP.csv` and
 `tools/check-primap-factual-display-review.js /path/to/PRIMAP.csv`, when that
 reviewed raw input is available.
+
+The current asset manifest also keeps runtime image rights and the composite
+bundle notice review explicitly `not_reviewed`. Production readiness therefore
+remains blocked even if later climate evidence becomes complete. A public
+candidate preview must not be published until the exact readable and machine
+third-party notices are deployed and independently reviewed.

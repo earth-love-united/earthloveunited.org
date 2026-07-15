@@ -10,8 +10,19 @@
 let _globeClickHandler = null;
 const GLOBE_DRAG_CLICK_THRESHOLD_PX = 6;
 const GLOBE_DRAG_SUPPRESS_MS = 350;
-const COUNTRY_GEOJSON_URL = 'https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson';
+const COUNTRY_GEOJSON_URL = '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75';
 const COUNTRY_GEOJSON_TIMEOUT_MS = 8000;
+const COUNTRY_GEOJSON_FEATURE_COUNT = 177;
+const EXPECTED_INTERACTIVE_ENTITY_COUNT = 201;
+const EXPECTED_INTERACTIVE_FACTUAL_COUNT = 194;
+const EXPECTED_INTERACTIVE_GAP_COUNT = 7;
+const GLOBE_VISUAL_ASSET_TIMEOUT_MS = 8000;
+const GLOBE_VISUAL_ASSETS = Object.freeze({
+  darkSurface: Object.freeze({ url: '/assets/globe/runtime/earth-night.jpg?v=355ab23dd132', width: 4096, height: 2048 }),
+  darkBackground: Object.freeze({ url: '/assets/globe/runtime/night-sky.png?v=7e1d5e780301', width: 4096, height: 2048 }),
+  lightSurface: Object.freeze({ url: '/assets/globe/runtime/earth-blue-marble.jpg?v=228deba2e4b6', width: 4096, height: 2048 }),
+  bump: Object.freeze({ url: '/assets/globe/runtime/earth-topology.png?v=839b12da2e4d', width: 2048, height: 1024 }),
+});
 
 // ── Point-in-polygon (ray casting) ──
 function _pointInRing(lng, lat, ring) {
@@ -74,11 +85,51 @@ function _findCountryAtPoint(lng, lat, features) {
 const COUNTRY_ISO_FALLBACKS = {
   France: 'FRA',
   Norway: 'NOR',
-  Kosovo: 'XKX',
-  'N. Cyprus': 'CYP',
-  'Northern Cyprus': 'CYP',
-  Somaliland: 'SOM',
 };
+
+// These Natural Earth subfeatures must never inherit evidence from a parent
+// registry entity. They remain visible only in the base texture; the assessed
+// overlay excludes them and supplies no hover/card/rank interaction.
+const NON_ASSESSING_MAP_AREAS = Object.freeze(new Set([
+  'N. Cyprus',
+  'Northern Cyprus',
+  'Somaliland',
+  'Kosovo',
+]));
+
+// Natural Earth 110m omits these small states. These approximate navigation
+// points are only clickable affordances; they are not boundaries, sovereignty
+// assertions, or precise geographic centroids.
+const SMALL_NATION_NAVIGATION_POINTS = Object.freeze([
+  { iso: 'AND', country: 'Andorra', lat: 42.55, lng: 1.58 },
+  { iso: 'ATG', country: 'Antigua and Barbuda', lat: 17.08, lng: -61.80 },
+  { iso: 'BHR', country: 'Bahrain', lat: 26.05, lng: 50.55 },
+  { iso: 'BRB', country: 'Barbados', lat: 13.17, lng: -59.55 },
+  { iso: 'CPV', country: 'Cabo Verde', lat: 15.10, lng: -23.62 },
+  { iso: 'COM', country: 'Comoros', lat: -11.65, lng: 43.35 },
+  { iso: 'DMA', country: 'Dominica', lat: 15.42, lng: -61.34 },
+  { iso: 'FSM', country: 'Micronesia, Federated States of', lat: 6.92, lng: 158.25 },
+  { iso: 'GRD', country: 'Grenada', lat: 12.11, lng: -61.68 },
+  { iso: 'KIR', country: 'Kiribati', lat: 1.45, lng: 172.98 },
+  { iso: 'KNA', country: 'Saint Kitts and Nevis', lat: 17.30, lng: -62.73 },
+  { iso: 'LCA', country: 'Saint Lucia', lat: 13.90, lng: -60.97 },
+  { iso: 'LIE', country: 'Liechtenstein', lat: 47.16, lng: 9.55 },
+  { iso: 'MCO', country: 'Monaco', lat: 43.73, lng: 7.42 },
+  { iso: 'MDV', country: 'Maldives', lat: 3.25, lng: 73.22 },
+  { iso: 'MHL', country: 'Marshall Islands', lat: 7.10, lng: 171.38 },
+  { iso: 'MLT', country: 'Malta', lat: 35.90, lng: 14.51 },
+  { iso: 'MUS', country: 'Mauritius', lat: -20.28, lng: 57.55 },
+  { iso: 'NRU', country: 'Nauru', lat: -0.52, lng: 166.93 },
+  { iso: 'PLW', country: 'Palau', lat: 7.50, lng: 134.62 },
+  { iso: 'SMR', country: 'San Marino', lat: 43.94, lng: 12.46 },
+  { iso: 'SGP', country: 'Singapore', lat: 1.35, lng: 103.82 },
+  { iso: 'STP', country: 'Sao Tome and Principe', lat: 0.33, lng: 6.73 },
+  { iso: 'SYC', country: 'Seychelles', lat: -4.68, lng: 55.48 },
+  { iso: 'TON', country: 'Tonga', lat: -21.18, lng: -175.20 },
+  { iso: 'TUV', country: 'Tuvalu', lat: -8.52, lng: 179.20 },
+  { iso: 'VCT', country: 'Saint Vincent and the Grenadines', lat: 13.25, lng: -61.20 },
+  { iso: 'WSM', country: 'Samoa', lat: -13.83, lng: -171.77 },
+]);
 
 const COUNTRY_STATUS = {
   FACTUAL: 'factual',
@@ -96,6 +147,10 @@ const COUNTRY_STATUS_BADGE_CLASSES = {
 };
 
 const GLOBE_FALLBACK_REASONS = Object.freeze({
+  evidence_browse_requested: 'All 249 registry entities are available here, including those without reliable 1:110m geometry. This is an evidence browser, not a 3D failure state.',
+  candidate_data_unavailable: 'The country evidence candidate is missing or did not pass its runtime boundary checks. No climate values or assessments are being inferred.',
+  country_geometry_unavailable: 'The navigational country geometry is unavailable or invalid. The country evidence remains available below.',
+  visual_assets_unavailable: 'One or more verified globe images could not be loaded. The country evidence remains available below.',
   library_load_failed: 'The 3D globe library could not be loaded. The country evidence remains available below.',
   library_unavailable: 'The 3D globe library is unavailable. The country evidence remains available below.',
   webgl_unavailable: 'This browser or device could not start WebGL. The country evidence remains available below.',
@@ -115,16 +170,24 @@ function _resolveCountryIso(feature) {
   return props.ISO_A3 || props.ISO_A2 || 'UNK';
 }
 
+function _isNonAssessingMapArea(feature) {
+  const properties = feature?.properties || {};
+  return [properties.ADMIN, properties.NAME, properties.name]
+    .some(name => NON_ASSESSING_MAP_AREAS.has(name));
+}
+
 function _getCountryDisplayData(feature) {
   if (!feature) return null;
   const props = feature.properties || {};
   const iso = _resolveCountryIso(feature);
-  const country = props.ADMIN || props.NAME || props.name || iso;
-
+  const mapArea = props.ADMIN || props.NAME || props.name || iso;
   const climate = Data.getClimateCountry ? Data.getClimateCountry(iso) : null;
+  const country = climate?.name || mapArea;
   return {
     iso,
     country,
+    mapArea,
+    mapAreaDiffers: Boolean(climate?.name && climate.name !== mapArea),
     emissions: climate?.emissions || null,
     lat: _isFiniteNumber(Number(props.__lat)) ? Number(props.__lat) : null,
     lng: _isFiniteNumber(Number(props.__lng)) ? Number(props.__lng) : null,
@@ -200,15 +263,15 @@ function _getCountryStatusAttr(d) {
 
 const GLOBE_THEME_CONFIG = Object.freeze({
   dark: Object.freeze({
-    surface: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg',
-    backgroundImage: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png',
+    surface: GLOBE_VISUAL_ASSETS.darkSurface.url,
+    backgroundImage: GLOBE_VISUAL_ASSETS.darkBackground.url,
     backgroundColor: '#050509',
     atmosphere: '#4ecdc4',
     atmosphereAltitude: 0.25,
   }),
   light: Object.freeze({
-    surface: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg',
-    backgroundImage: '/assets/globe/light-atmosphere.png?v=v2',
+    surface: GLOBE_VISUAL_ASSETS.lightSurface.url,
+    backgroundImage: null,
     backgroundColor: '#dfe9e3',
     atmosphere: '#2fa77f',
     atmosphereAltitude: 0.33,
@@ -251,17 +314,86 @@ function _isCountryModeActive() {
   return safeGet('GLOBE_MODES', 'getMode', document.body?.dataset?.globeMode || 'countries') === 'countries';
 }
 
-function _fetchJsonWithTimeout(url, timeoutMs) {
+function _fetchJsonWithTimeout(url, timeoutMs, cacheMode) {
   const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-  const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
-  return fetch(url, controller ? { signal: controller.signal } : undefined)
+  let timer;
+  const options = {};
+  if (controller) options.signal = controller.signal;
+  if (cacheMode) options.cache = cacheMode;
+  const timeout = new Promise((resolve, reject) => {
+    timer = setTimeout(() => {
+      controller?.abort();
+      reject(new Error(`Country GeoJSON timeout after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+  const request = fetch(url, options)
     .then(resp => {
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
       return resp.json();
-    })
-    .finally(() => {
-      if (timer) clearTimeout(timer);
     });
+  return Promise.race([request, timeout]).finally(() => clearTimeout(timer));
+}
+
+function _validGeoJsonRing(ring) {
+  return Array.isArray(ring) && ring.length >= 4 && ring.every(position =>
+    Array.isArray(position) && position.length >= 2 &&
+    Number.isFinite(position[0]) && Number.isFinite(position[1]));
+}
+
+function _validGeoJsonGeometry(geometry) {
+  if (!geometry || !Array.isArray(geometry.coordinates)) return false;
+  if (geometry.type === 'Polygon') {
+    return geometry.coordinates.length > 0 && geometry.coordinates.every(_validGeoJsonRing);
+  }
+  if (geometry.type === 'MultiPolygon') {
+    return geometry.coordinates.length > 0 && geometry.coordinates.every(polygon =>
+      Array.isArray(polygon) && polygon.length > 0 && polygon.every(_validGeoJsonRing));
+  }
+  return false;
+}
+
+function _validateCountryGeoJson(payload) {
+  if (!payload || payload.type !== 'FeatureCollection' || !Array.isArray(payload.features) ||
+      payload.features.length !== COUNTRY_GEOJSON_FEATURE_COUNT) {
+    throw new Error('Country GeoJSON is not the reviewed 177-feature FeatureCollection');
+  }
+  payload.features.forEach((feature, index) => {
+    const properties = feature?.properties;
+    const requiredStrings = ['ISO_A2', 'ISO_A3', 'ADMIN', 'NAME'];
+    if (feature?.type !== 'Feature' || !properties ||
+        requiredStrings.some(key => typeof properties[key] !== 'string' || properties[key].length === 0) ||
+        !_validGeoJsonGeometry(feature.geometry)) {
+      throw new Error(`Country GeoJSON feature ${index} has an invalid identity or geometry shape`);
+    }
+  });
+  return payload;
+}
+
+function _preloadImageAsset(asset, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    let settled = false;
+    const finish = (error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      image.onload = null;
+      image.onerror = null;
+      if (error) reject(error);
+      else resolve(asset);
+    };
+    const timer = setTimeout(() => finish(new Error(`Image timeout: ${asset.url}`)), timeoutMs);
+    image.onload = () => {
+      if (image.naturalWidth !== asset.width || image.naturalHeight !== asset.height) {
+        finish(new Error(`Image dimensions rejected: ${asset.url}`));
+        return;
+      }
+      finish(null);
+    };
+    image.onerror = () => finish(new Error(`Image unavailable: ${asset.url}`));
+    image.decoding = 'async';
+    image.src = asset.url;
+  });
 }
 
 const GlobeModule = {
@@ -292,8 +424,113 @@ const GlobeModule = {
   _fallbackEntries: [],
   _fallbackBound: false,
   _fallbackSelectedIso: null,
+  _prepared: false,
+  _preparationPromise: null,
+  _preparationFailure: null,
+
+  async prepare(options = {}) {
+    if (this._prepared && !options.force) return { ok: true, reason: null };
+    if (this._preparationPromise && (!options.force || !this._prepared)) return this._preparationPromise;
+    if (options.force) {
+      this._preparationPromise = null;
+      this._prepared = false;
+      this._preparationFailure = null;
+      this._countryFeatures = null;
+      this._featureByIso = {};
+      this._countryDeck = [];
+      this._countryDataState = 'idle';
+      this._countryDataError = null;
+    }
+
+    const promise = this._prepareRuntimeAssets(options);
+    this._preparationPromise = promise;
+    try {
+      const result = await promise;
+      if (!result.ok && this._preparationPromise === promise) this._preparationPromise = null;
+      return result;
+    } catch (error) {
+      const result = this._failPreparation('globe_construction_failed', error);
+      if (this._preparationPromise === promise) this._preparationPromise = null;
+      return result;
+    }
+  },
+
+  async _prepareRuntimeAssets(options) {
+    if (!Data.isClimateCandidateReady?.() && options.reloadCandidate) {
+      try {
+        await Data.reloadClimateCandidate?.();
+      } catch (error) {
+        reportWarn('GlobeModule', 'Candidate reload failed: ' + (error?.message || 'unknown error'));
+      }
+    }
+    if (!Data.isClimateCandidateReady?.()) {
+      return this._failPreparation('candidate_data_unavailable', new Error('CT-42 candidate is unavailable or invalid'));
+    }
+
+    let countries;
+    try {
+      countries = _validateCountryGeoJson(await _fetchJsonWithTimeout(
+        COUNTRY_GEOJSON_URL,
+        COUNTRY_GEOJSON_TIMEOUT_MS,
+        options.force ? 'reload' : 'default'
+      ));
+    } catch (error) {
+      return this._failPreparation('country_geometry_unavailable', error);
+    }
+
+    try {
+      await Promise.all(Object.values(GLOBE_VISUAL_ASSETS).map(asset =>
+        _preloadImageAsset(asset, GLOBE_VISUAL_ASSET_TIMEOUT_MS)));
+    } catch (error) {
+      return this._failPreparation('visual_assets_unavailable', error);
+    }
+
+    this._countryFeatures = countries.features.filter(feature =>
+      feature.properties.ISO_A2 !== 'AQ' && !_isNonAssessingMapArea(feature) &&
+      Boolean(Data.getClimateCountry?.(_resolveCountryIso(feature))));
+    this._appendSmallNationFeatures();
+    this._buildCountryDeck();
+    const factualMapped = this._countryDeck.filter(entry => entry.data?.emissions?.status === 'reviewed_factual').length;
+    const gapMapped = this._countryDeck.filter(entry => entry.data?.emissions?.status === 'source_gap').length;
+    const featureIsos = this._countryFeatures.map(feature => _resolveCountryIso(feature));
+    const deckIsos = this._countryDeck.map(entry => entry.iso);
+    const uniqueFeatureIsos = new Set(featureIsos);
+    const uniqueDeckIsos = new Set(deckIsos);
+    const setsMatch = uniqueFeatureIsos.size === uniqueDeckIsos.size &&
+      [...uniqueFeatureIsos].every(iso => uniqueDeckIsos.has(iso));
+    if (this._countryFeatures.length !== EXPECTED_INTERACTIVE_ENTITY_COUNT ||
+        uniqueFeatureIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT ||
+        this._countryDeck.length !== EXPECTED_INTERACTIVE_ENTITY_COUNT ||
+        uniqueDeckIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT || !setsMatch ||
+        factualMapped !== EXPECTED_INTERACTIVE_FACTUAL_COUNT || gapMapped !== EXPECTED_INTERACTIVE_GAP_COUNT ||
+        this._countryDeck.some(entry => !Data.getClimateCountry?.(entry.iso))) {
+      return this._failPreparation('country_geometry_unavailable', new Error('Prepared country navigation deck failed its exact 201-entity registry boundary'));
+    }
+    this._countryDataState = 'ready';
+    this._countryDataError = null;
+    this._prepared = true;
+    this._preparationFailure = null;
+    return { ok: true, reason: null };
+  },
+
+  _failPreparation(reason, error) {
+    this._prepared = false;
+    this._preparationFailure = reason;
+    this._countryDataState = 'unavailable';
+    this._countryDataError = error?.message || reason;
+    this._countryFeatures = [];
+    this._featureByIso = {};
+    this._countryDeck = [];
+    reportWarn('GlobeModule', `${reason}: ${this._countryDataError}`);
+    return { ok: false, reason };
+  },
 
   init() {
+    if (!this._prepared || !this._countryFeatures?.length || !this._countryDeck?.length) {
+      reportWarn('GlobeModule', 'Renderer init refused before runtime assets were prepared.');
+      this.showFallback(this._preparationFailure || 'country_geometry_unavailable');
+      return false;
+    }
     // App lazy-loads the vendored renderer before calling init. If that load
     // failed, fail immediately into the evidence view instead of retrying a
     // missing global for 30 seconds.
@@ -328,7 +565,7 @@ const GlobeModule = {
     }
     this.world = safeChain(renderer, 'Globe')
       .globeImageUrl(themeConfig.surface)
-      .bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
+      .bumpImageUrl(GLOBE_VISUAL_ASSETS.bump.url)
       .backgroundImageUrl(themeConfig.backgroundImage)
       .backgroundColor(themeConfig.backgroundColor)
       .showAtmosphere(!this.isMobile).atmosphereColor(themeConfig.atmosphere).atmosphereAltitude(themeConfig.atmosphereAltitude)
@@ -399,29 +636,14 @@ const GlobeModule = {
     // safeChain returns a Proxy — unwrap to get the real Globe instance
     // (the Proxy target IS the Globe, so direct property access still works)
     console.log('[Globe] init — ' + (this.world.pointsData()?.length || 0) + ' points loaded');
-    if (hasModule('EventBus')) EventBus.emit('globe:render-ready', { timestamp: Date.now() });
 
     // Country climate point layers remain disabled until reviewed evidence is
     // explicitly released. Country polygons stay navigable without values.
 
-    // ── Country hex polygons — shared between modes ──
-    // Default: empty wireframe grid (visible edges, transparent fill)
-    this._countryFeatures = null;
-    this._countryDataState = 'loading';
-    this._countryDataError = null;
-    _fetchJsonWithTimeout(COUNTRY_GEOJSON_URL, COUNTRY_GEOJSON_TIMEOUT_MS)
-      .then(countries => {
-        if (!countries || !Array.isArray(countries.features)) {
-          throw new Error('Malformed country GeoJSON');
-        }
-        this._countryFeatures = countries.features.filter(d => d.properties?.ISO_A2 !== 'AQ');
-        // Island + micro nations missing from the 110m GeoJSON get synthetic
-        // dot-sized circle features — same layers, colors, tooltip, and click
-        // behavior as every other country. Appended LAST so they win the
-        // point-in-polygon scan (it iterates back-to-front).
-        this._appendSmallNationFeatures();
-        this._countryDataState = 'ready';
-        this._buildCountryDeck();
+    // Country geometry and every globe image were prepared and validated before
+    // the renderer was constructed. Activation is synchronous so render-ready
+    // cannot race ahead of the country deck.
+    try {
         this._renderRankRail();
         // Only build the H3 hex layer when the solid polygon-border layer is
         // NOT available (old globe.gl builds). Building world-wide hexes just
@@ -556,11 +778,16 @@ const GlobeModule = {
 
         // Attach to the globe canvas
         this._canvasEl = this.world.renderer?.()?.domElement;
-        if (this._canvasEl) {
-          this._bindCanvasDragGuard();
-          this._canvasEl.addEventListener('pointermove', this._onCanvasPointerMove);
-          this._canvasEl.addEventListener('click', this._onCanvasClick);
-        }
+        if (!this._canvasEl) throw new Error('Prepared renderer did not expose a canvas');
+        this._onCanvasWebGLContextLost = event => {
+          event.preventDefault();
+          this._teardownFailedRenderer();
+          this.showFallback('webgl_unavailable');
+        };
+        this._canvasEl.addEventListener('webglcontextlost', this._onCanvasWebGLContextLost);
+        this._bindCanvasDragGuard();
+        this._canvasEl.addEventListener('pointermove', this._onCanvasPointerMove);
+        this._canvasEl.addEventListener('click', this._onCanvasClick);
 
         // Do not auto-open a modal card. A country card is a user-triggered
         // dialog so it always has a real opener for focus restoration.
@@ -572,12 +799,20 @@ const GlobeModule = {
             featureCount: this._countryFeatures.length,
             deckCount: this._countryDeck.length,
           });
+          EventBus.emit('globe:render-ready', {
+            featureCount: this._countryFeatures.length,
+            deckCount: this._countryDeck.length,
+            timestamp: Date.now(),
+          });
         }
-      })
-      .catch(e => {
-        this._handleCountryGeoJsonFailure(e);
-        if (hasModule('EventBus')) EventBus.emit('globe:data-error', { message: 'Country layer unavailable' });
-      });
+    } catch (error) {
+      reportError('GlobeModule.initPreparedAssets()', error);
+      this._prepared = false;
+      this._preparationPromise = null;
+      this._teardownFailedRenderer();
+      this.showFallback('globe_construction_failed');
+      return false;
+    }
 
     // ── Hex country tooltip mouse tracking ──
     // (removed — tooltip positioning now handled in _onCanvasPointerMove)
@@ -690,15 +925,50 @@ const GlobeModule = {
   },
 
   _teardownFailedRenderer() {
-    if (this.world && typeof this.world.destroy === 'function') {
-      try { this.world.destroy(); } catch (error) {
+    if (this._canvasEl) {
+      if (this._onCanvasPointerMove) this._canvasEl.removeEventListener('pointermove', this._onCanvasPointerMove);
+      if (this._onCanvasClick) this._canvasEl.removeEventListener('click', this._onCanvasClick);
+      if (this._onCanvasPointerDown) this._canvasEl.removeEventListener('pointerdown', this._onCanvasPointerDown);
+      if (this._onCanvasPointerMoveGuard) this._canvasEl.removeEventListener('pointermove', this._onCanvasPointerMoveGuard);
+      if (this._onCanvasPointerUp) this._canvasEl.removeEventListener('pointerup', this._onCanvasPointerUp);
+      if (this._onCanvasPointerCancel) this._canvasEl.removeEventListener('pointercancel', this._onCanvasPointerCancel);
+      if (this._onCanvasMouseDown) this._canvasEl.removeEventListener('mousedown', this._onCanvasMouseDown);
+      if (this._onCanvasMouseMoveGuard) this._canvasEl.removeEventListener('mousemove', this._onCanvasMouseMoveGuard);
+      if (this._onCanvasMouseUp) this._canvasEl.removeEventListener('mouseup', this._onCanvasMouseUp);
+      if (this._onCanvasWebGLContextLost) this._canvasEl.removeEventListener('webglcontextlost', this._onCanvasWebGLContextLost);
+    }
+    if (this.world && (typeof this.world._destructor === 'function' || typeof this.world.destroy === 'function')) {
+      try {
+        const destroyRenderer = typeof this.world._destructor === 'function'
+          ? this.world._destructor
+          : this.world.destroy;
+        destroyRenderer.call(this.world);
+      } catch (error) {
         reportWarn('GlobeModule', 'Failed renderer cleanup was incomplete.');
       }
     }
     this.world = null;
     this._initialized = false;
+    this._canvasEl = null;
+    this._onCanvasWebGLContextLost = null;
+    this._canvasDragGuardBound = false;
+    this._canvasPointer = null;
+    if (this._countryKeydownBound && this._onCountryKeydown) {
+      document.removeEventListener('keydown', this._onCountryKeydown);
+      this._countryKeydownBound = false;
+    }
+    if (this._rankRail) {
+      this._rankRail.remove();
+      this._rankRail = null;
+    }
+    this._unmountCountryCard();
     const el = $('globeViz');
     if (el) el.replaceChildren();
+  },
+
+  teardownFailedRenderer() {
+    this._teardownFailedRenderer();
+    return true;
   },
 
   rememberFallbackOpener(element) {
@@ -732,6 +1002,15 @@ const GlobeModule = {
     panel.setAttribute('aria-hidden', 'false');
     document.body.classList.add('globe-fallback-active');
     $text('globe-fallback-reason', GLOBE_FALLBACK_REASONS[stableReason]);
+    const browseRequested = stableReason === 'evidence_browse_requested';
+    $text('globe-fallback-title', browseRequested ? 'Browse all 249 country evidence records' : 'The 3D view is unavailable.');
+    const primaryAction = panel.querySelector('[data-globe-fallback-action="retry"], [data-globe-fallback-action="close"]');
+    if (primaryAction) {
+      primaryAction.setAttribute('data-globe-fallback-action', browseRequested ? 'close' : 'retry');
+      primaryAction.textContent = browseRequested ? 'Return to the 3D globe' : 'Retry the 3D view';
+    }
+    const actionGroup = primaryAction?.closest('.elu-fallback-actions');
+    if (actionGroup) actionGroup.setAttribute('aria-label', browseRequested ? 'Evidence browser navigation' : '3D view recovery options');
     this._bindFallbackControls();
     this._renderFallbackEvidence();
 
@@ -754,6 +1033,9 @@ const GlobeModule = {
       if (action) {
         const name = action.getAttribute('data-globe-fallback-action');
         if (name === 'retry') safeCall('App', 'retryGlobe');
+        if (name === 'close') {
+          this.closeEvidenceBrowser();
+        }
         if (name === 'exit') safeCall('App', 'exitGlobe');
         if (name === 'list') {
           const row = panel.querySelector('[data-fallback-country-iso="' + this._fallbackSelectedIso + '"]');
@@ -873,6 +1155,7 @@ const GlobeModule = {
   hideFallback(options = {}) {
     const panel = $('globe-fallback');
     const opener = this._fallbackOpener;
+    const wasEvidenceBrowse = this._fallbackReasonCode === 'evidence_browse_requested';
     document.body?.classList.remove('globe-fallback-active');
     if (panel) {
       panel.hidden = true;
@@ -880,11 +1163,25 @@ const GlobeModule = {
       panel.removeAttribute('data-reason');
     }
     this._fallbackReasonCode = null;
+    if (wasEvidenceBrowse && this._initialized === true && $('globeViz')?.querySelectorAll('canvas').length === 1) {
+      const browseButton = $('globe-evidence-browse');
+      if (browseButton) {
+        browseButton.disabled = false;
+        browseButton.setAttribute('aria-disabled', 'false');
+      }
+    }
     if (!options.preserveOpener) this._fallbackOpener = null;
     if (options.restoreFocus && opener && document.contains(opener) && typeof opener.focus === 'function') {
       requestAnimationFrame(() => opener.focus({ preventScroll: true }));
     }
     return true;
+  },
+
+  closeEvidenceBrowser() {
+    const hasLiveRenderer = this._initialized === true && $('globeViz')?.querySelectorAll('canvas').length === 1;
+    if (hasLiveRenderer) return this.hideFallback({ restoreFocus: true, preserveOpener: false });
+    this._teardownFailedRenderer();
+    return this.showFallback('globe_construction_failed');
   },
 
   setTheme(theme) {
@@ -1274,6 +1571,12 @@ const GlobeModule = {
       ? d.emissions.label + ' · 2014–2023 · ' + d.emissions.unit
       : 'No reviewed factual emissions series in this candidate';
     const comment = _getCountryGaiaComment(d);
+    const approximatePointNote = feature?.properties?.__smallNation
+      ? '<div class="tt-detail">Approximate navigation point; not a boundary or precise centroid.</div>'
+      : '';
+    const mapAreaNote = d.mapAreaDiffers
+      ? '<div class="tt-detail">Map geometry label: ' + _escapeHtml(d.mapArea) + '. Evidence entity: ' + _escapeHtml(d.country) + '.</div>'
+      : '';
 
     if (selected) {
       const wrap = this._ensureCountryCardWrap(tt);
@@ -1290,7 +1593,8 @@ const GlobeModule = {
     if (selected) tt.removeAttribute('role');
     else tt.setAttribute('role', 'tooltip');
     if (selected) tt.removeAttribute('aria-label');
-    else tt.setAttribute('aria-label', d.country + (d.hasData ? ' emissions facts' : ' emissions data gap'));
+    else tt.setAttribute('aria-label', d.country + (d.hasData ? ' emissions facts' : ' emissions data gap') +
+      (feature?.properties?.__smallNation ? ', approximate navigation point, not a boundary or precise centroid' : ''));
     if (!selected) tt.removeAttribute('tabindex');
 
     let html = '<div class="tt-topline">'
@@ -1299,6 +1603,8 @@ const GlobeModule = {
       + (selected ? '<button type="button" class="tt-close" data-country-close aria-label="Close">✕</button>' : '')
       + '</div>'
       + '<div class="tt-detail">' + _escapeHtml(evidenceSummary) + '</div>'
+      + approximatePointNote
+      + mapAreaNote
       + (selected ? '<div class="tt-candidate"><span aria-hidden="true">◇</span> CT-42 candidate preview · runtime and release not reviewed</div>' : '');
 
     if (!selected) {
@@ -1635,7 +1941,7 @@ const GlobeModule = {
   // layers as real countries: status fill color, border, hover highlight,
   // country tooltip, and click-to-pin all work unchanged.
   _appendSmallNationFeatures() {
-    const nations = Data.smallNations;
+    const nations = SMALL_NATION_NAVIGATION_POINTS;
     if (!Array.isArray(nations) || !nations.length) return;
     if (!Array.isArray(this._countryFeatures)) return;
 
@@ -1961,16 +2267,26 @@ const GlobeModule = {
       this._canvasEl.removeEventListener('mouseup', this._onCanvasMouseUp);
       this._canvasEl.removeEventListener('pointermove', this._onCanvasPointerMove);
       this._canvasEl.removeEventListener('click', this._onCanvasClick);
+      this._canvasEl.removeEventListener('webglcontextlost', this._onCanvasWebGLContextLost);
       this._canvasEl = null;
     }
+    this._onCanvasWebGLContextLost = null;
     this._canvasDragGuardBound = false;
     this._canvasPointer = null;
 
     // Destroy WebGL globe instance
     if (this.world) {
-      // Globe.gl wraps Three.js — call its destroy method if available
-      if (typeof this.world.destroy === 'function') {
-        this.world.destroy();
+      // globe.gl 2.46.1 exposes Kapsule's `_destructor`; retain the older
+      // destroy fallback for compatibility with alternate local builds.
+      const destroyRenderer = typeof this.world._destructor === 'function'
+        ? this.world._destructor
+        : this.world.destroy;
+      if (typeof destroyRenderer === 'function') {
+        try {
+          destroyRenderer.call(this.world);
+        } catch (error) {
+          reportWarn('GlobeModule', 'Renderer cleanup was incomplete.');
+        }
       }
       this.world = null;
     }
@@ -1979,6 +2295,9 @@ const GlobeModule = {
     this._countryFeatures = null;
     this._countryDeck = [];
     this._defaultCountrySelected = false;
+    this._prepared = false;
+    this._preparationPromise = null;
+    this._preparationFailure = null;
 
     if (this._rankRail) {
       this._rankRail.remove();
@@ -2015,6 +2334,9 @@ const GlobeModule = {
       fallbackActive: document.body?.classList.contains('globe-fallback-active') || false,
       fallbackReasonCode: this._fallbackReasonCode,
       fallbackEntityCount: this._fallbackEntries.length,
+      runtimeAssetsPrepared: this._prepared,
+      preparationFailure: this._preparationFailure,
+      rendererCanvasCount: $('globeViz')?.querySelectorAll('canvas').length || 0,
     };
   },
 };
@@ -2164,7 +2486,7 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['init', 'hasWebGLSupport', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
+    provides: ['prepare', 'init', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState'],
     requires: ['Data'],
     emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown'],
   });

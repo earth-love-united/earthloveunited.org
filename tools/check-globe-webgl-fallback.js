@@ -59,9 +59,20 @@ function compile() {
         globe.includes("if (name === 'retry') safeCall('App', 'retryGlobe')"),
       stable_reason_codes: ['library_load_failed', 'library_unavailable', 'webgl_unavailable', 'globe_construction_failed', 'globe_container_missing']
         .every(code => globe.includes(code)),
-      contracts_registered: globe.includes("'hasWebGLSupport', 'rememberFallbackOpener', 'showFallback', 'hideFallback'") &&
+      preparation_failure_codes: ['candidate_data_unavailable', 'country_geometry_unavailable', 'visual_assets_unavailable']
+        .every(code => globe.includes(code)),
+      user_invoked_browser: html.includes('aria-label="Browse all 249 evidence records"') &&
+        globe.includes("stableReason === 'evidence_browse_requested'") &&
+        globe.includes("evidence_browse_requested: 'All 249 registry entities"),
+      guarded_browser_return: globe.includes('closeEvidenceBrowser()') &&
+        globe.includes("querySelectorAll('canvas').length === 1") &&
+        globe.includes('this._teardownFailedRenderer();'),
+      context_loss_route: globe.includes("addEventListener('webglcontextlost', this._onCanvasWebGLContextLost)") &&
+        globe.includes("this.showFallback('webgl_unavailable')"),
+      contracts_registered: globe.includes("'hasWebGLSupport'") && globe.includes("'showFallback'") &&
+        globe.includes("'hideFallback'") && globe.includes("'closeEvidenceBrowser'") &&
         globe.includes("'globe:fallback-shown'") && app.includes("'retryGlobe'") &&
-        app.includes("'globe:fallback-shown'"),
+        app.includes("'browseEvidence'") && app.includes("'globe:fallback-shown'"),
     },
     accessibility: {
       body_level_region: html.indexOf('<section id="globe-fallback"') > html.indexOf('<div id="globeViz" aria-hidden="true"></div>') &&
@@ -72,7 +83,8 @@ function compile() {
         fallbackHtml.includes('role="status" aria-live="polite"'),
       searchable_evidence: fallbackHtml.includes('id="globe-fallback-search"') &&
         fallbackHtml.includes('id="globe-fallback-country-list"') &&
-        fallbackRuntime.includes("data-fallback-country-iso"),
+        fallbackRuntime.includes("data-fallback-country-iso") &&
+        fallbackRuntime.includes("if (name === 'close')"),
       focus_restoration: app.includes("safeCall('GlobeModule', 'rememberFallbackOpener', document.activeElement)") &&
         app.includes("safeCall('GlobeModule', 'hideFallback', { restoreFocus: true, preserveOpener: false })") &&
         globe.includes('requestAnimationFrame(() => opener.focus({ preventScroll: true }))'),
@@ -91,6 +103,9 @@ function compile() {
       registry_entities: candidate.countries.length,
       factual_series: factual,
       source_gaps: gaps,
+      mapped_entities: Number((globe.match(/EXPECTED_INTERACTIVE_ENTITY_COUNT = (\d+)/) || [])[1]),
+      mapped_factual: Number((globe.match(/EXPECTED_INTERACTIVE_FACTUAL_COUNT = (\d+)/) || [])[1]),
+      mapped_gaps: Number((globe.match(/EXPECTED_INTERACTIVE_GAP_COUNT = (\d+)/) || [])[1]),
       review_status: candidate.review_status,
       production_runtime_release: candidate.production_runtime_release,
     },
@@ -110,9 +125,11 @@ function compile() {
     validation: {
       smoke_contract: smoke.includes('Non-WebGL fallback is body-level, accessible, and fail-closed') &&
         smoke.includes('data-fallback-evidence-state="factual"') &&
-        smoke.includes('data-fallback-evidence-state="gap"'),
+        smoke.includes('data-fallback-evidence-state="gap"') &&
+        smoke.includes('All 249 evidence records remain first-class and searchable'),
       architecture_route: architecture.includes('load failure → show body-level #globe-fallback evidence view') &&
-        architecture.includes('60  #globe-fallback (failure only), .hex-legend'),
+        architecture.includes('60  #globe-fallback (failure or user-invoked evidence browser), .hex-legend') &&
+        architecture.includes('Close/Escape validates the renderer again before returning'),
       release_files_absent: PROHIBITED_RELEASE_FILES.every(relative => !fs.existsSync(path.join(ROOT, relative))),
     },
   };
@@ -129,6 +146,9 @@ function validate(snapshot) {
   assert.equal(snapshot.data.registry_entities, 249);
   assert.equal(snapshot.data.factual_series, 206);
   assert.equal(snapshot.data.source_gaps, 43);
+  assert.equal(snapshot.data.mapped_entities, 201);
+  assert.equal(snapshot.data.mapped_factual, 194);
+  assert.equal(snapshot.data.mapped_gaps, 7);
   assert.equal(snapshot.data.review_status, 'not_reviewed');
   assert.equal(snapshot.data.production_runtime_release, false);
 }

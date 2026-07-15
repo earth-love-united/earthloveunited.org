@@ -23,26 +23,47 @@ Interactive 3D globe rendering — the visual centerpiece of the site.
   verifies the digest, and atomically installs the generated local copy
 - **Generated location:** `js/vendor/globe.gl.js` (gitignored; never commit the
   1.8 MB generated file)
+- **Notice boundary:** the exact minified file is a composite bundle. Its full
+  dependency notice inventory has not yet been independently reviewed or
+  deployed, so this pin does not by itself establish production redistribution
+  readiness.
 
-### three-globe (textures + geometry)
-The earth surface, bump, specular, and night-sky textures used by globe.gl.
+### Globe runtime assets
+The country navigation geometry and four decorative globe images are committed
+under `assets/globe/runtime/` and pinned in
+`assets/globe/runtime/manifest.json`. Runtime requests are same-origin and use
+content-versioned query keys; they are not loaded from a CDN.
 
-- **Project:** https://github.com/vasturiano/three-globe
-- **Author:** Vasco Asturiano
-- **License:** MIT
-- **Assets used (loaded from jsdelivr CDN):**
-  - `earth-blue-marble.jpg`
-  - `earth-night.jpg`
-  - `earth-topology.png`
-  - `earth-water.png`
-  - `night-sky.png`
+- **Natural Earth geometry:**
+  `ne_110m_admin_0_countries.geojson`, from the exact `globe.gl@2.46.1`
+  example URL recorded in the manifest. Natural Earth's
+  [project description](https://www.naturalearthdata.com/about/) explains the
+  dataset, and its data are public domain under the project's
+  [official terms](https://www.naturalearthdata.com/about/terms-of-use/).
+  The 1:110m file is generalized, follows Natural Earth's
+  [disputed-boundaries policy](https://www.naturalearthdata.com/about/disputed-boundaries-policy/),
+  and is used only for navigation—not as a sovereignty, legal boundary, or
+  climate-performance judgment.
+- **three-globe 2.45.2 image files:** `earth-blue-marble.jpg`,
+  `earth-night.jpg`, `earth-topology.png`, and `night-sky.png`, from the exact
+  versioned URLs, SHA-256 digests, sizes, and dimensions in the manifest.
+- **Rights boundary:** Package inclusion establishes byte provenance, not production image-rights clearance.
+  The four underlying image rights and the
+  applicable deployed notice sections are **not reviewed**;
+  `production_use_approved` and `release_authority` remain `false`.
+- **Small-state navigation points:** 28 manually curated approximate point
+  affordances are pinned to `data/small-nations.json` and normalized to the
+  candidate registry names by ISO. They are not Natural Earth polygons,
+  boundaries, sovereignty assertions, or precise centroids.
 
 ### three.js
-The underlying WebGL engine for globe.gl.
+The WebGL engine is included transitively inside the exact composite globe.gl
+bundle; it is not loaded separately from a CDN.
 
 - **Project:** https://github.com/mrdoob/three.js
 - **License:** MIT
-- **Loaded via:** CDN (no vendored copy)
+- **Notice status:** included in the pending exact-bundle third-party notice
+  review above; no blanket production-compliance claim is made here.
 
 ---
 

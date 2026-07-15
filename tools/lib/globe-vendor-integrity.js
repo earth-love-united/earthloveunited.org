@@ -185,7 +185,7 @@ function evaluateVendorIntegrity(input) {
     'Quick-start instructions must use the canonical verified fetch command.');
   check('credits-pin', /\*\*Version:\*\*\s+2\.46\.1/.test(credits) && credits.includes(EXPECTED_SPEC.sha256) && credits.includes('./tools/fetch-globe-vendor.sh') && /\*\*License:\*\*\s+MIT/.test(credits),
     'Attribution must state the exact version, digest, command, and licence.');
-  check('deployment-contract', deploymentGuide.includes('Build command:** `./tools/build-deploy.sh`') && deploymentGuide.includes('Build output directory:** `_deploy`') && !deploymentGuide.includes('Build command:** *(leave empty)*'),
+  check('deployment-contract', deploymentGuide.includes('Build command:** `./tools/build-deploy.sh --release`') && deploymentGuide.includes('Build output directory:** `_deploy`') && !deploymentGuide.includes('Build command:** *(leave empty)*'),
     'Cloudflare instructions must run verified staging and publish only _deploy.');
   check('post-deploy-digest-check',
     deploymentGuide.includes('https://earthloveunited.pages.dev/js/vendor/globe.gl.js') &&

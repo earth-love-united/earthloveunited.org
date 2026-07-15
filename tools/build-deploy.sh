@@ -7,9 +7,10 @@
 #  HTML, CSS, JS, runtime data, textures, assets. Excludes scraper
 #  pipelines, build artifacts, internal docs, .git, and bloat.
 #
-#  After running:
+#  After a successful --release build only:
 #    1. Open Cloudflare Pages → Create project → Upload → drag _deploy/
 #    2. (or use `wrangler pages deploy _deploy --project-name earthloveunited`)
+#  A --candidate build is local QA output and must never be uploaded.
 #
 #  Re-run any time to refresh the staging dir from the working tree.
 # ═════════════════════════════════════════════════════════════════
@@ -23,9 +24,67 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
 DEPLOY_DIR="_deploy"
+cleanup_failed_build() {
+  local status=$?
+  if [ "$status" -ne 0 ]; then
+    rm -rf "$DEPLOY_DIR"
+  fi
+  exit "$status"
+}
+trap cleanup_failed_build EXIT
 
+ENV_DEPLOY_MODE="${ELU_DEPLOY_MODE:-}"
+ARG_DEPLOY_MODE=""
+case "${1:-}" in
+  --candidate) ARG_DEPLOY_MODE="candidate" ;;
+  --release) ARG_DEPLOY_MODE="release" ;;
+  "") ;;
+  *)
+    echo "Unknown build mode: $1 (use --candidate or --release)" >&2
+    exit 2
+    ;;
+esac
+case "$ENV_DEPLOY_MODE" in
+  ""|candidate|release) ;;
+  *)
+    echo "Unknown ELU_DEPLOY_MODE: $ENV_DEPLOY_MODE (use candidate or release)" >&2
+    exit 2
+    ;;
+esac
+# Every Cloudflare Pages build is externally reachable, including branch and
+# pull-request previews. Until release readiness passes, none may stage the
+# explicitly local-only candidate path.
+if [ -n "${CF_PAGES_BRANCH:-}" ]; then
+  DEPLOY_MODE="release"
+elif [ -n "$ARG_DEPLOY_MODE" ] && [ -n "$ENV_DEPLOY_MODE" ] && [ "$ARG_DEPLOY_MODE" != "$ENV_DEPLOY_MODE" ]; then
+  echo "Conflicting build modes: CLI=$ARG_DEPLOY_MODE ELU_DEPLOY_MODE=$ENV_DEPLOY_MODE" >&2
+  exit 2
+else
+  DEPLOY_MODE="${ARG_DEPLOY_MODE:-$ENV_DEPLOY_MODE}"
+fi
+case "$DEPLOY_MODE" in
+  candidate|release) ;;
+  "")
+    echo "Build mode is required: use --candidate for local QA or --release for production." >&2
+    exit 2
+    ;;
+  *)
+    echo "Unknown ELU_DEPLOY_MODE: $DEPLOY_MODE (use candidate or release)" >&2
+    exit 2
+    ;;
+esac
+
+# Remove any stale candidate/release output before a release gate can fail.
 echo "🧹 Cleaning $DEPLOY_DIR/ ..."
 rm -rf "$DEPLOY_DIR"
+
+if [ "$DEPLOY_MODE" = "release" ]; then
+  echo "🔐 Enforcing production release readiness..."
+  node tools/check-climate-production-readiness.js --release
+else
+  echo "⚠️  LOCAL QA CANDIDATE ONLY — DO NOT PUBLISH. Production use and release authority remain false."
+fi
+
 mkdir -p "$DEPLOY_DIR"
 
 # ── Fetch or verify the gitignored globe.gl runtime dependency. The helper
@@ -85,6 +144,15 @@ find "$DEPLOY_DIR" -name "*.bak.*"     -delete 2>/dev/null
 find "$DEPLOY_DIR" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null
 find "$DEPLOY_DIR" -name "*.pyc"       -delete 2>/dev/null
 
+if [ "$DEPLOY_MODE" = "candidate" ]; then
+  printf '%s\n' \
+    'LOCAL QA CANDIDATE — DO NOT PUBLISH' \
+    'Runtime image rights and third-party notices are not reviewed.' \
+    'production_use_approved=false' \
+    'release_authority=false' \
+    > "$DEPLOY_DIR/CANDIDATE-NOT-FOR-PUBLICATION.txt"
+fi
+
 # ── Report
 echo ""
 echo "✅ Staging complete: $DEPLOY_DIR/"
@@ -95,12 +163,14 @@ echo ""
 echo "Biggest files (sanity check — anything > 5MB? should be runtime knowledge data only):"
 find "$DEPLOY_DIR" -type f -size +1M -exec du -h {} \; | sort -rh | head -5
 echo ""
-echo "Next:"
-echo "   Option A — Drag-and-drop:"
-echo "     1. Open https://dash.cloudflare.com → Workers & Pages → Create"
-echo "     2. Pages → Upload assets → drag the $DEPLOY_DIR folder"
-echo "     3. Project name: earthloveunited"
-echo "     4. Click Deploy"
-echo ""
-echo "   Option B — wrangler CLI (faster on subsequent deploys):"
-echo "     npx wrangler pages deploy $DEPLOY_DIR --project-name earthloveunited"
+if [ "$DEPLOY_MODE" = "release" ]; then
+  echo "Production readiness passed. Publish only this verified $DEPLOY_DIR directory."
+else
+  echo "LOCAL QA ONLY. Do not upload, deploy, or expose this candidate as a public preview."
+fi
+
+# This must remain the final executable command. The source-tree policy runs
+# before staging in CI; this last step re-verifies the exact runtime consumers
+# and asset bytes after every copy, cleanup, and report operation.
+echo "🔐 Verifying final staged globe runtime assets..."
+node tools/check-globe-runtime-assets.js --staged "$DEPLOY_DIR"

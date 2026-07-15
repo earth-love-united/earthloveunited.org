@@ -2,13 +2,14 @@
 'use strict';
 
 const childProcess = require('node:child_process');
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
-const { evaluateReadiness } = require('./lib/climate-production-readiness');
+const { evaluateReadiness, parseReadinessArgs, releaseWorktreeCleanPasses } = require('./lib/climate-production-readiness');
+const { EXPECTED_ASSETS, REQUIRED_UI_REVIEW_PIN_PATHS } = require('./lib/globe-runtime-assets');
 
 const ROOT = path.resolve(__dirname, '..');
-const mode = process.argv.includes('--release') ? 'release' : 'candidate';
-const jsonOnly = process.argv.includes('--json');
+const { mode, jsonOnly } = parseReadinessArgs(process.argv.slice(2));
 const P = Object.freeze({
   dataReview: 'data/climate/reviews/climate-factual-runtime-candidate-ct42-data-review.json',
   uiReview: 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json',
@@ -19,9 +20,12 @@ const P = Object.freeze({
   releaseDiff: 'data/climate/releases/reviewed-release-diff.json',
   allowManifest: 'data/climate/releases/ct40-allow-manifest.json',
   rollbackProof: 'data/climate/releases/reviewed-rollback-proof.json',
+  runtimeAssets: 'assets/globe/runtime/manifest.json',
+  runtimeAssetApproval: 'data/climate/reviews/globe-runtime-assets-production-review.json',
 });
 
 function exists(relative) { return fs.existsSync(path.join(ROOT, relative)); }
+function sha256(relative) { return crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, relative))).digest('hex'); }
 function read(relative) { return JSON.parse(fs.readFileSync(path.join(ROOT, relative), 'utf8')); }
 function required(relative) {
   if (!exists(relative)) throw new Error(`required readiness input missing: ${relative}`);
@@ -62,6 +66,36 @@ function runTruthCi() {
   };
 }
 
+function regularNonSymlink(relative) {
+  try {
+    const stat = fs.lstatSync(path.join(ROOT, relative));
+    return stat.isFile() && !stat.isSymbolicLink();
+  } catch {
+    return false;
+  }
+}
+
+function currentCommitSha() {
+  const result = childProcess.spawnSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' });
+  const value = result.status === 0 ? result.stdout.trim() : '';
+  return /^[0-9a-f]{40}$/.test(value) ? value : null;
+}
+
+function reviewedCommitBindingPasses(approval) {
+  const reviewed = approval?.reviewed_commit_sha;
+  if (!/^[0-9a-f]{40}$/.test(reviewed || '')) return false;
+  const ancestor = childProcess.spawnSync('git', ['merge-base', '--is-ancestor', reviewed, 'HEAD'], { cwd: ROOT, encoding: 'utf8' });
+  if (ancestor.status !== 0) return false;
+  const reviewedPaths = [...new Set([
+    ...REQUIRED_UI_REVIEW_PIN_PATHS,
+    'tools/check-globe-runtime-assets.js',
+    'tools/lib/globe-runtime-assets.js',
+    'tools/fixtures/globe-runtime-assets.json',
+  ])];
+  const diff = childProcess.spawnSync('git', ['diff', '--quiet', reviewed, 'HEAD', '--', ...reviewedPaths], { cwd: ROOT, encoding: 'utf8' });
+  return diff.status === 0;
+}
+
 const dataReview = required(P.dataReview);
 const uiReview = required(P.uiReview);
 const top20Queue = required(P.top20Queue);
@@ -72,9 +106,11 @@ const ct40 = mode === 'release' && allowManifest ? allowManifest : denyResult;
 const truthCi = runTruthCi();
 const canonicalLinks = run(process.execPath, ['tools/check-canonical-source-links.js']);
 const publicCopy = run(process.execPath, ['tools/check-public-copy.js']);
+const ct45 = run(process.execPath, ['tools/check-globe-runtime-assets.js']);
 const loadOrder = run('python3', ['scripts/verify_load_order.py']);
 const reviewContext = allowManifest?.review_context || {};
 const releaseReview = allowManifest?.review || {};
+const runtimeAssetApproval = exists(P.runtimeAssetApproval) ? read(P.runtimeAssetApproval) : null;
 
 const report = evaluateReadiness({
   mode,
@@ -102,6 +138,7 @@ const report = evaluateReadiness({
   licence_decisions_complete: reviewContext.licence_decisions_complete === true,
   field_level_fact_reviews_complete: reviewContext.field_level_fact_reviews_complete === true,
   independent_release_review_passed: releaseReview.status === 'reviewed' && releaseReview.independent === true,
+  release_worktree_clean_passed: releaseWorktreeCleanPasses(ROOT),
   artifacts: {
     runtime_manifest: exists(P.runtimeManifest),
     release_diff: exists(P.releaseDiff),
@@ -109,6 +146,20 @@ const report = evaluateReadiness({
     rollback_proof: exists(P.rollbackProof),
   },
   truth_ci: truthCi,
+  runtime_assets: {
+    integrity_passed: ct45.pass,
+    manifest: required(P.runtimeAssets),
+    manifest_sha256: sha256(P.runtimeAssets),
+    asset_pins: EXPECTED_ASSETS.map(asset => ({ path: asset.path, sha256: sha256(asset.path) })),
+    current_commit_sha: currentCommitSha(),
+    reviewed_commit_binding_passed: reviewedCommitBindingPasses(runtimeAssetApproval),
+    approval_review_present: exists(P.runtimeAssetApproval),
+    approval_file_regular: regularNonSymlink(P.runtimeAssetApproval),
+    approval: runtimeAssetApproval,
+    // A separate notices mission must replace this fail-closed boundary with
+    // exact source/staged notice verification; reviewer booleans are not proof.
+    notices_integrity_passed: false,
+  },
 });
 
 if (jsonOnly) {

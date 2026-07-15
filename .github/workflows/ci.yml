@@ -39,6 +39,12 @@ jobs:
       - name: globe.gl vendor delivery policy
         run: node tools/check-globe-vendor-integrity.js
 
+      - name: CT-45 localized runtime asset policy
+        run: node tools/check-globe-runtime-assets.js
+
+      - name: Climate production readiness policy fixtures
+        run: node tools/check-climate-production-readiness-policy.js
+
       - name: Verify script load-order DAG
         run: python3 scripts/verify_load_order.py
 
@@ -106,6 +112,12 @@ jobs:
       - name: Verify browser-test dependency bytes
         run: node tools/check-globe-vendor-integrity.js --require-file
 
+      - name: Build candidate deploy directory
+        run: ./tools/build-deploy.sh --candidate
+
+      - name: Verify staged CT-45 bytes independently
+        run: node tools/check-globe-runtime-assets.js --staged _deploy
+
       - name: Install Playwright + Chromium
         run: |
           npm init -y >/dev/null
@@ -114,6 +126,7 @@ jobs:
 
       - name: Serve static site in background
         run: |
+          cd _deploy
           python3 -m http.server 8000 &
           echo $! > /tmp/server.pid
           # wait until reachable
@@ -127,22 +140,155 @@ jobs:
           cat > runchecks.mjs <<'JS'
           import { chromium } from 'playwright';
           const browser = await chromium.launch();
-          const ctx = await browser.newContext();
+          const ctx = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1280, height: 800 } });
           const page = await ctx.newPage();
 
           const consoleErrors = [];
-          page.on('pageerror', e => consoleErrors.push('pageerror: ' + e.message));
-          page.on('console', m => {
-            if (m.type() === 'error') consoleErrors.push('console.error: ' + m.text());
+          const trackErrors = (target, options = {}) => {
+            target.on('pageerror', e => consoleErrors.push('pageerror: ' + e.message));
+            target.on('console', m => {
+              if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) {
+                if (options.expectedConsoleError?.test(m.text())) options.expectedMatches += 1;
+                else consoleErrors.push('console.error: ' + m.text());
+              }
+            });
+          };
+          trackErrors(page);
+          const assert = (condition, message) => {
+            if (!condition) throw new Error(message);
+          };
+          const waitForApp = target => target.waitForFunction(
+            () => window.App && window.GlobeModule && window.Data && ['ready', 'unavailable'].includes(window.Data.climateCandidateState),
+            null,
+            { timeout: 15000 }
+          );
+          const waitForLiveGlobe = target => target.waitForFunction(() => {
+            const state = window.GlobeModule?.getState?.();
+            return window.GlobeModule?._initialized === true && state?.runtimeAssetsPrepared === true &&
+              state?.countryFeatureCount === 201 && state?.countryDeckCount === 201 && state?.rendererCanvasCount === 1;
+          }, null, { timeout: 30000 });
+          const liveSnapshot = target => target.evaluate(() => window.GlobeModule.getState());
+
+          async function exercisePreRenderFailure(urlPattern, expectedReason, response, expectedConsoleError = null) {
+            const target = await ctx.newPage();
+            const expectedCapture = { expectedConsoleError, expectedMatches: 0 };
+            trackErrors(target, expectedCapture);
+            const handler = route => route.fulfill(response);
+            await target.route(urlPattern, handler);
+            await target.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
+            await waitForApp(target);
+            const started = await target.evaluate(() => window.App.enterGlobe());
+            assert(started === false, expectedReason + ' must prevent renderer startup');
+            await target.waitForFunction(reason => window.GlobeModule?._fallbackReasonCode === reason, expectedReason);
+            const failed = await liveSnapshot(target);
+            assert(failed.rendererCanvasCount === 0, expectedReason + ' must have zero canvases');
+            assert(await target.evaluate(() => window.GlobeModule._initialized === false), expectedReason + ' must remain uninitialized');
+            await target.unroute(urlPattern, handler);
+            const retried = await target.evaluate(() => window.App.retryGlobe());
+            assert(retried === true, expectedReason + ' retry must recover');
+            await waitForLiveGlobe(target);
+            const recovered = await liveSnapshot(target);
+            assert(recovered.rendererCanvasCount === 1 && recovered.countryDeckCount === 201, expectedReason + ' retry must create exactly one renderer');
+            if (expectedConsoleError) assert(expectedCapture.expectedMatches >= 1, expectedReason + ' must emit its exact visible data-boundary error');
+            await target.close();
+          }
+
+          await exercisePreRenderFailure('**/data/climate/runtime/country-factual-candidate.json*', 'candidate_data_unavailable', { status: 503, body: 'candidate unavailable' }, /\[Data\._indexClimateCandidate\(\)\] CT-42 candidate boundary or shape invalid/);
+          await exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable', { status: 503, body: 'geometry unavailable' });
+          await exercisePreRenderFailure('**/assets/globe/runtime/earth-night.jpg*', 'visual_assets_unavailable', { status: 200, contentType: 'image/jpeg', headers: { 'Cache-Control': 'no-store' }, body: 'invalid image bytes' });
+
+          const cancellationPage = await ctx.newPage();
+          trackErrors(cancellationPage);
+          await cancellationPage.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
+          await waitForApp(cancellationPage);
+          const cancelled = await cancellationPage.evaluate(async () => {
+            const original = GlobeModule.prepare;
+            let release;
+            GlobeModule.prepare = () => new Promise(resolve => { release = resolve; });
+            const pending = App.enterGlobe();
+            await new Promise(resolve => setTimeout(resolve, 0));
+            App.exitGlobe();
+            release({ ok: true, reason: null });
+            const result = await pending;
+            GlobeModule.prepare = original;
+            return { result, initialized: GlobeModule._initialized, canvases: document.querySelectorAll('#globeViz canvas').length };
           });
+          assert(cancelled.result === false && cancelled.initialized === false && cancelled.canvases === 0, 'stale async activation must not construct a renderer');
+          assert(await cancellationPage.evaluate(() => App.enterGlobe()), 'fresh activation after cancellation must recover');
+          await waitForLiveGlobe(cancellationPage);
+          await cancellationPage.close();
 
           await page.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
 
           // Wait for the boot validator to finish
           await page.waitForFunction(
             () => window.SmokeTest && window.StackLint,
+            null,
             { timeout: 10000 }
           );
+
+          await page.locator('[data-action="enterGlobe"]').first().click();
+          await waitForLiveGlobe(page);
+          let runtimeLifecycle = await liveSnapshot(page);
+          assert(runtimeLifecycle.countryFeatureCount === 201 && runtimeLifecycle.countryDeckCount === 201 && runtimeLifecycle.rendererCanvasCount === 1,
+            'live globe must expose the exact 201-entity deck on one canvas');
+
+          const initialTheme = await page.evaluate(() => document.documentElement.dataset.theme || 'dark');
+          await page.click('#globe-theme-toggle');
+          await page.waitForFunction(theme => (document.documentElement.dataset.theme || 'dark') !== theme, initialTheme);
+          assert((await liveSnapshot(page)).rendererCanvasCount === 1, 'theme change must retain one renderer');
+          await page.click('#globe-theme-toggle');
+
+          await page.click('#globe-evidence-browse');
+          await page.waitForFunction(() => window.GlobeModule?._fallbackReasonCode === 'evidence_browse_requested');
+          const browserCounts = await page.evaluate(() => ({
+            factual: document.querySelectorAll('[data-fallback-evidence-state="factual"]').length,
+            gaps: document.querySelectorAll('[data-fallback-evidence-state="gap"]').length,
+            canvases: document.querySelectorAll('#globeViz canvas').length,
+          }));
+          assert(browserCounts.factual === 206 && browserCounts.gaps === 43 && browserCounts.canvases === 1,
+            'evidence browser must retain one live canvas and expose 206 factual + 43 gap records');
+          await page.fill('#globe-fallback-search', 'Andorra');
+          const visibleRows = page.locator('[data-fallback-country-iso]:visible');
+          assert(await visibleRows.count() === 1, 'evidence search must narrow to one Andorra record');
+          await visibleRows.first().click();
+          assert(/Andorra/.test(await page.locator('#globe-fallback-detail-title').textContent()), 'evidence detail must open for the selected entity');
+          await page.click('[data-globe-fallback-action="close"]');
+          await page.waitForFunction(() => !document.body.classList.contains('globe-fallback-active'));
+          await waitForLiveGlobe(page);
+
+          await page.click('#globe-evidence-browse');
+          await page.waitForFunction(() => window.GlobeModule?._fallbackReasonCode === 'evidence_browse_requested');
+          await page.keyboard.press('Escape');
+          await page.waitForFunction(() => !document.body.classList.contains('globe-fallback-active'));
+          await waitForLiveGlobe(page);
+
+          await page.click('#globe-evidence-browse');
+          await page.waitForFunction(() => window.GlobeModule?._fallbackReasonCode === 'evidence_browse_requested');
+          await page.evaluate(() => document.querySelector('#globeViz canvas').dispatchEvent(new Event('webglcontextlost', { cancelable: true })));
+          await page.waitForFunction(() => window.GlobeModule?._fallbackReasonCode === 'webgl_unavailable');
+          runtimeLifecycle = await liveSnapshot(page);
+          assert(runtimeLifecycle.rendererCanvasCount === 0 && await page.evaluate(() => window.GlobeModule._initialized === false),
+            'renderer loss while browsing must become a genuine zero-canvas fallback');
+          await page.click('[data-globe-fallback-action="retry"]');
+          await waitForLiveGlobe(page);
+
+          for (const width of [320, 375]) {
+            await page.setViewportSize({ width, height: 720 });
+            const rects = await page.evaluate(() => {
+              const browse = document.getElementById('globe-evidence-browse').getBoundingClientRect();
+              const theme = document.getElementById('globe-theme-toggle').getBoundingClientRect();
+              const controls = [...document.querySelectorAll('#topbar button')].map(button => {
+                const rect = button.getBoundingClientRect();
+                return { id: button.id, left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
+              });
+              return { viewport: innerWidth, browse: { left: browse.left, right: browse.right, height: browse.height }, theme: { left: theme.left, right: theme.right, height: theme.height }, controls };
+            });
+            assert(rects.controls.every(rect => rect.left >= 0 && rect.right <= rects.viewport), width + 'px topbar controls must remain inside the viewport');
+            assert(rects.browse.height >= 44 && rects.theme.height >= 44, width + 'px controls must retain 44px targets');
+            assert(rects.browse.right <= rects.theme.left, width + 'px browse/theme controls must not overlap');
+          }
+          await page.setViewportSize({ width: 1280, height: 800 });
 
           const smoke = await page.evaluate(async () => {
             try { return await window.SmokeTest.run(); }
@@ -155,6 +301,7 @@ jobs:
 
           console.log('SmokeTest:', JSON.stringify(smoke, null, 2));
           console.log('StackLint:', JSON.stringify(stack, null, 2));
+          console.log('Runtime lifecycle:', JSON.stringify(runtimeLifecycle, null, 2));
 
           await browser.close();
 

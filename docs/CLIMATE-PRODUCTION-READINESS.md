@@ -23,6 +23,10 @@ This mode must prove all of the following:
 - no runtime manifest, reviewed release diff, or CT-40 allow manifest exists;
 - partial climate truth CI is incomplete only for the two prohibited release
   artifacts.
+- CT-45 localized globe bytes, runtime URL coupling, pre-render validation,
+  fallback behavior, and staged-copy integrity pass while the asset manifest
+  continues to say rights/notices `not_reviewed`, production use `false`, and
+  release authority `false`.
 
 The successful status is
 `candidate_integrity_ready_release_blocked`.
@@ -46,8 +50,21 @@ This mode fails closed unless every item below is true:
 - a separately reviewed executable production rollback proof exists at
   `data/climate/releases/reviewed-rollback-proof.json`;
 - strict climate truth CI passes with no missing components.
+- CT-45 passes and a separate independent exact-digest runtime-asset review
+  approves the image rights, confirms the complete deployed third-party notice
+  inventory, and explicitly grants production use and release authority.
 
 The only successful production status is `release_ready`.
+
+`./tools/build-deploy.sh --candidate` stages a local or branch candidate and
+rechecks every runtime consumer and exact asset after all copy operations.
+`./tools/build-deploy.sh --release` (also inferred for
+`CF_PAGES_BRANCH=main`) runs this production gate before staging and currently
+refuses. CT-45 establishes reproducible bytes; it does not grant texture
+rights, complete third-party notices, legal approval, deploy authority, or
+release authority. No public candidate preview should redistribute the vendor
+or textures until the pinned readable and machine third-party notices are
+deployed and independently reviewed.
 
 ## Current result
 

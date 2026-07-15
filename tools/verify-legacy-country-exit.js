@@ -209,12 +209,22 @@ if (compact(serviceWorker).includes('pledgenodesjson')) failures.push('sw.js: le
 if (!index.includes('docs/LEGACY-COUNTRY-DATA-EXIT.md')) failures.push('index.html: public exit-ledger link missing');
 const hasNeutralLegend = index.includes('Uniform neutral surface · country evidence withheld');
 const hasCandidateLegend = index.includes('CT-42 candidate, not a performance score') &&
-  index.includes('Source gap · visible, not ranked') &&
+  index.includes('7 mapped source gaps · all 43 in browser') &&
+  index.includes('Neutral pattern · source gap, visible and unranked') &&
   read('data/climate/runtime/candidate-manifest.json').includes('"release_eligible": false');
 const candidateCache = serviceWorker.includes("const CACHE_NAME = 'elu-v27-ct42-candidate'") && hasCandidateLegend;
-if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'") && !candidateCache) failures.push('sw.js: cache version is neither legacy-exit v26 nor denied CT-42 candidate v27');
+const localizedCandidateCache = serviceWorker.includes("const CACHE_NAME = 'elu-v29-ct42-runtime-assets'") &&
+  serviceWorker.includes("'/assets/globe/runtime/manifest.json'") &&
+  serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'") && hasCandidateLegend;
+if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'") && !candidateCache && !localizedCandidateCache) {
+  failures.push('sw.js: cache version is neither legacy-exit v26, denied CT-42 candidate v27, nor localized denied candidate v29');
+}
 if (!hasNeutralLegend && !hasCandidateLegend) failures.push('index.html: fail-closed neutral or denied CT-42 candidate legend missing');
-if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'") && !index.includes("navigator.serviceWorker.register('/sw.js?v=27-ct42-candidate'")) failures.push('index.html: service-worker registration is neither v26 nor CT-42 candidate v27');
+if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'") &&
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=27-ct42-candidate'") &&
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=29-ct42-runtime-assets'")) {
+  failures.push('index.html: service-worker registration is neither v26, CT-42 candidate v27, nor localized candidate v29');
+}
 
 const ledger = read('docs/LEGACY-COUNTRY-DATA-EXIT.md');
 const payload = JSON.parse(read(historicalPath));

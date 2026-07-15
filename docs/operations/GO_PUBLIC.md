@@ -232,7 +232,7 @@ In your browser:
    not create a second production project to change build settings
 5. **Production branch:** `main`
 6. **Framework preset:** **None**
-7. **Build command:** `./tools/build-deploy.sh`
+7. **Build command:** `./tools/build-deploy.sh --release`
 8. **Build output directory:** `_deploy`
 9. **Environment variables:** none needed
 10. Click **Save and Deploy**
@@ -245,9 +245,12 @@ These Pages settings live outside this repository. A maintainer must confirm
 the production project uses this exact command and output directory before the
 dependency-delivery gate can be considered operational in production.
 
-PR branches get their own preview URLs like
-`https://<commit-hash>.earthloveunited.pages.dev` — perfect for sharing
-iterations without affecting production.
+Public PR preview builds intentionally run the same `--release` gate and remain
+blocked while runtime image rights, complete third-party notices, CT-40, or any
+other production input is unresolved. Use
+`./tools/build-deploy.sh --candidate` only for local QA; its output carries a
+`CANDIDATE-NOT-FOR-PUBLICATION.txt` marker and must not be uploaded or shared as
+a public preview.
 
 The existing crypto-token site on `elu-website.pages.dev` is untouched.
 
@@ -290,7 +293,7 @@ response alone does not prove that Cloudflare served the approved bytes. When
 WebGL or the library is unavailable, the tested
 accessible factual fallback should appear instead. If the generated vendor URL
 returns 404 or its digest differs, inspect the Cloudflare build log and confirm
-that the external project settings exactly use `./tools/build-deploy.sh` and
+that the external project settings exactly use `./tools/build-deploy.sh --release` and
 `_deploy`. Do not bypass the verified local path with a runtime CDN URL, and do
 not commit the generated 1.8 MB file.
 

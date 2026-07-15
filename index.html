@@ -67,8 +67,8 @@
   Content Security Policy — v1 surface only.
   - Scripts: self + inline (boot clock, SW registration)
   - Styles: self + fonts.googleapis.com + inline
-  - Connect: self + raw.githubusercontent.com (country GeoJSON)
-  - Images: self + data: + cdn.jsdelivr.net (globe textures)
+  - Connect: self (runtime data and localized country geometry)
+  - Images: self + data: (all globe visuals are localized)
   - Fonts: self + fonts.gstatic.com
   - Frames: youtube-nocookie.com only (volunteer video, injected on click)
 -->
@@ -76,8 +76,8 @@
   default-src 'self';
   script-src 'self' 'unsafe-inline';
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  connect-src 'self' https://raw.githubusercontent.com https://api.carbonmark.com;
-  img-src 'self' data: https://cdn.jsdelivr.net;
+  connect-src 'self';
+  img-src 'self' data:;
   font-src 'self' https://fonts.gstatic.com;
   frame-src https://www.youtube-nocookie.com;
 ">
@@ -94,12 +94,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- Resource hints -->
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="dns-prefetch" href="https://raw.githubusercontent.com">
 <link rel="preload" href="js/gaia-utils.js" as="script">
-<link rel="preload" href="js/data.js?v=v1" as="script">
+<link rel="preload" href="js/data.js?v=v2" as="script">
 
 <!-- ═══ CRITICAL CSS (inlined) ═══ -->
 <style>
@@ -393,7 +391,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v12">
+<link rel="stylesheet" href="css/globe-system.css?v=v13">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -495,6 +493,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <span class="brand-subtitle">Living Climate Atlas</span>
   </div>
   <div class="topbar-actions">
+    <button id="globe-evidence-browse" class="glass-btn" data-action="browseEvidence" disabled aria-disabled="true" aria-label="Browse all 249 evidence records"><span class="browse-label-full">Browse all 249 evidence records</span><span class="browse-label-short" aria-hidden="true">249 records</span></button>
     <div class="stats">
       <div class="stat-block">
         <div class="stat-label">Net Human Emissions</div>
@@ -512,8 +511,8 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <div class="hex-legend" id="hex-legend" role="note" aria-label="Candidate emissions magnitude legend">
   <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-low" aria-hidden="true"></span> Lower 2023 emissions magnitude</div>
   <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-high" aria-hidden="true"></span> Higher 2023 emissions magnitude</div>
-  <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-gap" aria-hidden="true"></span> Source gap · visible, not ranked</div>
-  <div class="hex-legend-note">Log-scaled MtCO₂e/yr · harmonized estimate · CT-42 candidate, not a performance score</div>
+  <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-gap" aria-hidden="true"></span> 7 mapped source gaps · all 43 in browser</div>
+  <div class="hex-legend-note">Log-scaled MtCO₂e/yr · harmonized estimate · CT-42 candidate, not a performance score. Boundary geometry is navigational, not a sovereignty or performance judgment.</div>
 </div>
 
 <!-- ═══ GLOBE ═══ -->
@@ -592,6 +591,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <span role="listitem"><i style="background:linear-gradient(135deg,#5b4a97,#f6913a)"></i> Non-green sequential color · log-scaled 2023 emissions magnitude, not performance</span>
       <span role="listitem"><i style="background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1"></i> Neutral pattern · source gap, visible and unranked</span>
     </div>
+    <p class="data-note">Map boundaries use generalized Natural Earth 1:110m geometry for navigation only. Twenty-eight small states absent from that dataset use manually curated approximate navigation points, not boundaries or precise centroids. Disputed subfeatures including Northern Cyprus and Somaliland are excluded from the assessed overlay and never inherit a parent entity’s evidence. None of these representations expresses a position on sovereignty or legal boundaries or assesses climate performance.</p>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Evidence Review</div>
@@ -599,7 +599,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       </div>
       <div class="card">
         <div class="card-tag">Country Cards</div>
-        <p>Tap a mapped entity to inspect its source-labelled 2014–2023 annual harmonized estimates, exact unit, accessible data table, and limitations. Source gaps remain neutral, unnumbered, and equally navigable.</p>
+        <p>The candidate overlay maps 201 registry entities: 194 factual series and 7 neutral, unnumbered source gaps. The searchable 249-record evidence browser also makes the 48 entities not mapped in this candidate reachable, including the other 12 factual series and 36 source gaps.</p>
       </div>
     </div>
     <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
@@ -798,10 +798,10 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage-adapter.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
-<script src="js/data.js?v=v1"></script>
-<script src="js/globe.js?v=v6"></script>
+<script src="js/data.js?v=v2"></script>
+<script src="js/globe.js?v=v7"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
-<script src="js/app.js?v=v2"></script>
+<script src="js/app.js?v=v3"></script>
 
 <!-- Glass system behavior: scroll reveal + theme toggle (design handoff v1) -->
 <script>
@@ -895,15 +895,16 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   ← Return to the Foundation
 </button>
 
-<!-- Accessible non-WebGL route. GlobeModule reveals this body-level region
-     only when the vendored renderer, WebGL, or globe construction fails. -->
+<!-- Accessible evidence route. GlobeModule reveals this body-level region
+     when critical candidate data, geometry, visual assets, the renderer,
+     WebGL, or globe construction fail closed. -->
 <section id="globe-fallback" hidden aria-hidden="true" aria-labelledby="globe-fallback-title">
   <div class="elu-fallback-shell">
     <header class="elu-fallback-header">
       <p class="elu-fallback-eyebrow">Living Globe · accessible evidence view</p>
       <h2 id="globe-fallback-title" tabindex="-1">The 3D view is unavailable.</h2>
       <p id="globe-fallback-reason" class="elu-fallback-reason" role="status" aria-live="polite">The country evidence remains available below.</p>
-      <p class="elu-fallback-boundary">This accessible view shows factual emissions records and explicit source gaps only. It does not assess commitments, targets, delivery, performance, impact bands, or climate scores.</p>
+      <p class="elu-fallback-boundary">This accessible view shows factual emissions records and explicit source gaps only. It does not assess commitments, targets, delivery, performance, impact bands, or climate scores. Map boundaries are navigational and are not a sovereignty or performance judgment.</p>
       <div class="elu-fallback-actions" aria-label="3D view recovery options">
         <button type="button" class="glass-btn" data-globe-fallback-action="retry">Retry the 3D view</button>
         <button type="button" class="glass-btn" data-globe-fallback-action="exit">Return to the Foundation</button>
@@ -945,7 +946,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=27-ct42-candidate', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=29-ct42-runtime-assets', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it
