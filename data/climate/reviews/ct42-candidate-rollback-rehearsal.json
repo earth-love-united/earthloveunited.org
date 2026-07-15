@@ -148,6 +148,13 @@
     ],
     "runtime_dependency_closure": [
       {
+        "path": "manifest.json",
+        "role": "pwa_manifest_metadata",
+        "source_commit": "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a",
+        "source_sha256": "cc7cf3ee37944ea792e72ed10a47b6ba57994afcb1270aa9855e488f835d0d75",
+        "materialized_sha256": "cc7cf3ee37944ea792e72ed10a47b6ba57994afcb1270aa9855e488f835d0d75"
+      },
+      {
         "path": "css/carbon-clock.css",
         "role": "supporting_runtime_style",
         "source_commit": "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a",
@@ -254,7 +261,9 @@
       "exact 201 alphabetical neutral entities equal 173 retained polygons plus 28 approximate navigation points",
       "all country climate values, rankings, trajectories, status distinctions, and performance implications are absent",
       "solid globe and background use no image textures; geometry remains pinned and same-origin",
+      "the root PWA manifest remains byte-identical to the hardened runtime and is included in the materialized dependency closure",
       "service-worker cache is v34 and candidate JSON plus all globe visual assets are absent from pre-cache",
+      "browser-ready materialization requires all 14 pinned runtime dependencies, including the verified local renderer",
       "rollback plan bytes, CT-40 DENY, and no-release/no-deploy authority remain unchanged",
       "the static checker proves exact temporary-site materialization but browser execution remains an external required gate with independently reviewed evidence"
     ]
@@ -295,5 +304,5 @@
     "writes_workspace": false,
     "deploys": false
   },
-  "calculation_hash": "c1e03b000032669cc7e3845628d59cbbc19e136ed1c8d253f95d9babfe5db089"
+  "calculation_hash": "4df15a954054a4c733a00d35cec57a4c1f4cb902cca7a5f07c17387bd04d3c2f"
 }

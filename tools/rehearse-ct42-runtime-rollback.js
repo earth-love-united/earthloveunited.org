@@ -88,6 +88,7 @@ process.stdout.write([
   `  deterministic patch files: ${result.changed_files}; pinned controls: ${result.pinned_control_files}`,
   `  pinned unchanged runtime dependencies: ${result.pinned_runtime_dependencies}`,
   `  materialized runtime dependencies: ${result.materialized_runtime_dependencies}; vendor materialized: ${result.vendor_materialized}`,
+  `  runtime dependency closure complete: ${result.runtime_dependencies_complete}`,
   `  neutral entities: ${result.retained_polygons} retained polygons + ${result.small_nation_points} approximate points = ${result.retained_polygons + result.small_nation_points}`,
   `  service-worker cache: ${result.cache_name}`,
   `  runtime exclusions absent: ${result.runtime_exclusions_absent}`,

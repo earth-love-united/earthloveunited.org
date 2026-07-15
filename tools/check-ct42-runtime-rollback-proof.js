@@ -18,7 +18,7 @@ const {
 const ROOT = path.resolve(__dirname, '..');
 const PROOF_PATH = 'data/climate/reviews/ct42-candidate-rollback-rehearsal.json';
 const FIXTURE_PATH = 'data/climate/fixtures/ct42-runtime-rollback-proof.json';
-const EXPECTED_PROOF_CALCULATION_HASH = 'c1e03b000032669cc7e3845628d59cbbc19e136ed1c8d253f95d9babfe5db089';
+const EXPECTED_PROOF_CALCULATION_HASH = '4df15a954054a4c733a00d35cec57a4c1f4cb902cca7a5f07c17387bd04d3c2f';
 const EXPECTED_PATCH_SHA256 = '8089195ae3e00560012a5d9fa5341ceccfadfca871b40ad4c442c98fa56c01fb';
 const VENDOR_PATH = EXPECTED_VENDOR_SPEC.destination;
 
@@ -70,6 +70,7 @@ assert.equal(result.changed_files, 6);
 assert.equal(result.pinned_control_files, 7);
 assert.equal(result.pinned_runtime_dependencies, RUNTIME_DEPENDENCY_FILES.length);
 assert.equal(result.materialized_runtime_dependencies, RUNTIME_DEPENDENCY_FILES.length - (vendorEntryPresent ? 0 : 1));
+assert.equal(result.runtime_dependencies_complete, vendorEntryPresent);
 assert.equal(result.vendor_materialized, vendorEntryPresent);
 assert.equal(result.retained_polygons, 173);
 assert.equal(result.small_nation_points, 28);
@@ -81,7 +82,9 @@ try {
   const materialized = materializeRollbackSite(ROOT, proof, materializedPath, pins);
   assert.equal(materialized.retained_polygons, 173);
   assert.equal(materialized.small_nation_points, 28);
-  assert.equal(materialized.browser_ready, vendorEntryPresent);
+  assert.equal(materialized.runtime_dependencies_complete, vendorEntryPresent);
+  assert.equal(materialized.browser_ready, materialized.vendor_materialized && materialized.runtime_dependencies_complete);
+  assert.equal(fs.lstatSync(path.join(materializedPath, 'manifest.json')).isFile(), true, 'root manifest must be a regular materialized dependency');
   RUNTIME_EXCLUSIONS.forEach(relative => assert.equal(fs.existsSync(path.join(materializedPath, relative)), false, `${relative} leaked into temporary site`));
 } finally {
   fs.rmSync(materializedPath, { recursive: true, force: true });
@@ -108,7 +111,8 @@ for (const mutation of fixture.mutations) {
       afterApply(rehearsalRoot) {
         const destination = path.join(rehearsalRoot, mutation.target);
         fs.mkdirSync(path.dirname(destination), { recursive: true });
-        if (mutation.operation === 'create') fs.writeFileSync(destination, mutation.value);
+        if (mutation.operation === 'remove') fs.rmSync(destination);
+        else if (mutation.operation === 'create') fs.writeFileSync(destination, mutation.value);
         else if (mutation.operation === 'symlink-copy') {
           const target = destination + '.exact-target';
           fs.writeFileSync(target, fs.readFileSync(destination));
@@ -134,7 +138,7 @@ process.stdout.write([
   `  pinned unchanged runtime dependencies: ${result.pinned_runtime_dependencies}`,
   `  materialized runtime dependencies: ${result.materialized_runtime_dependencies}; vendor materialized: ${result.vendor_materialized}`,
   `  deterministic adversarial mutations rejected: ${rejected}`,
-  result.vendor_materialized
+  result.runtime_dependencies_complete
     ? '  complete exact temporary browser site materialization: PASS'
     : '  static temporary site materialization: PASS; browser site remains incomplete until the canonical vendor fetch gate supplies exact globe.gl bytes',
   '  browser execution evidence: external required gate; not run or recorded by this checker',

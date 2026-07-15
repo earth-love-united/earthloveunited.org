@@ -30,6 +30,7 @@ const CONTROL_FILES = Object.freeze([
 const PATCH_FILES = Object.freeze(CONTROL_FILES.filter(relative => relative !== 'js/app.js'));
 
 const RUNTIME_DEPENDENCIES = Object.freeze([
+  Object.freeze({ path: 'manifest.json', role: 'pwa_manifest_metadata' }),
   Object.freeze({ path: 'css/carbon-clock.css', role: 'supporting_runtime_style' }),
   Object.freeze({ path: 'js/gaia-utils.js', role: 'foundation_runtime' }),
   Object.freeze({ path: 'js/module-contracts.js', role: 'module_contract_runtime' }),
@@ -448,6 +449,7 @@ function validateRollbackState(rehearsalRoot, proof, options = {}) {
     );
     materializedRuntimeDependencies.push(relative);
   }
+  const runtimeDependenciesComplete = materializedRuntimeDependencies.length === RUNTIME_DEPENDENCY_FILES.length;
 
   const index = read(rehearsalRoot, 'index.html').toString('utf8');
   const data = read(rehearsalRoot, 'js/data.js').toString('utf8');
@@ -534,6 +536,7 @@ function validateRollbackState(rehearsalRoot, proof, options = {}) {
     retainedPolygons,
     smallNationPoints: proof.rollback.entity_boundary.approximate_small_state_points,
     materializedRuntimeDependencies,
+    runtimeDependenciesComplete,
     vendorMaterialized: materializedRuntimeDependencies.includes(EXPECTED_VENDOR_SPEC.destination),
   };
 }
@@ -555,6 +558,7 @@ function rehearse(root, proof, options = {}) {
       pinned_control_files: CONTROL_FILES.length,
       pinned_runtime_dependencies: RUNTIME_DEPENDENCY_FILES.length,
       materialized_runtime_dependencies: state.materializedRuntimeDependencies.length,
+      runtime_dependencies_complete: state.runtimeDependenciesComplete,
       vendor_materialized: state.vendorMaterialized,
       output_hashes: state.outputHashes,
       retained_polygons: state.retainedPolygons,
@@ -601,8 +605,9 @@ function materializeRollbackSite(root, proof, destination, options = {}) {
       retained_polygons: state.retainedPolygons,
       small_nation_points: state.smallNationPoints,
       materialized_runtime_dependencies: state.materializedRuntimeDependencies.length,
+      runtime_dependencies_complete: state.runtimeDependenciesComplete,
       vendor_materialized: state.vendorMaterialized,
-      browser_ready: state.vendorMaterialized,
+      browser_ready: state.vendorMaterialized && state.runtimeDependenciesComplete,
       browser_commands: proof.execution.browser_rehearsal,
     };
   } catch (error) {
