@@ -11,15 +11,22 @@ const ROOT = path.resolve(__dirname, '..');
 const STRICT = process.argv.includes('--strict') || process.argv.includes('--require-complete');
 const ALLOW_INCOMPLETE = process.argv.includes('--allow-incomplete');
 const COMPONENTS = Object.freeze([
+  { id: 'CT-01', script: 'tools/check-climate-source-registry.js', required: true },
   { id: 'CT-02', script: 'tools/check-country-evidence.js', required: true },
+  { id: 'CT-03', script: 'tools/validate-visual-truth-fixtures.js', required: true },
   { id: 'CT-04', script: 'tools/verify-legacy-country-quarantine.js', required: true },
+  { id: 'CT-10', script: 'tools/check-country-emissions-evidence.js', required: true },
+  { id: 'CT-10B', script: 'tools/check-primap-economy-wide.js', required: true },
   { id: 'CT-11', script: 'tools/check-major-emitter-ndc-evidence.js', required: true },
   { id: 'CT-12', script: 'tools/check-policy-finance-evidence.js', required: true },
+  { id: 'CT-13', script: 'tools/check-country-coverage-gap-queue.js', required: true },
   { id: 'CT-20', script: 'tools/check-target-comparability.js', required: true },
   { id: 'CT-21', script: 'tools/check-country-delivery-engine.js', required: true },
   { id: 'CT-22', script: 'tools/check-country-profile-compiler.js', required: true },
   { id: 'CT-30', script: 'tools/check-country-view-model.js', required: true },
   { id: 'CT-31', script: 'tools/check-country-ranking.js', required: true },
+  { id: 'CT-32', script: 'tools/check-country-card-evidence-model.js', required: true },
+  { id: 'CT-33', script: 'tools/check-country-accessibility.js', required: true },
   { id: 'CT-40', script: 'tools/check-climate-release-gate.js', required: true },
   { id: 'public-copy', script: 'tools/check-public-copy.js', required: true },
   { id: 'CT-11-generated', script: 'tools/build-major-emitter-ndc-release.js', args: ['--check'], required: false }

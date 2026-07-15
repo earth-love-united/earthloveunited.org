@@ -63,4 +63,3 @@ if (require.main === module) {
 }
 
 module.exports = { EXPECTED, verify };
-

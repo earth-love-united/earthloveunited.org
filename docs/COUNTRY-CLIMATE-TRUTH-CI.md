@@ -36,15 +36,22 @@ tool happens to exist:
 
 | Mission | Validator |
 |---|---|
+| CT-01 source and licence registry | `tools/check-climate-source-registry.js` |
 | CT-02 evidence contract | `tools/check-country-evidence.js` |
+| CT-03 visual truth contract | `tools/validate-visual-truth-fixtures.js` |
 | CT-04 legacy quarantine | `tools/verify-legacy-country-quarantine.js` |
+| CT-10 GCB evidence boundary | `tools/check-country-emissions-evidence.js` |
+| CT-10B PRIMAP candidates | `tools/check-primap-economy-wide.js` |
 | CT-11 NDC evidence | `tools/check-major-emitter-ndc-evidence.js` |
 | CT-12 policy and finance | `tools/check-policy-finance-evidence.js` |
+| CT-13 coverage-gap queue | `tools/check-country-coverage-gap-queue.js` |
 | CT-20 target comparability | `tools/check-target-comparability.js` |
 | CT-21 delivery | `tools/check-country-delivery-engine.js` |
 | CT-22 profile compiler | `tools/check-country-profile-compiler.js` |
 | CT-30 reviewed view model | `tools/check-country-view-model.js` |
 | CT-31 ranking | `tools/check-country-ranking.js` |
+| CT-32 card evidence | `tools/check-country-card-evidence-model.js` |
+| CT-33 accessibility | `tools/check-country-accessibility.js` |
 | CT-40 release gate | `tools/check-climate-release-gate.js` |
 
 `tools/build-major-emitter-ndc-release.js --check` is also run when present as
@@ -118,10 +125,11 @@ The checker also proves strict mode is nonzero for missing components,
 `--allow-incomplete` is explicitly incomplete rather than passed, and a
 reviewed runtime candidate cannot use the incomplete escape hatch.
 
-## Current dependency-stack limitation
+## Current release limitation
 
-On the CT-40 base, CT-02 and CT-40 are available. CT-04, CT-11, CT-12, CT-20,
-CT-21, CT-22, CT-30, CT-31, the reviewed runtime manifest, and reviewed release
-diff are separate mission outputs. Stack-aware CI lists them as missing.
-Strict release CI remains red until they are assembled; no placeholder is
-counted as a pass.
+The integrated pre-release stack contains all validators listed above. Strict
+release CI remains red until CT-42 supplies the reviewed runtime manifest and
+reviewed release diff; no placeholder is counted as a pass. The independent
+PRIMAP attestation additionally requires the pinned external source CSV and is
+run with `tools/check-primap-review-attestation.js /path/to/PRIMAP.csv` when
+that reviewed raw input is available.
