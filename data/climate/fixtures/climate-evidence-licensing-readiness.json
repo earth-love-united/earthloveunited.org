@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "fixture_set": "ct15-production-evidence-licensing-readiness",
+  "mutations": [
+    { "id": "status-ready", "path": "status", "value": "ready" },
+    { "id": "release-authority-enabled", "path": "release_authority", "value": true },
+    { "id": "production-runtime-enabled", "path": "production_runtime_release", "value": true },
+    { "id": "ct40-snapshot-transitionable", "path": "snapshot_boundaries.0.transitionable", "value": true },
+    { "id": "compiler-implemented", "path": "required_next_compiler.status", "value": "implemented" },
+    { "id": "factual-track-ready", "path": "readiness_tracks.0.status", "value": "ready" },
+    { "id": "fact-review-invented", "path": "field_review_contracts.current_runtime_fact.review_records_present", "value": 1 },
+    { "id": "primap-decision-invented", "path": "source_decision_work.0.ct40_decision_state", "value": "approved" },
+    { "id": "unfccc-approval-inferred", "path": "source_decision_work.1.current_registry_state.approval_state", "value": "approved" },
+    { "id": "unfccc-values-enabled", "path": "source_decision_work.1.current_registry_state.normalized_values_allowed", "value": true },
+    { "id": "unfccc-registry-work-bypassed", "path": "source_decision_work.1.registry_change_required_before_normalized_use", "value": false },
+    { "id": "ndc-checksum-invented", "path": "known_ndc_artifact_work.0.current_checksum_sha256", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+    { "id": "inventory-document-invented", "path": "official_inventory_artifact_work.0.known_source_document_ids", "value": ["invented"] },
+    { "id": "routing-mismatch-hidden", "path": "audit_findings.routing_mismatches", "operation": "pop" },
+    { "id": "country-removed", "path": "country_work_items", "operation": "pop" },
+    { "id": "inventory-invented", "path": "audit_findings.ct14.official_inventory_documents_available", "value": 1 },
+    { "id": "iran-boundary-removed", "path": "country_work_items.7.country_specific_review_requirements", "value": ["verify source"] },
+    { "id": "independence-pair-removed", "path": "required_independence_pairs", "operation": "pop" },
+    { "id": "safety-action-removed", "path": "prohibited_actions", "operation": "pop" },
+    { "id": "calculation-hash-drift", "path": "calculation_hash", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }
+  ]
+}
