@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "source_registry_id": "gcp-gcb-2025-v1.0",
+  "publisher": "Global Carbon Project",
+  "title": "Supplemental data of the Global Carbon Project 2025: National Fossil Carbon Emissions 2025 v1.0",
+  "version": "2025 v1.0",
+  "evidence_plane": "harmonized",
+  "doi": "https://doi.org/10.18160/GCP-2025",
+  "landing_url": "https://meta.icos-cp.eu/objects/loCXyssaalv6DPdO6Qdj90qQ",
+  "retrieval_url": "https://data.icos-cp.eu/objects?ids=%5B%22loCXyssaalv6DPdO6Qdj90qQ%22%5D&fileName=National_Fossil_Carbon_Emissions_2025_v1.0",
+  "metadata_retrieved_on": "2026-07-15",
+  "raw_retrieval": {
+    "status": "source_unavailable",
+    "reason_code": "user_licence_acceptance_required",
+    "retrieved_on": null,
+    "file_name": "National_Fossil_Carbon_Emissions_2025_v1.0.xlsx",
+    "bytes": 755198,
+    "sha256": "968097cacb1a6a5bfa0cf74ee90763f74a90ef10499e060ab43d1a74c671d46b",
+    "raw_storage": "external_only"
+  },
+  "licence": {
+    "identifier": "CC-BY-4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/",
+    "redistribution": "permitted_with_attribution",
+    "attribution": "Global Carbon Project (2025), Supplemental data of Global Carbon Budget 2025, version 1.0, https://doi.org/10.18160/GCP-2025. Changes and unit conversions by Earth Love United are identified."
+  },
+  "accounting_scope": {
+    "metric": "territorial_fossil_co2",
+    "years": {"first": 1850, "last": 2024},
+    "gases": ["CO2"],
+    "includes": ["fossil fuel combustion and oxidation", "carbonate decomposition in industrial processes", "cement production", "cement carbonation uptake as a sink in E_FOS"],
+    "excludes": ["land-use change", "short-cycle biomass", "international aviation and maritime bunkers from national values"],
+    "source_unit": "MtC/yr",
+    "published_unit": "MtCO2/yr",
+    "conversion_factor": 3.664
+  },
+  "source_note": "The source states that national values exclude bunker fuels while world totals include them. Country-year uncertainty intervals are not supplied in the workbook and must not be inferred from the global uncertainty range."
+}
+

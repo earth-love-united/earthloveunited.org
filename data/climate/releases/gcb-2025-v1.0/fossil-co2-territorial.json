@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "schema_ref": "../../schemas/emissions-evidence.schema.json",
+  "release_id": "gcb-2025-v1.0",
+  "release_status": "blocked_source_unavailable",
+  "compiled_on": null,
+  "evidence_plane": "harmonized",
+  "metric": "territorial_fossil_co2",
+  "availability": {
+    "status": "source_unavailable",
+    "reason_code": "user_licence_acceptance_required",
+    "value": null
+  },
+  "series": []
+}
