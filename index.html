@@ -895,6 +895,46 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   ← Return to the Foundation
 </button>
 
+<!-- Accessible non-WebGL route. GlobeModule reveals this body-level region
+     only when the vendored renderer, WebGL, or globe construction fails. -->
+<section id="globe-fallback" hidden aria-hidden="true" aria-labelledby="globe-fallback-title">
+  <div class="elu-fallback-shell">
+    <header class="elu-fallback-header">
+      <p class="elu-fallback-eyebrow">Living Globe · accessible evidence view</p>
+      <h2 id="globe-fallback-title" tabindex="-1">The 3D view is unavailable.</h2>
+      <p id="globe-fallback-reason" class="elu-fallback-reason" role="status" aria-live="polite">The country evidence remains available below.</p>
+      <p class="elu-fallback-boundary">This accessible view shows factual emissions records and explicit source gaps only. It does not assess commitments, targets, delivery, performance, impact bands, or climate scores.</p>
+      <div class="elu-fallback-actions" aria-label="3D view recovery options">
+        <button type="button" class="glass-btn" data-globe-fallback-action="retry">Retry the 3D view</button>
+        <button type="button" class="glass-btn" data-globe-fallback-action="exit">Return to the Foundation</button>
+      </div>
+    </header>
+
+    <div class="elu-fallback-evidence" aria-labelledby="globe-fallback-evidence-title">
+      <div class="elu-fallback-evidence-head">
+        <div>
+          <h3 id="globe-fallback-evidence-title">Country evidence candidate</h3>
+          <p id="globe-fallback-summary">Loading the candidate coverage…</p>
+        </div>
+        <label class="elu-fallback-search" for="globe-fallback-search">
+          <span>Find a country or ISO code</span>
+          <input id="globe-fallback-search" type="search" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+      <p id="globe-fallback-results" class="elu-fallback-results" aria-live="polite"></p>
+      <div class="elu-fallback-grid">
+        <div class="elu-fallback-list-panel">
+          <ul id="globe-fallback-country-list" aria-label="Countries and registry entities in the candidate dataset"></ul>
+        </div>
+        <article id="globe-fallback-country-detail" class="elu-fallback-detail" tabindex="-1" aria-live="polite">
+          <h3>Select a country or registry entity</h3>
+          <p>Choose an item from the list to inspect its factual series or explicit source-gap state. No commitment, delivery, performance, impact, or score conclusion is shown here.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Service Worker registration — deferred to window load -->
 <script>
 if ('serviceWorker' in navigator) {

@@ -188,7 +188,7 @@ const SmokeTest = (() => {
         name: 'Critical DOM elements exist',
         critical: true,
         test: () => {
-          const required = ['globeViz', 'hero', 'topbar', 'hex-legend', 'globe-back-btn', 'hero-carbon-clock'];
+          const required = ['globeViz', 'hero', 'topbar', 'hex-legend', 'globe-back-btn', 'globe-fallback', 'hero-carbon-clock'];
           const missing = required.filter(id => !document.getElementById(id));
           return {
             pass: missing.length === 0,
@@ -203,6 +203,14 @@ const SmokeTest = (() => {
           const gv = document.getElementById('globeViz');
           if (!gv) return { pass: false, detail: '#globeViz not found' };
           const canvas = gv.querySelector('canvas');
+          const fallback = document.body.classList.contains('globe-fallback-active');
+          if (fallback) {
+            const rows = document.querySelectorAll('#globe-fallback [data-fallback-country-iso]').length;
+            return {
+              pass: rows === 249 && !canvas,
+              detail: `Non-WebGL evidence view active with ${rows} entities and no unusable canvas`,
+            };
+          }
           // Globe is lazy-initialized — only rendered after entering globe mode.
           if (!canvas && !window.GlobeModule?._initialized) {
             return { pass: true, detail: 'Globe not yet entered (lazy init) — OK. Re-run after Enter the Living Globe for full check.' };
@@ -235,6 +243,9 @@ const SmokeTest = (() => {
         name: 'Globe has country polygons',
         critical: false,
         test: () => {
+          if (document.body.classList.contains('globe-fallback-active')) {
+            return { pass: true, detail: 'Country polygons intentionally replaced by the accessible evidence view' };
+          }
           if (!window.GlobeModule || !GlobeModule.world) {
             // Lazy init — world only exists after entering globe mode.
             if (!window.GlobeModule?._initialized) return { pass: true, detail: 'Globe not yet entered (lazy init) — OK' };
@@ -262,6 +273,32 @@ const SmokeTest = (() => {
     // INTERACTION TESTS
     // ═══════════════════════════════════════════
     interactions: [
+      {
+        name: 'Non-WebGL fallback is body-level, accessible, and fail-closed',
+        critical: true,
+        test: () => {
+          const panel = document.getElementById('globe-fallback');
+          if (!panel) return { pass: false, detail: '#globe-fallback is missing' };
+          if (panel.parentElement !== document.body) return { pass: false, detail: '#globe-fallback is not a direct child of body' };
+          if (!document.body.classList.contains('globe-fallback-active')) {
+            const closed = panel.hidden && panel.getAttribute('aria-hidden') === 'true';
+            return { pass: closed, detail: closed ? 'Fallback is inert and hidden until a renderer failure' : 'Closed fallback remains exposed' };
+          }
+          const factual = panel.querySelectorAll('[data-fallback-evidence-state="factual"]').length;
+          const gaps = panel.querySelectorAll('[data-fallback-evidence-state="gap"]').length;
+          const controls = [...panel.querySelectorAll('button,input,a[href]')];
+          const undersized = controls.filter(control => control.getBoundingClientRect().height < 44);
+          const reason = panel.dataset.reason;
+          const allowed = ['library_load_failed', 'library_unavailable', 'webgl_unavailable', 'globe_construction_failed', 'globe_container_missing'];
+          const ok = factual === 206 && gaps === 43 && undersized.length === 0 && allowed.includes(reason) && window.GlobeModule?._initialized !== true;
+          return {
+            pass: ok,
+            detail: ok
+              ? `${factual} factual candidate series + ${gaps} explicit gaps; reason ${reason}; all ${controls.length} controls >=44px; renderer not initialized`
+              : `factual ${factual}, gaps ${gaps}, undersized ${undersized.length}, reason ${reason}, initialized ${window.GlobeModule?._initialized}`,
+          };
+        },
+      },
       {
         name: 'Country card is not open by default',
         critical: true,

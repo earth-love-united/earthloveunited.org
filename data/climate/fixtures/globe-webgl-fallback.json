@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "mutations": [
+    { "id": "vendor-failure-route-removed", "path": "runtime.vendor_failure_route", "value": false },
+    { "id": "false-init-accepted", "path": "runtime.boolean_initialization", "value": false },
+    { "id": "webgl-check-removed", "path": "runtime.webgl_gate", "value": false },
+    { "id": "constructor-boundary-removed", "path": "runtime.constructor_boundary", "value": false },
+    { "id": "retry-route-removed", "path": "runtime.retry_route", "value": false },
+    { "id": "focus-restoration-removed", "path": "accessibility.focus_restoration", "value": false },
+    { "id": "fallback-nested-in-globe", "path": "accessibility.body_level_region", "value": false },
+    { "id": "fallback-not-inert-when-closed", "path": "accessibility.closed_inert", "value": false },
+    { "id": "touch-targets-regressed", "path": "accessibility.touch_targets_44px", "value": false },
+    { "id": "reduced-motion-regressed", "path": "accessibility.reduced_motion", "value": false },
+    { "id": "candidate-count-regressed", "path": "data.registry_entities", "value": 248 },
+    { "id": "factual-count-regressed", "path": "data.factual_series", "value": 205 },
+    { "id": "gap-count-regressed", "path": "data.source_gaps", "value": 44 },
+    { "id": "production-boundary-widened", "path": "data.production_runtime_release", "value": true },
+    { "id": "assessment-field-read", "path": "truth.no_assessment_field_reads", "value": false },
+    { "id": "performance-disclaimer-removed", "path": "truth.performance_disclaimer", "value": false },
+    { "id": "smoke-coverage-removed", "path": "validation.smoke_contract", "value": false },
+    { "id": "architecture-route-removed", "path": "validation.architecture_route", "value": false }
+  ]
+}
