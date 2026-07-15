@@ -1,7 +1,8 @@
 # Legacy country data exit ledger
 
-**Decision date:** 2026-07-15  
-**Historical input:** `data/pledge-nodes.json`, schema 2.0.0, generated 2025-07-18, 123 rows  
+**Decision date:** 2026-07-15
+
+**Historical input:** `data/pledge-nodes.json`, schema 2.0.0, generated 2025-07-18, 123 rows
 **Runtime state:** retired; not fetched, cached, parsed, ranked, painted, or rendered
 
 ## Public-use prohibition
