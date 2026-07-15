@@ -74,14 +74,21 @@ if [ -d "$WORKTREE_DIR" ]; then
   exit 1
 fi
 
-# ── Make sure main is current ──
+# ── Select the current main ref ──
 echo "📡 Fetching latest main..."
-git fetch origin main 2>/dev/null || echo "   (no remote yet — skipping fetch)"
+BASE_REF="main"
+if git fetch origin main 2>/dev/null; then
+  if git show-ref --verify --quiet "refs/remotes/origin/main"; then
+    BASE_REF="origin/main"
+  fi
+else
+  echo "   (no remote yet — using local main)"
+fi
 
 # ── Create the worktree ──
-echo "🌱 Creating worktree at $WORKTREE_DIR on branch $BRANCH..."
+echo "🌱 Creating worktree at $WORKTREE_DIR on branch $BRANCH from $BASE_REF..."
 mkdir -p "$(dirname "$WORKTREE_DIR")"
-git worktree add -b "$BRANCH" "$WORKTREE_DIR" main
+git worktree add -b "$BRANCH" "$WORKTREE_DIR" "$BASE_REF"
 
 # ── Install hooks in the new worktree (worktrees share .git/hooks via the
 #    parent repo, but tools/install-hooks.sh is idempotent) ──

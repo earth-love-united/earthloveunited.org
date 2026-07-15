@@ -1,297 +1,311 @@
-# Earth Love United — Architecture Map
+# Earth Love United — v1 Architecture Map
 
-> **Read this before touching any code.** This document maps the entire module system,
-> z-index stacking order, event flows, and known traps.
->
-> Last updated: 2026-06-06
+> Read this before changing runtime code. `AGENTS.md` contains the rules;
+> this file records the live module graph, data flow, stacking model, and
+> extension points.
 
----
+**Runtime baseline:** 2026-07-15
+**Architecture:** one HTML page, classic scripts, no bundler or browser build
 
-## Public Journey
+## Public surface
 
-The homepage is now organized as a public climate-science journey rather than
-as a scattered globe demo. The intended path is:
+`index.html` owns the public journey:
 
+```text
+site navigation
+  → hero and live carbon clock
+  → foundation story and projects
+  → living-globe explanation
+  → carbon services
+  → partners, open-source commitment, team, tribute, contact
+
+hero / Living Globe action
+  → App.enterGlobe()
+  → lazy-load globe.gl
+  → initialize GlobeModule
+  → country atlas rail + selected-country card
+  → App.exitGlobe() returns to the foundation page
 ```
-Wonder
-  → Climate Science
-  → Living Globe
-  → GAIA
-  → Dataset Audit
-  → Restoration Action
-  → Volunteer / Partner
-```
 
-Concrete section anchors in `index.html`:
+The former GAIA, quiz, biome, scenario, pledge-wall, declarative-learning,
+NDVI, and event-globe systems are parked in `_archive/v1-cut/`. They are not
+runtime dependencies and must not be resurrected without an architecture
+mission.
 
-| Journey Step | Anchor | Purpose |
+## Runtime file map
+
+| Layer | File | Responsibility |
 |---|---|---|
-| Wonder | `#quiz` | Begin with questions and carbon literacy |
-| Climate Science | `#carbon-cycle`, `#imbalance`, `#biomes`, `#compare` | Explain carbon flows, sinks, uncertainty, and biome differences |
-| Living Globe | `#projects` plus `#globeViz` | Move from general science to place-based project context |
-| GAIA | `#gaia-guide`, `gaia.html#trust-layer` | Guide users from question to source trail |
-| Dataset Audit | `#datasets` | Expose source code, Hugging Face datasets, raw JSON/CSV files, and readiness status |
-| Restoration Action | `#scenario` | Frame model outputs as assumptions to inspect, not promises |
-| Volunteer / Partner | `#together` | Route careful contributors and institutions into review/action pathways |
+| Page | `index.html` | Critical tokens/layout, public copy, DOM, script order, theme bootstrap |
+| Globe presentation | `css/globe-system.css` | Globe HUD, atlas rail/card, status visuals, themes, responsive behavior |
+| Clock presentation | `css/carbon-clock.css` | Carbon-clock typography and layout |
+| Safety utilities | `js/gaia-utils.js` | Safe DOM access, cross-module calls, safe fluent chains, error reporting |
+| Contract registry | `js/module-contracts.js` | Module interfaces, dependencies, events, runtime pre-flight validation |
+| Event bus | `js/event-bus.js` | Decoupled runtime events |
+| Persistence | `js/storage-adapter.js` | IndexedDB adapter and migrations |
+| Persistence facade | `js/storage.js` | Safe storage API over `STORAGE_ADAPTER` |
+| Data validation | `js/data-schema.js` | Runtime JSON validation |
+| Data loader | `js/data.js` | Country, small-nation, and carbon-project data loading/lookups |
+| Globe runtime | `js/globe.js` | globe.gl lifecycle, country geometry, atlas rail/card, selection and themes |
+| Carbon clock | `js/carbon-clock.js` | Hero/topbar emissions counter |
+| Application | `js/app.js` | Bootstrap, contract pre-flight, hero/globe transitions, lazy globe load |
+| Offline cache | `sw.js` | Static precache and network-first data/code updates |
 
-## Public Trust Layer
+## Script load order
 
-Earth Love United's public trust layer has four surfaces:
+The ten classic scripts load synchronously at the end of `index.html`:
 
-1. **GAIA interface** — `gaia.html` positions GAIA as a climate-science guide
-   and audit assistant. It must describe what GAIA can help with, what it
-   cannot guarantee, and how users should ask for source trails and uncertainty.
-2. **Dataset provenance** — `data/provenance-registry.json` is the source of
-   truth for public readiness labels, data types, local paths, external links,
-   intended use, known limits, and GAIA prompt hints. `index.html#datasets`
-   and `gaia.html#trust-layer` expose registry-backed cards using
-   `data-provenance-id` attributes.
-3. **Testing and smoke validation** — boot validation, `SmokeTest.run()`,
-   `StackLint.audit()`, and the static DAG verifier are part of the public
-   audit story. They prove module loading and stacking invariants are not just
-   visual guesses.
-4. **Open-source auditability** — the site keeps classic scripts, no build
-   step, and readable source files so researchers, partners, and contributors
-   can inspect what the interface claims.
-
-GAIA answers should never be treated as peer review, legal advice, financial
-advice, or carbon-project certification. The expected pathway is:
-
-```
-question → GAIA orientation → registry entry → source family → dataset record → restoration assumption → human review
+```text
+1.  js/gaia-utils.js
+2.  js/module-contracts.js
+3.  js/event-bus.js
+4.  js/storage-adapter.js
+5.  js/storage.js
+6.  js/data-schema.js
+7.  js/data.js
+8.  js/globe.js
+9.  js/carbon-clock.js
+10. js/app.js
 ```
 
-Run `node tools/check-provenance-registry.js` after changing dataset cards,
-readiness labels, or GAIA provenance copy.
+`js/vendor/globe.gl.js` is loaded by `App.enterGlobe()` rather than at page
+boot. This keeps WebGL work out of the foundation-page path.
 
-## Module Registry
+After changing scripts or contracts, run:
 
-Every JS module that is referenced via `safeCall()`, `hasModule()`, or `safeGet()`
-**must** be attached to `window` — otherwise these functions silently fail.
-
-### Core Layer (required for page to function)
-
-| Module | File | `window.X` | Pattern | Description |
-|--------|------|:----------:|---------|-------------|
-| `Data` | `js/data.js` | ❌ global | `const Data = {}` | JSON loader, biome/site data, carbon math |
-| `Storage` | `js/data.js` | ❌ global | `const Storage = {}` | Safe localStorage wrapper |
-| `GlobeModule` | `js/globe.js` | ❌ global | `const GlobeModule = {}` | Globe.gl renderer, point/label setup |
-| `Panel` | `js/globe.js` | ❌ global | `const Panel = {}` | Legacy right-side panel (used as fallback) |
-| `PanelSlider` | `js/globe.js` | ❌ global | `const PanelSlider = {}` | NDVI/area slider helpers for Panel |
-| `App` | `js/app.js` | ❌ global | `const App = {}` | Main init, scroll handler, enterSite() |
-| `Quiz` | `js/quiz.js` | ❌ global | `const Quiz = {}` | Carbon quiz widget |
-| `Biomes` | `js/biomes.js` | ❌ global | `const Biomes = {}` | Biome comparison bars |
-| `Counters` | `js/counters.js` | ❌ global | `const Counters = {}` | Animated number counters |
-| `Cycle` | `js/cycle.js` | ❌ global | `const Cycle = {}` | Carbon cycle diagram |
-| `Scenario` | `js/scenario.js` | ❌ global | `const Scenario = {}` | Biome transition sandbox |
-
-### Globe Interaction Layer
-
-| Module | File | `window.X` | Pattern | Description |
-|--------|------|:----------:|---------|-------------|
-| `GLOBE_OVERLAY` | `js/globe-overlay.js` | ✅ | const IIFE | Left sidebar over globe — tabbed content |
-| `GAIA_NODES` | `js/gaia-nodes.js` | ✅ | const IIFE | Globe point click handlers, site registration |
-| `SITE_PANEL` | `js/site-panel.js` | ✅ | const IIFE | Right side panel (currently unused in favor of GLOBE_OVERLAY) |
-| `PLEDGE_PANEL` | `js/site-panel.js` | ✅ | const IIFE | Pledge node dashboard renderer |
-| `COUNTRY_DATA` | `js/country-data.js` | ❌ IIFE | const IIFE | Country metadata for pledge tooltips |
-| `DELEGATION` | `js/delegation.js` | ❌ IIFE | const IIFE | COP31 delegation data |
-
-### GAIA Intelligence Layer
-
-| Module | File | `window.X` | Pattern | Description |
-|--------|------|:----------:|---------|-------------|
-| `GAIA_BUBBLE` | `js/gaia-bubble.js` | ❌ IIFE | const IIFE | Floating GAIA speech bubble |
-| `GAIA_VOICE` | `js/gaia-voice.js` | ❌ IIFE | const IIFE | Voice line selection engine |
-| `GAIA_ENGAGEMENT` | `js/gaia-engagement.js` | ✅ | const IIFE | User behavior tracking, archetype detection |
-| `GAIA_PRESENCE` | `js/gaia-presence.js` | ✅ | const IIFE | Ambient site teasers |
-| `GAIA_JOURNAL` | `js/gaia-journal.js` | ❌ IIFE | const IIFE | Session journal/diary |
-| `GAIA_KNOWLEDGE` | `js/gaia-overlay-knowledge.js` | ❌ IIFE | const IIFE | TF-IDF knowledge engine (2541 chunks) |
-| `GAIA_CHARTS` | `js/gaia-legacy/gaia-charts.js` | ❌ legacy | `window.GAIA_CHARTS` via script | Canvas sparklines |
-| `GAIA_DATA` | `js/gaia-legacy/gaia-data.js` | ❌ legacy | `window.GAIA_DATA` via script | Live CO₂/climate data fetcher |
-| `GaiaMind` | `dis/gaia-mind.js` | ❌ | distributed | LLM state machine for GAIA chat |
-
-### Utility Layer
-
-| Module | File | `window.X` | Pattern | Description |
-|--------|------|:----------:|---------|-------------|
-| `CARBON_CLOCK` | `js/carbon-clock.js` | ❌ IIFE | const IIFE | Live CO₂ clock in topbar |
-| `PLEDGE_WALL` | `js/pledge-wall.js` | ❌ IIFE | const IIFE | Pledge modal + wall display |
-| `NDVIVerifier` | `js/ndvi-verifier.js` | ❌ IIFE | const IIFE | Satellite NDVI verification |
-| `RegistryCheck` | `js/registry-check.js` | ❌ IIFE | const IIFE | Carbon registry verification |
-
----
-
-## Z-Index Stack (top → bottom)
-
-All `position: fixed` elements compete for click priority. This stack MUST be
-maintained as the single source of truth for stacking order.
-
-```
-z-index  │ Element              │ File                  │ Notes
-─────────┼──────────────────────┼───────────────────────┼─────────────────────────
-1000     │ #scroll-progress     │ layout.css            │ 2px bar, harmless
-1000     │ #pledge-tooltip      │ globe-overlay.css     │ pointer-events:none when hidden
- 300     │ #pledge-modal        │ pledge-wall.css       │ display:none when inactive
- 300     │ #pledge-wall         │ pledge-wall.css       │ display:none when inactive
- 201     │ .gaia-bubble-expand  │ gaia-bubble.css       │ Full chat window
- 200     │ #hero                │ layout.css            │ pe:none + opacity:0 when .hidden
- 200     │ #gaia-bubble         │ gaia-bubble.css       │ Floating bubble, small
- 100     │ #topbar              │ layout.css            │ 60px tall, full width
-  90     │ #site-panel          │ components.css        │ ⚠️ pe:none when not .open
-  85     │ #panel-backdrop      │ components.css        │ display:none when not .show
-  85     │ .site-panel-overlay  │ components.css        │ display:none when not .visible
-  50     │ #globe-overlay       │ globe-overlay.css     │ pe:none when not .open. ON body!
-  10     │ .sections            │ layout.css            │ Opaque background, captures clicks
-  10     │ .footer              │ layout.css            │ Below sections
-   1     │ #globeViz            │ layout.css            │ Globe canvas. pe:none when scrolled
+```bash
+python3 scripts/verify_load_order.py
 ```
 
-### Stacking Rules
+The verifier parses script tags, `window.X` assignments, and
+`MODULE_CONTRACTS.register()` declarations. It is the static module graph
+authority; there is no separate `MODULE_MANIFEST`.
 
-1. **NEVER** append interactive DOM elements as children of `#globeViz` (z-index: 1).
-   They will be trapped below `.sections` (z-index: 10).
-2. Elements with `pointer-events: none` should also have `display: none` or
-   `opacity: 0` when inactive. `opacity: 0` alone does NOT disable pointer-events.
-3. `transform` creates a new stacking context. An element with `transform: translateX(100%)`
-   is visually off-screen but still captures events unless `pointer-events: none` is set.
+## Module registry
 
----
+Any API reached through `safeCall()`, `safeGet()`, or `hasModule()` must exist
+on `window`.
 
-## Event Flow: Globe Point Click
+| Global | File | Contract | Main responsibility |
+|---|---|---:|---|
+| `MODULE_CONTRACTS` | `js/module-contracts.js` | registry itself | Runtime interface/dependency validation |
+| `EventBus` | `js/event-bus.js` | infrastructure | Publish/subscribe |
+| `STORAGE_ADAPTER` | `js/storage-adapter.js` | yes | IndexedDB persistence |
+| `Storage` | `js/storage.js` | yes | Safe persistence facade |
+| `DATA_SCHEMA` | `js/data-schema.js` | yes | Runtime data validation |
+| `Data` | `js/data.js` | yes | Data load and country lookups |
+| `GlobeModule` | `js/globe.js` | yes | Live globe and country atlas |
+| `Panel` | `js/globe.js` | legacy internal export | Archived-site fallback helpers; not part of current public flow |
+| `PanelSlider` | `js/globe.js` | legacy internal export | Archived-site fallback helpers |
+| `CARBON_CLOCK` | `js/carbon-clock.js` | yes | Live counter |
+| `App` | `js/app.js` | yes | Bootstrap and navigation |
 
-```
-User clicks globe point
-  │
-  ├─ p._type === 'site'
-  │    └─ hasModule('GAIA_NODES') ? ──yes──► GAIA_NODES.onNodeClick(siteId)
-  │                                             ├─ safeCall('GLOBE_OVERLAY', 'open', siteId)
-  │                                             ├─ addXP(siteId, 10)
-  │                                             ├─ safeCall('GAIA_BUBBLE', 'speak', ...)
-  │                                             └─ safeCall('GAIA_ENGAGEMENT', 'addSignal', ...)
-  │    └─ hasModule('SITE_PANEL') ? ──yes──► SITE_PANEL.open(site)
-  │    └─ fallback ──────────────────────────► Panel.open(site)
-  │
-  └─ p._type === 'pledge'
-       └─ hasModule('PLEDGE_PANEL') ? ──yes──► PLEDGE_PANEL.open(node)
-                                                  ├─ GLOBE_OVERLAY.registerSite({...})
-                                                  └─ GLOBE_OVERLAY.open('pledge_' + iso)
-       └─ fallback ───────────────────────────► Panel.open({...})
-```
+`App.init()` calls `MODULE_CONTRACTS.validate()` after `Data.init()`. A
+registered module must exist on `window`, expose every declared method, and
+have its required globals available. Contract errors use `reportError()`.
 
-## Event Flow: Enter Living Globe (Hero → Globe)
+## Standard module shape
 
-```
-User clicks "Enter the Living Globe"
-  │
-  └─ enterGlobe() → App.enterGlobe()
-       ├─ #hero.classList.add('hidden')     → opacity:0, pe:none
-       ├─ #topbar.classList.add('visible')  → opacity:1, pe:all
-       ├─ #globe-modes receives focus       → mode controls become visible
-       ├─ updateProgress()                  → scroll bar width
-       └─ scroll handler activates:
-            └─ if scrollY > 30vh → #globeViz.pe = 'none'
-            └─ if scrollY < 30vh → #globeViz.pe = ''
-            └─ if GLOBE_OVERLAY.isOpen() → skip pe:none
-```
+New orchestration/evaluation modules use a classic-script global API:
 
----
+```javascript
+const COUNTRY_PROFILE = (() => {
+  function init() {}
+  function reset() { return true; }
+  function destroy() { return true; }
+  function getState() { return {}; }
 
-## Script Load Order (index.html)
+  return { init, reset, destroy, getState };
+})();
 
-Scripts load synchronously in this order. A module can only reference modules
-that appear ABOVE it in this list.
+window.COUNTRY_PROFILE = COUNTRY_PROFILE;
 
-```
- 1. globe.gl (CDN)           ← Three.js + globe.gl library
- 2. gaia-utils.js            ← $(), safeCall, hasModule, safeGet
- 3. data.js                  ← Data, Storage
- 4. quiz.js                  ← Quiz
- 5. cycle.js                 ← Cycle
- 6. biomes.js                ← Biomes
- 7. counters.js              ← Counters
- 8. scenario.js              ← Scenario
- 9. globe.js                 ← GlobeModule, Panel, PanelSlider
-10. gaia-legacy/gaia-data.js ← GAIA_DATA
-11. gaia-legacy/gaia-signals.js ← GAIA_SIG
-12. gaia-legacy/gaia-charts.js  ← GAIA_CHARTS
-13. gaia-voice.js            ← GAIA_VOICE
-14. dis/gaia-mind.js         ← GaiaMind
-15. gaia-engagement.js       ← GAIA_ENGAGEMENT
-16. gaia-journal.js          ← GAIA_JOURNAL
-17. gaia-bubble.js           ← GAIA_BUBBLE
-18. site-panel.js            ← SITE_PANEL, PLEDGE_PANEL
-19. carbon-clock.js          ← CARBON_CLOCK
-20. country-data.js          ← COUNTRY_DATA
-21. delegation.js            ← DELEGATION
-22. pledge-wall.js           ← PLEDGE_WALL
-23. globe-overlay.js         ← GLOBE_OVERLAY
-24. gaia-nodes.js            ← GAIA_NODES
-25. gaia-legacy/gaia-knowledge.js ← GaiaKnowledge
-26. gaia-overlay-knowledge.js ← GAIA_KNOWLEDGE
-27. ndvi-verifier.js         ← NDVIVerifier
-28. gaia-presence.js         ← GAIA_PRESENCE
-29. registry-check.js        ← RegistryCheck
-30. module-validator.js      ← Boot validator (NEW)
-31. app.js                   ← App (init entry point)
+MODULE_CONTRACTS.register('COUNTRY_PROFILE', {
+  provides: ['init', 'reset', 'destroy', 'getState'],
+  requires: ['Data'],
+  emits: [],
+  listens: [],
+});
 ```
 
----
+Add its script tag after dependencies, run the static verifier, run
+`node --check`, and extend `SmokeTest` coverage. Do not place additional
+evaluation policy directly into `js/globe.js`; the globe consumes a reviewed
+view model.
 
-## CSS Files
+## Data flow
 
-| File | Purpose |
-|------|---------|
-| `css/layout.css` | Page structure: hero, topbar, sections, globe, footer |
-| `css/components.css` | Cards, panels, backdrops, sliders, quiz, cycle |
-| `css/globe-overlay.css` | Left sidebar overlay, tabs, charts, pledge styles |
-| `css/gaia-bubble.css` | GAIA bubble + full chat window |
-| `css/gaia-presence.css` | GAIA cursor follower + ambient elements |
-| `css/pledge-wall.css` | Pledge modal + wall display |
-| `css/ndvi-verifier.css` | NDVI satellite verification panel |
+### Current v1 flow
 
----
+```mermaid
+flowchart LR
+    P["data/pledge-nodes.json"] --> D["Data.init()"]
+    S["data/small-nations.json"] --> D
+    C["data/carbon-projects.json"] --> D
+    D --> L["country lookups"]
+    L --> G["GlobeModule"]
+    N["Natural Earth 110m<br/>remote GeoJSON"] --> G
+    G --> R["atlas rail"]
+    G --> K["country card"]
+    G --> V["polygon visuals"]
+```
 
-## Data Files
+`Data.init()` fetches all three runtime files concurrently and unwraps the
+`{ _meta, data }` envelope when present. `DATA_SCHEMA` currently validates the
+pledge-node array only at a structural level.
 
-| File | Description | Loaded by |
-|------|-------------|-----------|
-| `data/biomes.json` | 12 biome types with carbon density, sequestration rates | Data.init() |
-| `data/sites.json` | 4 restoration sites with NDVI, climate, narratives | Data.init() |
-| `data/pledge-nodes.json` | 123 countries with emissions, targets, reality gaps | Data.init() |
-| `dis/climate-facts.json` | Global climate statistics | gaia-nodes.js |
+`GlobeModule` fetches Natural Earth 110m country geometry from the globe.gl
+example repository and adds synthetic small polygons for countries missing
+from that geometry. The URL is not yet pinned or vendored; this is a known
+availability/provenance risk.
 
----
+### Target country-truth flow
 
-## Known Traps
+The approved direction is documented in:
 
-| Trap | Why It's Dangerous | Prevention |
-|------|-------------------|------------|
-| `const X = (() => {})()` without `window.X = X` | `safeCall('X', ...)` silently returns undefined | Boot validator catches this |
-| Appending DOM to `#globeViz` | Child z-index trapped below `.sections` (z:10) | ALWAYS append to `document.body` |
-| `opacity: 0` without `pointer-events: none` | Element is invisible but intercepts all clicks | Always pair opacity:0 with pe:none |
-| `transform: translateX(100%)` without `pe:none` | Element is off-screen but has live hit area | Always pair transform with pe:none |
-| Duplicate CSS selectors (`#panel-backdrop` × 2) | Second rule may override first unexpectedly | Lint / manual audit |
-| `safeCall` swallows errors | Catch block logs warning but returns undefined | Check console for `[safeCall]` warnings |
+- `docs/COUNTRY-CLIMATE-TRUTH-PLAN.md`
+- `docs/COUNTRY-CLIMATE-METHODOLOGY.md`
+- `docs/decisions/CLI-100-country-climate-profile.md`
 
----
+```mermaid
+flowchart LR
+    O["official evidence"] --> E["reviewed evidence packets"]
+    H["harmonized evidence"] --> E
+    E --> Q["schema + comparability gates"]
+    Q --> X["offline profile compiler"]
+    X --> J["compact runtime JSON"]
+    J --> D["Data"]
+    D --> M["country-profile module"]
+    M --> G["GlobeModule presentation"]
+```
 
-## Before You Ship
+The browser remains static. Fetching, normalization, review, and compilation
+are publication tasks, not a frontend build.
 
-1. Run the boot validator: open console, look for 🔴 errors from `[BOOT]`
-2. Check no `position:fixed` element has `pointer-events:auto` when it should be hidden
-3. Click a globe point → verify GLOBE_OVERLAY left sidebar opens
-4. Scroll to quiz → verify quiz buttons are clickable
-5. Check console for `[safeCall] X.Y() threw:` warnings
-6. Run `SmokeTest.run()` in console — all 22 tests should pass
-7. Run `StackLint.audit()` — no stacking regressions
+## Current country-selection flow
 
-## Key Files for Common Tasks
+```text
+App.enterGlobe()
+  → show loading state and enter globe mode
+  → lazy-load js/vendor/globe.gl.js
+  → GlobeModule.init()
+      → create globe.gl instance through safeChain()
+      → fetch country GeoJSON
+      → join Data.countryHexColors by ISO3
+      → build atlas deck
+      → emit globe:render-ready / globe:country-data-ready
+  → selectDefaultCountry()
 
-| Task | Files |
-|------|-------|
-| Add a new globe point layer | `js/globe.js` (renderer), `js/gaia-nodes.js` (click handler) |
-| Add a new GLOBE_OVERLAY tab | `js/gaia-nodes.js` (registerAllSites), `css/globe-overlay.css` |
-| Add a new pledge data field | `data/pledge-nodes.json`, `js/site-panel.js` (PLEDGE_PANEL.renderDashboard) |
-| Modify z-index stacking | `css/layout.css`, update z-index table in this file |
-| Add a new GAIA module | Create IIFE, add `window.X = X`, add to `MODULE_MANIFEST` in `module-validator.js` |
-| Add a new dev tool | Create IIFE in `tools/`, add `<script>` tag in `index.html` |
+pointer or keyboard selection
+  → select country feature
+  → renderCountryTooltip()
+  → renderCountryMetrics()
+  → emit globe:country-selected
+
+Escape / close / App.exitGlobe()
+  → clear selection
+  → emit globe:country-closed / app:globe-exited
+```
+
+## Event channels
+
+| Event | Emitter | Listener/consumer |
+|---|---|---|
+| `app:ready` | `App` | External/optional listeners |
+| `app:globe-entered` | `App` | External/optional listeners |
+| `app:globe-exited` | `App` | External/optional listeners |
+| `globe:render-ready` | `GlobeModule` | `App` loading state |
+| `globe:country-data-ready` | `GlobeModule` | `App` loading state |
+| `globe:data-error` | `GlobeModule` | `App` user-visible loading/error state |
+| `globe:country-selected` | `GlobeModule` | External/optional listeners |
+| `globe:country-closed` | `GlobeModule` | External/optional listeners |
+
+Event names use an emitter prefix (`module:verb`). Contracts declare emitted
+and listened-to channels so pre-flight can flag orphan listeners.
+
+## Z-index stack
+
+Top to bottom:
+
+```text
+9999  .skip-nav while focused
+1000  #hex-country-tooltip, .country-atlas-card
+ 300  #site-nav
+ 200  #hero, #globe-back-btn
+ 110  .globe-status
+ 100  #topbar
+  60  .hex-legend
+  50  .country-atlas-rail
+  20  .country-atlas-scrim
+  10  .sections, .footer
+   1  #globeViz
+```
+
+Rules:
+
+1. Interactive overlays belong under `document.body`, not inside `#globeViz`.
+2. Invisible/off-screen UI must disable pointer events.
+3. A transformed element creates a stacking context.
+4. `#globeViz` becomes interactive only in `body.globe-mode`.
+5. Any z-index change requires `StackLint.audit()` and an update to this table.
+
+## Service worker and freshness
+
+`sw.js` precaches the public page, core CSS/JS, globe atmosphere, and three
+runtime data files. It applies:
+
+- network-first for `/data/`;
+- network-first with browser-cache bypass for HTML, JS, and CSS;
+- cache-first for other same-origin static assets.
+
+Any runtime data filename or script addition requires a service-worker asset
+and cache-version review. A reviewed data release must not pair new HTML with
+an old profile artifact.
+
+## Validation layers
+
+| Layer | Tool | What it proves |
+|---|---|---|
+| Syntax | `node --check` | JavaScript parses |
+| Static module graph | `python3 scripts/verify_load_order.py` | Contract dependencies load in order |
+| Runtime contracts | `MODULE_CONTRACTS.validate()` | Registered globals and methods exist |
+| Runtime behavior | `SmokeTest.run()` | Modules, data, DOM, globe, and selected interactions work |
+| Stacking | `StackLint.audit()` | No known invisible blockers/z-index regressions |
+| Country truth | `tools/verify-globe-country-truth.js` | Intended country-status invariants; currently requires repair for v1 |
+| Public copy | `node tools/check-public-copy.js` | No unresolved draft markers; not scientific fact-checking |
+
+The existing CI runs syntax, static load order, SmokeTest, and StackLint. It
+does not yet prove country-source truth, target comparability, or scientific
+lineage; those gates are part of the country-truth plan.
+
+## Known traps and debt
+
+| Trap/debt | Consequence | Direction |
+|---|---|---|
+| `const X` without `window.X` | `safeCall()` cannot see the module | Export every cross-module API |
+| Ad hoc status logic in `js/globe.js` | Missing and non-comparable targets collapse together | Move policy to reviewed profile module |
+| Flat `pledge-nodes.json` | No field-level lineage or scope | Replace through evidence/compiler missions |
+| Remote unpinned country geometry | Availability/version drift | Pin or vendor in a later evidence mission |
+| Color/opacity as status | Missing evidence can appear visually calm | Persistent impact cue plus text/icon/reason states |
+| Modeled CAGR chart described as measured | Public claim exceeds evidence | Plot reviewed annual observations only |
+| Carbon projects beside performance | Can soften national accountability | Separate and label as outside profile |
+| Archived subsystems copied into v1 | Reintroduces dead dependencies | Architecture review before restoration |
+
+## Before shipping
+
+```bash
+python3 scripts/verify_load_order.py
+node --check js/changed-file.js
+node tools/check-public-copy.js
+```
+
+Then serve the site and run:
+
+```text
+SmokeTest.run()
+StackLint.audit()
+```
+
+For country-profile releases, also require the methodology, provenance,
+comparability, golden-country, coverage, visual-truth, change-control, and
+independent-review gates in `docs/COUNTRY-CLIMATE-TRUTH-PLAN.md`.
