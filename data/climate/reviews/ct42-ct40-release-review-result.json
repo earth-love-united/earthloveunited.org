@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "review_candidate_id": "ct-42-to-ct-40-real-release-review-2026-07-15",
   "adapter_version": "1.2.0",
-  "evaluated_input_sha256": "a16999d836f7657bde0e75a6c4cbd87b11b23d894ef81665b5fcffcbb1c0dc26",
+  "evaluated_input_sha256": "84473031b08d5f96cff06482beb84d217b2f2e9ea06114bd289e1757a6c65155",
   "ct40_gate_version": "1.0.0",
   "ct40_manifest_calculation_hash": "ac6d58c1c34186abcb4379eecc8416de2459fc5fba84da73dfd5585f431ca32c",
   "full_gate_output_sha256": "60c48efe6a32b6814ca2337387b2a008b4c7b9ae88a8e3a6029494c388a48f87",
