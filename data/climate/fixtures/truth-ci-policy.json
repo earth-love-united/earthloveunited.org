@@ -1,7 +1,7 @@
 {
   "_meta": {
     "fixture_set": "ct41-climate-truth-ci-policy",
-    "fixture_version": "1.0.0",
+    "fixture_version": "1.1.0",
     "fictional_entities": true
   },
   "base": {
@@ -27,22 +27,61 @@
     "facts": [
       {
         "fact_id": "fact:fixture:observed",
-        "source_id": "fixture-source",
-        "source_checksum_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+        "entity_id": "iso3166-1:ZZZ",
+        "metric": "emissions.economy_wide_ghg",
+        "value": "123.4000",
+        "unit": "MtCO2e",
+        "period": "2098",
+        "plane": "harmonized",
+        "source_id": "primap-hist-2.6.1-final",
+        "source_version": "2.6.1 final, 13 March 2025",
+        "source_checksum_sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9",
+        "_artifact_path": "fixture/ct-10c-published-facts.json",
+        "_artifact_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
         "evidence_class": "harmonized_estimate",
-        "review": { "status": "reviewed", "extractor_id": "fixture-observed-extractor", "reviewer_id": "fixture-observed-reviewer", "reviewed_at": "2099-01-01T00:00:00Z", "methodology_version": "0.1.0" },
+        "review": { "status": "reviewed", "mode": "batch_attestation", "batch_attestation_id": "ct-10c-r-fictional", "batch_artifact_sha256": "4444444444444444444444444444444444444444444444444444444444444444", "batch_attestation_sha256": "5555555555555555555555555555555555555555555555555555555555555555", "methodology_version": "0.1.0" },
+        "allowed_uses": { "factual_display": true, "time_series": true, "magnitude_comparison": true, "annual_emissions_ranking": true, "target": false, "commitment": false, "delivery": false, "performance": false, "assessed_status": false, "impact_bands": false, "composite": false, "normative_scoring": false, "scoring": false, "runtime_profile": false },
         "derivation": null
       },
       {
         "fact_id": "fact:fixture:derived",
-        "source_id": "fixture-source",
-        "source_checksum_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+        "entity_id": "iso3166-1:ZZZ",
+        "metric": "emissions.change_since_base",
+        "value": "1.2000",
+        "unit": "percent",
+        "period": "2097-2098",
+        "plane": "harmonized",
+        "source_id": "primap-hist-2.6.1-final",
+        "source_version": "2.6.1 final, 13 March 2025",
+        "source_checksum_sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9",
+        "_artifact_path": "fixture/ct-10c-published-facts.json",
+        "_artifact_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
         "evidence_class": "derived",
-        "review": { "status": "reviewed", "extractor_id": "fixture-extractor", "reviewer_id": "fixture-reviewer", "reviewed_at": "2099-01-01T00:00:00Z", "methodology_version": "0.1.0" },
-        "derivation": { "input_fact_ids": ["fact:fixture:observed"], "transformation": "Fictional formula", "formula_version": "1.0.0", "methodology_version": "0.1.0", "calculation_hash": "4444444444444444444444444444444444444444444444444444444444444444" }
+        "review": { "status": "reviewed", "mode": "individual", "extractor_id": "fixture-derived-extractor", "reviewer_id": "fixture-derived-reviewer", "reviewed_at": "2099-01-01T00:00:00Z", "methodology_version": "0.1.0" },
+        "allowed_uses": { "factual_display": true, "time_series": true, "magnitude_comparison": true, "annual_emissions_ranking": true, "target": false, "commitment": false, "delivery": false, "performance": false, "assessed_status": false, "impact_bands": false, "composite": false, "normative_scoring": false, "scoring": false, "runtime_profile": false },
+        "derivation": { "input_fact_ids": ["fact:fixture:observed"], "transformation": "Fictional formula", "formula_version": "1.0.0", "methodology_version": "0.1.0", "calculation_hash": "6666666666666666666666666666666666666666666666666666666666666666" }
       }
     ],
-    "sources": [{ "source_id": "fixture-source", "checksum_sha256": "3333333333333333333333333333333333333333333333333333333333333333", "licence": { "redistribution_approved": true, "decision_id": "fixture-licence-decision" } }],
+    "batch_attestations": [{
+      "attestation_id": "ct-10c-r-fictional",
+      "batch_id": "ct-10c-fictional",
+      "decision": "pass",
+      "source": { "source_id": "primap-hist-2.6.1-final", "version": "2.6.1 final, 13 March 2025", "checksum_sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9" },
+      "artifact": { "path": "fixture/ct-10c-published-facts.json", "sha256": "4444444444444444444444444444444444444444444444444444444444444444" },
+      "_path": "fixture/ct-10c-review.json",
+      "_file_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "fact_ids": ["fact:fixture:observed"],
+      "review": { "status": "reviewed", "builder_id": "ct-10c-fictional-builder", "reviewer_id": "ct-10c-fictional-reviewer", "reviewed_at": "2099-01-01T00:00:00Z", "methodology_version": "0.1.0" },
+      "production_runtime_release": false
+    }],
+    "sources": [{
+      "id": "primap-hist-2.6.1-final",
+      "version": "2.6.1 final, 13 March 2025",
+      "licence": { "identifier": "CC-BY-4.0", "status": "confirmed" },
+      "redistribution": { "status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true },
+      "approval": { "state": "approved", "decision": "Approved frozen PRIMAP release." },
+      "artifact": { "format": "csv", "sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9" }
+    }],
     "canonical_reason_codes": "$canonical",
     "embedded_reason_enums": [{ "id": "fixture-engine", "values": "$canonical" }],
     "generated_drift": false
@@ -60,8 +99,20 @@
     { "id": "release-denied", "mutations": [{ "path": "release_manifest.decision", "value": "deny" }, { "path": "release_manifest.release_eligible", "value": false }, { "path": "release_manifest.reason_codes", "value": ["licence_not_approved"] }], "expected_status": "fail", "expected_codes": ["release_manifest_denied"] },
     { "id": "release-diff-lineage-missing", "mutations": [{ "path": "release_diff.initial_release", "value": false }, { "path": "release_diff.previous_release_id", "value": null }], "expected_status": "fail", "expected_codes": ["release_diff_invalid"] },
     { "id": "release-diff-self-review", "mutations": [{ "path": "release_diff.review.reviewer_id", "value": "fixture-diff-builder" }], "expected_status": "fail", "expected_codes": ["release_diff_not_reviewed"] },
-    { "id": "fact-licence-missing", "mutations": [{ "path": "sources.0.licence.redistribution_approved", "value": false }], "expected_status": "fail", "expected_codes": ["fact_licence_missing"] },
-    { "id": "fact-self-review", "mutations": [{ "path": "facts.1.review.reviewer_id", "value": "fixture-extractor" }], "expected_status": "fail", "expected_codes": ["fact_review_missing"] },
+    { "id": "wrong-source-version", "mutations": [{ "path": "sources.0.version", "value": "2.7 final, 22 August 2025" }], "expected_status": "fail", "expected_codes": ["fact_source_version_mismatch"] },
+    { "id": "wrong-source-checksum", "mutations": [{ "path": "sources.0.artifact.sha256", "value": "7777777777777777777777777777777777777777777777777777777777777777" }], "expected_status": "fail", "expected_codes": ["fact_source_checksum_mismatch"] },
+    { "id": "licence-not-confirmed", "mutations": [{ "path": "sources.0.licence.status", "value": "uncertain" }], "expected_status": "fail", "expected_codes": ["fact_licence_missing"] },
+    { "id": "redistribution-not-permitted", "mutations": [{ "path": "sources.0.redistribution.normalized_values", "value": false }], "expected_status": "fail", "expected_codes": ["fact_licence_missing"] },
+    { "id": "source-not-approved", "mutations": [{ "path": "sources.0.approval.state", "value": "pending" }], "expected_status": "fail", "expected_codes": ["fact_licence_missing"] },
+    { "id": "missing-batch-attestation", "mutations": [{ "path": "batch_attestations", "value": [] }], "expected_status": "fail", "expected_codes": ["batch_attestation_missing"] },
+    { "id": "batch-self-review", "mutations": [{ "path": "batch_attestations.0.review.reviewer_id", "value": "ct-10c-fictional-builder" }], "expected_status": "fail", "expected_codes": ["batch_attestation_self_review"] },
+    { "id": "individual-fact-self-review", "mutations": [{ "path": "facts.1.review.reviewer_id", "value": "fixture-derived-extractor" }], "expected_status": "fail", "expected_codes": ["fact_review_missing"] },
+    { "id": "wrong-batch-artifact-pin", "mutations": [{ "path": "facts.0.review.batch_artifact_sha256", "value": "8888888888888888888888888888888888888888888888888888888888888888" }], "expected_status": "fail", "expected_codes": ["batch_attestation_pin_mismatch"] },
+    { "id": "published-artifact-bytes-drift", "mutations": [{ "path": "facts.0._artifact_sha256", "value": "8888888888888888888888888888888888888888888888888888888888888888" }], "expected_status": "fail", "expected_codes": ["batch_attestation_pin_mismatch"] },
+    { "id": "attestation-bytes-drift", "mutations": [{ "path": "batch_attestations.0._file_sha256", "value": "8888888888888888888888888888888888888888888888888888888888888888" }], "expected_status": "fail", "expected_codes": ["batch_attestation_pin_mismatch"] },
+    { "id": "forbidden-performance-use", "mutations": [{ "path": "facts.0.allowed_uses.performance", "value": true }], "expected_status": "fail", "expected_codes": ["fact_forbidden_use"] },
+    { "id": "unknown-use-flag-rejected", "mutations": [{ "path": "facts.0.allowed_uses.climate_score", "value": true }], "expected_status": "fail", "expected_codes": ["fact_forbidden_use"] },
+    { "id": "ct10c-runtime-release-forbidden", "mutations": [{ "path": "batch_attestations.0.production_runtime_release", "value": true }], "expected_status": "fail", "expected_codes": ["fact_forbidden_use"] },
     { "id": "derived-lineage-missing", "mutations": [{ "path": "facts.1.derivation.input_fact_ids", "value": [] }], "expected_status": "fail", "expected_codes": ["fact_lineage_missing"] },
     { "id": "canonical-enum-diverges", "mutations": [{ "path": "embedded_reason_enums.0.values", "value": ["source_missing"] }], "expected_status": "fail", "expected_codes": ["canonical_enum_divergence"] },
     { "id": "generated-files-drift", "mutations": [{ "path": "generated_drift", "value": true }], "expected_status": "fail", "expected_codes": ["generated_drift"] }

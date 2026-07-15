@@ -9,6 +9,7 @@ const { POLICY_VERSION, evaluateTruthPolicy, resolveRunStatus } = require('./lib
 const ROOT = path.resolve(__dirname, '..');
 const fixture = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/climate/fixtures/truth-ci-policy.json'), 'utf8'));
 const canonical = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/climate/schemas/enums.json'), 'utf8')).reason_codes;
+const realSourceRegistry = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/climate/source-registry.json'), 'utf8'));
 
 function materialize(value) {
   if (value === '$canonical') return structuredClone(canonical);
@@ -28,6 +29,9 @@ assert.strictEqual(POLICY_VERSION, fixture._meta.fixture_version);
 assert.deepStrictEqual(resolveRunStatus({ hardFailure: false, missingCount: 2, strict: true, allowIncomplete: false, reviewedCandidate: false }), { status: 'fail', exit_code: 1 });
 assert.deepStrictEqual(resolveRunStatus({ hardFailure: false, missingCount: 2, strict: false, allowIncomplete: true, reviewedCandidate: false }), { status: 'incomplete', exit_code: 0 });
 assert.deepStrictEqual(resolveRunStatus({ hardFailure: false, missingCount: 2, strict: false, allowIncomplete: true, reviewedCandidate: true }), { status: 'fail', exit_code: 1 });
+const realRegistryInput = materialize(fixture.base);
+realRegistryInput.sources = realSourceRegistry.sources;
+assert.strictEqual(evaluateTruthPolicy(realRegistryInput).status, 'pass', 'real CT-01 registry is incompatible with the CT-10C fact fixture');
 let passed = 0;
 let failedAsExpected = 0;
 for (const testCase of fixture.cases) {
@@ -47,5 +51,6 @@ process.stdout.write([
   'CT-41 climate truth CI policy: PASS',
   `  fictional cases: ${fixture.cases.length}`,
   `  pass / expected fail: ${passed} / ${failedAsExpected}`,
-  '  legacy runtime, truth language, release, diff, enums, lineage, licence, review, and drift: covered'
+  '  real CT-01 PRIMAP source shape: compatible',
+  '  legacy runtime, truth language, release, diff, enums, lineage, licence, batch review, forbidden uses, and drift: covered'
 ].join('\n') + '\n');
