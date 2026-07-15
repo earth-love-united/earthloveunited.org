@@ -3,8 +3,16 @@
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
+const { EXPECTED_SPEC: EXPECTED_VENDOR } = require('./globe-vendor-integrity');
 
 const CANDIDATE_MARKER_PATH = 'CANDIDATE-NOT-FOR-PUBLICATION.txt';
+const CANDIDATE_MARKER_TEXT = [
+  'LOCAL QA CANDIDATE — DO NOT PUBLISH',
+  'Runtime image rights and third-party notices are not reviewed.',
+  'production_use_approved=false',
+  'release_authority=false',
+  '',
+].join('\n');
 const APPROVAL_PATH = 'data/climate/reviews/globe-runtime-assets-production-review.json';
 const SIGNATURE_BUNDLE_PATH = 'data/climate/reviews/globe-runtime-assets-production-review.signatures.json';
 
@@ -48,6 +56,7 @@ const ALWAYS_PUBLIC_PATHS = Object.freeze([
   'assets/partners/st-vincents-wordmark.png',
   'data/carbon-projects.json',
   'data/small-nations.json',
+  'docs/LEGACY-COUNTRY-DATA-EXIT.md',
   'data/climate/runtime/candidate-manifest.json',
   'data/climate/runtime/country-factual-candidate.json',
   'data/climate/governance/globe-runtime-approval-trust.json',
@@ -180,12 +189,16 @@ function verifyPublicDeploySurface(options) {
     const source = inspectRegular(sourceRoot, relative);
     const staged = inspectRegular(stagedRoot, relative);
     if (source.sha256 !== staged.sha256) throw new Error('source/staged public byte mismatch: ' + relative);
+    if (relative === EXPECTED_VENDOR.destination) {
+      const expectedVendorSha256 = options.expectedVendorSha256 || EXPECTED_VENDOR.sha256;
+      if (source.sha256 !== expectedVendorSha256 || staged.sha256 !== expectedVendorSha256) {
+        throw new Error('public vendor bytes do not match the pinned globe.gl digest');
+      }
+    }
   });
   if (mode === 'candidate') {
     const marker = inspectRegular(stagedRoot, CANDIDATE_MARKER_PATH).bytes.toString('utf8');
-    for (const token of ['LOCAL QA CANDIDATE — DO NOT PUBLISH', 'production_use_approved=false', 'release_authority=false']) {
-      if (!marker.includes(token)) throw new Error('candidate marker missing boundary: ' + token);
-    }
+    if (marker !== CANDIDATE_MARKER_TEXT) throw new Error('candidate marker must match the exact denied-publication boundary');
   }
   return { status: 'pass', mode, file_count: actual.length, paths: actual };
 }
@@ -194,6 +207,7 @@ module.exports = {
   ALWAYS_PUBLIC_PATHS,
   APPROVAL_PATH,
   CANDIDATE_MARKER_PATH,
+  CANDIDATE_MARKER_TEXT,
   CANDIDATE_ONLY_PATHS,
   OPTIONAL_APPROVAL_PATHS,
   SIGNATURE_BUNDLE_PATH,

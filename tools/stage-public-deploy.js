@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {
   CANDIDATE_MARKER_PATH,
+  CANDIDATE_MARKER_TEXT,
   expectedSourcePaths,
   inspectRegular,
 } = require('./lib/public-deploy-surface');
@@ -67,6 +68,9 @@ function main() {
     .forEach(relative => copyExact(ROOT, stagedRoot, relative));
   if (!fs.existsSync(path.join(stagedRoot, 'THIRD_PARTY_NOTICES.txt'))) {
     throw new Error('separately verified third-party notice is missing');
+  }
+  if (mode === 'candidate') {
+    fs.writeFileSync(path.join(stagedRoot, CANDIDATE_MARKER_PATH), CANDIDATE_MARKER_TEXT, { flag: 'wx' });
   }
   process.stdout.write(`Public deploy staging: PASS (${paths.length} exact source files; ${mode})\n`);
 }

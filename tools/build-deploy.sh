@@ -103,15 +103,6 @@ echo "📋 Staging files..."
 cp THIRD_PARTY_NOTICES.txt "$DEPLOY_DIR/"
 node tools/stage-public-deploy.js --staged "$DEPLOY_DIR" --mode "$DEPLOY_MODE"
 
-if [ "$DEPLOY_MODE" = "candidate" ]; then
-  printf '%s\n' \
-    'LOCAL QA CANDIDATE — DO NOT PUBLISH' \
-    'Runtime image rights and third-party notices are not reviewed.' \
-    'production_use_approved=false' \
-    'release_authority=false' \
-    > "$DEPLOY_DIR/CANDIDATE-NOT-FOR-PUBLICATION.txt"
-fi
-
 echo "🔎 Verifying exact public deploy surface..."
 node tools/check-public-deploy-surface.js --staged "$DEPLOY_DIR" --mode "$DEPLOY_MODE"
 
@@ -140,4 +131,5 @@ node tools/check-globe-third-party-notices.js --staged "$DEPLOY_DIR"
 # handlers cannot write after verification. The verifier removes failed staged
 # output; if exec itself cannot start, the existing shell EXIT trap removes it.
 echo "🔐 Verifying final staged production integrity..."
+export ELU_VERIFIED_DEPLOY_MODE="$DEPLOY_MODE"
 exec node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"

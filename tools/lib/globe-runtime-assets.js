@@ -289,6 +289,8 @@ function evaluateRuntimeAssets(input) {
   const data = stripComments(files.data);
   const sw = stripComments(files.sw);
   const buildDeploy = stripComments(files.build_deploy);
+  const stagePublicDeploy = stripComments(files.stage_public_deploy);
+  const publicDeploySurface = stripComments(files.public_deploy_surface);
   // CI is YAML with embedded shell/JavaScript globs. JavaScript block-comment
   // stripping would misread paths such as */vendor/* and delete active steps.
   const ci = String(files.ci || '');
@@ -500,9 +502,11 @@ function evaluateRuntimeAssets(input) {
 
   const stagedVerifier = 'node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"';
   const stagedBuildCommand = `exec ${stagedVerifier}`;
+  const verifiedModeExport = 'export ELU_VERIFIED_DEPLOY_MODE="$DEPLOY_MODE"';
   const buildLines = activeShellLines(buildDeploy);
-  const trustedTail = [stagedBuildCommand];
+  const trustedTail = [verifiedModeExport, stagedBuildCommand];
   check('deploy-staged-verification', buildLines.filter(line => line === stagedBuildCommand).length === 1 &&
+    buildLines.filter(line => line === verifiedModeExport).length === 1 &&
     JSON.stringify(buildLines.slice(-trustedTail.length)) === JSON.stringify(trustedTail) &&
     !buildLines.some(hasBackgroundOperator) &&
     !/(?:^|\n)\s*(?:exit|return)\s+0(?:\s|$)/.test(buildDeploy) &&
@@ -535,9 +539,13 @@ function evaluateRuntimeAssets(input) {
     input?.deploy_behavior?.conflicting_selectors_rejected === true &&
     input?.deploy_behavior?.cloudflare_preview_forces_release === true,
     'Denied releases, Cloudflare previews, final verification failures, later staging failures, unknown environment modes, and conflicting selectors must fail closed without a publishable output directory.');
-  check('candidate-publication-marker', buildDeploy.includes('CANDIDATE-NOT-FOR-PUBLICATION.txt') &&
-    buildDeploy.includes('LOCAL QA CANDIDATE — DO NOT PUBLISH') &&
-    buildDeploy.includes('production_use_approved=false') && buildDeploy.includes('release_authority=false') &&
+  check('candidate-publication-marker',
+    buildDeploy.includes('node tools/stage-public-deploy.js --staged "$DEPLOY_DIR" --mode "$DEPLOY_MODE"') &&
+    stagePublicDeploy.includes('CANDIDATE_MARKER_TEXT') && stagePublicDeploy.includes("{ flag: 'wx' }") &&
+    publicDeploySurface.includes("const CANDIDATE_MARKER_PATH = 'CANDIDATE-NOT-FOR-PUBLICATION.txt';") &&
+    publicDeploySurface.includes('LOCAL QA CANDIDATE — DO NOT PUBLISH') &&
+    publicDeploySurface.includes('production_use_approved=false') && publicDeploySurface.includes('release_authority=false') &&
+    publicDeploySurface.includes('marker !== CANDIDATE_MARKER_TEXT') &&
     buildDeploy.includes('Do not upload, deploy, or expose this candidate as a public preview.'),
     'Candidate staging must carry an explicit non-publication marker and never print public deployment instructions.');
   check('ci-policy-wired',
@@ -545,6 +553,8 @@ function evaluateRuntimeAssets(input) {
     hasExactCiStep(ci, 'Verify deterministic globe starfield', 'node tools/authoring/generate-globe-starfield.js --check') &&
     hasExactCiStep(ci, 'Verify NASA Black Marble source pin', './tools/authoring/fetch-nasa-black-marble.sh --check') &&
     hasExactCiStep(ci, 'CT-45 localized runtime asset policy', 'node tools/check-globe-runtime-assets.js') &&
+    hasExactCiStep(ci, 'Exact public deploy surface policy self-test', 'node tools/check-public-deploy-surface.js --self-test') &&
+    hasExactCiStep(ci, 'Verify exact public deploy surface independently', 'node tools/check-public-deploy-surface.js --staged _deploy --mode candidate') &&
     hasExactCiStep(ci, 'Climate production readiness policy fixtures', 'node tools/check-climate-production-readiness-policy.js') &&
     hasExactCiStep(ci, 'Build candidate deploy directory', './tools/build-deploy.sh --candidate') &&
     hasExactCiStep(ci, 'Verify staged CT-45 bytes independently', 'node tools/check-globe-runtime-assets.js --staged _deploy'),

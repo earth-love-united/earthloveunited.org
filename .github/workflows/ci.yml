@@ -143,6 +143,8 @@ jobs:
         run: node tools/check-globe-runtime-assets.js --staged _deploy
 
       - name: Verify final staged production integrity independently
+        env:
+          ELU_VERIFIED_DEPLOY_MODE: candidate
         run: node tools/check-staged-production-integrity.js --staged _deploy
 
       - name: Install Playwright + Chromium

@@ -621,8 +621,8 @@
       "id": "ci-final-aggregate-step-disabled",
       "kind": "replace_file",
       "file": "ci",
-      "from": "- name: Verify final staged production integrity independently\n        run: node tools/check-staged-production-integrity.js --staged _deploy",
-      "to": "- name: Verify final staged production integrity independently\n        run: node tools/check-staged-production-integrity.js --staged _deploy\n        if: false",
+      "from": "- name: Verify final staged production integrity independently\n        env:\n          ELU_VERIFIED_DEPLOY_MODE: candidate\n        run: node tools/check-staged-production-integrity.js --staged _deploy",
+      "to": "- name: Verify final staged production integrity independently\n        env:\n          ELU_VERIFIED_DEPLOY_MODE: candidate\n        run: node tools/check-staged-production-integrity.js --staged _deploy\n        if: false",
       "expected_failure": "ci_notice_wiring"
     },
     {

@@ -8,8 +8,10 @@ const path = require('node:path');
 const {
   ALWAYS_PUBLIC_PATHS,
   CANDIDATE_MARKER_PATH,
+  CANDIDATE_MARKER_TEXT,
   CANDIDATE_ONLY_PATHS,
   expectedSourcePaths,
+  inspectRegular,
   verifyPublicDeploySurface,
 } = require('./lib/public-deploy-surface');
 
@@ -50,13 +52,7 @@ function copyFixture(sourceRoot, stagedRoot, mode) {
     fs.copyFileSync(path.join(sourceRoot, relative), destination);
   });
   if (mode === 'candidate') {
-    fs.writeFileSync(path.join(stagedRoot, CANDIDATE_MARKER_PATH), [
-      'LOCAL QA CANDIDATE — DO NOT PUBLISH',
-      'Runtime image rights and third-party notices are not reviewed.',
-      'production_use_approved=false',
-      'release_authority=false',
-      '',
-    ].join('\n'));
+    fs.writeFileSync(path.join(stagedRoot, CANDIDATE_MARKER_PATH), CANDIDATE_MARKER_TEXT);
   }
 }
 
@@ -77,7 +73,11 @@ function withFixture(mode, callback) {
   try {
     makeSyntheticSource(source);
     copyFixture(source, staged, mode);
-    callback({ source, staged });
+    callback({
+      source,
+      staged,
+      vendorSha256: inspectRegular(source, 'js/vendor/globe.gl.js').sha256,
+    });
   } finally {
     fs.rmSync(fixtureRoot, { recursive: true, force: true });
   }
@@ -86,7 +86,12 @@ function withFixture(mode, callback) {
 function rejected(id, mode, mutate) {
   withFixture(mode, fixture => {
     mutate(fixture.staged);
-    assert.throws(() => verifyPublicDeploySurface({ sourceRoot: fixture.source, stagedRoot: fixture.staged, mode }), undefined, id);
+    assert.throws(() => verifyPublicDeploySurface({
+      sourceRoot: fixture.source,
+      stagedRoot: fixture.staged,
+      mode,
+      expectedVendorSha256: fixture.vendorSha256,
+    }), undefined, id);
   });
 }
 
@@ -94,7 +99,12 @@ function runSelfTest() {
   let cases = 0;
   for (const mode of ['candidate', 'release']) {
     withFixture(mode, fixture => {
-      assert.equal(verifyPublicDeploySurface({ sourceRoot: fixture.source, stagedRoot: fixture.staged, mode }).status, 'pass');
+      assert.equal(verifyPublicDeploySurface({
+        sourceRoot: fixture.source,
+        stagedRoot: fixture.staged,
+        mode,
+        expectedVendorSha256: fixture.vendorSha256,
+      }).status, 'pass');
     });
     cases += 1;
   }
@@ -116,6 +126,9 @@ function runSelfTest() {
   rejected('missing runtime script', 'candidate', staged => fs.unlinkSync(path.join(staged, 'js/gaia-utils.js'))); cases += 1;
   rejected('runtime byte tamper', 'candidate', staged => fs.appendFileSync(path.join(staged, 'js/app.js'), '\n// tamper\n')); cases += 1;
   rejected('candidate marker tamper', 'candidate', staged => fs.writeFileSync(path.join(staged, CANDIDATE_MARKER_PATH), 'publish')); cases += 1;
+  rejected('candidate marker contradictory approval', 'candidate', staged => {
+    fs.appendFileSync(path.join(staged, CANDIDATE_MARKER_PATH), 'production_use_approved=true\nrelease_authority=true\n');
+  }); cases += 1;
   rejected('release candidate marker leak', 'release', staged => fs.writeFileSync(path.join(staged, CANDIDATE_MARKER_PATH), 'LOCAL QA CANDIDATE — DO NOT PUBLISH')); cases += 1;
   rejected('leaf symlink', 'candidate', staged => {
     fs.unlinkSync(path.join(staged, 'js/app.js'));
@@ -127,6 +140,16 @@ function runSelfTest() {
   }); cases += 1;
   assert.throws(() => resolveExistingStaged('../escape'), /inside repository/); cases += 1;
   assert.throws(() => parseArgs(['--staged', '_deploy', '--mode', 'candidate', '--extra']), /unknown/); cases += 1;
+  withFixture('candidate', fixture => {
+    fs.appendFileSync(path.join(fixture.source, 'js/vendor/globe.gl.js'), 'paired mutation');
+    fs.appendFileSync(path.join(fixture.staged, 'js/vendor/globe.gl.js'), 'paired mutation');
+    assert.throws(() => verifyPublicDeploySurface({
+      sourceRoot: fixture.source,
+      stagedRoot: fixture.staged,
+      mode: 'candidate',
+      expectedVendorSha256: fixture.vendorSha256,
+    }), /pinned globe\.gl digest/);
+  }); cases += 1;
   process.stdout.write(`Public deploy surface self-test: PASS (${cases} fail-closed cases)\n`);
 }
 

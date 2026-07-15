@@ -417,13 +417,7 @@ function makePublicSurfaceSelfTestFixture() {
     fs.copyFileSync(fixtureSource, fixtureStaged);
   });
   copyFixtureFile(ROOT, root, UI_REVIEW_PATH);
-  fs.writeFileSync(path.join(staged, publicSurface.CANDIDATE_MARKER_PATH), [
-    'LOCAL QA CANDIDATE — DO NOT PUBLISH',
-    'Runtime image rights and third-party notices are not reviewed.',
-    'production_use_approved=false',
-    'release_authority=false',
-    '',
-  ].join('\n'));
+  fs.writeFileSync(path.join(staged, publicSurface.CANDIDATE_MARKER_PATH), publicSurface.CANDIDATE_MARKER_TEXT);
   return { root, staged };
 }
 

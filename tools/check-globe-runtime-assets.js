@@ -35,6 +35,8 @@ const PATHS = Object.freeze({
   globe_css: 'css/globe-system.css',
   sw: 'sw.js',
   build_deploy: 'tools/build-deploy.sh',
+  stage_public_deploy: 'tools/stage-public-deploy.js',
+  public_deploy_surface: 'tools/lib/public-deploy-surface.js',
   ci: '.github/workflows/ci.yml',
   climate_truth_ci: 'tools/climate-truth-ci.js',
   final_integrity: 'tools/check-staged-production-integrity.js',
@@ -294,7 +296,7 @@ function inspectFinalVerifierCleanup() {
     const requested = path.relative(ROOT, stagedRoot);
     const result = childProcess.spawnSync(process.execPath, [
       'tools/check-staged-production-integrity.js', '--staged', requested,
-    ], { cwd: ROOT, encoding: 'utf8' });
+    ], { cwd: ROOT, encoding: 'utf8', env: { ...process.env, ELU_VERIFIED_DEPLOY_MODE: 'candidate' } });
     return result.status !== 0 && !fs.existsSync(stagedRoot);
   } finally {
     fs.rmSync(stagedRoot, { recursive: true, force: true });
