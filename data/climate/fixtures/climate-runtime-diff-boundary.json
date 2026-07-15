@@ -23,6 +23,12 @@
       "expected": { "status": "pass", "mode": "no-runtime-change", "strict_required": false }
     },
     {
+      "id": "public-legacy-ledger-is-runtime-affecting",
+      "changed_paths": ["docs/LEGACY-COUNTRY-DATA-EXIT.md"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
       "id": "explicit-denied-candidate",
       "changed_paths": ["js/globe.js", "data/climate/runtime/country-factual-candidate.json"],
       "candidate": "$base_denied_candidate",

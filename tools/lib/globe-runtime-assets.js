@@ -167,6 +167,7 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/check-public-deploy-surface.js',
   '/tools/lib/public-deploy-surface.js',
   '/_headers',
+  '/docs/LEGACY-COUNTRY-DATA-EXIT.md',
   '/tools/check-climate-production-readiness.js',
   '/tools/check-climate-production-readiness-policy.js',
   '/tools/lib/climate-production-readiness.js',

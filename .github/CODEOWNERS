@@ -95,6 +95,7 @@
 /data/climate/governance/globe-runtime-approval-trust.json @earth-love-united/maintainers
 /data/climate/reviews/globe-runtime-assets-production-review.json @earth-love-united/maintainers
 /data/climate/reviews/globe-runtime-assets-production-review.signatures.json @earth-love-united/maintainers
+/docs/LEGACY-COUNTRY-DATA-EXIT.md      @earth-love-united/maintainers
 /tools/climate-truth-ci.js            @earth-love-united/maintainers
 
 # ─── CI / GitHub config ─────────────────────────────────────────

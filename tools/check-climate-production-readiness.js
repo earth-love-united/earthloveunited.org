@@ -150,6 +150,7 @@ function reviewedCommitBindingPasses(approval) {
     'tools/check-public-deploy-surface.js',
     'tools/lib/public-deploy-surface.js',
     '_headers',
+    'docs/LEGACY-COUNTRY-DATA-EXIT.md',
     'tools/climate-truth-ci.js',
     'tools/lib/climate-runtime-diff-boundary.js',
     'tools/lib/climate-production-readiness.js',
