@@ -336,11 +336,13 @@ const COUNTRY_CLIMATE_VIEW_MODEL = (() => {
   return { VERSION, CARD_SECTION_ORDER: CARD_SECTION_ORDER.slice(), build };
 })();
 
-window.COUNTRY_CLIMATE_VIEW_MODEL = COUNTRY_CLIMATE_VIEW_MODEL;
+if (typeof window !== 'undefined') window.COUNTRY_CLIMATE_VIEW_MODEL = COUNTRY_CLIMATE_VIEW_MODEL;
 
-if (hasModule('MODULE_CONTRACTS')) {
+if (typeof hasModule === 'function' && hasModule('MODULE_CONTRACTS')) {
   safeCall('MODULE_CONTRACTS', 'register', 'COUNTRY_CLIMATE_VIEW_MODEL', {
-    provides: ['VERSION', 'CARD_SECTION_ORDER', 'build'],
+    provides: ['build'],
     requires: [],
   });
 }
+
+if (typeof module !== 'undefined' && module.exports) module.exports = COUNTRY_CLIMATE_VIEW_MODEL;

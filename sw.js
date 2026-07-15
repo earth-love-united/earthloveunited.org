@@ -1,9 +1,9 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Version bump (v26) — remove the retired legacy country payload.
+ * Candidate cache (v27) — add the denied CT-42 factual runtime preview.
  */
-const CACHE_NAME = 'elu-v26';
+const CACHE_NAME = 'elu-v27-ct42-candidate';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -26,6 +26,7 @@ const STATIC_ASSETS = [
   // Data (small, cacheable)
   '/data/small-nations.json',
   '/data/carbon-projects.json',
+  '/data/climate/runtime/country-factual-candidate.json',
 ];
 
 // ── Install: pre-cache static assets ──

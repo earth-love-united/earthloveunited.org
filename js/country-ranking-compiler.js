@@ -385,11 +385,13 @@ const COUNTRY_RANKING_COMPILER = (() => {
   return { VERSION, REASON_CODES: REASON_CODES.slice(), normalizeSelection, compile };
 })();
 
-window.COUNTRY_RANKING_COMPILER = COUNTRY_RANKING_COMPILER;
+if (typeof window !== 'undefined') window.COUNTRY_RANKING_COMPILER = COUNTRY_RANKING_COMPILER;
 
-if (hasModule('MODULE_CONTRACTS')) {
+if (typeof hasModule === 'function' && hasModule('MODULE_CONTRACTS')) {
   safeCall('MODULE_CONTRACTS', 'register', 'COUNTRY_RANKING_COMPILER', {
-    provides: ['VERSION', 'REASON_CODES', 'normalizeSelection', 'compile'],
+    provides: ['normalizeSelection', 'compile'],
     requires: [],
   });
 }
+
+if (typeof module !== 'undefined' && module.exports) module.exports = COUNTRY_RANKING_COMPILER;

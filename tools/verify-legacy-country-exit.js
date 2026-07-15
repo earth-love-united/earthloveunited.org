@@ -205,11 +205,16 @@ if (/fetch\s*\([^)]*pledge/i.test(dataSource)) failures.push('js/data.js: legacy
 
 const serviceWorker = read('sw.js');
 if (compact(serviceWorker).includes('pledgenodesjson')) failures.push('sw.js: legacy payload remains in cache behavior');
-if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'")) failures.push('sw.js: cache version was not advanced to elu-v26');
 
 if (!index.includes('docs/LEGACY-COUNTRY-DATA-EXIT.md')) failures.push('index.html: public exit-ledger link missing');
-if (!index.includes('Uniform neutral surface · country evidence withheld')) failures.push('index.html: neutral entered-globe legend missing');
-if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'")) failures.push('index.html: service-worker registration is not v26');
+const hasNeutralLegend = index.includes('Uniform neutral surface · country evidence withheld');
+const hasCandidateLegend = index.includes('CT-42 candidate, not a performance score') &&
+  index.includes('Source gap · visible, not ranked') &&
+  read('data/climate/runtime/candidate-manifest.json').includes('"release_eligible": false');
+const candidateCache = serviceWorker.includes("const CACHE_NAME = 'elu-v27-ct42-candidate'") && hasCandidateLegend;
+if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'") && !candidateCache) failures.push('sw.js: cache version is neither legacy-exit v26 nor denied CT-42 candidate v27');
+if (!hasNeutralLegend && !hasCandidateLegend) failures.push('index.html: fail-closed neutral or denied CT-42 candidate legend missing');
+if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'") && !index.includes("navigator.serviceWorker.register('/sw.js?v=27-ct42-candidate'")) failures.push('index.html: service-worker registration is neither v26 nor CT-42 candidate v27');
 
 const ledger = read('docs/LEGACY-COUNTRY-DATA-EXIT.md');
 const payload = JSON.parse(read(historicalPath));

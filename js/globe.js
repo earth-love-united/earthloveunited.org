@@ -81,14 +81,17 @@ const COUNTRY_ISO_FALLBACKS = {
 };
 
 const COUNTRY_STATUS = {
+  FACTUAL: 'factual',
   MISSING: 'missing',
 };
 
 const COUNTRY_STATUS_LABELS = {
-  [COUNTRY_STATUS.MISSING]: 'Country data being re-sourced',
+  [COUNTRY_STATUS.FACTUAL]: 'Reviewed facts · candidate preview',
+  [COUNTRY_STATUS.MISSING]: 'Emissions source gap',
 };
 
 const COUNTRY_STATUS_BADGE_CLASSES = {
+  [COUNTRY_STATUS.FACTUAL]: 'magnitude',
   [COUNTRY_STATUS.MISSING]: 'neutral',
 };
 
@@ -110,13 +113,15 @@ function _getCountryDisplayData(feature) {
   const iso = _resolveCountryIso(feature);
   const country = props.ADMIN || props.NAME || props.name || iso;
 
+  const climate = Data.getClimateCountry ? Data.getClimateCountry(iso) : null;
   return {
     iso,
     country,
-    emissions: null,
+    emissions: climate?.emissions || null,
     lat: _isFiniteNumber(Number(props.__lat)) ? Number(props.__lat) : null,
     lng: _isFiniteNumber(Number(props.__lng)) ? Number(props.__lng) : null,
-    hasData: false,
+    hasData: climate?.emissions?.status === 'reviewed_factual',
+    climate,
   };
 }
 
@@ -170,7 +175,7 @@ function _isFiniteNumber(value) {
 }
 
 function _getCountryStatusKey(d) {
-  return COUNTRY_STATUS.MISSING;
+  return d?.hasData ? COUNTRY_STATUS.FACTUAL : COUNTRY_STATUS.MISSING;
 }
 
 function _getCountryStatusText(d) {
@@ -182,7 +187,7 @@ function _getCountryStatusClass(d) {
 }
 
 function _getCountryStatusAttr(d) {
-  return 'nodata';
+  return d?.hasData ? 'factual' : 'nodata';
 }
 
 const GLOBE_THEME_CONFIG = Object.freeze({
@@ -207,11 +212,31 @@ function _getGlobeThemeConfig(theme) {
 }
 
 function _renderCountryTrajectory() {
-  return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">Performance withheld</span><span class="elu-trajectory-note">Evidence review in progress</span></div><div class="elu-trajectory-empty">Target, ambition, and delivery claims are being rebuilt from reviewed sources.</div></div>';
+  return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">Assessment boundary</span><span class="elu-trajectory-note">Not reviewed</span></div><div class="elu-trajectory-empty">Commitment and target: not reviewed. Delivery, performance, impact band, and climate score: not assessed.</div></div>';
 }
 
 function _getCountryGaiaComment(d, projectCount) {
-  return 'Country evidence is being re-sourced; the border remains navigable.';
+  return d?.hasData
+    ? 'Reviewed harmonized emissions facts are available; no performance judgment is made.'
+    : 'This country remains equally navigable while its emissions source gap is resolved.';
+}
+
+function _magnitudePosition(value) {
+  if (!_isFiniteNumber(value) || value < 0) return null;
+  const domain = Data.getClimateMagnitudeDomain ? Data.getClimateMagnitudeDomain() : null;
+  if (!domain || !_isFiniteNumber(domain.min_mtco2e_per_year) || !_isFiniteNumber(domain.max_mtco2e_per_year) || !_isFiniteNumber(domain.offset_mtco2e_per_year)) return null;
+  const min = Math.log10(domain.min_mtco2e_per_year + domain.offset_mtco2e_per_year);
+  const max = Math.log10(domain.max_mtco2e_per_year + domain.offset_mtco2e_per_year);
+  return Math.max(0, Math.min(1, (Math.log10(value + domain.offset_mtco2e_per_year) - min) / (max - min)));
+}
+
+function _magnitudeColor(value, alpha) {
+  const t = _magnitudePosition(value);
+  if (t === null) return 'rgba(145,160,172,' + alpha + ')';
+  const start = [91, 74, 151];
+  const end = [246, 145, 58];
+  const rgb = start.map((channel, index) => Math.round(channel + (end[index] - channel) * t));
+  return 'rgba(' + rgb.join(',') + ',' + alpha + ')';
 }
 
 function _isCountryModeActive() {
@@ -683,19 +708,24 @@ const GlobeModule = {
       });
   },
 
-  // Uniform neutral country surface: no climate magnitude or performance
-  // channel is available until a reviewed runtime release replaces it.
+  // CT-42 candidate: factual magnitude only. This is deliberately not a
+  // performance, target, delivery, impact-band, or score color channel.
   _countryHexColorFn(feature) {
-    return 'rgba(149,165,166,0.28)';
+    const d = _getCountryDisplayData(feature);
+    return d?.hasData ? _magnitudeColor(d.emissions.latest.value, 0.72) : 'rgba(145,160,172,0.34)';
   },
 
   _countryHexAltitudeFn(feature) {
-    return 0.003;
+    const d = _getCountryDisplayData(feature);
+    const position = d?.hasData ? _magnitudePosition(d.emissions.latest.value) : null;
+    return position === null ? 0.004 : 0.004 + position * 0.022;
   },
 
-  // With no reviewed scoring or magnitude evidence, navigation is alphabetical.
+  // Same-metric 2023 magnitude order from CT-31; gaps follow alphabetically.
   _buildCountryDeck() {
     const featureByIso = this._featureByIso || {};
+    const ranking = Data.getClimateRanking ? Data.getClimateRanking() : null;
+    const ranks = new Map((ranking?.ranked || []).map(entry => [entry.country_id.split(':')[1], entry]));
     const entries = Object.keys(featureByIso)
       .filter(iso => iso && iso !== 'UNK' && iso !== '-99' && iso !== 'ATA')
       .map(iso => {
@@ -707,16 +737,65 @@ const GlobeModule = {
           feature,
           data,
           country,
+          rank: ranks.get(iso) || null,
         };
       })
       .filter(entry => entry.feature && entry.data);
-    this._countryDeck = entries.sort((a, b) => String(a.country).localeCompare(String(b.country)));
+    this._countryDeck = entries.sort((a, b) => {
+      if (a.rank && b.rank) return a.rank.ordinal - b.rank.ordinal || a.iso.localeCompare(b.iso);
+      if (a.rank) return -1;
+      if (b.rank) return 1;
+      return String(a.country).localeCompare(String(b.country));
+    });
   },
 
   _renderRankRail() {
     const previous = $('elu-country-rank-rail');
     if (previous) previous.remove();
-    this._rankRail = null;
+    const ranking = Data.getClimateRanking ? Data.getClimateRanking() : null;
+    if (!ranking || !document.body) { this._rankRail = null; return; }
+    const rail = document.createElement('aside');
+    rail.id = 'elu-country-rank-rail';
+    rail.setAttribute('aria-label', 'Candidate preview: 2023 harmonized emissions magnitude ranking and data gaps');
+    const mappedRanked = ranking.ranked.filter(entry => this._featureByIso?.[entry.country_id.split(':')[1]]);
+    const unmappedRanked = ranking.ranked.filter(entry => !this._featureByIso?.[entry.country_id.split(':')[1]]);
+    const mappedGaps = ranking.unranked.entries.filter(entry => this._featureByIso?.[entry.country_id.split(':')[1]]);
+    const unmappedGaps = ranking.unranked.entries.filter(entry => !this._featureByIso?.[entry.country_id.split(':')[1]]);
+    const ranked = mappedRanked.map(entry => {
+      const iso = entry.country_id.split(':')[1];
+      return '<button type="button" class="elu-rank-row" data-country-rail-iso="' + _escapeHtml(iso) + '" aria-label="Rank ' + entry.ordinal + ', ' + _escapeHtml(entry.label) + ', ' + entry.value.toLocaleString() + ' ' + _escapeHtml(entry.unit) + '">'
+        + '<span class="elu-rank-number">' + entry.ordinal + '</span><span class="elu-rank-dot is-magnitude" aria-hidden="true"></span>'
+        + '<span class="elu-rank-name">' + _escapeHtml(entry.label) + '</span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span>'
+        + '<span class="elu-rank-gap">' + entry.value.toLocaleString() + '</span></button>';
+    }).join('');
+    const gaps = mappedGaps.map(entry => {
+      const iso = entry.country_id.split(':')[1];
+      return '<button type="button" class="elu-rank-row is-gap" data-country-rail-iso="' + _escapeHtml(iso) + '" aria-label="Data gap, ' + _escapeHtml(entry.label) + ', not ranked">'
+        + '<span class="elu-rank-number" aria-hidden="true">—</span><span class="elu-rank-dot is-gap" aria-hidden="true"></span>'
+        + '<span class="elu-rank-name">' + _escapeHtml(entry.label) + '</span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span><span class="elu-rank-gap">Data gap</span></button>';
+    }).join('');
+    const unmapped = unmappedRanked.concat(unmappedGaps).map(entry => '<div class="elu-rank-unmapped"><span aria-hidden="true">◇</span> ' + _escapeHtml(entry.label) + ' (' + _escapeHtml(entry.country_id.split(':')[1]) + ') · not mapped on this globe</div>').join('');
+    rail.innerHTML = '<div class="elu-rank-head"><div><div class="elu-rank-title">Candidate preview · 2023 magnitude</div><div class="elu-rank-subtitle">Same metric · MtCO₂e/yr · harmonized · not a performance score</div></div><button type="button" class="elu-rank-toggle" aria-label="Collapse candidate ranking" aria-expanded="true">−</button></div>'
+      + '<div class="elu-rank-list"><div class="elu-rank-disclosure">' + mappedRanked.length + ' of 206 reviewed registry entities mapped · competition ties preserved</div>'
+      + '<div role="list" aria-label="Mapped registry entities ranked by the same 2023 metric">' + ranked + '</div>'
+      + '<h2 class="elu-rank-gap-heading">Source gaps · unnumbered</h2><div role="list" aria-label="Mapped registry entities not ranked because source data are unavailable">' + gaps + '</div>'
+      + (unmapped ? '<h2 class="elu-rank-gap-heading">Not mapped · noninteractive</h2><div aria-label="Registry entities without interactive globe geometry">' + unmapped + '</div>' : '') + '</div>';
+    rail.addEventListener('click', event => {
+      const toggle = event.target.closest('.elu-rank-toggle');
+      if (toggle) {
+        const collapsed = rail.classList.toggle('is-collapsed');
+        toggle.textContent = collapsed ? '+' : '−';
+        toggle.setAttribute('aria-expanded', String(!collapsed));
+        toggle.setAttribute('aria-label', collapsed ? 'Expand country ranking' : 'Collapse country ranking');
+        return;
+      }
+      const row = event.target.closest('[data-country-rail-iso]');
+      if (!row) return;
+      const feature = this._featureByIso?.[row.getAttribute('data-country-rail-iso')];
+      if (feature) this._selectCountryFeature(feature, { focus: true });
+    });
+    document.body.appendChild(rail);
+    this._rankRail = rail;
   },
 
   _updateRankRail() {
@@ -765,6 +844,9 @@ const GlobeModule = {
   _selectCountryFeature(feature, opts = {}) {
     const d = _getCountryDisplayData(feature);
     if (!d) return;
+    if (opts.focus && document.activeElement && !document.activeElement.closest('#hex-country-tooltip')) {
+      this._countryOpener = document.activeElement;
+    }
     this._selectedCountryFeature = feature;
     this._countryHoverFeature = feature;
     this._renderCountryInfoCard(feature, true);
@@ -782,8 +864,8 @@ const GlobeModule = {
     const tt = $('hex-country-tooltip');
     this._queueCountrySwipeCue(tt);
     if (opts.focus && tt) {
-      tt.setAttribute('tabindex', '-1');
-      tt.focus({ preventScroll: true });
+      const heading = tt.querySelector('#country-card-heading');
+      if (heading) heading.focus({ preventScroll: true });
     }
     if (hasModule('EventBus')) EventBus.emit('globe:country-selected', { iso: d.iso, country: d.country });
   },
@@ -848,6 +930,14 @@ const GlobeModule = {
           this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
           return;
         }
+      });
+      tt.addEventListener('keydown', event => {
+        if (!tt.classList.contains('selected') || event.key !== 'Tab') return;
+        const focusable = Array.from(tt.querySelectorAll('button,a[href],summary,[tabindex="0"]')).filter(node => !node.disabled);
+        if (!focusable.length) return;
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
       });
 
       // ── Swipe physics (ported from agent/designer/swipeable-hover-card) ──
@@ -929,23 +1019,32 @@ const GlobeModule = {
     const statusText = _getCountryStatusText(d);
     const statusClass = _getCountryStatusClass(d);
     const statusAttr = _getCountryStatusAttr(d);
-    const evidenceSummary = 'Country facts are being re-sourced';
+    const evidenceSummary = d.hasData
+      ? d.emissions.label + ' · 2014–2023 · ' + d.emissions.unit
+      : 'No reviewed factual emissions series in this candidate';
     const comment = _getCountryGaiaComment(d);
 
     if (selected) this._ensureCountryCardWrap(tt);
     else this._unmountCountryCard();
     tt.classList.toggle('selected', !!selected);
     tt.dataset.status = statusAttr;
-    tt.setAttribute('role', selected ? 'region' : 'tooltip');
-    tt.setAttribute('aria-label', selected ? d.country + ' evidence review' : d.country + ' evidence unavailable');
+    tt.setAttribute('role', selected ? 'dialog' : 'tooltip');
+    if (selected) {
+      tt.setAttribute('aria-modal', 'true');
+      tt.setAttribute('aria-labelledby', 'country-card-heading');
+    } else {
+      tt.removeAttribute('aria-modal'); tt.removeAttribute('aria-labelledby');
+    }
+    tt.setAttribute('aria-label', selected ? d.country + ' factual emissions candidate' : d.country + (d.hasData ? ' emissions facts' : ' emissions data gap'));
     if (!selected) tt.removeAttribute('tabindex');
 
     let html = '<div class="tt-topline">'
-      + '<div class="tt-country">' + _escapeHtml(d.country) + '</div>'
+      + (selected ? '<h2 class="tt-country" id="country-card-heading" tabindex="-1">' + _escapeHtml(d.country) + '</h2>' : '<div class="tt-country">' + _escapeHtml(d.country) + '</div>')
       + '<div class="tt-pill tt-status-' + statusClass + '">' + _escapeHtml(statusText) + '</div>'
       + (selected ? '<button type="button" class="tt-close" data-country-close aria-label="Close">✕</button>' : '')
       + '</div>'
-      + '<div class="tt-detail">' + _escapeHtml(evidenceSummary) + '</div>';
+      + '<div class="tt-detail">' + _escapeHtml(evidenceSummary) + '</div>'
+      + (selected ? '<div class="tt-candidate"><span aria-hidden="true">◇</span> CT-42 candidate preview · runtime and release not reviewed</div>' : '');
 
     if (!selected) {
       html += '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
@@ -1033,9 +1132,36 @@ const GlobeModule = {
   },
 
   _renderCountryMetrics(d) {
-    return '<div class="tt-comment" style="margin-top:8px">Country facts are being re-sourced. Performance is withheld until reviewed evidence is available.</div>'
+    if (!d.hasData) {
+      return '<div class="tt-comment" style="margin-top:8px"><strong>Data gap.</strong> No reviewed PRIMAP series is available for this registry entity. It is visible but excluded from ranking.</div>'
+        + _renderCountryTrajectory()
+        + '<div class="tt-hint">Unnumbered data gap · ← → or swipe · esc closes</div>';
+    }
+    const points = d.emissions.series;
+    const values = points.map(point => point.value);
+    const min = Math.min(...values), max = Math.max(...values);
+    const span = Math.max(max - min, Math.abs(max) * 0.02, 0.001);
+    const coordPoints = points.map((point, index) => {
+      const x = 8 + index * (304 / Math.max(points.length - 1, 1));
+      const y = 51 - ((point.value - min) / span) * 39;
+      return { x: x.toFixed(1), y: y.toFixed(1), point };
+    });
+    const coords = coordPoints.map(item => item.x + ',' + item.y).join(' ');
+    const markers = coordPoints.map(item => '<circle class="elu-trajectory-point" cx="' + item.x + '" cy="' + item.y + '" r="2.5"><title>' + item.point.year + ': ' + item.point.value.toLocaleString() + ' ' + _escapeHtml(d.emissions.unit) + '</title></circle>').join('');
+    const rows = points.map(point => '<tr><th scope="row">' + point.year + '</th><td>' + point.value.toLocaleString() + '</td><td>' + _escapeHtml(d.emissions.unit) + '</td></tr>').join('');
+    const latest = d.emissions.latest;
+    const sourceLabel = 'PRIMAP-hist v2.6.1 final';
+    return '<section class="tt-factual" aria-labelledby="country-emissions-heading"><h3 id="country-emissions-heading">Annual harmonized emissions estimates</h3>'
+      + '<div class="tt-factual-value"><strong>' + latest.value.toLocaleString() + '</strong> ' + _escapeHtml(d.emissions.unit) + ' <span>in ' + latest.year + '</span></div>'
+      + '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">2014–2023 series</span><span class="elu-trajectory-note">Harmonized estimate</span></div>'
+      + '<svg viewBox="0 0 320 72" role="img" aria-labelledby="emissions-chart-title emissions-chart-desc"><title id="emissions-chart-title">' + _escapeHtml(d.country) + ' annual harmonized emissions estimates, 2014 to 2023</title><desc id="emissions-chart-desc">Ten annual harmonized estimates in ' + _escapeHtml(d.emissions.unit) + '. Points and line show emissions magnitude, not a performance pathway.</desc>'
+      + '<line class="elu-trajectory-grid" x1="8" y1="51" x2="312" y2="51"></line><text class="elu-chart-axis" x="8" y="9">' + max.toLocaleString() + ' ' + _escapeHtml(d.emissions.unit) + '</text><text class="elu-chart-axis" x="8" y="66">' + min.toLocaleString() + ' ' + _escapeHtml(d.emissions.unit) + '</text><polyline class="elu-trajectory-current is-magnitude" points="' + coords + '"></polyline>' + markers + '</svg>'
+      + '<div class="elu-trajectory-years"><span>2014</span><span>2023</span></div></div>'
+      + '<details class="tt-chart-data"><summary>Show chart data</summary><table><caption>' + _escapeHtml(d.country) + ' annual harmonized emissions</caption><thead><tr><th>Year</th><th>Value</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>'
+      + '<p class="tt-source"><strong>Source:</strong> <a href="' + _escapeHtml(d.emissions.source_url) + '" target="_blank" rel="noopener">' + sourceLabel + '</a> · facts reviewed through CT-10C / CT-10C-R; this CT-42 runtime candidate is not reviewed.</p>'
+      + '<p class="tt-limit"><strong>Limits:</strong> ' + _escapeHtml(d.emissions.limitations.join(' ')) + '</p></section>'
       + _renderCountryTrajectory()
-      + '<div class="tt-hint">← → or swipe to browse countries · esc closes</div>';
+      + '<div class="tt-hint">2023 magnitude rank only · ← → or swipe · esc closes</div>';
   },
 
   // ── Project markers: the pinned country's top projects on the globe ──
@@ -1128,15 +1254,19 @@ const GlobeModule = {
     const hovered = feature === this._countryHoverFeature;
     const selected = feature === this._selectedCountryFeature;
     const hoverBoost = hovered ? 0.12 : (selected ? 0.08 : 0);
+    const d = _getCountryDisplayData(feature);
 
     // Small-nation dot markers: a few pixels wide, so the usual low-alpha
     // country wash would vanish. Paint them near-solid for contrast.
     if (feature?.properties?.__smallNation) {
-      const boost = hovered ? 0.10 : (selected ? 0.08 : 0);
-      return 'rgba(150,182,196,' + Math.min(0.85 + boost, 0.98).toFixed(2) + ')';
+      return d?.hasData
+        ? _magnitudeColor(d.emissions.latest.value, Math.min(0.84 + hoverBoost, 0.98).toFixed(2))
+        : 'rgba(165,178,188,' + Math.min(0.82 + hoverBoost, 0.96).toFixed(2) + ')';
     }
 
-    return 'rgba(120,150,165,' + (0.14 + hoverBoost).toFixed(2) + ')';
+    return d?.hasData
+      ? _magnitudeColor(d.emissions.latest.value, (0.54 + hoverBoost).toFixed(2))
+      : 'rgba(145,160,172,' + (0.32 + hoverBoost).toFixed(2) + ')';
   },
 
   _supportsCountryBorders() {
@@ -1307,6 +1437,8 @@ const GlobeModule = {
     this._updateRankRail();
     this._clearCountryProjects();
     this._refreshCountryBorders();
+    if (this._countryOpener && document.contains(this._countryOpener) && typeof this._countryOpener.focus === 'function') this._countryOpener.focus();
+    this._countryOpener = null;
     if (hasModule('EventBus')) EventBus.emit('globe:country-closed', { timestamp: Date.now() });
   },
 

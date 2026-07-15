@@ -297,7 +297,7 @@ body:not(.globe-mode) #globe-loading {
   align-items: center;
   gap: 6px;
   width: 100%;
-  min-height: 31px;
+  min-height: 44px;
   padding: 5px 10px;
   border: 0;
   border-bottom: 1px solid var(--hud-divider-soft);
@@ -338,6 +338,11 @@ body:not(.globe-mode) #globe-loading {
 .elu-rank-dot.is-red { background: #ff786d; box-shadow: 0 0 7px rgba(255, 120, 109, .35); }
 .elu-rank-dot.is-green { background: #63dc8b; box-shadow: 0 0 7px rgba(99, 220, 139, .3); }
 .elu-rank-dot.is-amber { background: var(--amber); }
+.elu-rank-dot.is-magnitude { background: linear-gradient(135deg,#5b4a97,#f6913a); box-shadow:0 0 7px rgba(246,145,58,.28); }
+.elu-rank-dot.is-gap { background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px); border:1px solid #aeb9c1; }
+.elu-rank-gap-heading { margin:0; padding:9px 10px; border-top:1px solid var(--hud-divider); border-bottom:1px solid var(--hud-divider-soft); color:var(--hud-muted); font-family:var(--mono); font-size:8px; font-weight:500; letter-spacing:1px; text-transform:uppercase; }
+.elu-rank-disclosure,.elu-rank-unmapped { padding:7px 10px; color:var(--hud-muted); font-size:9px; line-height:1.4; }
+.elu-rank-unmapped { border-bottom:1px solid var(--hud-divider-soft); }
 
 /* Selected dashboard: the v0.7 461px docked card. */
 #hex-country-tooltip {
@@ -472,6 +477,25 @@ body:not(.globe-mode) #globe-loading {
   border-radius: 2px;
   letter-spacing: .9px;
 }
+
+#hex-country-tooltip .tt-status-magnitude { color:#f2b36f; border-color:rgba(242,179,111,.38); background:rgba(117,76,151,.16); }
+#hex-country-tooltip .tt-candidate { margin-top:8px; padding:7px 8px; border:1px solid rgba(242,179,111,.34); background:rgba(117,76,151,.14); color:#f7c58d; font-family:var(--mono); font-size:8px; letter-spacing:.55px; line-height:1.4; text-transform:uppercase; }
+#hex-country-tooltip .tt-close { min-width:44px; min-height:44px; }
+#hex-country-tooltip .tt-factual h3 { margin:12px 0 5px; color:var(--mint); font-family:var(--mono); font-size:9px; letter-spacing:1px; text-transform:uppercase; }
+#hex-country-tooltip .tt-factual-value { color:var(--text2); font-size:11px; }
+#hex-country-tooltip .tt-factual-value strong { color:#f2b36f; font-family:var(--mono); font-size:20px; }
+#hex-country-tooltip .tt-factual-value span { color:var(--hud-faint); }
+#hex-country-tooltip .elu-trajectory-current.is-magnitude { stroke:#f2a553; stroke-width:2; fill:none; }
+#hex-country-tooltip .elu-trajectory-point { fill:#fff1dc; stroke:#704f9d; stroke-width:1.2; }
+#hex-country-tooltip .elu-chart-axis { fill:var(--text2); font-family:var(--mono); font-size:7px; }
+#hex-country-tooltip .tt-chart-data { margin-top:8px; color:var(--text2); font-size:10px; }
+#hex-country-tooltip .tt-chart-data summary { min-height:44px; display:flex; align-items:center; color:var(--teal); cursor:pointer; }
+#hex-country-tooltip .tt-chart-data table { width:100%; border-collapse:collapse; font-family:var(--mono); font-size:9px; }
+#hex-country-tooltip .tt-chart-data caption { padding:5px; color:var(--hud-muted); text-align:left; }
+#hex-country-tooltip .tt-chart-data th,#hex-country-tooltip .tt-chart-data td { padding:4px 5px; border-top:1px solid var(--hud-divider-soft); text-align:left; }
+#hex-country-tooltip .tt-source,#hex-country-tooltip .tt-limit { margin-top:8px; color:var(--text2); font-size:10px; line-height:1.45; }
+#hex-country-tooltip .tt-source a { display:inline-flex; align-items:center; min-height:44px; color:var(--teal); }
+#hex-country-tooltip :focus-visible,#elu-country-rank-rail :focus-visible { outline:2px solid var(--mint); outline-offset:2px; }
 
 #hex-country-tooltip.selected .tt-gap {
   border-radius: 3px;
