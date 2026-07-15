@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "review_id": "ct-42-independent-runtime-ui-review-2026-07-15",
+  "reviewed_at": "2026-07-15T12:25:00Z",
+  "reviewed_commit": "793eade295ae3fa787749e4d6ee112cf374a7634",
+  "reviewer_id": "ct-42-independent-ui-reviewer",
+  "builder_id": "ct-42-runtime-candidate-builder",
+  "independent": true,
+  "decision": "pass",
+  "scope": "Runtime truth presentation, interaction, accessibility, responsive layout, rendering paths, and denied release boundary only.",
+  "data_lineage_reviewed": false,
+  "data_lineage_boundary": "Displayed source pins and factual-use labels were checked for presence and consistency; upstream data lineage was not independently re-reviewed by CT-42.",
+  "reviewed_file_pins": [
+    { "path": "index.html", "sha256": "ee0a0cdd3eba85ffbe2fc0b5fc74f8f50a392558845960ada766f98539decc2e" },
+    { "path": "css/globe-system.css", "sha256": "50e577d2302e8990f2885830011ce65581c915915d55e8d7508c14acd8928bfb" },
+    { "path": "js/globe.js", "sha256": "c60d58cba0471885975b0ca3db0af0f9f1c38570ddea4a935cad2f6fc6bf6059" },
+    { "path": "js/data.js", "sha256": "9d7c517115e875da46e2a583d3f397b4a491d15425c7d95bae852a614e07563d" },
+    { "path": "tools/smoke-test.js", "sha256": "37042fd6da00d01ad2cda55512b2e448dcb075416958f370bbf37b8fb8d461e4" },
+    { "path": "data/climate/runtime/country-factual-candidate.json", "sha256": "7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664" },
+    { "path": "data/climate/runtime/candidate-manifest.json", "sha256": "96e74966e40a65c838d7030de07c8cead4c05fe28d49876814c8e0cd4b8c7a1c" }
+  ],
+  "local_runtime_dependency": {
+    "name": "globe.gl",
+    "version": "2.46.1",
+    "sha256": "2ab6767f47e2be0ac346cd7a5eb55d259ea3da06d479dc22f1820ddd698f496a",
+    "committed": false,
+    "purpose": "Ignored local browser-QA dependency only."
+  },
+  "gates": [
+    { "id": "runtime-boundary", "result": "pass", "evidence": "249 registry entities render as 206 reviewed factual series plus 43 explicit source gaps; candidate review_status remains not_reviewed and production_runtime_release remains false." },
+    { "id": "truth-language", "result": "pass", "evidence": "No target, commitment, delivery, performance, impact-band, or climate-score conclusion is implied; cards state not reviewed/not assessed." },
+    { "id": "magnitude-and-gaps", "result": "pass", "evidence": "China remains rank 1 at 15,000 MtCO2e/yr; competition ties are preserved; source gaps are neutral, unnumbered, visible, and excluded from ranking." },
+    { "id": "chart-table-source", "result": "pass", "evidence": "Card exposes ten labelled 2014-2023 points, a ten-row Year/Value/Unit table, PRIMAP-hist v2.6.1 source link, unit, accounting-frame label, and limitations." },
+    { "id": "screen-reader-semantics", "result": "pass", "evidence": "Accessible tree exposes labelled ranking controls, a wrapper-owned modal dialog, named chart image and points, table caption/headers, source, limitations, and assessment boundary." },
+    { "id": "keyboard-focus", "result": "pass", "evidence": "No default dialog; user opener focuses heading; desktop and 320px Tab loops remain inside; ArrowRight retains focus on the replacement heading; Escape closes, hides tooltip from the accessibility tree, and restores the original rank control." },
+    { "id": "touch-targets", "result": "pass", "evidence": "Visible rank rows, close, chart disclosure, source link, and desktop previous/next controls are at least 44px in the tested dimension." },
+    { "id": "responsive-320", "result": "pass", "evidence": "Real 320x640 browser viewport has document scrollWidth=clientWidth=320 in foundation and globe modes; card is 248px wide and vertically scrollable; mobile rail title is 2023." },
+    { "id": "zoom-200", "result": "pass", "evidence": "Real browser rendered CSS zoom=2 without horizontal overflow; independent 655x334 CSS-pixel viewport (1310x667 baseline at 200% reflow equivalent) had document widths 655/655 and an on-screen scrollable card." },
+    { "id": "reduced-motion", "result": "pass", "evidence": "Browser CSSOM found three reduced-motion media rules disabling animation and transition; emulated prefers-reduced-motion suppressed the mobile swipe cue." },
+    { "id": "contrast", "result": "pass", "evidence": "Formal contrast checks: repaired light banner 7.514:1, light text minimum tested 6.287:1, dark text minimum tested 6.648:1; focus indicators remain explicit." },
+    { "id": "color-removal", "result": "pass", "evidence": "With candidate swatches forced to grayscale, rank/value/unit labels, explicit source-gap/not-ranked label, three legend texts, and assessment-boundary copy remain available." },
+    { "id": "polygon-render", "result": "pass", "evidence": "Pinned globe.gl rendered one WebGL canvas and 204 country polygon features; SmokeTest reported polygon presence." },
+    { "id": "fallback-render", "result": "pass", "evidence": "Forced no-polygon facade rendered 204 hex features; China retained orange magnitude color and altitude 0.026 while a source gap retained neutral color and altitude 0.004." },
+    { "id": "smoke-and-stack", "result": "pass", "evidence": "SmokeTest 18/18 passed with zero critical failures; StackLint returned zero issues." }
+  ],
+  "publication_boundary": {
+    "runtime_ui_review_passed": true,
+    "factual_display_only": true,
+    "targets_reviewed": false,
+    "commitments_reviewed": false,
+    "performance_assessed": false,
+    "scores_assessed": false,
+    "ct40_allow_decision": false,
+    "release_eligible": false,
+    "production_runtime_release": false,
+    "required_next_gate": "CT-40 independent allow decision plus reviewed runtime manifest and release diff"
+  }
+}
