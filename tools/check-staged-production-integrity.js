@@ -9,11 +9,15 @@ const path = require('node:path');
 
 const notices = require('./lib/globe-third-party-notices');
 const approvalPolicy = require('./lib/globe-runtime-approval');
-const { REQUIRED_UI_REVIEW_PIN_PATHS } = require('./lib/globe-runtime-assets');
+const {
+  EXPECTED_UI_REVIEW_COMMIT,
+  EXPECTED_UI_REVIEW_SHA256,
+  REQUIRED_UI_REVIEW_PIN_PATHS,
+  UI_REVIEW_PATH,
+} = require('./lib/globe-runtime-assets');
 
 const ROOT = path.resolve(__dirname, '..');
 const PUBLIC_NOTICE_LINK = '<a href="/THIRD_PARTY_NOTICES.txt">Third-party notices</a>';
-const UI_REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
 const FINAL_CT45_REHASH_PATHS = REQUIRED_UI_REVIEW_PIN_PATHS;
 const PINNED_FILES = Object.freeze([
   Object.freeze({ path: notices.NOTICE_PATH, sha256: notices.EXPECTED_NOTICE_SHA256 }),
@@ -24,6 +28,7 @@ const PINNED_FILES = Object.freeze([
 ]);
 const APPROVAL_REVIEWED_PATHS = Object.freeze([...new Set([
   ...REQUIRED_UI_REVIEW_PIN_PATHS,
+  UI_REVIEW_PATH,
   notices.NOTICE_PATH,
   notices.MANIFEST_PATH,
   notices.INTEGRATION_PATH,
@@ -219,9 +224,15 @@ function verifyApprovalArtifacts(sourceRoot, stagedRoot) {
 
 function reviewedRuntimePins(sourceRoot) {
   const record = requireRegular(sourceRoot, UI_REVIEW_PATH);
+  if (record.sha256 !== EXPECTED_UI_REVIEW_SHA256) {
+    throw new Error('CT-42 UI review attestation SHA-256 drift');
+  }
   let review;
   try { review = JSON.parse(record.text); }
   catch (_) { throw new Error('CT-42 UI review must be valid JSON'); }
+  if (review.reviewed_commit !== EXPECTED_UI_REVIEW_COMMIT) {
+    throw new Error('CT-42 UI review commit drift');
+  }
   const pins = Array.isArray(review.reviewed_file_pins) ? review.reviewed_file_pins : [];
   const paths = pins.map(entry => entry && entry.path);
   if (JSON.stringify(paths) !== JSON.stringify(FINAL_CT45_REHASH_PATHS)) {
@@ -232,9 +243,25 @@ function reviewedRuntimePins(sourceRoot) {
     if (!entry || !/^[0-9a-f]{64}$/.test(entry.sha256 || '') || result.has(entry.path)) {
       throw new Error('CT-42 UI review contains an invalid or duplicate runtime pin');
     }
+    const reviewedBytes = reviewedCommitBytes(ROOT, review.reviewed_commit, entry.path);
+    if (approvalPolicy.sha256(reviewedBytes) !== entry.sha256) {
+      throw new Error('CT-42 UI review pin differs from reviewed Git object: ' + entry.path);
+    }
     result.set(entry.path, entry.sha256);
   });
   return result;
+}
+
+function reviewedCommitBytes(sourceRoot, commit, relative) {
+  const result = childProcess.spawnSync('git', ['show', commit + ':' + relative], {
+    cwd: sourceRoot,
+    encoding: null,
+    maxBuffer: 32 * 1024 * 1024,
+  });
+  if (result.status !== 0) {
+    throw new Error('reviewed Git object is unavailable: ' + relative);
+  }
+  return result.stdout;
 }
 
 function verifyCt45RuntimeBytes(sourceRoot, stagedRoot) {
@@ -318,7 +345,25 @@ function runApprovalCommitBindingSelfTest() {
     runFixtureGit(root, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid', 'commit', '-q', '-m', 'runtime drift']);
     assert.equal(reviewedCommitBindingPasses(root, { reviewed_commit_sha: reviewed }), false,
       'foundation runtime drift must invalidate approval commit binding');
-    return 2;
+
+    const reviewRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-approval-ui-review-binding-'));
+    try {
+      APPROVAL_REVIEWED_PATHS.forEach(relative => copyFixtureFile(ROOT, reviewRoot, relative));
+      runFixtureGit(reviewRoot, ['init', '-q']);
+      runFixtureGit(reviewRoot, ['add', '.']);
+      runFixtureGit(reviewRoot, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid',
+        'commit', '-q', '-m', 'reviewed']);
+      const reviewCommit = runFixtureGit(reviewRoot, ['rev-parse', 'HEAD']);
+      fs.appendFileSync(path.join(reviewRoot, UI_REVIEW_PATH), '\n');
+      runFixtureGit(reviewRoot, ['add', UI_REVIEW_PATH]);
+      runFixtureGit(reviewRoot, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid',
+        'commit', '-q', '-m', 'ui review drift']);
+      assert.equal(reviewedCommitBindingPasses(reviewRoot, { reviewed_commit_sha: reviewCommit }), false,
+        'UI review attestation drift must invalidate approval commit binding');
+    } finally {
+      fs.rmSync(reviewRoot, { recursive: true, force: true });
+    }
+    return 3;
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
@@ -379,6 +424,21 @@ function runSelfTest() {
   });
   assertMutationRejected('post-check foundation runtime tamper', function () {}, function (value) {
     fs.appendFileSync(path.join(value.staged, 'js/gaia-utils.js'), '\n// tampered after earlier checks\n');
+  });
+  assertMutationRejected('post-check UI review hash drift', function () {}, function (value) {
+    fs.appendFileSync(path.join(value.root, UI_REVIEW_PATH), '\n');
+  });
+  assertMutationRejected('UI review leaf symlink', function (value) {
+    const target = path.join(value.root, 'repinned-ui-review.json');
+    fs.copyFileSync(path.join(value.root, UI_REVIEW_PATH), target);
+    fs.unlinkSync(path.join(value.root, UI_REVIEW_PATH));
+    fs.symlinkSync(target, path.join(value.root, UI_REVIEW_PATH));
+  });
+  assertMutationRejected('UI review ancestor symlink', function (value) {
+    const reviewsPath = path.join(value.root, path.dirname(UI_REVIEW_PATH));
+    const externalReviews = path.join(value.root, 'external-ui-reviews');
+    fs.renameSync(reviewsPath, externalReviews);
+    fs.symlinkSync(path.relative(path.dirname(reviewsPath), externalReviews), reviewsPath, 'dir');
   });
   assertMutationRejected('staged-only unpinned approval', function (value) {
     const approvalPath = path.join(value.staged, approvalPolicy.APPROVAL_PATH);
@@ -457,7 +517,35 @@ function runSelfTest() {
   } finally {
     fs.rmSync(postChildCt45Fixture.root, { recursive: true, force: true });
   }
-  process.stdout.write('Final staged production integrity self-test: PASS (12 fail-closed filesystem/tamper/cleanup cases; ' +
+
+  const pairedRepinFixture = makeSelfTestFixture();
+  let pairedChildChecksCompleted = false;
+  try {
+    assert.throws(() => verifyFinalStagedIntegrityWithCleanup({
+      sourceRoot: pairedRepinFixture.root,
+      stagedRoot: pairedRepinFixture.staged,
+      childCheckRunner: function () { pairedChildChecksCompleted = true; },
+      afterPrecheck: function () {
+        assert.equal(pairedChildChecksCompleted, true, 'paired mutation must occur after child checks');
+        const relative = 'js/gaia-utils.js';
+        const suffix = Buffer.from('\n// adversarial paired post-child mutation\n');
+        fs.appendFileSync(path.join(pairedRepinFixture.root, relative), suffix);
+        fs.appendFileSync(path.join(pairedRepinFixture.staged, relative), suffix);
+        const reviewPath = path.join(pairedRepinFixture.root, UI_REVIEW_PATH);
+        const review = JSON.parse(fs.readFileSync(reviewPath, 'utf8'));
+        review.reviewed_file_pins.find(entry => entry.path === relative).sha256 =
+          approvalPolicy.sha256(fs.readFileSync(path.join(pairedRepinFixture.root, relative)));
+        fs.writeFileSync(reviewPath, JSON.stringify(review, null, 2) + '\n');
+      },
+    }), /CT-42 UI review attestation SHA-256 drift/,
+    'paired source/staged runtime mutation plus review repin must fail');
+    assert.equal(pairedChildChecksCompleted, true, 'child checker hook must precede paired repin mutation');
+    assert.equal(fs.existsSync(pairedRepinFixture.staged), false,
+      'paired repin failure must remove staged output');
+  } finally {
+    fs.rmSync(pairedRepinFixture.root, { recursive: true, force: true });
+  }
+  process.stdout.write('Final staged production integrity self-test: PASS (16 fail-closed filesystem/tamper/cleanup cases; ' +
     approvalBindingCases + ' scoped approval commit-binding cases; post-child CT-45 mutation rejected and cleaned)\n');
 }
 

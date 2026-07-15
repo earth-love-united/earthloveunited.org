@@ -1,7 +1,10 @@
 'use strict';
 
 const crypto = require('node:crypto');
-const { ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS } = require('./globe-runtime-assets');
+const {
+  ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
+  UI_REVIEW_PATH,
+} = require('./globe-runtime-assets');
 
 const POLICY_VERSION = '1.0.0';
 
@@ -27,6 +30,7 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'data/climate/governance/globe-runtime-approval-trust.json',
   'data/climate/reviews/globe-runtime-assets-production-review.json',
   'data/climate/reviews/globe-runtime-assets-production-review.signatures.json',
+  UI_REVIEW_PATH,
   'tools/build-deploy.sh',
   'tools/fetch-globe-vendor.sh',
   'tools/check-globe-vendor-integrity.js',

@@ -5,6 +5,9 @@ const { hasActiveCiJob, hasExactCiStep } = require('./globe-vendor-integrity');
 
 const POLICY_VERSION = '1.2.0';
 const MANIFEST_PATH = 'assets/globe/runtime/manifest.json';
+const UI_REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
+const EXPECTED_UI_REVIEW_COMMIT = 'c7ba0560b164e5f3b67c01e96abf75720ad3fd7a';
+const EXPECTED_UI_REVIEW_SHA256 = '5c1e3dd78cb670a9fb5d650cce5863b657b0f30a32c6711a744449acb2789975';
 const EXPECTED_MANIFEST_SHA256 = '6f03e630512982f2edfd40097881bae73bbc49110ca79c6fdbb49dc7b44b7da4';
 const EXPECTED_MANIFEST_SEMANTIC_SHA256 = '687e6ba28c5ffe422be5a4579f6ebfb910f54598782ddb4702b54cdd0ad3c3d2';
 const EXPECTED_STARFIELD_GENERATOR_SHA256 = '4097bcbcb2bf0a9279ae0c8eeab7c0393b54fd72b4ea9fcf141e8fc6b1f55a25';
@@ -506,6 +509,12 @@ function evaluateRuntimeAssets(input) {
     finalIntegrity.indexOf(finalCt45RehashCall) > finalIntegrity.indexOf('verifyApprovalArtifacts(sourceRoot, stagedRoot);') &&
     finalIntegrity.includes('FINAL_CT45_REHASH_PATHS = REQUIRED_UI_REVIEW_PIN_PATHS'),
     'The aggregate verifier must finish with one post-hook CT-45 rehash over the canonical reviewed runtime scope.');
+  check('final-ui-review-binding',
+    finalIntegrity.includes('record.sha256 !== EXPECTED_UI_REVIEW_SHA256') &&
+    finalIntegrity.includes('review.reviewed_commit !== EXPECTED_UI_REVIEW_COMMIT') &&
+    finalIntegrity.includes('reviewedCommitBytes(ROOT, review.reviewed_commit, entry.path)') &&
+    finalIntegrity.includes('APPROVAL_REVIEWED_PATHS') && finalIntegrity.includes('UI_REVIEW_PATH,'),
+    'The final verifier must bind the UI-review record itself and every pin to the exact reviewed Git objects.');
   const releaseGuard = buildDeploy.indexOf('if [ "$DEPLOY_MODE" = "release" ]; then');
   const readinessCommand = buildDeploy.indexOf('node tools/check-climate-production-readiness.js --release');
   const stagingStart = buildDeploy.indexOf('mkdir -p "$DEPLOY_DIR"');
@@ -632,9 +641,12 @@ module.exports = {
   EXPECTED_MANIFEST_SEMANTIC_SHA256,
   EXPECTED_MANIFEST_SHA256,
   EXPECTED_SMALL_NATION_POINTS,
+  EXPECTED_UI_REVIEW_COMMIT,
+  EXPECTED_UI_REVIEW_SHA256,
   MANIFEST_PATH,
   POLICY_VERSION,
   REQUIRED_UI_REVIEW_PIN_PATHS,
+  UI_REVIEW_PATH,
   digest,
   evaluateRuntimeAssets,
   exactAssetManifest,

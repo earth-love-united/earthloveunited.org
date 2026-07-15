@@ -76,6 +76,12 @@
       "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
     },
     {
+      "id": "ui-review-attestation-is-runtime-affecting",
+      "changed_paths": ["data/climate/reviews/climate-factual-runtime-ct42-ui-review.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
       "id": "candidate-cannot-claim-allow",
       "changed_paths": ["index.html"],
       "candidate": "$base_denied_candidate",
