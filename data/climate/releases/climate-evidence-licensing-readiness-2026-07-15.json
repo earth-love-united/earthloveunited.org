@@ -1,0 +1,4166 @@
+{
+  "schema_version": "1.0.0",
+  "work_package_id": "ct15-production-evidence-readiness-2026-07-15",
+  "created_at": "2026-07-15T16:00:00Z",
+  "status": "blocked",
+  "release_authority": false,
+  "production_runtime_release": false,
+  "scope": "Evidence, rights, and independent-review work required before a new production candidate may be evaluated. This package does not authorize release.",
+  "inputs": {
+    "ct40Result": {
+      "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
+      "sha256": "0cfd2e1c1429c59f6fa073c9f35b3bcd17a7f3d4770979bdbe6b1049a202f2e9"
+    },
+    "ct40Input": {
+      "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
+      "sha256": "43062b04810fa2954acc3ad5a736191740c1e240e6b306dcd0e9264e8badf89e"
+    },
+    "ct14Queue": {
+      "path": "data/climate/releases/top20-primary-source-gap-queue-2026-07-15.json",
+      "sha256": "fb1bbc050b7ba791893b7751dd4f916ecd01885557b272cb025f8c0e4b64452d"
+    },
+    "sourceRegistry": {
+      "path": "data/climate/source-registry.json",
+      "sha256": "ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d"
+    },
+    "audit": {
+      "path": "data/climate/evidence/major-emitter-ndc-source-audit.json",
+      "sha256": "c4764628073653bda0f3f8a14f49400a624dfb3935c36432db8754e23d2c6683"
+    },
+    "publishedFacts": {
+      "path": "data/climate/runtime/published-facts-candidate.json",
+      "sha256": "307b0a7c9edc59f6360ce05e66ccf54624f3233d809dd0f4232338b324b07e19"
+    },
+    "targetSchema": {
+      "path": "data/climate/schemas/target.schema.json",
+      "sha256": "4345b713a6b6e07951da03037f96a815795f95d248c7c3b4729b2ab4e7366441"
+    },
+    "observationSchema": {
+      "path": "data/climate/schemas/observation.schema.json",
+      "sha256": "364d0475afca10e657eec961db184e1524c3f5d2a29e67f44a81dad969a8a2af"
+    },
+    "releaseGate": {
+      "path": "tools/lib/climate-release-gate.js",
+      "sha256": "5fb2b6d702cbf97de65d3f9a1c6a7342f4c80c6f3054220418bd527aa280bd16"
+    },
+    "ct40Adapter": {
+      "path": "tools/lib/ct42-ct40-release-review.js",
+      "sha256": "6e40244b41326e5d269321729003d216da843d12df9d20cfdedd665c91921aa2"
+    },
+    "ct14Compiler": {
+      "path": "tools/lib/top20-primary-source-gap-queue.js",
+      "sha256": "9cf4ffa080fec458de3cf2e875d877ad88460d8ee25fa8568cf08b50839baade"
+    }
+  },
+  "audit_findings": {
+    "ct40": {
+      "decision": "deny",
+      "facts_evaluated": 2060,
+      "facts_eligible": 0,
+      "facts_with_evidence_state_not_reviewed": 2060,
+      "field_level_fact_reviews_present": 0,
+      "source_licence_decisions_present": 0,
+      "release_reviewer_ids_present": 0,
+      "canonical_reason_codes": [
+        "climate_evidence_not_reviewed",
+        "source_not_reviewed",
+        "licence_not_approved",
+        "evidence_insufficient",
+        "independent_review_required"
+      ]
+    },
+    "ct14": {
+      "ranked_entities": 20,
+      "metadata_only_entities": 4,
+      "audits_not_started": 16,
+      "official_inventory_documents_available": 0,
+      "active_ndc_metadata_entities": 3,
+      "legacy_indc_only_entities": 1,
+      "release_eligible_entities": 0
+    },
+    "routing_mismatches": [
+      {
+        "id": "btr-official-inventory-domain",
+        "status": "unresolved",
+        "detail": "CT-14 accepts the BTR source family for official_inventory, while its CT-01 source-registry domains omit official_inventory.",
+        "required_resolution": "Add the domain through reviewed source governance or remove BTR from the official-inventory route before acquisition."
+      }
+    ]
+  },
+  "snapshot_boundaries": [
+    {
+      "snapshot_id": "ct-42-to-ct-40-real-release-review-2026-07-15",
+      "transitionable": false,
+      "reason": "The denial adapter intentionally writes not_reviewed facts, an empty fact-review array, null licence decisions, and an unreviewed release block."
+    },
+    {
+      "snapshot_id": "ct-14-top20-primary-source-gap-queue-2026-07-15",
+      "transitionable": false,
+      "reason": "The CT-14 checker pins zero inventories, four metadata-only audits, sixteen not-started audits, and pending source approvals."
+    }
+  ],
+  "required_next_compiler": {
+    "status": "not_implemented",
+    "name": "reviewed production candidate compiler",
+    "rule": "Consume new independently reviewed source decisions, document manifests, fact reviews, profiles, and release review inputs; preserve CT-14 and the CT-40 DENY snapshot unchanged."
+  },
+  "readiness_tracks": [
+    {
+      "track_id": "factual_runtime",
+      "status": "blocked",
+      "can_proceed_independently_of_country_scoring": true,
+      "current": {
+        "facts": 2060,
+        "fact_reviews": 0,
+        "ct40_source_decisions": 0,
+        "release_reviews": 0
+      },
+      "required": [
+        "explicit PRIMAP CT-40 rights decision tied to the exact checksum",
+        "2,060 CT-40 fact-review records with exact field reviews",
+        "independent release review on the assembled candidate",
+        "reviewed runtime manifest, release diff, and executable rollback proof after an authentic allow decision"
+      ],
+      "boundary": "No target, commitment, delivery, performance, impact-band, or score claims."
+    },
+    {
+      "track_id": "top20_country_assessment",
+      "status": "blocked",
+      "can_block_factual_only_publication_by_policy_only": true,
+      "current": {
+        "countries": 20,
+        "official_inventory_packages": 0,
+        "metadata_only_countries": 4,
+        "audits_not_started": 16,
+        "eligible_profiles": 0
+      },
+      "required": [
+        "reviewed source-family and per-document rights decisions",
+        "latest official inventory package or explicit source-unavailable outcome for every country",
+        "latest active NDC package or independently reviewed absence/status determination for every country",
+        "target-methodology extraction and field review",
+        "comparability, delivery, and profile review using only eligible input facts"
+      ],
+      "boundary": "Scores remain withheld until all facts used by a profile also have scoring_approved rights decisions."
+    }
+  ],
+  "source_decision_work": [
+    {
+      "source_registry_id": "primap-hist-2.6.1-final",
+      "purpose": "Current 2,060-fact harmonized factual runtime",
+      "required_for": [
+        "factual_runtime"
+      ],
+      "mandatory_if_used": true,
+      "current_registry_state": {
+        "approval_state": "approved",
+        "licence_status": "confirmed",
+        "licence_identifier": "CC-BY-4.0",
+        "redistribution_status": "permitted",
+        "source_files_allowed": true,
+        "normalized_values_allowed": true,
+        "metadata_and_links_allowed": true,
+        "artifact_checksum_sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9"
+      },
+      "ct40_decision_state": "missing",
+      "registry_change_required_before_normalized_use": false,
+      "registry_transition_fields": [],
+      "ct40_candidate_decision_path": "ct40_candidate.sources[source_id=primap-hist-2.6.1-final].licence",
+      "decision_must_not_be_inferred": true,
+      "required_decision_record_fields": [
+        "decision_id",
+        "source_registry_id",
+        "reviewed_source_version",
+        "reviewed_source_checksum_sha256_or_per_document_checksums",
+        "licence_identifier",
+        "terms_url",
+        "licence_evidence_url_or_written_clarification_reference",
+        "redistribution_approved",
+        "scoring_approved",
+        "source_files_approved",
+        "normalized_values_approved",
+        "attribution_template",
+        "restrictions",
+        "decision_by",
+        "decision_at",
+        "decision_notes"
+      ],
+      "transition_conditions": {
+        "factual_publication": [
+          "non-empty decision_id",
+          "checksum pin matches every released fact",
+          "redistribution_approved is true",
+          "normalized_values_approved is true"
+        ],
+        "assessment_or_scoring": [
+          "all factual-publication conditions",
+          "scoring_approved is true"
+        ],
+        "note": "These are gate conditions, not approvals. The independent rights reviewer may deny or narrow any use."
+      },
+      "accepted_decision_basis": [
+        "pinned CC BY 4.0 evidence",
+        "exact v2.6.1 artifact checksum",
+        "reviewed attribution and transformation notice"
+      ],
+      "prohibited_basis": [
+        "inference from public availability",
+        "acceptance of click-through terms by an agent",
+        "a metadata-only source-registry entry",
+        "a batch scientific attestation without a rights decision"
+      ],
+      "routing_note": null
+    },
+    {
+      "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15",
+      "purpose": "Active NDC identity, target text, and target methodology",
+      "required_for": [
+        "target_facts",
+        "comparability",
+        "country_assessment"
+      ],
+      "mandatory_if_used": true,
+      "current_registry_state": {
+        "approval_state": "pending",
+        "licence_status": "uncertain",
+        "licence_identifier": "UNFCCC-terms-and-party-document-rights",
+        "redistribution_status": "metadata_only",
+        "source_files_allowed": false,
+        "normalized_values_allowed": false,
+        "metadata_and_links_allowed": true,
+        "artifact_checksum_sha256": null
+      },
+      "ct40_decision_state": "pending_metadata_only",
+      "registry_change_required_before_normalized_use": true,
+      "registry_transition_fields": [
+        "licence.status",
+        "licence.evidence_url",
+        "licence.summary",
+        "licence.restrictions",
+        "redistribution.status",
+        "redistribution.source_files",
+        "redistribution.normalized_values",
+        "redistribution.metadata_and_links",
+        "approval.state",
+        "approval.decision",
+        "approval.required_action",
+        "storage.raw"
+      ],
+      "ct40_candidate_decision_path": "ct40_candidate.sources[source_id=unfccc-ndc-registry-continuous-2026-07-15].licence",
+      "decision_must_not_be_inferred": true,
+      "required_decision_record_fields": [
+        "decision_id",
+        "source_registry_id",
+        "reviewed_source_version",
+        "reviewed_source_checksum_sha256_or_per_document_checksums",
+        "licence_identifier",
+        "terms_url",
+        "licence_evidence_url_or_written_clarification_reference",
+        "redistribution_approved",
+        "scoring_approved",
+        "source_files_approved",
+        "normalized_values_approved",
+        "attribution_template",
+        "restrictions",
+        "decision_by",
+        "decision_at",
+        "decision_notes"
+      ],
+      "transition_conditions": {
+        "factual_publication": [
+          "non-empty decision_id",
+          "checksum pin matches every released fact",
+          "redistribution_approved is true",
+          "normalized_values_approved is true"
+        ],
+        "assessment_or_scoring": [
+          "all factual-publication conditions",
+          "scoring_approved is true"
+        ],
+        "note": "These are gate conditions, not approvals. The independent rights reviewer may deny or narrow any use."
+      },
+      "accepted_decision_basis": [
+        "written interpretation or clarification covering normalized fact extraction",
+        "document-specific rights review",
+        "explicitly licensed official data interface"
+      ],
+      "prohibited_basis": [
+        "inference from public availability",
+        "acceptance of click-through terms by an agent",
+        "a metadata-only source-registry entry",
+        "a batch scientific attestation without a rights decision"
+      ],
+      "routing_note": null
+    },
+    {
+      "source_registry_id": "unfccc-nir-crt-2026-cycle",
+      "purpose": "Official Party inventory documents and common reporting tables",
+      "required_for": [
+        "official_inventory_facts",
+        "delivery",
+        "country_assessment"
+      ],
+      "mandatory_if_used": true,
+      "current_registry_state": {
+        "approval_state": "pending",
+        "licence_status": "uncertain",
+        "licence_identifier": "UNFCCC-terms-and-party-document-rights",
+        "redistribution_status": "metadata_only",
+        "source_files_allowed": false,
+        "normalized_values_allowed": false,
+        "metadata_and_links_allowed": true,
+        "artifact_checksum_sha256": null
+      },
+      "ct40_decision_state": "pending_metadata_only",
+      "registry_change_required_before_normalized_use": true,
+      "registry_transition_fields": [
+        "licence.status",
+        "licence.evidence_url",
+        "licence.summary",
+        "licence.restrictions",
+        "redistribution.status",
+        "redistribution.source_files",
+        "redistribution.normalized_values",
+        "redistribution.metadata_and_links",
+        "approval.state",
+        "approval.decision",
+        "approval.required_action",
+        "storage.raw"
+      ],
+      "ct40_candidate_decision_path": "ct40_candidate.sources[source_id=unfccc-nir-crt-2026-cycle].licence",
+      "decision_must_not_be_inferred": true,
+      "required_decision_record_fields": [
+        "decision_id",
+        "source_registry_id",
+        "reviewed_source_version",
+        "reviewed_source_checksum_sha256_or_per_document_checksums",
+        "licence_identifier",
+        "terms_url",
+        "licence_evidence_url_or_written_clarification_reference",
+        "redistribution_approved",
+        "scoring_approved",
+        "source_files_approved",
+        "normalized_values_approved",
+        "attribution_template",
+        "restrictions",
+        "decision_by",
+        "decision_at",
+        "decision_notes"
+      ],
+      "transition_conditions": {
+        "factual_publication": [
+          "non-empty decision_id",
+          "checksum pin matches every released fact",
+          "redistribution_approved is true",
+          "normalized_values_approved is true"
+        ],
+        "assessment_or_scoring": [
+          "all factual-publication conditions",
+          "scoring_approved is true"
+        ],
+        "note": "These are gate conditions, not approvals. The independent rights reviewer may deny or narrow any use."
+      },
+      "accepted_decision_basis": [
+        "written interpretation covering normalized inventory facts",
+        "document-specific rights review",
+        "explicitly licensed official data interface"
+      ],
+      "prohibited_basis": [
+        "inference from public availability",
+        "acceptance of click-through terms by an agent",
+        "a metadata-only source-registry entry",
+        "a batch scientific attestation without a rights decision"
+      ],
+      "routing_note": null
+    },
+    {
+      "source_registry_id": "unfccc-btr-continuous-2026-07-15",
+      "purpose": "BTR progress, policy, finance, and any explicitly routed CTF inventory facts",
+      "required_for": [
+        "official_progress",
+        "policy_projection",
+        "climate_finance",
+        "official_inventory_only_if_registry_domain_is_corrected"
+      ],
+      "mandatory_if_used": true,
+      "current_registry_state": {
+        "approval_state": "pending",
+        "licence_status": "uncertain",
+        "licence_identifier": "UNFCCC-terms-and-party-document-rights",
+        "redistribution_status": "metadata_only",
+        "source_files_allowed": false,
+        "normalized_values_allowed": false,
+        "metadata_and_links_allowed": true,
+        "artifact_checksum_sha256": null
+      },
+      "ct40_decision_state": "pending_metadata_only",
+      "registry_change_required_before_normalized_use": true,
+      "registry_transition_fields": [
+        "licence.status",
+        "licence.evidence_url",
+        "licence.summary",
+        "licence.restrictions",
+        "redistribution.status",
+        "redistribution.source_files",
+        "redistribution.normalized_values",
+        "redistribution.metadata_and_links",
+        "approval.state",
+        "approval.decision",
+        "approval.required_action",
+        "storage.raw"
+      ],
+      "ct40_candidate_decision_path": "ct40_candidate.sources[source_id=unfccc-btr-continuous-2026-07-15].licence",
+      "decision_must_not_be_inferred": true,
+      "required_decision_record_fields": [
+        "decision_id",
+        "source_registry_id",
+        "reviewed_source_version",
+        "reviewed_source_checksum_sha256_or_per_document_checksums",
+        "licence_identifier",
+        "terms_url",
+        "licence_evidence_url_or_written_clarification_reference",
+        "redistribution_approved",
+        "scoring_approved",
+        "source_files_approved",
+        "normalized_values_approved",
+        "attribution_template",
+        "restrictions",
+        "decision_by",
+        "decision_at",
+        "decision_notes"
+      ],
+      "transition_conditions": {
+        "factual_publication": [
+          "non-empty decision_id",
+          "checksum pin matches every released fact",
+          "redistribution_approved is true",
+          "normalized_values_approved is true"
+        ],
+        "assessment_or_scoring": [
+          "all factual-publication conditions",
+          "scoring_approved is true"
+        ],
+        "note": "These are gate conditions, not approvals. The independent rights reviewer may deny or narrow any use."
+      },
+      "accepted_decision_basis": [
+        "written interpretation covering normalized factual extraction",
+        "document-specific rights review",
+        "explicitly licensed official data interface"
+      ],
+      "prohibited_basis": [
+        "inference from public availability",
+        "acceptance of click-through terms by an agent",
+        "a metadata-only source-registry entry",
+        "a batch scientific attestation without a rights decision"
+      ],
+      "routing_note": "CT-14 routes BTR to official_inventory, but this registry entry does not declare the official_inventory domain. Correct the registry domain or do not use BTR as an inventory source."
+    },
+    {
+      "source_registry_id": "unfccc-ter-continuous-2026-07-15",
+      "purpose": "Technical expert review documents and reviewed findings",
+      "required_for": [
+        "conflict_resolution_or_review_findings_if_used"
+      ],
+      "mandatory_if_used": true,
+      "current_registry_state": {
+        "approval_state": "pending",
+        "licence_status": "confirmed",
+        "licence_identifier": "UNFCCC-official-document-public-domain",
+        "redistribution_status": "metadata_only",
+        "source_files_allowed": true,
+        "normalized_values_allowed": false,
+        "metadata_and_links_allowed": true,
+        "artifact_checksum_sha256": null
+      },
+      "ct40_decision_state": "pending_metadata_only",
+      "registry_change_required_before_normalized_use": true,
+      "registry_transition_fields": [
+        "licence.status",
+        "licence.evidence_url",
+        "licence.summary",
+        "licence.restrictions",
+        "redistribution.status",
+        "redistribution.source_files",
+        "redistribution.normalized_values",
+        "redistribution.metadata_and_links",
+        "approval.state",
+        "approval.decision",
+        "approval.required_action",
+        "storage.raw"
+      ],
+      "ct40_candidate_decision_path": "ct40_candidate.sources[source_id=unfccc-ter-continuous-2026-07-15].licence",
+      "decision_must_not_be_inferred": true,
+      "required_decision_record_fields": [
+        "decision_id",
+        "source_registry_id",
+        "reviewed_source_version",
+        "reviewed_source_checksum_sha256_or_per_document_checksums",
+        "licence_identifier",
+        "terms_url",
+        "licence_evidence_url_or_written_clarification_reference",
+        "redistribution_approved",
+        "scoring_approved",
+        "source_files_approved",
+        "normalized_values_approved",
+        "attribution_template",
+        "restrictions",
+        "decision_by",
+        "decision_at",
+        "decision_notes"
+      ],
+      "transition_conditions": {
+        "factual_publication": [
+          "non-empty decision_id",
+          "checksum pin matches every released fact",
+          "redistribution_approved is true",
+          "normalized_values_approved is true"
+        ],
+        "assessment_or_scoring": [
+          "all factual-publication conditions",
+          "scoring_approved is true"
+        ],
+        "note": "These are gate conditions, not approvals. The independent rights reviewer may deny or narrow any use."
+      },
+      "accepted_decision_basis": [
+        "unchanged-document public-domain basis for source-file archiving",
+        "separate written decision for normalized findings"
+      ],
+      "prohibited_basis": [
+        "inference from public availability",
+        "acceptance of click-through terms by an agent",
+        "a metadata-only source-registry entry",
+        "a batch scientific attestation without a rights decision"
+      ],
+      "routing_note": "TER can corroborate or qualify an inventory but is not a substitute for the Party submission that supplies inventory values."
+    }
+  ],
+  "known_ndc_artifact_work": [
+    {
+      "source_document_id": "unfccc-ndc-chn-2035-2025-11-03",
+      "country_id": "iso3166-1:CHN",
+      "document_type": "ndc",
+      "registry_status": "active",
+      "submission_date": "2025-11-03",
+      "metadata_url": "https://unfccc.int/documents/497393",
+      "direct_url": "https://unfccc.int/sites/default/files/2025-11/2035%E5%B9%B4%E4%B8%AD%E5%9B%BD%E5%9B%BD%E5%AE%B6%E8%87%AA%E4%B8%BB%E8%B4%A1%E7%8C%AE%E6%8A%A5%E5%91%8A.pdf",
+      "current_acquisition_state": "source_unavailable",
+      "current_checksum_sha256": null,
+      "checksum_required": true,
+      "required_next_state": "exact_artifact_acquired_and_independently_verified_or_explicit_fail_closed_outcome",
+      "normalized_extraction_allowed_now": false
+    },
+    {
+      "source_document_id": "unfccc-ndc-ind-2031-2035-2026-04-24",
+      "country_id": "iso3166-1:IND",
+      "document_type": "ndc",
+      "registry_status": "active",
+      "submission_date": "2026-04-24",
+      "metadata_url": "https://unfccc.int/node/656817",
+      "direct_url": "https://unfccc.int/sites/default/files/2026-04/INDIA%20NDC%202031-35.pdf",
+      "current_acquisition_state": "source_unavailable",
+      "current_checksum_sha256": null,
+      "checksum_required": true,
+      "required_next_state": "exact_artifact_acquired_and_independently_verified_or_explicit_fail_closed_outcome",
+      "normalized_extraction_allowed_now": false
+    },
+    {
+      "source_document_id": "unfccc-ndc-idn-second-2025-10-27",
+      "country_id": "iso3166-1:IDN",
+      "document_type": "ndc",
+      "registry_status": "active",
+      "submission_date": "2025-10-27",
+      "metadata_url": "https://unfccc.int/documents/615082",
+      "direct_url": "https://unfccc.int/sites/default/files/2025-10/Indonesia_Second%20NDC_2025.10.24.pdf",
+      "current_acquisition_state": "source_unavailable",
+      "current_checksum_sha256": null,
+      "checksum_required": true,
+      "required_next_state": "exact_artifact_acquired_and_independently_verified_or_explicit_fail_closed_outcome",
+      "normalized_extraction_allowed_now": false
+    },
+    {
+      "source_document_id": "unfccc-ndc-idn-enhanced-2022-09-23",
+      "country_id": "iso3166-1:IDN",
+      "document_type": "ndc",
+      "registry_status": "active",
+      "submission_date": "2022-09-23",
+      "metadata_url": "https://unfccc.int/NDCREG?field_document_ca_target_id=176",
+      "direct_url": "https://unfccc.int/sites/default/files/NDC/2022-09/ENDC%20Indonesia.pdf",
+      "current_acquisition_state": "source_unavailable",
+      "current_checksum_sha256": null,
+      "checksum_required": true,
+      "required_next_state": "exact_artifact_acquired_and_independently_verified_or_explicit_fail_closed_outcome",
+      "normalized_extraction_allowed_now": false
+    },
+    {
+      "source_document_id": "unfccc-indc-irn-2015-11-21",
+      "country_id": "iso3166-1:IRN",
+      "document_type": "indc",
+      "registry_status": "not_applicable",
+      "submission_date": null,
+      "metadata_url": "https://www4.unfccc.int/sites/submissions/INDC/Published%20Documents/Iran/1/",
+      "direct_url": "https://www4.unfccc.int/sites/submissions/INDC/Published%20Documents/Iran/1/INDC%20Iran%20Final%20Text.pdf",
+      "current_acquisition_state": "source_unavailable",
+      "current_checksum_sha256": null,
+      "checksum_required": true,
+      "required_next_state": "exact_artifact_acquired_and_independently_verified_or_explicit_fail_closed_outcome",
+      "normalized_extraction_allowed_now": false
+    }
+  ],
+  "official_inventory_artifact_work": [
+    {
+      "country_id": "iso3166-1:CHN",
+      "iso_alpha3": "CHN",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:USA",
+      "iso_alpha3": "USA",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:IND",
+      "iso_alpha3": "IND",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:RUS",
+      "iso_alpha3": "RUS",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:IDN",
+      "iso_alpha3": "IDN",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:BRA",
+      "iso_alpha3": "BRA",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:JPN",
+      "iso_alpha3": "JPN",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:IRN",
+      "iso_alpha3": "IRN",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:SAU",
+      "iso_alpha3": "SAU",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:CAN",
+      "iso_alpha3": "CAN",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:MEX",
+      "iso_alpha3": "MEX",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:KOR",
+      "iso_alpha3": "KOR",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:DEU",
+      "iso_alpha3": "DEU",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:AUS",
+      "iso_alpha3": "AUS",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:TUR",
+      "iso_alpha3": "TUR",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:ZAF",
+      "iso_alpha3": "ZAF",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:VNM",
+      "iso_alpha3": "VNM",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:PAK",
+      "iso_alpha3": "PAK",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:THA",
+      "iso_alpha3": "THA",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    },
+    {
+      "country_id": "iso3166-1:NGA",
+      "iso_alpha3": "NGA",
+      "acceptable_source_registry_ids": [
+        "unfccc-btr-continuous-2026-07-15",
+        "unfccc-nir-crt-2026-cycle",
+        "unfccc-ter-continuous-2026-07-15"
+      ],
+      "known_source_document_ids": [],
+      "known_checksums_sha256": [],
+      "current_status": "source_missing",
+      "checksum_required_for_every_acquired_attachment": true
+    }
+  ],
+  "artifact_contracts": {
+    "document_identity_manifest": {
+      "required_fields": [
+        "source_document_id",
+        "country_id",
+        "document_role",
+        "source_registry_id",
+        "publisher",
+        "title",
+        "document_type",
+        "language",
+        "registry_status",
+        "submission_date",
+        "submission_version",
+        "registry_page_url",
+        "metadata_url",
+        "direct_url",
+        "retrieved_at",
+        "mime_type",
+        "byte_length",
+        "checksum_sha256",
+        "rights_notice_locator",
+        "licence_decision_id",
+        "raw_storage_state",
+        "latest_active_status_verified_at",
+        "supersedes",
+        "superseded_by",
+        "acquisition_outcome"
+      ],
+      "acquisition_outcomes": [
+        "exact_artifact_acquired",
+        "source_unavailable",
+        "clickthrough_blocked",
+        "rights_blocked"
+      ],
+      "checksum_rule": "Every acquired file and attachment must have a SHA-256 over exact bytes; a locator or search index is not a checksum substitute."
+    },
+    "official_inventory_package": {
+      "required_artifact_roles": [
+        "official Party submission metadata",
+        "national inventory document or BTR inventory chapter",
+        "CRT/CTF/common reporting tables used for values",
+        "methodology and recalculation annexes used for interpretation",
+        "TER only when used as corroboration or conflict evidence"
+      ],
+      "required_fact_fields": [
+        "country_id",
+        "metric",
+        "value",
+        "unit",
+        "period",
+        "evidence_plane",
+        "accounting_frame",
+        "gases",
+        "sectors",
+        "geography",
+        "lulucf",
+        "gwp_convention",
+        "source_id",
+        "publisher",
+        "title",
+        "version",
+        "url",
+        "locator",
+        "publication_date",
+        "retrieved_at",
+        "checksum_sha256",
+        "licence_id",
+        "attribution",
+        "evidence_state",
+        "uncertainty",
+        "review"
+      ],
+      "selection_rule": "Use the latest official Party submission appropriate to the reporting obligation and retain older vintages needed to explain recalculations."
+    },
+    "ndc_and_target_package": {
+      "required_artifact_roles": [
+        "official registry metadata",
+        "latest active Party NDC document",
+        "official ICTU or methodology annexes",
+        "superseded submissions needed for status history"
+      ],
+      "common_target_fields": [
+        "target_id",
+        "country_id",
+        "target_type",
+        "condition",
+        "status",
+        "target_year",
+        "target_period",
+        "reduction_pct",
+        "target_value",
+        "statement",
+        "scope.accounting_frame",
+        "scope.gases",
+        "scope.sectors",
+        "scope.geography",
+        "scope.lulucf",
+        "scope.gwp_convention",
+        "scope.article6_treatment",
+        "source_fact_ids",
+        "review"
+      ],
+      "conditional_target_fields": {
+        "base_year": [
+          "reference.year",
+          "reference.value",
+          "reference.fact_id"
+        ],
+        "bau": [
+          "bau.scenario_id",
+          "bau.vintage",
+          "bau.target_year_value",
+          "bau.source_fact_id"
+        ],
+        "intensity": [
+          "intensity.denominator_metric",
+          "intensity.denominator_unit",
+          "intensity.target_year_denominator_fact_id"
+        ],
+        "trajectory_or_peaking": [
+          "trajectory.pathway_fact_ids",
+          "peak_year"
+        ],
+        "net_zero": [
+          "net_zero.residual_emissions",
+          "net_zero.removals_treatment",
+          "net_zero.offsets_treatment",
+          "net_zero.interim_target_ids"
+        ]
+      },
+      "absence_rule": "No active target found is a reviewed result requiring current Party status and registry coverage; it must never be inferred from a failed download."
+    }
+  },
+  "field_review_contracts": {
+    "current_runtime_fact": {
+      "review_records_required": 2060,
+      "review_records_present": 0,
+      "review_record_fields": [
+        "fact_id",
+        "status",
+        "extractor_id",
+        "reviewer_id",
+        "reviewed_at",
+        "source_checksum_sha256",
+        "methodology_version",
+        "field_reviews"
+      ],
+      "required_field_paths": [
+        "metric",
+        "period",
+        "scope",
+        "source",
+        "evidence"
+      ],
+      "additional_high_impact_field_path": "derivation",
+      "independence_rule": "extractor_id must differ from reviewer_id",
+      "checksum_rule": "review.source_checksum_sha256 must equal the fact and source-decision checksum",
+      "derivation_rule": "A derivation review must include the output fact_id and every input_fact_id."
+    },
+    "target_and_inventory_fact": {
+      "required_field_paths": [
+        "metric",
+        "period",
+        "scope",
+        "source",
+        "evidence"
+      ],
+      "target_specific_paths": [
+        "target identity and status",
+        "endpoint",
+        "reference or BAU or intensity basis",
+        "conditionality",
+        "Article 6 treatment",
+        "comparability inputs"
+      ],
+      "review_states": [
+        "reviewed",
+        "rejected",
+        "not_reported",
+        "source_unavailable",
+        "non_comparable"
+      ],
+      "rule": "Null, missing, withheld, and not-applicable values keep explicit evidence states and canonical reason codes."
+    },
+    "profile": {
+      "required_fields": [
+        "profile_id",
+        "input_fact_ids",
+        "methodology_version",
+        "generated_at",
+        "calculation_hash",
+        "review.status",
+        "review.compiler_id",
+        "review.reviewer_id",
+        "review.reviewed_at",
+        "review.methodology_version",
+        "review.input_fact_ids"
+      ],
+      "independence_rule": "compiler_id must differ from reviewer_id",
+      "eligibility_rule": "Every input fact must pass the assessment path, including scoring_approved rights."
+    },
+    "release": {
+      "required_fields": [
+        "status",
+        "builder_id",
+        "reviewer_ids",
+        "reviewed_at"
+      ],
+      "independence_rule": "reviewer_ids must be non-empty, unique, and exclude builder_id"
+    }
+  },
+  "review_roles": [
+    {
+      "role": "document_acquirer",
+      "responsibility": "Record official URLs, immutable identity metadata, exact bytes or fail-closed acquisition outcomes; makes no rights or scientific approval."
+    },
+    {
+      "role": "source_identity_reviewer",
+      "responsibility": "Independently verify publisher, latest/superseded status, document role, attachment completeness, and checksums."
+    },
+    {
+      "role": "licence_and_redistribution_reviewer",
+      "responsibility": "Record the explicit rights decision for source files, normalized values, redistribution, and scoring; may approve, narrow, or deny."
+    },
+    {
+      "role": "fact_extractor",
+      "responsibility": "Create draft observations and targets with locators, evidence states, and no inferred values."
+    },
+    {
+      "role": "field_level_climate_reviewer",
+      "responsibility": "Independently review every required fact field against the pinned source bytes and methodology."
+    },
+    {
+      "role": "comparability_reviewer",
+      "responsibility": "Review target type, reference basis, scope alignment, transformations, and non-comparability reasons."
+    },
+    {
+      "role": "profile_compiler",
+      "responsibility": "Compile candidate delivery/performance/profile outputs only from eligible facts."
+    },
+    {
+      "role": "profile_reviewer",
+      "responsibility": "Independently review inputs, method version, calculation hash, and output boundaries."
+    },
+    {
+      "role": "release_builder",
+      "responsibility": "Assemble a new candidate without modifying denial snapshots."
+    },
+    {
+      "role": "ct40_release_reviewer",
+      "responsibility": "Independently review the assembled release candidate and issue allow or deny; no earlier attestation grants this authority."
+    }
+  ],
+  "required_independence_pairs": [
+    [
+      "document_acquirer",
+      "source_identity_reviewer"
+    ],
+    [
+      "fact_extractor",
+      "field_level_climate_reviewer"
+    ],
+    [
+      "profile_compiler",
+      "profile_reviewer"
+    ],
+    [
+      "release_builder",
+      "ct40_release_reviewer"
+    ]
+  ],
+  "country_work_items": [
+    {
+      "priority": 1,
+      "country_id": "iso3166-1:CHN",
+      "iso_alpha3": "CHN",
+      "name": "China",
+      "current_evidence_status": "metadata_only_in_review",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "metadata_only_in_review",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [
+            "unfccc-ndc-chn-2035-2025-11-03"
+          ],
+          "current_reason_codes": [
+            "independent_review_required",
+            "licence_not_approved",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "field_presence_in_review",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [
+            "unfccc-ndc-chn-2035-2025-11-03"
+          ],
+          "current_reason_codes": [
+            "independent_review_required",
+            "licence_not_approved",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "present_but_withheld",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [],
+          "withheld_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "reason_codes": [
+            "licence_not_approved",
+            "value_withheld"
+          ]
+        },
+        "base_year": {
+          "status": "incomplete",
+          "required_fields": [
+            "reference_value",
+            "reference_year"
+          ],
+          "missing_fields": [
+            "reference_value",
+            "reference_year"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "peaking_year_missing",
+            "reference_value_missing",
+            "reference_year_missing"
+          ]
+        },
+        "coverage": {
+          "status": "present_but_withheld",
+          "required_fields": [
+            "geography",
+            "sectors"
+          ],
+          "missing_fields": [],
+          "withheld_fields": [
+            "geography",
+            "sectors"
+          ],
+          "reason_codes": [
+            "licence_not_approved",
+            "value_withheld"
+          ]
+        },
+        "conditionality": {
+          "status": "incomplete",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "conditionality_missing"
+          ]
+        },
+        "methodology": {
+          "status": "incomplete",
+          "required_fields": [
+            "article6_treatment",
+            "gwp_convention",
+            "trajectory"
+          ],
+          "missing_fields": [
+            "article6_treatment",
+            "gwp_convention",
+            "trajectory"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "article6_treatment_missing",
+            "gwp_convention_missing",
+            "source_unavailable",
+            "trajectory_missing"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 2,
+      "country_id": "iso3166-1:USA",
+      "iso_alpha3": "USA",
+      "name": "United States",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 3,
+      "country_id": "iso3166-1:IND",
+      "iso_alpha3": "IND",
+      "name": "India",
+      "current_evidence_status": "metadata_only_in_review",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "metadata_only_in_review",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [
+            "unfccc-ndc-ind-2031-2035-2026-04-24"
+          ],
+          "current_reason_codes": [
+            "independent_review_required",
+            "licence_not_approved",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "field_presence_in_review",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [
+            "unfccc-ndc-ind-2031-2035-2026-04-24"
+          ],
+          "current_reason_codes": [
+            "independent_review_required",
+            "licence_not_approved",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "incomplete",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases"
+          ],
+          "withheld_fields": [
+            "lulucf"
+          ],
+          "reason_codes": [
+            "gas_basket_missing",
+            "licence_not_approved",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        },
+        "base_year": {
+          "status": "present_but_withheld",
+          "required_fields": [
+            "reference_value",
+            "reference_year"
+          ],
+          "missing_fields": [],
+          "withheld_fields": [
+            "reference_value",
+            "reference_year"
+          ],
+          "reason_codes": [
+            "licence_not_approved",
+            "value_withheld"
+          ]
+        },
+        "coverage": {
+          "status": "present_but_withheld",
+          "required_fields": [
+            "geography",
+            "sectors"
+          ],
+          "missing_fields": [],
+          "withheld_fields": [
+            "geography",
+            "sectors"
+          ],
+          "reason_codes": [
+            "licence_not_approved",
+            "value_withheld"
+          ]
+        },
+        "conditionality": {
+          "status": "incomplete",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "conditionality_missing"
+          ]
+        },
+        "methodology": {
+          "status": "incomplete",
+          "required_fields": [
+            "article6_treatment",
+            "gwp_convention",
+            "intensity_denominator",
+            "intensity_denominator_projection"
+          ],
+          "missing_fields": [
+            "article6_treatment",
+            "intensity_denominator_projection"
+          ],
+          "withheld_fields": [
+            "gwp_convention",
+            "intensity_denominator"
+          ],
+          "reason_codes": [
+            "article6_treatment_missing",
+            "intensity_denominator_projection_missing",
+            "licence_not_approved",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 4,
+      "country_id": "iso3166-1:RUS",
+      "iso_alpha3": "RUS",
+      "name": "Russian Federation",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 5,
+      "country_id": "iso3166-1:IDN",
+      "iso_alpha3": "IDN",
+      "name": "Indonesia",
+      "current_evidence_status": "metadata_only_in_review",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "metadata_only_in_review",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [
+            "unfccc-ndc-idn-enhanced-2022-09-23",
+            "unfccc-ndc-idn-second-2025-10-27"
+          ],
+          "current_reason_codes": [
+            "independent_review_required",
+            "licence_not_approved",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "field_presence_in_review",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [
+            "unfccc-ndc-idn-enhanced-2022-09-23",
+            "unfccc-ndc-idn-second-2025-10-27"
+          ],
+          "current_reason_codes": [
+            "independent_review_required",
+            "licence_not_approved",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "present_but_withheld",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [],
+          "withheld_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "reason_codes": [
+            "licence_not_approved",
+            "value_withheld"
+          ]
+        },
+        "base_year": {
+          "status": "incomplete",
+          "required_fields": [
+            "bau_target_value",
+            "bau_vintage",
+            "reference_value",
+            "reference_year"
+          ],
+          "missing_fields": [
+            "bau_vintage"
+          ],
+          "withheld_fields": [
+            "bau_target_value",
+            "reference_value",
+            "reference_year"
+          ],
+          "reason_codes": [
+            "bau_vintage_missing",
+            "licence_not_approved",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        },
+        "coverage": {
+          "status": "present_but_withheld",
+          "required_fields": [
+            "geography",
+            "sectors"
+          ],
+          "missing_fields": [],
+          "withheld_fields": [
+            "geography",
+            "sectors"
+          ],
+          "reason_codes": [
+            "licence_not_approved",
+            "value_withheld"
+          ]
+        },
+        "conditionality": {
+          "status": "present_but_withheld",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [],
+          "withheld_fields": [
+            "condition"
+          ],
+          "reason_codes": [
+            "licence_not_approved",
+            "value_withheld"
+          ]
+        },
+        "methodology": {
+          "status": "present_but_withheld",
+          "required_fields": [
+            "article6_treatment",
+            "bau_scenario",
+            "gwp_convention"
+          ],
+          "missing_fields": [],
+          "withheld_fields": [
+            "article6_treatment",
+            "bau_scenario",
+            "gwp_convention"
+          ],
+          "reason_codes": [
+            "licence_not_approved",
+            "value_withheld"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 6,
+      "country_id": "iso3166-1:BRA",
+      "iso_alpha3": "BRA",
+      "name": "Brazil",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 7,
+      "country_id": "iso3166-1:JPN",
+      "iso_alpha3": "JPN",
+      "name": "Japan",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 8,
+      "country_id": "iso3166-1:IRN",
+      "iso_alpha3": "IRN",
+      "name": "Iran",
+      "current_evidence_status": "metadata_only_in_review",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "legacy_indc_only",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "independent_review_required",
+            "party_status_not_reviewed",
+            "source_unavailable",
+            "target_not_found"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "field_presence_in_review",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [
+            "unfccc-indc-irn-2015-11-21"
+          ],
+          "current_reason_codes": [
+            "independent_review_required",
+            "licence_not_approved",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "incomplete",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "lulucf"
+          ],
+          "withheld_fields": [
+            "gases"
+          ],
+          "reason_codes": [
+            "licence_not_approved",
+            "lulucf_treatment_missing",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        },
+        "base_year": {
+          "status": "incomplete",
+          "required_fields": [
+            "bau_target_value",
+            "bau_vintage"
+          ],
+          "missing_fields": [
+            "bau_target_value",
+            "bau_vintage"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "bau_target_value_missing",
+            "bau_vintage_missing"
+          ]
+        },
+        "coverage": {
+          "status": "incomplete",
+          "required_fields": [
+            "geography",
+            "sectors"
+          ],
+          "missing_fields": [
+            "sectors"
+          ],
+          "withheld_fields": [
+            "geography"
+          ],
+          "reason_codes": [
+            "licence_not_approved",
+            "sector_coverage_missing",
+            "source_unavailable",
+            "value_withheld"
+          ]
+        },
+        "conditionality": {
+          "status": "present_but_withheld",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [],
+          "withheld_fields": [
+            "condition"
+          ],
+          "reason_codes": [
+            "licence_not_approved",
+            "value_withheld"
+          ]
+        },
+        "methodology": {
+          "status": "incomplete",
+          "required_fields": [
+            "article6_treatment",
+            "bau_scenario",
+            "gwp_convention"
+          ],
+          "missing_fields": [
+            "gwp_convention"
+          ],
+          "withheld_fields": [
+            "bau_scenario"
+          ],
+          "reason_codes": [
+            "gwp_convention_missing",
+            "licence_not_approved",
+            "value_withheld"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference",
+        "do not promote the legacy INDC to an active NDC",
+        "independently review Party status and active-target absence"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 9,
+      "country_id": "iso3166-1:SAU",
+      "iso_alpha3": "SAU",
+      "name": "Saudi Arabia",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 10,
+      "country_id": "iso3166-1:CAN",
+      "iso_alpha3": "CAN",
+      "name": "Canada",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 11,
+      "country_id": "iso3166-1:MEX",
+      "iso_alpha3": "MEX",
+      "name": "Mexico",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 12,
+      "country_id": "iso3166-1:KOR",
+      "iso_alpha3": "KOR",
+      "name": "South Korea",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 13,
+      "country_id": "iso3166-1:DEU",
+      "iso_alpha3": "DEU",
+      "name": "Germany",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference",
+        "review EU joint-NDC applicability, membership, and any Germany-specific allocation separately"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 14,
+      "country_id": "iso3166-1:AUS",
+      "iso_alpha3": "AUS",
+      "name": "Australia",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 15,
+      "country_id": "iso3166-1:TUR",
+      "iso_alpha3": "TUR",
+      "name": "Türkiye",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 16,
+      "country_id": "iso3166-1:ZAF",
+      "iso_alpha3": "ZAF",
+      "name": "South Africa",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 17,
+      "country_id": "iso3166-1:VNM",
+      "iso_alpha3": "VNM",
+      "name": "Vietnam",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 18,
+      "country_id": "iso3166-1:PAK",
+      "iso_alpha3": "PAK",
+      "name": "Pakistan",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 19,
+      "country_id": "iso3166-1:THA",
+      "iso_alpha3": "THA",
+      "name": "Thailand",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    },
+    {
+      "priority": 20,
+      "country_id": "iso3166-1:NGA",
+      "iso_alpha3": "NGA",
+      "name": "Nigeria",
+      "current_evidence_status": "primary_source_audit_not_started",
+      "required_document_roles": [
+        {
+          "role": "official_inventory",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-ter-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "active_ndc",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        {
+          "role": "target_methodology",
+          "current_status": "source_missing",
+          "source_registry_ids": [
+            "unfccc-ndc-registry-continuous-2026-07-15"
+          ],
+          "known_source_document_ids": [],
+          "current_reason_codes": [
+            "licence_not_approved",
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      ],
+      "field_gap_groups": {
+        "scope": {
+          "status": "not_started",
+          "required_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "missing_fields": [
+            "gases",
+            "lulucf"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "base_year": {
+          "status": "not_started",
+          "required_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "missing_fields": [
+            "reference_year",
+            "reference_value"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "coverage": {
+          "status": "not_started",
+          "required_fields": [
+            "sectors",
+            "geography"
+          ],
+          "missing_fields": [
+            "sectors",
+            "geography"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "conditionality": {
+          "status": "not_started",
+          "required_fields": [
+            "condition"
+          ],
+          "missing_fields": [
+            "condition"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        },
+        "methodology": {
+          "status": "not_started",
+          "required_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "missing_fields": [
+            "gwp_convention",
+            "article6_treatment"
+          ],
+          "withheld_fields": [],
+          "reason_codes": [
+            "source_missing",
+            "source_not_reviewed"
+          ]
+        }
+      },
+      "status_and_identity_fields_required": [
+        "party_status",
+        "registry_status",
+        "submission_version",
+        "submission_date",
+        "latest_active_or_reviewed_absence_determination",
+        "supersedes",
+        "superseded_by"
+      ],
+      "country_specific_review_requirements": [
+        "verify current Party status from an official treaty or UNFCCC record",
+        "verify the latest active submission and every superseded version",
+        "record source-unavailable or not-reported states without inference"
+      ],
+      "current_release_eligible": false
+    }
+  ],
+  "ordered_worklist": [
+    {
+      "order": 1,
+      "work": "Preserve CT-14 and the CT-40 DENY artifacts as immutable audit evidence.",
+      "status": "required"
+    },
+    {
+      "order": 2,
+      "work": "Complete the explicit PRIMAP CT-40 rights decision for the pinned v2.6.1 checksum; do not infer it from CT-01 approval.",
+      "status": "not_started"
+    },
+    {
+      "order": 3,
+      "work": "Resolve UNFCCC source-family normalized-extraction and scoring rights with counsel, written clarification, or an explicitly licensed official interface.",
+      "status": "not_started"
+    },
+    {
+      "order": 4,
+      "work": "Resolve the BTR official-inventory routing mismatch before using BTR values as inventory facts.",
+      "status": "not_started"
+    },
+    {
+      "order": 5,
+      "work": "Acquire or fail-close exact official inventory and NDC artifact packages for all 20 countries; hash every acquired attachment.",
+      "status": "not_started"
+    },
+    {
+      "order": 6,
+      "work": "Independently review document identity, current Party/submission status, rights exceptions, and checksums.",
+      "status": "not_started"
+    },
+    {
+      "order": 7,
+      "work": "Produce and independently review 2,060 current-runtime fact reviews plus any new official inventory and target fact reviews.",
+      "status": "not_started"
+    },
+    {
+      "order": 8,
+      "work": "Compile and review target comparability and country profiles only from facts eligible for assessment/scoring.",
+      "status": "not_started"
+    },
+    {
+      "order": 9,
+      "work": "Build a new reviewed release candidate and run CT-40; retain DENY if any condition remains unmet.",
+      "status": "not_started"
+    },
+    {
+      "order": 10,
+      "work": "Only after an authentic allow: independently verify runtime manifest, release diff, deployment checks, and executable rollback proof.",
+      "status": "blocked_on_authentic_allow"
+    }
+  ],
+  "prohibited_actions": [
+    "accept click-through terms",
+    "download gated data through circumvention",
+    "infer reuse permission from public access",
+    "treat CT-42 data/UI attestations as CT-40 fact, rights, profile, or release review",
+    "promote an INDC to active NDC status",
+    "fill missing country fields from legacy pledge data",
+    "create a production runtime manifest or allow manifest from this package"
+  ],
+  "calculation_hash": "8a34107b4c74f36b9bebcac6cf95b9034bb546db2811a6dfe271a35bd09f547d"
+}
