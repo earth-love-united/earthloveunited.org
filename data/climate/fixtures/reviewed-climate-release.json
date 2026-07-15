@@ -52,6 +52,7 @@
     { "id": "rollback-control-pin-drift", "document": "rollbackProof", "path": "rollback.controls.0.release_sha256", "value": "7777777777777777777777777777777777777777777777777777777777777777", "expected_code": "rollback_release_pin_mismatch" },
     { "id": "rollback-unlisted-extra-file", "filesystem": "patch_creates_extra_file", "expected_code": "rollback_patch_file_set_mismatch" },
     { "id": "rollback-in-tree-patch-target", "filesystem": "patch_edits_rehearsal_patch", "expected_code": "rollback_patch_file_set_mismatch" },
+    { "id": "rollback-no-effect", "filesystem": "patch_no_effect", "expected_codes": ["rollback_control_digest_unchanged", "rollback_control_bytes_unchanged", "rollback_no_effect", "rollback_patch_noop_hunk"] },
     { "id": "partial-release-package", "filesystem": "remove_allow_manifest", "expected_code": "release_artifact_missing" },
     { "id": "release-schema-symlink", "filesystem": "symlink_release_schema", "expected_code": "releaseInput_schema_unavailable" },
     { "id": "runtime-manifest-symlink", "filesystem": "symlink_runtime_manifest", "expected_code": "release_artifact_not_regular" }

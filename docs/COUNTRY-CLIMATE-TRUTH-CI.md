@@ -150,7 +150,9 @@ pins, schema, calculation hash, patch bytes, current control-file hashes, and
 baseline Git bytes are checked before the patch is streamed to `git apply` for
 a temporary tree; the patch artifact itself never exists inside that tree.
 Every undeclared target, restored-hash mismatch, and JavaScript syntax failure
-must fail. Mere existence
+must fail. The baseline must precede the reviewed head, every control must
+restore byte- and digest-distinct content, and identical remove/add hunks are
+rejected as non-executable no-ops. Mere existence
 of `reviewed-rollback-proof.json` never satisfies release readiness. The same
 shared package validator runs from strict truth CI and production readiness;
 the signed release-authority reviewed-commit binding covers the validator,
@@ -193,12 +195,13 @@ regressions, ambiguous missing-target treatment, composite scores, unsourced
 rankings, denied releases, invalid/self-reviewed diffs, missing licence/review/
 lineage, empty facts/profile data, canonical diff hashes, canonical-enum
 divergence, and generated drift. The reviewed production-package checker adds
-53 adversarial cases for malformed/empty facts and profiles, synthetic ALLOWs,
+54 adversarial cases for malformed/empty facts and profiles, synthetic ALLOWs,
 invented source rights, placeholder reviewers, shape-only calculation hashes,
 pin drift, partial/symlinked artifacts, published-record/envelope substitution,
 reordering, duplication and omission, nonexistent/traversing/symlinked/
 duplicated/cross-entity/unpinned top-20 evidence, and executable rollback
-tampering, including an attempted in-tree patch-artifact target.
+tampering, including an attempted in-tree patch-artifact target and a pinned
+no-effect rollback.
 
 Run:
 

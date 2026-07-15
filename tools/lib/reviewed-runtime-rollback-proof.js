@@ -86,6 +86,37 @@ function rehearsalFiles(root, current = root, found = []) {
   return found.sort();
 }
 
+function inspectPatchHunks(patchBytes) {
+  const lines = patchBytes.toString('utf8').split('\n');
+  let inHunk = false;
+  let sawHunk = false;
+  let noOpHunk = false;
+  let removed = [];
+  let added = [];
+  const finish = () => {
+    if (!inHunk) return;
+    if ((removed.length || added.length) && JSON.stringify(removed) === JSON.stringify(added)) noOpHunk = true;
+  };
+  for (const line of lines) {
+    if (line.startsWith('@@')) {
+      finish();
+      inHunk = true;
+      sawHunk = true;
+      removed = [];
+      added = [];
+    } else if (line.startsWith('diff --git ')) {
+      finish();
+      inHunk = false;
+    } else if (inHunk && line.startsWith('-')) {
+      removed.push(line.slice(1));
+    } else if (inHunk && line.startsWith('+')) {
+      added.push(line.slice(1));
+    }
+  }
+  finish();
+  return { sawHunk, noOpHunk };
+}
+
 function validateReviewedRollbackProof(root, proof, options = {}) {
   const errors = [];
   let schema;
@@ -132,9 +163,15 @@ function validateReviewedRollbackProof(root, proof, options = {}) {
   if (!options.baselineReader && /^[a-f0-9]{40}$/.test(baseline || '')) {
     const commit = childProcess.spawnSync('git', ['cat-file', '-e', `${baseline}^{commit}`], { cwd: root, encoding: 'utf8' });
     const ancestor = childProcess.spawnSync('git', ['merge-base', '--is-ancestor', baseline, 'HEAD'], { cwd: root, encoding: 'utf8' });
-    if (commit.status !== 0 || ancestor.status !== 0) add(errors, 'rollback_baseline_commit_invalid', 'Baseline commit is missing or is not an ancestor of HEAD.');
+    const head = childProcess.spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' });
+    if (commit.status !== 0 || ancestor.status !== 0 || head.status !== 0) {
+      add(errors, 'rollback_baseline_commit_invalid', 'Baseline commit is missing or is not an ancestor of HEAD.');
+    } else if (baseline === head.stdout.trim()) {
+      add(errors, 'rollback_baseline_not_prior', 'Rollback baseline must be a commit before the reviewed release head.');
+    }
   }
 
+  let changedControls = 0;
   for (const control of controls) {
     if (!control || !isSafeRelative(control.path) || !regularNonSymlink(root, control.path)) {
       add(errors, 'rollback_control_not_regular', String(control && control.path));
@@ -142,12 +179,19 @@ function validateReviewedRollbackProof(root, proof, options = {}) {
     }
     const current = fs.readFileSync(path.join(root, control.path));
     if (sha256(current) !== control.release_sha256) add(errors, 'rollback_release_pin_mismatch', control.path);
+    if (control.release_sha256 === control.rollback_sha256) {
+      add(errors, 'rollback_control_digest_unchanged', control.path);
+    }
     try {
-      if (sha256(baselineReader(control.path)) !== control.rollback_sha256) add(errors, 'rollback_baseline_pin_mismatch', control.path);
+      const baselineBytes = baselineReader(control.path);
+      if (sha256(baselineBytes) !== control.rollback_sha256) add(errors, 'rollback_baseline_pin_mismatch', control.path);
+      if (Buffer.compare(current, baselineBytes) === 0) add(errors, 'rollback_control_bytes_unchanged', control.path);
+      else if (control.release_sha256 !== control.rollback_sha256) changedControls += 1;
     } catch (error) {
       add(errors, 'rollback_baseline_pin_mismatch', `${control.path}: ${error.message}`);
     }
   }
+  if (changedControls === 0) add(errors, 'rollback_no_effect', 'No declared control restores different baseline bytes.');
 
   const patchRelative = rollback.patch?.path;
   let patchBytes = null;
@@ -161,6 +205,9 @@ function validateReviewedRollbackProof(root, proof, options = {}) {
     else {
       patchBytes = decoded.decoded;
       if (sha256(patchBytes) !== rollback.patch.decoded_sha256) add(errors, 'rollback_patch_decoded_pin_mismatch', 'Decoded patch SHA-256 differs.');
+      const hunks = inspectPatchHunks(patchBytes);
+      if (!hunks.sawHunk) add(errors, 'rollback_patch_hunks_invalid', 'Rollback patch contains no unified-diff hunks.');
+      if (hunks.noOpHunk) add(errors, 'rollback_patch_noop_hunk', 'Rollback patch contains an identical remove/add hunk.');
     }
   }
 

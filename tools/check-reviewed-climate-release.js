@@ -209,7 +209,7 @@ function makeFixture(mutation = null) {
   write(root, PATHS.releaseDiff, documents.releaseDiff);
 
   const releaseBytes = fs.readFileSync(path.join(root, 'js/fixture-runtime.js'));
-  const baselineBytes = Buffer.from("const runtimeState = 'baseline';\n");
+  let baselineBytes = Buffer.from("const runtimeState = 'baseline';\n");
   let patchBytes = Buffer.from([
     'diff --git a/js/fixture-runtime.js b/js/fixture-runtime.js',
     '--- a/js/fixture-runtime.js',
@@ -219,7 +219,18 @@ function makeFixture(mutation = null) {
     "+const runtimeState = 'baseline';",
     '',
   ].join('\n'));
-  if (mutation?.filesystem === 'patch_creates_extra_file') {
+  if (mutation?.filesystem === 'patch_no_effect') {
+    baselineBytes = Buffer.from(releaseBytes);
+    patchBytes = Buffer.from([
+      'diff --git a/js/fixture-runtime.js b/js/fixture-runtime.js',
+      '--- a/js/fixture-runtime.js',
+      '+++ b/js/fixture-runtime.js',
+      '@@ -1 +1 @@',
+      "-const runtimeState = 'release';",
+      "+const runtimeState = 'release';",
+      '',
+    ].join('\n'));
+  } else if (mutation?.filesystem === 'patch_creates_extra_file') {
     patchBytes = Buffer.concat([patchBytes, Buffer.from([
       'diff --git a/js/unreviewed.js b/js/unreviewed.js',
       'new file mode 100644',
@@ -393,8 +404,10 @@ for (const testCase of FIXTURE.cases) {
       allowFixtureIdentities: testCase.id !== 'placeholder-release-reviewer',
     });
     assert.equal(report.pass, false, `${testCase.id}: adversarial package passed`);
-    assert(report.errors.some(item => item.code === testCase.expected_code),
-      `${testCase.id}: missing ${testCase.expected_code}; got ${report.errors.map(item => item.code).join(', ')}`);
+    for (const expectedCode of testCase.expected_codes || [testCase.expected_code]) {
+      assert(report.errors.some(item => item.code === expectedCode),
+        `${testCase.id}: missing ${expectedCode}; got ${report.errors.map(item => item.code).join(', ')}`);
+    }
     rejected += 1;
   } finally { fs.rmSync(fixture.root, { recursive: true, force: true }); }
 }
