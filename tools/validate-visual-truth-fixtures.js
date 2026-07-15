@@ -79,6 +79,11 @@ const CANONICAL_REASON_CODES = new Set([
   'party_status_not_reviewed',
   'territory_status_not_reviewed',
   'geometry_not_reviewed',
+  'region_not_reviewed',
+  'ldc_status_not_reviewed',
+  'lldc_status_not_reviewed',
+  'sids_status_not_reviewed',
+  'assessment_eligibility_not_reviewed',
 ]);
 
 const errors = [];
