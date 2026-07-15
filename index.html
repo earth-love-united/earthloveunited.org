@@ -584,10 +584,9 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <section class="section" id="globe" aria-labelledby="globe-h">
     <div class="sec-kicker">The key instrument</div>
     <h2 id="globe-h">The Living Globe</h2>
-    <p class="sec-lead">The globe remains navigable while its country evidence is rebuilt from reviewed sources. Neutral height and shading preserve provisional fossil CO₂ magnitude context; they do not grade performance. Target, ambition, delivery, finance, and rating claims are withheld during this review.</p>
-    <div class="globe-key" role="list" aria-label="Provisional country evidence legend">
-      <span role="listitem"><i style="background:rgba(111,145,168,0.65)"></i> Provisional fossil CO₂ magnitude · legacy, unverified</span>
-      <span role="listitem"><i style="background:rgba(120,150,165,0.28)"></i> Country facts being re-sourced</span>
+    <p class="sec-lead">The globe remains navigable while its country evidence is rebuilt from reviewed sources. Neutral, uniform height and shading indicate that climate facts and performance are unavailable. Target, ambition, delivery, finance, rating, and emissions claims are withheld during this review.</p>
+    <div class="globe-key" role="list" aria-label="Country evidence availability legend">
+      <span role="listitem"><i style="background:rgba(120,150,165,0.28)"></i> Country facts being re-sourced · performance unavailable</span>
     </div>
     <div class="card-grid">
       <div class="card">
@@ -596,7 +595,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       </div>
       <div class="card">
         <div class="card-tag">Country Cards</div>
-        <p>Tap a country to see provisional magnitude context and whether reviewed evidence is available. Legacy targets, ratings, finance totals, and modeled trajectories are not shown.</p>
+        <p>Tap a country to navigate the atlas and see the explicit evidence-unavailable state. Climate values and modeled trajectories are not shown until reviewed replacements are released.</p>
       </div>
     </div>
     <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
@@ -680,8 +679,8 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       </div>
       <div class="card">
         <div class="card-tag">Open Data</div>
-        <p>The legacy country layer remains public for inspection, but it is unverified and quarantined from performance claims while reviewed evidence replaces it.</p>
-        <a class="card-cta glass-btn" href="data/pledge-nodes.json">Inspect the quarantined legacy data</a>
+        <p>The former country payload has been retired from the live site. Its field-by-field exit ledger records what is blocked and what reviewed evidence must replace it.</p>
+        <a class="card-cta glass-btn" href="docs/LEGACY-COUNTRY-DATA-EXIT.md">Inspect the legacy exit ledger</a>
       </div>
       <div class="card">
         <div class="card-tag">Truth Checks</div>
@@ -902,7 +901,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=25', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=26', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

@@ -7,23 +7,21 @@
 const Data = {
   biomes: null,
   sites: null,
-  pledgeNodes: null,
   smallNations: null,
   carbonProjects: null,
   version: 'prod001',
 
   async init() {
-    // v1: the bare countries globe only needs pledge-nodes.json.
-    // biomes.json / sites.json were archived with the foundation sections
-    // (see _archive/) — getBiome/getSite degrade to null.
+    // Country climate evidence is intentionally absent until the reviewed
+    // evidence pipeline publishes a release-approved runtime artifact.
+    // biomes.json / sites.json were archived with the foundation sections;
+    // getBiome/getSite continue to degrade to null.
     const v = '?v=' + this.version;
-    const [pledgeNodesRes, smallNationsRes, carbonProjectsRes] = await Promise.allSettled([
-      fetch('data/pledge-nodes.json' + v),
+    const [smallNationsRes, carbonProjectsRes] = await Promise.allSettled([
       fetch('data/small-nations.json' + v),
       fetch('data/carbon-projects.json' + v)
     ]);
 
-    this.pledgeNodes = await this._parseResponse(pledgeNodesRes, 'pledge-nodes');
     // UN members absent from the 110m country GeoJSON (island + micro
     // nations) — GlobeModule renders these as small circular markers.
     this.smallNations = await this._parseResponse(smallNationsRes, 'small-nations');
@@ -32,43 +30,6 @@ const Data = {
     // "Close the Gap" section of the country cards.
     this.carbonProjects = await this._parseResponse(carbonProjectsRes, 'carbon-projects');
 
-    // Validate loaded data against schema
-    if (typeof DATA_SCHEMA !== 'undefined') {
-      if (this.pledgeNodes) DATA_SCHEMA.validate('pledge-nodes.json', this.pledgeNodes);
-    }
-
-    if (this.pledgeNodes) {
-      console.log('[Data] Loaded:', this.pledgeNodes.length, 'pledge nodes');
-    } else {
-      console.error('[Data] CRITICAL: pledge-nodes.json failed to load — country layer will be uncolored');
-    }
-
-    // ── Country Hex Color Lookup ──
-    // Built once from pledgeNodes, keyed by ISO_A3
-    // Used by GlobeModule to color hex polygons per-country
-    this.countryHexColors = {};
-    if (this.pledgeNodes) {
-      this.pledgeNodes.forEach(n => {
-        this.countryHexColors[n.iso] = {
-          country: n.country,
-          iso: n.iso,
-          lat: n.lat,
-          lng: n.lng,
-          emissions: n.fossil_co2_mt,
-          perCapita: n.co2_per_capita,
-          gap: n.reality_gap_mt,
-          onTrack: n.on_track,
-          catRating: n.cat_rating,
-          catScore: n.cat_score,
-          globeColor: n.globe_color,
-          targetYear: n.target_year,
-          reductionPct: n.reduction_pct,
-          lulucf: n.lulucf_co2_mt,
-          totalCo2: n.total_co2_mt,
-        };
-      });
-      console.log('[Data] Country hex colors:', Object.keys(this.countryHexColors).length, 'countries');
-    }
     return this;
   },
 
@@ -100,9 +61,7 @@ const Data = {
 
   getBiome(key) { return this.biomes ? this.biomes[key] : null; },
   getSite(id) { return this.sites ? this.sites.find(s => s.id === id) : null; },
-  getPledgeNode(iso) { return this.pledgeNodes ? this.pledgeNodes.find(n => n.iso === iso) : null; },
   getCarbonProjects(iso) { return this.carbonProjects ? this.carbonProjects[iso] || null : null; },
-  getCountryHexData(iso) { return this.countryHexColors ? this.countryHexColors[iso] || null : null; },
   getAllBiomes() { return this.biomes ? Object.entries(this.biomes).filter(([k]) => k !== '_meta').map(([k, v]) => ({ key: k, ...v })) : []; },
 
   // Carbon calculation engine
