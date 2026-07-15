@@ -409,6 +409,18 @@ function evaluateRuntimeAssets(input) {
   ].every(token => browserLifecycleStep.includes(token)) &&
     !/continue-on-error:\s*true|\n\s*if:\s*false|assert\(true\s*\|\|/.test(browserLifecycleStep),
   'Headless CI must execute the real success, failure, cancellation, evidence-browser, renderer-loss/retry, and narrow-viewport lifecycle.');
+  check('ci-browser-results-fail-closed', [
+    "Number.isInteger(smoke.failed)",
+    "Number.isInteger(smoke.criticalFailed)",
+    "Array.isArray(smoke.results)",
+    "smoke.failed !== 0",
+    "smoke.criticalFailed !== 0",
+    "smoke.results.some(result => result?.pass !== true)",
+    "const stackShapeValid = Array.isArray(stack);",
+    "!stackShapeValid || stack.some(result => result?.pass !== true)",
+  ].every(token => browserLifecycleStep.includes(token)) &&
+    !browserLifecycleStep.includes("Array.isArray(smoke) && smoke.some"),
+  'Headless CI must validate the actual SmokeTest result object and fail on invalid shape or any failed result.');
   const truthComponent = "{ id: 'CT-45-ASSETS', script: 'tools/check-globe-runtime-assets.js', required: true }";
   check('truth-ci-required', climateTruthCi.split('\n').filter(line => line.trim().replace(/,$/, '') === truthComponent).length === 1,
     'Climate truth CI must require exactly one active CT-45 component.');

@@ -305,8 +305,13 @@ jobs:
 
           await browser.close();
 
-          const smokeFailed = smoke?.error || (Array.isArray(smoke) && smoke.some(r => r.pass === false));
-          const stackFailed = stack?.error || (Array.isArray(stack) && stack.some(r => r.pass === false));
+          const smokeShapeValid = smoke && typeof smoke === 'object' && !Array.isArray(smoke) &&
+            Number.isInteger(smoke.passed) && Number.isInteger(smoke.failed) &&
+            Number.isInteger(smoke.criticalFailed) && Array.isArray(smoke.results);
+          const smokeFailed = !smokeShapeValid || smoke.error || smoke.failed !== 0 ||
+            smoke.criticalFailed !== 0 || smoke.results.some(result => result?.pass !== true);
+          const stackShapeValid = Array.isArray(stack);
+          const stackFailed = !stackShapeValid || stack.some(result => result?.pass !== true);
 
           if (smokeFailed || stackFailed || consoleErrors.length) {
             console.error('❌ checks failed');

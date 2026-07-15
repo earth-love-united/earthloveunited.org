@@ -102,6 +102,9 @@
     { "id": "ci-browser-context-loss-removed", "operation": "replace", "path": "files.ci", "from": "new Event('webglcontextlost', { cancelable: true })", "to": "new Event('unrelated')", "expected_failure": "ci-browser-runtime-lifecycle" },
     { "id": "ci-browser-mobile-width-removed", "operation": "replace", "path": "files.ci", "from": "for (const width of [320, 375])", "to": "for (const width of [1280])", "expected_failure": "ci-browser-runtime-lifecycle" },
     { "id": "ci-browser-assert-noop", "operation": "replace", "path": "files.ci", "from": "if (!condition) throw new Error(message);", "to": "if (!condition) return false;", "expected_failure": "ci-browser-runtime-lifecycle" },
-    { "id": "ci-browser-count-assert-bypassed", "operation": "replace", "path": "files.ci", "from": "assert(browserCounts.factual === 206 && browserCounts.gaps === 43 && browserCounts.canvases === 1,", "to": "assert(true || (browserCounts.factual === 206 && browserCounts.gaps === 43 && browserCounts.canvases === 1),", "expected_failure": "ci-browser-runtime-lifecycle" }
+    { "id": "ci-browser-count-assert-bypassed", "operation": "replace", "path": "files.ci", "from": "assert(browserCounts.factual === 206 && browserCounts.gaps === 43 && browserCounts.canvases === 1,", "to": "assert(true || (browserCounts.factual === 206 && browserCounts.gaps === 43 && browserCounts.canvases === 1),", "expected_failure": "ci-browser-runtime-lifecycle" },
+    { "id": "ci-smoke-failures-ignored", "operation": "replace", "path": "files.ci", "from": "smoke.failed !== 0", "to": "false", "expected_failure": "ci-browser-results-fail-closed" },
+    { "id": "ci-smoke-shape-weakened", "operation": "replace", "path": "files.ci", "from": "Array.isArray(smoke.results)", "to": "true", "expected_failure": "ci-browser-results-fail-closed" },
+    { "id": "ci-stack-shape-weakened", "operation": "replace", "path": "files.ci", "from": "const stackShapeValid = Array.isArray(stack);", "to": "const stackShapeValid = true;", "expected_failure": "ci-browser-results-fail-closed" }
   ]
 }
