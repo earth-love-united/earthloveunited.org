@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0.0",
-  "registry_version": "0.1.0",
+  "schema_version": "1.1.0",
+  "registry_version": "0.2.0",
   "methodology_version": "0.1.0",
   "released_on": "2026-07-15",
   "reviewed_through": "2026-07-15",
@@ -50,6 +50,64 @@
       "redistribution": {"status": "metadata_only", "source_files": false, "normalized_values": false, "metadata_and_links": true},
       "approval": {"state": "pending", "decision": "Identity metadata may be linked, but copied M49 names, codes, and group flags cannot enter a public redistributed registry until reuse rights are confirmed.", "required_action": "Obtain written permission or a source-specific open-data statement from UNSD; record the response and approved attribution."},
       "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "debian-iso-codes-4.20.1-1-iso-3166-1",
+      "publisher": "Debian iso-codes maintainers",
+      "title": "iso-codes data/iso_3166-1.json",
+      "version": "4.20.1-1",
+      "evidence_plane": "context",
+      "domains": ["identity"],
+      "primary": false,
+      "source_url": "https://sources.debian.org/src/iso-codes/4.20.1-1/",
+      "retrieval_url": "https://sources.debian.org/data/main/i/iso-codes/4.20.1-1/data/iso_3166-1.json",
+      "cadence": {"frequency": "on pinned release change", "check_interval_days": 90},
+      "artifact": {
+        "format": "JSON",
+        "record_array_path": "3166-1",
+        "expected_record_count": 249,
+        "sha256": "f01b812b57fba9f31ff621bf33e7c7570a01964dbeb5be2167e94decf538c89f",
+        "required_unique_fields": ["alpha_2", "alpha_3", "numeric"]
+      },
+      "licence": {
+        "identifier": "LGPL-2.1-or-later",
+        "status": "confirmed",
+        "terms_url": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html",
+        "evidence_url": "https://sources.debian.org/src/iso-codes/4.20.1-1/REUSE.toml/",
+        "summary": "The versioned Debian REUSE.toml assigns data/*json, including iso_3166-1.json, to LGPL-2.1-or-later. Redistribution and modification are permitted when the LGPL notices, source-access, and modified-work obligations are met.",
+        "attribution": "iso-codes 4.20.1-1, data/iso_3166-1.json, copyright 2016 Dr. Tobias Quathamer <toddy@debian.org>, licensed LGPL-2.1-or-later. Source: https://sources.debian.org/src/iso-codes/4.20.1-1/. Earth Love United identifies every transformation and its date.",
+        "restrictions": [
+          "Preserve the copyright notice, LGPL identifier, warranty disclaimer, and a copy of the licence",
+          "Provide the complete preferred-form source or an equivalent source offer/access path with every distributed copy",
+          "Mark modified files prominently with the changes and change dates",
+          "Keep the imported or normalized identity asset separately identifiable under LGPL-2.1-or-later; do not silently relicense it as part of a combined climate dataset"
+        ]
+      },
+      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
+      "approval": {
+        "state": "approved",
+        "decision": "Approved as the open, pinned seed for an ISO 3166-1-compatible identity registry. Debian supplies the redistributable artifact; ISO and UN remain the normative authorities for codes and names, not the licence source for this copy.",
+        "required_action": "Verify the pinned SHA-256, 249-row count, unique alpha-2/alpha-3/numeric fields, notice bundle, source access, and transformation log on every build. A newer upstream release requires a new registry record and review."
+      },
+      "storage": {
+        "raw": "external_only",
+        "checksum_required": true,
+        "snapshot_required": true,
+        "checksum_algorithm": "SHA-256",
+        "notice_bundle_required": true,
+        "source_offer_required": true,
+        "transformation_log_required": true,
+        "separate_asset_required": true,
+        "normalized_asset_rule": "Store the ISO identity table as its own versioned LGPL asset and reference it by source ID; never embed its rows invisibly inside a differently licensed country-climate aggregate."
+      },
+      "limitations": [
+        "This is an open Debian-maintained implementation of ISO 3166-1, not an official ISO publication or official UN M49 dataset",
+        "The 249 entries include countries, dependencies, territories, Antarctica, and other areas of geopolitical interest; a code does not assert sovereignty, UN membership, or climate-assessment eligibility",
+        "Kosovo has no officially assigned ISO 3166-1 code in this artifact; any XK mapping must use an explicit project or user-assigned namespace and must not be labelled official ISO",
+        "Palestine, Taiwan, and Western Sahara appear with ISO-compatible codes and names; display policy must not imply a political or recognition judgment",
+        "The artifact does not provide UN membership, UNFCCC Party status, LDC, LLDC, SIDS, territory-parent, disputed-status, or climate-performance fields",
+        "A 248-entity product universe must retain all 249 source rows and record the excluded row with assessment_eligible=false and an explicit reason rather than deleting it"
+      ]
     },
     {
       "id": "unfccc-ndc-registry-continuous-2026-07-15",
@@ -257,6 +315,53 @@
       "redistribution": {"status": "restricted", "source_files": false, "normalized_values": false, "metadata_and_links": true},
       "approval": {"state": "pending", "decision": "CAT ratings and projections cannot be copied into the public profile until the site's commercial status and intended use are cleared.", "required_action": "Obtain written permission or a licence compatible with public normalized redistribution."},
       "storage": {"raw": "prohibited", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "legacy-pledge-nodes-climate-watch-wri-family-2025-07-18",
+      "publisher": "World Resources Institute / Climate Watch and unidentified upstream publishers",
+      "title": "Legacy source family represented in data/pledge-nodes.json",
+      "version": "legacy compiled file generated 2025-07-18; exact upstream releases unknown",
+      "evidence_plane": "harmonized",
+      "domains": ["ndc_target", "fossil_co2", "lulucf_co2", "population", "policy_projection", "independent_ambition", "climate_finance"],
+      "primary": false,
+      "source_url": "https://www.climatewatchdata.org/",
+      "retrieval_url": "https://www.climatewatchdata.org/about/permissions",
+      "cadence": {"frequency": "frozen legacy audit", "check_interval_days": 30},
+      "licence": {
+        "identifier": "mixed-unverified-WRI-CC-BY-4.0-and-unknown",
+        "status": "uncertain",
+        "terms_url": "https://www.wri.org/about/wri-data-platforms-tos",
+        "summary": "WRI's legacy catalog identifies some Climate Watch NDC and CAIT country-emissions datasets as CC BY 4.0, but WRI also requires compliance with each dataset's own licence and upstream restrictions. The compiled pledge-nodes file has no field-level source, release, access date, licence, attribution, or transformation lineage, so those candidate permissions cannot be applied to the file as a whole.",
+        "attribution": "Pending field-level reconstruction. Each released field must cite its exact Climate Watch/WRI dataset and version or its other upstream publisher, licence, direct record or document, retrieval date, and Earth Love United transformation.",
+        "restrictions": [
+          "No blanket CC BY 4.0 approval for data/pledge-nodes.json",
+          "Do not treat Climate Watch permission as covering Climate Action Tracker ratings, finance values, other third-party inputs, or project-derived fields",
+          "Do not republish WRI translations or NDC summaries until the exact dataset release, licence, attribution, and source-document relationship are recorded",
+          "Derived fields require reproducible formulas and approved, versioned inputs before release"
+        ]
+      },
+      "redistribution": {"status": "metadata_only", "source_files": false, "normalized_values": false, "metadata_and_links": true},
+      "approval": {
+        "state": "pending",
+        "decision": "The legacy file is frozen as unverified evidence and must not seed the canonical registry, cards, graphs, or climate score. Potentially permissive WRI dataset licences do not cure missing field lineage or unknown third-party rights.",
+        "required_action": "Reconstruct and approve lineage field by field: exact upstream dataset or official document, immutable version/export date, record locator, licence and attribution, transformation formula and code revision, reviewer, and checked_at. Lift the block only for individually verified fields."
+      },
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true},
+      "legacy_gate": {
+        "dataset_path": "data/pledge-nodes.json",
+        "state": "legacy_unverified",
+        "field_lineage_required": true,
+        "canonical_ingestion_allowed": false,
+        "scoring_allowed": false,
+        "public_claims_allowed": false,
+        "blocked_field_families": [
+          "ndc_summary and translated summaries",
+          "cat_rating and cat_score",
+          "fossil_co2_mt, lulucf_co2_mt, total_co2_mt, and population",
+          "finance_total_bn",
+          "reality_gap_mt, momentum_cagr, required_cagr, divergence, on_track, and globe_color"
+        ]
+      }
     },
     {
       "id": "un-wpp-2024",

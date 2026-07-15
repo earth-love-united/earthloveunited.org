@@ -1,6 +1,6 @@
 # Country Climate Evidence Sources and Reuse Rules
 
-**Registry version:** 0.1.0
+**Registry version:** 0.2.0
 
 **Methodology version:** 0.1.0
 
@@ -44,6 +44,7 @@ not establish redistribution rights.
 | Registry ID | Plane / domain | Exact release | Reuse decision | Public normalized values |
 |---|---|---|---|---|
 | `un-m49-continuous-2026-07-15` | Context / identity | Continuous snapshot, 2026-07-15 | **Pending** — general UN terms do not grant public derivative-database redistribution | No |
+| `debian-iso-codes-4.20.1-1-iso-3166-1` | Context / identity | Debian iso-codes 4.20.1-1, pinned JSON SHA-256 `f01b812…c89f` | **Approved** — LGPL-2.1-or-later, as a separately identifiable asset | Yes |
 | `unfccc-ndc-registry-continuous-2026-07-15` | Official / targets | Registry snapshot, 2026-07-15 | **Pending** — UNFCCC unchanged-document permission and Party-specific notices do not yet settle normalized extraction | No |
 | `unfccc-btr-continuous-2026-07-15` | Official / progress, policy, CTF finance | First BTR cycle snapshot, 2026-07-15 | **Pending** — links and citation only until extraction rights are approved | No |
 | `unfccc-nir-crt-2026-cycle` | Official / inventory | 2026 submission cycle | **Pending** — official values require a normalized-data reuse decision | No |
@@ -53,11 +54,50 @@ not establish redistribution rights.
 | `edgar-2025-ghg-non-iea-components` | Harmonized / non-CO2 GHG | EDGAR_2025_GHG | **Approved by component** — EU-owned CC BY 4.0 material only | Yes |
 | `iea-edgar-co2-v4-2025` | Harmonized / fossil CO2 | IEA-EDGAR CO2 v4 | **Excluded** — CC BY-NC-ND 4.0; normalization is a derivative | No |
 | `cat-continuous-2026-07-15` | Independent / ambition and policy | Continuous snapshot, 2026-07-15 | **Pending** — CAT terms permit credited non-commercial use only | No |
+| `legacy-pledge-nodes-climate-watch-wri-family-2025-07-18` | Mixed / legacy pledge-node fields | Compiled file dated 2025-07-18; upstream releases unknown | **Pending** — some WRI datasets may be CC BY 4.0, but field lineage and third-party rights are missing | No |
 | `un-wpp-2024` | Context / population | World Population Prospects 2024 | **Approved** — CC BY 3.0 IGO | Yes |
 | `world-bank-wdi-2026-07-01` | Context / economic denominators | WDI catalog release, 2026-07-01 | **Approved conditionally** — CC BY 4.0; indicator-level third-party metadata must also pass | Yes |
 | `oecd-climate-finance-2013-2024` | Independent / finance | Report released 2026-05-21, DOI `10.1787/ab5eb9ad-en` | **Pending** — mixed UNFCCC, DAC, MDB, export-credit, and private-finance inputs need item-level review | No |
 
 ## Approved acquisition paths
+
+### Debian iso-codes 4.20.1-1 identity seed
+
+- Versioned source package: [iso-codes 4.20.1-1](https://sources.debian.org/src/iso-codes/4.20.1-1/)
+- Exact artifact: [`data/iso_3166-1.json`](https://sources.debian.org/data/main/i/iso-codes/4.20.1-1/data/iso_3166-1.json)
+- SHA-256: `f01b812b57fba9f31ff621bf33e7c7570a01964dbeb5be2167e94decf538c89f`
+- Expected JSON array: `3166-1`, exactly 249 records with unique `alpha_2`,
+  `alpha_3`, and `numeric` values
+- Licence evidence: versioned [REUSE.toml](https://sources.debian.org/src/iso-codes/4.20.1-1/REUSE.toml/),
+  which assigns `data/*json` to
+  [LGPL-2.1-or-later](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
+
+This is the approved open seed for an ISO 3166-1-compatible entity table.
+Debian is the redistributable artifact publisher, not the normative authority:
+ISO maintains the code standard and states that country names and numeric codes
+come from UN sources. The public product must not call this an official ISO
+publication or an official UN M49 table.
+
+The identity asset must remain separately identifiable under LGPL. Every
+distribution preserves the copyright and licence notices, warranty disclaimer,
+licence copy, and preferred-form source or equivalent source-access offer.
+Modified files identify the changes and dates. Normalization records the pinned
+input checksum and a reproducible transformation log. The asset is referenced
+from climate evidence by source ID; its rows are not silently embedded in a
+differently licensed aggregate.
+
+The 249 entries include countries, dependencies, territories, Antarctica, and
+other areas of geopolitical interest. Codes do not establish sovereignty, UN
+membership, UNFCCC Party status, or assessment eligibility. Kosovo is absent
+from the officially assigned set; an `XK` mapping must be explicitly project-
+or user-assigned. Palestine, Taiwan, and Western Sahara require neutral display
+handling. LDC, LLDC, SIDS, territory-parent, disputed-status, UN membership,
+UNFCCC Party, and climate-performance fields remain absent until separately
+licensed and approved sources are registered.
+
+The source registry always retains all 249 rows. If the product evaluates 248
+entities, the excluded row remains present with `assessment_eligible=false` and
+an explicit reason. A compiler must never obtain 248 by silently deleting a row.
 
 ### Global Carbon Budget 2025
 
@@ -107,12 +147,14 @@ exception that does not independently pass.
 
 ### UN M49 identity
 
-[UN M49](https://unstats.un.org/unsd/methodology/m49/) is the accepted entity
-base, but the general [UN website terms](https://www.un.org/en/about-us/terms-of-use)
-do not grant redistribution or derivative-database rights. Until UNSD supplies
-a source-specific open-data statement or written permission, the project may
-link to M49 and use it for internal design, but may not copy its names, codes,
-or grouping flags into a public compiled registry.
+[UN M49](https://unstats.un.org/unsd/methodology/m49/) remains the normative UN
+reference for statistical country/area codes and classifications, but the
+general [UN website terms](https://www.un.org/en/about-us/terms-of-use) do not
+grant redistribution or derivative-database rights. Until UNSD supplies a
+source-specific open-data statement or written permission, the project may link
+to M49 and use it for internal verification, but may not copy its names, codes,
+or grouping flags into a public compiled registry. The approved Debian identity
+seed does not grant rights to copy M49 LDC, LLDC, SIDS, or grouping columns.
 
 ### UNFCCC official evidence
 
@@ -152,6 +194,37 @@ the preferred independent benchmark where covered, but its ratings, pathways,
 and projections are metadata/link-only until written permission or an approved
 licence is recorded. Missing CAT coverage remains `not_assessed`.
 
+### Legacy Climate Watch/WRI pledge-node source family
+
+The existing `data/pledge-nodes.json` is a 123-row compiled file dated
+2025-07-18. It contains summaries that identify Climate Watch/WRI translations,
+but its metadata does not identify exact upstream datasets, releases, access
+dates, licences, record locators, field lineage, or transformation formulas.
+It also combines apparent CAT ratings, emissions, population, finance, and
+project-derived gap and trajectory fields.
+
+WRI's legacy catalog identifies some Climate Watch NDC and CAIT country-
+emissions datasets as CC BY 4.0, and Climate Watch describes its data as open.
+WRI's platform terms nevertheless require compliance with every dataset's own
+licence and upstream restrictions. A candidate WRI licence therefore cannot be
+applied to the mixed file, CAT fields, finance, derived values, unknown inputs,
+or unsourced WRI translations as a group.
+
+The file remains unchanged but is governed as `legacy_unverified`. It may not
+seed the canonical registry, country cards, graphs, public claims, or climate
+score. Lifting the gate is field-specific and requires:
+
+- exact upstream dataset or official document and immutable release/export date;
+- record URL, document locator, and retrieval date;
+- dataset and upstream-component licence plus required attribution;
+- reproducible transformation formula and code revision;
+- reviewer and `checked_at` date.
+
+Until then, `ndc_summary`, translations, `cat_*`, emissions and population,
+finance, `reality_gap_mt`, CAGR/divergence/on-track fields, and display colors
+remain blocked. Reconstructing one WRI field does not approve any neighboring
+field.
+
 ### OECD climate finance
 
 The current reference is [Climate Finance Provided and Mobilised by Developed
@@ -189,6 +262,12 @@ separately preserve:
    Metadata and links may remain so the exclusion is auditable.
 8. Publication code must fail closed if an approval record is missing,
    contradictory, or expired by a later release.
+9. LGPL identity rows remain a separately identifiable, notice-bearing asset;
+   every build verifies the pinned checksum, source access, transformation log,
+   and 249-row invariant.
+10. Legacy mixed-source data is released only field by field after the registry
+    records complete lineage. Publisher-level or neighboring-field approval is
+    never inherited.
 
 ## Validation
 
@@ -197,12 +276,15 @@ Run:
 ```sh
 node tools/check-climate-source-registry.js
 node --check tools/check-climate-source-registry.js
+node tools/test-climate-source-registry.js
 ```
 
 The validator checks required domain coverage, exact or retrieval-dated
 versions, HTTPS source and terms URLs, attribution and storage fields, unique
-IDs, and the fail-closed approval invariants. It deliberately does not claim to
-verify live URLs or make a legal determination.
+IDs, and the fail-closed approval invariants. The regression test proves that a
+checksum change, 248-row truncation, separate-asset bypass, premature M49
+approval, or legacy lineage/scoring bypass is rejected. These tools deliberately
+do not claim to verify live URLs or make a legal determination.
 
 ## Unresolved decisions requiring human approval
 
@@ -213,9 +295,12 @@ verify live URLs or make a legal determination.
 3. Whether normalized factual extraction from UNFCCC official and
    Party-submitted documents is authorized under the current terms.
 4. Whether UNSD will authorize redistribution of an M49-derived entity table.
-5. Which exact OECD finance datasets and disclosure rules are suitable for
+5. Which legacy `pledge-nodes.json` fields can be reconstructed from exact,
+   licence-compatible Climate Watch/WRI or other upstream releases; the file
+   remains `legacy_unverified` until that field-level work is complete.
+6. Which exact OECD finance datasets and disclosure rules are suitable for
    country-level provider and recipient facts.
-6. Whether the IEA will authorize transformed IEA-EDGAR CO2 data. Until then,
+7. Whether the IEA will authorize transformed IEA-EDGAR CO2 data. Until then,
    GCB is the approved fossil-CO2 source and IEA-EDGAR CO2 remains excluded.
 
 These decisions are gates, not documentation tasks. They must not be resolved

@@ -54,6 +54,10 @@ function isHttpsUrl(value) {
   }
 }
 
+function isSha256(value) {
+  return typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
+}
+
 function readRegistry() {
   try {
     return JSON.parse(fs.readFileSync(REGISTRY_PATH, 'utf8'));
@@ -120,7 +124,24 @@ function validateSource(source, index, configuredDomains, errors) {
     });
     if (!ALLOWED_LICENCE_STATUS.has(source.licence.status)) errors.push(`${source.id}.licence.status is invalid.`);
     if (!isHttpsUrl(source.licence.terms_url)) errors.push(`${source.id}.licence.terms_url must be an HTTPS URL.`);
+    if ('evidence_url' in source.licence && !isHttpsUrl(source.licence.evidence_url)) {
+      errors.push(`${source.id}.licence.evidence_url must be an HTTPS URL.`);
+    }
     if (!isStringArray(source.licence.restrictions)) errors.push(`${source.id}.licence.restrictions must be a non-empty string array.`);
+  }
+
+  if ('artifact' in source) {
+    if (!isObject(source.artifact)) {
+      errors.push(`${source.id}.artifact must be an object.`);
+    } else {
+      requireFields(source.artifact, ['format', 'sha256'], `${source.id}.artifact`, errors);
+      if (!isString(source.artifact.format)) errors.push(`${source.id}.artifact.format is required.`);
+      if (!isSha256(source.artifact.sha256)) errors.push(`${source.id}.artifact.sha256 must be a lowercase SHA-256 digest.`);
+    }
+  }
+
+  if ('limitations' in source && !isStringArray(source.limitations)) {
+    errors.push(`${source.id}.limitations must be a non-empty string array.`);
   }
 
   if (!isObject(source.redistribution)) {
@@ -151,6 +172,26 @@ function validateSource(source, index, configuredDomains, errors) {
     if (typeof source.storage.snapshot_required !== 'boolean') errors.push(`${source.id}.storage.snapshot_required must be boolean.`);
   }
 
+  if ('legacy_gate' in source) {
+    if (!isObject(source.legacy_gate)) {
+      errors.push(`${source.id}.legacy_gate must be an object.`);
+    } else {
+      requireFields(source.legacy_gate, [
+        'dataset_path', 'state', 'field_lineage_required',
+        'canonical_ingestion_allowed', 'scoring_allowed', 'public_claims_allowed',
+        'blocked_field_families',
+      ], `${source.id}.legacy_gate`, errors);
+      if (!isString(source.legacy_gate.dataset_path)) errors.push(`${source.id}.legacy_gate.dataset_path is required.`);
+      if (!isString(source.legacy_gate.state)) errors.push(`${source.id}.legacy_gate.state is required.`);
+      if (!isStringArray(source.legacy_gate.blocked_field_families)) {
+        errors.push(`${source.id}.legacy_gate.blocked_field_families must be a non-empty string array.`);
+      }
+      ['field_lineage_required', 'canonical_ingestion_allowed', 'scoring_allowed', 'public_claims_allowed'].forEach(field => {
+        if (typeof source.legacy_gate[field] !== 'boolean') errors.push(`${source.id}.legacy_gate.${field} must be boolean.`);
+      });
+    }
+  }
+
   // Fail closed: only fully approved, confirmed, permitted sources may export values.
   if (source.redistribution?.normalized_values === true) {
     if (source.approval?.state !== 'approved') errors.push(`${source.id} exports normalized values without approved state.`);
@@ -172,6 +213,49 @@ function validateSource(source, index, configuredDomains, errors) {
   }
   if (source.licence?.status === 'uncertain' && source.approval?.state === 'approved') {
     errors.push(`${source.id} has uncertain terms but is approved.`);
+  }
+
+  if (source.id === 'debian-iso-codes-4.20.1-1-iso-3166-1') {
+    if (source.version !== '4.20.1-1') errors.push(`${source.id} must pin version 4.20.1-1.`);
+    if (source.retrieval_url !== 'https://sources.debian.org/data/main/i/iso-codes/4.20.1-1/data/iso_3166-1.json') {
+      errors.push(`${source.id} must pin the exact versioned Debian JSON URL.`);
+    }
+    if (source.licence?.identifier !== 'LGPL-2.1-or-later') errors.push(`${source.id} must retain LGPL-2.1-or-later.`);
+    if (source.licence?.evidence_url !== 'https://sources.debian.org/src/iso-codes/4.20.1-1/REUSE.toml/') {
+      errors.push(`${source.id} must retain the versioned Debian REUSE evidence URL.`);
+    }
+    if (source.artifact?.sha256 !== 'f01b812b57fba9f31ff621bf33e7c7570a01964dbeb5be2167e94decf538c89f') {
+      errors.push(`${source.id} does not match the reviewed SHA-256.`);
+    }
+    if (source.artifact?.expected_record_count !== 249) errors.push(`${source.id} must require exactly 249 source rows.`);
+    if (source.artifact?.record_array_path !== '3166-1') errors.push(`${source.id} must identify the 3166-1 record array.`);
+    if (!isStringArray(source.artifact?.required_unique_fields)) {
+      errors.push(`${source.id} must define unique identity fields.`);
+    }
+    ['notice_bundle_required', 'source_offer_required', 'transformation_log_required', 'separate_asset_required'].forEach(field => {
+      if (source.storage?.[field] !== true) errors.push(`${source.id}.storage.${field} must remain true.`);
+    });
+    if (!isString(source.storage?.normalized_asset_rule)) errors.push(`${source.id} must define a separate normalized-asset rule.`);
+    if (!isStringArray(source.limitations)) errors.push(`${source.id} must document identity and coverage limitations.`);
+  }
+
+  if (source.id === 'un-m49-continuous-2026-07-15') {
+    if (source.approval?.state !== 'pending' || source.redistribution?.status !== 'metadata_only' || source.redistribution?.normalized_values !== false) {
+      errors.push(`${source.id} must remain pending and metadata-only until reuse rights are confirmed.`);
+    }
+  }
+
+  if (source.id === 'legacy-pledge-nodes-climate-watch-wri-family-2025-07-18') {
+    if (source.approval?.state !== 'pending' || source.licence?.status !== 'uncertain') {
+      errors.push(`${source.id} must remain pending with uncertain mixed-source terms.`);
+    }
+    if (source.legacy_gate?.dataset_path !== 'data/pledge-nodes.json' || source.legacy_gate?.state !== 'legacy_unverified') {
+      errors.push(`${source.id} must identify the legacy pledge-node quarantine.`);
+    }
+    if (source.legacy_gate?.field_lineage_required !== true) errors.push(`${source.id} must require field-level lineage.`);
+    ['canonical_ingestion_allowed', 'scoring_allowed', 'public_claims_allowed'].forEach(field => {
+      if (source.legacy_gate?.[field] !== false) errors.push(`${source.id}.legacy_gate.${field} must remain false.`);
+    });
   }
 }
 
@@ -212,6 +296,15 @@ function validateRegistry(registry) {
   REQUIRED_DOMAINS.forEach(domain => {
     if (!coveredDomains.has(domain)) errors.push(`No source covers required domain: ${domain}`);
   });
+  if (!ids.has('debian-iso-codes-4.20.1-1-iso-3166-1')) {
+    errors.push('Registry must include the approved Debian iso-codes identity seed.');
+  }
+  if (!ids.has('un-m49-continuous-2026-07-15')) {
+    errors.push('Registry must retain UN M49 as pending normative metadata.');
+  }
+  if (!ids.has('legacy-pledge-nodes-climate-watch-wri-family-2025-07-18')) {
+    errors.push('Registry must include the legacy Climate Watch/WRI field-lineage gate.');
+  }
 
   return errors;
 }
@@ -242,4 +335,6 @@ function main() {
   );
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = { validateRegistry };
