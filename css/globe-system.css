@@ -16,7 +16,7 @@ body.globe-mode {
   --hud-divider: rgba(255, 255, 255, .08);
   --hud-divider-soft: rgba(255, 255, 255, .045);
   --hud-muted: rgba(210, 224, 224, .62);
-  --hud-faint: rgba(210, 224, 224, .38);
+  --hud-faint: rgba(210, 224, 224, .62);
   --hud-shadow: 0 16px 42px rgba(0, 0, 0, .28);
   --hud-shadow-strong: 0 18px 54px rgba(0, 0, 0, .42), 0 0 0 1px rgba(123, 232, 208, .025);
   --hud-nav-bg: rgba(6, 11, 18, .9);
@@ -58,7 +58,7 @@ body.globe-mode[data-theme="light"] {
   --hud-divider: rgba(31, 94, 70, .14);
   --hud-divider-soft: rgba(31, 94, 70, .08);
   --hud-muted: rgba(32, 48, 42, .78);
-  --hud-faint: rgba(32, 48, 42, .58);
+  --hud-faint: rgba(32, 48, 42, .78);
   --hud-shadow: 0 16px 38px rgba(62, 49, 25, .14);
   --hud-shadow-strong: 0 18px 48px rgba(62, 49, 25, .16), 0 0 0 1px rgba(31, 94, 70, .04);
   --hud-nav-bg: rgba(255, 253, 248, .96);
@@ -523,6 +523,8 @@ body:not(.globe-mode) #globe-loading {
 #hex-country-tooltip.selected .tt-hint {
   padding-top: 6px;
   border-top: 1px solid var(--hud-divider-soft);
+  color: var(--hud-muted);
+  opacity: 1;
 }
 
 /* v0.7 trajectory panel inserted by GlobeModule._renderCountryMetrics. */
@@ -594,6 +596,8 @@ body.globe-mode .hex-legend {
   bottom: 82px;
   z-index: 20;
 }
+
+body.globe-mode .hex-legend-note { color: var(--hud-muted); }
 
 body.globe-mode #globe-back-btn {
   left: 24px;
