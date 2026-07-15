@@ -27,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -39,6 +41,15 @@ jobs:
 
       - name: Climate truth CI policy fixtures
         run: node tools/check-climate-truth-ci.js
+
+      - name: Climate runtime diff boundary fixtures
+        run: node tools/check-climate-runtime-diff-boundary.js --self-test
+
+      - name: Climate runtime diff boundary
+        env:
+          CLIMATE_RUNTIME_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          CLIMATE_RUNTIME_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node tools/check-climate-runtime-diff-boundary.js --base "$CLIMATE_RUNTIME_BASE_SHA" --head "$CLIMATE_RUNTIME_HEAD_SHA"
 
       - name: Climate truth CI (explicit partial stack)
         run: node tools/climate-truth-ci.js --allow-incomplete
