@@ -10,32 +10,23 @@ const path = require('node:path');
 const vm = require('node:vm');
 const { inspectCanonicalSvg } = require('./authoring/generate-globe-starfield');
 const {
+  ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
   EXPECTED_ASSETS,
   EXPECTED_INDEX_SW_KEYS,
   MANIFEST_PATH,
+  REQUIRED_UI_REVIEW_PIN_PATHS,
   digest,
   evaluateRuntimeAssets,
   exactAssetManifest,
   exactLocalAssets,
 } = require('./lib/globe-runtime-assets');
-const { REQUIRED_UI_REVIEW_PIN_PATHS: ACTUAL_UI_REVIEW_PINS } = require('./lib/ct42-ct40-release-review');
 const { FIXED_RUNTIME_PATHS, RUNTIME_PATH_PREFIXES } = require('./lib/climate-runtime-diff-boundary');
 
 const ROOT = path.resolve(__dirname, '..');
 const JSON_ONLY = process.argv.includes('--json');
 const STAGED_INDEX = process.argv.indexOf('--staged');
 const FIXTURE_PATH = 'tools/fixtures/globe-runtime-assets.json';
-const STAGED_RUNTIME_FILES = Object.freeze([
-  'index.html',
-  'js/app.js',
-  'js/data.js',
-  'js/globe.js',
-  'css/globe-system.css',
-  'sw.js',
-  'data/small-nations.json',
-  'data/climate/runtime/country-factual-candidate.json',
-  MANIFEST_PATH,
-]);
+const STAGED_RUNTIME_FILES = REQUIRED_UI_REVIEW_PIN_PATHS;
 const PATHS = Object.freeze({
   index: 'index.html',
   globe: 'js/globe.js',
@@ -46,6 +37,7 @@ const PATHS = Object.freeze({
   build_deploy: 'tools/build-deploy.sh',
   ci: '.github/workflows/ci.yml',
   climate_truth_ci: 'tools/climate-truth-ci.js',
+  final_integrity: 'tools/check-staged-production-integrity.js',
   review_adapter: 'tools/lib/ct42-ct40-release-review.js',
   runtime_boundary: 'tools/lib/climate-runtime-diff-boundary.js',
   smoke: 'tools/smoke-test.js',
@@ -356,7 +348,8 @@ async function loadInput(root = ROOT) {
       meta: navigationSource._meta,
     },
     review_scope: {
-      ui_pins: [...ACTUAL_UI_REVIEW_PINS],
+      active_runtime_scripts: [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS],
+      ui_pins: [...REQUIRED_UI_REVIEW_PIN_PATHS],
       runtime_fixed: [...FIXED_RUNTIME_PATHS],
       runtime_prefixes: [...RUNTIME_PATH_PREFIXES],
     },
@@ -439,7 +432,7 @@ function applyMutation(input, mutation) {
 
 async function runFixtures(input) {
   const fixture = json(ROOT, FIXTURE_PATH);
-  assert.equal(fixture._meta.policy_version, '1.1.0', 'CT-45 fixture/policy version drift');
+  assert.equal(fixture._meta.policy_version, '1.2.0', 'CT-45 fixture/policy version drift');
   let rejected = 0;
   for (const mutation of fixture.mutations) {
     const changed = structuredClone(input);

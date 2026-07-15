@@ -2,6 +2,7 @@
 
 const crypto = require('node:crypto');
 const { evaluateRelease } = require('./climate-release-gate');
+const { REQUIRED_UI_REVIEW_PIN_PATHS } = require('./globe-runtime-assets');
 
 const ADAPTER_VERSION = '1.2.0';
 const METHODOLOGY_VERSION = '0.1.0';
@@ -18,24 +19,6 @@ const REQUIRED_DATA_REVIEW_PIN_PATHS = Object.freeze([
   'data/climate/runtime/ct10c-batch-attestation-wrapper.json',
   'data/climate/runtime/candidate-manifest.json',
   'data/climate/runtime/rollback-plan.json',
-]);
-const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
-  'index.html',
-  'css/globe-system.css',
-  'js/app.js',
-  'js/globe.js',
-  'js/data.js',
-  'tools/smoke-test.js',
-  'data/climate/runtime/country-factual-candidate.json',
-  'data/climate/runtime/candidate-manifest.json',
-  'data/small-nations.json',
-  'sw.js',
-  'assets/globe/runtime/manifest.json',
-  'assets/globe/runtime/ne_110m_admin_0_countries.geojson',
-  'assets/globe/runtime/earth-night.jpg',
-  'assets/globe/runtime/night-sky.svg',
-  'assets/globe/runtime/earth-blue-marble.jpg',
-  'assets/globe/runtime/earth-topology.png',
 ]);
 const ANCESTRY_BOUNDARY = 'This pure adapter does not inspect Git history. It accepts independent review commits only when every declared scoped file hash matches the assembled candidate; any ancestry assertion belongs in CI with explicitly fetched refs.';
 const REQUIRED_REASON_CODES = Object.freeze([

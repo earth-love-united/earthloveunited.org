@@ -13,6 +13,8 @@ const { REQUIRED_UI_REVIEW_PIN_PATHS } = require('./lib/globe-runtime-assets');
 
 const ROOT = path.resolve(__dirname, '..');
 const PUBLIC_NOTICE_LINK = '<a href="/THIRD_PARTY_NOTICES.txt">Third-party notices</a>';
+const UI_REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
+const FINAL_CT45_REHASH_PATHS = REQUIRED_UI_REVIEW_PIN_PATHS;
 const PINNED_FILES = Object.freeze([
   Object.freeze({ path: notices.NOTICE_PATH, sha256: notices.EXPECTED_NOTICE_SHA256 }),
   Object.freeze({ path: notices.MANIFEST_PATH, sha256: notices.EXPECTED_MANIFEST_SHA256 }),
@@ -20,6 +22,31 @@ const PINNED_FILES = Object.freeze([
   Object.freeze({ path: notices.APPROVAL_SCHEMA_PATH, sha256: notices.EXPECTED_APPROVAL_SCHEMA_SHA256 }),
   Object.freeze({ path: approvalPolicy.TRUST_REGISTRY_PATH, sha256: approvalPolicy.EXPECTED_TRUST_REGISTRY_SHA256 }),
 ]);
+const APPROVAL_REVIEWED_PATHS = Object.freeze([...new Set([
+  ...REQUIRED_UI_REVIEW_PIN_PATHS,
+  notices.NOTICE_PATH,
+  notices.MANIFEST_PATH,
+  notices.INTEGRATION_PATH,
+  notices.APPROVAL_SCHEMA_PATH,
+  approvalPolicy.TRUST_REGISTRY_PATH,
+  'CREDITS.md',
+  '.github/workflows/ci.yml',
+  'tools/build-deploy.sh',
+  'tools/check-globe-runtime-assets.js',
+  'tools/lib/globe-runtime-assets.js',
+  'tools/fixtures/globe-runtime-assets.json',
+  'tools/check-globe-third-party-notices.js',
+  'tools/lib/globe-third-party-notices.js',
+  'tools/fixtures/globe-third-party-notices.json',
+  'tools/check-globe-runtime-approval.js',
+  'tools/lib/globe-runtime-approval.js',
+  'tools/check-staged-production-integrity.js',
+  'tools/climate-truth-ci.js',
+  'tools/lib/climate-runtime-diff-boundary.js',
+  'tools/lib/climate-production-readiness.js',
+  'tools/check-climate-production-readiness.js',
+  'tools/check-climate-production-readiness-policy.js',
+])]);
 
 function safeRelative(relative) {
   const normalized = path.posix.normalize(String(relative || '').replaceAll(path.sep, '/'));
@@ -119,33 +146,7 @@ function reviewedCommitBindingPasses(root, approval) {
     encoding: 'utf8',
   });
   if (ancestor.status !== 0) return false;
-  const reviewedPaths = [...new Set([
-    ...REQUIRED_UI_REVIEW_PIN_PATHS,
-    notices.NOTICE_PATH,
-    notices.MANIFEST_PATH,
-    notices.INTEGRATION_PATH,
-    notices.APPROVAL_SCHEMA_PATH,
-    approvalPolicy.TRUST_REGISTRY_PATH,
-    'index.html',
-    'CREDITS.md',
-    '.github/workflows/ci.yml',
-    'tools/build-deploy.sh',
-    'tools/check-globe-runtime-assets.js',
-    'tools/lib/globe-runtime-assets.js',
-    'tools/fixtures/globe-runtime-assets.json',
-    'tools/check-globe-third-party-notices.js',
-    'tools/lib/globe-third-party-notices.js',
-    'tools/fixtures/globe-third-party-notices.json',
-    'tools/check-globe-runtime-approval.js',
-    'tools/lib/globe-runtime-approval.js',
-    'tools/check-staged-production-integrity.js',
-    'tools/climate-truth-ci.js',
-    'tools/lib/climate-runtime-diff-boundary.js',
-    'tools/lib/climate-production-readiness.js',
-    'tools/check-climate-production-readiness.js',
-    'tools/check-climate-production-readiness-policy.js',
-  ])];
-  const diff = childProcess.spawnSync('git', ['diff', '--quiet', reviewed, 'HEAD', '--', ...reviewedPaths], {
+  const diff = childProcess.spawnSync('git', ['diff', '--quiet', reviewed, 'HEAD', '--', ...APPROVAL_REVIEWED_PATHS], {
     cwd: root,
     encoding: 'utf8',
   });
@@ -216,10 +217,45 @@ function verifyApprovalArtifacts(sourceRoot, stagedRoot) {
   }
 }
 
+function reviewedRuntimePins(sourceRoot) {
+  const record = requireRegular(sourceRoot, UI_REVIEW_PATH);
+  let review;
+  try { review = JSON.parse(record.text); }
+  catch (_) { throw new Error('CT-42 UI review must be valid JSON'); }
+  const pins = Array.isArray(review.reviewed_file_pins) ? review.reviewed_file_pins : [];
+  const paths = pins.map(entry => entry && entry.path);
+  if (JSON.stringify(paths) !== JSON.stringify(FINAL_CT45_REHASH_PATHS)) {
+    throw new Error('CT-42 UI review pin scope differs from canonical final CT-45 rehash scope');
+  }
+  const result = new Map();
+  pins.forEach(function (entry) {
+    if (!entry || !/^[0-9a-f]{64}$/.test(entry.sha256 || '') || result.has(entry.path)) {
+      throw new Error('CT-42 UI review contains an invalid or duplicate runtime pin');
+    }
+    result.set(entry.path, entry.sha256);
+  });
+  return result;
+}
+
+function verifyCt45RuntimeBytes(sourceRoot, stagedRoot) {
+  const pins = reviewedRuntimePins(sourceRoot);
+  FINAL_CT45_REHASH_PATHS.forEach(function (relative) {
+    const expected = pins.get(relative);
+    const source = requireRegular(sourceRoot, relative);
+    const staged = requireRegular(stagedRoot, relative);
+    if (source.sha256 !== expected) throw new Error('source reviewed runtime SHA-256 drift: ' + relative);
+    if (staged.sha256 !== expected) throw new Error('final staged CT-45 runtime SHA-256 drift: ' + relative);
+    if (source.sha256 !== staged.sha256) throw new Error('final CT-45 source/staged mismatch: ' + relative);
+  });
+  return FINAL_CT45_REHASH_PATHS.length;
+}
+
 function verifyFinalStagedIntegrity(options) {
   const sourceRoot = path.resolve(options.sourceRoot);
   const stagedRoot = path.resolve(options.stagedRoot);
-  if (!options.skipChildChecks) {
+  if (typeof options.childCheckRunner === 'function') {
+    options.childCheckRunner();
+  } else if (!options.skipChildChecks) {
     runChecker(sourceRoot, ['tools/check-globe-third-party-notices.js', '--staged', stagedRoot]);
     runChecker(sourceRoot, ['tools/check-globe-runtime-assets.js', '--staged', stagedRoot]);
   }
@@ -227,7 +263,12 @@ function verifyFinalStagedIntegrity(options) {
   verifyPinnedFiles(sourceRoot, stagedRoot);
   verifyFooter(sourceRoot, stagedRoot);
   verifyApprovalArtifacts(sourceRoot, stagedRoot);
-  return { status: 'pass', pinned_file_count: PINNED_FILES.length };
+  verifyCt45RuntimeBytes(sourceRoot, stagedRoot);
+  return {
+    status: 'pass',
+    pinned_file_count: PINNED_FILES.length,
+    ct45_rehash_count: FINAL_CT45_REHASH_PATHS.length,
+  };
 }
 
 function verifyFinalStagedIntegrityWithCleanup(options) {
@@ -249,14 +290,50 @@ function copyFixtureFile(sourceRoot, targetRoot, relative) {
   fs.copyFileSync(path.join(sourceRoot, relative), destination);
 }
 
+function runFixtureGit(root, args) {
+  const result = childProcess.spawnSync('git', args, { cwd: root, encoding: 'utf8' });
+  if (result.status !== 0) throw new Error('fixture git failed: ' + (result.stderr || result.stdout || args.join(' ')));
+  return result.stdout.trim();
+}
+
+function runApprovalCommitBindingSelfTest() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-approval-binding-'));
+  try {
+    APPROVAL_REVIEWED_PATHS.forEach(relative => copyFixtureFile(ROOT, root, relative));
+    runFixtureGit(root, ['init', '-q']);
+    runFixtureGit(root, ['add', '.']);
+    runFixtureGit(root, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid', 'commit', '-q', '-m', 'reviewed']);
+    const reviewed = runFixtureGit(root, ['rev-parse', 'HEAD']);
+    assert.equal(reviewedCommitBindingPasses(root, { reviewed_commit_sha: reviewed }), true,
+      'exact reviewed approval scope must pass');
+
+    fs.writeFileSync(path.join(root, 'unreviewed-note.txt'), 'outside approval scope\n');
+    runFixtureGit(root, ['add', 'unreviewed-note.txt']);
+    runFixtureGit(root, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid', 'commit', '-q', '-m', 'outside scope']);
+    assert.equal(reviewedCommitBindingPasses(root, { reviewed_commit_sha: reviewed }), true,
+      'unrelated descendant changes must not falsify scoped approval binding');
+
+    fs.appendFileSync(path.join(root, 'js/gaia-utils.js'), '\n// post-review foundation drift\n');
+    runFixtureGit(root, ['add', 'js/gaia-utils.js']);
+    runFixtureGit(root, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid', 'commit', '-q', '-m', 'runtime drift']);
+    assert.equal(reviewedCommitBindingPasses(root, { reviewed_commit_sha: reviewed }), false,
+      'foundation runtime drift must invalidate approval commit binding');
+    return 2;
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+}
+
 function makeSelfTestFixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-final-integrity-'));
   const staged = path.join(root, '_deploy');
   fs.mkdirSync(staged);
-  PINNED_FILES.map(entry => entry.path).concat(['index.html']).forEach(function (relative) {
+  const parityPaths = [...new Set(PINNED_FILES.map(entry => entry.path).concat(FINAL_CT45_REHASH_PATHS))];
+  parityPaths.forEach(function (relative) {
     copyFixtureFile(ROOT, root, relative);
     copyFixtureFile(ROOT, staged, relative);
   });
+  copyFixtureFile(ROOT, root, UI_REVIEW_PATH);
   return { root, staged };
 }
 
@@ -278,6 +355,7 @@ function assertMutationRejected(id, mutate, afterPrecheck) {
 }
 
 function runSelfTest() {
+  const approvalBindingCases = runApprovalCommitBindingSelfTest();
   const fixture = makeSelfTestFixture();
   try {
     assert.equal(verifyFinalStagedIntegrity({
@@ -299,6 +377,9 @@ function runSelfTest() {
     const indexPath = path.join(value.staged, 'index.html');
     fs.writeFileSync(indexPath, fs.readFileSync(indexPath, 'utf8').replace(PUBLIC_NOTICE_LINK, 'Notices unavailable'));
   });
+  assertMutationRejected('post-check foundation runtime tamper', function () {}, function (value) {
+    fs.appendFileSync(path.join(value.staged, 'js/gaia-utils.js'), '\n// tampered after earlier checks\n');
+  });
   assertMutationRejected('staged-only unpinned approval', function (value) {
     const approvalPath = path.join(value.staged, approvalPolicy.APPROVAL_PATH);
     fs.mkdirSync(path.dirname(approvalPath), { recursive: true });
@@ -313,10 +394,10 @@ function runSelfTest() {
   });
   assertMutationRejected('approval ancestor symlink', function (value) {
     const externalReviews = path.join(value.root, 'external-reviews');
-    fs.mkdirSync(externalReviews);
+    const reviewsPath = path.join(value.root, path.dirname(approvalPolicy.APPROVAL_PATH));
+    fs.renameSync(reviewsPath, externalReviews);
     fs.writeFileSync(path.join(externalReviews, path.basename(approvalPolicy.APPROVAL_PATH)), '{}\n');
     fs.writeFileSync(path.join(externalReviews, path.basename(approvalPolicy.SIGNATURE_BUNDLE_PATH)), '{}\n');
-    const reviewsPath = path.join(value.root, path.dirname(approvalPolicy.APPROVAL_PATH));
     fs.mkdirSync(path.dirname(reviewsPath), { recursive: true });
     fs.symlinkSync(path.relative(path.dirname(reviewsPath), externalReviews), reviewsPath, 'dir');
   });
@@ -356,7 +437,28 @@ function runSelfTest() {
   } finally {
     fs.rmSync(cleanupFixture.root, { recursive: true, force: true });
   }
-  process.stdout.write('Final staged production integrity self-test: PASS (10 fail-closed filesystem/tamper/cleanup cases)\n');
+
+  const postChildCt45Fixture = makeSelfTestFixture();
+  let childChecksCompleted = false;
+  try {
+    assert.throws(() => verifyFinalStagedIntegrityWithCleanup({
+      sourceRoot: postChildCt45Fixture.root,
+      stagedRoot: postChildCt45Fixture.staged,
+      childCheckRunner: function () { childChecksCompleted = true; },
+      afterPrecheck: function () {
+        assert.equal(childChecksCompleted, true, 'CT-45 mutation must occur after child checks');
+        fs.appendFileSync(path.join(postChildCt45Fixture.staged, 'assets/globe/runtime/earth-night.jpg'),
+          Buffer.from('post-child-check mutation'));
+      },
+    }), /final staged CT-45 runtime SHA-256 drift/, 'post-child CT-45 mutation must fail');
+    assert.equal(childChecksCompleted, true, 'child checker hook must run before the CT-45 mutation');
+    assert.equal(fs.existsSync(postChildCt45Fixture.staged), false,
+      'post-child CT-45 mutation failure must remove staged output');
+  } finally {
+    fs.rmSync(postChildCt45Fixture.root, { recursive: true, force: true });
+  }
+  process.stdout.write('Final staged production integrity self-test: PASS (12 fail-closed filesystem/tamper/cleanup cases; ' +
+    approvalBindingCases + ' scoped approval commit-binding cases; post-child CT-45 mutation rejected and cleaned)\n');
 }
 
 function runCli(argv) {
@@ -370,7 +472,8 @@ function runCli(argv) {
   const stagedRoot = resolveStagedRoot(ROOT, argv[1]);
   const report = verifyFinalStagedIntegrityWithCleanup({ sourceRoot: ROOT, stagedRoot });
   process.stdout.write('Final staged production integrity: PASS (' + report.pinned_file_count +
-    ' pinned notice/trust files, footer parity, approval boundary)\n');
+    ' pinned notice/trust files, ' + report.ct45_rehash_count +
+    ' final CT-45 reviewed runtime rehashes, footer parity, approval boundary)\n');
 }
 
 if (require.main === module) {
@@ -383,7 +486,10 @@ if (require.main === module) {
 
 module.exports = {
   PINNED_FILES,
+  APPROVAL_REVIEWED_PATHS,
+  FINAL_CT45_REHASH_PATHS,
   inspectEntry,
   resolveStagedRoot,
+  verifyCt45RuntimeBytes,
   verifyFinalStagedIntegrity,
 };

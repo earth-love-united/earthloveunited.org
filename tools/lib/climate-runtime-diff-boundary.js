@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('node:crypto');
+const { ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS } = require('./globe-runtime-assets');
 
 const POLICY_VERSION = '1.0.0';
 
@@ -14,9 +15,7 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'index.html',
   'sw.js',
   'css/globe-system.css',
-  'js/app.js',
-  'js/data.js',
-  'js/globe.js',
+  ...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
   'js/country-climate-view-model.js',
   'js/country-ranking-compiler.js',
   'js/vendor/globe.gl.js',

@@ -3,7 +3,7 @@
 const crypto = require('node:crypto');
 const { hasActiveCiJob, hasExactCiStep } = require('./globe-vendor-integrity');
 
-const POLICY_VERSION = '1.1.0';
+const POLICY_VERSION = '1.2.0';
 const MANIFEST_PATH = 'assets/globe/runtime/manifest.json';
 const EXPECTED_MANIFEST_SHA256 = '6f03e630512982f2edfd40097881bae73bbc49110ca79c6fdbb49dc7b44b7da4';
 const EXPECTED_MANIFEST_SEMANTIC_SHA256 = '687e6ba28c5ffe422be5a4579f6ebfb910f54598782ddb4702b54cdd0ad3c3d2';
@@ -114,12 +114,22 @@ const EXPECTED_SMALL_NATION_NAMES = Object.freeze([
   'San Marino', 'Singapore', 'Sao Tome and Principe', 'Seychelles', 'Tonga', 'Tuvalu',
   'Saint Vincent and the Grenadines', 'Samoa',
 ]);
+const ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS = Object.freeze([
+  'js/gaia-utils.js',
+  'js/module-contracts.js',
+  'js/event-bus.js',
+  'js/storage-adapter.js',
+  'js/storage.js',
+  'js/data-schema.js',
+  'js/data.js',
+  'js/globe.js',
+  'js/carbon-clock.js',
+  'js/app.js',
+]);
 const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
   'index.html',
   'css/globe-system.css',
-  'js/app.js',
-  'js/globe.js',
-  'js/data.js',
+  ...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
   'tools/smoke-test.js',
   'data/climate/runtime/country-factual-candidate.json',
   'data/climate/runtime/candidate-manifest.json',
@@ -276,6 +286,7 @@ function evaluateRuntimeAssets(input) {
   // stripping would misread paths such as */vendor/* and delete active steps.
   const ci = String(files.ci || '');
   const climateTruthCi = stripComments(files.climate_truth_ci);
+  const finalIntegrity = stripComments(files.final_integrity);
   const reviewAdapter = stripComments(files.review_adapter);
   const runtimeBoundary = stripComments(files.runtime_boundary);
   const smoke = stripComments(files.smoke);
@@ -490,6 +501,11 @@ function evaluateRuntimeAssets(input) {
     !/(?:^|\n)\s*(?:exit|return)\s+0(?:\s|$)/.test(buildDeploy) &&
     !/trap\s+[^\n]*\b(?:DEBUG|RETURN)\b/.test(buildDeploy),
     'Deployment staging must exec the aggregate verifier as the exact tail and contain no direct shell background operator.');
+  const finalCt45RehashCall = 'verifyCt45RuntimeBytes(sourceRoot, stagedRoot);';
+  check('final-ct45-runtime-rehash', occurrences(finalIntegrity, finalCt45RehashCall) === 1 &&
+    finalIntegrity.indexOf(finalCt45RehashCall) > finalIntegrity.indexOf('verifyApprovalArtifacts(sourceRoot, stagedRoot);') &&
+    finalIntegrity.includes('FINAL_CT45_REHASH_PATHS = REQUIRED_UI_REVIEW_PIN_PATHS'),
+    'The aggregate verifier must finish with one post-hook CT-45 rehash over the canonical reviewed runtime scope.');
   const releaseGuard = buildDeploy.indexOf('if [ "$DEPLOY_MODE" = "release" ]; then');
   const readinessCommand = buildDeploy.indexOf('node tools/check-climate-production-readiness.js --release');
   const stagingStart = buildDeploy.indexOf('mkdir -p "$DEPLOY_DIR"');
@@ -564,9 +580,18 @@ function evaluateRuntimeAssets(input) {
     'Climate truth CI must require exactly one active CT-45 component.');
 
   check('ui-review-pin-scope', JSON.stringify(input?.review_scope?.ui_pins) === JSON.stringify(REQUIRED_UI_REVIEW_PIN_PATHS),
-  'Independent UI review must pin the existing runtime scope plus SW, manifest, and all five committed assets.');
+  'Independent UI review must pin every active globe-truth script plus CSS, data, SW, manifest, and all five committed assets.');
+  const activeIndexScripts = (input?.index_runtime_requests || [])
+    .filter(item => item.startsWith('/js/'))
+    .map(item => item.slice(1).split('?')[0]);
+  check('active-runtime-script-scope',
+    JSON.stringify(input?.review_scope?.active_runtime_scripts) === JSON.stringify(ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS) &&
+    JSON.stringify(activeIndexScripts) === JSON.stringify(ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS) &&
+    ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS.every(item =>
+      input?.review_scope?.ui_pins?.includes(item) && input?.review_scope?.runtime_fixed?.includes(item)),
+    'Every active index.html globe-truth script must share one canonical UI-pin and runtime-diff scope.');
   check('runtime-diff-boundary', input?.review_scope?.runtime_prefixes?.includes('assets/globe/runtime/') &&
-    ['tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/generate-globe-starfield.js', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'data/small-nations.json']
+    [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS, 'tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/generate-globe-starfield.js', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'data/small-nations.json']
       .every(item => input?.review_scope?.runtime_fixed?.includes(item)),
     'Runtime-diff policy must classify localized assets and CT-45 controls as runtime-affecting.');
   check('control-files-owned', REQUIRED_CONTROL_OWNERS.every(required =>
@@ -601,6 +626,7 @@ function evaluateRuntimeAssets(input) {
 }
 
 module.exports = {
+  ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
   EXPECTED_ASSETS,
   EXPECTED_INDEX_SW_KEYS,
   EXPECTED_MANIFEST_SEMANTIC_SHA256,

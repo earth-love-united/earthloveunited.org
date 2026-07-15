@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "policy_version": "1.1.0",
+    "policy_version": "1.2.0",
     "purpose": "Adversarial CT-45 mutations; no case grants rights, production use, release, deploy, or review authority."
   },
   "mutations": [
@@ -85,7 +85,9 @@
     { "id": "staged-verification-removed", "operation": "replace", "path": "files.build_deploy", "from": "exec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"", "to": "true", "expected_failure": "deploy-staged-verification" },
     { "id": "ci-source-check-removed", "operation": "replace", "path": "files.ci", "from": "node tools/check-globe-runtime-assets.js", "to": "node -e \"true\"", "expected_failure": "ci-policy-wired" },
     { "id": "truth-component-optional", "operation": "replace", "path": "files.climate_truth_ci", "from": "{ id: 'CT-45-ASSETS', script: 'tools/check-globe-runtime-assets.js', required: true }", "to": "{ id: 'CT-45-ASSETS', script: 'tools/check-globe-runtime-assets.js', required: false }", "expected_failure": "truth-ci-required" },
-    { "id": "ui-pin-manifest-removed", "operation": "set", "path": "review_scope.ui_pins.10", "value": "assets/globe/runtime/omitted.json", "expected_failure": "ui-review-pin-scope" },
+    { "id": "ui-pin-foundation-runtime-removed", "operation": "set", "path": "review_scope.ui_pins.2", "value": "js/unreviewed-foundation.js", "expected_failure": "ui-review-pin-scope" },
+    { "id": "ui-pin-manifest-removed", "operation": "set", "path": "review_scope.ui_pins.17", "value": "assets/globe/runtime/omitted.json", "expected_failure": "ui-review-pin-scope" },
+    { "id": "active-runtime-canonical-scope-drift", "operation": "set", "path": "review_scope.active_runtime_scripts.0", "value": "js/unreviewed-foundation.js", "expected_failure": "active-runtime-script-scope" },
     { "id": "runtime-boundary-prefix-removed", "operation": "set", "path": "review_scope.runtime_prefixes.1", "value": "assets/globe/nonruntime/", "expected_failure": "runtime-diff-boundary" },
     { "id": "smoke-preparation-contract-removed", "operation": "replace", "path": "files.smoke", "from": "runtime assets are prepared before renderer init", "to": "runtime starts", "expected_failure": "smoke-contract" },
     { "id": "credits-rights-boundary-removed", "operation": "replace", "path": "files.credits", "from": "Package inclusion establishes byte provenance, not production image-rights clearance", "to": "Package inclusion grants all image rights", "expected_failure": "credits-provenance-boundary" },
@@ -120,6 +122,7 @@
     { "id": "deploy-mode-validation-removed", "operation": "replace-all", "path": "files.build_deploy", "from": "candidate|release) ;;", "to": "*) ;;", "expected_failure": "deploy-release-boundary" },
     { "id": "deploy-cloudflare-preview-bypass", "operation": "replace", "path": "files.build_deploy", "from": "if [ -n \"${CF_PAGES_BRANCH:-}\" ]; then", "to": "if [ \"${CF_PAGES_BRANCH:-}\" = \"main\" ]; then", "expected_failure": "deploy-release-boundary" },
     { "id": "deploy-final-verifier-suppressed", "operation": "replace", "path": "files.build_deploy", "from": "exec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"", "to": "node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\" || true", "expected_failure": "deploy-staged-verification" },
+    { "id": "final-ct45-rehash-removed", "operation": "replace", "path": "files.final_integrity", "from": "verifyCt45RuntimeBytes(sourceRoot, stagedRoot);", "to": "true;", "expected_failure": "final-ct45-runtime-rehash" },
     { "id": "deploy-success-exit-tamper", "operation": "replace", "path": "files.build_deploy", "from": "exec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"", "to": "trap 'printf %s forged > \"$DEPLOY_DIR/THIRD_PARTY_NOTICES.txt\"' EXIT\nnode tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"", "expected_failure": "deploy-staged-verification" },
     { "id": "deploy-background-post-check-writer", "operation": "replace", "path": "files.build_deploy", "from": "exec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"", "to": "(sleep 1; printf %s forged > \"$DEPLOY_DIR/THIRD_PARTY_NOTICES.txt\") &\nexec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"", "expected_failure": "deploy-staged-verification" },
     { "id": "deploy-early-success-appended", "operation": "append", "path": "files.build_deploy", "value": "\nexit 0\n", "expected_failure": "deploy-staged-verification" },

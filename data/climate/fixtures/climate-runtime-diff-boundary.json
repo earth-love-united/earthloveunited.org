@@ -34,6 +34,48 @@
       "expected": { "status": "fail", "mode": "denied-candidate", "codes": ["candidate_manifest_missing"] }
     },
     {
+      "id": "gaia-utils-is-runtime-affecting",
+      "changed_paths": ["js/gaia-utils.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "module-contracts-is-runtime-affecting",
+      "changed_paths": ["js/module-contracts.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "event-bus-is-runtime-affecting",
+      "changed_paths": ["js/event-bus.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "storage-adapter-is-runtime-affecting",
+      "changed_paths": ["js/storage-adapter.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "storage-is-runtime-affecting",
+      "changed_paths": ["js/storage.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "data-schema-is-runtime-affecting",
+      "changed_paths": ["js/data-schema.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "carbon-clock-is-runtime-affecting",
+      "changed_paths": ["js/carbon-clock.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
       "id": "candidate-cannot-claim-allow",
       "changed_paths": ["index.html"],
       "candidate": "$base_denied_candidate",
