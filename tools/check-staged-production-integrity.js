@@ -9,6 +9,7 @@ const path = require('node:path');
 
 const notices = require('./lib/globe-third-party-notices');
 const approvalPolicy = require('./lib/globe-runtime-approval');
+const publicSurface = require('./lib/public-deploy-surface');
 const {
   EXPECTED_UI_REVIEW_COMMIT,
   EXPECTED_UI_REVIEW_SHA256,
@@ -34,9 +35,15 @@ const APPROVAL_REVIEWED_PATHS = Object.freeze([...new Set([
   notices.INTEGRATION_PATH,
   notices.APPROVAL_SCHEMA_PATH,
   approvalPolicy.TRUST_REGISTRY_PATH,
+  'index.html',
   'CREDITS.md',
   '.github/workflows/ci.yml',
   'tools/build-deploy.sh',
+  'tools/stage-public-deploy.js',
+  'tools/check-public-deploy-surface.js',
+  'tools/lib/public-deploy-surface.js',
+  '_headers',
+  'docs/LEGACY-COUNTRY-DATA-EXIT.md',
   'tools/check-globe-runtime-assets.js',
   'tools/lib/globe-runtime-assets.js',
   'tools/fixtures/globe-runtime-assets.json',
@@ -280,9 +287,15 @@ function verifyCt45RuntimeBytes(sourceRoot, stagedRoot) {
 function verifyFinalStagedIntegrity(options) {
   const sourceRoot = path.resolve(options.sourceRoot);
   const stagedRoot = path.resolve(options.stagedRoot);
+  if (!['candidate', 'release'].includes(options.mode)) {
+    throw new Error('final staged integrity requires an explicit candidate or release mode');
+  }
   if (typeof options.childCheckRunner === 'function') {
     options.childCheckRunner();
   } else if (!options.skipChildChecks) {
+    if (options.mode === 'release') {
+      runChecker(sourceRoot, ['tools/check-climate-production-readiness.js', '--release']);
+    }
     runChecker(sourceRoot, ['tools/check-globe-third-party-notices.js', '--staged', stagedRoot]);
     runChecker(sourceRoot, ['tools/check-globe-runtime-assets.js', '--staged', stagedRoot]);
   }
@@ -290,11 +303,18 @@ function verifyFinalStagedIntegrity(options) {
   verifyPinnedFiles(sourceRoot, stagedRoot);
   verifyFooter(sourceRoot, stagedRoot);
   verifyApprovalArtifacts(sourceRoot, stagedRoot);
-  verifyCt45RuntimeBytes(sourceRoot, stagedRoot);
+  const publicReport = options.skipPublicSurface ? null : publicSurface.verifyPublicDeploySurface({
+    sourceRoot,
+    stagedRoot,
+    mode: options.mode,
+    ...(options.expectedVendorSha256 ? { expectedVendorSha256: options.expectedVendorSha256 } : {}),
+  });
+  const ct45RehashCount = verifyCt45RuntimeBytes(sourceRoot, stagedRoot);
   return {
     status: 'pass',
     pinned_file_count: PINNED_FILES.length,
-    ct45_rehash_count: FINAL_CT45_REHASH_PATHS.length,
+    public_file_count: publicReport ? publicReport.file_count : null,
+    ct45_rehash_count: ct45RehashCount,
   };
 }
 
@@ -382,6 +402,31 @@ function makeSelfTestFixture() {
   return { root, staged };
 }
 
+function makePublicSurfaceSelfTestFixture() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-final-public-surface-'));
+  const staged = path.join(root, '_deploy');
+  fs.mkdirSync(staged);
+  [...publicSurface.ALWAYS_PUBLIC_PATHS, ...publicSurface.CANDIDATE_ONLY_PATHS].forEach(function (relative) {
+    const sourcePath = path.join(ROOT, relative);
+    const fixtureSource = path.join(root, relative);
+    const fixtureStaged = path.join(staged, relative);
+    fs.mkdirSync(path.dirname(fixtureSource), { recursive: true });
+    fs.mkdirSync(path.dirname(fixtureStaged), { recursive: true });
+    if (fs.existsSync(sourcePath)) fs.copyFileSync(sourcePath, fixtureSource);
+    else fs.writeFileSync(fixtureSource, 'self-test dependency placeholder: ' + relative + '\n');
+    fs.copyFileSync(fixtureSource, fixtureStaged);
+  });
+  copyFixtureFile(ROOT, root, UI_REVIEW_PATH);
+  fs.writeFileSync(path.join(staged, publicSurface.CANDIDATE_MARKER_PATH), [
+    'LOCAL QA CANDIDATE — DO NOT PUBLISH',
+    'Runtime image rights and third-party notices are not reviewed.',
+    'production_use_approved=false',
+    'release_authority=false',
+    '',
+  ].join('\n'));
+  return { root, staged };
+}
+
 function assertMutationRejected(id, mutate, afterPrecheck) {
   const fixture = makeSelfTestFixture();
   try {
@@ -390,7 +435,9 @@ function assertMutationRejected(id, mutate, afterPrecheck) {
       verifyFinalStagedIntegrity({
         sourceRoot: fixture.root,
         stagedRoot: fixture.staged,
+        mode: 'candidate',
         skipChildChecks: true,
+        skipPublicSurface: true,
         afterPrecheck: afterPrecheck ? function () { afterPrecheck(fixture); } : null,
       });
     }, undefined, id + ' unexpectedly passed');
@@ -403,10 +450,18 @@ function runSelfTest() {
   const approvalBindingCases = runApprovalCommitBindingSelfTest();
   const fixture = makeSelfTestFixture();
   try {
-    assert.equal(verifyFinalStagedIntegrity({
+    assert.throws(() => verifyFinalStagedIntegrity({
       sourceRoot: fixture.root,
       stagedRoot: fixture.staged,
       skipChildChecks: true,
+      skipPublicSurface: true,
+    }), /explicit candidate or release mode/);
+    assert.equal(verifyFinalStagedIntegrity({
+      sourceRoot: fixture.root,
+      stagedRoot: fixture.staged,
+      mode: 'candidate',
+      skipChildChecks: true,
+      skipPublicSurface: true,
     }).status, 'pass');
   } finally {
     fs.rmSync(fixture.root, { recursive: true, force: true });
@@ -491,7 +546,9 @@ function runSelfTest() {
     assert.throws(() => verifyFinalStagedIntegrityWithCleanup({
       sourceRoot: cleanupFixture.root,
       stagedRoot: cleanupFixture.staged,
+      mode: 'candidate',
       skipChildChecks: true,
+      skipPublicSurface: true,
     }), undefined, 'failed final verification must throw');
     assert.equal(fs.existsSync(cleanupFixture.staged), false, 'failed final verification must remove staged output');
   } finally {
@@ -504,6 +561,8 @@ function runSelfTest() {
     assert.throws(() => verifyFinalStagedIntegrityWithCleanup({
       sourceRoot: postChildCt45Fixture.root,
       stagedRoot: postChildCt45Fixture.staged,
+      mode: 'candidate',
+      skipPublicSurface: true,
       childCheckRunner: function () { childChecksCompleted = true; },
       afterPrecheck: function () {
         assert.equal(childChecksCompleted, true, 'CT-45 mutation must occur after child checks');
@@ -524,6 +583,8 @@ function runSelfTest() {
     assert.throws(() => verifyFinalStagedIntegrityWithCleanup({
       sourceRoot: pairedRepinFixture.root,
       stagedRoot: pairedRepinFixture.staged,
+      mode: 'candidate',
+      skipPublicSurface: true,
       childCheckRunner: function () { pairedChildChecksCompleted = true; },
       afterPrecheck: function () {
         assert.equal(pairedChildChecksCompleted, true, 'paired mutation must occur after child checks');
@@ -545,8 +606,35 @@ function runSelfTest() {
   } finally {
     fs.rmSync(pairedRepinFixture.root, { recursive: true, force: true });
   }
-  process.stdout.write('Final staged production integrity self-test: PASS (16 fail-closed filesystem/tamper/cleanup cases; ' +
-    approvalBindingCases + ' scoped approval commit-binding cases; post-child CT-45 mutation rejected and cleaned)\n');
+  const publicFixture = makePublicSurfaceSelfTestFixture();
+  try {
+    assert.equal(verifyFinalStagedIntegrity({
+      sourceRoot: publicFixture.root,
+      stagedRoot: publicFixture.staged,
+      mode: 'candidate',
+      skipChildChecks: true,
+      expectedVendorSha256: publicSurface.inspectRegular(publicFixture.root, 'js/vendor/globe.gl.js').sha256,
+    }).status, 'pass');
+    assert.throws(function () {
+      verifyFinalStagedIntegrity({
+        sourceRoot: publicFixture.root,
+        stagedRoot: publicFixture.staged,
+        mode: 'candidate',
+        skipChildChecks: true,
+        expectedVendorSha256: publicSurface.inspectRegular(publicFixture.root, 'js/vendor/globe.gl.js').sha256,
+        afterPrecheck: function () {
+          const leaked = path.join(publicFixture.staged, 'data/climate/fixtures/internal-review.json');
+          fs.mkdirSync(path.dirname(leaked), { recursive: true });
+          fs.writeFileSync(leaked, '{}\n');
+        },
+      });
+    }, /public surface mismatch/, 'post-check unexpected public file must fail');
+  } finally {
+    fs.rmSync(publicFixture.root, { recursive: true, force: true });
+  }
+  process.stdout.write('Final staged production integrity self-test: PASS (18 fail-closed ' +
+    'filesystem/tamper/cleanup/public-surface/mode cases; ' + approvalBindingCases +
+    ' scoped approval commit-binding cases; post-child CT-45 mutation rejected and cleaned)\n');
 }
 
 function runCli(argv) {
@@ -557,10 +645,15 @@ function runCli(argv) {
   if (argv.length !== 2 || argv[0] !== '--staged') {
     throw new Error('usage: node tools/check-staged-production-integrity.js --staged <directory> | --self-test');
   }
+  const mode = process.env.ELU_VERIFIED_DEPLOY_MODE;
+  if (!['candidate', 'release'].includes(mode)) {
+    throw new Error('ELU_VERIFIED_DEPLOY_MODE must explicitly be candidate or release');
+  }
   const stagedRoot = resolveStagedRoot(ROOT, argv[1]);
-  const report = verifyFinalStagedIntegrityWithCleanup({ sourceRoot: ROOT, stagedRoot });
+  const report = verifyFinalStagedIntegrityWithCleanup({ sourceRoot: ROOT, stagedRoot, mode });
   process.stdout.write('Final staged production integrity: PASS (' + report.pinned_file_count +
-    ' pinned notice/trust files, ' + report.ct45_rehash_count +
+    ' pinned notice/trust files, ' + report.public_file_count +
+    ' exact public files, ' + report.ct45_rehash_count +
     ' final CT-45 reviewed runtime rehashes, footer parity, approval boundary)\n');
 }
 

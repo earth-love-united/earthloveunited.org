@@ -57,6 +57,9 @@ jobs:
       - name: Final staged production integrity policy self-test
         run: node tools/check-staged-production-integrity.js --self-test
 
+      - name: Exact public deploy surface policy self-test
+        run: node tools/check-public-deploy-surface.js --self-test
+
       - name: Climate production readiness policy fixtures
         run: node tools/check-climate-production-readiness-policy.js
 
@@ -129,6 +132,9 @@ jobs:
 
       - name: Build candidate deploy directory
         run: ./tools/build-deploy.sh --candidate
+
+      - name: Verify exact public deploy surface independently
+        run: node tools/check-public-deploy-surface.js --staged _deploy --mode candidate
 
       - name: Verify staged third-party notices independently
         run: node tools/check-globe-third-party-notices.js --staged _deploy

@@ -20,6 +20,7 @@
 /LICENSE                              @earth-love-united/maintainers
 /CREDITS.md                           @earth-love-united/maintainers
 /THIRD_PARTY_NOTICES.txt                @earth-love-united/maintainers
+/_headers                              @earth-love-united/maintainers
 /CODE_OF_CONDUCT.md                   @earth-love-united/maintainers
 /CONTRIBUTING.md                      @earth-love-united/maintainers
 /README.md                            @earth-love-united/maintainers
@@ -69,6 +70,9 @@
 /tools/lib/globe-runtime-approval.js @earth-love-united/maintainers
 /tools/check-staged-production-integrity.js @earth-love-united/maintainers
 /tools/build-deploy.sh                @earth-love-united/maintainers
+/tools/stage-public-deploy.js         @earth-love-united/maintainers
+/tools/check-public-deploy-surface.js @earth-love-united/maintainers
+/tools/lib/public-deploy-surface.js   @earth-love-united/maintainers
 /tools/check-climate-production-readiness.js @earth-love-united/maintainers
 /tools/check-climate-production-readiness-policy.js @earth-love-united/maintainers
 /tools/lib/climate-production-readiness.js @earth-love-united/maintainers

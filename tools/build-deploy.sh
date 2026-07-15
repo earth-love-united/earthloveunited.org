@@ -96,57 +96,12 @@ mkdir -p "$DEPLOY_DIR"
 echo "📦 Verifying js/vendor/globe.gl.js..."
 "$REPO_ROOT/tools/fetch-globe-vendor.sh"
 
-# ── Copy ONLY what the browser needs.
-#    Order: HTML pages first, then code, then assets, then runtime data.
+# ── Copy the readable root notice first. The exact staging tool then copies
+#    only the audited browser/runtime surface and refuses symlinks, missing
+#    files, duplicate destinations, or any pre-existing staged payload.
 echo "📋 Staging files..."
-
-# Entry-point HTML pages
-cp index.html "$DEPLOY_DIR/"
-[ -f gaia.html ] && cp gaia.html "$DEPLOY_DIR/" || true
 cp THIRD_PARTY_NOTICES.txt "$DEPLOY_DIR/"
-
-# PWA: service worker must live at the origin root; manifest is linked from index.html
-cp sw.js manifest.json "$DEPLOY_DIR/"
-
-# Code
-cp -r js  "$DEPLOY_DIR/"
-cp -r css "$DEPLOY_DIR/"
-
-# Static assets
-[ -d assets ]   && cp -r assets   "$DEPLOY_DIR/"
-[ -d textures ] && cp -r textures "$DEPLOY_DIR/"
-
-# Runtime data — use cp (no rsync dependency; CI images may lack rsync).
-mkdir -p "$DEPLOY_DIR/data"
-cp -r data/. "$DEPLOY_DIR/data/"
-find "$DEPLOY_DIR/data" \( -name '*.bak*' -o -name '.DS_Store' \) -delete 2>/dev/null || true
-
-# DIS knowledge JSONs + JS bridges
-mkdir -p "$DEPLOY_DIR/dis"
-find dis -maxdepth 1 -type f \( -name "*.js" -o -name "*.json" -o -name "*.json.gz" -o -name "*.css" \) \
-  -exec cp {} "$DEPLOY_DIR/dis/" \;
-
-# Build artifacts the runtime fetches
-[ -d dist ] && cp -r dist "$DEPLOY_DIR/"
-
-# Tools dir (in-browser dev tools loaded only on localhost via index.html)
-[ -d tools ] && {
-  mkdir -p "$DEPLOY_DIR/tools"
-  # Only copy the in-browser tools (JS), not the bash scripts
-  find tools -maxdepth 1 -type f -name "*.js" -exec cp {} "$DEPLOY_DIR/tools/" \;
-}
-
-# Holocene bifurcation page if it exists
-[ -d holocene-bifurcation ] && cp -r holocene-bifurcation "$DEPLOY_DIR/"
-
-# ── Clean up junk that may have crept in
-echo "🧹 Stripping junk..."
-find "$DEPLOY_DIR" -name ".DS_Store"   -delete 2>/dev/null
-find "$DEPLOY_DIR" -name "Thumbs.db"   -delete 2>/dev/null
-find "$DEPLOY_DIR" -name "*.bak"       -delete 2>/dev/null
-find "$DEPLOY_DIR" -name "*.bak.*"     -delete 2>/dev/null
-find "$DEPLOY_DIR" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null
-find "$DEPLOY_DIR" -name "*.pyc"       -delete 2>/dev/null
+node tools/stage-public-deploy.js --staged "$DEPLOY_DIR" --mode "$DEPLOY_MODE"
 
 if [ "$DEPLOY_MODE" = "candidate" ]; then
   printf '%s\n' \
@@ -157,6 +112,9 @@ if [ "$DEPLOY_MODE" = "candidate" ]; then
     > "$DEPLOY_DIR/CANDIDATE-NOT-FOR-PUBLICATION.txt"
 fi
 
+echo "🔎 Verifying exact public deploy surface..."
+node tools/check-public-deploy-surface.js --staged "$DEPLOY_DIR" --mode "$DEPLOY_MODE"
+
 # ── Report
 echo ""
 echo "✅ Staging complete: $DEPLOY_DIR/"
@@ -164,7 +122,7 @@ TOTAL_SIZE=$(du -sh "$DEPLOY_DIR" | cut -f1)
 TOTAL_FILES=$(find "$DEPLOY_DIR" -type f | wc -l | tr -d ' ')
 echo "   Total: $TOTAL_FILES files, $TOTAL_SIZE"
 echo ""
-echo "Biggest files (sanity check — anything > 5MB? should be runtime knowledge data only):"
+echo "Biggest files (sanity check — only audited runtime files belong here):"
 find "$DEPLOY_DIR" -type f -size +1M -exec du -h {} \; | sort -rh | head -5
 echo ""
 if [ "$DEPLOY_MODE" = "release" ]; then
