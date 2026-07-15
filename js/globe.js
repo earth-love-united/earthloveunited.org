@@ -1643,7 +1643,9 @@ const GlobeModule = {
       + '<div class="tt-detail">' + _escapeHtml(evidenceSummary) + '</div>'
       + approximatePointNote
       + mapAreaNote
-      + (selected ? '<div class="tt-candidate">2023 harmonized estimate · excludes LULUCF</div>' : '');
+      + (selected ? '<div class="tt-candidate">' + (d.hasData
+        ? '2023 harmonized estimate · excludes LULUCF'
+        : 'No emissions estimate · visible and unranked') + '</div>' : '');
 
     if (!selected) {
       html += '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
