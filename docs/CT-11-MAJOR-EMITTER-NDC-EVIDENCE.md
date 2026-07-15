@@ -62,6 +62,15 @@ Consequently, every Party-document checksum is explicitly `null` with
 successful, lawful retrieval; they must never be committed under
 `data/climate/`.
 
+This raw-file state is separate from content-locator verification. On
+2026-07-15 the official UNFCCC PDF indexing/read channel exposed enough of the
+authoritative documents to verify the cited pages, tables, and field-presence
+states without creating a local raw-file copy. That indexed content supports
+an in-review presence audit only. It does not provide or substitute for a
+source-file checksum, and it does not authorize copied text or normalized
+public values. For China, both related UNFCCC metadata records 497393 and
+497392 are retained alongside the registry row and attachment URL.
+
 ## Reviewer separation
 
 The extraction is `in_review`. The builder is recorded as

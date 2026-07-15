@@ -51,17 +51,27 @@
       "submission_date": "2025-11-03",
       "registry_page_url": "https://unfccc.int/NDCREG?field_document_ca_target_id=143",
       "metadata_url": "https://unfccc.int/documents/497393",
+      "related_metadata_urls": ["https://unfccc.int/documents/497392"],
+      "metadata_note": "UNFCCC exposes related document records 497393 and 497392 for this submission; the registry row and attachment URL are the identity anchors.",
       "direct_url": "https://unfccc.int/sites/default/files/2025-11/2035%E5%B9%B4%E4%B8%AD%E5%9B%BD%E5%9B%BD%E5%AE%B6%E8%87%AA%E4%B8%BB%E8%B4%A1%E7%8C%AE%E6%8A%A5%E5%91%8A.pdf",
       "registry_locator": "China row; active; submitted 03/11/2025; attachment timestamp 03/11/2025 10:05",
       "licence_id": "UNFCCC-terms-and-party-document-rights",
       "redistribution": "metadata_only",
       "raw_storage": "external_only",
-      "acquisition": {
+      "raw_file_acquisition": {
         "state": "source_unavailable",
         "attempted_at": "2026-07-15",
         "detail": "Direct retrieval returned a 212-byte Incapsula HTML interstitial instead of the PDF; the response was discarded.",
         "checksum_sha256": null,
         "reason_codes": ["source_unavailable"]
+      },
+      "content_locator_verification": {
+        "state": "available",
+        "channel": "official_unfccc_pdf_index",
+        "checked_at": "2026-07-15",
+        "local_raw_file": false,
+        "supports": "in_review_field_presence_only",
+        "limitation": "Indexed official content supports page locators and presence states but is not a local source artifact, does not provide a source checksum, and cannot authorize normalized public values."
       }
     },
     {
@@ -80,12 +90,20 @@
       "licence_id": "UNFCCC-terms-and-party-document-rights",
       "redistribution": "metadata_only",
       "raw_storage": "external_only",
-      "acquisition": {
+      "raw_file_acquisition": {
         "state": "source_unavailable",
         "attempted_at": "2026-07-15",
         "detail": "Direct retrieval returned a 212-byte Incapsula HTML interstitial instead of the PDF; the response was discarded.",
         "checksum_sha256": null,
         "reason_codes": ["source_unavailable"]
+      },
+      "content_locator_verification": {
+        "state": "available",
+        "channel": "official_unfccc_pdf_index",
+        "checked_at": "2026-07-15",
+        "local_raw_file": false,
+        "supports": "in_review_field_presence_only",
+        "limitation": "Indexed official content supports page locators and presence states but is not a local source artifact, does not provide a source checksum, and cannot authorize normalized public values."
       }
     },
     {
@@ -104,12 +122,20 @@
       "licence_id": "UNFCCC-terms-and-party-document-rights",
       "redistribution": "metadata_only",
       "raw_storage": "external_only",
-      "acquisition": {
+      "raw_file_acquisition": {
         "state": "source_unavailable",
         "attempted_at": "2026-07-15",
         "detail": "Direct retrieval returned a 212-byte Incapsula HTML interstitial instead of the PDF; the response was discarded.",
         "checksum_sha256": null,
         "reason_codes": ["source_unavailable"]
+      },
+      "content_locator_verification": {
+        "state": "available",
+        "channel": "official_unfccc_pdf_index",
+        "checked_at": "2026-07-15",
+        "local_raw_file": false,
+        "supports": "in_review_field_presence_only",
+        "limitation": "Indexed official content supports page locators and presence states but is not a local source artifact, does not provide a source checksum, and cannot authorize normalized public values."
       }
     },
     {
@@ -128,12 +154,20 @@
       "licence_id": "UNFCCC-terms-and-party-document-rights",
       "redistribution": "metadata_only",
       "raw_storage": "external_only",
-      "acquisition": {
+      "raw_file_acquisition": {
         "state": "source_unavailable",
         "attempted_at": "2026-07-15",
         "detail": "Direct retrieval returned a 212-byte Incapsula HTML interstitial instead of the PDF; the response was discarded.",
         "checksum_sha256": null,
         "reason_codes": ["source_unavailable"]
+      },
+      "content_locator_verification": {
+        "state": "available",
+        "channel": "official_unfccc_pdf_index",
+        "checked_at": "2026-07-15",
+        "local_raw_file": false,
+        "supports": "in_review_field_presence_only",
+        "limitation": "Indexed official content supports section and table locators and presence states but is not a local source artifact, does not provide a source checksum, and cannot authorize normalized public values."
       }
     },
     {
@@ -162,12 +196,20 @@
       "licence_id": "UNFCCC-terms-and-party-document-rights",
       "redistribution": "metadata_only",
       "raw_storage": "external_only",
-      "acquisition": {
+      "raw_file_acquisition": {
         "state": "source_unavailable",
         "attempted_at": "2026-07-15",
         "detail": "The legacy submissions host redirected to UNFCCC maintenance and direct retrieval returned an Incapsula HTML interstitial; the response was discarded.",
         "checksum_sha256": null,
         "reason_codes": ["source_unavailable"]
+      },
+      "content_locator_verification": {
+        "state": "available",
+        "channel": "official_unfccc_pdf_index",
+        "checked_at": "2026-07-15",
+        "local_raw_file": false,
+        "supports": "in_review_field_presence_only",
+        "limitation": "Indexed official content supports page locators and presence states but is not a local source artifact, does not provide a source checksum, and cannot authorize normalized public values."
       }
     }
   ],

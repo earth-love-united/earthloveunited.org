@@ -121,8 +121,16 @@ function main() {
       if (typeof document[key] === 'string' && !document[key].startsWith('https://')) fail(errors, `${at}.${key} must use HTTPS`);
     }
     if (document.redistribution !== 'metadata_only' || document.raw_storage !== 'external_only') fail(errors, `${at} violates the source registry storage or redistribution gate`);
-    if (document.acquisition.state !== 'source_unavailable' || document.acquisition.checksum_sha256 !== null) fail(errors, `${at} must preserve the failed authoritative acquisition and null checksum`);
-    checkReasons(errors, document.acquisition.reason_codes, `${at}.acquisition.reason_codes`);
+    const raw = document.raw_file_acquisition;
+    const locatorReview = document.content_locator_verification;
+    if (!raw || raw.state !== 'source_unavailable' || raw.checksum_sha256 !== null) fail(errors, `${at} must preserve blocked raw-file acquisition and a null source checksum`);
+    if (raw) checkReasons(errors, raw.reason_codes, `${at}.raw_file_acquisition.reason_codes`);
+    if (!locatorReview || locatorReview.state !== 'available' || locatorReview.channel !== 'official_unfccc_pdf_index' || locatorReview.checked_at !== '2026-07-15' || locatorReview.local_raw_file !== false || locatorReview.supports !== 'in_review_field_presence_only') {
+      fail(errors, `${at} must distinguish official index locator verification from unavailable raw-file acquisition`);
+    }
+    if (!locatorReview || typeof locatorReview.limitation !== 'string' || !locatorReview.limitation.includes('does not provide a source checksum') || !locatorReview.limitation.includes('cannot authorize normalized public values')) {
+      fail(errors, `${at}.content_locator_verification must state checksum and normalized-value limitations`);
+    }
     if (document.submission_date === null) {
       if (document.submission_date_state !== 'not_reported') fail(errors, `${at} requires explicit not_reported submission date state`);
       checkReasons(errors, document.submission_date_reason_codes, `${at}.submission_date_reason_codes`);
@@ -146,6 +154,13 @@ function main() {
       if (!component.field_audit[fieldName]) fail(errors, `${at}.field_audit.${fieldName} is required for ${component.target_type}`);
     }
     for (const [fieldName, field] of Object.entries(component.field_audit)) checkAuditField(errors, field, `${at}.field_audit.${fieldName}`);
+    const sourceDocument = audit.documents.find(item => item.source_document_id === component.source_document_id);
+    const hasPageLocator = Object.values(component.field_audit).some(field => /\bpages?\b/i.test(field.locator));
+    if (hasPageLocator && sourceDocument?.raw_file_acquisition?.state === 'source_unavailable') {
+      if (sourceDocument.content_locator_verification?.state !== 'available' || sourceDocument.content_locator_verification.local_raw_file !== false) {
+        fail(errors, `${at}: page locators with source_unavailable require separate official index content verification`);
+      }
+    }
   }
 
   const requiredComponents = [
@@ -166,6 +181,10 @@ function main() {
   const iranDocument = audit.documents.find(item => item.country_id === 'iso3166-1:IRN');
   if (!iranDocument || iranDocument.document_type !== 'indc' || iranDocument.registry_status !== 'not_applicable' || iranDocument.party_status.interpretation !== 'signatory_not_party') {
     fail(errors, 'Iran must remain an INDC from a signatory that is not a Paris Agreement Party, not an active NDC');
+  }
+  const chinaDocument = audit.documents.find(item => item.country_id === 'iso3166-1:CHN');
+  if (!chinaDocument || chinaDocument.metadata_url !== 'https://unfccc.int/documents/497393' || !Array.isArray(chinaDocument.related_metadata_urls) || !chinaDocument.related_metadata_urls.includes('https://unfccc.int/documents/497392')) {
+    fail(errors, 'China metadata must retain both related UNFCCC document records 497393 and 497392');
   }
 
   const forbidden = [];

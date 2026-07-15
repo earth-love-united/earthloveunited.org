@@ -19,7 +19,7 @@
     {
       "path": "data/climate/evidence/major-emitter-ndc-source-audit.json",
       "media_type": "application/json",
-      "checksum_sha256": "be5a23a58c58a38057246da34286259260310cdcf42939dfdce43343bfae7f4a",
+      "checksum_sha256": "c4764628073653bda0f3f8a14f49400a624dfb3935c36432db8754e23d2c6683",
       "document_count": 5,
       "target_component_count": 7
     }
@@ -42,7 +42,9 @@
       "checksum_state": "source_unavailable",
       "reason_codes": [
         "source_unavailable"
-      ]
+      ],
+      "content_locator_verification_state": "available",
+      "content_locator_verification_channel": "official_unfccc_pdf_index"
     },
     {
       "source_document_id": "unfccc-ndc-ind-2031-2035-2026-04-24",
@@ -50,7 +52,9 @@
       "checksum_state": "source_unavailable",
       "reason_codes": [
         "source_unavailable"
-      ]
+      ],
+      "content_locator_verification_state": "available",
+      "content_locator_verification_channel": "official_unfccc_pdf_index"
     },
     {
       "source_document_id": "unfccc-ndc-idn-second-2025-10-27",
@@ -58,7 +62,9 @@
       "checksum_state": "source_unavailable",
       "reason_codes": [
         "source_unavailable"
-      ]
+      ],
+      "content_locator_verification_state": "available",
+      "content_locator_verification_channel": "official_unfccc_pdf_index"
     },
     {
       "source_document_id": "unfccc-ndc-idn-enhanced-2022-09-23",
@@ -66,7 +72,9 @@
       "checksum_state": "source_unavailable",
       "reason_codes": [
         "source_unavailable"
-      ]
+      ],
+      "content_locator_verification_state": "available",
+      "content_locator_verification_channel": "official_unfccc_pdf_index"
     },
     {
       "source_document_id": "unfccc-indc-irn-2015-11-21",
@@ -74,7 +82,9 @@
       "checksum_state": "source_unavailable",
       "reason_codes": [
         "source_unavailable"
-      ]
+      ],
+      "content_locator_verification_state": "available",
+      "content_locator_verification_channel": "official_unfccc_pdf_index"
     }
   ],
   "review": {
