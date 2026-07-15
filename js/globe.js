@@ -1089,6 +1089,8 @@ const GlobeModule = {
     const mobileMotion = window.innerWidth <= 720;
     const exitDuration = mobileMotion ? 220 : (opts.fromDrag ? 300 : 260);
     const enterDuration = mobileMotion ? 300 : 460;
+    const activeBeforeSwap = document.activeElement;
+    const restoreHeadingFocus = !!(tt && activeBeforeSwap && tt.contains(activeBeforeSwap));
     // Bumble semantics: advancing throws the card out to the RIGHT and the
     // next one enters from the left; going back mirrors it.
     const outClass = dir > 0 ? 'tt-fly-right' : 'tt-fly-left';
@@ -1098,6 +1100,14 @@ const GlobeModule = {
       this._selectedCountryFeature = target.feature;
       this._countryHoverFeature = target.feature;
       this._renderCountryInfoCard(target.feature, true);
+      // Re-rendering replaces every node inside the card. Keep keyboard and
+      // screen-reader users inside the modal by focusing the new heading when
+      // their prior focus was in the replaced content. The persistent outer
+      // previous/next buttons retain focus naturally.
+      if (restoreHeadingFocus && tt) {
+        const heading = tt.querySelector('#country-card-heading');
+        if (heading) heading.focus({ preventScroll: true });
+      }
       this._dockCountryCard();
       this._refreshCountryBorders();
       this._showCountryProjects(target.iso);

@@ -53,6 +53,7 @@ assert.ok(!data.includes('pledge-nodes.json') && !globe.includes('pledge-nodes.j
 assert.ok(globe.includes('elu-trajectory-point') && globe.includes('elu-chart-axis') && globe.includes('Show chart data'));
 assert.ok(globe.includes("wrap.setAttribute('role', 'dialog')") && globe.includes("wrap.setAttribute('aria-modal', 'true')") && globe.includes('country-card-heading'));
 assert.ok(globe.includes("tt.removeAttribute('aria-modal')") && globe.includes("tt.setAttribute('aria-hidden', 'true')"), 'closed modal must leave the accessibility tree');
+assert.ok(globe.includes('restoreHeadingFocus') && globe.includes("heading.focus({ preventScroll: true })"), 'country navigation must restore focus after replacing dialog content');
 assert.ok(css.includes('.elu-rank-dot.is-magnitude') && css.includes('.elu-rank-dot.is-gap') && css.includes('.tt-candidate'));
 assert.ok(!/Measured \/ harmonized emissions|Measured annual observations/.test(JSON.stringify(output.runtime) + globe));
 assert.ok(!/Math\.log10\((?:0\.00334|15000)/.test(globe), 'hard-coded visual magnitude bounds leaked');
