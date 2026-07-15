@@ -88,3 +88,22 @@ subset using Node.js built-ins, with no npm dependency or browser build step.
 Valid fixtures distinguish real `0` and `false` values from missing `null`
 evidence. Invalid fixtures prove that schema, lineage, target-type,
 independent-plane, identity, and release-gate violations fail closed.
+
+## CT-10C factual-display promotion
+
+`releases/primap-hist-2.6.1-factual-display-2026-07-15.json` is a narrow,
+deterministic promotion of the CT-10B PRIMAP batch after its exact input bytes
+were independently attested. It permits only attributed factual emissions
+display, time-series display, and descriptive comparison/ranking by the 2023
+value of this one harmonized metric. Such a magnitude ranking is not a target,
+delivery, performance, impact-band, composite-score, or normative climate-score
+judgment.
+
+The promotion has not been loaded by the site. Its own independent review and
+the CT-40 runtime release gate remain required, so
+`production_runtime_release` is explicitly false. Verify the deterministic
+artifact and eight fail-closed mutations with:
+
+```sh
+node tools/check-primap-factual-display-promotion.js
+```

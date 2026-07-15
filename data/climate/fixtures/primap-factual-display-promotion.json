@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "fictional_or_mutated_inputs_only": true,
+  "fail_closed_cases": [
+    { "id": "candidate-byte-mismatch", "mutation": "candidate_byte", "expected": "deny" },
+    { "id": "attestation-byte-mismatch", "mutation": "attestation_byte", "expected": "deny" },
+    { "id": "attestation-not-pass", "mutation": "attestation_decision", "expected": "deny" },
+    { "id": "independence-not-asserted", "mutation": "independent_of_builder", "expected": "deny" },
+    { "id": "same-builder-reviewer", "mutation": "reviewer_id", "expected": "deny" },
+    { "id": "candidate-calculation-mismatch", "mutation": "candidate_calculation_hash", "expected": "deny" },
+    { "id": "attestation-calculation-mismatch", "mutation": "attestation_calculation_hash", "expected": "deny" },
+    { "id": "scoring-boundary-crossed", "mutation": "scoring_allowed", "expected": "deny" }
+  ]
+}
