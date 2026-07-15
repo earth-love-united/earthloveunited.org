@@ -1,6 +1,16 @@
 {
   "schema_version": "1.0.0",
   "fixture_set": "ct42-to-ct40-real-release-review",
+  "scope_mutations": [
+    { "id": "data-pin-missing", "operation": "delete-data-pin", "path": "data/climate/runtime/published-facts-candidate.json", "expected": "reject" },
+    { "id": "data-pin-wrong", "operation": "set-data-pin", "path": "data/climate/runtime/published-facts-candidate.json", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "expected": "reject" },
+    { "id": "data-pin-map-empty", "operation": "clear-data-pins", "expected": "reject" },
+    { "id": "ui-pin-missing-app", "operation": "remove-ui-pin", "path": "js/app.js", "expected": "reject" },
+    { "id": "ui-pin-wrong-app", "operation": "set-ui-pin", "path": "js/app.js", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "expected": "reject" },
+    { "id": "ui-pin-list-empty", "operation": "clear-ui-pins", "expected": "reject" },
+    { "id": "ui-pin-duplicate-app", "operation": "duplicate-ui-pin", "path": "js/app.js", "expected": "reject" },
+    { "id": "ui-stale-app-bytes", "operation": "set-current-hash", "path": "js/app.js", "value": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "expected": "reject" }
+  ],
   "mutations": [
     { "id": "ui-release-authority", "target": "uiReview", "path": "publication_boundary.release_eligible", "value": true, "expected": "reject" },
     { "id": "ui-production-authority", "target": "uiReview", "path": "publication_boundary.production_runtime_release", "value": true, "expected": "reject" },

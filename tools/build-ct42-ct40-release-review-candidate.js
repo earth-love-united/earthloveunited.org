@@ -4,7 +4,7 @@
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
-const { compile } = require('./lib/ct42-ct40-release-review');
+const { compile, reviewPinPaths } = require('./lib/ct42-ct40-release-review');
 
 const ROOT = path.resolve(__dirname, '..');
 const PATHS = Object.freeze({
@@ -27,8 +27,7 @@ function write(relative, value) { fs.writeFileSync(path.join(ROOT, relative), `$
 const dataReview = json(PATHS.dataReview);
 const uiReview = json(PATHS.uiReview);
 const referenced = new Set([
-  ...Object.keys(dataReview.reviewed_input_sha256 || {}),
-  ...(uiReview.reviewed_file_pins || []).map(item => item.path),
+  ...reviewPinPaths(dataReview, uiReview),
   PATHS.dataReview,
   PATHS.uiReview,
   PATHS.primarySourcePilot,
