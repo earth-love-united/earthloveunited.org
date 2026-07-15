@@ -97,7 +97,7 @@ function neutralIndex(bytes) {
   index = replaceOnce(index, 'href="css/globe-system.css?v=v15"', 'href="css/globe-system.css?v=ct42-neutral-rollback-1"', 'rollback CSS key');
   index = replaceOnce(index, 'href="js/data.js?v=v2" as="script"', 'href="js/data.js?v=ct42-neutral-rollback-1" as="script"', 'rollback data preload key');
   index = replaceOnce(index, 'src="js/data.js?v=v2"', 'src="js/data.js?v=ct42-neutral-rollback-1"', 'rollback data key');
-  index = replaceOnce(index, 'src="js/globe.js?v=v10"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
+  index = replaceOnce(index, 'src="js/globe.js?v=v11"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
   index = replaceOnce(index, "'tools/smoke-test.js?v=v1'", "'tools/smoke-test.js?v=ct42-neutral-rollback-1'", 'rollback SmokeTest key');
   index = replaceOnce(index,
     '<button id="globe-evidence-browse" class="glass-btn" data-action="browseEvidence" disabled aria-disabled="true" aria-label="Browse all 249 evidence records"><span class="browse-label-full">Browse all 249 evidence records</span><span class="browse-label-short" aria-hidden="true">249 records</span></button>',
@@ -137,17 +137,17 @@ function neutralIndex(bytes) {
     '<!-- Accessible neutral navigation route. GlobeModule reveals this body-level region\n     when local geometry, the renderer, WebGL, or globe construction fail closed. -->',
     'neutral fallback comment');
   index = replaceOnce(index,
-    'This accessible view shows factual emissions records and explicit source gaps only. It does not assess commitments, targets, delivery, performance, impact bands, or climate scores. Map boundaries are navigational and are not a sovereignty or performance judgment.',
+    'This view shows emissions records and source gaps. Emissions magnitude is not a climate-performance score. Map boundaries are navigational and are not a sovereignty judgment.',
     'This accessible view contains neutral country navigation only. Country climate evidence, commitments, targets, delivery, finance, ratings, performance, impact bands, emissions values, and climate scores are withheld. Map boundaries are navigational and are not a sovereignty or performance judgment.',
     'neutral fallback boundary');
-  index = replaceOnce(index, '<h3 id="globe-fallback-evidence-title">Country evidence candidate</h3>', '<h3 id="globe-fallback-evidence-title">Neutral country navigation</h3>', 'neutral fallback heading');
-  index = replaceOnce(index, '<p id="globe-fallback-summary">Loading the candidate coverage…</p>', '<p id="globe-fallback-summary">Loading the neutral navigation set…</p>', 'neutral fallback summary');
-  index = replaceOnce(index, 'aria-label="Countries and registry entities in the candidate dataset"', 'aria-label="Neutral country navigation entities"', 'neutral fallback list label');
+  index = replaceOnce(index, '<h3 id="globe-fallback-evidence-title">Country emissions evidence</h3>', '<h3 id="globe-fallback-evidence-title">Neutral country navigation</h3>', 'neutral fallback heading');
+  index = replaceOnce(index, '<p id="globe-fallback-summary">Loading emissions coverage…</p>', '<p id="globe-fallback-summary">Loading the neutral navigation set…</p>', 'neutral fallback summary');
+  index = replaceOnce(index, 'aria-label="Countries and registry entities in the emissions dataset"', 'aria-label="Neutral country navigation entities"', 'neutral fallback list label');
   index = replaceOnce(index,
-    'Choose an item from the list to inspect its factual series or explicit source-gap state. No commitment, delivery, performance, impact, or score conclusion is shown here.',
+    'Choose an item to inspect its emissions series or source-gap state. Climate performance is not scored in this view.',
     'Choose an entity to inspect its explicit evidence-withheld state. No climate value, commitment, target, delivery, performance, impact, finance, rating, or score conclusion is shown here.',
     'neutral fallback detail');
-  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=33-focus-trap'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
+  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=34-truth-copy'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
   return Buffer.from(index);
 }
 
@@ -836,7 +836,7 @@ const CACHE_NAME = '${CACHE_NAME}';`,
   for (const line of removals) sw = replaceOnce(sw, line, '', `remove precache ${line.trim()}`);
   sw = replaceOnce(sw, "'/css/globe-system.css?v=v15'", "'/css/globe-system.css?v=ct42-neutral-rollback-1'", 'rollback CSS precache');
   sw = replaceOnce(sw, "'/js/data.js?v=v2'", "'/js/data.js?v=ct42-neutral-rollback-1'", 'rollback data precache');
-  sw = replaceOnce(sw, "'/js/globe.js?v=v10'", "'/js/globe.js?v=ct42-neutral-rollback-1'", 'rollback globe precache');
+  sw = replaceOnce(sw, "'/js/globe.js?v=v11'", "'/js/globe.js?v=ct42-neutral-rollback-1'", 'rollback globe precache');
   sw = replaceOnce(sw, "'/data/carbon-projects.json?v=ct42candidate1'", "'/data/carbon-projects.json?v=ct42-neutral-rollback-1'", 'rollback carbon data key');
   return Buffer.from(sw);
 }

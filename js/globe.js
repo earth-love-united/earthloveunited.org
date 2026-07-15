@@ -137,7 +137,7 @@ const COUNTRY_STATUS = {
 };
 
 const COUNTRY_STATUS_LABELS = {
-  [COUNTRY_STATUS.FACTUAL]: 'Reviewed facts · candidate preview',
+  [COUNTRY_STATUS.FACTUAL]: 'Reviewed emissions data',
   [COUNTRY_STATUS.MISSING]: 'Emissions source gap',
 };
 
@@ -283,7 +283,7 @@ function _getGlobeThemeConfig(theme) {
 }
 
 function _renderCountryTrajectory() {
-  return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">Assessment boundary</span><span class="elu-trajectory-note">Not reviewed</span></div><div class="elu-trajectory-empty">Commitment and target: not reviewed. Delivery, performance, impact band, and climate score: not assessed.</div></div>';
+  return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">Climate performance</span><span class="elu-trajectory-note">Not scored</span></div><div class="elu-trajectory-empty">Commitments and targets are not reviewed. Delivery and performance are not assessed.</div></div>';
 }
 
 function _getCountryGaiaComment(d, projectCount) {
@@ -1121,7 +1121,7 @@ const GlobeModule = {
     const factualCount = this._fallbackEntries.filter(entry => entry.factual).length;
     const gapCount = this._fallbackEntries.length - factualCount;
     summary.textContent = this._fallbackEntries.length + ' registry entities · ' + factualCount +
-      ' factual series in this candidate dataset · ' + gapCount +
+      ' reviewed emissions series · ' + gapCount +
       ' explicit source gaps. The 2023 order uses one harmonized magnitude metric and is not a performance score.';
 
     list.innerHTML = this._fallbackEntries.map(entry => {
@@ -1133,7 +1133,7 @@ const GlobeModule = {
         const latest = country.emissions.latest;
         const value = Number(latest.value).toLocaleString('en-US', { maximumFractionDigits: 4 });
         const rank = entry.rank ? entry.rank.ordinal : '—';
-        return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="factual" aria-label="' + name + ', factual series in the candidate dataset, 2023 ' + value + ' ' + _escapeHtml(country.emissions.unit) + ', magnitude rank ' + rank + ', not a performance score"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · magnitude rank ' + rank + '</small></span><span class="elu-fallback-country-state">' + value + '<small>' + _escapeHtml(country.emissions.unit) + '</small></span></button></li>';
+        return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="factual" aria-label="' + name + ', reviewed emissions series, 2023 ' + value + ' ' + _escapeHtml(country.emissions.unit) + ', magnitude rank ' + rank + ', not a performance score"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · magnitude rank ' + rank + '</small></span><span class="elu-fallback-country-state">' + value + '<small>' + _escapeHtml(country.emissions.unit) + '</small></span></button></li>';
       }
       return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="gap" aria-label="' + name + ', explicit source gap, unranked"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · unranked</small></span><span class="elu-fallback-country-state is-gap">Source gap</span></button></li>';
     }).join('');
@@ -1169,20 +1169,20 @@ const GlobeModule = {
     const name = _escapeHtml(country.name);
     const code = _escapeHtml(country.iso_alpha3);
     const flag = _escapeHtml(country.flag_emoji || '');
-    const boundary = '<h4>Assessment boundary</h4><p>Commitments, targets, delivery, performance, impact bands, and climate scores are not assessed in this view.</p>';
+    const boundary = '<h4>Climate performance</h4><p>Commitments and targets are not reviewed. Delivery and performance are not assessed.</p>';
     if (!entry.factual) {
-      detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3><span class="elu-fallback-detail-badge">' + code + ' · explicit source gap</span><p class="elu-fallback-detail-value"><strong>No emissions value shown</strong></p><p>This registry entity is unranked because the candidate dataset has no factual series for it. Missing data does not indicate better or worse climate performance.</p>' + boundary + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
+      detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3><span class="elu-fallback-detail-badge">' + code + ' · emissions source gap</span><p class="elu-fallback-detail-value"><strong>No emissions value shown</strong></p><p>No PRIMAP series is available for this registry entity. It remains visible and unranked; missing data does not indicate better climate performance.</p>' + boundary + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
     } else {
       const emissions = country.emissions;
       const latestValue = Number(emissions.latest.value).toLocaleString('en-US', { maximumFractionDigits: 4 });
-      const rankText = entry.rank ? 'Magnitude rank ' + entry.rank.ordinal + ' of 206 for the same 2023 metric; not a performance score.' : 'Not present in the candidate magnitude order.';
+      const rankText = entry.rank ? 'Magnitude rank ' + entry.rank.ordinal + ' of 206 for the same 2023 metric; not a performance score.' : 'Not present in the 2023 magnitude order.';
       const rows = emissions.series.map(point => '<tr><th scope="row">' + point.year + '</th><td>' + Number(point.value).toLocaleString('en-US', { maximumFractionDigits: 4 }) + '</td><td>' + _escapeHtml(emissions.unit) + '</td></tr>').join('');
       const limitations = (emissions.limitations || []).map(item => '<li>' + _escapeHtml(item) + '</li>').join('');
       const safeSource = /^https:\/\//.test(emissions.source_url || '') ? emissions.source_url : '';
       const source = safeSource
         ? '<a href="' + _escapeHtml(safeSource) + '" target="_blank" rel="noopener">' + _escapeHtml(emissions.source_id) + '</a>'
         : _escapeHtml(emissions.source_id || 'Source unavailable');
-      detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3><span class="elu-fallback-detail-badge">' + code + ' · factual candidate series</span><p class="elu-fallback-detail-value"><strong>' + latestValue + '</strong> ' + _escapeHtml(emissions.unit) + ' · ' + emissions.latest.year + '</p><p>' + _escapeHtml(emissions.label) + '. ' + _escapeHtml(rankText) + '</p><div class="elu-fallback-table-wrap"><table><caption>' + name + ' annual factual series in the candidate dataset</caption><thead><tr><th scope="col">Year</th><th scope="col">Value</th><th scope="col">Unit</th></tr></thead><tbody>' + rows + '</tbody></table></div><h4>Source and limits</h4><p class="elu-fallback-source">Source: ' + source + '</p><ul>' + limitations + '</ul>' + boundary + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
+      detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3><span class="elu-fallback-detail-badge">' + code + ' · reviewed emissions data</span><p class="elu-fallback-detail-value"><strong>' + latestValue + '</strong> ' + _escapeHtml(emissions.unit) + ' · ' + emissions.latest.year + '</p><p>' + _escapeHtml(emissions.label) + '. ' + _escapeHtml(rankText) + '</p><div class="elu-fallback-table-wrap"><table><caption>' + name + ' annual harmonized emissions estimates</caption><thead><tr><th scope="col">Year</th><th scope="col">Value</th><th scope="col">Unit</th></tr></thead><tbody>' + rows + '</tbody></table></div><h4>Source &amp; methodology</h4><p class="elu-fallback-source">Source: ' + source + '</p><ul>' + limitations + '</ul>' + boundary + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
     }
     if (focusDetail) detail.focus({ preventScroll: true });
     return true;
@@ -1337,7 +1337,7 @@ const GlobeModule = {
     if (!ranking || !document.body) { this._rankRail = null; return; }
     const rail = document.createElement('aside');
     rail.id = 'elu-country-rank-rail';
-    rail.setAttribute('aria-label', 'Candidate preview: 2023 harmonized emissions magnitude ranking and data gaps');
+    rail.setAttribute('aria-label', '2023 harmonized emissions magnitude ranking and data gaps');
     const mappedRanked = ranking.ranked.filter(entry => this._featureByIso?.[entry.country_id.split(':')[1]]);
     const unmappedRanked = ranking.ranked.filter(entry => !this._featureByIso?.[entry.country_id.split(':')[1]]);
     const mappedGaps = ranking.unranked.entries.filter(entry => this._featureByIso?.[entry.country_id.split(':')[1]]);
@@ -1356,7 +1356,7 @@ const GlobeModule = {
         + '<span class="elu-rank-name">' + _escapeHtml(entry.label) + '</span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span><span class="elu-rank-gap">Data gap</span></button>';
     }).join('');
     const unmapped = unmappedRanked.concat(unmappedGaps).map(entry => '<div class="elu-rank-unmapped"><span aria-hidden="true">◇</span> ' + _escapeHtml(entry.label) + ' (' + _escapeHtml(entry.country_id.split(':')[1]) + ') · not mapped on this globe</div>').join('');
-    rail.innerHTML = '<div class="elu-rank-head"><div><div class="elu-rank-title">Candidate preview · 2023 magnitude</div><div class="elu-rank-subtitle">Same metric · MtCO₂e/yr · harmonized · not a performance score</div></div><button type="button" class="elu-rank-toggle" aria-label="Collapse candidate ranking" aria-expanded="true">−</button></div>'
+    rail.innerHTML = '<div class="elu-rank-head"><div><div class="elu-rank-title">2023 emissions magnitude</div><div class="elu-rank-subtitle">Harmonized estimate · MtCO₂e/yr · not a performance score</div></div><button type="button" class="elu-rank-toggle" aria-label="Collapse emissions ranking" aria-expanded="true">−</button></div>'
       + '<div class="elu-rank-list"><div class="elu-rank-disclosure">' + mappedRanked.length + ' of 206 reviewed registry entities mapped · competition ties preserved</div>'
       + '<div role="list" aria-label="Mapped registry entities ranked by the same 2023 metric">' + ranked + '</div>'
       + '<h2 class="elu-rank-gap-heading">Source gaps · unnumbered</h2><div role="list" aria-label="Mapped registry entities not ranked because source data are unavailable">' + gaps + '</div>'
@@ -1607,7 +1607,7 @@ const GlobeModule = {
     const statusAttr = _getCountryStatusAttr(d);
     const evidenceSummary = d.hasData
       ? d.emissions.label + ' · 2014–2023 · ' + d.emissions.unit
-      : 'No reviewed factual emissions series in this candidate';
+      : 'No PRIMAP emissions series available';
     const comment = _getCountryGaiaComment(d);
     const approximatePointNote = feature?.properties?.__smallNation
       ? '<div class="tt-detail">Approximate navigation point; not a boundary or precise centroid.</div>'
@@ -1643,7 +1643,7 @@ const GlobeModule = {
       + '<div class="tt-detail">' + _escapeHtml(evidenceSummary) + '</div>'
       + approximatePointNote
       + mapAreaNote
-      + (selected ? '<div class="tt-candidate"><span aria-hidden="true">◇</span> CT-42 candidate preview · runtime and release not reviewed</div>' : '');
+      + (selected ? '<div class="tt-candidate">2023 harmonized estimate · excludes LULUCF</div>' : '');
 
     if (!selected) {
       html += '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
@@ -1742,7 +1742,7 @@ const GlobeModule = {
 
   _renderCountryMetrics(d) {
     if (!d.hasData) {
-      return '<div class="tt-comment" style="margin-top:8px"><strong>Data gap.</strong> No reviewed PRIMAP series is available for this registry entity. It is visible but excluded from ranking.</div>'
+      return '<div class="tt-comment" style="margin-top:8px"><strong>Emissions source gap.</strong> No PRIMAP series is available for this registry entity. It is visible and unranked.</div>'
         + _renderCountryTrajectory()
         + '<div class="tt-hint">Unnumbered data gap · ← → or swipe · esc closes</div>';
     }
@@ -1767,8 +1767,8 @@ const GlobeModule = {
       + '<line class="elu-trajectory-grid" x1="8" y1="51" x2="312" y2="51"></line><text class="elu-chart-axis" x="8" y="9">' + max.toLocaleString() + ' ' + _escapeHtml(d.emissions.unit) + '</text><text class="elu-chart-axis" x="8" y="66">' + min.toLocaleString() + ' ' + _escapeHtml(d.emissions.unit) + '</text><polyline class="elu-trajectory-current is-magnitude" points="' + coords + '"></polyline>' + markers + '</svg>'
       + '<div class="elu-trajectory-years"><span>2014</span><span>2023</span></div></div>'
       + '<details class="tt-chart-data"><summary>Show chart data</summary><table><caption>' + _escapeHtml(d.country) + ' annual harmonized emissions</caption><thead><tr><th>Year</th><th>Value</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>'
-      + '<p class="tt-source"><strong>Source:</strong> <a href="' + _escapeHtml(d.emissions.source_url) + '" target="_blank" rel="noopener">' + sourceLabel + '</a> · facts reviewed through CT-10C / CT-10C-R; this CT-42 runtime candidate is not reviewed.</p>'
-      + '<p class="tt-limit"><strong>Limits:</strong> ' + _escapeHtml(d.emissions.limitations.join(' ')) + '</p></section>'
+      + '<p class="tt-source"><strong>Source &amp; methodology:</strong> <a href="' + _escapeHtml(d.emissions.source_url) + '" target="_blank" rel="noopener">' + sourceLabel + '</a></p>'
+      + '<p class="tt-limit"><strong>Limits:</strong> Harmonized estimate, not an official Party inventory. Excludes LULUCF; uncertainty bounds are not included.</p></section>'
       + _renderCountryTrajectory()
       + '<div class="tt-hint">2023 magnitude rank only · ← → or swipe · esc closes</div>';
   },

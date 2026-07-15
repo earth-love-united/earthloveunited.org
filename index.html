@@ -510,11 +510,11 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </div>
 
 <!-- ── HEX LEGEND ── -->
-<div class="hex-legend" id="hex-legend" role="note" aria-label="Candidate emissions magnitude legend">
+<div class="hex-legend" id="hex-legend" role="note" aria-label="Emissions magnitude legend">
   <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-low" aria-hidden="true"></span> Lower 2023 emissions magnitude</div>
   <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-high" aria-hidden="true"></span> Higher 2023 emissions magnitude</div>
   <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-gap" aria-hidden="true"></span> 7 mapped source gaps · all 43 in browser</div>
-  <div class="hex-legend-note">Log-scaled MtCO₂e/yr · harmonized estimate · CT-42 candidate, not a performance score. Boundary geometry is navigational, not a sovereignty or performance judgment.</div>
+  <div class="hex-legend-note">2023 harmonized emissions estimate · PRIMAP-hist v2.6.1 · excludes LULUCF. Emissions magnitude only—not a climate-performance score. Boundaries are for navigation.</div>
 </div>
 
 <!-- ═══ GLOBE ═══ -->
@@ -588,21 +588,21 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <section class="section" id="globe" aria-labelledby="globe-h">
     <div class="sec-kicker">The key instrument</div>
     <h2 id="globe-h">The Living Globe</h2>
-    <p class="sec-lead">This CT-42 candidate previews reviewed PRIMAP annual harmonized emissions estimates for 206 registry entities and keeps 43 source gaps explicitly visible. The preview is not a production release: commitments and targets are not reviewed, while delivery, performance, impact bands, and climate scores are not assessed.</p>
+    <p class="sec-lead">Explore reviewed annual greenhouse-gas emissions estimates for 206 registry entities. Forty-three source gaps remain visible and unranked.</p>
     <div class="globe-key" role="list" aria-label="Country evidence availability legend">
       <span role="listitem"><i style="background:linear-gradient(135deg,#5b4a97,#f6913a)"></i> Non-green sequential color · log-scaled 2023 emissions magnitude, not performance</span>
       <span role="listitem"><i style="background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1"></i> Neutral pattern · source gap, visible and unranked</span>
     </div>
     <p class="data-note">Map boundaries use generalized Natural Earth 1:110m geometry for navigation only. Twenty-eight small states absent from that dataset use manually curated approximate navigation points, not boundaries or precise centroids. Disputed subfeatures including Northern Cyprus and Somaliland are excluded from the assessed overlay and never inherit a parent entity’s evidence. None of these representations expresses a position on sovereignty or legal boundaries or assesses climate performance.</p>
-    <p class="data-note">Visual context: the dark globe surface is the byte-for-byte <a href="https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/" target="_blank" rel="noopener">NASA Earth Observatory Black Marble 2012</a> composite (image by Robert Simmon; Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center). NASA is acknowledged as the source and no endorsement is implied. This historical surface is decorative context, not current emissions, commitments, delivery, performance, or scoring evidence. The surrounding starfield is a deterministic Earth Love United synthetic illustration—not astronomical data or observation.</p>
+    <p class="data-note">Visual credits: <a href="https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/" target="_blank" rel="noopener">NASA Earth Observatory Black Marble 2012</a>, image by Robert Simmon with Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center. Decorative background only. Starfield illustration by Earth Love United.</p>
     <div class="card-grid">
       <div class="card">
-        <div class="card-tag">Evidence Review</div>
-        <p>The factual series passed CT-10C / CT-10C-R review, but this runtime candidate has not. Performance judgments remain unavailable until target scope and independently reviewed assessment evidence can be compared.</p>
+        <div class="card-tag">Source &amp; Methodology</div>
+        <p><a href="https://zenodo.org/records/15016289" target="_blank" rel="noopener">PRIMAP-hist v2.6.1</a> provides harmonized estimates, not official Party inventories. This view excludes LULUCF; the selected rows do not include uncertainty bounds.</p>
       </div>
       <div class="card">
         <div class="card-tag">Country Cards</div>
-        <p>The candidate overlay maps 201 registry entities: 194 factual series and 7 neutral, unnumbered source gaps. The searchable 249-record evidence browser also makes the 48 entities not mapped in this candidate reachable, including the other 12 factual series and 36 source gaps.</p>
+        <p>The globe maps 201 registry entities: 194 reviewed emissions series and 7 neutral, unnumbered source gaps. The searchable 249-record evidence browser includes the 48 entities not represented by map geometry.</p>
       </div>
     </div>
     <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
@@ -804,7 +804,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v2"></script>
-<script src="js/globe.js?v=v10"></script>
+<script src="js/globe.js?v=v11"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/app.js?v=v3"></script>
 
@@ -909,7 +909,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <p class="elu-fallback-eyebrow">Living Globe · accessible evidence view</p>
       <h2 id="globe-fallback-title" tabindex="-1">The 3D view is unavailable.</h2>
       <p id="globe-fallback-reason" class="elu-fallback-reason" role="status" aria-live="polite">The country evidence remains available below.</p>
-      <p class="elu-fallback-boundary">This accessible view shows factual emissions records and explicit source gaps only. It does not assess commitments, targets, delivery, performance, impact bands, or climate scores. Map boundaries are navigational and are not a sovereignty or performance judgment.</p>
+      <p class="elu-fallback-boundary">This view shows emissions records and source gaps. Emissions magnitude is not a climate-performance score. Map boundaries are navigational and are not a sovereignty judgment.</p>
       <div class="elu-fallback-actions" aria-label="3D view recovery options">
         <button type="button" class="glass-btn" data-globe-fallback-action="retry">Retry the 3D view</button>
         <button type="button" class="glass-btn" data-globe-fallback-action="exit">Return to the Foundation</button>
@@ -919,8 +919,8 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <div class="elu-fallback-evidence" aria-labelledby="globe-fallback-evidence-title">
       <div class="elu-fallback-evidence-head">
         <div>
-          <h3 id="globe-fallback-evidence-title">Country evidence candidate</h3>
-          <p id="globe-fallback-summary">Loading the candidate coverage…</p>
+          <h3 id="globe-fallback-evidence-title">Country emissions evidence</h3>
+          <p id="globe-fallback-summary">Loading emissions coverage…</p>
         </div>
         <label class="elu-fallback-search" for="globe-fallback-search">
           <span>Find a country or ISO code</span>
@@ -930,11 +930,11 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <p id="globe-fallback-results" class="elu-fallback-results" aria-live="polite"></p>
       <div class="elu-fallback-grid">
         <div class="elu-fallback-list-panel">
-          <ul id="globe-fallback-country-list" aria-label="Countries and registry entities in the candidate dataset"></ul>
+          <ul id="globe-fallback-country-list" aria-label="Countries and registry entities in the emissions dataset"></ul>
         </div>
         <article id="globe-fallback-country-detail" class="elu-fallback-detail" tabindex="-1" aria-live="polite">
           <h3>Select a country or registry entity</h3>
-          <p>Choose an item from the list to inspect its factual series or explicit source-gap state. No commitment, delivery, performance, impact, or score conclusion is shown here.</p>
+          <p>Choose an item to inspect its emissions series or source-gap state. Climate performance is not scored in this view.</p>
         </article>
       </div>
     </div>
@@ -951,7 +951,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=33-focus-trap', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=34-truth-copy', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

@@ -151,7 +151,7 @@ const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v2',
-  '/js/globe.js?v=v10',
+  '/js/globe.js?v=v11',
   '/js/carbon-clock.js?v=v1',
   '/js/app.js?v=v3',
 ]);
@@ -472,16 +472,15 @@ function evaluateRuntimeAssets(input) {
     index.includes("object-src 'none';") && index.includes("base-uri 'self';") &&
     !/raw\.githubusercontent\.com|api\.carbonmark\.com|cdn\.jsdelivr\.net/.test(index),
     'CSP and resource hints must not retain obsolete runtime origins or the unused Carbonmark permission.');
-  check('visible-boundary-disclaimer', occurrences(index, 'not a sovereignty or performance judgment') >= 2 && index.includes('Map boundaries use generalized Natural Earth 1:110m geometry for navigation only.'),
+  check('visible-boundary-disclaimer', index.includes('None of these representations expresses a position on sovereignty or legal boundaries') && index.includes('Map boundaries are navigational and are not a sovereignty judgment') && index.includes('Map boundaries use generalized Natural Earth 1:110m geometry for navigation only.'),
     'Foundation, globe, and fallback surfaces must expose the navigational boundary limitation.');
   check('public-visual-provenance-limits', index.includes('NASA Earth Observatory Black Marble 2012') &&
     index.includes('image by Robert Simmon') &&
-    index.includes('no endorsement is implied') &&
-    ['not current emissions', 'commitments', 'delivery', 'performance', 'scoring evidence', 'not astronomical data or observation']
-      .every(token => index.includes(token)),
-    'Public copy must credit NASA and identify the historical surface and synthetic sky as decorative, non-current, non-assessment evidence.');
+    index.includes('Decorative background only') &&
+    index.includes('Starfield illustration by Earth Love United'),
+    'Public copy must credit NASA and identify the historical surface and synthetic sky as decorative visual context.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v33-focus-trap';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=33-focus-trap'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v34-truth-copy';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=34-truth-copy'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&
