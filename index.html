@@ -804,7 +804,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v2"></script>
-<script src="js/globe.js?v=v9"></script>
+<script src="js/globe.js?v=v10"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/app.js?v=v3"></script>
 
@@ -951,7 +951,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=32-motion-reflow', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=33-focus-trap', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

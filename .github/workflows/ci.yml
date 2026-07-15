@@ -323,6 +323,21 @@ jobs:
           assert(runtimeLifecycle.countryFeatureCount === 201 && runtimeLifecycle.countryDeckCount === 201 && runtimeLifecycle.rendererCanvasCount === 1,
             'live globe must expose the exact 201-entity deck on one canvas');
 
+          await page.click('[data-country-rail-iso="CHN"]');
+          await page.waitForFunction(() => document.activeElement?.id === 'country-card-heading');
+          await page.keyboard.press('Tab');
+          assert(await page.evaluate(() => document.activeElement?.matches('[data-country-close]')),
+            'country-card heading must advance to Close');
+          await page.keyboard.press('Shift+Tab');
+          assert(await page.evaluate(() => document.activeElement?.classList.contains('tt-nav-prev')),
+            'reverse tab from Close must reach Previous country');
+          await page.keyboard.press('Shift+Tab');
+          assert(await page.evaluate(() => document.activeElement?.classList.contains('tt-nav-next') &&
+            document.getElementById('elu-country-card-wrap')?.contains(document.activeElement)),
+            'backward country-card focus trap must wrap to Next country without reaching the background rail');
+          await page.click('[data-country-close]');
+          await page.waitForFunction(() => !window.GlobeModule?._selectedCountryFeature);
+
           await page.waitForFunction(() => {
             const textureState = window.GlobeModule?.getRuntimeTextureState?.();
             return textureState?.surface?.src.includes('/assets/globe/runtime/earth-night.jpg') &&

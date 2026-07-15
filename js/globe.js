@@ -1414,8 +1414,9 @@ const GlobeModule = {
           return node.getClientRects().length > 0 && style.visibility !== 'hidden';
         });
         if (!heading || !tabbable.length) return;
+        const first = tabbable[0];
         const last = tabbable[tabbable.length - 1];
-        if (event.shiftKey && document.activeElement === heading) { event.preventDefault(); last.focus(); }
+        if (event.shiftKey && (document.activeElement === heading || document.activeElement === first)) { event.preventDefault(); last.focus(); }
         else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); heading.focus(); }
       });
       document.body.appendChild(wrap);

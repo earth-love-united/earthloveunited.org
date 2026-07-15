@@ -138,7 +138,7 @@ const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v2',
-  '/js/globe.js?v=v9',
+  '/js/globe.js?v=v10',
   '/js/carbon-clock.js?v=v1',
   '/js/app.js?v=v3',
 ]);
@@ -440,6 +440,10 @@ function evaluateRuntimeAssets(input) {
     closeBrowserBody.includes('this._teardownFailedRenderer();') && closeBrowserBody.includes("this.showFallback('globe_construction_failed')") &&
     globe.includes("this.showFallback('webgl_unavailable')"),
     'Evidence-browser return and WebGL context loss must tear down stale renderer state and expose a stable failure.');
+  check('country-card-focus-trap', globe.includes('const first = tabbable[0];') &&
+    globe.includes('event.shiftKey && (document.activeElement === heading || document.activeElement === first)') &&
+    globe.includes('!event.shiftKey && document.activeElement === last'),
+    'The modal country card must wrap both backward and forward keyboard focus without exposing background controls.');
   check('safe-error-reporting', !/console\.error\s*\(/.test(`${app}\n${data}\n${globe}`) && app.includes("reportError('GlobeModule.prepare()'") && globe.includes("reportWarn('GlobeModule'"),
     'Runtime failures must use the shared reportError/reportWarn utilities.');
 
@@ -456,7 +460,7 @@ function evaluateRuntimeAssets(input) {
       .every(token => index.includes(token)),
     'Public copy must credit NASA and identify the historical surface and synthetic sky as decorative, non-current, non-assessment evidence.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v32-motion-reflow';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=32-motion-reflow'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v33-focus-trap';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=33-focus-trap'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&
@@ -534,6 +538,7 @@ function evaluateRuntimeAssets(input) {
     'browserCounts.factual === 206 && browserCounts.gaps === 43',
     "new Event('webglcontextlost', { cancelable: true })",
     'reducedMotion.autoRotate === false',
+    'backward country-card focus trap must wrap to Next country without reaching the background rail',
     'rendererCanvasCount === 0',
     'for (const width of [320, 375])',
     'rects.browse.height >= 44 && rects.theme.height >= 44',

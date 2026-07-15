@@ -213,17 +213,17 @@ const hasCandidateLegend = index.includes('CT-42 candidate, not a performance sc
   index.includes('Neutral pattern · source gap, visible and unranked') &&
   read('data/climate/runtime/candidate-manifest.json').includes('"release_eligible": false');
 const candidateCache = serviceWorker.includes("const CACHE_NAME = 'elu-v27-ct42-candidate'") && hasCandidateLegend;
-const localizedCandidateCache = serviceWorker.includes("const CACHE_NAME = 'elu-v32-motion-reflow'") &&
+const localizedCandidateCache = serviceWorker.includes("const CACHE_NAME = 'elu-v33-focus-trap'") &&
   serviceWorker.includes("'/assets/globe/runtime/manifest.json'") &&
   serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'") && hasCandidateLegend;
 if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'") && !candidateCache && !localizedCandidateCache) {
-  failures.push('sw.js: cache version is neither legacy-exit v26, denied CT-42 candidate v27, nor localized denied candidate v32');
+  failures.push('sw.js: cache version is neither legacy-exit v26, denied CT-42 candidate v27, nor localized denied candidate v33');
 }
 if (!hasNeutralLegend && !hasCandidateLegend) failures.push('index.html: fail-closed neutral or denied CT-42 candidate legend missing');
 if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=27-ct42-candidate'") &&
-    !index.includes("navigator.serviceWorker.register('/sw.js?v=32-motion-reflow'")) {
-  failures.push('index.html: service-worker registration is neither v26, CT-42 candidate v27, nor localized candidate v32');
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=33-focus-trap'")) {
+  failures.push('index.html: service-worker registration is neither v26, CT-42 candidate v27, nor localized candidate v33');
 }
 
 const ledger = read('docs/LEGACY-COUNTRY-DATA-EXIT.md');
