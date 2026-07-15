@@ -39,9 +39,8 @@ python3 -m http.server 8000
 
 No `npm install`. No `pnpm`. No bundler. No build step at all. The site is one
 HTML file (`index.html`) loading ten classic `<script>` tags. See
-[ARCHITECTURE.md](ARCHITECTURE.md) for the module map, and
-[SWARM_SDK.md](SWARM_SDK.md) for the Standard Module Lifecycle (SML) every
-module follows.
+[ARCHITECTURE.md](ARCHITECTURE.md) for the module map and [AGENTS.md](AGENTS.md)
+for the Standard Module Lifecycle and contribution rules.
 
 ---
 
@@ -112,12 +111,11 @@ These are the corpus behind Gaia's grounded answers. Built from IPCC AR6,
 Project Drawdown, US EPA, NOAA GML, Our World in Data, Wikipedia, and arXiv.
 Full source attribution lives in [CREDITS.md](CREDITS.md).
 
-Dataset cards and GAIA source guidance are backed by
-[`data/provenance-registry.json`](data/provenance-registry.json). The registry
-tracks each public dataset's readiness label (`production`, `review-stage`, or
-`experimental`), data type, local files, external links, intended use, known
-limits, and GAIA prompt hint. Update the registry before changing public
-readiness language.
+The live country-globe data is currently a review-stage artifact. Its planned
+replacement, source hierarchy, evidence contract, and release gates are defined
+in [`docs/COUNTRY-CLIMATE-TRUTH-PLAN.md`](docs/COUNTRY-CLIMATE-TRUTH-PLAN.md).
+Do not describe country values as policy-grade until that plan's provenance and
+comparability gates pass.
 
 ---
 
@@ -146,10 +144,10 @@ the browser console on any page:
 | `Impact.check('globe.js')` | Blast radius — who calls it, what breaks |
 | `DepGraph.mermaid()` | Dependency graph as Mermaid diagram |
 | `node tools/check-public-copy.js` | Static scan for unresolved draft copy and dummy links |
-| `node tools/check-provenance-registry.js` | Validate dataset readiness/source-trail registry |
+| `python3 scripts/verify_load_order.py` | Validate module dependency and script load order |
 
-The boot validator (`js/module-validator.js`) runs automatically at page load
-and reports `✅ [BOOT] N/N modules loaded` in the console.
+`App.init()` runs `MODULE_CONTRACTS.validate()` at startup and reports the
+runtime pre-flight result. The static load-order verifier runs in CI.
 
 ---
 
