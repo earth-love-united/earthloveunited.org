@@ -2,12 +2,13 @@
 #  CI — Earth Love United
 # ═════════════════════════════════════════════════════════════════
 #
-#  Runs on every PR and every push to main. Three validation layers:
+#  Runs on every PR and every push to main. Four validation layers:
 #
 #    1. SDK static checks   (verify_load_order.py + node --check)
-#    2. Headless SmokeTest  (serve the site + run SmokeTest.run()
+#    2. Climate truth       (stack-aware validators; strict for reviewed release)
+#    3. Headless SmokeTest  (serve the site + run SmokeTest.run()
 #                            in Playwright/Chromium)
-#    3. StackLint audit     (z-index + invisible-blocker check)
+#    4. StackLint audit     (z-index + invisible-blocker check)
 #
 #  Required by branch protection. PRs cannot merge until CI is green.
 # ═════════════════════════════════════════════════════════════════
@@ -35,6 +36,16 @@ jobs:
 
       - name: Verify script load-order DAG
         run: python3 scripts/verify_load_order.py
+
+      - name: Climate truth CI policy fixtures
+        run: node tools/check-climate-truth-ci.js
+
+      - name: Climate truth CI (explicit partial stack)
+        run: node tools/climate-truth-ci.js --allow-incomplete
+
+      - name: Climate truth CI reviewed-release gate
+        if: ${{ hashFiles('data/climate/runtime-manifest.json') != '' }}
+        run: node tools/climate-truth-ci.js --strict
 
       - name: node --check on every JS file
         run: |
