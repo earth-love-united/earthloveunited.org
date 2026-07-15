@@ -25,6 +25,62 @@ const REQUIRED_SECTIONS = [
   'projects_separate',
 ];
 
+// Temporary mirror of CT-02 data/climate/schemas/enums.json. This branch
+// cannot import that file until the contract branches integrate. Replace this
+// duplication with the shared schema enum during reconciliation.
+const CANONICAL_REASON_CODES = new Set([
+  'climate_evidence_not_reviewed',
+  'source_not_reviewed',
+  'source_missing',
+  'source_unavailable',
+  'licence_not_approved',
+  'value_not_reported',
+  'value_withheld',
+  'reporting_not_yet_due',
+  'reporting_optional',
+  'not_applicable',
+  'stale_source',
+  'unresolved_source_conflict',
+  'target_not_found',
+  'target_expired',
+  'target_scope_missing',
+  'target_year_missing',
+  'reference_year_missing',
+  'reference_value_missing',
+  'gas_basket_missing',
+  'gwp_convention_missing',
+  'sector_coverage_missing',
+  'geographic_coverage_missing',
+  'lulucf_treatment_missing',
+  'conditionality_missing',
+  'article6_treatment_missing',
+  'bau_scenario_missing',
+  'bau_vintage_missing',
+  'bau_target_value_missing',
+  'intensity_denominator_missing',
+  'intensity_denominator_projection_missing',
+  'fixed_level_missing',
+  'trajectory_missing',
+  'peaking_year_missing',
+  'qualitative_target',
+  'sectoral_target',
+  'net_zero_details_missing',
+  'scope_mismatch',
+  'gas_basket_mismatch',
+  'gwp_mismatch',
+  'sector_mismatch',
+  'geographic_boundary_mismatch',
+  'lulucf_mismatch',
+  'year_mismatch',
+  'evidence_insufficient',
+  'uncertainty_too_large',
+  'independent_review_required',
+  'membership_not_reviewed',
+  'party_status_not_reviewed',
+  'territory_status_not_reviewed',
+  'geometry_not_reviewed',
+]);
+
 const errors = [];
 const assert = (condition, message) => { if (!condition) errors.push(message); };
 
@@ -63,6 +119,19 @@ cases.forEach(item => {
     prefix + ': missing card section ' + section
   ));
 
+  const targetReasonCodes = input.target?.reason_codes;
+  assert(Array.isArray(targetReasonCodes), prefix + ': target reason_codes must be an array');
+  (Array.isArray(targetReasonCodes) ? targetReasonCodes : []).forEach(code => {
+    assert(CANONICAL_REASON_CODES.has(code), prefix + ': non-canonical target reason code ' + code);
+  });
+  if (input.target?.integrity !== 'comparable') {
+    assert(targetReasonCodes?.length > 0, prefix + ': non-comparable/unassessed target requires a canonical reason code');
+  }
+  if (expected.overshoot_ranking?.eligible === false) {
+    assert(CANONICAL_REASON_CODES.has(expected.overshoot_ranking?.reason),
+      prefix + ': ineligible overshoot ranking requires a canonical reason');
+  }
+
   const impactBand = input.impact?.band;
   if (impactBand !== 'not_assessed') {
     assert(expected.impact_height === impactBand, prefix + ': impact height must preserve the impact band');
@@ -86,8 +155,9 @@ cases.forEach(item => {
     assert(expected.chart?.required_path === false, prefix + ': non-comparable target cannot draw a required path');
     assert(expected.chart?.absolute_target_endpoint === false, prefix + ': non-comparable target cannot draw an absolute endpoint');
   }
-  if (input.target?.type === 'intensity' && input.target?.reason_codes?.includes('denominator_missing')) {
+  if (input.target?.type === 'intensity' && input.target?.reason_codes?.includes('intensity_denominator_missing')) {
     assert(expected.overshoot_ranking?.eligible === false, prefix + ': intensity target without denominator cannot enter overshoot ranking');
+    assert(expected.overshoot_ranking?.reason === 'intensity_denominator_missing', prefix + ': overshoot reason must use canonical intensity code');
   }
   if (input.planes?.conflict) {
     assert(expected.chart?.show_both_planes === true, prefix + ': conflict must show both evidence planes');

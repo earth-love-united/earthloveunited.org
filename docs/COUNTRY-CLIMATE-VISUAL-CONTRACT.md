@@ -434,6 +434,10 @@ Fixtures define semantic outputs rather than final colors or pixel values so
 later theme work cannot weaken the truth assertions. Real-country facts enter
 only after CT-10/CT-11 review.
 
+Until CT-02 and CT-03 are integrated, the fixture validator temporarily mirrors
+CT-02's canonical reason-code enum. Integration MUST replace that duplication
+with the shared `data/climate/schemas/enums.json` source of truth.
+
 ## Runtime test assertions
 
 CT-30 through CT-33 and CT-41 MUST make the following executable in both the
