@@ -82,23 +82,17 @@ const COUNTRY_ISO_FALLBACKS = {
 
 const COUNTRY_STATUS = {
   MISSING: 'missing',
-  NO_TARGET: 'no-target',
-  OVERSHOOTING: 'overshooting',
-  ON_TRACK: 'on-track',
+  LEGACY: 'legacy-unverified',
 };
 
 const COUNTRY_STATUS_LABELS = {
-  [COUNTRY_STATUS.MISSING]: 'No pledge data',
-  [COUNTRY_STATUS.NO_TARGET]: 'No target',
-  [COUNTRY_STATUS.OVERSHOOTING]: 'Overshooting',
-  [COUNTRY_STATUS.ON_TRACK]: 'On track',
+  [COUNTRY_STATUS.MISSING]: 'Country data being re-sourced',
+  [COUNTRY_STATUS.LEGACY]: 'Legacy evidence — not yet verified',
 };
 
 const COUNTRY_STATUS_BADGE_CLASSES = {
   [COUNTRY_STATUS.MISSING]: 'neutral',
-  [COUNTRY_STATUS.NO_TARGET]: 'neutral',
-  [COUNTRY_STATUS.OVERSHOOTING]: 'red',
-  [COUNTRY_STATUS.ON_TRACK]: 'green',
+  [COUNTRY_STATUS.LEGACY]: 'neutral',
 };
 
 function _resolveCountryIso(feature) {
@@ -132,13 +126,6 @@ function _getCountryDisplayData(feature) {
     iso,
     country,
     emissions: null,
-    perCapita: null,
-    reductionPct: null,
-    targetYear: null,
-    gap: null,
-    onTrack: null,
-    catRating: 'No pledge dataset record',
-    catScore: null,
     lat: _isFiniteNumber(Number(props.__lat)) ? Number(props.__lat) : null,
     lng: _isFiniteNumber(Number(props.__lng)) ? Number(props.__lng) : null,
     hasData: false,
@@ -196,8 +183,7 @@ function _isFiniteNumber(value) {
 
 function _getCountryStatusKey(d) {
   if (!d?.hasData) return COUNTRY_STATUS.MISSING;
-  if (!_isFiniteNumber(d.gap)) return COUNTRY_STATUS.NO_TARGET;
-  return d.gap > 0 ? COUNTRY_STATUS.OVERSHOOTING : COUNTRY_STATUS.ON_TRACK;
+  return COUNTRY_STATUS.LEGACY;
 }
 
 function _getCountryStatusText(d) {
@@ -209,21 +195,7 @@ function _getCountryStatusClass(d) {
 }
 
 function _getCountryStatusAttr(d) {
-  const key = _getCountryStatusKey(d);
-  if (key === COUNTRY_STATUS.OVERSHOOTING) return 'over';
-  if (key === COUNTRY_STATUS.ON_TRACK) return 'on';
-  if (key === COUNTRY_STATUS.NO_TARGET) return 'notarget';
-  return 'nodata';
-}
-
-function _getCatClass(node) {
-  const rating = String(node?.cat_rating || '').toLowerCase();
-  if (rating.includes('critically')) return 'cat-crit';
-  if (rating.includes('highly')) return 'cat-high';
-  if (rating.includes('insufficient')) return 'cat-insuf';
-  if (rating.includes('almost')) return 'cat-almost';
-  if (rating.includes('compatible')) return 'cat-compat';
-  return 'cat-unknown';
+  return _getCountryStatusKey(d) === COUNTRY_STATUS.MISSING ? 'nodata' : 'legacy';
 }
 
 const GLOBE_THEME_CONFIG = Object.freeze({
@@ -247,154 +219,14 @@ function _getGlobeThemeConfig(theme) {
   return theme === 'light' ? GLOBE_THEME_CONFIG.light : GLOBE_THEME_CONFIG.dark;
 }
 
-function _getCountryEmissionsClass(d) {
-  if (!d?.hasData || !_isFiniteNumber(d.perCapita)) return 'No emissions class';
-  if (d.perCapita < 2) return 'Low emissions';
-  if (d.perCapita < 6) return 'Moderate emissions';
-  if (d.perCapita < 12) return 'High emissions';
-  return 'Very high emissions';
-}
-
-function _getCountryProjectCount(feature) {
-  if (!feature) return null;
-  const countryIso = _resolveCountryIso(feature);
-  if (hasModule('Data') && typeof Data.getCarbonProjects === 'function') {
-    const projects = Data.getCarbonProjects(countryIso);
-    if (projects && Number.isFinite(projects.c)) return projects.c;
-  }
-  if (!hasModule('Data') || !Array.isArray(Data.sites)) return null;
-  return Data.sites.filter(site => (
-    site?.countryIso === countryIso || (
-    !site?.countryIso &&
-    Number.isFinite(site?.lat) &&
-    Number.isFinite(site?.lng) &&
-    _pointInFeature(site.lng, site.lat, feature))
-  )).length;
-}
-
-function _countryStatusToken(d) {
-  const key = _getCountryStatusKey(d);
-  if (key === COUNTRY_STATUS.OVERSHOOTING) return 'red';
-  if (key === COUNTRY_STATUS.ON_TRACK) return 'green';
-  if (key === COUNTRY_STATUS.NO_TARGET) return 'amber';
-  return 'neutral';
-}
-
-function _formatCountryGap(node) {
-  if (!node || !Number.isFinite(node.reality_gap_mt)) return '—';
-  const sign = node.reality_gap_mt > 0 ? '+' : '';
-  const magnitude = Math.abs(node.reality_gap_mt);
-  return sign + (hasModule('Data') ? Data.fmt(magnitude) : magnitude.toFixed(0));
-}
-
-function _countryShortCode(feature, country, iso) {
-  const props = feature?.properties || {};
-  const alpha2 = [props.ISO_A2, props.ISO_A2_EH]
-    .find(code => code && code !== '-99');
-  if (alpha2) return String(alpha2).toUpperCase();
-
-  const words = String(country || '')
-    .trim()
-    .split(/\s+/)
-    .filter(word => word && !/^(and|of|the)$/i.test(word));
-  if (words.length > 1) return words.slice(0, 2).map(word => word[0]).join('').toUpperCase();
-  if (words[0]) return words[0].slice(0, 2).toUpperCase();
-  return String(iso || '').slice(0, 2).toUpperCase();
-}
-
-function _trajectoryPath(values, min, max) {
-  const left = 0, width = 300, top = 4, height = 32;
-  const span = Math.max(1, max - min);
-  return values.map((value, index) => {
-    const x = left + (index / Math.max(1, values.length - 1)) * width;
-    const y = top + height - ((value - min) / span) * height;
-    return (index ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
-  }).join(' ');
-}
-
-function _trajectoryPoint(values, index, min, max) {
-  const span = Math.max(1, max - min);
-  return {
-    x: ((index / Math.max(1, values.length - 1)) * 300).toFixed(1),
-    y: (4 + 32 - ((values[index] - min) / span) * 32).toFixed(1),
-  };
-}
-
-function _renderCountryTrajectory(node) {
-  const startYear = 2015;
-  const targetYear = Number(node?.target_year);
-  const momentum = Number(node?.momentum_cagr);
-  const total = Number(node?.total_co2_mt);
-  const target = Number(node?.implied_target_mt);
-  const targetRatio = Number.isFinite(target) && target > 0 && Number.isFinite(total) && total > 0
-    ? target / total
-    : (Number.isFinite(Number(node.reduction_pct)) && Number(node.reduction_pct) > 0
-      ? 1 - (Number(node.reduction_pct) / 100)
-      : null);
-  if (!Number.isFinite(targetYear) || targetYear <= startYear || !Number.isFinite(momentum)
-    || !Number.isFinite(targetRatio) || targetRatio <= 0) {
-    return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">Trajectory</span><span class="elu-trajectory-note">No target path</span></div><div class="elu-trajectory-empty">A comparable target trajectory is not available for this country yet.</div></div>';
-  }
-
-  const years = Math.max(1, Math.round(targetYear - startYear));
-  const points = 11;
-  const current = [];
-  const pledge = [];
-  const targetEnd = targetRatio * 100;
-  for (let i = 0; i < points; i++) {
-    const progress = i / Math.max(1, points - 1);
-    const elapsed = years * progress;
-    const modeled = 100 * Math.pow(Math.max(.05, 1 + momentum / 100), elapsed);
-    current.push(modeled);
-    pledge.push(100 + (targetEnd - 100) * progress);
-  }
-
-  const allValues = current.concat(pledge);
-  const min = Math.min.apply(null, allValues) - 5;
-  const max = Math.max.apply(null, allValues) + 5;
-  const statusToken = Number.isFinite(Number(node.reality_gap_mt))
-    ? (Number(node.reality_gap_mt) > 0 ? 'red' : 'green')
-    : 'amber';
-  const statusClass = 'is-' + statusToken;
-  const lastCurrent = current[current.length - 1];
-  const lastTarget = pledge[pledge.length - 1];
-  const markerIndex = Math.max(0, Math.min(points - 1, Math.round(((2025 - startYear) / years) * (points - 1))));
-  const marker = _trajectoryPoint(current, markerIndex, min, max);
-  const divergence = Number(node.divergence);
-  const since2015 = Number(node.change_since_2015);
-  const targetLabel = Number.isFinite(Number(node.reduction_pct)) && Number(node.reduction_pct) > 0
-    ? 'Target: −' + Number(node.reduction_pct).toFixed(0) + '% by ' + Math.round(targetYear)
-    : 'Target path';
-  const chips = [];
-  if (Number.isFinite(divergence)) chips.push('<span class="elu-trajectory-chip ' + (divergence > 0 ? 'is-red' : 'is-green') + '">Divergence ' + (divergence > 0 ? '+' : '') + divergence.toFixed(2) + '%/yr</span>');
-  if (Number.isFinite(since2015)) chips.push('<span class="elu-trajectory-chip ' + (since2015 > 0 ? 'is-red' : 'is-green') + '">Since 2015 ' + (since2015 > 0 ? '+' : '') + since2015.toFixed(1) + '%</span>');
-  chips.push('<span class="elu-trajectory-chip">' + targetLabel + '</span>');
-  chips.push('<span class="elu-trajectory-chip ' + (Number(node.on_track) === 1 || node.on_track === true ? 'is-green' : 'is-red') + '">' + (Number(node.on_track) === 1 || node.on_track === true ? '✓ On track' : '✗ Off track') + '</span>');
-
-  return '<div class="elu-trajectory">'
-    + '<div class="elu-trajectory-head"><span class="elu-trajectory-title">Emissions trajectory</span><span class="elu-trajectory-note">2015 → ' + Math.round(targetYear) + '</span></div>'
-    + '<svg viewBox="0 0 300 42" preserveAspectRatio="none" role="img" aria-label="Modeled current trend compared with the pledge trajectory">'
-    + '<line class="elu-trajectory-grid" x1="0" y1="4" x2="300" y2="4"></line>'
-    + '<line class="elu-trajectory-grid" x1="0" y1="20" x2="300" y2="20"></line>'
-    + '<line class="elu-trajectory-grid" x1="0" y1="36" x2="300" y2="36"></line>'
-    + '<line class="elu-trajectory-today" x1="' + marker.x + '" y1="4" x2="' + marker.x + '" y2="36"></line>'
-    + '<path class="elu-trajectory-target" vector-effect="non-scaling-stroke" d="' + _trajectoryPath(pledge, min, max) + '"></path>'
-    + '<path class="elu-trajectory-current ' + statusClass + '" vector-effect="non-scaling-stroke" d="' + _trajectoryPath(current, min, max) + '"></path>'
-    + '<circle class="elu-trajectory-marker ' + statusClass + '" vector-effect="non-scaling-stroke" cx="' + marker.x + '" cy="' + marker.y + '" r="2.4"></circle>'
-    + '</svg>'
-    + '<div class="elu-trajectory-years" aria-hidden="true"><span>2015</span><span>' + Math.round(targetYear) + '</span></div>'
-    + '<div class="elu-trajectory-legend"><span class="is-' + statusToken + '">Current trend ' + (lastCurrent >= lastTarget ? 'above' : 'below') + ' pledge path</span><span>Pledge path</span><span class="elu-trajectory-today-key">Today · 2025</span></div>'
-    + '<div class="elu-trajectory-chips">' + chips.join('') + '</div>'
-    + '</div>';
+function _renderCountryTrajectory() {
+  return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">Performance withheld</span><span class="elu-trajectory-note">Evidence review in progress</span></div><div class="elu-trajectory-empty">Target, ambition, and delivery claims are being rebuilt from reviewed sources.</div></div>';
 }
 
 function _getCountryGaiaComment(d, projectCount) {
   const statusKey = _getCountryStatusKey(d);
-  if (statusKey === COUNTRY_STATUS.MISSING) return 'GAIA is missing pledge data here; the border still keeps its place on the map.';
-  if (projectCount > 0) return 'Restoration signal detected inside this country.';
-  if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'The promise is visible, but the target line is still incomplete.';
-  if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'This pathway is running hot against the current pledge.';
-  return 'This country is closer to the green lane in the current dataset.';
+  if (statusKey === COUNTRY_STATUS.MISSING) return 'Country evidence is being re-sourced; the border remains navigable.';
+  return 'Legacy evidence is visible only as provisional context while country facts are re-sourced.';
 }
 
 function _isCountryModeActive() {
@@ -879,10 +711,8 @@ const GlobeModule = {
           return;
         }
         if (p._type === 'pledge') {
-          const gap = p.reality_gap_mt;
-          const status = gap === null ? 'No data' : (gap > 0 ? 'OVERSHOOTING' : 'On Track');
           window.dispatchEvent(new CustomEvent('pledgeHover', {
-            detail: { node: p, tooltip: p.country + ' | ' + (p.fossil_co2_mt != null ? p.fossil_co2_mt : '—') + ' MtCO2 | ' + status }
+            detail: { node: p, tooltip: p.country + ' | Provisional fossil CO2 magnitude | Performance withheld' }
           }));
         } else {
           // Site hover
@@ -897,11 +727,8 @@ const GlobeModule = {
       });
   },
 
-  pledgePointColor(n) {
-    const gap = n.reality_gap_mt;
-    if (gap === null || gap === undefined) return '#95a5a6';
-    if (gap > 0) return '#e74c3c';
-    return '#2ecc71';
+  pledgePointColor() {
+    return '#6f91a8';
   },
 
   pledgePointAltitude(n) {
@@ -914,39 +741,21 @@ const GlobeModule = {
     return 0.3 + Math.min(co2 / 20000, 0.8);
   },
 
-  // ── Country hex color function — per-feature coloring ──
-  // Each country gets a unique, perceptually distinct color
-  // Uses HSL with deterministic hue from ISO hash + gap-based saturation
-  // ── Diverging color scale for carbon sustainability ──
-  // Green = on track, Red = overshooting, intensity = magnitude
-  // Per-capita emissions modulate saturation (higher = more vivid)
+  // Provisional magnitude channel: neutral blue-grey only. Legacy emissions
+  // affect prominence, never favorable/adverse performance semantics.
   _countryHexColorFn(feature) {
     const d = _getCountryDisplayData(feature);
     if (!d) return 'rgba(149,165,166,0.22)';
 
-    const perCapita = d.perCapita || 0;
     const statusKey = _getCountryStatusKey(d);
     if (statusKey === COUNTRY_STATUS.MISSING) return 'rgba(149,165,166,0.28)';
 
-    // Fallback hexes use the same status hue categories as polygons:
-    // slate = missing pledge data, amber = no target, red = overshooting,
-    // green = on track. Per-capita emissions affects saturation only.
-    const pc = Math.min(perCapita / 20, 1);
     const te = Math.min(Math.log(Math.max(d.emissions || 0, 1)) / Math.log(12000), 1);
-
-    let hue = 130;
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) {
-      hue = 35;
-    } else if (statusKey === COUNTRY_STATUS.OVERSHOOTING) {
-      const i = Math.min(d.gap / 500, 1);
-      hue = 18 - i * 18;
-    }
-
-    const sat = 40 + pc * 45;
-    const lum = 42 - te * 8;
+    const sat = 22 + te * 16;
+    const lum = 52 - te * 15;
     const alpha = 0.35 + te * 0.40;
 
-    return 'hsla(' + Math.round(hue) + ',' + Math.round(sat) + '%,' + Math.round(lum) + '%,' + alpha.toFixed(2) + ')';
+    return 'hsla(205,' + Math.round(sat) + '%,' + Math.round(lum) + '%,' + alpha.toFixed(2) + ')';
   },
 
   // ── Elevation function: total emissions → hex altitude ──
@@ -964,10 +773,8 @@ const GlobeModule = {
     return 0.003 + t * 0.022;
   },
 
-  // ── ELU 0.7 country deck + ranked rail ──
-  // The production data order is intentionally left untouched. The HUD gets
-  // its own view of the complete mapped atlas: measurable gaps first, then
-  // pledge records without a target, then countries awaiting pledge data.
+  // Navigation order keeps large provisional fossil values prominent without
+  // presenting a numbered or performance-based ranking.
   _buildCountryDeck() {
     const featureByIso = this._featureByIso || {};
     const entries = Object.keys(featureByIso)
@@ -985,67 +792,22 @@ const GlobeModule = {
           data,
           node,
           country,
-          shortCode: _countryShortCode(feature, country, iso),
         };
       })
       .filter(entry => entry.feature && entry.data);
-    const ranked = entries
-      .filter(entry => Number.isFinite(entry.node?.reality_gap_mt))
-      .sort((a, b) => b.node.reality_gap_mt - a.node.reality_gap_mt);
-    const noTarget = entries
-      .filter(entry => entry.data.hasData && !Number.isFinite(entry.node?.reality_gap_mt))
-      .sort((a, b) => String(a.country).localeCompare(String(b.country)));
+    const provisional = entries
+      .filter(entry => entry.data.hasData)
+      .sort((a, b) => (b.data.emissions || 0) - (a.data.emissions || 0));
     const missing = entries
       .filter(entry => !entry.data.hasData)
       .sort((a, b) => String(a.country).localeCompare(String(b.country)));
-    this._countryDeck = ranked.concat(noTarget, missing);
+    this._countryDeck = provisional.concat(missing);
   },
 
   _renderRankRail() {
-    if (!document.body || !this._countryDeck.length) return;
     const previous = $('elu-country-rank-rail');
     if (previous) previous.remove();
-
-    const rail = document.createElement('aside');
-    rail.id = 'elu-country-rank-rail';
-    rail.setAttribute('aria-label', 'Country reality gap ranking');
-    rail.innerHTML = '<div class="elu-rank-head">'
-      + '<div><div class="elu-rank-title">Reality gap</div><div class="elu-rank-subtitle">Gap first · ' + this._countryDeck.length + ' mapped countries</div></div>'
-      + '<button type="button" class="elu-rank-toggle" data-rank-toggle aria-label="Collapse country ranking">−</button>'
-      + '</div><div class="elu-rank-list">'
-      + this._countryDeck.map((entry, index) => {
-        const node = entry.node;
-        const token = _countryStatusToken(entry.data);
-        const gap = _formatCountryGap(node);
-        const summary = entry.data.hasData ? 'gap ' + gap : 'no pledge data';
-        return '<button type="button" class="elu-rank-row" data-country-rail-iso="' + _escapeHtml(entry.iso) + '" aria-label="Open ' + _escapeHtml(entry.country) + ', ' + _escapeHtml(summary) + '">'
-          + '<span class="elu-rank-number">' + String(index + 1).padStart(2, '0') + '</span>'
-          + '<span class="elu-rank-dot is-' + token + '" aria-hidden="true"></span>'
-          + '<span class="elu-rank-name">' + _escapeHtml(entry.country) + '</span>'
-          + '<span class="elu-rank-code" aria-hidden="true">' + _escapeHtml(entry.shortCode) + '</span>'
-          + '<span class="elu-rank-gap">' + _escapeHtml(gap) + '</span>'
-          + '</button>';
-      }).join('')
-      + '</div>';
-
-    rail.addEventListener('click', event => {
-      const toggle = event.target.closest('[data-rank-toggle]');
-      if (toggle) {
-        this._rankRailCollapsed = !this._rankRailCollapsed;
-        rail.classList.toggle('is-collapsed', this._rankRailCollapsed);
-        toggle.textContent = this._rankRailCollapsed ? '+' : '−';
-        toggle.setAttribute('aria-label', this._rankRailCollapsed ? 'Expand country ranking' : 'Collapse country ranking');
-        return;
-      }
-      const row = event.target.closest('[data-country-rail-iso]');
-      if (!row) return;
-      const feature = this._featureByIso?.[row.getAttribute('data-country-rail-iso')];
-      if (feature) this._selectCountryFeature(feature, { focus: true });
-    });
-
-    document.body.appendChild(rail);
-    this._rankRail = rail;
-    this._updateRankRail();
+    this._rankRail = null;
   },
 
   _updateRankRail() {
@@ -1177,34 +939,6 @@ const GlobeModule = {
           this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
           return;
         }
-        // ☆ watch toggle
-        const watch = event.target.closest('[data-country-watch]');
-        if (watch) {
-          event.preventDefault();
-          event.stopPropagation();
-          this._toggleWatch(watch.getAttribute('data-country-watch'));
-          if (this._selectedCountryFeature) {
-            this._renderCountryInfoCard(this._selectedCountryFeature, true);
-            this._dockCountryCard();
-          }
-          return;
-        }
-        const stat = event.target.closest('[data-country-stat]');
-        if (!stat) return;
-        event.preventDefault();
-        event.stopPropagation();
-        stat.focus({ preventScroll: true });
-
-        const activeFeature = this._selectedCountryFeature || this._countryHoverFeature;
-        const activeData = _getCountryDisplayData(activeFeature);
-        if (!activeData) return;
-
-        const type = stat.getAttribute('data-country-stat');
-        const projectCount = _getCountryProjectCount(activeFeature);
-        const message = type === 'projects'
-          ? activeData.country + ' has ' + (projectCount ?? 'an unknown number of') + ' restoration site' + (projectCount === 1 ? '' : 's') + ' in the current atlas layer.'
-          : activeData.country + ' is classed as ' + _getCountryEmissionsClass(activeData).toLowerCase() + ' from per-person CO₂. Its pledge status is separate: ' + _getCountryStatusText(activeData).toLowerCase() + '.';
-        safeCall('GAIA_BUBBLE', 'speak', message, 'curious', 4200);
       });
 
       // ── Swipe physics (ported from agent/designer/swipeable-hover-card) ──
@@ -1216,7 +950,7 @@ const GlobeModule = {
 
       tt.addEventListener('pointerdown', (e) => {
         if (!tt.classList.contains('selected')) return;
-        if (e.target.closest('.tt-close,.tt-nav,[data-country-stat],a')) return;
+        if (e.target.closest('.tt-close,.tt-nav,a')) return;
         if (tt.classList.contains('tt-swipe-cue')) {
           tt.classList.add('tt-motion-ready');
           tt.classList.remove('tt-swipe-cue');
@@ -1283,43 +1017,33 @@ const GlobeModule = {
       }, { passive: false });
     }
 
-    const projectCount = _getCountryProjectCount(feature);
-    const projects = projectCount === null
-      ? 'Unknown'
-      : projectCount + ' site' + (projectCount === 1 ? '' : 's');
     const statusText = _getCountryStatusText(d);
     const statusClass = _getCountryStatusClass(d);
     const statusAttr = _getCountryStatusAttr(d);
-    const emissions = d.emissions ? d.emissions.toLocaleString() + ' MtCO₂/yr' : 'No emissions data';
-    const perCapita = d.perCapita ? d.perCapita + ' t/person' : 'No per-person data';
-    const comment = _getCountryGaiaComment(d, projectCount);
+    const emissions = d.emissions
+      ? 'Provisional fossil CO₂ magnitude: ' + d.emissions.toLocaleString() + ' MtCO₂/yr · legacy, unverified'
+      : 'Country facts are being re-sourced';
+    const comment = _getCountryGaiaComment(d);
 
     if (selected) this._ensureCountryCardWrap(tt);
     else this._unmountCountryCard();
     tt.classList.toggle('selected', !!selected);
     tt.dataset.status = statusAttr;
     tt.setAttribute('role', selected ? 'region' : 'tooltip');
-    tt.setAttribute('aria-label', selected ? d.country + ' climate dashboard' : d.country + ' country summary');
+    tt.setAttribute('aria-label', selected ? d.country + ' evidence review' : d.country + ' provisional evidence summary');
     if (!selected) tt.removeAttribute('tabindex');
 
-    const watched = selected && this._getWatchlist().includes(d.iso);
     let html = '<div class="tt-topline">'
       + '<div class="tt-country">' + _escapeHtml(d.country) + '</div>'
       + '<div class="tt-pill tt-status-' + statusClass + '">' + _escapeHtml(statusText) + '</div>'
-      + (selected ? '<button type="button" class="tt-watch' + (watched ? ' watched' : '') + '" data-country-watch="' + _escapeHtml(d.iso) + '" aria-label="Watch this country" title="Watch — build a list, get updates">' + (watched ? '★' : '☆') + '</button>' : '')
       + (selected ? '<button type="button" class="tt-close" data-country-close aria-label="Close">✕</button>' : '')
       + '</div>'
-      + '<div class="tt-detail">' + _escapeHtml(emissions) + ' · ' + _escapeHtml(perCapita) + '</div>';
+      + '<div class="tt-detail">' + _escapeHtml(emissions) + '</div>';
 
     if (!selected) {
-      // ── Compact hover card ──
-      html += '<div class="tt-stat-grid">'
-        + '<button type="button" class="tt-stat" data-country-stat="emissions"><span>Class</span><strong>' + _escapeHtml(_getCountryEmissionsClass(d)) + '</strong></button>'
-        + '<button type="button" class="tt-stat" data-country-stat="projects"><span>Restoration</span><strong>' + _escapeHtml(projects) + '</strong></button>'
-        + '</div>'
-        + '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
+      html += '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
     } else {
-      // ── Pinned card: full pledge-vs-reality metrics ──
+      // Pinned card: quarantine disclosure + provisional magnitude only.
       html += this._renderCountryMetrics(d);
     }
 
@@ -1401,250 +1125,30 @@ const GlobeModule = {
     }
   },
 
-  // Full metrics block for the pinned country card. Reads the raw pledge
-  // node (Data.pledgeNodes has all 27 fields); degrades to a short note
-  // for countries without pledge data.
+  // Interim quarantine: legacy rows may support neutral, provisional fossil
+  // prominence only. Performance, target, finance, CAT, and market claims are
+  // withheld until reviewed evidence replaces this payload.
   _renderCountryMetrics(d) {
     const node = (hasModule('Data') && typeof Data.getPledgeNode === 'function') ? Data.getPledgeNode(d.iso) : null;
     const fmt = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '—'
       : (hasModule('Data') ? Data.fmt(n) : String(n));
 
     if (!node) {
-      return '<div class="tt-comment" style="margin-top:8px">No pledge dataset entry for this country yet. Its emissions and NDC data are not in the current atlas layer.</div>'
+      return '<div class="tt-comment" style="margin-top:8px">Country facts are being re-sourced. Performance is withheld until reviewed evidence is available.</div>'
         + '<div class="tt-hint">esc or ✕ to close</div>';
     }
 
-    let html = '';
-
-    // CAT rating badge
-    if (node.cat_rating) {
-      const catClass = _getCatClass(node);
-      html += '<div class="tt-cat ' + catClass + '" data-cat-rating="' + _escapeHtml(node.cat_rating) + '">'
-        + '<span class="tt-cat-dot" aria-hidden="true"></span>'
-        + _escapeHtml(node.cat_rating) + ' <span class="tt-cat-src">· Climate Action Tracker</span></div>';
-    }
-
-    // Reality gap
-    const gap = node.reality_gap_mt;
-    html += '<div class="tt-gap">'
-      + '<div class="tt-gap-big">' + fmt(node.fossil_co2_mt) + ' <span>MtCO₂/yr fossil</span></div>'
-      + (gap === null || gap === undefined
-          ? '<div class="tt-gap-line">No target data available</div>'
-          : '<div class="tt-gap-line ' + (gap > 0 ? 'tt-red' : 'tt-green') + '">Gap to pledge target: ' + (gap > 0 ? '+' : '') + fmt(gap) + ' MtCO₂</div>')
-      + '</div>';
-
-    // Emissions grid
-    const pc = (typeof node.co2_per_capita === 'number' && node.co2_per_capita > 0) ? node.co2_per_capita.toFixed(1) : '—';
-    html += '<div class="tt-grid4">'
-      + '<div><span>Fossil</span><strong>' + fmt(node.fossil_co2_mt) + '</strong></div>'
-      + '<div><span>LULUCF</span><strong>' + fmt(node.lulucf_co2_mt) + '</strong></div>'
-      + '<div><span>Total Mt</span><strong>' + fmt(node.total_co2_mt) + '</strong></div>'
-      + '<div><span>t/person</span><strong>' + pc + '</strong></div>'
-      + '</div>';
-
-    // Designer handoff: keep the pledge path legible without replacing the
-    // production metrics. The chart is explicitly modeled, not presented as
-    // a new data source.
-    html += _renderCountryTrajectory(node);
-
-    // Momentum: actual vs required velocity
-    const mom = node.momentum_cagr, req = node.required_cagr;
-    if (typeof mom === 'number') {
-      html += '<div class="tt-momentum">'
-        + '<div class="' + (mom > 0 ? 'tt-red' : 'tt-green') + '"><span>Actual</span><strong>' + (mom > 0 ? '+' : '') + mom.toFixed(2) + '%/yr</strong></div>'
-        + (typeof req === 'number' && req > 0
-            ? '<em>vs</em><div class="tt-teal"><span>Required</span><strong>−' + req.toFixed(2) + '%/yr</strong></div>'
-            : '')
-        + '</div>';
-    }
-
-    // Climate finance
-    if (typeof node.finance_total_bn === 'number' && node.finance_total_bn > 0) {
-      html += '<div class="tt-finance">$' + fmt(node.finance_total_bn) + 'B <span>target conditional on international finance</span></div>';
-    }
-
-    // NDC summary
-    if (node.ndc_summary) {
-      html += '<div class="tt-ndc"><span>NDC pledge</span>' + _escapeHtml(node.ndc_summary) + '</div>';
-    }
-
-    // ── Close the Gap: the credit market bridge ──
-    html += this._renderCloseTheGap(node);
-
-    html += '<div class="tt-hint">← → or swipe to browse countries · esc closes</div>';
-    return html;
-  },
-
-  // ── Carbon price (voluntary market) ──
-  // Live median listing price from Carbonmark, cached for the session;
-  // falls back to a baked estimate so the card never blocks on the network.
-  CARBON_PRICE_FALLBACK: 6.5, // USD/tCO₂ — Ecosystem Marketplace VCM avg (est.)
-  _carbonPrice: null,          // { value, live }
-  _fetchCarbonPrice() {
-    if (this._carbonPrice || this._carbonPriceFetching) return;
-    try {
-      const cached = sessionStorage.getItem('elu_carbon_price');
-      if (cached) {
-        const c = JSON.parse(cached);
-        if (Date.now() - c.at < 3600000) { this._carbonPrice = { value: c.value, live: true }; return; }
-      }
-    } catch { /* ignore */ }
-    this._carbonPriceFetching = true;
-    fetch('https://api.carbonmark.com/prices')
-      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
-      .then(list => {
-        const prices = (Array.isArray(list) ? list : [])
-          .map(l => Number(l.purchasePrice))
-          .filter(p => p > 0.5 && p < 500)
-          .sort((a, b) => a - b);
-        if (!prices.length) throw new Error('no prices');
-        const median = prices[Math.floor(prices.length / 2)];
-        this._carbonPrice = { value: median, live: true };
-        try { sessionStorage.setItem('elu_carbon_price', JSON.stringify({ value: median, at: Date.now() })); } catch { /* ignore */ }
-        // Refresh the pinned card so the estimate becomes the live figure
-        if (this._selectedCountryFeature) {
-          this._renderCountryInfoCard(this._selectedCountryFeature, true);
-          this._dockCountryCard();
-        }
-      })
-      .catch(() => { /* fallback stays in effect */ })
-      .finally(() => { this._carbonPriceFetching = false; });
-  },
-
-  _renderCloseTheGap(node) {
-    this._fetchCarbonPrice();
-    const cp = (hasModule('Data') && typeof Data.getCarbonProjects === 'function') ? Data.getCarbonProjects(node.iso) : null;
-    const price = this._carbonPrice ? this._carbonPrice.value : this.CARBON_PRICE_FALLBACK;
-    const live = !!this._carbonPrice;
-    const fmt = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '—'
-      : (hasModule('Data') ? Data.fmt(n) : String(n));
-
-    const gapIsFinite = typeof node.reality_gap_mt === 'number' && Number.isFinite(node.reality_gap_mt);
-    const gapHeading = gapIsFinite && node.reality_gap_mt <= 0 ? 'Extend the lead' : 'Close the gap';
-    let html = '<div class="tt-ctg"><span class="tt-ctg-label">' + gapHeading + '</span>';
-
-    // Demand side: the pledge gap priced in credits
-    const gap = node.reality_gap_mt;
-    if (typeof gap === 'number' && gap > 0) {
-      const credits = gap * 1e6; // 1 credit = 1 tCO₂
-      const usd = credits * price;
-      html += '<div class="tt-ctg-line">Overshoot ≈ <strong>' + fmt(credits) + ' credits/yr</strong>'
-        + ' ≈ <strong>$' + fmt(usd) + '/yr</strong>'
-        + ' <em>at ~$' + price.toFixed(2) + '/t voluntary ' + (live ? 'median (Carbonmark, live)' : 'avg (est.)') + '</em></div>';
-    } else if (typeof gap === 'number') {
-      html += '<div class="tt-ctg-line tt-green">Tracking at or under its pledge — credits here go beyond the target.</div>';
-    }
-
-    // Supply side: real projects on the ground
-    if (cp && cp.c > 0) {
-      html += '<div class="tt-ctg-supply">' + cp.c.toLocaleString() + ' carbon project' + (cp.c === 1 ? '' : 's')
-        + ' on the ground · <strong>' + fmt(cp.ar) + ' tCO₂/yr</strong> claimed'
-        + (cp.ci > 0 ? ' · ' + fmt(cp.ci) + ' credits issued' : '') + '</div>';
-      const top = (cp.top || []).slice(0, 3);
-      if (top.length) {
-        html += '<div class="tt-projects">';
-        top.forEach(p => {
-          const reg = p.r === 'gold_standard' ? 'GS' : p.r === 'verra' ? 'VCS' : (p.r || '?').toUpperCase().slice(0, 4);
-          const type = (p.t || 'other').replace(/_/g, ' ');
-          html += '<a class="tt-proj" href="' + _escapeHtml(p.u) + '" target="_blank" rel="noopener">'
-            + '<span class="tt-proj-reg">' + _escapeHtml(reg) + '</span>'
-            + '<span class="tt-proj-name">' + _escapeHtml(p.n) + '</span>'
-            + '<span class="tt-proj-meta">' + _escapeHtml(type) + ' · ' + fmt(p.ar) + ' t/yr</span>'
-            + '</a>';
-        });
-        html += '</div>';
-        const shown = Math.min((cp.top || []).length, 6);
-        html += '<div class="tt-ctg-note">' + shown + ' largest shown as ◆ on the globe — registry links open the public record</div>';
-      }
-    } else {
-      html += '<div class="tt-ctg-supply tt-ctg-none">No registered carbon projects in the unified dataset for this country yet.</div>';
-    }
-
-    // ── The hook: free sourcing brief, ELU as the verification layer ──
-    html += '<a class="tt-brief-btn glass-btn" href="' + _escapeHtml(this._briefMailto(node, cp, price)) + '">Request a sourcing brief for ' + _escapeHtml(node.country) + '</a>'
-      + '<div class="tt-brief-sub">Free · registry records pulled + satellite ground-truth where possible · no obligation</div>';
-
-    html += '</div>';
-
-    // Watchlist line (retention): appears once anything is watched
-    const wl = this._getWatchlist();
-    if (wl.length) {
-      const listNames = wl.join(', ');
-      const wlMail = 'mailto:info@earthloveunited.org'
-        + '?subject=' + encodeURIComponent('Watchlist updates — ' + listNames)
-        + '&body=' + encodeURIComponent('Hello Earth Love United,\n\nPlease send me updates on these countries from the living globe (new registered projects, verification results, market moves):\n\n' + listNames + '\n\nMy email: \nOrganization (optional): \n');
-      html += '<div class="tt-watchline">★ ' + wl.length + ' watched · <a href="' + _escapeHtml(wlMail) + '">email me updates</a></div>';
-    }
-    return html;
-  },
-
-  // ── Watchlist (localStorage, ISO codes) ──
-  _getWatchlist() {
-    try { return JSON.parse(localStorage.getItem('elu_watchlist') || '[]'); } catch { return []; }
-  },
-  _toggleWatch(iso) {
-    const wl = this._getWatchlist();
-    const i = wl.indexOf(iso);
-    if (i >= 0) wl.splice(i, 1); else wl.push(iso);
-    try { localStorage.setItem('elu_watchlist', JSON.stringify(wl)); } catch { /* ignore */ }
-    return wl.includes(iso);
-  },
-
-  // Prefilled sourcing-brief email — the lead arrives with full context
-  _briefMailto(node, cp, price) {
-    const gap = node.reality_gap_mt;
-    const fmt = (n) => (hasModule('Data') ? Data.fmt(n) : String(n));
-    const lines = [
-      'Hello Earth Love United,',
-      '',
-      'I was exploring the living globe and would like a sourcing brief for ' + node.country + '.',
-      '',
-      'Context from the atlas:',
-      '- Pledge status: ' + (node.cat_rating || 'n/a') + (typeof gap === 'number' ? ' · gap to target ' + (gap > 0 ? '+' : '') + fmt(gap) + ' MtCO2/yr' : ''),
-    ];
-    if (cp && cp.c > 0) {
-      lines.push('- Projects in the unified dataset: ' + cp.c + ' (' + fmt(cp.ar) + ' tCO2/yr claimed)');
-      (cp.top || []).slice(0, 3).forEach(p => {
-        const reg = (p.r === 'gold_standard' ? 'GS' : p.r === 'verra' ? 'VCS' : p.r);
-        lines.push('  · ' + p.n + ' [' + reg + ']');
-      });
-    }
-    lines.push(
-      '- Reference price at time of visit: ~$' + price.toFixed(2) + '/t',
-      '',
-      'About me:',
-      '- Organization: ',
-      '- Volume I am exploring (tCO2): ',
-      '- Timeline: ',
-      '',
-      'Thanks,'
-    );
-    return 'mailto:info@earthloveunited.org'
-      + '?subject=' + encodeURIComponent('Sourcing brief request — ' + node.country + ' (' + node.iso + ')')
-      + '&body=' + encodeURIComponent(lines.join('\n'));
+    return '<div class="tt-gap">'
+      + '<div class="tt-gap-big">' + fmt(node.fossil_co2_mt) + ' <span>MtCO₂/yr fossil · provisional legacy value</span></div>'
+      + '<div class="tt-gap-line">Unverified magnitude context only. Performance, targets, ratings, finance, and market inferences are withheld while sources are reviewed.</div>'
+      + '</div>'
+      + _renderCountryTrajectory()
+      + '<div class="tt-hint">← → or swipe to browse countries · esc closes</div>';
   },
 
   // ── Project markers: the pinned country's top projects on the globe ──
   _showCountryProjects(iso) {
-    if (!this.world || typeof this.world.pointsData !== 'function') return;
-    const cp = (hasModule('Data') && typeof Data.getCarbonProjects === 'function') ? Data.getCarbonProjects(iso) : null;
-    const pts = (cp && cp.top ? cp.top : []).filter(p => typeof p.lat === 'number' && typeof p.lng === 'number');
-    const typeColor = (t) => t === 'forestry' || t === 'agriculture' ? 'rgba(91,191,114,0.95)'
-      : t === 'renewable_energy' ? 'rgba(78,205,196,0.95)'
-      : t === 'energy_efficiency' ? 'rgba(123,232,208,0.9)'
-      : 'rgba(212,165,116,0.95)';
-    this.world
-      .pointsData(pts)
-      .pointLat('lat').pointLng('lng')
-      .pointAltitude(0.015).pointRadius(0.22)
-      .pointColor(p => typeColor(p.t))
-      .pointResolution(10);
-    if (typeof this.world.pointLabel === 'function') {
-      this.world.pointLabel(p =>
-        '<div style="max-width:220px"><strong>' + _escapeHtml(p.n) + '</strong><br>'
-        + _escapeHtml((p.t || 'other').replace(/_/g, ' ')) + ' · '
-        + (hasModule('Data') ? Data.fmt(p.ar) : p.ar) + ' tCO₂/yr</div>');
-    }
+    this._clearCountryProjects();
   },
 
   _clearCountryProjects() {
@@ -1721,18 +1225,23 @@ const GlobeModule = {
   },
 
   _countryBorderColorFn(feature) {
-    if (feature === this._countryHoverFeature) return 'rgba(246,255,250,0.96)';
-    if (feature === this._selectedCountryFeature) return 'rgba(123,232,208,0.86)';
+    if (feature === this._countryHoverFeature) return 'rgba(221,238,247,0.96)';
+    if (feature === this._selectedCountryFeature) return 'rgba(141,184,208,0.90)';
 
     const d = _getCountryDisplayData(feature);
     const small = !!feature?.properties?.__smallNation;
     if (!d) return small ? 'rgba(200,230,235,0.7)' : 'rgba(180,215,218,0.34)';
     const statusKey = _getCountryStatusKey(d);
-    // Small-nation dots get a bright rim so they read at a few pixels wide
-    if (statusKey === COUNTRY_STATUS.MISSING) return small ? 'rgba(225,245,248,0.9)' : 'rgba(170,205,214,0.34)';
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) return small ? 'rgba(245,210,160,0.92)' : 'rgba(214,184,138,0.38)';
-    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return small ? 'rgba(255,150,128,0.95)' : 'rgba(255,132,112,0.42)';
-    return small ? 'rgba(136,245,188,0.95)' : 'rgba(116,232,172,0.42)';
+    if (statusKey === COUNTRY_STATUS.MISSING) {
+      return small ? 'rgba(205,225,235,0.82)' : 'rgba(145,170,184,0.32)';
+    }
+
+    const emissions = d.emissions || 0;
+    const magnitude = Math.min(Math.log(Math.max(emissions, 1)) / Math.log(12000), 1);
+    const alpha = small ? 0.82 + magnitude * 0.12 : 0.30 + magnitude * 0.18;
+    return small
+      ? 'rgba(151,188,210,' + Math.min(alpha, 0.96).toFixed(2) + ')'
+      : 'rgba(111,145,168,' + Math.min(alpha, 0.48).toFixed(2) + ')';
   },
 
   _countryPolygonPaintColorFn(feature) {
@@ -1746,10 +1255,13 @@ const GlobeModule = {
     if (feature?.properties?.__smallNation) {
       const boost = hovered ? 0.10 : (selected ? 0.08 : 0);
       const statusKey = d ? _getCountryStatusKey(d) : COUNTRY_STATUS.MISSING;
-      if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(224,172,110,' + (0.88 + boost).toFixed(2) + ')';
-      if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'rgba(255,84,58,' + (0.90 + boost).toFixed(2) + ')';
-      if (statusKey === COUNTRY_STATUS.ON_TRACK) return 'rgba(46,214,118,' + (0.88 + boost).toFixed(2) + ')';
-      return 'rgba(150,182,196,' + (0.85 + boost).toFixed(2) + ')';
+      if (statusKey === COUNTRY_STATUS.MISSING) {
+        return 'rgba(150,182,196,' + Math.min(0.85 + boost, 0.98).toFixed(2) + ')';
+      }
+      const emissions = d?.emissions || 0;
+      const magnitude = Math.min(Math.log(Math.max(emissions, 1)) / Math.log(12000), 1);
+      const alpha = Math.min(0.84 + magnitude * 0.08 + boost, 0.98).toFixed(2);
+      return 'rgba(111,145,168,' + alpha + ')';
     }
 
     if (!d) return 'rgba(120,150,165,' + (0.14 + hoverBoost).toFixed(2) + ')';
@@ -1761,16 +1273,8 @@ const GlobeModule = {
     const alpha = Math.min(0.28, 0.16 + te * 0.12) + hoverBoost;
     const cappedAlpha = Math.min(alpha, 0.42).toFixed(2);
 
-    // Status drives hue; emissions only modulates opacity. A low-emissions
-    // country can still be overshooting its pledge target.
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(212,165,116,' + (0.16 + hoverBoost).toFixed(2) + ')';
-    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) {
-      const intensity = Math.min(d.gap / 500, 1);
-      const red = Math.round(220 + intensity * 35);
-      const green = Math.round(108 - intensity * 40);
-      return 'rgba(' + red + ',' + green + ',58,' + cappedAlpha + ')';
-    }
-    return 'rgba(46,204,113,' + cappedAlpha + ')';
+    // Legacy evidence always uses one neutral hue; magnitude affects opacity.
+    return 'rgba(111,145,168,' + cappedAlpha + ')';
   },
 
   _supportsCountryBorders() {
@@ -2123,42 +1627,10 @@ const GlobeModule = {
 
   updatePledgeVisuals() {
     if (!Data.pledgeNodes) return;
-    const nodes = Data.pledgeNodes;
-
-    switch (this.currentLens) {
-      case 'gap':
-        // Reality Gap: color by gap, height by emissions
-        this.world.pointColor(n => {
-          const gap = n.reality_gap_mt;
-          if (gap === null || gap === undefined) return '#95a5a6';
-          if (gap > 0) return '#e74c3c';
-          return '#2ecc71';
-        });
-        this.world.pointAltitude(n => 0.01 + Math.min((n.fossil_co2_mt || 0) / 50000, 0.15));
-        break;
-
-      case 'forest':
-        // Forestry Loophole: height includes LULUCF
-        this.world.pointColor(n => {
-          const lulucf = n.lulucf_co2_mt || 0;
-          const fossil = n.fossil_co2_mt || 1;
-          const ratio = Math.abs(lulucf) / fossil;
-          if (ratio > 0.5) return '#e67e22'; // High LULUCF = orange
-          if (ratio > 0.2) return '#f39c12';
-          return '#27ae60';
-        });
-        this.world.pointAltitude(n => {
-          const total = (n.fossil_co2_mt || 0) + Math.abs(n.lulucf_co2_mt || 0);
-          return 0.01 + Math.min(total / 50000, 0.2);
-        });
-        break;
-
-      case 'cat':
-        // CAT Rating: use globe_color hex
-        this.world.pointColor(n => n.globe_color || '#95a5a6');
-        this.world.pointAltitude(n => 0.01 + Math.min((n.fossil_co2_mt || 0) / 50000, 0.15));
-        break;
-    }
+    // Every former lens is temporarily the same neutral provisional magnitude
+    // view. No legacy field can switch the globe into a performance judgment.
+    this.world.pointColor(() => '#6f91a8');
+    this.world.pointAltitude(n => 0.01 + Math.min((n.fossil_co2_mt || 0) / 50000, 0.15));
   },
 
   // ── Update node visual states based on engagement ──
@@ -2171,12 +1643,8 @@ const GlobeModule = {
       : [];
 
     this.world.pointColor(p => {
-      // Pledge nodes: use gap color
       if (p._type === 'pledge') {
-        const gap = p.reality_gap_mt;
-        if (gap === null || gap === undefined) return '#95a5a6';
-        if (gap > 0) return '#e74c3c';
-        return '#2ecc71';
+        return '#6f91a8';
       }
       // Site nodes: use engagement state color
       if (suggestedIds.includes(p.id)) return '#ffd700';
@@ -2232,14 +1700,10 @@ const GlobeModule = {
         return;
       }
       const n = detail.node;
-      const gap = n.reality_gap_mt;
-      const statusClass = gap === null ? '' : (gap > 0 ? 'tt-status-red' : 'tt-status-green');
-      const statusText = gap === null ? 'No target data' : (gap > 0 ? 'OVERSHOOTING' : 'ON TRACK');
-      const target = n.reduction_pct > 0 ? n.reduction_pct + '% by ' + Math.round(n.target_year) : 'No target';
-      const cat = n.cat_rating ? ' · ' + n.cat_rating : '';
-      tooltip.innerHTML = '<div class="tt-country">' + n.country + cat + '</div>'
-        + '<div class="tt-detail">' + (n.fossil_co2_mt ? n.fossil_co2_mt.toFixed(1) : '—') + ' MtCO₂ · ' + target + '</div>'
-        + '<div class="' + statusClass + '">' + statusText + '</div>';
+      const magnitude = n.fossil_co2_mt ? n.fossil_co2_mt.toFixed(1) + ' MtCO₂/yr' : 'Magnitude unavailable';
+      tooltip.innerHTML = '<div class="tt-country">' + _escapeHtml(n.country) + '</div>'
+        + '<div class="tt-detail">Provisional fossil CO₂ magnitude: ' + magnitude + ' · legacy, unverified</div>'
+        + '<div>Performance withheld</div>';
       tooltip.classList.add('visible');
     };
     window.addEventListener('pledgeHover', this._onPledgeHover);
