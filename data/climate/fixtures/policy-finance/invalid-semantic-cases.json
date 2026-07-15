@@ -1,0 +1,18 @@
+{
+  "fixture_notice": "FICTIONAL INVALID CONTRACT CASES. Each mutation must be rejected by the validator.",
+  "schema_version": "1.0.0",
+  "cases": [
+    { "case_id": "policy-expected-effect-uses-measured-method", "record_family": "policies", "base_index": 0, "set": { "effects.expected.0.method": "measured" }, "expected_error": "expected policy effects must use modeled or projected methods" },
+    { "case_id": "policy-observed-effect-uses-modeled-method", "record_family": "policies", "base_index": 0, "set": { "effects.observed.0.method": "modeled" }, "expected_error": "observed policy effects must use measured, evaluated, or official_reported methods" },
+    { "case_id": "policy-effect-reused-as-expected-and-observed", "record_family": "policies", "base_index": 0, "set": { "effects.observed.0.source_fact_id": "fact:fixture-zzz:modeled-policy-effect:2030" }, "expected_error": "expected and observed effects must not reuse a source fact" },
+    { "case_id": "projection-mislabeled-as-observation", "record_family": "projections", "base_index": 0, "set": { "data_role": "observation" }, "expected_error": "projection data_role must remain scenario_projection_only" },
+    { "case_id": "projection-context-plane", "record_family": "projections", "base_index": 0, "set": { "evidence_plane": "context" }, "expected_error": "projection evidence_plane must be official, harmonized, or independent" },
+    { "case_id": "projection-duplicate-year", "record_family": "projections", "base_index": 0, "set": { "points.1.year": 2025 }, "expected_error": "projection years must be unique and strictly increasing" },
+    { "case_id": "finance-ambiguous-total-field", "record_family": "finance", "base_index": 0, "set": { "finance_total_bn": 12.5 }, "expected_error": "ambiguous finance total fields are prohibited" },
+    { "case_id": "finance-provided-as-recipient", "record_family": "finance", "base_index": 0, "set": { "country_role": "recipient" }, "expected_error": "provided and mobilized flows require provider country_role" },
+    { "case_id": "finance-received-as-provider", "record_family": "finance", "base_index": 1, "set": { "country_role": "provider" }, "expected_error": "needed and received flows require recipient country_role" },
+    { "case_id": "finance-domestic-bilateral", "record_family": "finance", "base_index": 0, "set": { "origin": "domestic", "channel": "bilateral" }, "expected_error": "domestic origin requires domestic channel" },
+    { "case_id": "finance-constant-without-base-year", "record_family": "finance", "base_index": 0, "set": { "price_basis.base_year": null }, "expected_error": "constant prices require a base year and conversion method" },
+    { "case_id": "finance-official-source-independent-plane", "record_family": "finance", "base_index": 0, "set": { "evidence_plane": "independent" }, "expected_error": "UNFCCC source records must remain on the official evidence plane" }
+  ]
+}
