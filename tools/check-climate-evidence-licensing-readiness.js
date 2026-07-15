@@ -65,6 +65,8 @@ validate(actual, input);
 assert.deepEqual(actual.country_work_items.map(item => item.iso_alpha3), EXPECTED_TOP20);
 assert.deepEqual(actual.source_decision_work.map(item => item.source_registry_id), SOURCE_IDS);
 assert.equal(actual.audit_findings.ct40.facts_with_evidence_state_not_reviewed, 2060);
+assert.equal(actual.audit_findings.ct40.factual_display_eligible_facts, 2060);
+assert.equal(actual.audit_findings.ct40.magnitude_comparison_eligible_facts, 2060);
 assert.equal(actual.audit_findings.ct14.metadata_only_entities, 4);
 assert.equal(actual.audit_findings.ct14.audits_not_started, 16);
 assert.equal(actual.audit_findings.ct14.official_inventory_documents_available, 0);
@@ -79,8 +81,9 @@ for (const mutation of json(FIXTURE).mutations) {
 }
 
 console.log([
-  'CT-15 production evidence/licensing readiness: PASS (release remains blocked)',
-  '  CT-40: 2,060 not-reviewed facts; 0 fact reviews; 0 CT-40 rights decisions; 0 release reviewers',
+  'CT-15 production evidence/licensing readiness: PASS (assessed release remains blocked)',
+  '  CT-40 factual tiers: 2,060/2,060 eligible for factual display and magnitude comparison',
+  '  CT-40 assessed release: DENY; 0 field-level assessment reviews; 0 assessment/scoring rights decisions; 0 release reviewers',
   '  CT-14: 20 countries; 0 official inventories; 4 metadata-only; 16 audits not started',
   `  source-decision work items: ${SOURCE_IDS.length}; country work items: ${EXPECTED_TOP20.length}`,
   `  adversarial mutations rejected: ${rejected}`,

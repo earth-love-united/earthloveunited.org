@@ -82,7 +82,9 @@ This mode must prove all of the following:
 - independent CT-42 data and UI reviews pass;
 - public-copy, canonical source-link, JavaScript syntax, and load-order checks
   pass;
-- the real CT-40 evaluation remains `deny` and has canonical reasons;
+- the real CT-40 evaluation remains `deny` only for
+  `assessed_climate_release`, while its factual-display and
+  magnitude-comparison tiers remain eligible for all 2,060 reviewed facts;
 - the top-20 primary-source queue covers 20 entities and authorizes zero;
 - the evidence/licensing work package remains blocked and points to a separate
   future reviewed-candidate compiler;
@@ -110,7 +112,8 @@ node tools/check-climate-production-readiness.js --release
 
 This mode fails closed unless every item below is true:
 
-- CT-40 returns an authentic `allow` with release authority;
+- CT-40 returns an authentic `allow` with release authority for the assessed
+  release scope (the limited factual tiers do not grant this authority);
 - top-20 primary-source review is complete;
 - explicit redistribution and scoring licence decisions are complete;
 - required field-level fact reviews are complete;
@@ -148,9 +151,12 @@ deployed and independently reviewed.
 
 ## Current result
 
-The current factual base remains fail closed. Production mode is blocked by the
-unprovisioned registry, absent human approval/signatures, and the wider climate
+The current 2,060-fact PRIMAP base is eligible for factual display and magnitude
+comparison with attribution. Commitments, derived metrics, performance
+assessment, scores, and authoritative assessed release remain absent or
+blocked. Production deployment is additionally blocked by the unprovisioned
+asset-approval registry, absent human approval/signatures, and the wider
 release requirements. Any UI/control change must receive a fresh independent
-candidate review before candidate integrity can pass. The gate must not be
-weakened to make the release appear ready; evidence and independent decisions
-must be added instead.
+candidate review before candidate integrity can pass. Missing evidence and
+independent decisions must be added without broadening the limited factual
+approval.

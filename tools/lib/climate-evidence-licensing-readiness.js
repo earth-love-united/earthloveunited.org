@@ -47,6 +47,7 @@ function sourceDecision(source, config) {
       artifact_checksum_sha256: source.artifact?.sha256 || null,
     },
     ct40_decision_state: config.ct40DecisionState,
+    publication_tier_state: config.publicationTierState,
     registry_change_required_before_normalized_use: config.registryChangeRequired,
     registry_transition_fields: config.registryChangeRequired ? [
       'licence.status',
@@ -82,18 +83,20 @@ function sourceDecision(source, config) {
       'decision_at',
       'decision_notes',
     ],
-    transition_conditions: {
+    use_conditions: {
       factual_publication: [
-        'non-empty decision_id',
-        'checksum pin matches every released fact',
-        'redistribution_approved is true',
-        'normalized_values_approved is true',
+        'pinned source-registry approval and licence evidence cover the exact release checksum',
+        'source-registry redistribution and normalized-values flags are true',
+        'batch publication attestation covers every released fact and exact allowed-use flag',
+        'attribution and transformation notice are retained',
       ],
       assessment_or_scoring: [
-        'all factual-publication conditions',
+        'all factual-publication conditions remain satisfied',
+        'non-empty independent assessment-rights decision_id',
+        'decision checksum pin matches every assessed fact',
         'scoring_approved is true',
       ],
-      note: 'These are gate conditions, not approvals. The independent rights reviewer may deny or narrow any use.',
+      note: 'The factual conditions describe the already reviewed limited tier only. Assessment and scoring remain separate gate conditions, not approvals; the independent reviewer may deny or narrow those uses.',
     },
     accepted_decision_basis: config.acceptedDecisionBasis,
     prohibited_basis: [
@@ -149,7 +152,13 @@ function buildCountryWorkItem(entity) {
 function compile(input) {
   const { ct40Result, ct40Input, ct14Queue, sourceRegistry, audit, publishedFacts, inputPins } = input;
   assert(ct40Result.decision === 'deny' && ct40Result.eligible === false && ct40Result.release_authority === false, 'CT-40 DENY snapshot required');
+  assert(ct40Result.decision_scope === 'assessed_climate_release', 'CT-40 assessed-release scope required');
   assert(ct40Result.counts?.facts_evaluated === 2060 && ct40Result.counts?.facts_eligible === 0, 'CT-40 fact counts drift');
+  assert(ct40Result.publication_tiers?.factual_display?.status === 'eligible' && ct40Result.publication_tiers.factual_display.eligible_count === 2060, 'CT-40 factual-display tier drift');
+  assert(ct40Result.publication_tiers?.magnitude_comparison?.status === 'eligible' && ct40Result.publication_tiers.magnitude_comparison.eligible_count === 2060, 'CT-40 magnitude-comparison tier drift');
+  for (const tier of ['commitment_display', 'derived_metrics', 'performance_assessment', 'score']) {
+    assert(ct40Result.publication_tiers?.[tier]?.status === 'not_present' && ct40Result.publication_tiers[tier].eligible_count === 0, `CT-40 ${tier} tier drift`);
+  }
   assert(ct40Input.ct40_candidate?.facts?.length === 2060, 'CT-40 input fact universe drift');
   assert(ct40Input.ct40_candidate.fact_reviews.length === 0, 'CT-40 denial input unexpectedly contains fact reviews');
   assert(ct40Input.ct40_candidate.facts.every(fact => fact.evidence_state === 'not_reviewed'), 'CT-40 denial input must preserve not_reviewed evidence');
@@ -166,26 +175,30 @@ function compile(input) {
 
   const sourceConfigs = [
     {
-      id: SOURCE_IDS[0], purpose: 'Current 2,060-fact harmonized factual runtime', requiredFor: ['factual_runtime'],
-      ct40DecisionState: 'missing',
+      id: SOURCE_IDS[0], purpose: 'Current 2,060-fact harmonized factual publication and future assessed-runtime input', requiredFor: ['factual_display', 'magnitude_comparison', 'future_country_assessment'],
+      ct40DecisionState: 'missing_for_assessment_and_scoring',
+      publicationTierState: 'approved_for_factual_display_and_magnitude_comparison',
       registryChangeRequired: false,
       acceptedDecisionBasis: ['pinned CC BY 4.0 evidence', 'exact v2.6.1 artifact checksum', 'reviewed attribution and transformation notice'],
     },
     {
       id: SOURCE_IDS[1], purpose: 'Active NDC identity, target text, and target methodology', requiredFor: ['target_facts', 'comparability', 'country_assessment'],
       ct40DecisionState: 'pending_metadata_only',
+      publicationTierState: 'not_present',
       registryChangeRequired: true,
       acceptedDecisionBasis: ['written interpretation or clarification covering normalized fact extraction', 'document-specific rights review', 'explicitly licensed official data interface'],
     },
     {
       id: SOURCE_IDS[2], purpose: 'Official Party inventory documents and common reporting tables', requiredFor: ['official_inventory_facts', 'delivery', 'country_assessment'],
       ct40DecisionState: 'pending_metadata_only',
+      publicationTierState: 'not_present',
       registryChangeRequired: true,
       acceptedDecisionBasis: ['written interpretation covering normalized inventory facts', 'document-specific rights review', 'explicitly licensed official data interface'],
     },
     {
       id: SOURCE_IDS[3], purpose: 'BTR progress, policy, finance, and any explicitly routed CTF inventory facts', requiredFor: ['official_progress', 'policy_projection', 'climate_finance', 'official_inventory_only_if_registry_domain_is_corrected'],
       ct40DecisionState: 'pending_metadata_only',
+      publicationTierState: 'not_present',
       registryChangeRequired: true,
       acceptedDecisionBasis: ['written interpretation covering normalized factual extraction', 'document-specific rights review', 'explicitly licensed official data interface'],
       routingNote: 'CT-14 routes BTR to official_inventory, but this registry entry does not declare the official_inventory domain. Correct the registry domain or do not use BTR as an inventory source.',
@@ -193,6 +206,7 @@ function compile(input) {
     {
       id: SOURCE_IDS[4], purpose: 'Technical expert review documents and reviewed findings', requiredFor: ['conflict_resolution_or_review_findings_if_used'],
       ct40DecisionState: 'pending_metadata_only',
+      publicationTierState: 'not_present',
       registryChangeRequired: true,
       acceptedDecisionBasis: ['unchanged-document public-domain basis for source-file archiving', 'separate written decision for normalized findings'],
       routingNote: 'TER can corroborate or qualify an inventory but is not a substitute for the Party submission that supplies inventory values.',
@@ -200,19 +214,28 @@ function compile(input) {
   ];
 
   const output = {
-    schema_version: '1.0.0',
+    schema_version: '1.1.0',
     work_package_id: PACKAGE_ID,
     created_at: CREATED_AT,
     status: 'blocked',
     release_authority: false,
     production_runtime_release: false,
-    scope: 'Evidence, rights, and independent-review work required before a new production candidate may be evaluated. This package does not authorize release.',
+    scope: 'Evidence, rights, and independent-review work required before assessment, scoring, or an authoritative assessed-climate release. CT-40 separately permits the reviewed factual-display and magnitude-comparison tiers; this package grants no broader release authority.',
     inputs: inputPins,
     audit_findings: {
       ct40: {
         decision: 'deny',
+        decision_scope: 'assessed_climate_release',
         facts_evaluated: 2060,
         facts_eligible: 0,
+        factual_display_status: 'eligible',
+        factual_display_eligible_facts: 2060,
+        magnitude_comparison_status: 'eligible',
+        magnitude_comparison_eligible_facts: 2060,
+        commitment_display_status: 'not_present',
+        derived_metrics_status: 'not_present',
+        performance_assessment_status: 'not_present',
+        score_status: 'not_present',
         facts_with_evidence_state_not_reviewed: 2060,
         field_level_fact_reviews_present: 0,
         source_licence_decisions_present: 0,
@@ -241,7 +264,7 @@ function compile(input) {
       {
         snapshot_id: ct40Result.review_candidate_id,
         transitionable: false,
-        reason: 'The denial adapter intentionally writes not_reviewed facts, an empty fact-review array, null licence decisions, and an unreviewed release block.',
+        reason: 'The adapter preserves the pinned batch attestation and source-registry decision for factual display and magnitude comparison while leaving field-level assessment reviews, assessment/scoring licence decisions, profiles, and release review absent.',
       },
       {
         snapshot_id: ct14Queue.queue_id,
@@ -252,21 +275,33 @@ function compile(input) {
     required_next_compiler: {
       status: 'not_implemented',
       name: 'reviewed production candidate compiler',
-      rule: 'Consume new independently reviewed source decisions, document manifests, fact reviews, profiles, and release review inputs; preserve CT-14 and the CT-40 DENY snapshot unchanged.',
+      rule: 'For assessment or scoring, consume new independently reviewed source decisions, document manifests, field-level fact reviews, profiles, and release review inputs; preserve CT-14 and the scoped CT-40 assessed-release DENY snapshot unchanged.',
     },
     readiness_tracks: [
       {
-        track_id: 'factual_runtime',
-        status: 'blocked',
+        track_id: 'factual_display_and_magnitude_comparison',
+        status: 'eligible',
         can_proceed_independently_of_country_scoring: true,
-        current: { facts: 2060, fact_reviews: 0, ct40_source_decisions: 0, release_reviews: 0 },
+        current: { facts: 2060, batch_attested_facts: 2060, source_registry_factual_decisions: 1, eligible_facts: 2060 },
         required: [
-          'explicit PRIMAP CT-40 rights decision tied to the exact checksum',
-          '2,060 CT-40 fact-review records with exact field reviews',
-          'independent release review on the assembled candidate',
-          'reviewed runtime manifest, release diff, and executable rollback proof after an authentic allow decision',
+          'retain the pinned PRIMAP v2.6.1 checksum and CC BY 4.0 attribution',
+          'retain the CT-10C batch publication attestation and exact allowed-use flags',
+          'label values as harmonized economy-wide GHG facts without commitment, performance, or score claims',
         ],
         boundary: 'No target, commitment, delivery, performance, impact-band, or score claims.',
+      },
+      {
+        track_id: 'assessed_runtime_and_scoring',
+        status: 'blocked',
+        can_proceed_independently_of_factual_publication: true,
+        current: { facts: 2060, field_level_fact_reviews: 0, ct40_assessment_rights_decisions: 0, profiles: 0, release_reviews: 0 },
+        required: [
+          'explicit PRIMAP assessment-and-scoring rights decision tied to the exact checksum',
+          '2,060 CT-40 field-level fact-review records for any facts used by assessment',
+          'reviewed derived metrics and profiles with complete input lineage',
+          'independent release review on the assembled assessed candidate',
+        ],
+        boundary: 'The top-level CT-40 DENY applies here; it does not revoke the independently eligible factual tiers.',
       },
       {
         track_id: 'top20_country_assessment',
@@ -357,6 +392,8 @@ function compile(input) {
       current_runtime_fact: {
         review_records_required: 2060,
         review_records_present: 0,
+        publication_batch_attestation_facts: 2060,
+        publication_batch_attestation_scope: ['factual_display', 'magnitude_comparison'],
         review_record_fields: ['fact_id', 'status', 'extractor_id', 'reviewer_id', 'reviewed_at', 'source_checksum_sha256', 'methodology_version', 'field_reviews'],
         required_field_paths: ['metric', 'period', 'scope', 'source', 'evidence'],
         additional_high_impact_field_path: 'derivation',
@@ -400,13 +437,13 @@ function compile(input) {
     ],
     country_work_items: ct14Queue.entities.map(buildCountryWorkItem),
     ordered_worklist: [
-      { order: 1, work: 'Preserve CT-14 and the CT-40 DENY artifacts as immutable audit evidence.', status: 'required' },
-      { order: 2, work: 'Complete the explicit PRIMAP CT-40 rights decision for the pinned v2.6.1 checksum; do not infer it from CT-01 approval.', status: 'not_started' },
+      { order: 1, work: 'Preserve CT-14 and the scoped CT-40 tier decision as immutable audit evidence, including factual eligibility and assessed-release denial.', status: 'required' },
+      { order: 2, work: 'Complete the explicit PRIMAP assessment-and-scoring rights decision for the pinned v2.6.1 checksum; do not reopen or overstate the existing factual CC BY 4.0 decision.', status: 'not_started' },
       { order: 3, work: 'Resolve UNFCCC source-family normalized-extraction and scoring rights with counsel, written clarification, or an explicitly licensed official interface.', status: 'not_started' },
       { order: 4, work: 'Resolve the BTR official-inventory routing mismatch before using BTR values as inventory facts.', status: 'not_started' },
       { order: 5, work: 'Acquire or fail-close exact official inventory and NDC artifact packages for all 20 countries; hash every acquired attachment.', status: 'not_started' },
       { order: 6, work: 'Independently review document identity, current Party/submission status, rights exceptions, and checksums.', status: 'not_started' },
-      { order: 7, work: 'Produce and independently review 2,060 current-runtime fact reviews plus any new official inventory and target fact reviews.', status: 'not_started' },
+      { order: 7, work: 'Produce and independently review field-level records for every fact used in assessment, plus any new official inventory and target fact reviews; do not misdescribe the existing batch factual-publication attestation as absent.', status: 'not_started' },
       { order: 8, work: 'Compile and review target comparability and country profiles only from facts eligible for assessment/scoring.', status: 'not_started' },
       { order: 9, work: 'Build a new reviewed release candidate and run CT-40; retain DENY if any condition remains unmet.', status: 'not_started' },
       { order: 10, work: 'Only after an authentic allow: independently verify runtime manifest, release diff, deployment checks, and executable rollback proof.', status: 'blocked_on_authentic_allow' },
@@ -415,7 +452,7 @@ function compile(input) {
       'accept click-through terms',
       'download gated data through circumvention',
       'infer reuse permission from public access',
-      'treat CT-42 data/UI attestations as CT-40 fact, rights, profile, or release review',
+      'extend CT-42/CT-10C factual-publication attestations beyond factual display and magnitude comparison into commitment, derived metric, performance, score, profile, or assessed-release approval',
       'promote an INDC to active NDC status',
       'fill missing country fields from legacy pledge data',
       'create a production runtime manifest or allow manifest from this package',
@@ -430,14 +467,24 @@ function validate(output, input) {
   assert(output.status === 'blocked' && output.release_authority === false && output.production_runtime_release === false, 'readiness package leaked release authority');
   assert(output.snapshot_boundaries.length === 2 && output.snapshot_boundaries.every(item => item.transitionable === false), 'denial snapshot became transitionable');
   assert(output.required_next_compiler.status === 'not_implemented', 'unimplemented production compiler claimed ready');
-  assert(output.readiness_tracks.length === 2 && output.readiness_tracks.every(item => item.status === 'blocked'), 'readiness track claimed ready');
+  assert(output.readiness_tracks.length === 3, 'readiness track coverage drift');
+  const tracks = new Map(output.readiness_tracks.map(item => [item.track_id, item]));
+  assert(tracks.get('factual_display_and_magnitude_comparison')?.status === 'eligible', 'factual publication eligibility was hidden');
+  assert(tracks.get('assessed_runtime_and_scoring')?.status === 'blocked' && tracks.get('top20_country_assessment')?.status === 'blocked', 'assessed readiness track claimed ready');
   assert(output.audit_findings.ct40.facts_evaluated === 2060 && output.audit_findings.ct40.facts_eligible === 0, 'CT-40 counts drift');
+  assert(output.audit_findings.ct40.decision_scope === 'assessed_climate_release', 'CT-40 decision scope drift');
+  assert(output.audit_findings.ct40.factual_display_status === 'eligible' && output.audit_findings.ct40.factual_display_eligible_facts === 2060, 'factual-display eligibility drift');
+  assert(output.audit_findings.ct40.magnitude_comparison_status === 'eligible' && output.audit_findings.ct40.magnitude_comparison_eligible_facts === 2060, 'magnitude-comparison eligibility drift');
+  for (const tier of ['commitment_display', 'derived_metrics', 'performance_assessment', 'score']) {
+    assert(output.audit_findings.ct40[`${tier}_status`] === 'not_present', `${tier} status drift`);
+  }
   assert(output.audit_findings.ct40.field_level_fact_reviews_present === 0 && output.field_review_contracts.current_runtime_fact.review_records_present === 0, 'fact reviews were invented');
   assert(output.field_review_contracts.current_runtime_fact.review_records_required === 2060, 'fact-review requirement drift');
   assert(output.audit_findings.ct14.official_inventory_documents_available === 0 && output.audit_findings.ct14.release_eligible_entities === 0, 'official evidence or eligibility invented');
   assert(output.source_decision_work.length === SOURCE_IDS.length, 'source-decision work coverage drift');
   const decisions = new Map(output.source_decision_work.map(item => [item.source_registry_id, item]));
-  assert(decisions.get(SOURCE_IDS[0])?.ct40_decision_state === 'missing', 'PRIMAP CT-40 decision was invented');
+  assert(decisions.get(SOURCE_IDS[0])?.ct40_decision_state === 'missing_for_assessment_and_scoring', 'PRIMAP assessed-use decision drift');
+  assert(decisions.get(SOURCE_IDS[0])?.publication_tier_state === 'approved_for_factual_display_and_magnitude_comparison', 'PRIMAP factual publication state drift');
   assert(decisions.get(SOURCE_IDS[0])?.registry_change_required_before_normalized_use === false, 'PRIMAP registry was needlessly reopened');
   assert(decisions.get(SOURCE_IDS[0])?.current_registry_state.artifact_checksum_sha256 === '7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9', 'PRIMAP checksum drift');
   for (const id of SOURCE_IDS.slice(1)) {
@@ -445,6 +492,7 @@ function validate(output, input) {
     assert(decision?.current_registry_state.approval_state === 'pending', `${id} approval was inferred`);
     assert(decision.current_registry_state.normalized_values_allowed === false, `${id} normalized values were prematurely allowed`);
     assert(decision.ct40_decision_state === 'pending_metadata_only', `${id} CT-40 decision drift`);
+    assert(decision.publication_tier_state === 'not_present', `${id} publication tier state drift`);
     assert(decision.registry_change_required_before_normalized_use === true && decision.registry_transition_fields.length > 0, `${id} registry transition work missing`);
   }
   assert(output.known_ndc_artifact_work.length === 5, 'known NDC artifact work drift');

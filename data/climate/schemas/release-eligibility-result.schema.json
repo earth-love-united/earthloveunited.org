@@ -1,18 +1,32 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://earthloveunited.org/schemas/climate/release-eligibility-result-1.0.0.json",
+  "$id": "https://earthloveunited.org/schemas/climate/release-eligibility-result-2.0.0.json",
   "title": "CT-40 independent review and release eligibility result",
   "type": "object",
   "additionalProperties": false,
-  "required": ["gate_version", "data_release_id", "methodology_version", "evaluated_at", "decision", "eligible", "reason_codes", "fact_decisions", "profile_decisions", "review_queue", "manifest"],
+  "required": ["gate_version", "decision_scope", "data_release_id", "methodology_version", "evaluated_at", "decision", "eligible", "reason_codes", "publication_tiers", "fact_decisions", "profile_decisions", "review_queue", "manifest"],
   "properties": {
-    "gate_version": { "const": "1.0.0" },
+    "gate_version": { "const": "2.0.0" },
+    "decision_scope": { "const": "assessed_climate_release" },
     "data_release_id": { "type": ["string", "null"] },
     "methodology_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
     "evaluated_at": { "type": "string", "format": "date-time" },
     "decision": { "enum": ["allow", "deny"] },
     "eligible": { "type": "boolean" },
     "reason_codes": { "$ref": "#/$defs/reasons" },
+    "publication_tiers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["factual_display", "magnitude_comparison", "commitment_display", "derived_metrics", "performance_assessment", "score"],
+      "properties": {
+        "factual_display": { "$ref": "#/$defs/publicationTier" },
+        "magnitude_comparison": { "$ref": "#/$defs/publicationTier" },
+        "commitment_display": { "$ref": "#/$defs/publicationTier" },
+        "derived_metrics": { "$ref": "#/$defs/publicationTier" },
+        "performance_assessment": { "$ref": "#/$defs/publicationTier" },
+        "score": { "$ref": "#/$defs/publicationTier" }
+      }
+    },
     "fact_decisions": {
       "type": "array",
       "items": {
@@ -58,8 +72,9 @@
     "manifest": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["decision", "release_eligible", "reason_codes", "eligible_fact_ids", "eligible_profile_ids", "calculation_hash"],
+      "required": ["decision_scope", "decision", "release_eligible", "reason_codes", "eligible_fact_ids", "eligible_profile_ids", "calculation_hash"],
       "properties": {
+        "decision_scope": { "const": "assessed_climate_release" },
         "decision": { "enum": ["allow", "deny"] },
         "release_eligible": { "type": "boolean" },
         "reason_codes": { "$ref": "#/$defs/reasons" },
@@ -70,6 +85,18 @@
     }
   },
   "$defs": {
+    "publicationTier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "eligible", "reason_codes", "eligible_ids", "blocked_ids"],
+      "properties": {
+        "status": { "enum": ["eligible", "blocked", "not_present"] },
+        "eligible": { "type": "boolean" },
+        "reason_codes": { "$ref": "#/$defs/reasons" },
+        "eligible_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "blocked_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
     "reasons": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
     "nonEmptyReasons": { "type": "array", "minItems": 1, "items": { "type": "string" }, "uniqueItems": true },
     "factIds": { "type": "array", "items": { "type": "string", "pattern": "^fact:" }, "uniqueItems": true }

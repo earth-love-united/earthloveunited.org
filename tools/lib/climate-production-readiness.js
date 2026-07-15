@@ -284,9 +284,13 @@ function evaluateReadiness(input, options = {}) {
   if (input.mode === 'candidate') {
     const coverage = input.top20_queue?.coverage || {};
     const missing = [...(truthCi.missing_required_components || [])].sort();
-    check('real-ct40-deny', ct40.decision === 'deny' && ct40.eligible === false &&
-      ct40.content_eligible === false && ct40.release_authority === false,
-      'The current real CT-40 result must remain a non-authoritative DENY.');
+    check('tiered-ct40-publication-boundary', ct40.decision_scope === 'assessed_climate_release' &&
+      ct40.decision === 'deny' && ct40.eligible === false && ct40.content_eligible === false &&
+      ct40.factual_publication_eligible === true && ct40.magnitude_comparison_eligible === true &&
+      ct40.commitment_display_status === 'not_present' && ct40.derived_metrics_status === 'not_present' &&
+      ct40.performance_assessment_status === 'not_present' && ct40.score_status === 'not_present' &&
+      ct40.release_authority === false,
+      'Reviewed factual display and magnitude comparison may pass while absent commitments, derived metrics, performance, scores, and assessed release remain blocked.');
     check('deny-reasons-present', Array.isArray(ct40.reason_codes) && ct40.reason_codes.length > 0,
       'A denied candidate must disclose canonical reason codes.');
     check('top20-queue-fail-closed', coverage.ranked_entities === 20 && coverage.release_eligible_entities === 0,
@@ -309,7 +313,8 @@ function evaluateReadiness(input, options = {}) {
       'Candidate integrity may pass only with exact notice bytes while all five asset rights decisions, counsel questions, production use, and release authority remain explicitly blocked.');
   } else {
     check('real-ct40-allow', reviewedRelease.status === 'validated' && reviewedRelease.pass === true &&
-      ct40.decision === 'allow' && ct40.eligible === true && ct40.content_eligible === true &&
+      ct40.decision_scope === 'assessed_climate_release' && ct40.decision === 'allow' &&
+      ct40.eligible === true && ct40.content_eligible === true && ct40.factual_publication_eligible === true &&
       ct40.release_authority === false,
       'Release requires an authentic, independently reviewed CT-40 ALLOW that grants content eligibility only.');
     check('canonical-reviewed-release-package', reviewedRelease.status === 'validated' && reviewedRelease.pass === true &&

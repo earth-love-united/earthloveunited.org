@@ -1028,8 +1028,16 @@ const rollbackPlanPath = 'data/climate/runtime/rollback-plan.json';
 const ct40 = JSON.parse(fs.readFileSync(path.join(ROOT, ct40Path)));
 const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, manifestPath)));
 assert.equal(ct40.decision, 'deny');
+assert.equal(ct40.decision_scope, 'assessed_climate_release');
 assert.equal(ct40.eligible, false);
 assert.equal(ct40.release_authority, false);
+assert.equal(ct40.publication_tiers.factual_display.status, 'eligible');
+assert.equal(ct40.publication_tiers.factual_display.eligible_count, 2060);
+assert.equal(ct40.publication_tiers.magnitude_comparison.status, 'eligible');
+assert.equal(ct40.publication_tiers.magnitude_comparison.eligible_count, 2060);
+for (const tier of ['commitment_display', 'derived_metrics', 'performance_assessment', 'score']) {
+  assert.equal(ct40.publication_tiers[tier].status, 'not_present');
+}
 assert.equal(manifest.review_status, 'not_reviewed');
 assert.equal(manifest.production_runtime_release, false);
 assert.equal(sha256(fs.readFileSync(path.join(ROOT, rollbackPlanPath))), ROLLBACK_PLAN_SHA256, 'rollback plan must remain byte-identical');
@@ -1046,7 +1054,7 @@ const roles = {
 };
 
 const proof = {
-  schema_version: '2.1.0',
+  schema_version: '2.2.0',
   proof_id: 'ct-42-neutral-runtime-rollback-rehearsal-2026-07-15',
   status: 'built_not_reviewed_browser_gate_required',
   release_authority: false,
@@ -1065,6 +1073,12 @@ const proof = {
     review_chain_late_bound: reviewChainHead === null,
     candidate_id: 'ct-42-factual-runtime-candidate-2026-07-15',
     decision: 'deny',
+    decision_scope: 'assessed_climate_release',
+    publication_tiers: Object.fromEntries(Object.entries(ct40.publication_tiers).map(([tier, state]) => [tier, {
+      status: state.status,
+      eligible_count: state.eligible_count,
+      blocked_count: state.blocked_count,
+    }])),
     release_eligible: false,
     production_runtime_release: false,
     candidate_manifest: { path: manifestPath, sha256: sha256(fs.readFileSync(path.join(ROOT, manifestPath))) },

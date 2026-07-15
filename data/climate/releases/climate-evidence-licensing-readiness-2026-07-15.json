@@ -1,19 +1,19 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "work_package_id": "ct15-production-evidence-readiness-2026-07-15",
   "created_at": "2026-07-15T16:00:00Z",
   "status": "blocked",
   "release_authority": false,
   "production_runtime_release": false,
-  "scope": "Evidence, rights, and independent-review work required before a new production candidate may be evaluated. This package does not authorize release.",
+  "scope": "Evidence, rights, and independent-review work required before assessment, scoring, or an authoritative assessed-climate release. CT-40 separately permits the reviewed factual-display and magnitude-comparison tiers; this package grants no broader release authority.",
   "inputs": {
     "ct40Result": {
       "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
-      "sha256": "fce7c173fa5b2560f474b9265c04aeecd8c49b48ebcb65143a0e01226fe51da2"
+      "sha256": "e37314cdfc6863f26811c28429c14c57c109c2a0be0140fe7447f0d4aaaf77bd"
     },
     "ct40Input": {
       "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
-      "sha256": "31966ea0dd35444b4aedff394645c1fc0cc949c4bd4e6cd43a1a94a27abd81c1"
+      "sha256": "78b7cc69241b6d3679c9a611649dab7c7bba6707d174247bd6d5372ce2631b1e"
     },
     "ct14Queue": {
       "path": "data/climate/releases/top20-primary-source-gap-queue-2026-07-15.json",
@@ -41,11 +41,11 @@
     },
     "releaseGate": {
       "path": "tools/lib/climate-release-gate.js",
-      "sha256": "f0433101e6330a58f6152367536043f4b687cd670c50343d34dc7f1f58f1e4c9"
+      "sha256": "05f4a64dc5b7f66a075c9dc7e5e58f91f6380754393412e637542a01a928a40c"
     },
     "ct40Adapter": {
       "path": "tools/lib/ct42-ct40-release-review.js",
-      "sha256": "0960a195594297a6c4970d1ce3cca70269b3d9107e425e3d1d9b85cc8a0115a4"
+      "sha256": "bb9ca986f4410e174e83cde604e92dfd0be708942a4fe4bf609d2a26385228f2"
     },
     "ct14Compiler": {
       "path": "tools/lib/top20-primary-source-gap-queue.js",
@@ -55,8 +55,17 @@
   "audit_findings": {
     "ct40": {
       "decision": "deny",
+      "decision_scope": "assessed_climate_release",
       "facts_evaluated": 2060,
       "facts_eligible": 0,
+      "factual_display_status": "eligible",
+      "factual_display_eligible_facts": 2060,
+      "magnitude_comparison_status": "eligible",
+      "magnitude_comparison_eligible_facts": 2060,
+      "commitment_display_status": "not_present",
+      "derived_metrics_status": "not_present",
+      "performance_assessment_status": "not_present",
+      "score_status": "not_present",
       "facts_with_evidence_state_not_reviewed": 2060,
       "field_level_fact_reviews_present": 0,
       "source_licence_decisions_present": 0,
@@ -91,7 +100,7 @@
     {
       "snapshot_id": "ct-42-to-ct-40-real-release-review-2026-07-15",
       "transitionable": false,
-      "reason": "The denial adapter intentionally writes not_reviewed facts, an empty fact-review array, null licence decisions, and an unreviewed release block."
+      "reason": "The adapter preserves the pinned batch attestation and source-registry decision for factual display and magnitude comparison while leaving field-level assessment reviews, assessment/scoring licence decisions, profiles, and release review absent."
     },
     {
       "snapshot_id": "ct-14-top20-primary-source-gap-queue-2026-07-15",
@@ -102,26 +111,44 @@
   "required_next_compiler": {
     "status": "not_implemented",
     "name": "reviewed production candidate compiler",
-    "rule": "Consume new independently reviewed source decisions, document manifests, fact reviews, profiles, and release review inputs; preserve CT-14 and the CT-40 DENY snapshot unchanged."
+    "rule": "For assessment or scoring, consume new independently reviewed source decisions, document manifests, field-level fact reviews, profiles, and release review inputs; preserve CT-14 and the scoped CT-40 assessed-release DENY snapshot unchanged."
   },
   "readiness_tracks": [
     {
-      "track_id": "factual_runtime",
-      "status": "blocked",
+      "track_id": "factual_display_and_magnitude_comparison",
+      "status": "eligible",
       "can_proceed_independently_of_country_scoring": true,
       "current": {
         "facts": 2060,
-        "fact_reviews": 0,
-        "ct40_source_decisions": 0,
+        "batch_attested_facts": 2060,
+        "source_registry_factual_decisions": 1,
+        "eligible_facts": 2060
+      },
+      "required": [
+        "retain the pinned PRIMAP v2.6.1 checksum and CC BY 4.0 attribution",
+        "retain the CT-10C batch publication attestation and exact allowed-use flags",
+        "label values as harmonized economy-wide GHG facts without commitment, performance, or score claims"
+      ],
+      "boundary": "No target, commitment, delivery, performance, impact-band, or score claims."
+    },
+    {
+      "track_id": "assessed_runtime_and_scoring",
+      "status": "blocked",
+      "can_proceed_independently_of_factual_publication": true,
+      "current": {
+        "facts": 2060,
+        "field_level_fact_reviews": 0,
+        "ct40_assessment_rights_decisions": 0,
+        "profiles": 0,
         "release_reviews": 0
       },
       "required": [
-        "explicit PRIMAP CT-40 rights decision tied to the exact checksum",
-        "2,060 CT-40 fact-review records with exact field reviews",
-        "independent release review on the assembled candidate",
-        "reviewed runtime manifest, release diff, and executable rollback proof after an authentic allow decision"
+        "explicit PRIMAP assessment-and-scoring rights decision tied to the exact checksum",
+        "2,060 CT-40 field-level fact-review records for any facts used by assessment",
+        "reviewed derived metrics and profiles with complete input lineage",
+        "independent release review on the assembled assessed candidate"
       ],
-      "boundary": "No target, commitment, delivery, performance, impact-band, or score claims."
+      "boundary": "The top-level CT-40 DENY applies here; it does not revoke the independently eligible factual tiers."
     },
     {
       "track_id": "top20_country_assessment",
@@ -147,9 +174,11 @@
   "source_decision_work": [
     {
       "source_registry_id": "primap-hist-2.6.1-final",
-      "purpose": "Current 2,060-fact harmonized factual runtime",
+      "purpose": "Current 2,060-fact harmonized factual publication and future assessed-runtime input",
       "required_for": [
-        "factual_runtime"
+        "factual_display",
+        "magnitude_comparison",
+        "future_country_assessment"
       ],
       "mandatory_if_used": true,
       "current_registry_state": {
@@ -162,7 +191,8 @@
         "metadata_and_links_allowed": true,
         "artifact_checksum_sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9"
       },
-      "ct40_decision_state": "missing",
+      "ct40_decision_state": "missing_for_assessment_and_scoring",
+      "publication_tier_state": "approved_for_factual_display_and_magnitude_comparison",
       "registry_change_required_before_normalized_use": false,
       "registry_transition_fields": [],
       "ct40_candidate_decision_path": "ct40_candidate.sources[source_id=primap-hist-2.6.1-final].licence",
@@ -185,18 +215,20 @@
         "decision_at",
         "decision_notes"
       ],
-      "transition_conditions": {
+      "use_conditions": {
         "factual_publication": [
-          "non-empty decision_id",
-          "checksum pin matches every released fact",
-          "redistribution_approved is true",
-          "normalized_values_approved is true"
+          "pinned source-registry approval and licence evidence cover the exact release checksum",
+          "source-registry redistribution and normalized-values flags are true",
+          "batch publication attestation covers every released fact and exact allowed-use flag",
+          "attribution and transformation notice are retained"
         ],
         "assessment_or_scoring": [
-          "all factual-publication conditions",
+          "all factual-publication conditions remain satisfied",
+          "non-empty independent assessment-rights decision_id",
+          "decision checksum pin matches every assessed fact",
           "scoring_approved is true"
         ],
-        "note": "These are gate conditions, not approvals. The independent rights reviewer may deny or narrow any use."
+        "note": "The factual conditions describe the already reviewed limited tier only. Assessment and scoring remain separate gate conditions, not approvals; the independent reviewer may deny or narrow those uses."
       },
       "accepted_decision_basis": [
         "pinned CC BY 4.0 evidence",
@@ -231,6 +263,7 @@
         "artifact_checksum_sha256": null
       },
       "ct40_decision_state": "pending_metadata_only",
+      "publication_tier_state": "not_present",
       "registry_change_required_before_normalized_use": true,
       "registry_transition_fields": [
         "licence.status",
@@ -266,18 +299,20 @@
         "decision_at",
         "decision_notes"
       ],
-      "transition_conditions": {
+      "use_conditions": {
         "factual_publication": [
-          "non-empty decision_id",
-          "checksum pin matches every released fact",
-          "redistribution_approved is true",
-          "normalized_values_approved is true"
+          "pinned source-registry approval and licence evidence cover the exact release checksum",
+          "source-registry redistribution and normalized-values flags are true",
+          "batch publication attestation covers every released fact and exact allowed-use flag",
+          "attribution and transformation notice are retained"
         ],
         "assessment_or_scoring": [
-          "all factual-publication conditions",
+          "all factual-publication conditions remain satisfied",
+          "non-empty independent assessment-rights decision_id",
+          "decision checksum pin matches every assessed fact",
           "scoring_approved is true"
         ],
-        "note": "These are gate conditions, not approvals. The independent rights reviewer may deny or narrow any use."
+        "note": "The factual conditions describe the already reviewed limited tier only. Assessment and scoring remain separate gate conditions, not approvals; the independent reviewer may deny or narrow those uses."
       },
       "accepted_decision_basis": [
         "written interpretation or clarification covering normalized fact extraction",
@@ -312,6 +347,7 @@
         "artifact_checksum_sha256": null
       },
       "ct40_decision_state": "pending_metadata_only",
+      "publication_tier_state": "not_present",
       "registry_change_required_before_normalized_use": true,
       "registry_transition_fields": [
         "licence.status",
@@ -347,18 +383,20 @@
         "decision_at",
         "decision_notes"
       ],
-      "transition_conditions": {
+      "use_conditions": {
         "factual_publication": [
-          "non-empty decision_id",
-          "checksum pin matches every released fact",
-          "redistribution_approved is true",
-          "normalized_values_approved is true"
+          "pinned source-registry approval and licence evidence cover the exact release checksum",
+          "source-registry redistribution and normalized-values flags are true",
+          "batch publication attestation covers every released fact and exact allowed-use flag",
+          "attribution and transformation notice are retained"
         ],
         "assessment_or_scoring": [
-          "all factual-publication conditions",
+          "all factual-publication conditions remain satisfied",
+          "non-empty independent assessment-rights decision_id",
+          "decision checksum pin matches every assessed fact",
           "scoring_approved is true"
         ],
-        "note": "These are gate conditions, not approvals. The independent rights reviewer may deny or narrow any use."
+        "note": "The factual conditions describe the already reviewed limited tier only. Assessment and scoring remain separate gate conditions, not approvals; the independent reviewer may deny or narrow those uses."
       },
       "accepted_decision_basis": [
         "written interpretation covering normalized inventory facts",
@@ -394,6 +432,7 @@
         "artifact_checksum_sha256": null
       },
       "ct40_decision_state": "pending_metadata_only",
+      "publication_tier_state": "not_present",
       "registry_change_required_before_normalized_use": true,
       "registry_transition_fields": [
         "licence.status",
@@ -429,18 +468,20 @@
         "decision_at",
         "decision_notes"
       ],
-      "transition_conditions": {
+      "use_conditions": {
         "factual_publication": [
-          "non-empty decision_id",
-          "checksum pin matches every released fact",
-          "redistribution_approved is true",
-          "normalized_values_approved is true"
+          "pinned source-registry approval and licence evidence cover the exact release checksum",
+          "source-registry redistribution and normalized-values flags are true",
+          "batch publication attestation covers every released fact and exact allowed-use flag",
+          "attribution and transformation notice are retained"
         ],
         "assessment_or_scoring": [
-          "all factual-publication conditions",
+          "all factual-publication conditions remain satisfied",
+          "non-empty independent assessment-rights decision_id",
+          "decision checksum pin matches every assessed fact",
           "scoring_approved is true"
         ],
-        "note": "These are gate conditions, not approvals. The independent rights reviewer may deny or narrow any use."
+        "note": "The factual conditions describe the already reviewed limited tier only. Assessment and scoring remain separate gate conditions, not approvals; the independent reviewer may deny or narrow those uses."
       },
       "accepted_decision_basis": [
         "written interpretation covering normalized factual extraction",
@@ -473,6 +514,7 @@
         "artifact_checksum_sha256": null
       },
       "ct40_decision_state": "pending_metadata_only",
+      "publication_tier_state": "not_present",
       "registry_change_required_before_normalized_use": true,
       "registry_transition_fields": [
         "licence.status",
@@ -508,18 +550,20 @@
         "decision_at",
         "decision_notes"
       ],
-      "transition_conditions": {
+      "use_conditions": {
         "factual_publication": [
-          "non-empty decision_id",
-          "checksum pin matches every released fact",
-          "redistribution_approved is true",
-          "normalized_values_approved is true"
+          "pinned source-registry approval and licence evidence cover the exact release checksum",
+          "source-registry redistribution and normalized-values flags are true",
+          "batch publication attestation covers every released fact and exact allowed-use flag",
+          "attribution and transformation notice are retained"
         ],
         "assessment_or_scoring": [
-          "all factual-publication conditions",
+          "all factual-publication conditions remain satisfied",
+          "non-empty independent assessment-rights decision_id",
+          "decision checksum pin matches every assessed fact",
           "scoring_approved is true"
         ],
-        "note": "These are gate conditions, not approvals. The independent rights reviewer may deny or narrow any use."
+        "note": "The factual conditions describe the already reviewed limited tier only. Assessment and scoring remain separate gate conditions, not approvals; the independent reviewer may deny or narrow those uses."
       },
       "accepted_decision_basis": [
         "unchanged-document public-domain basis for source-file archiving",
@@ -1006,6 +1050,11 @@
     "current_runtime_fact": {
       "review_records_required": 2060,
       "review_records_present": 0,
+      "publication_batch_attestation_facts": 2060,
+      "publication_batch_attestation_scope": [
+        "factual_display",
+        "magnitude_comparison"
+      ],
       "review_record_fields": [
         "fact_id",
         "status",
@@ -4104,12 +4153,12 @@
   "ordered_worklist": [
     {
       "order": 1,
-      "work": "Preserve CT-14 and the CT-40 DENY artifacts as immutable audit evidence.",
+      "work": "Preserve CT-14 and the scoped CT-40 tier decision as immutable audit evidence, including factual eligibility and assessed-release denial.",
       "status": "required"
     },
     {
       "order": 2,
-      "work": "Complete the explicit PRIMAP CT-40 rights decision for the pinned v2.6.1 checksum; do not infer it from CT-01 approval.",
+      "work": "Complete the explicit PRIMAP assessment-and-scoring rights decision for the pinned v2.6.1 checksum; do not reopen or overstate the existing factual CC BY 4.0 decision.",
       "status": "not_started"
     },
     {
@@ -4134,7 +4183,7 @@
     },
     {
       "order": 7,
-      "work": "Produce and independently review 2,060 current-runtime fact reviews plus any new official inventory and target fact reviews.",
+      "work": "Produce and independently review field-level records for every fact used in assessment, plus any new official inventory and target fact reviews; do not misdescribe the existing batch factual-publication attestation as absent.",
       "status": "not_started"
     },
     {
@@ -4157,10 +4206,10 @@
     "accept click-through terms",
     "download gated data through circumvention",
     "infer reuse permission from public access",
-    "treat CT-42 data/UI attestations as CT-40 fact, rights, profile, or release review",
+    "extend CT-42/CT-10C factual-publication attestations beyond factual display and magnitude comparison into commitment, derived metric, performance, score, profile, or assessed-release approval",
     "promote an INDC to active NDC status",
     "fill missing country fields from legacy pledge data",
     "create a production runtime manifest or allow manifest from this package"
   ],
-  "calculation_hash": "7cb9eba6245fed762750dafabb91445144818fcfe893f0f595426a9bb8fcd7d8"
+  "calculation_hash": "92d4afb18f03a7eedcf918055a26e92ff71d5facd3ff5bd98ba978e250556b58"
 }

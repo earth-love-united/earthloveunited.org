@@ -17,10 +17,10 @@ const SOURCE_IDS = Object.freeze([
 ]);
 const EXPECTED_INPUT_SHA256 = Object.freeze({
   source_registry: 'ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d',
-  ct15_readiness: 'c43c4dade50f5da40fea13567e2d6f758ff18af84b0689adbc2d266e5151fcd2',
-  ct16_policy: '17ea61279dcf06442032441a752c5458de5e9ea724661ef13e4f484bd2dd2442',
-  ct16_queue: 'cd5888b870753c30b5cfc6e5044d9a460454a9cb552061c671439b71a20b7ac1',
-  ct40_result: 'fce7c173fa5b2560f474b9265c04aeecd8c49b48ebcb65143a0e01226fe51da2',
+  ct15_readiness: 'b56813d8054a2a39ea72e1142e1f02e0b6534169e08895a10cf711f7a1b2ad47',
+  ct16_policy: 'e8332292a48d648c94f8b3f0514c1d0edfdef9c0bcba8c7f85789a4ec03204a6',
+  ct16_queue: '8e4f933c592a00da16f510f69ea4447bf4b28a748120157fe468bf002c3b747e',
+  ct40_result: 'e37314cdfc6863f26811c28429c14c57c109c2a0be0140fe7447f0d4aaaf77bd',
 });
 const DECISION_FIELDS = Object.freeze([
   'decision_id',
@@ -175,7 +175,7 @@ const CONFIGS = Object.freeze([
   {
     sourceId: SOURCE_IDS[0],
     packetId: 'ct17-rights-primap-v2.6.1-final',
-    purpose: 'Review the exact frozen PRIMAP v2.6.1 CSV and normalized factual values used by the factual runtime candidate.',
+    purpose: 'Review assessment, scoring, derivative-database, and other uses of the exact frozen PRIMAP v2.6.1 CSV beyond the already approved factual-display and magnitude-comparison tiers.',
     expectedRegistry: ['approved', 'confirmed', 'CC-BY-4.0', 'permitted', 'recorded_allowed', 'recorded_allowed'],
     scope: {
       scope_kind: 'frozen_file',
@@ -188,7 +188,7 @@ const CONFIGS = Object.freeze([
       captured_document_ids: [],
       captured_document_checksums_sha256: [],
       acquisition_state: 'exact_sha256_pinned_no_raw_file_committed',
-      scope_note: 'The SHA-256 is the exact project pin supplied for the named CSV. The official Zenodo record exposes the matching filename and an MD5, not this SHA-256; independent byte verification remains a reviewer task.',
+      scope_note: 'The SHA-256 is the exact project pin supplied for the named CSV. The official Zenodo record exposes the matching filename and an MD5, not this SHA-256. The existing source-registry decision and batch attestation already support factual display and magnitude comparison; this packet seeks independent review only for broader assessment/scoring uses.',
     },
     evidence: [
       evidence(
@@ -241,12 +241,12 @@ const CONFIGS = Object.freeze([
       ],
       [
         'Does an independent checksum verification confirm that the pinned SHA-256 belongs to the exact named v2.6.1 CSV whose Zenodo MD5 is recorded?',
-        'Does CC BY 4.0 cover source-file redistribution, normalized-value redistribution, derivative-database use and scoring for this exact artifact?',
-        'What attribution, change notice and re-review cadence must the production release enforce?',
+        'Beyond the existing factual-display decision, does CC BY 4.0 and the incorporated-source record cover derivative-database use, assessment and scoring for this exact artifact?',
+        'What additional attribution, change notice and re-review cadence must an assessed or scored production release enforce?',
       ],
       [
-        'Does the record-level licence grant sufficient authority over the composite dataset for the planned transformations and commercial public-site context?',
-        'Do any incorporated-source notices require additional attribution or restrict downstream normalization or redistribution?',
+        'Does the record-level licence grant sufficient authority over the composite dataset for assessment, scoring and derived outputs beyond limited factual display?',
+        'Do any incorporated-source notices require additional attribution or restrict downstream assessment, derivative-database use or scoring?',
       ],
     ),
   },
@@ -558,6 +558,9 @@ function registryState(source) {
 
 function assertCt15DecisionContract(ct15Readiness) {
   assert(ct15Readiness.work_package_id === 'ct15-production-evidence-readiness-2026-07-15' && ct15Readiness.status === 'blocked', 'CT-15 readiness boundary drift');
+  const tracks = new Map(ct15Readiness.readiness_tracks.map(item => [item.track_id, item]));
+  assert(tracks.get('factual_display_and_magnitude_comparison')?.status === 'eligible', 'CT-15 factual publication state drift');
+  assert(tracks.get('assessed_runtime_and_scoring')?.status === 'blocked', 'CT-15 assessed-runtime boundary drift');
   const work = new Map(ct15Readiness.source_decision_work.map(item => [item.source_registry_id, item]));
   for (const sourceId of SOURCE_IDS) {
     const decisionWork = work.get(sourceId);
@@ -575,7 +578,13 @@ function assertInputs(sourceRegistry, ct40Result, ct15Readiness, inputPins) {
     assert(inputPins[key]?.sha256 === expected, key + ' immutable input checksum drift');
   }
   assert(ct40Result.decision === 'deny' && ct40Result.eligible === false && ct40Result.release_authority === false, 'CT-40 DENY boundary required');
+  assert(ct40Result.decision_scope === 'assessed_climate_release', 'CT-40 decision scope drift');
   assert(ct40Result.counts?.facts_evaluated === 2060 && ct40Result.counts?.facts_eligible === 0, 'CT-40 fact-count boundary drift');
+  assert(ct40Result.publication_tiers?.factual_display?.status === 'eligible' && ct40Result.publication_tiers.factual_display.eligible_count === 2060, 'CT-40 factual-display tier drift');
+  assert(ct40Result.publication_tiers?.magnitude_comparison?.status === 'eligible' && ct40Result.publication_tiers.magnitude_comparison.eligible_count === 2060, 'CT-40 magnitude-comparison tier drift');
+  for (const tier of ['commitment_display', 'derived_metrics', 'performance_assessment', 'score']) {
+    assert(ct40Result.publication_tiers?.[tier]?.status === 'not_present', `CT-40 ${tier} tier drift`);
+  }
   assertCt15DecisionContract(ct15Readiness);
   const sourceMap = new Map(sourceRegistry.sources.map(source => [source.id, source]));
   for (const config of CONFIGS) {
@@ -596,18 +605,20 @@ function assertInputs(sourceRegistry, ct40Result, ct15Readiness, inputPins) {
 function compile(input) {
   const sourceMap = assertInputs(input.sourceRegistry, input.ct40Result, input.ct15Readiness, input.inputPins);
   const output = {
-    schema_version: '1.0.0',
+    schema_version: '1.1.0',
     package_id: PACKAGE_ID,
     created_at: CREATED_AT,
     retrieved_on: RETRIEVED_ON,
     status: 'requires_authorized_review',
-    purpose: 'Decision-ready official evidence packets for independent source-rights review. This package records evidence and questions only and never grants approval.',
+    purpose: 'Decision-ready official evidence packets for independent review of assessment/scoring and unresolved source uses. This package records evidence and questions only; it neither grants new approval nor revokes the existing PRIMAP factual-display and magnitude-comparison approval.',
     immutable_inputs: input.inputPins,
     governance_boundary: {
       source_registry_modified: false,
       rights_decisions_made: false,
       ct40_decision_modified: false,
-      normalized_facts_authorized: false,
+      preexisting_factual_tier_state: 'eligible_unchanged',
+      preexisting_factual_facts: 2060,
+      new_normalized_fact_uses_authorized: false,
       scoring_authorized: false,
       release_authority: false,
       production_runtime_release: false,
@@ -663,7 +674,11 @@ function validateDecision(decision, packetId, sourceRegistryId) {
 
 function validate(output, input) {
   assert(output.package_id === PACKAGE_ID && output.status === 'requires_authorized_review', 'rights packet status drift');
-  assert(output.governance_boundary && Object.values(output.governance_boundary).every(value => value === false), 'rights packet leaked authority');
+  const boundary = output.governance_boundary;
+  assert(boundary?.preexisting_factual_tier_state === 'eligible_unchanged' && boundary.preexisting_factual_facts === 2060, 'pre-existing factual publication state was hidden or changed');
+  for (const field of ['source_registry_modified', 'rights_decisions_made', 'ct40_decision_modified', 'new_normalized_fact_uses_authorized', 'scoring_authorized', 'release_authority', 'production_runtime_release']) {
+    assert(boundary[field] === false, `rights packet leaked authority through ${field}`);
+  }
   assert(output.evidence_method.raw_or_large_downloads_committed === false, 'raw or large download claimed committed');
   assert(JSON.stringify(output.immutable_inputs) === JSON.stringify(input.inputPins), 'immutable input pins drift');
   assert(JSON.stringify(output.required_decision_fields) === JSON.stringify(DECISION_FIELDS), 'required decision fields drift');

@@ -1,7 +1,7 @@
 # CT-15 Production Evidence and Licensing Readiness
 
 **Snapshot:** 2026-07-15  
-**Status:** blocked work package; no release authority
+**Status:** factual publication eligible; assessed release and scoring blocked
 
 ## Outcome
 
@@ -10,31 +10,49 @@ tracks. The factual globe can complete its own review path without publishing
 targets or scores. Country assessment requires official inventory and NDC
 evidence in addition to the factual-emissions plane.
 
-Neither current snapshot can be converted in place:
+The current evidence has two different release states that must not be collapsed:
 
 - CT-14 deliberately pins zero official inventories, four metadata-only
   country audits, sixteen audits not started, and zero eligible countries.
-- The CT-42→CT-40 adapter deliberately supplies 2,060 `not_reviewed` facts,
-  zero fact reviews, null licence decisions, and an unreviewed release block.
+- The CT-42→CT-40 adapter preserves a reviewed batch publication attestation
+  and source-registry approval for all 2,060 facts. CT-40 therefore marks
+  factual display and magnitude comparison eligible. The same candidate has
+  zero field-level assessment reviews, null assessment/scoring licence
+  decisions, no profiles, and an unreviewed assessed-release block.
 
-A later mission must build a new candidate from reviewed inputs while keeping
-both denial snapshots unchanged.
+A later assessment mission must build a new assessed candidate from reviewed
+inputs while keeping CT-14 and CT-40's scoped audit evidence unchanged. It does
+not need to re-deny or re-authorize the already reviewed factual tier.
 
-## Track A — factual runtime
+## Track A — factual display and magnitude comparison
 
-The exact outstanding package is:
+This limited tier is eligible now for all 2,060 PRIMAP facts because the source
+registry pins the CC BY 4.0 release and checksum, permits normalized-value
+redistribution, and the CT-10C batch attestation verifies the exact factual-use
+boundary. Production must retain:
 
-1. an explicit CT-40 rights decision for the pinned PRIMAP v2.6.1 checksum;
-2. 2,060 fact reviews, each independently covering `metric`, `period`,
-   `scope`, `source`, and `evidence`;
-3. an independent release review whose reviewer IDs exclude the builder;
-4. only after an authentic allow decision, a reviewed runtime manifest,
-   release diff, deployment checks, and executable rollback proof.
+1. the pinned PRIMAP v2.6.1 checksum, CC BY 4.0 attribution, and change notice;
+2. the batch publication attestation and each fact's exact `allowed_uses`;
+3. labels that identify the values as harmonized economy-wide GHG facts;
+4. no commitment, delivery, performance, impact-band, or score claim.
 
-The CT-10C and CT-42 attestations remain valuable input evidence, but CT-40
-does not treat them as field-level fact, rights, or release approval.
+The batch attestation is sufficient only for factual display and magnitude
+comparison. It is not a field-level assessment review, scoring-rights decision,
+profile review, or assessed-release approval.
 
-## Track B — top-20 country assessment
+## Track B — assessed runtime and scoring
+
+The top-level CT-40 `deny` applies to `assessed_climate_release`. Assessment or
+scoring still requires:
+
+1. an explicit assessment-and-scoring rights decision for the pinned PRIMAP
+   v2.6.1 checksum;
+2. field-level independent reviews for every fact used by an assessment;
+3. reviewed derived metrics and profiles with complete input lineage;
+4. an independent assessed-release review whose reviewer IDs exclude the
+   builder.
+
+## Track C — top-20 country assessment
 
 Each country needs three reviewed document roles: official inventory, latest
 active NDC or reviewed absence/status determination, and target methodology.
@@ -60,8 +78,9 @@ The current source decisions remain fail-closed:
 For each pending source family, the package names the exact registry fields
 that would require independent revision: licence status/evidence/restrictions,
 redistribution flags, approval decision, and raw-storage policy. PRIMAP's
-existing source-registry approval remains intact; its missing item is a
-separate CT-40 candidate licence decision tied to the reviewed checksum.
+existing source-registry approval remains intact and supports the factual
+tiers. Its missing item is a separate assessment-and-scoring decision tied to
+the reviewed checksum.
 
 CT-14 currently routes BTR to the official-inventory role while the source
 registry does not give BTR the `official_inventory` domain. That mismatch must
@@ -84,7 +103,7 @@ explicit source-unavailable outcome where evidence cannot be obtained.
 
 ## Deterministic artifact
 
-The generated work package contains the source-decision record fields,
+The generated work package records all six CT-40 publication tiers, contains the source-decision record fields,
 document manifests, official-inventory and target fields, exact CT-40 review
 shape, reviewer roles, all 20 country field gaps, and the ordered worklist.
 

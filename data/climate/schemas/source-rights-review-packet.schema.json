@@ -20,7 +20,7 @@
     "calculation_hash"
   ],
   "properties": {
-    "schema_version": { "const": "1.0.0" },
+    "schema_version": { "const": "1.1.0" },
     "package_id": { "const": "ct-17-source-rights-review-packets-2026-07-15" },
     "created_at": { "type": "string", "pattern": "Z$" },
     "retrieved_on": { "const": "2026-07-15" },
@@ -45,7 +45,9 @@
         "source_registry_modified",
         "rights_decisions_made",
         "ct40_decision_modified",
-        "normalized_facts_authorized",
+        "preexisting_factual_tier_state",
+        "preexisting_factual_facts",
+        "new_normalized_fact_uses_authorized",
         "scoring_authorized",
         "release_authority",
         "production_runtime_release"
@@ -54,7 +56,9 @@
         "source_registry_modified": { "const": false },
         "rights_decisions_made": { "const": false },
         "ct40_decision_modified": { "const": false },
-        "normalized_facts_authorized": { "const": false },
+        "preexisting_factual_tier_state": { "const": "eligible_unchanged" },
+        "preexisting_factual_facts": { "const": 2060 },
+        "new_normalized_fact_uses_authorized": { "const": false },
         "scoring_authorized": { "const": false },
         "release_authority": { "const": false },
         "production_runtime_release": { "const": false }

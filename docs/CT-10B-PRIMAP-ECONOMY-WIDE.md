@@ -93,19 +93,20 @@ row retains its CSV row number and complete source row key.
 
 ## Review and publication boundary
 
-These are real values built by the ingestion author and have not been checked
-by a different reviewer. Therefore every series is `not_reviewed`, release and
-scoring eligibility are false, and the release manifest instructs CT-40 to
-return `deny_not_reviewed`. No performance label, impact band, score, ranking,
-or target is present.
+At this CT-10B ingestion stage, these real values had not yet been checked by a
+different reviewer. The later CT-10C batch publication attestation now covers
+all 2,060 facts, and CT-40 v2 marks factual display and magnitude comparison
+eligible. The field-level assessment state remains `not_reviewed`; no
+performance label, impact band, score, commitment ranking, or target is
+present.
 
-The normalized artifact may be inspected and independently reviewed. It must
-not feed public assessment, ranking, card status, or globe performance styling
-until a separate reviewer signs off and the release gate is rebuilt.
+The normalized artifact may feed factual labels and emissions-magnitude
+comparison with the pinned attribution. It must not feed public assessment,
+card status, performance styling, or score until the separate assessment path
+passes.
 
-CC BY 4.0 candidate redistribution is distinct from site release eligibility:
-the normalized candidates may be shared for audit with attribution, but the
-site must not consume them as reviewed evidence.
+CC BY 4.0 factual redistribution remains distinct from assessed-site release
+authority: factual display is eligible, while derived judgments remain gated.
 
 ## Rebuild
 

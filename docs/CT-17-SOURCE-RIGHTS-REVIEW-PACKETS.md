@@ -1,14 +1,22 @@
 # CT-17 Source-Rights Review Packets
 
 CT-17 prepares five decision-ready evidence packets for an authorized independent
-rights reviewer. It does not make a legal determination, change the source
-registry, approve normalized facts or scoring, change CT-40, or authorize a
-release.
+rights reviewer. For PRIMAP, the packet covers assessment, scoring, derivative
+database, and other uses beyond the already approved factual-display and
+magnitude-comparison tiers. It does not make a new legal determination, change
+the source registry, approve new normalized-fact uses or scoring, change CT-40,
+or authorize an assessed release.
 
 The committed bundle remains `requires_authorized_review`. Every decision ID and
 reviewer ID is `null`; every approval boolean is `false`. A reviewer must issue a
 separate decision artifact rather than filling or converting this evidence bundle
 in place.
+
+CT-17 does not suspend the existing PRIMAP source-registry decision or CT-10C
+batch attestation. CT-40 continues to mark all 2,060 PRIMAP facts eligible for
+factual display and magnitude comparison. The empty CT-17 decision record is for
+broader assessment/scoring review, not evidence that factual climate information
+is prohibited.
 
 ## Scope
 
@@ -73,7 +81,9 @@ CT-17 does not resolve the following points. It labels them
 - Normalization, unit conversion, table parsing, aggregation, paraphrasing and
   scoring may fall outside unchanged-document use.
 - A record-level PRIMAP licence may not answer every obligation inherited from
-  incorporated source datasets; this needs rights-review judgment.
+  incorporated source datasets for assessment, scoring, and derived database
+  outputs beyond the existing limited factual tier; this needs rights-review
+  judgment.
 
 ## Required authorized-review outcome
 
@@ -96,9 +106,9 @@ Questions that specifically require counsel or a human rights reviewer include:
   normalized facts or findings?
 - Is written UNFCCC, Party or joint clarification required for commercial public
   display, derivative databases and scoring?
-- Does PRIMAP's record-level CC BY 4.0 statement sufficiently cover the exact
-  composite artifact and planned transformations, including any surviving
-  source-specific duties?
+- Beyond factual display and magnitude comparison, does PRIMAP's record-level
+  CC BY 4.0 statement sufficiently cover assessment, scoring, derivative
+  database outputs, and any surviving source-specific duties?
 
 ## Artifacts and checks
 
@@ -119,7 +129,8 @@ node tools/check-climate-evidence-licensing-readiness.js
 node tools/check-source-routing-policy.js
 ```
 
-The CT-17 checker rejects 33 adversarial mutations after recalculating the bundle
+The CT-17 checker rejects adversarial mutations after recalculating the bundle
 hash, including fabricated identities or approvals, changed exact scope, invented
 UNFCCC documents, non-authoritative evidence URLs, altered immutable inputs,
-source-registry changes and a changed CT-40 denial.
+source-registry changes, a changed CT-40 assessed denial, or suppression of the
+eligible factual tiers.

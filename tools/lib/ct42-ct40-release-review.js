@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const { evaluateRelease } = require('./climate-release-gate');
 const { REQUIRED_UI_REVIEW_PIN_PATHS } = require('./globe-runtime-assets');
 
-const ADAPTER_VERSION = '1.2.0';
+const ADAPTER_VERSION = '1.3.0';
 const METHODOLOGY_VERSION = '0.1.0';
 const EVALUATED_AT = '2026-07-15T13:00:00Z';
 const COMMIT_SHA_PATTERN = /^[0-9a-f]{40}$/;
@@ -143,6 +143,13 @@ function validateInputs(input) {
   const source = sourceRegistry.sources.find(item => item.id === 'primap-hist-2.6.1-final');
   assert(source, 'pinned PRIMAP source is absent');
   assert(source.artifact?.sha256 && facts.facts.every(fact => fact.source_checksum_sha256 === source.artifact.sha256), 'published facts do not match the pinned PRIMAP checksum');
+  assert(source.licence?.identifier === 'CC-BY-4.0' && source.licence?.status === 'confirmed' &&
+    source.redistribution?.normalized_values === true && source.approval?.state === 'approved',
+  'reviewed factual publication basis is absent from the pinned source registry');
+  assert(facts.facts.every(fact => fact.review?.status === 'reviewed' && fact.review?.mode === 'batch_attestation' &&
+    fact.allowed_uses?.factual_display === true && fact.allowed_uses?.magnitude_comparison === true &&
+    fact.allowed_uses?.commitment === false && fact.allowed_uses?.performance === false &&
+    fact.allowed_uses?.scoring === false), 'published facts crossed the reviewed factual-use boundary');
   assert(!source.licence?.decision_id, 'CT-40 licence decision ID must not be inferred from the source registry');
   assert(source.licence?.redistribution_approved !== true && source.licence?.scoring_approved !== true, 'CT-40 approval booleans must not be inferred from the source registry');
   return { source, reviewEvidence };
@@ -161,9 +168,12 @@ function buildGateCandidate(input, source, reviewEvidence) {
     plane: fact.plane,
     evidence_class: fact.evidence_class,
     evidence_state: 'not_reviewed',
+    publication_evidence_state: 'available',
     source_id: fact.source_id,
     source_checksum_sha256: fact.source_checksum_sha256,
     methodology_version: METHODOLOGY_VERSION,
+    publication_review: fact.review,
+    allowed_uses: fact.allowed_uses,
     derivation: fact.derivation,
   }));
 
@@ -178,6 +188,15 @@ function buildGateCandidate(input, source, reviewEvidence) {
         decision_id: null,
         redistribution_approved: null,
         scoring_approved: null,
+      },
+      factual_use: {
+        status: 'approved',
+        basis: 'pinned_source_registry_and_ct10c_batch_attestation',
+        licence_identifier: source.licence.identifier,
+        terms_url: source.licence.terms_url,
+        attribution: source.licence.attribution,
+        redistribution_approved: source.redistribution.normalized_values === true,
+        normalized_values_approved: source.redistribution.normalized_values === true,
       },
     }],
     facts,
@@ -224,12 +243,20 @@ function summarizeGate(inputArtifact, gateOutput) {
     counts[item.subject_type] = (counts[item.subject_type] || 0) + 1;
     return counts;
   }, {});
+  const publicationTiers = Object.fromEntries(Object.entries(gateOutput.publication_tiers).map(([tierId, tier]) => [tierId, {
+    status: tier.status,
+    eligible: tier.eligible,
+    reason_codes: tier.reason_codes,
+    eligible_count: tier.eligible_ids.length,
+    blocked_count: tier.blocked_ids.length,
+  }]));
   return {
     schema_version: '1.0.0',
     review_candidate_id: 'ct-42-to-ct-40-real-release-review-2026-07-15',
     adapter_version: ADAPTER_VERSION,
     evaluated_input_sha256: hash(inputArtifact),
     ct40_gate_version: gateOutput.gate_version,
+    decision_scope: gateOutput.decision_scope,
     ct40_manifest_calculation_hash: gateOutput.manifest.calculation_hash,
     full_gate_output_sha256: hash(gateOutput),
     review_commits: {
@@ -241,9 +268,12 @@ function summarizeGate(inputArtifact, gateOutput) {
     decision: gateOutput.decision,
     eligible: gateOutput.eligible,
     reason_codes: gateOutput.reason_codes,
+    publication_tiers: publicationTiers,
     counts: {
       facts_evaluated: gateOutput.fact_decisions.length,
       facts_eligible: gateOutput.fact_decisions.filter(item => item.eligible).length,
+      facts_factual_display_eligible: gateOutput.publication_tiers.factual_display.eligible_ids.length,
+      facts_magnitude_comparison_eligible: gateOutput.publication_tiers.magnitude_comparison.eligible_ids.length,
       profiles_evaluated: gateOutput.profile_decisions.length,
       review_queue_items: gateOutput.review_queue.length,
       review_queue_by_subject: queueSubjects,
@@ -274,11 +304,12 @@ function compile(input) {
   const inputArtifact = {
     schema_version: '1.0.0',
     adapter_version: ADAPTER_VERSION,
-    purpose: 'Evaluate the actual denied CT-42 factual runtime candidate through CT-40 without manufacturing missing release evidence.',
+    purpose: 'Evaluate the actual CT-42 factual runtime through CT-40, preserving reviewed factual publication separately from assessed-release eligibility.',
     input_files: Object.keys(input.fileHashes).sort().map(path => ({ path, sha256: input.fileHashes[path] })),
     review_evidence: reviewEvidence,
     adapter_rules: {
       preserve_candidate_not_reviewed_state: true,
+      preserve_reviewed_factual_publication_state: true,
       require_common_review_commit: false,
       require_scoped_review_file_hashes: true,
       evaluate_git_ancestry: false,
@@ -292,6 +323,18 @@ function compile(input) {
   };
   const gateOutput = evaluateRelease(gateCandidate);
   assert(gateOutput.decision === 'deny' && gateOutput.eligible === false, 'real CT-42 release-review candidate must remain denied');
+  assert(gateOutput.decision_scope === 'assessed_climate_release', 'CT-40 decision scope drift');
+  assert(gateOutput.publication_tiers.factual_display.status === 'eligible' &&
+    gateOutput.publication_tiers.factual_display.eligible_ids.length === 2060,
+  'reviewed factual display did not remain independently eligible');
+  assert(gateOutput.publication_tiers.magnitude_comparison.status === 'eligible' &&
+    gateOutput.publication_tiers.magnitude_comparison.eligible_ids.length === 2060,
+  'reviewed descriptive magnitude comparison did not remain independently eligible');
+  assert(gateOutput.publication_tiers.commitment_display.status === 'not_present' &&
+    gateOutput.publication_tiers.derived_metrics.status === 'not_present' &&
+    gateOutput.publication_tiers.performance_assessment.status === 'not_present' &&
+    gateOutput.publication_tiers.score.status === 'not_present',
+  'unavailable assessment tiers were presented as reviewed content');
   assert(REQUIRED_REASON_CODES.every(code => gateOutput.reason_codes.includes(code)), 'CT-40 deny reasons do not expose every known release-evidence gap');
   return { inputArtifact, gateOutput, resultArtifact: summarizeGate(inputArtifact, gateOutput) };
 }

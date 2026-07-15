@@ -190,7 +190,7 @@ function assertCommitOrLateBound(proof) {
 }
 
 function validateProofDocument(root, proof, options = {}) {
-  assert.equal(proof.schema_version, '2.1.0');
+  assert.equal(proof.schema_version, '2.2.0');
   assert.equal(proof.proof_id, 'ct-42-neutral-runtime-rollback-rehearsal-2026-07-15');
   assert.equal(proof.status, 'built_not_reviewed_browser_gate_required');
   assert.equal(proof.release_authority, false);
@@ -211,6 +211,15 @@ function validateProofDocument(root, proof, options = {}) {
   assertCommitOrLateBound(proof);
   assert.equal(proof.candidate.candidate_id, 'ct-42-factual-runtime-candidate-2026-07-15');
   assert.equal(proof.candidate.decision, 'deny');
+  assert.equal(proof.candidate.decision_scope, 'assessed_climate_release');
+  assert.deepEqual(proof.candidate.publication_tiers, {
+    factual_display: { status: 'eligible', eligible_count: 2060, blocked_count: 0 },
+    magnitude_comparison: { status: 'eligible', eligible_count: 2060, blocked_count: 0 },
+    commitment_display: { status: 'not_present', eligible_count: 0, blocked_count: 0 },
+    derived_metrics: { status: 'not_present', eligible_count: 0, blocked_count: 0 },
+    performance_assessment: { status: 'not_present', eligible_count: 0, blocked_count: 0 },
+    score: { status: 'not_present', eligible_count: 0, blocked_count: 0 },
+  });
   assert.equal(proof.candidate.release_eligible, false);
   assert.equal(proof.candidate.production_runtime_release, false);
   assert.equal(proof.candidate.rollback_plan.path, 'data/climate/runtime/rollback-plan.json');
@@ -277,8 +286,17 @@ function validateProofDocument(root, proof, options = {}) {
   const ct40 = readJson(root, proof.candidate.ct40_result.path);
   assert.equal(sha256(read(root, proof.candidate.ct40_result.path)), proof.candidate.ct40_result.sha256);
   assert.equal(ct40.decision, 'deny');
+  assert.equal(ct40.decision_scope, proof.candidate.decision_scope);
   assert.equal(ct40.eligible, false);
   assert.equal(ct40.release_authority, false);
+  assert.deepEqual(
+    Object.fromEntries(Object.entries(ct40.publication_tiers).map(([tier, state]) => [tier, {
+      status: state.status,
+      eligible_count: state.eligible_count,
+      blocked_count: state.blocked_count,
+    }])),
+    proof.candidate.publication_tiers,
+  );
   assert.deepEqual(ct40.prohibited_outputs_absent, PROHIBITED_OUTPUTS);
 
   const patchArtifactBytes = options.patchBytes || read(root, proof.rollback.patch.path);

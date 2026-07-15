@@ -2,7 +2,8 @@
 
 const crypto = require('crypto');
 
-const GATE_VERSION = '1.0.0';
+const GATE_VERSION = '2.0.0';
+const DECISION_SCOPE = 'assessed_climate_release';
 const BLOCKED_EVIDENCE_STATES = new Set(['not_reported', 'not_assessed', 'non_comparable', 'stale', 'conflicting', 'withheld', 'source_unavailable', 'not_reviewed']);
 const ASSESSMENT_ONLY_STATE_REASONS = Object.freeze({
   not_yet_due: 'reporting_not_yet_due',
@@ -194,6 +195,62 @@ function factDecision(fact, context, forScoring) {
   };
 }
 
+function batchPublicationReasons(fact, context, useFlag) {
+  const reasons = [];
+  const state = fact && fact.publication_evidence_state;
+  if (state !== 'available') reasons.push(stateReason(state) || 'evidence_insufficient');
+  if (!fact || fact.allowed_uses?.[useFlag] !== true) reasons.push('assessment_eligibility_not_reviewed');
+  if (!fact || !isSha256(fact.source_checksum_sha256)) reasons.push('source_missing');
+  if (!fact || fact.methodology_version !== context.methodologyVersion) reasons.push('evidence_insufficient');
+
+  const source = fact ? context.sources.get(fact.source_id) : null;
+  const factualUse = source && source.factual_use;
+  if (!source || !isSha256(source.checksum_sha256) || source.checksum_sha256 !== fact.source_checksum_sha256) {
+    reasons.push('source_missing');
+  }
+  if (!factualUse || factualUse.status !== 'approved' || factualUse.redistribution_approved !== true ||
+      factualUse.normalized_values_approved !== true || !isText(factualUse.licence_identifier) ||
+      !isText(factualUse.terms_url) || !isText(factualUse.attribution)) {
+    reasons.push('licence_not_approved');
+  }
+
+  const review = fact && fact.publication_review;
+  if (!review || review.status !== 'reviewed' || review.mode !== 'batch_attestation' ||
+      !isText(review.batch_attestation_id) || !isSha256(review.batch_artifact_sha256) ||
+      !isSha256(review.batch_attestation_sha256) || review.methodology_version !== context.methodologyVersion) {
+    reasons.push('climate_evidence_not_reviewed');
+  }
+  reasons.push(...conflictReasons(fact && fact.fact_id, context.conflicts, context.factIds));
+  return uniqueSorted(reasons.filter(Boolean));
+}
+
+function publicationFactDecision(fact, context, useFlag) {
+  const fullyReviewed = factDecision(fact, context, false);
+  if (fullyReviewed.eligible) return fullyReviewed;
+  const reasons = batchPublicationReasons(fact, context, useFlag);
+  return {
+    fact_id: fact && fact.fact_id ? fact.fact_id : null,
+    eligible: reasons.length === 0,
+    reason_codes: reasons,
+  };
+}
+
+function publicationTier(decisions, idKey) {
+  if (!decisions.length) {
+    return { status: 'not_present', eligible: false, reason_codes: [], eligible_ids: [], blocked_ids: [] };
+  }
+  const reasonCodes = uniqueSorted(decisions.flatMap(item => item.reason_codes));
+  const eligibleIds = decisions.filter(item => item.eligible).map(item => item[idKey]).filter(isText).sort();
+  const blockedIds = decisions.filter(item => !item.eligible).map(item => item[idKey]).filter(isText).sort();
+  return {
+    status: blockedIds.length ? 'blocked' : 'eligible',
+    eligible: blockedIds.length === 0,
+    reason_codes: reasonCodes,
+    eligible_ids: eligibleIds,
+    blocked_ids: blockedIds,
+  };
+}
+
 function profileDecision(profile, factDecisions, methodologyVersion) {
   const reasons = [];
   const inputs = Array.isArray(profile.input_fact_ids) ? [...new Set(profile.input_fact_ids)].sort() : [];
@@ -257,6 +314,16 @@ function evaluateRelease(candidate) {
 
   const factReleaseDecisions = facts.map((fact) => factDecision(fact, context, false));
   const factAssessmentDecisions = facts.map((fact) => factDecision(fact, context, true));
+  const factualPublicationDecisions = facts.map((fact) => publicationFactDecision(fact, context, 'factual_display'));
+  const magnitudeFacts = facts.filter((fact) => fact?.allowed_uses?.magnitude_comparison === true ||
+    String(fact?.metric || '').startsWith('emissions.') || String(fact?.metric || '').includes('emissions'));
+  const magnitudePublicationDecisions = magnitudeFacts.map((fact) => publicationFactDecision(fact, context, 'magnitude_comparison'));
+  const commitmentFacts = facts.filter((fact) => fact?.allowed_uses?.commitment === true ||
+    ['target.', 'commitment.', 'ambition.'].some(prefix => String(fact?.metric || '').startsWith(prefix)));
+  const commitmentPublicationDecisions = commitmentFacts.map((fact) => factDecision(fact, context, false));
+  const derivedFacts = facts.filter((fact) => fact &&
+    (fact.evidence_class === 'derived' || fact.evidence_class === 'modeled' || fact.derivation));
+  const derivedMetricDecisions = derivedFacts.map((fact) => factDecision(fact, context, false));
   const assessmentById = new Map(factAssessmentDecisions.map((decision) => [decision.fact_id, decision]));
   const profiles = deterministicSort(rawProfiles, 'profile_id');
   const profileDecisions = profiles.map((profile) => profileDecision(profile, assessmentById, candidate.methodology_version));
@@ -289,16 +356,26 @@ function evaluateRelease(candidate) {
 
   const output = {
     gate_version: GATE_VERSION,
+    decision_scope: DECISION_SCOPE,
     data_release_id: candidate.data_release_id || null,
     methodology_version: candidate.methodology_version,
     evaluated_at: candidate.evaluated_at,
     decision: reasonCodes.length ? 'deny' : 'allow',
     eligible: reasonCodes.length === 0,
     reason_codes: reasonCodes,
+    publication_tiers: {
+      factual_display: publicationTier(factualPublicationDecisions, 'fact_id'),
+      magnitude_comparison: publicationTier(magnitudePublicationDecisions, 'fact_id'),
+      commitment_display: publicationTier(commitmentPublicationDecisions, 'fact_id'),
+      derived_metrics: publicationTier(derivedMetricDecisions, 'fact_id'),
+      performance_assessment: publicationTier(profileDecisions, 'profile_id'),
+      score: publicationTier(profileDecisions, 'profile_id'),
+    },
     fact_decisions: factReleaseDecisions,
     profile_decisions: profileDecisions,
     review_queue: reviewQueue,
     manifest: {
+      decision_scope: DECISION_SCOPE,
       decision: reasonCodes.length ? 'deny' : 'allow',
       release_eligible: reasonCodes.length === 0,
       reason_codes: reasonCodes,
@@ -311,4 +388,4 @@ function evaluateRelease(candidate) {
   return output;
 }
 
-module.exports = { GATE_VERSION, REASON_CODES, evaluateRelease };
+module.exports = { DECISION_SCOPE, GATE_VERSION, REASON_CODES, evaluateRelease };

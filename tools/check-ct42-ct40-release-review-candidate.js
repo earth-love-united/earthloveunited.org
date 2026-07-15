@@ -155,6 +155,18 @@ assert.equal(candidate.review_context.top20_primary_source_review.pilot_country_
 assert.equal(candidate.review_context.top20_primary_source_review.independently_reviewed_country_ids.length, 0);
 assert.equal(candidate.review_context.release_authority, false);
 assert.equal(actual.resultArtifact.release_authority, false);
+assert.equal(actual.resultArtifact.decision_scope, 'assessed_climate_release');
+assert.deepEqual(actual.resultArtifact.publication_tiers.factual_display, {
+  status: 'eligible', eligible: true, reason_codes: [], eligible_count: 2060, blocked_count: 0,
+});
+assert.deepEqual(actual.resultArtifact.publication_tiers.magnitude_comparison, {
+  status: 'eligible', eligible: true, reason_codes: [], eligible_count: 2060, blocked_count: 0,
+});
+['commitment_display', 'derived_metrics', 'performance_assessment', 'score'].forEach(tierId => {
+  assert.deepEqual(actual.resultArtifact.publication_tiers[tierId], {
+    status: 'not_present', eligible: false, reason_codes: [], eligible_count: 0, blocked_count: 0,
+  }, `${tierId} must remain explicitly unavailable`);
+});
 PROHIBITED.forEach(relative => assert.equal(fs.existsSync(path.join(ROOT, relative)), false, `${relative} must remain absent after DENY`));
 
 const reversed = loadInputs();
@@ -200,6 +212,7 @@ for (const mutation of fixture.mutations) {
 process.stdout.write([
   'CT-42→CT-40 real release-review candidate: PASS (truthful DENY)',
   `  actual facts evaluated: ${actual.gateOutput.fact_decisions.length}`,
+  `  factual display / magnitude comparison eligible: ${actual.resultArtifact.counts.facts_factual_display_eligible} / ${actual.resultArtifact.counts.facts_magnitude_comparison_eligible}`,
   `  canonical deny reasons: ${actual.gateOutput.reason_codes.join(', ')}`,
   `  scoped review pin mutations: ${scopeRejected} rejected; independent commits retained`,
   `  adversarial mutations: ${rejected} rejected; ${drifted} artifact drifts detected; ${stable} deterministic reorder`,

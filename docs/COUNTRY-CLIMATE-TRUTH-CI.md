@@ -139,6 +139,14 @@ authority. Production readiness preserves `ct40.content_eligible=true` with
 `ct40.release_authority=false`; authority still requires the detached signed
 production approval.
 
+CT-40 v2 also exposes publication tiers. Its legacy top-level decision is
+explicitly `assessed_climate_release`, so a DENY cannot be misread as a ban on
+publishing climate facts. The real CT-42 candidate may report 2,060 pinned facts
+as eligible for factual display and descriptive same-metric magnitude
+comparison while commitment display is absent and derived metrics, performance
+assessment, and scores remain absent or blocked. These tier results do not
+create production or deployment authority.
+
 The reviewed release diff records the current and previous release (or marks an
 initial release), change summary, changed entity IDs, source revision IDs,
 exact input/runtime/output artifact pins, a recomputed canonical hash, and an

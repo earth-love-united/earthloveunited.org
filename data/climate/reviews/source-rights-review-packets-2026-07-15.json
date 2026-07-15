@@ -1,10 +1,10 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "package_id": "ct-17-source-rights-review-packets-2026-07-15",
   "created_at": "2026-07-15T18:00:00Z",
   "retrieved_on": "2026-07-15",
   "status": "requires_authorized_review",
-  "purpose": "Decision-ready official evidence packets for independent source-rights review. This package records evidence and questions only and never grants approval.",
+  "purpose": "Decision-ready official evidence packets for independent review of assessment/scoring and unresolved source uses. This package records evidence and questions only; it neither grants new approval nor revokes the existing PRIMAP factual-display and magnitude-comparison approval.",
   "immutable_inputs": {
     "source_registry": {
       "path": "data/climate/source-registry.json",
@@ -12,26 +12,28 @@
     },
     "ct15_readiness": {
       "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
-      "sha256": "c43c4dade50f5da40fea13567e2d6f758ff18af84b0689adbc2d266e5151fcd2"
+      "sha256": "b56813d8054a2a39ea72e1142e1f02e0b6534169e08895a10cf711f7a1b2ad47"
     },
     "ct16_policy": {
       "path": "data/climate/releases/source-routing-policy-v2-2026-07-15.json",
-      "sha256": "17ea61279dcf06442032441a752c5458de5e9ea724661ef13e4f484bd2dd2442"
+      "sha256": "e8332292a48d648c94f8b3f0514c1d0edfdef9c0bcba8c7f85789a4ec03204a6"
     },
     "ct16_queue": {
       "path": "data/climate/releases/top20-source-routing-queue-v2-2026-07-15.json",
-      "sha256": "cd5888b870753c30b5cfc6e5044d9a460454a9cb552061c671439b71a20b7ac1"
+      "sha256": "8e4f933c592a00da16f510f69ea4447bf4b28a748120157fe468bf002c3b747e"
     },
     "ct40_result": {
       "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
-      "sha256": "fce7c173fa5b2560f474b9265c04aeecd8c49b48ebcb65143a0e01226fe51da2"
+      "sha256": "e37314cdfc6863f26811c28429c14c57c109c2a0be0140fe7447f0d4aaaf77bd"
     }
   },
   "governance_boundary": {
     "source_registry_modified": false,
     "rights_decisions_made": false,
     "ct40_decision_modified": false,
-    "normalized_facts_authorized": false,
+    "preexisting_factual_tier_state": "eligible_unchanged",
+    "preexisting_factual_facts": 2060,
+    "new_normalized_fact_uses_authorized": false,
     "scoring_authorized": false,
     "release_authority": false,
     "production_runtime_release": false
@@ -93,7 +95,7 @@
       "source_registry_id": "primap-hist-2.6.1-final",
       "source_title": "The PRIMAP-hist national historical emissions time series (1750–2023)",
       "status": "requires_authorized_review",
-      "purpose": "Review the exact frozen PRIMAP v2.6.1 CSV and normalized factual values used by the factual runtime candidate.",
+      "purpose": "Review assessment, scoring, derivative-database, and other uses of the exact frozen PRIMAP v2.6.1 CSV beyond the already approved factual-display and magnitude-comparison tiers.",
       "source_registry_snapshot": {
         "snapshot_kind": "pre_existing_registry_state_not_a_ct17_decision",
         "record_hash_sha256": "ac8789f4a513217ffe9bc3307d384b2a7d3dda08fe6386d119d1714924fe197b",
@@ -115,7 +117,7 @@
         "captured_document_ids": [],
         "captured_document_checksums_sha256": [],
         "acquisition_state": "exact_sha256_pinned_no_raw_file_committed",
-        "scope_note": "The SHA-256 is the exact project pin supplied for the named CSV. The official Zenodo record exposes the matching filename and an MD5, not this SHA-256; independent byte verification remains a reviewer task."
+        "scope_note": "The SHA-256 is the exact project pin supplied for the named CSV. The official Zenodo record exposes the matching filename and an MD5, not this SHA-256. The existing source-registry decision and batch attestation already support factual display and magnitude comparison; this packet seeks independent review only for broader assessment/scoring uses."
       },
       "official_evidence": [
         {
@@ -173,12 +175,12 @@
         ],
         "questions_for_authorized_reviewer": [
           "Does an independent checksum verification confirm that the pinned SHA-256 belongs to the exact named v2.6.1 CSV whose Zenodo MD5 is recorded?",
-          "Does CC BY 4.0 cover source-file redistribution, normalized-value redistribution, derivative-database use and scoring for this exact artifact?",
-          "What attribution, change notice and re-review cadence must the production release enforce?"
+          "Beyond the existing factual-display decision, does CC BY 4.0 and the incorporated-source record cover derivative-database use, assessment and scoring for this exact artifact?",
+          "What additional attribution, change notice and re-review cadence must an assessed or scored production release enforce?"
         ],
         "questions_requiring_counsel_or_human_rights_review": [
-          "Does the record-level licence grant sufficient authority over the composite dataset for the planned transformations and commercial public-site context?",
-          "Do any incorporated-source notices require additional attribution or restrict downstream normalization or redistribution?"
+          "Does the record-level licence grant sufficient authority over the composite dataset for assessment, scoring and derived outputs beyond limited factual display?",
+          "Do any incorporated-source notices require additional attribution or restrict downstream assessment, derivative-database use or scoring?"
         ]
       },
       "blank_decision_record": {
@@ -776,5 +778,5 @@
       }
     }
   ],
-  "calculation_hash": "fd49c064c69ae81c5e13caa17125ce21aaa3a079a09c1155f31005d39c7d9555"
+  "calculation_hash": "bff6604448bd18fb5db4a12dd665f01720e73658ceafd70c061fc7eb6ac404fe"
 }

@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
-const { GATE_VERSION, REASON_CODES, evaluateRelease } = require('./lib/climate-release-gate');
+const { DECISION_SCOPE, GATE_VERSION, REASON_CODES, evaluateRelease } = require('./lib/climate-release-gate');
 
 const ROOT = path.join(__dirname, '..');
 const fixtures = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/climate/fixtures/release-eligibility.json'), 'utf8'));
@@ -30,7 +30,20 @@ function canonical(output, id) {
   assert.deepStrictEqual(output.manifest.reason_codes, output.reason_codes, `${id}: manifest reasons differ`);
   assert.strictEqual(output.manifest.release_eligible, output.eligible, `${id}: manifest eligibility differs`);
   assert.strictEqual(output.manifest.decision, output.decision, `${id}: manifest decision differs`);
+  assert.strictEqual(output.decision_scope, DECISION_SCOPE, `${id}: decision scope differs`);
+  assert.strictEqual(output.manifest.decision_scope, DECISION_SCOPE, `${id}: manifest decision scope differs`);
   assert.strictEqual(output.decision, output.eligible ? 'allow' : 'deny', `${id}: decision differs`);
+  assert.deepStrictEqual(Object.keys(output.publication_tiers).sort(), [
+    'commitment_display', 'derived_metrics', 'factual_display', 'magnitude_comparison',
+    'performance_assessment', 'score',
+  ], `${id}: publication tier keys differ`);
+  for (const [tierId, tier] of Object.entries(output.publication_tiers)) {
+    assert(['eligible', 'blocked', 'not_present'].includes(tier.status), `${id}: invalid ${tierId} status`);
+    assert.strictEqual(tier.eligible, tier.status === 'eligible', `${id}: ${tierId} eligibility differs`);
+    assert.strictEqual(tier.blocked_ids.length > 0, tier.status === 'blocked', `${id}: ${tierId} blocked IDs differ`);
+    assert.strictEqual(tier.eligible_ids.length + tier.blocked_ids.length === 0, tier.status === 'not_present', `${id}: ${tierId} presence differs`);
+    tier.reason_codes.forEach(code => assert(REASON_CODES.includes(code), `${id}: ${tierId} reason non-canonical`));
+  }
   for (const item of output.review_queue) {
     assert(item.reason_codes.length > 0, `${id}: empty review queue reasons`);
     item.reason_codes.forEach((code) => assert(REASON_CODES.includes(code), `${id}: queue reason non-canonical`));
@@ -64,6 +77,18 @@ for (const testCase of fixtures.cases) {
   if (testCase.expected.eligible_profiles !== undefined) assert.strictEqual(output.manifest.eligible_profile_ids.length, testCase.expected.eligible_profiles, `${testCase.id}: eligible profile count`);
   assert(/^[a-f0-9]{64}$/.test(output.manifest.calculation_hash), `${testCase.id}: deterministic hash shape`);
   canonical(output, testCase.id);
+  if (testCase.id === 'fully-reviewed-release') {
+    assert.strictEqual(output.publication_tiers.factual_display.status, 'eligible');
+    assert.strictEqual(output.publication_tiers.commitment_display.status, 'eligible');
+    assert.strictEqual(output.publication_tiers.derived_metrics.status, 'eligible');
+    assert.strictEqual(output.publication_tiers.performance_assessment.status, 'eligible');
+    assert.strictEqual(output.publication_tiers.score.status, 'eligible');
+  }
+  if (testCase.id === 'scoring-permission-blocked') {
+    assert.strictEqual(output.publication_tiers.factual_display.status, 'eligible');
+    assert.strictEqual(output.publication_tiers.performance_assessment.status, 'blocked');
+    assert.strictEqual(output.publication_tiers.score.status, 'blocked');
+  }
   if (output.eligible) allow += 1; else deny += 1;
 }
 

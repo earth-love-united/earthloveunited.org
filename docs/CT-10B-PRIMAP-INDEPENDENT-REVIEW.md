@@ -12,4 +12,7 @@ Run the linked checker with the pinned raw CSV:
 node tools/check-primap-review-attestation.js /path/to/PRIMAP-hist_v2.6.1_final_13-Mar-2025.csv
 ```
 
-This PASS is not a scoring or public assessed-data release. The candidate artifacts remain `not_reviewed`, assessed use and scoring remain false, reviewed-site release remains false, and CT-40 release-gate design and execution remain required before any such publication.
+This PASS was not a scoring or public assessed-data release. A later CT-10C
+batch publication review and CT-40 v2 evaluation now make the same 2,060 facts
+eligible for factual display and magnitude comparison only. Assessed use,
+performance, scoring, and authoritative assessed release remain false.

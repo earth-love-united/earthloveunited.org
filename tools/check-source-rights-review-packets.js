@@ -128,6 +128,8 @@ validateJsonSchema(actual, schema, schema);
 assert.deepEqual(actual.packets.map(packet => packet.source_registry_id), SOURCE_IDS, 'five-source coverage drift');
 assert.deepEqual(actual.required_decision_fields, DECISION_FIELDS, 'authorized-reviewer decision field coverage drift');
 assert.equal(actual.packets[0].exact_scope.artifact_sha256, PRIMAP_SHA256, 'exact PRIMAP pin drift');
+assert.equal(actual.governance_boundary.preexisting_factual_tier_state, 'eligible_unchanged', 'existing factual tier was hidden');
+assert.equal(actual.governance_boundary.preexisting_factual_facts, 2060, 'existing factual fact count drift');
 assert.ok(actual.packets.every(packet => packet.status === 'requires_authorized_review'), 'packet claimed reviewed status');
 assert.ok(actual.packets.every(packet => packet.blank_decision_record.decision_id === null && packet.blank_decision_record.reviewer_id === null), 'decision or reviewer identity invented');
 assert.ok(actual.packets.every(packet => Object.values(packet.blank_decision_record).every(value => typeof value !== 'boolean' || value === false)), 'approval boolean enabled');
@@ -168,8 +170,9 @@ for (const mutation of json(FIXTURES).mutations) {
 process.stdout.write([
   'CT-17 source-rights review packets: PASS (requires authorized review)',
   '  five source packets: PRIMAP v2.6.1, NDC Registry, NIR/CRT, BTR/CTF, TER findings',
+  '  existing PRIMAP factual display and magnitude comparison: eligible and unchanged (2,060 facts)',
   '  official evidence and retrieval dates recorded; interpretations separated as reviewer questions',
   '  decision IDs / reviewer IDs: null; all approval booleans: false',
-  '  source registry / CT-40 DENY / release / runtime / public UI: unchanged',
+  '  assessed CT-40 DENY / scoring / authoritative release / public UI: unchanged',
   '  adversarial mutations rejected after hash recomputation: ' + rejected,
 ].join('\n') + '\n');

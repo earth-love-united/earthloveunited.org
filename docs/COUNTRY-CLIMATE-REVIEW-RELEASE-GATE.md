@@ -1,16 +1,22 @@
 # CT-40 Independent Review and Release Eligibility Gate
 
-**Status:** offline fail-closed validator; no runtime or public-data release
+**Status:** offline tiered-publication and fail-closed assessed-release validator
 
-**Gate version:** 1.0.0
+**Gate version:** 2.0.0
 
 ## Purpose
 
-CT-40 is the final separation between staged climate evidence and an eligible
-release. Schema-valid data is not automatically publishable or assessable. The
-gate requires attributed source decisions, complete evidence lineage, and
-independent human review before a fact or Country Climate Profile can enter a
-release manifest.
+CT-40 separates publication uses instead of treating all climate information as
+one all-or-nothing release. Its top-level `allow` / `deny` is explicitly scoped
+to `assessed_climate_release`: derived metrics, performance conclusions,
+profiles, and scores still require complete evidence lineage and independent
+human review. Separately, the gate reports whether pinned factual display,
+descriptive magnitude comparison, sourced commitment display, derived metrics,
+performance assessment, and scoring are eligible, blocked, or not present.
+
+A top-level assessed-release `deny` therefore does not suppress an independently
+reviewed factual tier. It prevents factual emissions data from being silently
+promoted into a commitment, delivery, performance, impact-band, or score claim.
 
 The implementation is the pure CommonJS function `evaluateRelease(candidate)`
 in `tools/lib/climate-release-gate.js`. It uses Node built-ins only, performs no
@@ -42,6 +48,13 @@ remains blocked even when a fact may lawfully be redistributed but not used in
 an assessment. Raw evidence release and assessment eligibility are separate:
 redistributable context may remain in an evidence artifact while every profile
 that references it is withheld.
+
+The reviewed factual-display path is narrower. A batch-attested fact can be
+eligible for factual display and same-metric magnitude comparison when its exact
+source-registry record is pinned, the source has a confirmed factual-use basis,
+normalized-value redistribution is approved, attribution is present, and the
+fact's batch artifact and attestation hashes are exact. This path never grants
+commitment, derived-metric, performance, score, runtime, or deployment authority.
 
 ### Evidence facts and reviews
 
@@ -113,9 +126,13 @@ with `data/climate/schemas/enums.json`.
 ## Output and review queue
 
 `data/climate/schemas/release-eligibility-result.schema.json` freezes the
-output. Both the top-level result and nested manifest carry an explicit
+output. Both the top-level result and nested manifest carry the explicit
+`assessed_climate_release` decision scope and an
 `allow`/`deny`, boolean eligibility, and identical canonical reason-code list.
-The manifest also identifies individually eligible facts and profiles and has
+`publication_tiers` independently reports `eligible`, `blocked`, or
+`not_present` for factual display, magnitude comparison, commitment display,
+derived metrics, performance assessment, and scoring. The manifest also
+identifies individually eligible assessed-release facts and profiles and has
 a deterministic SHA-256 over the entire decision structure.
 
 Every blocked fact, profile, or release review emits a stable queue item:
@@ -134,7 +151,7 @@ They do not silently repair evidence and do not weaken release denial.
 
 `data/climate/fixtures/release-eligibility.json` contains only explicitly
 fictional identifiers, values, hashes, and permission decisions. Nothing in it
-describes or accepts a real licence. One fully reviewed release is allowed; 35
+describes or accepts a real licence. One fully reviewed release is allowed; 37
 failing cases cover self-review, timestamps, checksums, field-level lineage,
 redistribution versus scoring approval, unresolved conflicts, every blocking
 evidence state, high-impact transformation lineage, profile provenance, and
