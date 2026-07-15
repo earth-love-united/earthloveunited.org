@@ -23,6 +23,7 @@ The first release milestone is not “every country has a score.” It is:
 ## Non-negotiable rules
 
 - Missing, stale, or non-comparable evidence never becomes `0`, `false`, neutral performance, or green.
+- The legacy `data/pledge-nodes.json` artifact is unverified input, not a source of record: it is frozen for replacement and none of its unsourced fields may enter the reviewed release.
 - A country can have a target without having a target that can be converted into an absolute emissions level.
 - Official Party-reported information and harmonized scientific estimates remain separate evidence planes.
 - Every derived value records its input facts, accounting scope, formula, methodology version, and source release.
@@ -100,7 +101,8 @@ publication/submission date, retrieval date
 direct URL or DOI, page/table/cell locator
 checksum, licence, required attribution
 
-evidence class: official | harmonized | derived | modeled | proxy
+evidence class: official_reported | harmonized_estimate | independent_assessment | context | derived | modeled
+evidence plane: official | harmonized | independent | context | derived
 transformation and input fact IDs
 uncertainty/confidence and quality flags
 review status, reviewer, review date
@@ -121,7 +123,7 @@ withheld                  source_unavailable
 reporting_optional        not_reviewed
 ```
 
-Target-specific reasons include `baseline_not_quantified`, `denominator_missing`, `scope_mismatch`, `lulucf_treatment_unknown`, `conditionality_unknown`, and `independent_benchmark_unavailable`.
+Target-specific reasons include `reference_value_missing`, `intensity_denominator_missing`, `scope_mismatch`, `lulucf_treatment_missing`, `conditionality_missing`, and `independent_review_required`. The evidence-contract enum is canonical; public copy and visual fixtures may not invent synonyms.
 
 ## Evaluation contract
 
@@ -225,10 +227,12 @@ flowchart TD
     S0["CT-01 Source and licence registry"]
     E0["CT-02 Evidence contract and country universe"]
     V0["CT-03 Visual truth contract"]
+    L0["CT-04 Legacy country-data quarantine"]
 
     G0 --> S0
     G0 --> E0
     G0 --> V0
+    G0 --> L0
 
     S0 --> EM["CT-10 Dual emissions planes"]
     E0 --> EM
@@ -253,6 +257,7 @@ flowchart TD
     PC --> QA["CT-40 Scientific red team"]
     UI4 --> QA
     QA --> CI["CT-41 Truth CI and release governance"]
+    L0 --> CI
     CI --> RL["CT-42 Reviewed release"]
 ```
 
@@ -266,8 +271,9 @@ flowchart TD
 | **CT-01 `climate-source-registry`** | Generalist/reviewer | Versioned source/licence/attribution registry and storage rules | Every proposed source has explicit reuse status and retrieval path |
 | **CT-02 `country-evidence-contract`** | Architect/generalist | Canonical country registry, observation/target schema, enums, valid/invalid fixtures, schema validator | Unknown cannot validate as zero/false; every canonical entity has a state |
 | **CT-03 `country-visual-contract`** | Designer | Non-runtime visual specification and golden UI fixtures for major-emitter, missing, non-comparable, and conflicting cases | Science/data sign-off before runtime styling |
+| **CT-04 `legacy-country-data-quarantine`** | Reviewer/generalist | Audit the live 123-record `data/pledge-nodes.json`, register every upstream source/licence if recoverable, and produce a field-level replacement/quarantine report | No legacy value is silently grandfathered into the reviewed pipeline; unverifiable fields are removed or visibly withheld at release |
 
-CT-01, CT-02, and CT-03 can run in parallel after CT-00's decisions are recorded.
+CT-01, CT-02, CT-03, and the read-only portion of CT-04 can run in parallel after CT-00's decisions are recorded. Any public-copy change from CT-04 waits for the visual and release contract.
 
 ### Wave 1 — Evidence acquisition
 
@@ -313,7 +319,7 @@ CT-41 will touch protected infrastructure and therefore needs a dedicated review
 ## Release gates
 
 1. **Method:** every public axis, term, threshold, exclusion, and ethical choice is documented.
-2. **Licence:** every redistributed source has approved terms and attribution.
+2. **Licence:** every redistributed source has approved terms and attribution; pre-existing public files receive no grandfather exemption.
 3. **Provenance:** every displayed fact has publisher, version, dates, locator, URL/DOI, and checksum.
 4. **Comparability:** no gap crosses incompatible gases, sectors, boundaries, LULUCF treatment, or years.
 5. **Calculation:** deterministic rebuild, formula tests, uncertainty tests, and target-type fixtures pass.
@@ -321,8 +327,9 @@ CT-41 will touch protected infrastructure and therefore needs a dedicated review
 7. **Fairness:** reporting flexibility, conditional support, and provider/recipient roles remain distinct.
 8. **Visual truth:** official, measured, harmonized, derived, and modeled information are distinguishable.
 9. **Accessibility:** status does not rely on color, and card/rail interactions meet the approved WCAG checks.
-10. **Change control:** every country-level change has an explanation and rollback path.
-11. **Independent review:** an agent who did not build the result signs off on the science and public claim.
+10. **Legacy replacement:** every released field derived from `data/pledge-nodes.json` has been independently re-sourced through the new evidence contract, or is explicitly withheld; the legacy artifact is not loaded by the reviewed runtime.
+11. **Change control:** every country-level change has an explanation and rollback path.
+12. **Independent review:** an agent who did not build the result signs off on the science and public claim.
 
 ## Pilot and full-coverage milestones
 

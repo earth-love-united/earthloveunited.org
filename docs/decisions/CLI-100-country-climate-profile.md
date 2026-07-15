@@ -17,6 +17,12 @@ The flat `data/pledge-nodes.json` artifact does not carry field-level source,
 scope, accounting, uncertainty, or transformation lineage. Its generated values
 cannot presently support a policy-grade country score.
 
+Its 123 public records are therefore classified as legacy unverified input.
+Existing publication does not prove provenance or reuse permission. The file is
+frozen for replacement: none of its unsourced values may be copied into the new
+evidence store or reviewed release, and the reviewed runtime must stop loading
+it once the replacement artifact passes release gates.
+
 The v1 runtime was also simplified without updating the protected architecture
 documents. The public application now contains one HTML page and ten classic
 runtime scripts. The former `js/module-validator.js`, GAIA page, learning
@@ -79,6 +85,15 @@ embedded as additional ad hoc branches in `js/globe.js`.
 Source acquisition, normalization, review, and release compilation are offline
 publication tasks. The browser still loads committed JSON through classic
 scripts with no bundler or application build step.
+
+### 7. Do not grandfather legacy country data
+
+The existing `data/pledge-nodes.json` remains available only to keep the current
+site operational during the staged migration. A dedicated audit must identify
+its recoverable upstream sources and licences. Country facts are independently
+reacquired through approved evidence records; unverifiable fields are withheld,
+not migrated. The final runtime switch removes the legacy file from the climate
+profile data path.
 
 ## Consequences
 
