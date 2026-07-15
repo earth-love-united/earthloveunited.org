@@ -14,9 +14,12 @@ const COMPONENTS = Object.freeze([
   { id: 'CT-01', script: 'tools/check-climate-source-registry.js', required: true },
   { id: 'CT-02', script: 'tools/check-country-evidence.js', required: true },
   { id: 'CT-03', script: 'tools/validate-visual-truth-fixtures.js', required: true },
-  { id: 'CT-04', script: 'tools/verify-legacy-country-quarantine.js', required: true },
+  { id: 'CT-04', script: 'tools/verify-legacy-country-exit.js', required: true },
   { id: 'CT-10', script: 'tools/check-country-emissions-evidence.js', required: true },
   { id: 'CT-10B', script: 'tools/check-primap-economy-wide.js', args: ['--committed-only'], required: true },
+  { id: 'CT-10B-R', script: 'tools/check-primap-review-attestation.js', args: ['--committed-only'], summary_prefix: 'PRIMAP CT-10B-R', required: true },
+  { id: 'CT-10C', script: 'tools/check-primap-factual-display-promotion.js', required: true },
+  { id: 'CT-10C-R', script: 'tools/check-primap-factual-display-review.js', args: ['--committed-only'], summary_prefix: 'PRIMAP CT-10C-R', required: true },
   { id: 'CT-11', script: 'tools/check-major-emitter-ndc-evidence.js', required: true },
   { id: 'CT-12', script: 'tools/check-policy-finance-evidence.js', required: true },
   { id: 'CT-13', script: 'tools/check-country-coverage-gap-queue.js', required: true },
@@ -67,13 +70,16 @@ function runComponent(component) {
     env: { ...process.env, TZ: 'UTC', LC_ALL: 'C' }
   });
   const output = `${run.stdout || ''}${run.stderr || ''}`.trim();
+  const outputLines = output.split('\n').filter(Boolean);
   return {
     id: component.id,
     status: run.status === 0 ? 'passed' : 'failed',
     required: component.required,
     script: component.script,
     exit_code: run.status,
-    summary: output.split('\n').find(Boolean) || ''
+    summary: (component.summary_prefix
+      ? outputLines.find(line => line.startsWith(component.summary_prefix))
+      : outputLines[0]) || ''
   };
 }
 

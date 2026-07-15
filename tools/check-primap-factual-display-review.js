@@ -313,9 +313,11 @@ function verifyReview(review, promotion, mutations) {
 }
 
 function main() {
-  const rawPath = process.argv[2];
-  assert(rawPath, 'usage: node tools/check-primap-factual-display-review.js /path/to/PRIMAP.csv');
-  const prerequisite = spawnSync(process.execPath, [path.join(ROOT, 'tools/check-primap-review-attestation.js'), rawPath], { cwd: ROOT, encoding: 'utf8' });
+  const committedOnly = process.argv.includes('--committed-only');
+  const rawPath = process.argv.slice(2).find(argument => !argument.startsWith('--'));
+  assert(committedOnly || rawPath, 'usage: node tools/check-primap-factual-display-review.js /path/to/PRIMAP.csv [or --committed-only]');
+  const prerequisiteArgs = committedOnly ? ['--committed-only'] : [rawPath];
+  const prerequisite = spawnSync(process.execPath, [path.join(ROOT, 'tools/check-primap-review-attestation.js'), ...prerequisiteArgs], { cwd: ROOT, encoding: 'utf8' });
   assert(prerequisite.status === 0, `CT-10B-R prerequisite failed: ${(prerequisite.stderr || prerequisite.stdout).trim()}`);
 
   const candidate = JSON.parse(bytes(PATHS.candidate));
@@ -328,7 +330,8 @@ function main() {
   verifyReview(review, promotion, mutations);
 
   process.stdout.write(prerequisite.stdout);
-  console.log(`PRIMAP CT-10C-R: PASS (byte-exact independent rebuild; 206 series; 2,060 observations; ${mutations} adversarial mutations rejected; factual display reviewed; performance/scoring/runtime false)`);
+  const mode = committedOnly ? 'committed review pins; raw-source rerun not performed' : 'pinned raw-source prerequisite';
+  console.log(`PRIMAP CT-10C-R: PASS (${mode}; byte-exact independent rebuild; 206 series; 2,060 observations; ${mutations} adversarial mutations rejected; factual display reviewed; performance/scoring/runtime false)`);
 }
 
 try { main(); } catch (error) {

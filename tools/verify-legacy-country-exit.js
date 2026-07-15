@@ -51,13 +51,15 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 }
 
-function listJs(relativeDir) {
-  const absoluteDir = path.join(ROOT, relativeDir);
-  return fs.readdirSync(absoluteDir, { withFileTypes: true }).flatMap(entry => {
-    const relative = path.join(relativeDir, entry.name);
-    if (entry.isDirectory()) return listJs(relative);
-    return entry.isFile() && entry.name.endsWith('.js') ? [relative] : [];
-  });
+function runtimeScripts(indexSource) {
+  const scripts = [];
+  const pattern = /<script\b[^>]*\bsrc=["']([^"']+\.js(?:\?[^"']*)?)["'][^>]*>/gi;
+  for (const match of indexSource.matchAll(pattern)) {
+    const relative = match[1].split('?')[0].replace(/^\//, '');
+    if (!relative.startsWith('js/') || relative.includes('..')) continue;
+    if (fs.existsSync(path.join(ROOT, relative))) scripts.push(relative);
+  }
+  return [...new Set(scripts)];
 }
 
 function stripComments(source) {
@@ -137,10 +139,11 @@ assertMutationDetected(
   'retired climate field reality_gap_mt'
 );
 
+const index = read('index.html');
 const runtimeFiles = [
   'index.html',
   'sw.js',
-  ...listJs('js'),
+  ...runtimeScripts(index),
   'tools/smoke-test.js',
   'tools/impact-analyzer.js',
 ];
@@ -156,7 +159,6 @@ const serviceWorker = read('sw.js');
 if (compact(serviceWorker).includes('pledgenodesjson')) failures.push('sw.js: legacy payload remains in cache behavior');
 if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'")) failures.push('sw.js: cache version was not advanced to elu-v26');
 
-const index = read('index.html');
 if (!index.includes('docs/LEGACY-COUNTRY-DATA-EXIT.md')) failures.push('index.html: public exit-ledger link missing');
 if (!index.includes('Uniform neutral surface · country evidence withheld')) failures.push('index.html: neutral entered-globe legend missing');
 if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'")) failures.push('index.html: service-worker registration is not v26');

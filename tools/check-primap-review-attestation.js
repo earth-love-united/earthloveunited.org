@@ -77,6 +77,16 @@ function validateSamples(samples, artifact, selectedRows) {
   });
 }
 
+function selectedRowsFromCandidate(artifact) {
+  return artifact.series.map(series => ({
+    csv_row: series.source_locator.csv_row,
+    row: Object.fromEntries([
+      ['area (ISO3)', series.iso_alpha3],
+      ...series.values.map(value => [String(value.year), value.source_value_text]),
+    ]),
+  }));
+}
+
 function assertMutationRejected(label, review, artifact, selectedRows, mutate) {
   const changed = structuredClone(review.sample);
   mutate(changed);
@@ -90,10 +100,12 @@ function assertMutationRejected(label, review, artifact, selectedRows, mutate) {
 }
 
 async function main() {
-  const sourcePath = process.argv[2];
-  assert(sourcePath, 'usage: node tools/check-primap-review-attestation.js /path/to/PRIMAP.csv');
+  const committedOnly = process.argv.includes('--committed-only');
+  const sourcePath = process.argv.slice(2).find(argument => !argument.startsWith('--'));
+  assert(committedOnly || sourcePath, 'usage: node tools/check-primap-review-attestation.js /path/to/PRIMAP.csv [or --committed-only]');
 
-  const audit = spawnSync(process.execPath, [path.join(ROOT, 'tools/check-primap-economy-wide.js'), sourcePath], {
+  const auditArgs = committedOnly ? ['--committed-only'] : [sourcePath];
+  const audit = spawnSync(process.execPath, [path.join(ROOT, 'tools/check-primap-economy-wide.js'), ...auditArgs], {
     cwd: ROOT,
     encoding: 'utf8',
   });
@@ -104,8 +116,10 @@ async function main() {
   const manifestPath = path.join(ROOT, review.reviewed_inputs.manifest_path);
   const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  const sourceHashes = assertPinnedSource(sourcePath);
-  const { selected } = await readSelectedRows(sourcePath);
+  const sourceHashes = committedOnly ? null : assertPinnedSource(sourcePath);
+  const selected = committedOnly
+    ? selectedRowsFromCandidate(artifact)
+    : (await readSelectedRows(sourcePath)).selected;
 
   assert(review.schema_version === '1.0.0' && review.decision === 'pass', 'review decision is not a typed pass');
   assert(review.calculation_hash === calculationHash(review), 'review calculation hash mismatch');
@@ -120,9 +134,12 @@ async function main() {
   assert(artifact.calculation_hash === review.reviewed_inputs.artifact_calculation_hash, 'artifact calculation hash changed');
   assert(manifest.calculation_hash === review.reviewed_inputs.manifest_calculation_hash, 'manifest calculation hash changed');
   assert(artifact.schema_ref === review.reviewed_inputs.batch_schema_path, 'batch schema_ref changed');
-  assert(sourceHashes.size === review.reviewed_inputs.source_size_bytes, 'review source byte size changed');
-  assert(sourceHashes.md5 === review.reviewed_inputs.source_md5, 'review source MD5 changed');
-  assert(sourceHashes.sha256 === review.reviewed_inputs.source_sha256, 'review source SHA-256 changed');
+  assert(review.reviewed_inputs.source_sha256 === artifact.source.input_hash_sha256, 'review source SHA-256 differs from candidate source pin');
+  if (!committedOnly) {
+    assert(sourceHashes.size === review.reviewed_inputs.source_size_bytes, 'review source byte size changed');
+    assert(sourceHashes.md5 === review.reviewed_inputs.source_md5, 'review source MD5 changed');
+    assert(sourceHashes.sha256 === review.reviewed_inputs.source_sha256, 'review source SHA-256 changed');
+  }
 
   assert(review.counts.normalized_observations === 2060, 'review observation count changed');
   assert(review.counts.unique_normalized_fact_ids === 2060, 'review normalized ID count changed');
@@ -152,7 +169,8 @@ async function main() {
   assert(Object.values(artifact.forbidden_outputs).every(value => value === false), 'artifact assigns a forbidden assessment output');
 
   process.stdout.write(audit.stdout);
-  console.log('PRIMAP CT-10B-R attestation: PASS (13 complete raw/candidate samples; 2 adversarial mutations rejected; assessed/scoring/site release remain false)');
+  const mode = committedOnly ? 'committed attestation/candidate pins; raw-source rerun not performed' : '13 complete raw/candidate samples';
+  console.log(`PRIMAP CT-10B-R attestation: PASS (${mode}; 2 adversarial mutations rejected; assessed/scoring/site release remain false)`);
 }
 
 main().catch(error => {
