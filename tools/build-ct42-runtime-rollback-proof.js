@@ -10,11 +10,13 @@ const {
   APP_CALLED_GLOBE_APIS,
   CACHE_NAME,
   CONTROL_FILES,
+  EXPECTED_VENDOR_SPEC,
   PATCH_FILES,
   PROHIBITED_OUTPUTS,
   REQUIRED_GLOBE_LIFECYCLE_APIS,
   ROLLBACK_PLAN_SHA256,
   RUNTIME_CONTROL_COMMIT,
+  RUNTIME_DEPENDENCIES,
   RUNTIME_EXCLUSIONS,
   SERVICE_WORKER_REGISTRATION,
   calculationHash,
@@ -1008,6 +1010,13 @@ const current = Object.fromEntries(CONTROL_FILES.map(relative => {
   assert.deepEqual(bytes, gitFile(RUNTIME_CONTROL_COMMIT, relative), `${relative} no longer matches the exact hardened runtime-control commit`);
   return [relative, bytes];
 }));
+const dependencyBytes = Object.fromEntries(RUNTIME_DEPENDENCIES.map(dependency => {
+  const bytes = fs.readFileSync(path.join(ROOT, dependency.path));
+  if (dependency.path !== EXPECTED_VENDOR_SPEC.destination) {
+    assert.deepEqual(bytes, gitFile(RUNTIME_CONTROL_COMMIT, dependency.path), `${dependency.path} no longer matches the exact hardened runtime-control commit`);
+  }
+  return [dependency.path, bytes];
+}));
 const targets = rollbackTargets(current);
 const patch = buildPatch(current, targets);
 const encodedPatch = encodePatchArtifact(patch);
@@ -1037,9 +1046,9 @@ const roles = {
 };
 
 const proof = {
-  schema_version: '2.0.0',
+  schema_version: '2.1.0',
   proof_id: 'ct-42-neutral-runtime-rollback-rehearsal-2026-07-15',
-  status: 'rehearsed_not_reviewed',
+  status: 'built_not_reviewed_browser_gate_required',
   release_authority: false,
   deploy_authority: false,
   review: {
@@ -1107,6 +1116,13 @@ const proof = {
       candidate_sha256: sha256(current[relative]),
       rollback_sha256: sha256(targets[relative]),
     })),
+    runtime_dependency_closure: RUNTIME_DEPENDENCIES.map(dependency => ({
+      path: dependency.path,
+      role: dependency.role,
+      source_commit: dependency.path === EXPECTED_VENDOR_SPEC.destination ? null : RUNTIME_CONTROL_COMMIT,
+      source_sha256: sha256(dependencyBytes[dependency.path]),
+      materialized_sha256: sha256(dependencyBytes[dependency.path]),
+    })),
     runtime_exclusions: RUNTIME_EXCLUSIONS,
     assertions: [
       'rollback targets are deterministic transformations of the pinned current hardened runtime, not a historical baseline transplant',
@@ -1117,7 +1133,7 @@ const proof = {
       'solid globe and background use no image textures; geometry remains pinned and same-origin',
       'service-worker cache is v34 and candidate JSON plus all globe visual assets are absent from pre-cache',
       'rollback plan bytes, CT-40 DENY, and no-release/no-deploy authority remain unchanged',
-      'temporary-site browser rehearsal must pass rollback SmokeTest and StackLint independently',
+      'the static checker proves exact temporary-site materialization but browser execution remains an external required gate with independently reviewed evidence',
     ],
   },
   prohibited_outputs: PROHIBITED_OUTPUTS,
@@ -1140,6 +1156,14 @@ const proof = {
       'run SmokeTest.run() and require every result pass with failed=0 and criticalFailed=0',
       'run StackLint.audit() and require an empty issue array',
     ],
+    browser_gate: {
+      status: 'external_required_not_recorded',
+      checker_enforced: false,
+      evidence_artifact: null,
+      independent_review_required: true,
+      release_authority: false,
+      deploy_authority: false,
+    },
     mode: 'temporary_copy_only',
     writes_workspace: false,
     deploys: false,

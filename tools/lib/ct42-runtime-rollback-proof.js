@@ -6,11 +6,16 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { EXPECTED_ASSETS } = require('./globe-runtime-assets');
+const { EXPECTED_SPEC: EXPECTED_VENDOR_SPEC } = require('./globe-vendor-integrity');
 
 const RUNTIME_CONTROL_COMMIT = 'c7ba0560b164e5f3b67c01e96abf75720ad3fd7a';
 const ROLLBACK_PLAN_SHA256 = 'c23bd5caf21bf05b6e637c6f599742e13a47b822b298054ca8d56e968d8aeaae';
 const CACHE_NAME = 'elu-v34-ct42-neutral-rollback';
 const SERVICE_WORKER_REGISTRATION = '/sw.js?v=34-ct42-neutral-rollback';
+
+const EXPECTED_GEOMETRY = EXPECTED_ASSETS.find(asset => asset.id === 'country-geometry');
+assert.ok(EXPECTED_GEOMETRY, 'canonical country geometry specification is absent');
 
 const CONTROL_FILES = Object.freeze([
   'index.html',
@@ -23,6 +28,24 @@ const CONTROL_FILES = Object.freeze([
 ]);
 
 const PATCH_FILES = Object.freeze(CONTROL_FILES.filter(relative => relative !== 'js/app.js'));
+
+const RUNTIME_DEPENDENCIES = Object.freeze([
+  Object.freeze({ path: 'css/carbon-clock.css', role: 'supporting_runtime_style' }),
+  Object.freeze({ path: 'js/gaia-utils.js', role: 'foundation_runtime' }),
+  Object.freeze({ path: 'js/module-contracts.js', role: 'module_contract_runtime' }),
+  Object.freeze({ path: 'js/event-bus.js', role: 'event_runtime' }),
+  Object.freeze({ path: 'js/storage-adapter.js', role: 'storage_runtime' }),
+  Object.freeze({ path: 'js/storage.js', role: 'storage_facade_runtime' }),
+  Object.freeze({ path: 'js/data-schema.js', role: 'data_schema_runtime' }),
+  Object.freeze({ path: 'js/carbon-clock.js', role: 'carbon_clock_runtime' }),
+  Object.freeze({ path: EXPECTED_VENDOR_SPEC.destination, role: 'verified_globe_renderer' }),
+  Object.freeze({ path: EXPECTED_GEOMETRY.path, role: 'pinned_country_geometry' }),
+  Object.freeze({ path: 'data/carbon-projects.json', role: 'noncritical_runtime_data' }),
+  Object.freeze({ path: 'tools/stack-lint.js', role: 'browser_rehearsal_stack_audit' }),
+  Object.freeze({ path: 'scripts/verify_load_order.py', role: 'static_rehearsal_load_order' }),
+]);
+
+const RUNTIME_DEPENDENCY_FILES = Object.freeze(RUNTIME_DEPENDENCIES.map(entry => entry.path));
 
 const APP_CALLED_GLOBE_APIS = Object.freeze([
   'prepare',
@@ -73,8 +96,50 @@ function calculationHash(value) {
   return sha256(JSON.stringify(stable(copy)));
 }
 
+function assertSafeRelativePath(relative) {
+  assert.equal(typeof relative, 'string', 'runtime path must be a string');
+  assert.ok(relative.length > 0 && !path.isAbsolute(relative), `runtime path must be relative: ${relative}`);
+  const normalized = path.normalize(relative);
+  assert.ok(normalized !== '..' && !normalized.startsWith(`..${path.sep}`), `runtime path escapes its root: ${relative}`);
+  assert.equal(normalized, relative, `runtime path is not canonical: ${relative}`);
+  return normalized;
+}
+
+function readRegularFile(root, relative) {
+  const normalized = assertSafeRelativePath(relative);
+  const rootReal = fs.realpathSync(root);
+  let current = rootReal;
+  const parts = normalized.split(path.sep);
+  parts.forEach((part, index) => {
+    current = path.join(current, part);
+    const stat = fs.lstatSync(current);
+    assert.equal(stat.isSymbolicLink(), false, `${relative} must not traverse a symlink`);
+    if (index === parts.length - 1) assert.equal(stat.isFile(), true, `${relative} must be a regular file`);
+    else assert.equal(stat.isDirectory(), true, `${relative} ancestor ${parts.slice(0, index + 1).join('/')} must be a directory`);
+  });
+  const fileReal = fs.realpathSync(current);
+  assert.ok(fileReal.startsWith(rootReal + path.sep), `${relative} resolves outside its root`);
+  return fs.readFileSync(current);
+}
+
 function read(root, relative) {
-  return fs.readFileSync(path.join(root, relative));
+  return readRegularFile(root, relative);
+}
+
+function pathEntryExists(root, relative) {
+  try {
+    fs.lstatSync(path.join(root, assertSafeRelativePath(relative)));
+    return true;
+  } catch (error) {
+    if (error?.code === 'ENOENT') return false;
+    throw error;
+  }
+}
+
+function allowedMissingVendor(root, options = {}) {
+  return options.allowMissingVendor === true &&
+    !options.sourceOverrides?.[EXPECTED_VENDOR_SPEC.destination] &&
+    !pathEntryExists(root, EXPECTED_VENDOR_SPEC.destination);
 }
 
 function readJson(root, relative) {
@@ -93,6 +158,27 @@ function controlByPath(proof) {
   return new Map(proof.rollback.controls.map(control => [control.path, control]));
 }
 
+function dependencyByPath(proof) {
+  return new Map(proof.rollback.runtime_dependency_closure.map(dependency => [dependency.path, dependency]));
+}
+
+function assertRegularTree(root) {
+  const rootStat = fs.lstatSync(root);
+  assert.equal(rootStat.isSymbolicLink(), false, 'materialized rollback root must not be a symlink');
+  assert.equal(rootStat.isDirectory(), true, 'materialized rollback root must be a directory');
+  const walk = directory => {
+    for (const name of fs.readdirSync(directory)) {
+      const absolute = path.join(directory, name);
+      const relative = path.relative(root, absolute);
+      const stat = fs.lstatSync(absolute);
+      assert.equal(stat.isSymbolicLink(), false, `${relative} must not be a symlink in the materialized rollback site`);
+      if (stat.isDirectory()) walk(absolute);
+      else assert.equal(stat.isFile(), true, `${relative} must be a regular file in the materialized rollback site`);
+    }
+  };
+  walk(root);
+}
+
 function assertCommitOrLateBound(proof) {
   const value = proof.candidate.review_chain_head;
   if (proof.candidate.review_chain_late_bound) {
@@ -103,9 +189,9 @@ function assertCommitOrLateBound(proof) {
 }
 
 function validateProofDocument(root, proof, options = {}) {
-  assert.equal(proof.schema_version, '2.0.0');
+  assert.equal(proof.schema_version, '2.1.0');
   assert.equal(proof.proof_id, 'ct-42-neutral-runtime-rollback-rehearsal-2026-07-15');
-  assert.equal(proof.status, 'rehearsed_not_reviewed');
+  assert.equal(proof.status, 'built_not_reviewed_browser_gate_required');
   assert.equal(proof.release_authority, false);
   assert.equal(proof.deploy_authority, false);
   assert.deepEqual(proof.review, {
@@ -161,8 +247,17 @@ function validateProofDocument(root, proof, options = {}) {
   assert.equal(proof.rollback.patch.encoding, 'base64');
   assertExactFileSet(proof.rollback.patch.changed_files, PATCH_FILES, 'rollback patch');
   assertExactFileSet(proof.rollback.controls.map(control => control.path), CONTROL_FILES, 'rollback control');
+  assertExactFileSet(proof.rollback.runtime_dependency_closure.map(dependency => dependency.path), RUNTIME_DEPENDENCY_FILES, 'rollback runtime dependency closure');
   assert.deepEqual(proof.rollback.runtime_exclusions, RUNTIME_EXCLUSIONS);
   assert.deepEqual(proof.prohibited_outputs, PROHIBITED_OUTPUTS);
+  assert.deepEqual(proof.execution.browser_gate, {
+    status: 'external_required_not_recorded',
+    checker_enforced: false,
+    evidence_artifact: null,
+    independent_review_required: true,
+    release_authority: false,
+    deploy_authority: false,
+  });
 
   const manifest = readJson(root, proof.candidate.candidate_manifest.path);
   assert.equal(sha256(read(root, proof.candidate.candidate_manifest.path)), proof.candidate.candidate_manifest.sha256);
@@ -215,6 +310,27 @@ function validateProofDocument(root, proof, options = {}) {
   );
   assert.equal(controls.get('js/app.js').candidate_sha256, controls.get('js/app.js').rollback_sha256, 'App must remain byte-identical');
 
+  const dependencies = dependencyByPath(proof);
+  for (const expected of RUNTIME_DEPENDENCIES) {
+    const dependency = dependencies.get(expected.path);
+    assert.ok(dependency, `missing rollback runtime dependency ${expected.path}`);
+    assert.equal(dependency.role, expected.role, `${expected.path} dependency role drift`);
+    assert.equal(
+      dependency.source_commit,
+      expected.path === EXPECTED_VENDOR_SPEC.destination ? null : RUNTIME_CONTROL_COMMIT,
+      `${expected.path} dependency source commit drift`,
+    );
+    assert.match(dependency.source_sha256, /^[a-f0-9]{64}$/);
+    assert.equal(dependency.materialized_sha256, dependency.source_sha256, `${expected.path} source/materialized pin drift`);
+    const missingExternalVendor = expected.path === EXPECTED_VENDOR_SPEC.destination && allowedMissingVendor(root, options);
+    if (!missingExternalVendor) {
+      const bytes = options.sourceOverrides?.[expected.path] || read(root, expected.path);
+      assert.equal(sha256(bytes), dependency.source_sha256, `${expected.path} source dependency pin drift`);
+    }
+  }
+  assert.equal(dependencies.get(EXPECTED_GEOMETRY.path).source_sha256, EXPECTED_GEOMETRY.sha256, 'country geometry is not bound to the canonical CT-45 digest');
+  assert.equal(dependencies.get(EXPECTED_VENDOR_SPEC.destination).source_sha256, EXPECTED_VENDOR_SPEC.sha256, 'globe.gl is not bound to the canonical vendor digest');
+
   for (const relative of PROHIBITED_OUTPUTS) {
     assert.equal(fs.existsSync(path.join(root, relative)), false, `${relative} must remain absent before rollback rehearsal`);
   }
@@ -231,33 +347,26 @@ function write(root, relative, bytes) {
 function copyIfPresent(sourceRoot, destinationRoot, relative) {
   const source = path.join(sourceRoot, relative);
   if (!fs.existsSync(source)) return false;
+  assert.equal(fs.lstatSync(source).isSymbolicLink(), false, `${relative} copy source must not be a symlink`);
   const destination = path.join(destinationRoot, relative);
   fs.mkdirSync(path.dirname(destination), { recursive: true });
   fs.cpSync(source, destination, { recursive: true });
   return true;
 }
 
-function stageCandidateTree(root, sourceRoot, controls, sourceOverrides = {}) {
-  [
-    'js/gaia-utils.js',
-    'js/module-contracts.js',
-    'js/event-bus.js',
-    'js/storage-adapter.js',
-    'js/storage.js',
-    'js/data-schema.js',
-    'js/carbon-clock.js',
-    'css/carbon-clock.css',
-    'scripts/verify_load_order.py',
-    'tools/stack-lint.js',
-    'assets/globe/runtime/ne_110m_admin_0_countries.geojson',
-    'data/carbon-projects.json',
-  ].forEach(relative => copyIfPresent(sourceRoot, root, relative));
+function stageCandidateTree(root, sourceRoot, controls, options = {}) {
+  const sourceOverrides = options.sourceOverrides || {};
+  for (const dependency of RUNTIME_DEPENDENCIES) {
+    if (dependency.path === EXPECTED_VENDOR_SPEC.destination && allowedMissingVendor(sourceRoot, options)) continue;
+    write(root, dependency.path, sourceOverrides[dependency.path] || read(sourceRoot, dependency.path));
+  }
 
   for (const relative of CONTROL_FILES) {
     const bytes = sourceOverrides[relative] || read(sourceRoot, relative);
     write(root, relative, bytes);
     assert.equal(sha256(read(root, relative)), controls.get(relative).candidate_sha256, `${relative} staged candidate drift`);
   }
+  assertRegularTree(root);
 }
 
 function applyPatch(rehearsalRoot, patchBytes) {
@@ -318,14 +427,26 @@ function validateGeometryBoundary(rehearsalRoot) {
   return retained.length;
 }
 
-function validateRollbackState(rehearsalRoot, proof) {
+function validateRollbackState(rehearsalRoot, proof, options = {}) {
   const controls = controlByPath(proof);
+  const dependencies = dependencyByPath(proof);
+  assertRegularTree(rehearsalRoot);
   for (const relative of CONTROL_FILES) {
     assert.equal(
       sha256(read(rehearsalRoot, relative)),
       controls.get(relative).rollback_sha256,
       `${relative} rollback output drift`,
     );
+  }
+  const materializedRuntimeDependencies = [];
+  for (const relative of RUNTIME_DEPENDENCY_FILES) {
+    if (relative === EXPECTED_VENDOR_SPEC.destination && allowedMissingVendor(rehearsalRoot, options)) continue;
+    assert.equal(
+      sha256(read(rehearsalRoot, relative)),
+      dependencies.get(relative).materialized_sha256,
+      `${relative} materialized runtime dependency drift`,
+    );
+    materializedRuntimeDependencies.push(relative);
   }
 
   const index = read(rehearsalRoot, 'index.html').toString('utf8');
@@ -412,6 +533,8 @@ function validateRollbackState(rehearsalRoot, proof) {
     outputHashes: Object.fromEntries(CONTROL_FILES.map(relative => [relative, sha256(read(rehearsalRoot, relative))])),
     retainedPolygons,
     smallNationPoints: proof.rollback.entity_boundary.approximate_small_state_points,
+    materializedRuntimeDependencies,
+    vendorMaterialized: materializedRuntimeDependencies.includes(EXPECTED_VENDOR_SPEC.destination),
   };
 }
 
@@ -419,17 +542,20 @@ function rehearse(root, proof, options = {}) {
   const validated = validateProofDocument(root, proof, options);
   const rehearsalRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-ct42-neutral-rollback-'));
   try {
-    stageCandidateTree(rehearsalRoot, root, validated.controls, options.sourceOverrides);
+    stageCandidateTree(rehearsalRoot, root, validated.controls, options);
     applyPatch(rehearsalRoot, validated.patchBytes);
     removeRuntimeExclusions(rehearsalRoot);
     if (options.afterApply) options.afterApply(rehearsalRoot);
-    const state = validateRollbackState(rehearsalRoot, proof);
+    const state = validateRollbackState(rehearsalRoot, proof, options);
     return {
       proof_id: proof.proof_id,
       candidate_decision: proof.candidate.decision,
       cache_name: proof.rollback.cache_name,
       changed_files: PATCH_FILES.length,
       pinned_control_files: CONTROL_FILES.length,
+      pinned_runtime_dependencies: RUNTIME_DEPENDENCY_FILES.length,
+      materialized_runtime_dependencies: state.materializedRuntimeDependencies.length,
+      vendor_materialized: state.vendorMaterialized,
       output_hashes: state.outputHashes,
       retained_polygons: state.retainedPolygons,
       small_nation_points: state.smallNationPoints,
@@ -458,20 +584,25 @@ function materializeRollbackSite(root, proof, destination, options = {}) {
   fs.mkdirSync(destination, { recursive: true });
   try {
     copyPublicTree(root, destination);
+    assertRegularTree(destination);
     for (const relative of CONTROL_FILES) {
+      write(destination, relative, options.sourceOverrides?.[relative] || read(root, relative));
+    }
+    for (const relative of RUNTIME_DEPENDENCY_FILES) {
+      if (relative === EXPECTED_VENDOR_SPEC.destination && allowedMissingVendor(root, options)) continue;
       write(destination, relative, options.sourceOverrides?.[relative] || read(root, relative));
     }
     applyPatch(destination, validated.patchBytes);
     removeRuntimeExclusions(destination);
-    const state = validateRollbackState(destination, proof);
-    if (options.requireVendor !== false) {
-      assert.equal(fs.existsSync(path.join(destination, 'js/vendor/globe.gl.js')), true, 'verified local globe.gl is required for browser rehearsal');
-    }
+    const state = validateRollbackState(destination, proof, options);
     return {
       destination,
       output_hashes: state.outputHashes,
       retained_polygons: state.retainedPolygons,
       small_nation_points: state.smallNationPoints,
+      materialized_runtime_dependencies: state.materializedRuntimeDependencies.length,
+      vendor_materialized: state.vendorMaterialized,
+      browser_ready: state.vendorMaterialized,
       browser_commands: proof.execution.browser_rehearsal,
     };
   } catch (error) {
@@ -484,14 +615,19 @@ module.exports = {
   APP_CALLED_GLOBE_APIS,
   CACHE_NAME,
   CONTROL_FILES,
+  EXPECTED_GEOMETRY,
+  EXPECTED_VENDOR_SPEC,
   PATCH_FILES,
   PROHIBITED_OUTPUTS,
   REQUIRED_GLOBE_LIFECYCLE_APIS,
   ROLLBACK_PLAN_SHA256,
   RUNTIME_CONTROL_COMMIT,
+  RUNTIME_DEPENDENCIES,
+  RUNTIME_DEPENDENCY_FILES,
   RUNTIME_EXCLUSIONS,
   SERVICE_WORKER_REGISTRATION,
   calculationHash,
+  assertRegularTree,
   materializeRollbackSite,
   rehearse,
   sha256,

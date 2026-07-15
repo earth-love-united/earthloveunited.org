@@ -6,7 +6,9 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const {
+  EXPECTED_VENDOR_SPEC,
   PROHIBITED_OUTPUTS,
+  RUNTIME_DEPENDENCY_FILES,
   RUNTIME_EXCLUSIONS,
   materializeRollbackSite,
   rehearse,
@@ -16,8 +18,9 @@ const {
 const ROOT = path.resolve(__dirname, '..');
 const PROOF_PATH = 'data/climate/reviews/ct42-candidate-rollback-rehearsal.json';
 const FIXTURE_PATH = 'data/climate/fixtures/ct42-runtime-rollback-proof.json';
-const EXPECTED_PROOF_CALCULATION_HASH = 'b02156bfe0bea04611ba6d90948c5e0c9a3f3832ce2a0e60493306a043a2f7d2';
+const EXPECTED_PROOF_CALCULATION_HASH = 'c1e03b000032669cc7e3845628d59cbbc19e136ed1c8d253f95d9babfe5db089';
 const EXPECTED_PATCH_SHA256 = '8089195ae3e00560012a5d9fa5341ceccfadfca871b40ad4c442c98fa56c01fb';
+const VENDOR_PATH = EXPECTED_VENDOR_SPEC.destination;
 
 function readJson(relative) {
   return JSON.parse(fs.readFileSync(path.join(ROOT, relative)));
@@ -49,15 +52,25 @@ function mutateBytes(bytes, mutation) {
 }
 
 const proof = readJson(PROOF_PATH);
+let vendorEntryPresent = true;
+try { fs.lstatSync(path.join(ROOT, VENDOR_PATH)); }
+catch (error) {
+  if (error?.code !== 'ENOENT') throw error;
+  vendorEntryPresent = false;
+}
 const pins = {
   expectedCalculationHash: EXPECTED_PROOF_CALCULATION_HASH,
   expectedPatchSha256: EXPECTED_PATCH_SHA256,
+  allowMissingVendor: !vendorEntryPresent,
 };
 validateProofDocument(ROOT, proof, pins);
 const result = rehearse(ROOT, proof, pins);
 assert.equal(result.workspace_mutation, false);
 assert.equal(result.changed_files, 6);
 assert.equal(result.pinned_control_files, 7);
+assert.equal(result.pinned_runtime_dependencies, RUNTIME_DEPENDENCY_FILES.length);
+assert.equal(result.materialized_runtime_dependencies, RUNTIME_DEPENDENCY_FILES.length - (vendorEntryPresent ? 0 : 1));
+assert.equal(result.vendor_materialized, vendorEntryPresent);
 assert.equal(result.retained_polygons, 173);
 assert.equal(result.small_nation_points, 28);
 assert.equal(result.runtime_exclusions_absent, RUNTIME_EXCLUSIONS.length);
@@ -65,9 +78,10 @@ assert.equal(result.prohibited_outputs_absent, PROHIBITED_OUTPUTS.length);
 
 const materializedPath = path.join(os.tmpdir(), `elu-ct42-neutral-site-${process.pid}-${Date.now()}`);
 try {
-  const materialized = materializeRollbackSite(ROOT, proof, materializedPath, { ...pins, requireVendor: false });
+  const materialized = materializeRollbackSite(ROOT, proof, materializedPath, pins);
   assert.equal(materialized.retained_polygons, 173);
   assert.equal(materialized.small_nation_points, 28);
+  assert.equal(materialized.browser_ready, vendorEntryPresent);
   RUNTIME_EXCLUSIONS.forEach(relative => assert.equal(fs.existsSync(path.join(materializedPath, relative)), false, `${relative} leaked into temporary site`));
 } finally {
   fs.rmSync(materializedPath, { recursive: true, force: true });
@@ -80,10 +94,11 @@ for (const mutation of fixture.mutations) {
     const changed = clone(proof);
     set(changed, mutation.path, mutation.value);
     assert.throws(() => validateProofDocument(ROOT, changed, pins), undefined, `${mutation.id}: proof mutation accepted`);
-  } else if (mutation.phase === 'candidate') {
-    const original = fs.readFileSync(path.join(ROOT, mutation.target));
+  } else if (mutation.phase === 'candidate' || mutation.phase === 'dependency') {
+    const originalPath = path.join(ROOT, mutation.target);
+    const original = fs.existsSync(originalPath) ? fs.readFileSync(originalPath) : Buffer.alloc(0);
     const sourceOverrides = { [mutation.target]: mutateBytes(original, mutation) };
-    assert.throws(() => rehearse(ROOT, proof, { ...pins, sourceOverrides }), undefined, `${mutation.id}: candidate mutation accepted`);
+    assert.throws(() => rehearse(ROOT, proof, { ...pins, sourceOverrides }), undefined, `${mutation.id}: ${mutation.phase} mutation accepted`);
   } else if (mutation.phase === 'patch') {
     const original = fs.readFileSync(path.join(ROOT, proof.rollback.patch.path));
     assert.throws(() => rehearse(ROOT, proof, { ...pins, patchBytes: mutateBytes(original, mutation) }), undefined, `${mutation.id}: patch mutation accepted`);
@@ -94,7 +109,12 @@ for (const mutation of fixture.mutations) {
         const destination = path.join(rehearsalRoot, mutation.target);
         fs.mkdirSync(path.dirname(destination), { recursive: true });
         if (mutation.operation === 'create') fs.writeFileSync(destination, mutation.value);
-        else fs.writeFileSync(destination, mutateBytes(fs.readFileSync(destination), mutation));
+        else if (mutation.operation === 'symlink-copy') {
+          const target = destination + '.exact-target';
+          fs.writeFileSync(target, fs.readFileSync(destination));
+          fs.rmSync(destination);
+          fs.symlinkSync(path.basename(target), destination);
+        } else fs.writeFileSync(destination, mutateBytes(fs.readFileSync(destination), mutation));
       },
     }), undefined, `${mutation.id}: post-rollback mutation accepted`);
   } else {
@@ -111,8 +131,13 @@ process.stdout.write([
   `  decoded patch sha256: ${proof.rollback.patch.decoded_sha256}`,
   `  exact entity boundary: ${result.retained_polygons} + ${result.small_nation_points} = ${result.retained_polygons + result.small_nation_points}`,
   `  pinned App/runtime controls: ${result.pinned_control_files}; deterministic patch files: ${result.changed_files}`,
+  `  pinned unchanged runtime dependencies: ${result.pinned_runtime_dependencies}`,
+  `  materialized runtime dependencies: ${result.materialized_runtime_dependencies}; vendor materialized: ${result.vendor_materialized}`,
   `  deterministic adversarial mutations rejected: ${rejected}`,
-  '  complete temporary browser site materialization: PASS',
+  result.vendor_materialized
+    ? '  complete exact temporary browser site materialization: PASS'
+    : '  static temporary site materialization: PASS; browser site remains incomplete until the canonical vendor fetch gate supplies exact globe.gl bytes',
+  '  browser execution evidence: external required gate; not run or recorded by this checker',
   '  production manifest / release diff / CT-40 allow manifest: absent',
   '  release authority / deploy authority / independent review: false / false / required',
 ].join('\n') + '\n');

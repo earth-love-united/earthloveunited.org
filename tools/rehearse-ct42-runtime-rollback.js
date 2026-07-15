@@ -83,17 +83,20 @@ if (site) {
 }
 
 process.stdout.write([
-  'CT-42 neutral runtime rollback rehearsal: PASS',
+  'CT-42 neutral runtime rollback static rehearsal: PASS',
   `  candidate decision: ${result.candidate_decision}`,
   `  deterministic patch files: ${result.changed_files}; pinned controls: ${result.pinned_control_files}`,
+  `  pinned unchanged runtime dependencies: ${result.pinned_runtime_dependencies}`,
+  `  materialized runtime dependencies: ${result.materialized_runtime_dependencies}; vendor materialized: ${result.vendor_materialized}`,
   `  neutral entities: ${result.retained_polygons} retained polygons + ${result.small_nation_points} approximate points = ${result.retained_polygons + result.small_nation_points}`,
   `  service-worker cache: ${result.cache_name}`,
   `  runtime exclusions absent: ${result.runtime_exclusions_absent}`,
   `  prohibited production outputs absent: ${result.prohibited_outputs_absent}`,
   '  workspace mutation / deploy / release authority: false / false / false',
+  '  browser execution: NOT RUN OR RECORDED by this checker; external independently reviewed browser evidence remains required',
   ...(materialized ? [
     `  temporary browser site: ${materialized.destination}`,
-    ...(process.argv.includes('--browser-harness') ? ['  temporary browser harness: installed (not part of rollback target hashes)'] : []),
+    ...(process.argv.includes('--browser-harness') ? ['  temporary browser harness: installed (not part of rollback target hashes; results are not persisted as evidence)'] : []),
     '  next: serve this directory on a fresh localhost origin, enter the globe, then require SmokeTest.run() to have zero failures and StackLint.audit() to return [].',
   ] : []),
 ].join('\n') + '\n');
