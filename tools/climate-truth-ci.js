@@ -16,7 +16,7 @@ const COMPONENTS = Object.freeze([
   { id: 'CT-03', script: 'tools/validate-visual-truth-fixtures.js', required: true },
   { id: 'CT-04', script: 'tools/verify-legacy-country-quarantine.js', required: true },
   { id: 'CT-10', script: 'tools/check-country-emissions-evidence.js', required: true },
-  { id: 'CT-10B', script: 'tools/check-primap-economy-wide.js', required: true },
+  { id: 'CT-10B', script: 'tools/check-primap-economy-wide.js', args: ['--committed-only'], required: true },
   { id: 'CT-11', script: 'tools/check-major-emitter-ndc-evidence.js', required: true },
   { id: 'CT-12', script: 'tools/check-policy-finance-evidence.js', required: true },
   { id: 'CT-13', script: 'tools/check-country-coverage-gap-queue.js', required: true },

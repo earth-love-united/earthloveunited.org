@@ -41,7 +41,7 @@ tool happens to exist:
 | CT-03 visual truth contract | `tools/validate-visual-truth-fixtures.js` |
 | CT-04 legacy quarantine | `tools/verify-legacy-country-quarantine.js` |
 | CT-10 GCB evidence boundary | `tools/check-country-emissions-evidence.js` |
-| CT-10B PRIMAP candidates | `tools/check-primap-economy-wide.js` |
+| CT-10B PRIMAP candidates | `tools/check-primap-economy-wide.js --committed-only` |
 | CT-11 NDC evidence | `tools/check-major-emitter-ndc-evidence.js` |
 | CT-12 policy and finance | `tools/check-policy-finance-evidence.js` |
 | CT-13 coverage-gap queue | `tools/check-country-coverage-gap-queue.js` |
@@ -127,9 +127,13 @@ reviewed runtime candidate cannot use the incomplete escape hatch.
 
 ## Current release limitation
 
-The integrated pre-release stack contains all validators listed above. Strict
+The integrated pre-release stack contains all validators listed above. The
+CT-10B CI mode verifies the committed schema, hashes, boundary observations,
+coverage, publication gates, and deterministic identifiers without claiming a
+raw-source rebuild. Strict
 release CI remains red until CT-42 supplies the reviewed runtime manifest and
 reviewed release diff; no placeholder is counted as a pass. The independent
-PRIMAP attestation additionally requires the pinned external source CSV and is
-run with `tools/check-primap-review-attestation.js /path/to/PRIMAP.csv` when
-that reviewed raw input is available.
+PRIMAP rebuild and attestation additionally require the pinned external source
+CSV and are run without `--committed-only`, followed by
+`tools/check-primap-review-attestation.js /path/to/PRIMAP.csv`, when that
+reviewed raw input is available.

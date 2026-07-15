@@ -91,7 +91,8 @@ function validateSchema(value, schema, rootSchema = schema, at = '$') {
 }
 
 async function main() {
-  const sourcePath = process.argv[2] || DEFAULT_SOURCE;
+  const committedOnly = process.argv.includes('--committed-only');
+  const sourcePath = process.argv.slice(2).find(argument => !argument.startsWith('--')) || DEFAULT_SOURCE;
   const fixture = JSON.parse(fs.readFileSync(FIXTURE_PATH, 'utf8'));
   assert(fixture._meta.fictional_entities === true, 'parser fixtures must remain fictional');
 
@@ -110,10 +111,13 @@ async function main() {
     assert(fictionalCoverage.find(item => item.country_id === countryId)?.state === state, `coverage fixture failed for ${countryId}`);
   });
 
-  assertPinnedSource(sourcePath);
-  const { selected } = await readSelectedRows(sourcePath);
-  assert(selected.length === CONFIG.source_row_count, `selected source rows must be ${CONFIG.source_row_count}`);
-  assert(selected.filter(item => item.row['2023'] !== '').length === CONFIG.source_2023_nonempty, `2023 nonempty source rows must be ${CONFIG.source_2023_nonempty}`);
+  let selected = null;
+  if (!committedOnly) {
+    assertPinnedSource(sourcePath);
+    ({ selected } = await readSelectedRows(sourcePath));
+    assert(selected.length === CONFIG.source_row_count, `selected source rows must be ${CONFIG.source_row_count}`);
+    assert(selected.filter(item => item.row['2023'] !== '').length === CONFIG.source_2023_nonempty, `2023 nonempty source rows must be ${CONFIG.source_2023_nonempty}`);
+  }
 
   const artifact = JSON.parse(fs.readFileSync(ARTIFACT_PATH, 'utf8'));
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
@@ -122,12 +126,14 @@ async function main() {
   const batchSchema = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/climate/schemas/primap-batch-candidate.schema.json'), 'utf8'));
   const observationSchema = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/climate/schemas/observation.schema.json'), 'utf8'));
   const registryIds = new Set(registry.entities.map(item => item.country_id));
-  const rebuiltArtifact = buildArtifact(registry, selected, artifact.created_at);
+  const rebuiltArtifact = committedOnly ? null : buildArtifact(registry, selected, artifact.created_at);
 
   const batchSchemaErrors = validateSchema(artifact, batchSchema);
   assert(batchSchemaErrors.length === 0, `batch candidate schema failed: ${batchSchemaErrors.slice(0, 5).join('; ')}`);
   assert(artifact.schema_ref === 'data/climate/schemas/primap-batch-candidate.schema.json', 'batch schema_ref mismatch');
-  assert(JSON.stringify(rebuiltArtifact) === JSON.stringify(artifact), 'artifact is not an exact deterministic rebuild of the pinned source');
+  if (!committedOnly) {
+    assert(JSON.stringify(rebuiltArtifact) === JSON.stringify(artifact), 'artifact is not an exact deterministic rebuild of the pinned source');
+  }
   assert(artifact.calculation_hash === calculationHash(artifact), 'artifact calculation hash mismatch');
   assert(manifest.calculation_hash === calculationHash(manifest), 'manifest calculation hash mismatch');
   assert(manifest.artifact.checksum_sha256 === hashFile(ARTIFACT_PATH), 'manifest artifact checksum mismatch');
@@ -191,33 +197,35 @@ async function main() {
   const ata2023 = artifact.series.find(item => item.iso_alpha3 === 'ATA')?.values.find(value => value.year === 2023);
   assert(ata2023?.source_value_text === '3.34' && ata2023?.normalized_value_decimal === '0.00334' && JSON.stringify(ata2023?.value_mtco2e) === '0.00334', 'ATA 2023 decimal conversion mismatch');
 
-  const rebuiltValues = new Map(selected.map(item => [item.row['area (ISO3)'], item]));
-  artifact.series.forEach(series => {
-    const source = rebuiltValues.get(series.iso_alpha3);
-    assert(source && source.csv_row === series.source_locator.csv_row, `${series.iso_alpha3} locator mismatch`);
-    assert(JSON.stringify(series.source_locator.row_key) === JSON.stringify({
-      source: source.row.source,
-      scenario: source.row['scenario (PRIMAP-hist)'],
-      provenance: source.row.provenance,
-      area: source.row['area (ISO3)'],
-      entity: source.row.entity,
-      unit: source.row.unit,
-      category: source.row['category (IPCC2006_PRIMAP)'],
-    }), `${series.iso_alpha3} row key mismatch`);
-    series.values.forEach(value => {
-      const sourceText = source.row[String(value.year)];
-      const sourceNumber = sourceText === '' ? null : Number(sourceText);
-      const normalizedDecimal = sourceText === '' ? null : gigagramTextToMegatonneDecimal(sourceText);
-      assert(value.source_value_text === (sourceText === '' ? null : sourceText), `${series.iso_alpha3} ${value.year} source text mismatch`);
-      assert(Object.is(value.source_value_ggco2e, sourceNumber), `${series.iso_alpha3} ${value.year} source value mismatch`);
-      assert(value.normalized_value_decimal === normalizedDecimal, `${series.iso_alpha3} ${value.year} normalized decimal mismatch`);
-      assert(Object.is(value.value_mtco2e, normalizedDecimal === null ? null : Number(normalizedDecimal)), `${series.iso_alpha3} ${value.year} normalized value mismatch`);
-      const sourceFactId = `fact:primap-hist-2.6.1:source:histtp:m0el:${series.iso_alpha3.toLowerCase()}:${value.year}`;
-      assert(value.source_fact_id === sourceFactId, `${series.iso_alpha3} ${value.year} source fact ID mismatch`);
-      assert(value.fact_id === `fact:primap-hist-2.6.1:normalized:histtp:m0el:${series.iso_alpha3.toLowerCase()}:${value.year}`, `${series.iso_alpha3} ${value.year} fact ID mismatch`);
-      assert(JSON.stringify(value.input_fact_ids) === JSON.stringify([sourceFactId]), `${series.iso_alpha3} ${value.year} input lineage mismatch`);
+  if (!committedOnly) {
+    const rebuiltValues = new Map(selected.map(item => [item.row['area (ISO3)'], item]));
+    artifact.series.forEach(series => {
+      const source = rebuiltValues.get(series.iso_alpha3);
+      assert(source && source.csv_row === series.source_locator.csv_row, `${series.iso_alpha3} locator mismatch`);
+      assert(JSON.stringify(series.source_locator.row_key) === JSON.stringify({
+        source: source.row.source,
+        scenario: source.row['scenario (PRIMAP-hist)'],
+        provenance: source.row.provenance,
+        area: source.row['area (ISO3)'],
+        entity: source.row.entity,
+        unit: source.row.unit,
+        category: source.row['category (IPCC2006_PRIMAP)'],
+      }), `${series.iso_alpha3} row key mismatch`);
+      series.values.forEach(value => {
+        const sourceText = source.row[String(value.year)];
+        const sourceNumber = sourceText === '' ? null : Number(sourceText);
+        const normalizedDecimal = sourceText === '' ? null : gigagramTextToMegatonneDecimal(sourceText);
+        assert(value.source_value_text === (sourceText === '' ? null : sourceText), `${series.iso_alpha3} ${value.year} source text mismatch`);
+        assert(Object.is(value.source_value_ggco2e, sourceNumber), `${series.iso_alpha3} ${value.year} source value mismatch`);
+        assert(value.normalized_value_decimal === normalizedDecimal, `${series.iso_alpha3} ${value.year} normalized decimal mismatch`);
+        assert(Object.is(value.value_mtco2e, normalizedDecimal === null ? null : Number(normalizedDecimal)), `${series.iso_alpha3} ${value.year} normalized value mismatch`);
+        const sourceFactId = `fact:primap-hist-2.6.1:source:histtp:m0el:${series.iso_alpha3.toLowerCase()}:${value.year}`;
+        assert(value.source_fact_id === sourceFactId, `${series.iso_alpha3} ${value.year} source fact ID mismatch`);
+        assert(value.fact_id === `fact:primap-hist-2.6.1:normalized:histtp:m0el:${series.iso_alpha3.toLowerCase()}:${value.year}`, `${series.iso_alpha3} ${value.year} fact ID mismatch`);
+        assert(JSON.stringify(value.input_fact_ids) === JSON.stringify([sourceFactId]), `${series.iso_alpha3} ${value.year} input lineage mismatch`);
+      });
     });
-  });
+  }
 
   const observations = compileAllObservations(artifact);
   assert(observations.length === 2060, 'boundary compiler must emit 2,060 CT-02 observations');
@@ -230,7 +238,8 @@ async function main() {
     assert(observation.evidence.reason_codes.every(code => enums.reason_codes.includes(code)), `CT-02 observation ${index} has non-canonical reason`);
   });
 
-  console.log(`PRIMAP CT-10B: PASS (215 source rows; 206 mapped; 8 aggregates; 1 obsolete; 0 unmapped; 43 registry gaps; 2,060 CT-02 boundary observations; 4,120 unique fact IDs; ${fs.statSync(ARTIFACT_PATH).size} bytes)`);
+  const mode = committedOnly ? 'committed candidate; raw-source rebuild not run' : 'pinned raw-source rebuild';
+  console.log(`PRIMAP CT-10B: PASS (${mode}; 215 source rows; 206 mapped; 8 aggregates; 1 obsolete; 0 unmapped; 43 registry gaps; 2,060 CT-02 boundary observations; 4,120 unique fact IDs; ${fs.statSync(ARTIFACT_PATH).size} bytes)`);
 }
 
 main().catch(error => {
