@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "release_id": "policy-finance-2026-07-15",
+  "created_at": "2026-07-15T12:00:00Z",
+  "methodology_version": "0.1.0",
+  "release_status": "blocked",
+  "scope": {
+    "planned_pilot_size": 30,
+    "selection_rule": "Top 30 emitters after the approved emissions release is reviewed; this manifest contains no selected country IDs.",
+    "record_families": ["implemented_policy_measure", "official_or_harmonized_policy_projection", "typed_climate_finance_fact"]
+  },
+  "publication": {
+    "country_values_included": false,
+    "normalized_country_record_count": 0,
+    "allowed_content": "Source titles, links, versions, cadence, licence state, and release gates only."
+  },
+  "source_release_ids": ["unfccc-btr-continuous-2026-07-15", "unfccc-ter-continuous-2026-07-15", "oecd-climate-finance-2013-2024"],
+  "gates": [
+    { "source_release_id": "unfccc-btr-continuous-2026-07-15", "domains": ["implemented_policy", "official_policy_projection", "official_climate_finance"], "state": "blocked", "reason_codes": ["licence_not_approved"], "required_action": "Obtain and record normalized-data redistribution permission for BTR documents and common tabular formats." },
+    { "source_release_id": "unfccc-ter-continuous-2026-07-15", "domains": ["implementation_review", "official_policy_projection", "official_climate_finance"], "state": "blocked", "reason_codes": ["licence_not_approved"], "required_action": "Obtain and record normalized-data redistribution permission for technical expert review material." },
+    { "source_release_id": "oecd-climate-finance-2013-2024", "domains": ["harmonized_climate_finance"], "state": "blocked", "reason_codes": ["licence_not_approved"], "required_action": "Approve exact OECD tables and their component-level third-party terms before normalizing any country value." }
+  ],
+  "artifacts": [
+    { "path": "data/climate/releases/policy-finance-2026-07-15/manifest.json", "media_type": "application/json", "content": "metadata_and_links_only", "record_count": 0 },
+    { "path": "data/climate/schemas/policy-measure.schema.json", "media_type": "application/schema+json", "content": "metadata_and_links_only", "record_count": 0 },
+    { "path": "data/climate/schemas/policy-projection.schema.json", "media_type": "application/schema+json", "content": "metadata_and_links_only", "record_count": 0 },
+    { "path": "data/climate/schemas/climate-finance.schema.json", "media_type": "application/schema+json", "content": "metadata_and_links_only", "record_count": 0 }
+  ],
+  "review": { "status": "not_reviewed", "reviewer_ids": [], "reviewed_at": null },
+  "change_summary": "Initial metadata-only contract release. No country value is licensed, reviewed, or released."
+}
