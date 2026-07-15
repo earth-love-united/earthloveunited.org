@@ -201,7 +201,8 @@ function exactRuntimeAssetApproval(runtimeAssets, expectedTrustRegistrySha256 = 
     signature_bundle_file_regular: runtimeAssets.signature_bundle_file_regular,
     reviewed_commit_binding_passed: runtimeAssets.reviewed_commit_binding_passed,
   });
-  return authorityReport.status === 'pass' && exactKeys(approval, RUNTIME_ASSET_REVIEW_KEYS) &&
+  return authorityReport.status === 'pass' && runtimeAssets.reviewed_release_passed === true &&
+    exactKeys(approval, RUNTIME_ASSET_REVIEW_KEYS) &&
     approval.schema_version === '2.0.0' && approval.review_id === RUNTIME_ASSET_REVIEW_ID &&
     approval.decision === 'approve' && exactKeys(runtimeManifest, ['path', 'sha256']) &&
     runtimeManifest.path === MANIFEST_PATH && runtimeManifest.sha256 === EXPECTED_MANIFEST_SHA256 &&
@@ -256,6 +257,7 @@ function evaluateReadiness(input, options = {}) {
   const artifacts = input.artifacts || {};
   const truthCi = input.truth_ci || {};
   const runtimeAssets = input.runtime_assets || {};
+  const reviewedRelease = input.reviewed_release || {};
   const expectedTrustRegistrySha256 = options.expectedTrustRegistrySha256 || EXPECTED_TRUST_REGISTRY_SHA256;
 
   check('independent-data-review', dataReview.decision === 'pass' && dataReview.independent === true,
@@ -290,8 +292,9 @@ function evaluateReadiness(input, options = {}) {
       'The top-20 acquisition queue must cover 20 entities and authorize none.');
     check('evidence-plan-fail-closed', input.evidence_readiness?.status === 'blocked' && input.evidence_readiness?.release_authority === false && input.evidence_readiness?.required_next_compiler?.status === 'not_implemented',
       'The evidence work package must remain blocked and require a new reviewed production-candidate compiler.');
-    check('release-artifacts-absent', !artifacts.runtime_manifest && !artifacts.release_diff && !artifacts.allow_manifest,
-      'Runtime manifest, reviewed release diff, and CT-40 allow manifest must be absent while denied.');
+    check('release-artifacts-absent', !artifacts.runtime_manifest && !artifacts.release_input && !artifacts.release_diff &&
+      !artifacts.allow_manifest && !artifacts.rollback_proof && reviewedRelease.status === 'absent' && reviewedRelease.pass === true,
+      'Runtime manifest, CT-40 reviewed input/ALLOW, release diff, and production rollback proof must all remain absent while denied.');
     check('truth-ci-incomplete-only', truthCi.status === 'incomplete' && JSON.stringify(missing) === JSON.stringify(CANDIDATE_MISSING),
       'Candidate CI may be incomplete only for the reviewed runtime manifest and release diff.');
     check('runtime-assets-candidate-release-blocked', runtimeAssets.manifest?.rights_review_status === 'not_reviewed' &&
@@ -304,8 +307,12 @@ function evaluateReadiness(input, options = {}) {
       exactUnprovisionedTrust(runtimeAssets.trust_registry) && exactCandidateNoticeBoundary(runtimeAssets),
       'Candidate integrity may pass only with exact notice bytes while all five asset rights decisions, counsel questions, production use, and release authority remain explicitly blocked.');
   } else {
-    check('real-ct40-allow', ct40.decision === 'allow' && ct40.eligible === true && ct40.release_authority === true,
+    check('real-ct40-allow', reviewedRelease.status === 'validated' && reviewedRelease.pass === true &&
+      ct40.decision === 'allow' && ct40.eligible === true && ct40.release_authority === true,
       'Release requires an authentic, independently reviewed CT-40 ALLOW.');
+    check('canonical-reviewed-release-package', reviewedRelease.status === 'validated' && reviewedRelease.pass === true &&
+      reviewedRelease.content_eligible === true && reviewedRelease.release_authority === false,
+      'The shared release-package validator must recompute CT-40, schemas, artifact pins, release diff, and rollback proof.');
     check('top20-primary-review-complete', input.top20_primary_source_review_complete === true,
       'All required top-20 primary-source reviews must be complete.');
     check('licence-decisions-complete', input.licence_decisions_complete === true,
@@ -314,10 +321,11 @@ function evaluateReadiness(input, options = {}) {
       'Required field-level fact reviews must be complete.');
     check('independent-release-review', input.independent_release_review_passed === true,
       'An independent CT-40 release review must pass.');
-    check('reviewed-release-artifacts', artifacts.runtime_manifest === true && artifacts.release_diff === true && artifacts.allow_manifest === true,
-      'Reviewed runtime manifest, release diff, and CT-40 allow manifest must exist.');
-    check('rollback-proof', artifacts.rollback_proof === true,
-      'A reviewed executable rollback proof must exist.');
+    check('reviewed-release-artifacts', artifacts.runtime_manifest === true && artifacts.release_input === true &&
+      artifacts.release_diff === true && artifacts.allow_manifest === true && artifacts.rollback_proof === true,
+      'Reviewed runtime manifest, CT-40 input/ALLOW, release diff, and rollback proof must exist as regular validated files.');
+    check('rollback-proof', reviewedRelease.rollback_proof_passed === true,
+      'The canonical reviewed rollback proof must apply successfully and restore exact pinned baseline bytes.');
     check('strict-truth-ci', truthCi.status === 'pass' && (truthCi.missing_required_components || []).length === 0,
       'Strict climate truth CI must pass with no missing components.');
     check('release-worktree-clean', input.release_worktree_clean_passed === true,

@@ -6,6 +6,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const { evaluateReadiness, parseReadinessArgs, releaseWorktreeCleanPasses } = require('./lib/climate-production-readiness');
+const { PATHS: REVIEWED_RELEASE_PATHS, SCHEMAS: REVIEWED_RELEASE_SCHEMAS, inspectReviewedClimateRelease } = require('./lib/climate-reviewed-release');
 const { EXPECTED_ASSETS, REQUIRED_UI_REVIEW_PIN_PATHS } = require('./lib/globe-runtime-assets');
 const {
   APPROVAL_SCHEMA_PATH,
@@ -27,10 +28,11 @@ const P = Object.freeze({
   ct40Deny: 'data/climate/reviews/ct42-ct40-release-review-result.json',
   top20Queue: 'data/climate/releases/top20-primary-source-gap-queue-2026-07-15.json',
   evidenceReadiness: 'data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json',
-  runtimeManifest: 'data/climate/runtime-manifest.json',
-  releaseDiff: 'data/climate/releases/reviewed-release-diff.json',
-  allowManifest: 'data/climate/releases/ct40-allow-manifest.json',
-  rollbackProof: 'data/climate/releases/reviewed-rollback-proof.json',
+  runtimeManifest: REVIEWED_RELEASE_PATHS.runtimeManifest,
+  releaseInput: REVIEWED_RELEASE_PATHS.releaseInput,
+  releaseDiff: REVIEWED_RELEASE_PATHS.releaseDiff,
+  allowManifest: REVIEWED_RELEASE_PATHS.allowManifest,
+  rollbackProof: REVIEWED_RELEASE_PATHS.rollbackProof,
   runtimeAssets: 'assets/globe/runtime/manifest.json',
   noticeIntegration: NOTICE_INTEGRATION_PATH,
   runtimeAssetApproval: RUNTIME_ASSET_APPROVAL_PATH,
@@ -152,6 +154,16 @@ function reviewedCommitBindingPasses(approval) {
     '_headers',
     'docs/LEGACY-COUNTRY-DATA-EXIT.md',
     'tools/climate-truth-ci.js',
+    'tools/check-climate-release-gate.js',
+    'tools/lib/climate-release-gate.js',
+    'tools/check-climate-truth-ci.js',
+    'tools/lib/climate-truth-ci-policy.js',
+    'tools/check-reviewed-climate-release.js',
+    'tools/lib/climate-reviewed-release.js',
+    'tools/lib/reviewed-runtime-rollback-proof.js',
+    'tools/lib/json-schema-lite.js',
+    ...Object.values(REVIEWED_RELEASE_SCHEMAS),
+    ...Object.values(REVIEWED_RELEASE_PATHS),
     'tools/lib/climate-runtime-diff-boundary.js',
     'tools/lib/climate-production-readiness.js',
     'tools/check-climate-production-readiness.js',
@@ -166,16 +178,14 @@ const uiReview = required(P.uiReview);
 const top20Queue = required(P.top20Queue);
 const evidenceReadiness = required(P.evidenceReadiness);
 const denyResult = required(P.ct40Deny);
-const allowManifest = exists(P.allowManifest) ? read(P.allowManifest) : null;
-const ct40 = mode === 'release' && allowManifest ? allowManifest : denyResult;
+const reviewedRelease = inspectReviewedClimateRelease(ROOT);
+const ct40 = mode === 'release' ? (reviewedRelease.canonical_output || {}) : denyResult;
 const truthCi = runTruthCi();
 const canonicalLinks = run(process.execPath, ['tools/check-canonical-source-links.js']);
 const publicCopy = run(process.execPath, ['tools/check-public-copy.js']);
 const ct45 = run(process.execPath, ['tools/check-globe-runtime-assets.js']);
 const notices = run(process.execPath, ['tools/check-globe-third-party-notices.js']);
 const loadOrder = run('python3', ['scripts/verify_load_order.py']);
-const reviewContext = allowManifest?.review_context || {};
-const releaseReview = allowManifest?.review || {};
 const runtimeAssetApprovalPresent = entryPresent(P.runtimeAssetApproval);
 const runtimeAssetApprovalRegular = regularNonSymlink(P.runtimeAssetApproval);
 const runtimeAssetApprovalRecord = readRegularJson(P.runtimeAssetApproval);
@@ -204,21 +214,23 @@ const report = evaluateReadiness({
   ct40: {
     decision: ct40.decision,
     eligible: ct40.eligible ?? ct40.release_eligible,
-    release_authority: ct40.release_authority === true,
+    release_authority: reviewedRelease.content_eligible === true,
     reason_codes: ct40.reason_codes || [],
   },
+  reviewed_release: reviewedRelease,
   top20_queue: top20Queue,
   evidence_readiness: evidenceReadiness,
-  top20_primary_source_review_complete: reviewContext.top20_primary_source_review_complete === true,
-  licence_decisions_complete: reviewContext.licence_decisions_complete === true,
-  field_level_fact_reviews_complete: reviewContext.field_level_fact_reviews_complete === true,
-  independent_release_review_passed: releaseReview.status === 'reviewed' && releaseReview.independent === true,
+  top20_primary_source_review_complete: reviewedRelease.top20_primary_source_review_complete === true,
+  licence_decisions_complete: reviewedRelease.licence_decisions_complete === true,
+  field_level_fact_reviews_complete: reviewedRelease.field_level_fact_reviews_complete === true,
+  independent_release_review_passed: reviewedRelease.independent_release_review_passed === true,
   release_worktree_clean_passed: releaseWorktreeCleanPasses(ROOT),
   artifacts: {
-    runtime_manifest: exists(P.runtimeManifest),
-    release_diff: exists(P.releaseDiff),
-    allow_manifest: exists(P.allowManifest),
-    rollback_proof: exists(P.rollbackProof),
+    runtime_manifest: entryPresent(P.runtimeManifest),
+    release_input: entryPresent(P.releaseInput),
+    release_diff: entryPresent(P.releaseDiff),
+    allow_manifest: entryPresent(P.allowManifest),
+    rollback_proof: entryPresent(P.rollbackProof),
   },
   truth_ci: truthCi,
   runtime_assets: {
@@ -231,6 +243,7 @@ const report = evaluateReadiness({
     asset_pins: EXPECTED_ASSETS.map(asset => ({ path: asset.path, sha256: sha256(asset.path) })),
     current_commit_sha: currentCommitSha(),
     reviewed_commit_binding_passed: reviewedCommitBindingPasses(runtimeAssetApproval),
+    reviewed_release_passed: reviewedRelease.pass === true && reviewedRelease.status === 'validated',
     approval_review_present: runtimeAssetApprovalPresent,
     approval_file_regular: runtimeAssetApprovalRegular,
     approval: runtimeAssetApproval,

@@ -7,6 +7,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const { compile, hashBytes } = require('./lib/climate-factual-runtime-candidate');
 const { evaluateTruthPolicy } = require('./lib/climate-truth-ci-policy');
+const { releaseDiffCalculationHash } = require('./lib/climate-reviewed-release');
 
 const ROOT = path.resolve(__dirname, '..');
 const P = {
@@ -22,6 +23,11 @@ function set(target, dotted, value) { const parts = dotted.split('.'); const key
 function inputs() {
   const promotionBytes = bytes(P.promotion), reviewBytes = bytes(P.review);
   return { registry: json(P.registry), promotion: JSON.parse(promotionBytes), promotionBytes, review: JSON.parse(reviewBytes), reviewBytes, sourceRegistry: json(P.source) };
+}
+function fixtureReleaseDiff() {
+  const diff = { initial_release: true, data_release_id: 'fixture-only', previous_release_id: null, change_summary: 'Checker fixture.', changed_entity_ids: [], source_revision_ids: [], diff_hash: null, review: { status: 'reviewed', builder_id: 'fixture-builder', reviewer_id: 'fixture-reviewer', reviewed_at: '2026-07-15T00:00:00Z' } };
+  diff.diff_hash = releaseDiffCalculationHash(diff);
+  return diff;
 }
 
 const output = compile(inputs());
@@ -77,7 +83,7 @@ const policy = evaluateTruthPolicy({
   methodology_version: '0.1.0',
   runtime: { review_status: 'reviewed', files: [{ path: 'fixture/runtime.js', content: 'const status = "Progress not assessed";' }], data_files: [P.facts], claims: {}, rankings: [{ ranking_id: 'ct42-same-metric-2023', metric: 'annual_economy_wide_ghg_excluding_lulucf', unit: 'MtCO2e/yr', period: '2023', plane: 'harmonized', source_fact_ids: factIds.filter(id => id.endsWith(':2023')) }] },
   release_manifest: { decision: 'allow', release_eligible: true, reason_codes: [], calculation_hash: '1'.repeat(64) },
-  release_diff: { initial_release: true, data_release_id: 'fixture-only', previous_release_id: null, change_summary: 'Checker fixture.', changed_entity_ids: [], source_revision_ids: [], diff_hash: '2'.repeat(64), review: { status: 'reviewed', builder_id: 'fixture-builder', reviewer_id: 'fixture-reviewer', reviewed_at: '2026-07-15T00:00:00Z' } },
+  release_diff: fixtureReleaseDiff(),
   facts: output.publishedFacts.facts, sources: json(P.source).sources, batch_attestations: [output.batchAttestation], canonical_reason_codes: [], embedded_reason_enums: [], generated_drift: false,
 });
 assert.equal(policy.status, 'pass', JSON.stringify(policy.failures.slice(0, 3)));

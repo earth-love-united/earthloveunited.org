@@ -3,7 +3,7 @@
 **Status:** deterministic stack-aware CI entrypoint; reviewed-release mode is
 fail-closed
 
-**Policy version:** 1.0.0
+**Policy version:** 1.2.0
 
 ## Entrypoint
 
@@ -60,6 +60,7 @@ tool happens to exist:
 | CT-45 localized globe runtime assets | `tools/check-globe-runtime-assets.js` |
 | CT-45 notices | `tools/check-globe-third-party-notices.js` |
 | CT-40 release gate | `tools/check-climate-release-gate.js` |
+| CT-40 reviewed production package | `tools/check-reviewed-climate-release.js` |
 
 `tools/build-major-emitter-ndc-release.js --check` is also run when present as
 an optional generated-artifact verification. Public-copy validation is always
@@ -98,9 +99,13 @@ methodology_version
 runtime.review_status = reviewed
 runtime.file_paths / runtime.data_files / runtime.claims / runtime.rankings
 release_eligibility_manifest
+ct40_reviewed_release_input
 release_diff
+rollback_proof
 published_fact_files
+published_profile_files
 source_registry
+artifact_pins
 ```
 
 Runtime source files are loaded from the declared paths. Absolute paths and
@@ -114,14 +119,47 @@ period, evidence plane, and source fact IDs.
 
 ## Release, lineage, and drift
 
-The referenced CT-40 manifest must say `allow`, set
-`release_eligible: true`, carry no denial reasons, and include a SHA-256. A
-denied or inconsistent manifest always fails.
+The referenced CT-40 manifest is not trusted as a claim. It must be the exact
+full output of `evaluateRelease()` recomputed from the separately pinned
+`ct40-reviewed-release-input.json`. The input and output must pass their frozen
+schemas, contain non-empty facts and profiles, profile every released fact,
+recompute derived-fact and profile hashes, match every source to the pinned
+canonical registry and an independent redistribution/scoring rights decision,
+and record independently reviewed, document-pinned, canonically hashed primary-source records for the exact required top-20 country set. An
+extra `release_authority` field, a shape-only hash, or any output drift fails.
+Successful content validation reports eligibility only and never mints release
+authority; authority still requires the detached signed production approval.
 
 The reviewed release diff records the current and previous release (or marks an
 initial release), change summary, changed entity IDs, source revision IDs,
-deterministic hash, and independent builder/reviewer attestation. Missing or
-self-reviewed diffs fail.
+exact input/runtime/output artifact pins, a recomputed canonical hash, and an
+independent builder/reviewer attestation. Missing, self-reviewed, shape-only,
+or byte-drifted diffs fail.
+
+The production rollback proof is a separate reviewed artifact. Its package
+pins, schema, calculation hash, patch bytes, current control-file hashes, and
+baseline Git bytes are checked before the patch is applied in a temporary
+tree. Every restored hash and JavaScript syntax check must pass. Mere existence
+of `reviewed-rollback-proof.json` never satisfies release readiness. The same
+shared package validator runs from strict truth CI and production readiness;
+the signed release-authority reviewed-commit binding covers the validator,
+schemas, and five release-package artifacts.
+
+The production artifacts have a deliberate acyclic generation order:
+
+1. Write the reviewed CT-40 input, including source-rights decisions and the
+   20 hashed primary-source review records; recompute derived fact/profile
+   hashes.
+2. Run `evaluateRelease()` and write its exact full output as the ALLOW file.
+3. Write the runtime manifest with exact pins for runtime/data/fact/profile,
+   source-registry, reviewed-input, and ALLOW bytes.
+4. Write and canonically hash the release diff, pinning the manifest, input,
+   and ALLOW.
+5. Build the rollback patch and proof, pinning those four earlier artifacts;
+   run `node tools/check-reviewed-climate-release.js` to rehearse it.
+6. Commit the package, then create the separate production approval and
+   detached signatures for that reviewed commit. Do not hand-edit downstream
+   hashes after an upstream artifact changes; regenerate in this order.
 
 Every published fact is checked against its pinned source decision. It needs
 redistribution approval, source checksum agreement, independent review, and
@@ -137,11 +175,15 @@ own validators cover additional embedded vocabularies.
 
 ## Policy fixtures
 
-`data/climate/fixtures/truth-ci-policy.json` contains 17 fictional cases: one
-complete pass and 16 expected failures covering legacy loads, truth-language
+`data/climate/fixtures/truth-ci-policy.json` contains 32 fictional cases: one
+complete pass and 31 expected failures covering legacy loads, truth-language
 regressions, ambiguous missing-target treatment, composite scores, unsourced
 rankings, denied releases, invalid/self-reviewed diffs, missing licence/review/
-lineage, canonical-enum divergence, and generated drift.
+lineage, empty facts/profile data, canonical diff hashes, canonical-enum
+divergence, and generated drift. The reviewed production-package checker adds
+30 adversarial cases for malformed/empty facts and profiles, synthetic ALLOWs, invented
+source rights, placeholder reviewers, shape-only calculation hashes, pin drift, partial/symlinked
+artifacts, and executable rollback tampering.
 
 Run:
 

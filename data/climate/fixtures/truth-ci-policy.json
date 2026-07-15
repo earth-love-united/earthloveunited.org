@@ -1,7 +1,7 @@
 {
   "_meta": {
     "fixture_set": "ct41-climate-truth-ci-policy",
-    "fixture_version": "1.1.0",
+    "fixture_version": "1.2.0",
     "fictional_entities": true
   },
   "base": {
@@ -21,7 +21,7 @@
       "change_summary": "Initial fictional reviewed release.",
       "changed_entity_ids": ["iso3166-1:ZZZ"],
       "source_revision_ids": ["fixture-source-v1"],
-      "diff_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+      "diff_hash": "44daca01027f5ad453afef90de9c197585f57d5a8d8c9ebaf41af4f0121eeda6",
       "review": { "status": "reviewed", "builder_id": "fixture-diff-builder", "reviewer_id": "fixture-diff-reviewer", "reviewed_at": "2099-01-01T00:00:00Z" }
     },
     "facts": [
@@ -98,7 +98,10 @@
     { "id": "unsourced-ranking", "mutations": [{ "path": "runtime.rankings.0.source_fact_ids", "value": [] }], "expected_status": "fail", "expected_codes": ["unsourced_ranking"] },
     { "id": "release-denied", "mutations": [{ "path": "release_manifest.decision", "value": "deny" }, { "path": "release_manifest.release_eligible", "value": false }, { "path": "release_manifest.reason_codes", "value": ["licence_not_approved"] }], "expected_status": "fail", "expected_codes": ["release_manifest_denied"] },
     { "id": "release-diff-lineage-missing", "mutations": [{ "path": "release_diff.initial_release", "value": false }, { "path": "release_diff.previous_release_id", "value": null }], "expected_status": "fail", "expected_codes": ["release_diff_invalid"] },
-    { "id": "release-diff-self-review", "mutations": [{ "path": "release_diff.review.reviewer_id", "value": "fixture-diff-builder" }], "expected_status": "fail", "expected_codes": ["release_diff_not_reviewed"] },
+    { "id": "release-diff-self-review", "mutations": [{ "path": "release_diff.review.reviewer_id", "value": "fixture-diff-builder" }], "expected_status": "fail", "expected_codes": ["release_diff_invalid", "release_diff_not_reviewed"] },
+    { "id": "shape-only-release-diff-hash", "mutations": [{ "path": "release_diff.diff_hash", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }], "expected_status": "fail", "expected_codes": ["release_diff_invalid"] },
+    { "id": "no-runtime-profile-data", "mutations": [{ "path": "runtime.data_files", "value": [] }], "expected_status": "fail", "expected_codes": ["runtime_data_files_missing"] },
+    { "id": "no-published-facts", "mutations": [{ "path": "facts", "value": [] }, { "path": "batch_attestations", "value": [] }, { "path": "runtime.rankings", "value": [] }], "expected_status": "fail", "expected_codes": ["release_facts_missing"] },
     { "id": "wrong-source-version", "mutations": [{ "path": "sources.0.version", "value": "2.7 final, 22 August 2025" }], "expected_status": "fail", "expected_codes": ["fact_source_version_mismatch"] },
     { "id": "wrong-source-checksum", "mutations": [{ "path": "sources.0.artifact.sha256", "value": "7777777777777777777777777777777777777777777777777777777777777777" }], "expected_status": "fail", "expected_codes": ["fact_source_checksum_mismatch"] },
     { "id": "licence-not-confirmed", "mutations": [{ "path": "sources.0.licence.status", "value": "uncertain" }], "expected_status": "fail", "expected_codes": ["fact_licence_missing"] },

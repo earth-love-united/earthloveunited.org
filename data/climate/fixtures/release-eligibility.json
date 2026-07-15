@@ -185,6 +185,8 @@
     { "id": "release-not-reviewed", "mutations": [{ "path": "review.status", "value": "not_reviewed" }, { "path": "review.reviewed_at", "value": null }], "expected": { "decision": "deny", "reasons": ["climate_evidence_not_reviewed"], "queue": 1 } },
     { "id": "release-reviewer-empty", "mutations": [{ "path": "review.reviewer_ids", "value": [""] }], "expected": { "decision": "deny", "reasons": ["independent_review_required"], "queue": 1 } },
     { "id": "release-reviewer-duplicate", "mutations": [{ "path": "review.reviewer_ids", "value": ["fixture-release-reviewer", "fixture-release-reviewer"] }], "expected": { "decision": "deny", "reasons": ["independent_review_required"], "queue": 1 } },
-    { "id": "empty-release", "mutations": [{ "path": "facts", "value": [] }, { "path": "fact_reviews", "value": [] }, { "path": "profiles", "value": [] }], "expected": { "decision": "deny", "reasons": ["evidence_insufficient"], "queue": 1 } }
+    { "id": "empty-release", "mutations": [{ "path": "facts", "value": [] }, { "path": "fact_reviews", "value": [] }, { "path": "profiles", "value": [] }], "expected": { "decision": "deny", "reasons": ["evidence_insufficient"], "queue": 1 } },
+    { "id": "no-profiles-release", "mutations": [{ "path": "profiles", "value": [] }], "expected": { "decision": "deny", "reasons": ["evidence_insufficient"], "queue": 1 } },
+    { "id": "orphaned-release-fact", "mutations": [{ "path": "profiles.0.input_fact_ids", "value": ["fact:fixture:emissions-2098", "fact:fixture:target-endpoint-2100"] }, { "path": "profiles.0.review.input_fact_ids", "value": ["fact:fixture:emissions-2098", "fact:fixture:target-endpoint-2100"] }], "expected": { "decision": "deny", "reasons": ["evidence_insufficient"], "eligible_facts": 3, "eligible_profiles": 1, "queue": 1 } }
   ]
 }

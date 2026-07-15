@@ -43,6 +43,7 @@ const COMPONENTS = Object.freeze([
   { id: 'CT-42-CT-40', script: 'tools/check-ct42-ct40-release-review-candidate.js', required: true },
   { id: 'CT-42-ROLLBACK', script: 'tools/check-ct42-runtime-rollback-proof.js', required: true },
   { id: 'CT-40', script: 'tools/check-climate-release-gate.js', required: true },
+  { id: 'CT-40-RELEASE', script: 'tools/check-reviewed-climate-release.js', required: true },
   { id: 'public-copy', script: 'tools/check-public-copy.js', required: true },
   { id: 'CT-11-generated', script: 'tools/build-major-emitter-ndc-release.js', args: ['--check'], required: false }
 ]);

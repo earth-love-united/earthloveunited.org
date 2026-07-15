@@ -260,12 +260,18 @@ function evaluateRelease(candidate) {
   const assessmentById = new Map(factAssessmentDecisions.map((decision) => [decision.fact_id, decision]));
   const profiles = deterministicSort(rawProfiles, 'profile_id');
   const profileDecisions = profiles.map((profile) => profileDecision(profile, assessmentById, candidate.methodology_version));
+  const profiledFactIds = new Set(profiles.flatMap(profile => Array.isArray(profile.input_fact_ids) ? profile.input_fact_ids : []));
   const releaseLevelReasons = releaseReviewReasons(candidate);
   if (!facts.length || hasDuplicateIds(rawFacts, 'fact_id') || hasDuplicateIds(rawSources, 'source_id') ||
       hasDuplicateIds(rawReviews, 'fact_id') || hasDuplicateIds(rawProfiles, 'profile_id')) releaseLevelReasons.push('evidence_insufficient');
   const releaseReasons = [...releaseLevelReasons];
   factReleaseDecisions.forEach((decision) => releaseReasons.push(...decision.reason_codes));
   profileDecisions.forEach((decision) => releaseReasons.push(...decision.reason_codes));
+  const incompleteProfileCoverage = !profiles.length || facts.some(fact => !profiledFactIds.has(fact.fact_id));
+  if (incompleteProfileCoverage && uniqueSorted(releaseReasons).length === 0) {
+    releaseLevelReasons.push('evidence_insufficient');
+    releaseReasons.push('evidence_insufficient');
+  }
 
   const reasonCodes = uniqueSorted(releaseReasons);
   const reviewQueue = [];

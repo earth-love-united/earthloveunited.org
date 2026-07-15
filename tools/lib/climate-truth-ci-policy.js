@@ -1,8 +1,9 @@
 'use strict';
 
 const crypto = require('crypto');
+const { releaseDiffCalculationHash } = require('./climate-reviewed-release');
 
-const POLICY_VERSION = '1.1.0';
+const POLICY_VERSION = '1.2.0';
 const PROHIBITED_PHRASES = Object.freeze(['On track', 'No target', 'composite score']);
 const PROHIBITED_FIELDS = new Set(['composite_score', 'overall_score', 'climate_score', 'on_track', 'cat_score', 'reality_gap_mt']);
 const FACTUAL_USE_FLAGS = Object.freeze(['factual_display', 'time_series', 'magnitude_comparison', 'annual_emissions_ranking']);
@@ -52,6 +53,7 @@ function auditRuntime(runtime, failures) {
   const files = Array.isArray(runtime.files) ? runtime.files : [];
   const dataFiles = Array.isArray(runtime.data_files) ? runtime.data_files : [];
   if (!files.length) add(failures, 'runtime_files_missing', 'runtime.files', 'Reviewed runtime has no enumerated source files.');
+  if (!dataFiles.length) add(failures, 'runtime_data_files_missing', 'runtime.data_files', 'Reviewed runtime has no enumerated profile/data artifact.');
   if ([...files.map((item) => item.path), ...dataFiles].some((item) => String(item).includes('pledge-nodes.json'))) {
     add(failures, 'legacy_runtime_load', 'runtime', 'Reviewed runtime loads legacy pledge-nodes.json.');
   }
@@ -105,7 +107,8 @@ function auditReleaseDiff(diff, failures) {
   }
   const initial = diff.initial_release === true;
   if (!isText(diff.data_release_id) || (!initial && !isText(diff.previous_release_id)) || !isText(diff.change_summary) ||
-      !Array.isArray(diff.changed_entity_ids) || !Array.isArray(diff.source_revision_ids) || !isSha(diff.diff_hash)) {
+      !Array.isArray(diff.changed_entity_ids) || !Array.isArray(diff.source_revision_ids) || !isSha(diff.diff_hash) ||
+      diff.diff_hash !== releaseDiffCalculationHash(diff)) {
     add(failures, 'release_diff_invalid', 'release_diff', 'Release diff lacks version lineage, entity/source changes, summary, or hash.');
   }
   const review = diff.review || {};
@@ -195,6 +198,9 @@ function auditAllowedUses(fact, subject, failures) {
 }
 
 function auditFacts(facts, sources, batchAttestations, methodologyVersion, failures) {
+  if (!Array.isArray(facts) || !facts.length) {
+    add(failures, 'release_facts_missing', 'facts', 'Reviewed release contains no published facts.');
+  }
   const normalizedSources = (sources || []).map(normalizeRegistrySource).filter(Boolean);
   const sourceMap = new Map(normalizedSources.map((source) => [source.source_id, source]));
   const factIds = new Set((facts || []).map((fact) => fact.fact_id));

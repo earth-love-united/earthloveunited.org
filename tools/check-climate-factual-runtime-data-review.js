@@ -6,6 +6,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const { evaluateTruthPolicy } = require('./lib/climate-truth-ci-policy');
+const { releaseDiffCalculationHash } = require('./lib/climate-reviewed-release');
 
 const ROOT = path.resolve(__dirname, '..');
 const PATHS = Object.freeze({
@@ -52,6 +53,15 @@ function stable(value) {
 }
 function hashJson(value) { return sha256(Buffer.from(JSON.stringify(stable(value)))); }
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
+function fixtureReleaseDiff() {
+  const diff = {
+    initial_release: true, data_release_id: 'review-fixture-only', previous_release_id: null,
+    change_summary: 'Independent CT-42 data review fixture.', changed_entity_ids: [], source_revision_ids: [], diff_hash: null,
+    review: { status: 'reviewed', builder_id: 'fixture-builder', reviewer_id: 'fixture-reviewer', reviewed_at: '2026-07-15T00:00:00Z' },
+  };
+  diff.diff_hash = releaseDiffCalculationHash(diff);
+  return diff;
+}
 function unique(values, label) { assert.equal(new Set(values).size, values.length, `${label} must be unique`); }
 function exactKeys(actual, expected, label) { assert.deepEqual(Object.keys(actual).sort(), [...expected].sort(), `${label} keys drift`); }
 function get(target, dotted) { return dotted.split('.').reduce((node, key) => node[Number.isInteger(Number(key)) ? Number(key) : key], target); }
@@ -256,11 +266,7 @@ function independentlyValidate(input) {
       }],
     },
     release_manifest: { decision: 'allow', release_eligible: true, reason_codes: [], calculation_hash: '1'.repeat(64) },
-    release_diff: {
-      initial_release: true, data_release_id: 'review-fixture-only', previous_release_id: null,
-      change_summary: 'Independent CT-42 data review fixture.', changed_entity_ids: [], source_revision_ids: [], diff_hash: '2'.repeat(64),
-      review: { status: 'reviewed', builder_id: 'fixture-builder', reviewer_id: 'fixture-reviewer', reviewed_at: '2026-07-15T00:00:00Z' },
-    },
+    release_diff: fixtureReleaseDiff(),
     facts: facts.facts, sources: sourceRegistry.sources, batch_attestations: [wrapper],
     canonical_reason_codes: [], embedded_reason_enums: [], generated_drift: false,
   });
