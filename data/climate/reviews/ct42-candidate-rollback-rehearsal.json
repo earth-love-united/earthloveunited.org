@@ -1,20 +1,21 @@
 {
-  "schema_version": "1.0.0",
-  "proof_id": "ct-42-runtime-rollback-rehearsal-2026-07-15",
+  "schema_version": "2.0.0",
+  "proof_id": "ct-42-neutral-runtime-rollback-rehearsal-2026-07-15",
   "status": "rehearsed_not_reviewed",
   "release_authority": false,
   "deploy_authority": false,
   "review": {
     "status": "not_reviewed",
-    "builder_id": "ct-42-runtime-rollback-builder",
+    "builder_id": "ct-42-neutral-rollback-builder",
     "reviewer_id": null,
     "reviewed_at": null,
     "independent_review_required": true
   },
   "candidate": {
     "builder_commit": "793eade295ae3fa787749e4d6ee112cf374a7634",
-    "review_chain_head": "9089b1f34cad985464c6d77f486b05f415496586",
-    "production_control_head": "225873f6a78889ef9395b0862e30ecf759c9608f",
+    "runtime_control_commit": "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a",
+    "review_chain_head": null,
+    "review_chain_late_bound": true,
     "candidate_id": "ct-42-factual-runtime-candidate-2026-07-15",
     "decision": "deny",
     "release_eligible": false,
@@ -30,66 +31,139 @@
     "ct40_result": {
       "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
       "sha256": "0cfd2e1c1429c59f6fa073c9f35b3bcd17a7f3d4770979bdbe6b1049a202f2e9"
+    },
+    "rollback_plan": {
+      "path": "data/climate/runtime/rollback-plan.json",
+      "sha256": "c23bd5caf21bf05b6e637c6f599742e13a47b822b298054ca8d56e968d8aeaae"
     }
   },
   "rollback": {
-    "strategy": "candidate_to_fail_closed_baseline",
-    "baseline_commit": "4f94b218c460d2d452dc3fd1354b9e1c3ddc25cc",
-    "cache_name": "elu-v28-ct42-rollback",
-    "service_worker_registration": "/sw.js?v=28-ct42-rollback",
+    "strategy": "current_hardened_runtime_to_neutral_surface",
+    "source_runtime_commit": "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a",
+    "baseline_commit": null,
+    "cache_name": "elu-v34-ct42-neutral-rollback",
+    "service_worker_registration": "/sw.js?v=34-ct42-neutral-rollback",
     "workspace_mutation": false,
+    "entity_boundary": {
+      "total": 201,
+      "retained_natural_earth_polygons": 173,
+      "approximate_small_state_points": 28,
+      "ordering": "alphabetical_country_name_then_iso",
+      "climate_values": 0,
+      "evidence_state": "withheld_for_all"
+    },
+    "runtime_resources": {
+      "geometry": "/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75",
+      "surface": "solid_color",
+      "background": "solid_color",
+      "remote_runtime_urls": [],
+      "candidate_json_precached": false,
+      "visual_assets_precached": false
+    },
+    "app_globe_compatibility": {
+      "app_path": "js/app.js",
+      "app_sha256": "6c0c387c74d31441bdc85be515b15a01cd1c421b6c2b601fc7971f97ce057b9c",
+      "app_called_apis": [
+        "prepare",
+        "init",
+        "teardownFailedRenderer",
+        "rememberFallbackOpener",
+        "showFallback",
+        "hideFallback",
+        "closeEvidenceBrowser",
+        "clearCountrySelection",
+        "selectDefaultCountry"
+      ],
+      "lifecycle_apis": [
+        "reset",
+        "destroy",
+        "getState"
+      ],
+      "boolean_init_required": true
+    },
     "patch": {
       "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
       "encoding": "base64",
-      "sha256": "c0f2ae6953dc9a79197348ea4849d009787fbe3996d9f654eaeb0a7dd6e5b771",
-      "decoded_sha256": "4c144f64b430cbda10557c68e04144eeb693e726178b45d2f5c4f250387be4a1",
+      "sha256": "8089195ae3e00560012a5d9fa5341ceccfadfca871b40ad4c442c98fa56c01fb",
+      "decoded_sha256": "1089e172db5b7db229a7f361809c1843fa7194e0e1d95e12eed6d8de3732a028",
       "changed_files": [
         "index.html",
         "css/globe-system.css",
         "js/data.js",
         "js/globe.js",
-        "sw.js"
+        "sw.js",
+        "tools/smoke-test.js"
       ]
     },
     "controls": [
       {
         "path": "index.html",
-        "role": "public_copy_and_service_worker_registration",
-        "candidate_sha256": "a95aa1b18800ba3cba70865680cf24c1e43e1675d6f8d0c026d15208784fd725",
-        "rollback_sha256": "26fd5ee1a4710ab09a58c00794f0a79995a62609691ce52425ca457710b96ced"
+        "role": "neutral_public_copy_and_v34_registration",
+        "changed": true,
+        "candidate_sha256": "21bd6bcd857879c6924f8b76b2a9cfb0afbe9697e7304d8eaa1eae8f6e8cd403",
+        "rollback_sha256": "bb00ca7d6555ceda5fa5aeb9f3afe100e61a1654ba625ec09f8158646187416e"
       },
       {
         "path": "css/globe-system.css",
-        "role": "candidate_visual_presentation",
-        "candidate_sha256": "50e577d2302e8990f2885830011ce65581c915915d55e8d7508c14acd8928bfb",
-        "rollback_sha256": "59c04ddb34429c736601468fbbb3c065892bef1937b2f8dda6148e24f99977b1"
+        "role": "neutral_accessible_presentation",
+        "changed": true,
+        "candidate_sha256": "25ba293a9dd7c23826f768cac21b55380a76d1cfae5f377bde16bf4bd23da1af",
+        "rollback_sha256": "62bdb38539044e20c14b280e21b7f4311832b05063af6ea3de84b9634aff2824"
       },
       {
         "path": "js/data.js",
-        "role": "runtime_data_pointer",
-        "candidate_sha256": "9d7c517115e875da46e2a583d3f397b4a491d15425c7d95bae852a614e07563d",
-        "rollback_sha256": "92da0d5aa3d19f67534240183ded691e88cac2cd4c880d07111fb1d4ce17b399"
+        "role": "withheld_country_climate_adapter",
+        "changed": true,
+        "candidate_sha256": "4e691d4ebdad821e85ba70c1db10f961b7211ac487e59df10dc835647fe7d82b",
+        "rollback_sha256": "59f723917c9d73011668af7bc6bc3ca1a1f053c438734507b54b9df4c46b6a6f"
       },
       {
         "path": "js/globe.js",
-        "role": "candidate_globe_and_card_logic",
-        "candidate_sha256": "c60d58cba0471885975b0ca3db0af0f9f1c38570ddea4a935cad2f6fc6bf6059",
-        "rollback_sha256": "5b243f48321db5d31cc4d2bdeca81c2ce2947a8bb0fc0057aea177aaf81d3f27"
+        "role": "hardened_neutral_globe_runtime",
+        "changed": true,
+        "candidate_sha256": "70d3e838c7301e711df633de641fbdeb56b303cd2001401b33cf0d924c3af688",
+        "rollback_sha256": "092d019e78e55041bca0dcdf67fcbda6b64613c856583cda7cb7859f46aa3f9c"
+      },
+      {
+        "path": "js/app.js",
+        "role": "unchanged_app_globe_compatibility_pin",
+        "changed": false,
+        "candidate_sha256": "6c0c387c74d31441bdc85be515b15a01cd1c421b6c2b601fc7971f97ce057b9c",
+        "rollback_sha256": "6c0c387c74d31441bdc85be515b15a01cd1c421b6c2b601fc7971f97ce057b9c"
       },
       {
         "path": "sw.js",
-        "role": "cache_epoch_and_candidate_precache",
-        "candidate_sha256": "ec4f6c1e07f43c524b3493732758bc4ba7e38b1054a8bbd084b9028c12568bc6",
-        "rollback_sha256": "7967c5d9d2c4f03ce3731d939a9a1f7877dc10a846c42255c2983d98b3ba55cc"
+        "role": "v34_cache_and_precache_exclusions",
+        "changed": true,
+        "candidate_sha256": "9c239fd3a53248388b963b702b8e08035371059bed1f0ef94ebe754dbc72e8ee",
+        "rollback_sha256": "4cc9220e05c94a376d56eac5778604ce2984ace987847365b595cc24b0f627f4"
+      },
+      {
+        "path": "tools/smoke-test.js",
+        "role": "rollback_browser_runtime_assertions",
+        "changed": true,
+        "candidate_sha256": "f02e9f75b2d0034648570a4c637f5cfdb4d7c89ad8493426f5c285d260be7d3f",
+        "rollback_sha256": "5a4ef877b756ee078b0deab80c8df45b8673d4f69de61d2fa985633b06efb475"
       }
     ],
+    "runtime_exclusions": [
+      "data/climate/runtime/country-factual-candidate.json",
+      "assets/globe/runtime/manifest.json",
+      "assets/globe/runtime/earth-night.jpg",
+      "assets/globe/runtime/night-sky.svg",
+      "assets/globe/runtime/earth-blue-marble.jpg",
+      "assets/globe/runtime/earth-topology.png"
+    ],
     "assertions": [
-      "candidate runtime data pointer absent",
-      "candidate magnitude, ranking, trajectory, and card presentation absent",
-      "neutral evidence-withheld public copy restored",
-      "reviewed dialog, focus, target-size, narrow-layout, and reduced-motion safeguards preserved",
-      "service-worker cache advanced and candidate JSON removed from pre-cache",
-      "production runtime manifest, reviewed release diff, and CT-40 allow manifest absent"
+      "rollback targets are deterministic transformations of the pinned current hardened runtime, not a historical baseline transplant",
+      "App is byte-identical and every App-called Globe API plus reset/destroy/getState remains callable",
+      "GlobeModule.init retains a boolean success boundary and renderer failure stays fail-closed",
+      "exact 201 alphabetical neutral entities equal 173 retained polygons plus 28 approximate navigation points",
+      "all country climate values, rankings, trajectories, status distinctions, and performance implications are absent",
+      "solid globe and background use no image textures; geometry remains pinned and same-origin",
+      "service-worker cache is v34 and candidate JSON plus all globe visual assets are absent from pre-cache",
+      "rollback plan bytes, CT-40 DENY, and no-release/no-deploy authority remain unchanged",
+      "temporary-site browser rehearsal must pass rollback SmokeTest and StackLint independently"
     ]
   },
   "prohibited_outputs": [
@@ -100,16 +174,25 @@
   "execution": {
     "builder": "node tools/build-ct42-runtime-rollback-proof.js",
     "command": "node tools/rehearse-ct42-runtime-rollback.js",
+    "materialize_temporary_site": "node tools/rehearse-ct42-runtime-rollback.js --site /absolute/new/temp/directory",
     "checker": "node tools/check-ct42-runtime-rollback-proof.js",
     "builder_requires_git_objects": [
-      "793eade295ae3fa787749e4d6ee112cf374a7634",
-      "9089b1f34cad985464c6d77f486b05f415496586",
-      "225873f6a78889ef9395b0862e30ecf759c9608f",
-      "4f94b218c460d2d452dc3fd1354b9e1c3ddc25cc"
+      "c7ba0560b164e5f3b67c01e96abf75720ad3fd7a"
+    ],
+    "late_bound_regeneration": "rerun builder with --review-chain-head <final exact review-chain commit>, then refresh checker pins after final CT-40 DENY regeneration",
+    "browser_rehearsal": [
+      "serve the materialized temporary site from localhost with service workers blocked or a fresh origin",
+      "await App and Data.climateCandidateState === withheld",
+      "call App.enterGlobe() and require boolean true",
+      "require one canvas; 173 retained polygons; 28 approximate points; 201 alphabetical neutral entities",
+      "require getRuntimeTextureState() surface/bump/sky null and zero remote/candidate/image runtime requests",
+      "exercise neutral evidence browser open/close and fallback focus restoration",
+      "run SmokeTest.run() and require every result pass with failed=0 and criticalFailed=0",
+      "run StackLint.audit() and require an empty issue array"
     ],
     "mode": "temporary_copy_only",
     "writes_workspace": false,
     "deploys": false
   },
-  "calculation_hash": "c66b05a3fdccb3f220c4dada1324da8a4e594faf35a6c131b8e5f1f7e85088b6"
+  "calculation_hash": "b02156bfe0bea04611ba6d90948c5e0c9a3f3832ce2a0e60493306a043a2f7d2"
 }
