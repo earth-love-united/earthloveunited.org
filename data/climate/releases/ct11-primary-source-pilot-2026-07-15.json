@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0.0",
+  "data_release_id": "ct11-primary-source-pilot-2026-07-15",
+  "methodology_version": "0.1.0",
+  "created_at": "2026-07-15T00:00:00Z",
+  "publication_status": "blocked",
+  "release_gate": {
+    "status": "metadata_only",
+    "normalized_values_allowed": false,
+    "reason_codes": [
+      "licence_not_approved",
+      "value_withheld"
+    ]
+  },
+  "source_release_ids": [
+    "unfccc-ndc-registry-continuous-2026-07-15"
+  ],
+  "artifacts": [
+    {
+      "path": "data/climate/evidence/major-emitter-ndc-source-audit.json",
+      "media_type": "application/json",
+      "checksum_sha256": "be5a23a58c58a38057246da34286259260310cdcf42939dfdce43343bfae7f4a",
+      "document_count": 5,
+      "target_component_count": 7
+    }
+  ],
+  "coverage": {
+    "countries": [
+      "iso3166-1:CHN",
+      "iso3166-1:IDN",
+      "iso3166-1:IND",
+      "iso3166-1:IRN"
+    ],
+    "documents": 5,
+    "target_components": 7,
+    "release_eligible": 0
+  },
+  "source_checksums": [
+    {
+      "source_document_id": "unfccc-ndc-chn-2035-2025-11-03",
+      "checksum_sha256": null,
+      "checksum_state": "source_unavailable",
+      "reason_codes": [
+        "source_unavailable"
+      ]
+    },
+    {
+      "source_document_id": "unfccc-ndc-ind-2031-2035-2026-04-24",
+      "checksum_sha256": null,
+      "checksum_state": "source_unavailable",
+      "reason_codes": [
+        "source_unavailable"
+      ]
+    },
+    {
+      "source_document_id": "unfccc-ndc-idn-second-2025-10-27",
+      "checksum_sha256": null,
+      "checksum_state": "source_unavailable",
+      "reason_codes": [
+        "source_unavailable"
+      ]
+    },
+    {
+      "source_document_id": "unfccc-ndc-idn-enhanced-2022-09-23",
+      "checksum_sha256": null,
+      "checksum_state": "source_unavailable",
+      "reason_codes": [
+        "source_unavailable"
+      ]
+    },
+    {
+      "source_document_id": "unfccc-indc-irn-2015-11-21",
+      "checksum_sha256": null,
+      "checksum_state": "source_unavailable",
+      "reason_codes": [
+        "source_unavailable"
+      ]
+    }
+  ],
+  "review": {
+    "status": "in_review",
+    "extractor_id": "agent:ct11-primary-source-builder",
+    "reviewer_id": null,
+    "reviewed_at": null,
+    "release_eligible": false,
+    "reason_codes": [
+      "independent_review_required",
+      "licence_not_approved"
+    ]
+  },
+  "change_summary": "Initial metadata-only primary-source audit for four high-emitter legacy cases. No Party text or normalized numeric target value is redistributed."
+}

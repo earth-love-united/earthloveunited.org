@@ -1,0 +1,363 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "ndc-primary-source-pilot-2026-07-15",
+  "methodology_version": "0.1.0",
+  "canonical_contract": {
+    "target_schema_id": "https://earthloveunited.org/schemas/climate/target-2.0.0.json",
+    "enum_schema_version": "2.0.0",
+    "source_registry_id": "unfccc-ndc-registry-continuous-2026-07-15"
+  },
+  "retrieved_at": "2026-07-15",
+  "release_gate": {
+    "status": "metadata_only",
+    "normalized_values_allowed": false,
+    "source_files_allowed": false,
+    "metadata_and_links_allowed": true,
+    "reason_codes": ["licence_not_approved", "value_withheld"],
+    "rule": "No copied Party text or normalized numeric target value may enter a public artifact until the CT-01 UNFCCC extraction gate is approved."
+  },
+  "review": {
+    "status": "in_review",
+    "extractor_id": "agent:ct11-primary-source-builder",
+    "reviewer_id": null,
+    "reviewed_at": null,
+    "release_eligible": false,
+    "reason_codes": ["independent_review_required", "licence_not_approved"]
+  },
+  "context_sources": [
+    {
+      "source_id": "un-treaty-collection-paris-status-2026-07-10",
+      "publisher": "United Nations Treaty Collection",
+      "title": "Paris Agreement participant status",
+      "version": "status as at 2026-07-10 09:15:32 EDT",
+      "url": "https://treaties.un.org/doc/Publication/MTDSG/Volume%20II/Chapter%20XXVII/XXVII-7-d.en.pdf",
+      "locator": "page 1, participant table, Iran (Islamic Republic of)",
+      "retrieved_at": "2026-07-15",
+      "licence_id": "UN-official-document-public-domain-metadata-only-pilot",
+      "checksum_sha256": null,
+      "checksum_state": "source_unavailable",
+      "reason_codes": ["source_unavailable"]
+    }
+  ],
+  "documents": [
+    {
+      "source_document_id": "unfccc-ndc-chn-2035-2025-11-03",
+      "country_id": "iso3166-1:CHN",
+      "publisher": "UNFCCC secretariat and China",
+      "title": "China’s 2035 National Determined Contributions",
+      "document_type": "ndc",
+      "language": "Chinese",
+      "registry_status": "active",
+      "submission_date": "2025-11-03",
+      "registry_page_url": "https://unfccc.int/NDCREG?field_document_ca_target_id=143",
+      "metadata_url": "https://unfccc.int/documents/497393",
+      "direct_url": "https://unfccc.int/sites/default/files/2025-11/2035%E5%B9%B4%E4%B8%AD%E5%9B%BD%E5%9B%BD%E5%AE%B6%E8%87%AA%E4%B8%BB%E8%B4%A1%E7%8C%AE%E6%8A%A5%E5%91%8A.pdf",
+      "registry_locator": "China row; active; submitted 03/11/2025; attachment timestamp 03/11/2025 10:05",
+      "licence_id": "UNFCCC-terms-and-party-document-rights",
+      "redistribution": "metadata_only",
+      "raw_storage": "external_only",
+      "acquisition": {
+        "state": "source_unavailable",
+        "attempted_at": "2026-07-15",
+        "detail": "Direct retrieval returned a 212-byte Incapsula HTML interstitial instead of the PDF; the response was discarded.",
+        "checksum_sha256": null,
+        "reason_codes": ["source_unavailable"]
+      }
+    },
+    {
+      "source_document_id": "unfccc-ndc-ind-2031-2035-2026-04-24",
+      "country_id": "iso3166-1:IND",
+      "publisher": "UNFCCC secretariat and Government of India",
+      "title": "India NDC (2031 - 2035)",
+      "document_type": "ndc",
+      "language": "English",
+      "registry_status": "active",
+      "submission_date": "2026-04-24",
+      "registry_page_url": "https://unfccc.int/NDCREG?field_document_ca_target_id=189",
+      "metadata_url": "https://unfccc.int/node/656817",
+      "direct_url": "https://unfccc.int/sites/default/files/2026-04/INDIA%20NDC%202031-35.pdf",
+      "registry_locator": "India row; active; submitted 24/04/2026; attachment timestamp 24/04/2026 18:33",
+      "licence_id": "UNFCCC-terms-and-party-document-rights",
+      "redistribution": "metadata_only",
+      "raw_storage": "external_only",
+      "acquisition": {
+        "state": "source_unavailable",
+        "attempted_at": "2026-07-15",
+        "detail": "Direct retrieval returned a 212-byte Incapsula HTML interstitial instead of the PDF; the response was discarded.",
+        "checksum_sha256": null,
+        "reason_codes": ["source_unavailable"]
+      }
+    },
+    {
+      "source_document_id": "unfccc-ndc-idn-second-2025-10-27",
+      "country_id": "iso3166-1:IDN",
+      "publisher": "UNFCCC secretariat and Republic of Indonesia",
+      "title": "Republic Of Indonesia Second NDC",
+      "document_type": "ndc",
+      "language": "English",
+      "registry_status": "active",
+      "submission_date": "2025-10-27",
+      "registry_page_url": "https://unfccc.int/NDCREG?field_document_ca_target_id=176",
+      "metadata_url": "https://unfccc.int/documents/615082",
+      "direct_url": "https://unfccc.int/sites/default/files/2025-10/Indonesia_Second%20NDC_2025.10.24.pdf",
+      "registry_locator": "Indonesia row; active; submitted 27/10/2025; attachment timestamp 27/10/2025 10:11",
+      "licence_id": "UNFCCC-terms-and-party-document-rights",
+      "redistribution": "metadata_only",
+      "raw_storage": "external_only",
+      "acquisition": {
+        "state": "source_unavailable",
+        "attempted_at": "2026-07-15",
+        "detail": "Direct retrieval returned a 212-byte Incapsula HTML interstitial instead of the PDF; the response was discarded.",
+        "checksum_sha256": null,
+        "reason_codes": ["source_unavailable"]
+      }
+    },
+    {
+      "source_document_id": "unfccc-ndc-idn-enhanced-2022-09-23",
+      "country_id": "iso3166-1:IDN",
+      "publisher": "UNFCCC secretariat and Republic of Indonesia",
+      "title": "Enhanced NDC - Republic of Indonesia",
+      "document_type": "ndc",
+      "language": "English",
+      "registry_status": "active",
+      "submission_date": "2022-09-23",
+      "registry_page_url": "https://unfccc.int/NDCREG?field_document_ca_target_id=176",
+      "metadata_url": "https://unfccc.int/NDCREG?field_document_ca_target_id=176",
+      "direct_url": "https://unfccc.int/sites/default/files/NDC/2022-09/ENDC%20Indonesia.pdf",
+      "registry_locator": "Indonesia Enhanced NDC row; version 3; active; submitted 23/09/2022; attachment timestamp 28/09/2022 14:17",
+      "licence_id": "UNFCCC-terms-and-party-document-rights",
+      "redistribution": "metadata_only",
+      "raw_storage": "external_only",
+      "acquisition": {
+        "state": "source_unavailable",
+        "attempted_at": "2026-07-15",
+        "detail": "Direct retrieval returned a 212-byte Incapsula HTML interstitial instead of the PDF; the response was discarded.",
+        "checksum_sha256": null,
+        "reason_codes": ["source_unavailable"]
+      }
+    },
+    {
+      "source_document_id": "unfccc-indc-irn-2015-11-21",
+      "country_id": "iso3166-1:IRN",
+      "publisher": "UNFCCC secretariat and National Climate Change Committee of Iran",
+      "title": "INDC Iran Final Text",
+      "document_type": "indc",
+      "language": "English",
+      "registry_status": "not_applicable",
+      "submission_date": null,
+      "submission_date_state": "not_reported",
+      "submission_date_reason_codes": ["value_not_reported"],
+      "portal_modified_at": "2015-11-21T07:19:00Z",
+      "registry_page_url": null,
+      "metadata_url": "https://www4.unfccc.int/sites/submissions/INDC/Published%20Documents/Iran/1/",
+      "direct_url": "https://www4.unfccc.int/sites/submissions/INDC/Published%20Documents/Iran/1/INDC%20Iran%20Final%20Text.pdf",
+      "registry_locator": "INDC Published Documents portal; file modified 21/11/2015 07:19; no NDC Registry row",
+      "party_status": {
+        "paris_agreement_signature_date": "2016-04-22",
+        "ratification_date": null,
+        "source_id": "un-treaty-collection-paris-status-2026-07-10",
+        "locator": "page 1, participant table, Iran (Islamic Republic of)",
+        "interpretation": "signatory_not_party"
+      },
+      "licence_id": "UNFCCC-terms-and-party-document-rights",
+      "redistribution": "metadata_only",
+      "raw_storage": "external_only",
+      "acquisition": {
+        "state": "source_unavailable",
+        "attempted_at": "2026-07-15",
+        "detail": "The legacy submissions host redirected to UNFCCC maintenance and direct retrieval returned an Incapsula HTML interstitial; the response was discarded.",
+        "checksum_sha256": null,
+        "reason_codes": ["source_unavailable"]
+      }
+    }
+  ],
+  "target_components": [
+    {
+      "target_component_id": "target-audit:chn:2035:net-ghg-from-peak",
+      "country_id": "iso3166-1:CHN",
+      "source_document_id": "unfccc-ndc-chn-2035-2025-11-03",
+      "target_type": "trajectory",
+      "condition": "not_stated",
+      "registry_status": "active",
+      "field_audit": {
+        "target_year": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 10-11, section 2, overall target and explanatory text", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "target_period": { "evidence_state": "not_reported", "release_state": "not_reported", "locator": "pages 10-11, single-year target framing", "reason_codes": ["value_not_reported"] },
+        "reduction_pct": { "evidence_state": "available", "release_state": "withheld", "locator": "page 10, section 2.1, overall target", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "reference_year": { "evidence_state": "non_comparable", "release_state": "non_comparable", "locator": "page 11, reference is the future net-GHG peak year rather than a fixed calendar year", "reason_codes": ["reference_year_missing", "peaking_year_missing"] },
+        "reference_value": { "evidence_state": "not_reported", "release_state": "not_reported", "locator": "page 11, value deferred to the national inventory", "reason_codes": ["reference_value_missing"] },
+        "gases": { "evidence_state": "available", "release_state": "withheld", "locator": "page 11, all greenhouse gases", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "sectors": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 10-11, economy-wide scope and model domains", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "geography": { "evidence_state": "available", "release_state": "withheld", "locator": "page 10, economy-wide national target", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "lulucf": { "evidence_state": "available", "release_state": "withheld", "locator": "page 11, land use, land-use change and forestry and removals are included in modeling", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "gwp_convention": { "evidence_state": "not_reported", "release_state": "not_reported", "locator": "page 11 cites IPCC inventory guidance but no assessment-report GWP convention was identified", "reason_codes": ["gwp_convention_missing"] },
+        "article6_treatment": { "evidence_state": "not_reviewed", "release_state": "not_reviewed", "locator": "document-wide review incomplete because the authoritative PDF could not be locally acquired", "reason_codes": ["source_unavailable", "article6_treatment_missing"] },
+        "trajectory": { "evidence_state": "non_comparable", "release_state": "non_comparable", "locator": "pages 10-11 provide a target endpoint relative to an endogenous peak, not a reproducible annual pathway", "reason_codes": ["trajectory_missing"] }
+      },
+      "target_type_eligibility": {
+        "comparability": "non_comparable",
+        "eligible_after_licence_and_review": false,
+        "reason_codes": ["licence_not_approved", "reference_year_missing", "reference_value_missing", "gwp_convention_missing", "article6_treatment_missing", "trajectory_missing", "independent_review_required"]
+      }
+    },
+    {
+      "target_component_id": "target-audit:ind:2031-2035:gdp-intensity",
+      "country_id": "iso3166-1:IND",
+      "source_document_id": "unfccc-ndc-ind-2031-2035-2026-04-24",
+      "target_type": "intensity",
+      "condition": "not_stated",
+      "registry_status": "active",
+      "field_audit": {
+        "target_year": { "evidence_state": "available", "release_state": "withheld", "locator": "page 16, Annex A ICTU paragraph 1(a)-(b)", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "target_period": { "evidence_state": "available", "release_state": "withheld", "locator": "page 16, Annex A ICTU paragraph 1(a)", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "reduction_pct": { "evidence_state": "available", "release_state": "withheld", "locator": "page 16, Annex A ICTU paragraph 1(b)", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "reference_year": { "evidence_state": "available", "release_state": "withheld", "locator": "page 16, Annex A ICTU paragraph 1(a)", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "reference_value": { "evidence_state": "modeled", "release_state": "withheld", "locator": "page 16, Annex A ICTU paragraph 1(b), indicator quantification tied to BTR reporting", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "intensity_denominator": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 16 and 19, GDP intensity indicator", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "intensity_denominator_projection": { "evidence_state": "not_reported", "release_state": "not_reported", "locator": "Annex A ICTU; no approved target-year GDP denominator series was identified", "reason_codes": ["intensity_denominator_projection_missing"] },
+        "gases": { "evidence_state": "not_reviewed", "release_state": "not_reviewed", "locator": "page 19 points to emissions-profile detail; full gas-basket review awaits authoritative local acquisition", "reason_codes": ["source_unavailable", "gas_basket_missing"] },
+        "sectors": { "evidence_state": "available", "release_state": "withheld", "locator": "page 19, Annex A ICTU paragraph 3(a)-(b), economy-wide intensity with no sector-specific reduction target", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "geography": { "evidence_state": "available", "release_state": "withheld", "locator": "page 19, economy-wide target description", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "lulucf": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 16 and 27, separate carbon-sink indicator and managed-land accounting", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "gwp_convention": { "evidence_state": "available", "release_state": "withheld", "locator": "page 27, Annex A accounting methodology", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "article6_treatment": { "evidence_state": "not_reviewed", "release_state": "not_reviewed", "locator": "NDC document-wide review incomplete because the authoritative PDF could not be locally acquired", "reason_codes": ["source_unavailable", "article6_treatment_missing"] }
+      },
+      "target_type_eligibility": {
+        "comparability": "non_comparable",
+        "eligible_after_licence_and_review": false,
+        "reason_codes": ["licence_not_approved", "intensity_denominator_projection_missing", "gas_basket_missing", "article6_treatment_missing", "independent_review_required"]
+      }
+    },
+    {
+      "target_component_id": "target-audit:idn:2031-2035:emissions-level",
+      "country_id": "iso3166-1:IDN",
+      "source_document_id": "unfccc-ndc-idn-second-2025-10-27",
+      "target_type": "fixed_level",
+      "condition": "combined",
+      "registry_status": "active",
+      "field_audit": {
+        "target_year": { "evidence_state": "available", "release_state": "withheld", "locator": "page 24, ICTU start and end dates", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "target_period": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 24 and 29, Second NDC period", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "target_value": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 27-28, Figure 1 and Table 1, scenario emissions levels", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "reference_year": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 26-28, reference-year description and Table 1", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "reference_value": { "evidence_state": "available", "release_state": "withheld", "locator": "page 28, Table 1", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "gases": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 2-3, Summary", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "sectors": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 2-3 and 26, Summary and ICTU coverage", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "geography": { "evidence_state": "available", "release_state": "withheld", "locator": "page 25, nationwide coverage note", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "lulucf": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 2-3, 13-14 and 26, FOLU scope and net-sink treatment", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "gwp_convention": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 2-3 and 26, GWP methodology", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "article6_treatment": { "evidence_state": "available", "release_state": "withheld", "locator": "page 36, Article 6 implementation and finance discussion", "reason_codes": ["licence_not_approved", "value_withheld"] }
+      },
+      "target_type_eligibility": {
+        "comparability": "not_assessed",
+        "eligible_after_licence_and_review": false,
+        "reason_codes": ["licence_not_approved", "value_withheld", "independent_review_required"]
+      }
+    },
+    {
+      "target_component_id": "target-audit:idn:2030:bau-unconditional",
+      "country_id": "iso3166-1:IDN",
+      "source_document_id": "unfccc-ndc-idn-enhanced-2022-09-23",
+      "target_type": "bau",
+      "condition": "unconditional",
+      "registry_status": "active",
+      "field_audit": {
+        "target_year": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU target-year row", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "reduction_pct": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC Summary and ICTU", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "bau_scenario": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU reference-point and assumptions rows", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "bau_vintage": { "evidence_state": "not_reviewed", "release_state": "not_reviewed", "locator": "authoritative local acquisition required to verify scenario vintage", "reason_codes": ["source_unavailable", "bau_vintage_missing"] },
+        "bau_target_value": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU reference-point row and sector table", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "gases": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU scope row", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "sectors": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU scope row", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "geography": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU nationwide coverage", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "lulucf": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC sector table and FOLU scope", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "gwp_convention": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU methodology row", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "article6_treatment": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC Article 6 section", "reason_codes": ["licence_not_approved", "value_withheld"] }
+      },
+      "target_type_eligibility": {
+        "comparability": "not_assessed",
+        "eligible_after_licence_and_review": false,
+        "reason_codes": ["licence_not_approved", "bau_vintage_missing", "independent_review_required"]
+      }
+    },
+    {
+      "target_component_id": "target-audit:idn:2030:bau-conditional",
+      "country_id": "iso3166-1:IDN",
+      "source_document_id": "unfccc-ndc-idn-enhanced-2022-09-23",
+      "target_type": "bau",
+      "condition": "conditional",
+      "registry_status": "active",
+      "field_audit": {
+        "target_year": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU target-year row", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "reduction_pct": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC Summary and ICTU", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "bau_scenario": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU reference-point and assumptions rows", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "bau_vintage": { "evidence_state": "not_reviewed", "release_state": "not_reviewed", "locator": "authoritative local acquisition required to verify scenario vintage", "reason_codes": ["source_unavailable", "bau_vintage_missing"] },
+        "bau_target_value": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU reference-point row and sector table", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "gases": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU scope row", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "sectors": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU scope row", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "geography": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU nationwide coverage", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "lulucf": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC sector table and FOLU scope", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "gwp_convention": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC ICTU methodology row", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "article6_treatment": { "evidence_state": "available", "release_state": "withheld", "locator": "Enhanced NDC Article 6 section", "reason_codes": ["licence_not_approved", "value_withheld"] }
+      },
+      "target_type_eligibility": {
+        "comparability": "not_assessed",
+        "eligible_after_licence_and_review": false,
+        "reason_codes": ["licence_not_approved", "bau_vintage_missing", "independent_review_required"]
+      }
+    },
+    {
+      "target_component_id": "target-audit:irn:2030:bau-unconditional",
+      "country_id": "iso3166-1:IRN",
+      "source_document_id": "unfccc-indc-irn-2015-11-21",
+      "target_type": "bau",
+      "condition": "unconditional",
+      "registry_status": "not_applicable",
+      "field_audit": {
+        "target_year": { "evidence_state": "available", "release_state": "withheld", "locator": "page 3, mitigation time frame; page 4, unconditional action", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "target_period": { "evidence_state": "available", "release_state": "withheld", "locator": "page 3, mitigation time frame", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "reduction_pct": { "evidence_state": "available", "release_state": "withheld", "locator": "page 4, unconditional mitigation action", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "bau_scenario": { "evidence_state": "available", "release_state": "withheld", "locator": "page 4, unconditional mitigation action", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "bau_vintage": { "evidence_state": "not_reported", "release_state": "not_reported", "locator": "pages 3-4; a calculation base year is stated but no fixed BAU scenario vintage was identified", "reason_codes": ["bau_vintage_missing"] },
+        "bau_target_value": { "evidence_state": "not_reported", "release_state": "not_reported", "locator": "pages 3-4; no target-year BAU emissions level identified", "reason_codes": ["bau_target_value_missing"] },
+        "gases": { "evidence_state": "available", "release_state": "withheld", "locator": "page 3, gases concerned", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "sectors": { "evidence_state": "not_reviewed", "release_state": "not_reviewed", "locator": "document-wide review incomplete because the authoritative PDF is unavailable", "reason_codes": ["source_unavailable", "sector_coverage_missing"] },
+        "geography": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 3-4, national mitigation framing", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "lulucf": { "evidence_state": "not_reviewed", "release_state": "not_reviewed", "locator": "document-wide review incomplete because the authoritative PDF is unavailable", "reason_codes": ["source_unavailable", "lulucf_treatment_missing"] },
+        "gwp_convention": { "evidence_state": "not_reported", "release_state": "not_reported", "locator": "pages 3-4; no GWP convention identified", "reason_codes": ["gwp_convention_missing"] },
+        "article6_treatment": { "evidence_state": "not_applicable", "release_state": "not_applicable", "locator": "UN Treaty Collection status and INDC portal; Iran is a signatory but not a Party to the Paris Agreement", "reason_codes": ["not_applicable"] }
+      },
+      "target_type_eligibility": {
+        "comparability": "non_comparable",
+        "eligible_after_licence_and_review": false,
+        "reason_codes": ["licence_not_approved", "bau_vintage_missing", "bau_target_value_missing", "sector_coverage_missing", "lulucf_treatment_missing", "gwp_convention_missing", "evidence_insufficient", "independent_review_required"]
+      }
+    },
+    {
+      "target_component_id": "target-audit:irn:2030:bau-conditional",
+      "country_id": "iso3166-1:IRN",
+      "source_document_id": "unfccc-indc-irn-2015-11-21",
+      "target_type": "bau",
+      "condition": "conditional",
+      "registry_status": "not_applicable",
+      "field_audit": {
+        "target_year": { "evidence_state": "available", "release_state": "withheld", "locator": "page 3, mitigation time frame; page 4, conditional action", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "target_period": { "evidence_state": "available", "release_state": "withheld", "locator": "page 3, mitigation time frame", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "reduction_pct": { "evidence_state": "available", "release_state": "withheld", "locator": "page 4, conditional mitigation action", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "bau_scenario": { "evidence_state": "available", "release_state": "withheld", "locator": "page 4, conditional mitigation action", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "bau_vintage": { "evidence_state": "not_reported", "release_state": "not_reported", "locator": "pages 3-4; a calculation base year is stated but no fixed BAU scenario vintage was identified", "reason_codes": ["bau_vintage_missing"] },
+        "bau_target_value": { "evidence_state": "not_reported", "release_state": "not_reported", "locator": "pages 3-4; no target-year BAU emissions level identified", "reason_codes": ["bau_target_value_missing"] },
+        "gases": { "evidence_state": "available", "release_state": "withheld", "locator": "page 3, gases concerned", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "sectors": { "evidence_state": "not_reviewed", "release_state": "not_reviewed", "locator": "document-wide review incomplete because the authoritative PDF is unavailable", "reason_codes": ["source_unavailable", "sector_coverage_missing"] },
+        "geography": { "evidence_state": "available", "release_state": "withheld", "locator": "pages 3-4, national mitigation framing", "reason_codes": ["licence_not_approved", "value_withheld"] },
+        "lulucf": { "evidence_state": "not_reviewed", "release_state": "not_reviewed", "locator": "document-wide review incomplete because the authoritative PDF is unavailable", "reason_codes": ["source_unavailable", "lulucf_treatment_missing"] },
+        "gwp_convention": { "evidence_state": "not_reported", "release_state": "not_reported", "locator": "pages 3-4; no GWP convention identified", "reason_codes": ["gwp_convention_missing"] },
+        "article6_treatment": { "evidence_state": "not_applicable", "release_state": "not_applicable", "locator": "UN Treaty Collection status and INDC portal; Iran is a signatory but not a Party to the Paris Agreement", "reason_codes": ["not_applicable"] }
+      },
+      "target_type_eligibility": {
+        "comparability": "non_comparable",
+        "eligible_after_licence_and_review": false,
+        "reason_codes": ["licence_not_approved", "bau_vintage_missing", "bau_target_value_missing", "sector_coverage_missing", "lulucf_treatment_missing", "gwp_convention_missing", "evidence_insufficient", "independent_review_required"]
+      }
+    }
+  ]
+}
