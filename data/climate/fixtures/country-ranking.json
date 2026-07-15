@@ -1,0 +1,158 @@
+{
+  "_meta": {
+    "fixture_set": "ct-31-country-ranking",
+    "fixture_version": "0.1.0",
+    "fictional_entities": true,
+    "generated": "2026-07-15"
+  },
+  "release_metadata": {
+    "valid": {
+      "release_id": "fictional-release",
+      "compiled_at": "2026-07-15T00:00:00Z",
+      "input_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "invalid_cases": [
+      { "id": "missing-release-id", "options": { "compiled_at": "2026-07-15T00:00:00Z", "input_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" } },
+      { "id": "missing-utc-time", "options": { "release_id": "fictional-release", "input_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" } },
+      { "id": "malformed-utc-time", "options": { "release_id": "fictional-release", "compiled_at": "2026-02-30T00:00:00Z", "input_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" } },
+      { "id": "missing-input-hash", "options": { "release_id": "fictional-release", "compiled_at": "2026-07-15T00:00:00Z" } },
+      { "id": "malformed-input-hash", "options": { "release_id": "fictional-release", "compiled_at": "2026-07-15T00:00:00Z", "input_hash": "not-a-sha256" } }
+    ]
+  },
+  "selections": {
+    "emissions_2024": {
+      "lens": "annual_emissions",
+      "metric": "economy_wide_ghg",
+      "period": { "start_year": 2024, "end_year": 2024 },
+      "plane": "harmonized",
+      "accounting_frame": "territorial",
+      "scope": "economy_wide",
+      "unit": "MtCO2e"
+    },
+    "overshoot_2030_unconditional": {
+      "lens": "pledge_overshoot",
+      "metric": "economy_wide_ghg",
+      "period": { "start_year": 2024, "end_year": 2024 },
+      "plane": "harmonized",
+      "accounting_frame": "territorial",
+      "scope": "economy_wide",
+      "unit": "MtCO2e",
+      "condition": "unconditional",
+      "target_year": 2030
+    }
+  },
+  "records": [
+    {
+      "country_id": "AAA",
+      "label": "Fixture Major No Target",
+      "mapped": true,
+      "latest_observation": { "value": 1000, "metric": "economy_wide_ghg", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "harmonized", "accounting_frame": "territorial", "scope": "economy_wide", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] },
+      "target": { "integrity": "no_active_target_found", "scope_match": false, "condition": null, "year": null, "value": null, "unit": null, "scope": null, "review_state": "reviewed", "evidence_gate_passed": true },
+      "projects": { "count": 99 }
+    },
+    {
+      "country_id": "BBB",
+      "label": "Fixture Tie One",
+      "mapped": true,
+      "latest_observation": { "value": 500, "metric": "economy_wide_ghg", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "harmonized", "accounting_frame": "territorial", "scope": "economy_wide", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] },
+      "target": { "integrity": "comparable", "scope_match": true, "condition": "unconditional", "year": 2030, "value": 400, "unit": "MtCO2e", "scope": "economy_wide", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] }
+    },
+    {
+      "country_id": "CCC",
+      "label": "Fixture Tie Two",
+      "mapped": true,
+      "latest_observation": { "value": 500, "metric": "economy_wide_ghg", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "harmonized", "accounting_frame": "territorial", "scope": "economy_wide", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] },
+      "target": { "integrity": "comparable", "scope_match": true, "condition": "unconditional", "year": 2030, "value": 450, "unit": "MtCO2e", "scope": "economy_wide", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] }
+    },
+    {
+      "country_id": "DDD",
+      "label": "Fixture Valid Zero",
+      "mapped": true,
+      "latest_observation": { "value": 0, "metric": "economy_wide_ghg", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "harmonized", "accounting_frame": "territorial", "scope": "economy_wide", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] },
+      "target": { "integrity": "comparable", "scope_match": true, "condition": "unconditional", "year": 2030, "value": 0, "unit": "MtCO2e", "scope": "economy_wide", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] }
+    },
+    {
+      "country_id": "EEE",
+      "label": "Fixture Null",
+      "mapped": true,
+      "latest_observation": { "value": null, "metric": "economy_wide_ghg", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "harmonized", "accounting_frame": "territorial", "scope": "economy_wide", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] }
+    },
+    {
+      "country_id": "FFF",
+      "label": "Fixture Other Unit",
+      "mapped": true,
+      "latest_observation": { "value": 0.3, "metric": "economy_wide_ghg", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "harmonized", "accounting_frame": "territorial", "scope": "economy_wide", "unit": "GtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] }
+    },
+    {
+      "country_id": "GGG",
+      "label": "Fixture Other Year",
+      "mapped": true,
+      "latest_observation": { "value": 700, "metric": "economy_wide_ghg", "period": { "start_year": 2023, "end_year": 2023 }, "plane": "harmonized", "accounting_frame": "territorial", "scope": "economy_wide", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] }
+    },
+    {
+      "country_id": "HHH",
+      "label": "Fixture Other Plane",
+      "mapped": true,
+      "latest_observation": { "value": 800, "metric": "economy_wide_ghg", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "official", "accounting_frame": "territorial", "scope": "economy_wide", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] }
+    },
+    {
+      "country_id": "III",
+      "label": "Fixture Stale",
+      "mapped": true,
+      "latest_observation": { "value": 900, "metric": "economy_wide_ghg", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "harmonized", "accounting_frame": "territorial", "scope": "economy_wide", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": ["stale_source"] },
+      "target": { "integrity": "comparable", "scope_match": true, "condition": "unconditional", "year": 2030, "value": 500, "unit": "MtCO2e", "scope": "economy_wide", "review_state": "reviewed", "evidence_gate_passed": true }
+    },
+    {
+      "country_id": "JJJ",
+      "label": "Fixture Conflict",
+      "mapped": true,
+      "latest_observation": { "value": 850, "metric": "economy_wide_ghg", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "harmonized", "accounting_frame": "territorial", "scope": "economy_wide", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": ["unresolved_source_conflict"] }
+    },
+    {
+      "country_id": "KKK",
+      "label": "Fixture Other Frame",
+      "mapped": true,
+      "latest_observation": { "value": 600, "metric": "economy_wide_ghg", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "harmonized", "accounting_frame": "consumption", "scope": "economy_wide", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] }
+    },
+    {
+      "country_id": "LLL",
+      "label": "Fixture Other Scope",
+      "mapped": true,
+      "latest_observation": { "value": 650, "metric": "economy_wide_ghg", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "harmonized", "accounting_frame": "territorial", "scope": "energy_only", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] }
+    },
+    {
+      "country_id": "MMM",
+      "label": "Fixture Other Metric",
+      "mapped": true,
+      "latest_observation": { "value": 750, "metric": "fossil_co2", "period": { "start_year": 2024, "end_year": 2024 }, "plane": "harmonized", "accounting_frame": "territorial", "scope": "economy_wide", "unit": "MtCO2e", "review_state": "reviewed", "evidence_gate_passed": true, "evidence_flags": [] }
+    }
+  ],
+  "expected": {
+    "emissions": {
+      "mapped_count": 13,
+      "eligible_count": 4,
+      "ranked_country_ids": ["AAA", "BBB", "CCC", "DDD"],
+      "ordinals": [1, 2, 2, 4],
+      "zero_country_id": "DDD",
+      "required_unranked_reasons": {
+        "EEE": "ranking_value_missing",
+        "FFF": "ranking_unit_mismatch",
+        "GGG": "ranking_period_mismatch",
+        "HHH": "ranking_plane_mismatch",
+        "III": "ranking_evidence_stale",
+        "JJJ": "ranking_evidence_conflicting",
+        "KKK": "ranking_accounting_frame_mismatch",
+        "LLL": "ranking_scope_mismatch",
+        "MMM": "ranking_metric_mismatch"
+      }
+    },
+    "overshoot": {
+      "mapped_count": 13,
+      "eligible_count": 3,
+      "ranked_country_ids": ["BBB", "CCC", "DDD"],
+      "values": [100, 50, 0],
+      "ordinals": [1, 2, 3],
+      "major_no_target": "AAA"
+    }
+  }
+}
