@@ -1,0 +1,465 @@
+{
+  "schema_version": "1.1.0",
+  "registry_version": "0.2.0",
+  "methodology_version": "0.1.0",
+  "released_on": "2026-07-15",
+  "reviewed_through": "2026-07-15",
+  "purpose": "Fail-closed source, licence, attribution, and storage decisions for Country Climate Profile evidence.",
+  "policy": {
+    "default_approval_state": "pending",
+    "approval_states": ["approved", "pending", "excluded"],
+    "rule": "Only an approved source with normalized_value_redistribution=true may contribute values to a public compiled country profile.",
+    "raw_storage": "Large or third-party raw files stay in versioned external storage. This repository stores manifests, checksums, reviewed normalized evidence, and reproducible retrieval instructions.",
+    "licence_review": "Approval is component-specific. Publisher-level terms never override a dataset, document, or upstream component restriction."
+  },
+  "evidence_planes": ["official", "harmonized", "independent", "context"],
+  "domains": [
+    "identity",
+    "ndc_target",
+    "official_inventory",
+    "official_progress",
+    "policy_projection",
+    "fossil_co2",
+    "lulucf_co2",
+    "economy_wide_ghg",
+    "independent_ambition",
+    "population",
+    "economic_denominator",
+    "climate_finance"
+  ],
+  "sources": [
+    {
+      "id": "un-m49-continuous-2026-07-15",
+      "publisher": "United Nations Statistics Division",
+      "title": "Standard country or area codes for statistical use (M49)",
+      "version": "continuous website snapshot retrieved 2026-07-15",
+      "evidence_plane": "context",
+      "domains": ["identity"],
+      "primary": true,
+      "source_url": "https://unstats.un.org/unsd/methodology/m49/",
+      "retrieval_url": "https://unstats.un.org/unsd/methodology/m49/overview/",
+      "cadence": {"frequency": "continuous", "check_interval_days": 90},
+      "licence": {
+        "identifier": "UN-website-terms",
+        "status": "uncertain",
+        "terms_url": "https://www.un.org/en/about-us/terms-of-use",
+        "summary": "The general UN website terms permit personal non-commercial copying but do not grant redistribution or derivative-database rights. No M49-specific open licence was found.",
+        "attribution": "United Nations Statistics Division, Standard country or area codes for statistical use (M49), retrieved {retrieval_date}.",
+        "restrictions": ["No verified M49-specific redistribution licence", "Do not imply that UN statistical groupings express a political judgment"]
+      },
+      "redistribution": {"status": "metadata_only", "source_files": false, "normalized_values": false, "metadata_and_links": true},
+      "approval": {"state": "pending", "decision": "Identity metadata may be linked, but copied M49 names, codes, and group flags cannot enter a public redistributed registry until reuse rights are confirmed.", "required_action": "Obtain written permission or a source-specific open-data statement from UNSD; record the response and approved attribution."},
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "debian-iso-codes-4.20.1-1-iso-3166-1",
+      "publisher": "Debian iso-codes maintainers",
+      "title": "iso-codes data/iso_3166-1.json",
+      "version": "4.20.1-1",
+      "evidence_plane": "context",
+      "domains": ["identity"],
+      "primary": false,
+      "source_url": "https://sources.debian.org/src/iso-codes/4.20.1-1/",
+      "retrieval_url": "https://sources.debian.org/data/main/i/iso-codes/4.20.1-1/data/iso_3166-1.json",
+      "cadence": {"frequency": "on pinned release change", "check_interval_days": 90},
+      "artifact": {
+        "format": "JSON",
+        "record_array_path": "3166-1",
+        "expected_record_count": 249,
+        "sha256": "f01b812b57fba9f31ff621bf33e7c7570a01964dbeb5be2167e94decf538c89f",
+        "required_unique_fields": ["alpha_2", "alpha_3", "numeric"]
+      },
+      "licence": {
+        "identifier": "LGPL-2.1-or-later",
+        "status": "confirmed",
+        "terms_url": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html",
+        "evidence_url": "https://sources.debian.org/src/iso-codes/4.20.1-1/REUSE.toml/",
+        "summary": "The versioned Debian REUSE.toml assigns data/*json, including iso_3166-1.json, to LGPL-2.1-or-later. Redistribution and modification are permitted when the LGPL notices, source-access, and modified-work obligations are met.",
+        "attribution": "iso-codes 4.20.1-1, data/iso_3166-1.json, copyright 2016 Dr. Tobias Quathamer <toddy@debian.org>, licensed LGPL-2.1-or-later. Source: https://sources.debian.org/src/iso-codes/4.20.1-1/. Earth Love United identifies every transformation and its date.",
+        "restrictions": [
+          "Preserve the copyright notice, LGPL identifier, warranty disclaimer, and a copy of the licence",
+          "Provide the complete preferred-form source or an equivalent source offer/access path with every distributed copy",
+          "Mark modified files prominently with the changes and change dates",
+          "Keep the imported or normalized identity asset separately identifiable under LGPL-2.1-or-later; do not silently relicense it as part of a combined climate dataset"
+        ]
+      },
+      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
+      "approval": {
+        "state": "approved",
+        "decision": "Approved as the open, pinned seed for an ISO 3166-1-compatible identity registry. Debian supplies the redistributable artifact; ISO and UN remain the normative authorities for codes and names, not the licence source for this copy.",
+        "required_action": "Verify the pinned SHA-256, 249-row count, unique alpha-2/alpha-3/numeric fields, notice bundle, source access, and transformation log on every build. A newer upstream release requires a new registry record and review."
+      },
+      "storage": {
+        "raw": "external_only",
+        "checksum_required": true,
+        "snapshot_required": true,
+        "checksum_algorithm": "SHA-256",
+        "notice_bundle_required": true,
+        "source_offer_required": true,
+        "transformation_log_required": true,
+        "separate_asset_required": true,
+        "normalized_asset_rule": "Store the ISO identity table as its own versioned LGPL asset and reference it by source ID; never embed its rows invisibly inside a differently licensed country-climate aggregate."
+      },
+      "limitations": [
+        "This is an open Debian-maintained implementation of ISO 3166-1, not an official ISO publication or official UN M49 dataset",
+        "The 249 entries include countries, dependencies, territories, Antarctica, and other areas of geopolitical interest; a code does not assert sovereignty, UN membership, or climate-assessment eligibility",
+        "Kosovo has no officially assigned ISO 3166-1 code in this artifact; any XK mapping must use an explicit project or user-assigned namespace and must not be labelled official ISO",
+        "Palestine, Taiwan, and Western Sahara appear with ISO-compatible codes and names; display policy must not imply a political or recognition judgment",
+        "The artifact does not provide UN membership, UNFCCC Party status, LDC, LLDC, SIDS, territory-parent, disputed-status, or climate-performance fields",
+        "A 248-entity product universe must retain all 249 source rows and record the excluded row with assessment_eligible=false and an explicit reason rather than deleting it"
+      ]
+    },
+    {
+      "id": "unfccc-ndc-registry-continuous-2026-07-15",
+      "publisher": "UNFCCC secretariat and submitting Parties",
+      "title": "Nationally Determined Contributions Registry",
+      "version": "continuous registry snapshot retrieved 2026-07-15",
+      "evidence_plane": "official",
+      "domains": ["ndc_target"],
+      "primary": true,
+      "source_url": "https://unfccc.int/NDCREG",
+      "retrieval_url": "https://unfccc.int/reports",
+      "cadence": {"frequency": "weekly", "check_interval_days": 7},
+      "licence": {
+        "identifier": "UNFCCC-terms-and-party-document-rights",
+        "status": "uncertain",
+        "terms_url": "https://unfccc.int/this-site/terms-of-use",
+        "summary": "UNFCCC states that official texts, data, and documents are public domain when unchanged and acknowledged, but Party-submitted NDC documents can carry their own copyright or reuse restrictions.",
+        "attribution": "{party}, {document_title}, submitted {submission_date}, UNFCCC NDC Registry, {direct_url}, retrieved {retrieval_date}.",
+        "restrictions": ["Preserve the original document unchanged", "Review document-specific rights", "Normalized target extraction requires explicit reuse approval"]
+      },
+      "redistribution": {"status": "metadata_only", "source_files": false, "normalized_values": false, "metadata_and_links": true},
+      "approval": {"state": "pending", "decision": "Registry metadata and links are usable. Public normalized target records remain blocked because Party-document terms vary and the general terms require unchanged content.", "required_action": "Approve a fact-extraction policy with counsel or obtain UNFCCC clarification, then record per-document exceptions during NDC review."},
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "unfccc-btr-continuous-2026-07-15",
+      "publisher": "UNFCCC secretariat and submitting Parties",
+      "title": "Biennial Transparency Reports and common tabular formats",
+      "version": "first BTR cycle; continuous reports snapshot retrieved 2026-07-15",
+      "evidence_plane": "official",
+      "domains": ["official_progress", "policy_projection", "climate_finance"],
+      "primary": true,
+      "source_url": "https://unfccc.int/biennial-transparency-reports",
+      "retrieval_url": "https://unfccc.int/reports",
+      "cadence": {"frequency": "monthly", "check_interval_days": 30},
+      "licence": {
+        "identifier": "UNFCCC-terms-and-party-document-rights",
+        "status": "uncertain",
+        "terms_url": "https://unfccc.int/this-site/terms-of-use",
+        "summary": "Official UNFCCC texts, data, and documents may be copied unchanged with acknowledgement; report-specific and Party rights still require checking before normalized redistribution.",
+        "attribution": "{party}, {document_title}, BTR/CTF submission {submission_date}, UNFCCC, {direct_url}, retrieved {retrieval_date}.",
+        "restrictions": ["Review each report and attachment", "Do not merge provided, mobilized, needed, and received finance", "Do not silently reconcile official and harmonized values"]
+      },
+      "redistribution": {"status": "metadata_only", "source_files": false, "normalized_values": false, "metadata_and_links": true},
+      "approval": {"state": "pending", "decision": "Discovery and citation are approved; normalized policies, projections, tracking indicators, and finance facts are blocked pending reuse review.", "required_action": "Resolve normalized factual extraction rights and document any Party-specific restrictions."},
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "unfccc-nir-crt-2026-cycle",
+      "publisher": "UNFCCC secretariat and submitting Parties",
+      "title": "National Inventory Documents and Common Reporting Tables",
+      "version": "2026 submission cycle; reports snapshot retrieved 2026-07-15",
+      "evidence_plane": "official",
+      "domains": ["official_inventory"],
+      "primary": true,
+      "source_url": "https://unfccc.int/reports",
+      "retrieval_url": "https://unfccc.int/reports",
+      "cadence": {"frequency": "monthly", "check_interval_days": 30},
+      "licence": {
+        "identifier": "UNFCCC-terms-and-party-document-rights",
+        "status": "uncertain",
+        "terms_url": "https://unfccc.int/this-site/terms-of-use",
+        "summary": "UNFCCC provides official submissions under its public-domain statement only when unchanged and acknowledged; source-document exceptions remain possible.",
+        "attribution": "{party}, {document_title}, NIR/CRT submission {submission_date}, UNFCCC, {direct_url}, retrieved {retrieval_date}.",
+        "restrictions": ["Keep gas, sector, GWP, and LULUCF metadata", "Review submission-specific notices", "Do not republish altered source files"]
+      },
+      "redistribution": {"status": "metadata_only", "source_files": false, "normalized_values": false, "metadata_and_links": true},
+      "approval": {"state": "pending", "decision": "The official inventory plane requires normalized values, which are not authorized by the unchanged-document permission alone.", "required_action": "Obtain a written interpretation covering normalized inventory facts or select an explicitly licensed official data interface."},
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "unfccc-ter-continuous-2026-07-15",
+      "publisher": "UNFCCC secretariat",
+      "title": "Technical expert review reports under the enhanced transparency framework",
+      "version": "continuous reports snapshot retrieved 2026-07-15",
+      "evidence_plane": "official",
+      "domains": ["official_inventory", "official_progress", "policy_projection", "climate_finance"],
+      "primary": true,
+      "source_url": "https://unfccc.int/Transparency",
+      "retrieval_url": "https://unfccc.int/reports",
+      "cadence": {"frequency": "monthly", "check_interval_days": 30},
+      "licence": {
+        "identifier": "UNFCCC-official-document-public-domain",
+        "status": "confirmed",
+        "terms_url": "https://unfccc.int/this-site/terms-of-use",
+        "summary": "UNFCCC official texts and documents are stated to be in the public domain and may be copied unchanged with source acknowledgement.",
+        "attribution": "UNFCCC, {document_title}, {document_symbol_or_url}, published {publication_date}, retrieved {retrieval_date}.",
+        "restrictions": ["Official document must remain unchanged", "Normalized findings require separate approval"]
+      },
+      "redistribution": {"status": "metadata_only", "source_files": true, "normalized_values": false, "metadata_and_links": true},
+      "approval": {"state": "pending", "decision": "Unchanged official review documents may be archived with attribution, but normalized review findings remain blocked.", "required_action": "Approve extraction of factual findings separately from reproduction of the official document."},
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "gcp-gcb-2025-v1.0",
+      "publisher": "Global Carbon Project",
+      "title": "Supplemental data of the Global Carbon Budget 2025",
+      "version": "2025 v1.0",
+      "evidence_plane": "harmonized",
+      "domains": ["fossil_co2", "lulucf_co2"],
+      "primary": false,
+      "source_url": "https://doi.org/10.18160/GCP-2025",
+      "retrieval_url": "https://meta.icos-cp.eu/collections/AxnIW-ydMBT4BdKjxV63DGQl",
+      "cadence": {"frequency": "annual", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-4.0",
+        "status": "confirmed",
+        "terms_url": "https://creativecommons.org/licenses/by/4.0/",
+        "summary": "The ICOS collection record licenses all three GCB 2025 v1.0 spreadsheets under CC BY 4.0.",
+        "attribution": "Global Carbon Project (2025), Supplemental data of Global Carbon Budget 2025, version 1.0, https://doi.org/10.18160/GCP-2025. Changes and unit conversions by Earth Love United are identified.",
+        "restrictions": ["Credit the Global Carbon Project", "Indicate transformations", "Preserve fossil and land-use series separately"]
+      },
+      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
+      "approval": {"state": "approved", "decision": "Approved for normalized fossil and land-use CO2 evidence with versioned citation, attribution, and transformation disclosure.", "required_action": "None; re-review on every new release."},
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "primap-hist-2.6.1-final",
+      "publisher": "Potsdam Institute for Climate Impact Research / PRIMAP team",
+      "title": "The PRIMAP-hist national historical emissions time series (1750–2023)",
+      "version": "2.6.1 final, 13 March 2025",
+      "evidence_plane": "harmonized",
+      "domains": ["economy_wide_ghg"],
+      "primary": false,
+      "source_url": "https://doi.org/10.5281/zenodo.15016289",
+      "retrieval_url": "https://zenodo.org/records/15016289/files/Guetschow_et_al_2025-PRIMAP-hist_v2.6.1_final_13-Mar-2025.csv?download=1",
+      "cadence": {"frequency": "frozen_pilot", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-4.0",
+        "status": "confirmed",
+        "terms_url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidence_url": "https://zenodo.org/records/15016289",
+        "summary": "The versioned v2.6.1 release and its data description explicitly make the dataset available under CC BY 4.0. The later v2.7 licence does not retroactively replace this frozen release's terms.",
+        "attribution": "Gütschow, Busch and Pflüger (2025), PRIMAP-hist v2.6.1 final, https://doi.org/10.5281/zenodo.15016289, retrieved 2026-07-15. Earth Love United transformations and selected scenario, gases, sectors, GWP and LULUCF treatment must be identified.",
+        "restrictions": ["Credit the dataset authors and DOI", "Identify transformations", "Do not imply v2.6.1 is the latest release", "Keep HISTCR and HISTTP scenarios distinct"]
+      },
+      "artifact": {
+        "format": "csv",
+        "sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9"
+      },
+      "limitations": ["Frozen at 2023 rather than the v2.7 2024 endpoint", "Harmonized estimates are not a substitute for official Party inventories", "LULUCF requires separate treatment and additional caution"],
+      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
+      "approval": {"state": "approved", "decision": "Approved as the openly licensed frozen economy-wide GHG pilot while v2.7 remains separately gated by its non-commercial share-alike terms.", "required_action": "Pin the reviewed artifact checksum, publish full attribution, and re-review before changing release or scenario."},
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "primap-hist-2.7-final",
+      "publisher": "Potsdam Institute for Climate Impact Research / PRIMAP team",
+      "title": "The PRIMAP-hist national historical emissions time series (1750–2024)",
+      "version": "2.7 final, 22 August 2025",
+      "evidence_plane": "harmonized",
+      "domains": ["economy_wide_ghg"],
+      "primary": false,
+      "source_url": "https://doi.org/10.5281/zenodo.17090760",
+      "retrieval_url": "https://zenodo.org/records/17090760",
+      "cadence": {"frequency": "annual", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-NC-SA-4.0",
+        "status": "confirmed",
+        "terms_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "summary": "Starting with v2.7, PRIMAP-hist is non-commercial and share-alike; commercial users need a separate licence, and TP-series commercial licensing is not offered.",
+        "attribution": "Gütschow et al., PRIMAP-hist v2.7 final, https://doi.org/10.5281/zenodo.17090760, retrieved {retrieval_date}. Preserve source citations and identify modifications.",
+        "restrictions": ["Non-commercial use only", "Adaptations must be share-alike", "Commercial licence differs by CR and TP series"]
+      },
+      "redistribution": {"status": "restricted", "source_files": false, "normalized_values": false, "metadata_and_links": true},
+      "approval": {"state": "pending", "decision": "The project's future commercial context and share-alike compatibility have not been approved; no values may be published.", "required_action": "Obtain a commercial-compatible licence or written legal approval for the intended public redistribution and downstream licence."},
+      "storage": {"raw": "prohibited", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "edgar-2025-ghg-non-iea-components",
+      "publisher": "European Commission, Joint Research Centre",
+      "title": "EDGAR Community GHG Database: CH4, N2O, F-gases, and non-IEA components",
+      "version": "EDGAR_2025_GHG",
+      "evidence_plane": "harmonized",
+      "domains": ["economy_wide_ghg"],
+      "primary": false,
+      "source_url": "https://edgar.jrc.ec.europa.eu/dataset_ghg2025",
+      "retrieval_url": "https://edgar.jrc.ec.europa.eu/dataset_ghg2025",
+      "cadence": {"frequency": "annual", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-4.0",
+        "status": "confirmed",
+        "terms_url": "https://creativecommons.org/licenses/by/4.0/",
+        "summary": "EU-owned EDGAR_2025_GHG material is CC BY 4.0 unless otherwise noted. This approval expressly excludes the IEA-EDGAR CO2 component.",
+        "attribution": "European Commission, Joint Research Centre, EDGAR Community GHG Database, version EDGAR_2025_GHG (2025), {source_url}. Changes by Earth Love United are identified.",
+        "restrictions": ["Exclude IEA-EDGAR CO2", "Acknowledge EDGAR_2025_GHG", "Indicate changes"]
+      },
+      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
+      "approval": {"state": "approved", "decision": "Approved only for explicitly EU-owned CH4, N2O, F-gas, and other CC BY components; ingestion must denylist IEA-EDGAR CO2 files and fields.", "required_action": "Enforce the component denylist and re-check upstream notices at each release."},
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "iea-edgar-co2-v4-2025",
+      "publisher": "International Energy Agency and European Commission, Joint Research Centre",
+      "title": "IEA-EDGAR CO2 component of EDGAR_2025_GHG",
+      "version": "IEA-EDGAR CO2 v4 within EDGAR_2025_GHG",
+      "evidence_plane": "harmonized",
+      "domains": ["fossil_co2"],
+      "primary": false,
+      "source_url": "https://edgar.jrc.ec.europa.eu/dataset_ghg2025",
+      "retrieval_url": "https://edgar.jrc.ec.europa.eu/dataset_ghg2025",
+      "cadence": {"frequency": "annual", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-NC-ND-4.0",
+        "status": "confirmed",
+        "terms_url": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+        "summary": "EDGAR states that its IEA-derived fossil CO2 component is licensed CC BY-NC-ND 4.0 and directs other uses to IEA compliance.",
+        "attribution": "IEA-EDGAR CO2 v4, a component of EDGAR_2025_GHG, based on IEA (2024) Greenhouse Gas Emissions from Energy as modified by JRC.",
+        "restrictions": ["Non-commercial only", "No derivatives", "Additional use requires IEA permission"]
+      },
+      "redistribution": {"status": "prohibited", "source_files": false, "normalized_values": false, "metadata_and_links": true},
+      "approval": {"state": "excluded", "decision": "Normalization is a derivative and is incompatible with the no-derivatives term. This component must not enter public evidence.", "required_action": "Use approved GCB fossil CO2 or obtain written IEA permission."},
+      "storage": {"raw": "prohibited", "checksum_required": true, "snapshot_required": false}
+    },
+    {
+      "id": "cat-continuous-2026-07-15",
+      "publisher": "Climate Analytics and NewClimate Institute",
+      "title": "Climate Action Tracker country ratings and current-policy assessments",
+      "version": "continuously updated website snapshot retrieved 2026-07-15",
+      "evidence_plane": "independent",
+      "domains": ["independent_ambition", "policy_projection"],
+      "primary": false,
+      "source_url": "https://climateactiontracker.org/",
+      "retrieval_url": "https://climateactiontracker.org/countries/",
+      "cadence": {"frequency": "monthly", "check_interval_days": 30},
+      "licence": {
+        "identifier": "CAT-non-commercial-terms",
+        "status": "confirmed",
+        "terms_url": "https://climateactiontracker.org/about/legal/",
+        "summary": "CAT content may be reproduced and distributed with credit and copyright notice only for non-commercial purposes; commercial use requires contact.",
+        "attribution": "Climate Action Tracker, country assessment for {country}, version captured {retrieval_date}; © Climate Analytics and NewClimate Institute.",
+        "restrictions": ["Non-commercial only", "Credit both institutions", "Include copyright notice", "Coverage is limited and continuously revised"]
+      },
+      "redistribution": {"status": "restricted", "source_files": false, "normalized_values": false, "metadata_and_links": true},
+      "approval": {"state": "pending", "decision": "CAT ratings and projections cannot be copied into the public profile until the site's commercial status and intended use are cleared.", "required_action": "Obtain written permission or a licence compatible with public normalized redistribution."},
+      "storage": {"raw": "prohibited", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "legacy-pledge-nodes-climate-watch-wri-family-2025-07-18",
+      "publisher": "World Resources Institute / Climate Watch and unidentified upstream publishers",
+      "title": "Legacy source family represented in data/pledge-nodes.json",
+      "version": "legacy compiled file generated 2025-07-18; exact upstream releases unknown",
+      "evidence_plane": "harmonized",
+      "domains": ["ndc_target", "fossil_co2", "lulucf_co2", "population", "policy_projection", "independent_ambition", "climate_finance"],
+      "primary": false,
+      "source_url": "https://www.climatewatchdata.org/",
+      "retrieval_url": "https://www.climatewatchdata.org/about/permissions",
+      "cadence": {"frequency": "frozen legacy audit", "check_interval_days": 30},
+      "licence": {
+        "identifier": "mixed-unverified-WRI-CC-BY-4.0-and-unknown",
+        "status": "uncertain",
+        "terms_url": "https://www.wri.org/about/wri-data-platforms-tos",
+        "summary": "WRI's legacy catalog identifies some Climate Watch NDC and CAIT country-emissions datasets as CC BY 4.0, but WRI also requires compliance with each dataset's own licence and upstream restrictions. The compiled pledge-nodes file has no field-level source, release, access date, licence, attribution, or transformation lineage, so those candidate permissions cannot be applied to the file as a whole.",
+        "attribution": "Pending field-level reconstruction. Each released field must cite its exact Climate Watch/WRI dataset and version or its other upstream publisher, licence, direct record or document, retrieval date, and Earth Love United transformation.",
+        "restrictions": [
+          "No blanket CC BY 4.0 approval for data/pledge-nodes.json",
+          "Do not treat Climate Watch permission as covering Climate Action Tracker ratings, finance values, other third-party inputs, or project-derived fields",
+          "Do not republish WRI translations or NDC summaries until the exact dataset release, licence, attribution, and source-document relationship are recorded",
+          "Derived fields require reproducible formulas and approved, versioned inputs before release"
+        ]
+      },
+      "redistribution": {"status": "metadata_only", "source_files": false, "normalized_values": false, "metadata_and_links": true},
+      "approval": {
+        "state": "pending",
+        "decision": "The legacy file is frozen as unverified evidence and must not seed the canonical registry, cards, graphs, or climate score. Potentially permissive WRI dataset licences do not cure missing field lineage or unknown third-party rights.",
+        "required_action": "Reconstruct and approve lineage field by field: exact upstream dataset or official document, immutable version/export date, record locator, licence and attribution, transformation formula and code revision, reviewer, and checked_at. Lift the block only for individually verified fields."
+      },
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true},
+      "legacy_gate": {
+        "dataset_path": "data/pledge-nodes.json",
+        "state": "legacy_unverified",
+        "field_lineage_required": true,
+        "canonical_ingestion_allowed": false,
+        "scoring_allowed": false,
+        "public_claims_allowed": false,
+        "blocked_field_families": [
+          "ndc_summary and translated summaries",
+          "cat_rating and cat_score",
+          "fossil_co2_mt, lulucf_co2_mt, total_co2_mt, and population",
+          "finance_total_bn",
+          "reality_gap_mt, momentum_cagr, required_cagr, divergence, on_track, and globe_color"
+        ]
+      }
+    },
+    {
+      "id": "un-wpp-2024",
+      "publisher": "United Nations, Department of Economic and Social Affairs, Population Division",
+      "title": "World Population Prospects 2024",
+      "version": "2024 Revision",
+      "evidence_plane": "context",
+      "domains": ["population"],
+      "primary": true,
+      "source_url": "https://population.un.org/wpp/",
+      "retrieval_url": "https://population.un.org/wpp/Download/Standard/MostUsed/",
+      "cadence": {"frequency": "official_revision", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-3.0-IGO",
+        "status": "confirmed",
+        "terms_url": "https://creativecommons.org/licenses/by/3.0/igo/",
+        "summary": "WPP 2024 publications and data are distributed under CC BY 3.0 IGO with attribution.",
+        "attribution": "United Nations, Department of Economic and Social Affairs, Population Division (2024), World Population Prospects 2024, retrieved {retrieval_date}. Changes by Earth Love United are identified.",
+        "restrictions": ["Attribute UN DESA Population Division", "Use year-matched estimates", "Distinguish estimates from projections"]
+      },
+      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
+      "approval": {"state": "approved", "decision": "Approved for year-matched population denominators under CC BY 3.0 IGO.", "required_action": "Re-review each revision and preserve estimate/projection labels."},
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "world-bank-wdi-2026-07-01",
+      "publisher": "World Bank",
+      "title": "World Development Indicators",
+      "version": "catalog release updated 2026-07-01",
+      "evidence_plane": "context",
+      "domains": ["economic_denominator"],
+      "primary": false,
+      "source_url": "https://datacatalog.worldbank.org/search/dataset/0037712/world-development-indicators",
+      "retrieval_url": "https://api.worldbank.org/v2/",
+      "cadence": {"frequency": "quarterly", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-4.0",
+        "status": "confirmed",
+        "terms_url": "https://datacatalog.worldbank.org/public-licenses",
+        "summary": "The WDI catalog entry identifies the dataset as public and CC BY 4.0. Individual indicator source metadata must still be retained because some series originate with third parties.",
+        "attribution": "World Bank, World Development Indicators, indicator {indicator_code}, release {version}, {source_url}, retrieved {retrieval_date}; original provider {provider} where listed.",
+        "restrictions": ["Retain indicator-level provider metadata", "Match years and price bases", "Indicate transformations"]
+      },
+      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
+      "approval": {"state": "approved", "decision": "Approved for WDI indicators whose catalog metadata confirms CC BY 4.0; third-party exceptions fail closed at indicator level.", "required_action": "Validate the licence and provider metadata of every selected indicator."},
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+    },
+    {
+      "id": "oecd-climate-finance-2013-2024",
+      "publisher": "Organisation for Economic Co-operation and Development",
+      "title": "Climate Finance Provided and Mobilised by Developed Countries in 2013–2024",
+      "version": "21 May 2026",
+      "evidence_plane": "independent",
+      "domains": ["climate_finance"],
+      "primary": false,
+      "source_url": "https://doi.org/10.1787/ab5eb9ad-en",
+      "retrieval_url": "https://www.oecd.org/en/publications/climate-finance-provided-and-mobilised-by-developed-countries-in-2013-2024_ab5eb9ad-en.html",
+      "cadence": {"frequency": "annual", "check_interval_days": 90},
+      "licence": {
+        "identifier": "OECD-data-terms-with-third-party-exceptions",
+        "status": "uncertain",
+        "terms_url": "https://www.oecd.org/en/about/terms-conditions.html",
+        "summary": "OECD generally permits data extraction, adaptation, and distribution with attribution, but warns that dataset-specific and third-party restrictions may apply. The report combines UNFCCC, DAC, export-credit, MDB, and mobilized-private-finance inputs.",
+        "attribution": "OECD (2026), Climate Finance Provided and Mobilised by Developed Countries in 2013–2024, https://doi.org/10.1787/ab5eb9ad-en, accessed {retrieval_date}.",
+        "restrictions": ["Verify each underlying component", "Do not infer provider-country values from aggregates", "Keep provided and mobilized flows distinct"]
+      },
+      "redistribution": {"status": "metadata_only", "source_files": false, "normalized_values": false, "metadata_and_links": true},
+      "approval": {"state": "pending", "decision": "The aggregate report is citable, but its mixed upstream rights and aggregation are not yet sufficient for country-profile redistribution.", "required_action": "Select exact OECD datasets/tables, verify their item-level licences and disclosure rules, and approve each finance type separately."},
+      "storage": {"raw": "prohibited", "checksum_required": true, "snapshot_required": true}
+    }
+  ]
+}
