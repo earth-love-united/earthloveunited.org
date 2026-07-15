@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/profile-2.0.0.json",
+  "title": "Country Climate Profile metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "profile_id", "country_id", "data_release_id", "methodology_version", "headline", "axes", "generated_at", "calculation_hash"],
+  "properties": {
+    "schema_version": { "const": "2.0.0" },
+    "profile_id": { "type": "string", "pattern": "^profile:iso3166-1:[A-Z]{3}:[a-z0-9._-]+$" },
+    "country_id": { "type": "string", "pattern": "^iso3166-1:[A-Z]{3}$" },
+    "data_release_id": { "type": "string", "minLength": 1 },
+    "methodology_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "headline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason_codes"],
+      "properties": {
+        "status": { "enum": ["available", "withheld", "not_assessed"] },
+        "reason_codes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "axes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["impact", "target_integrity", "ambition", "delivery", "fair_contribution", "evidence_quality"],
+      "properties": {
+        "impact": { "$ref": "#/$defs/impactAxis" },
+        "target_integrity": { "$ref": "#/$defs/targetAxis" },
+        "ambition": { "$ref": "#/$defs/ambitionAxis" },
+        "delivery": { "$ref": "#/$defs/deliveryAxis" },
+        "fair_contribution": { "$ref": "#/$defs/fairAxis" },
+        "evidence_quality": { "$ref": "#/$defs/evidenceAxis" }
+      }
+    },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "calculation_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "impactAxis": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason_codes", "fact_ids", "method_id"],
+      "properties": { "status": { "enum": ["very_high", "high", "medium", "low", "not_assessed"] }, "reason_codes": { "$ref": "#/$defs/reasons" }, "fact_ids": { "$ref": "#/$defs/facts" }, "method_id": { "type": ["string", "null"] } }
+    },
+    "targetAxis": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason_codes", "fact_ids", "method_id"],
+      "properties": { "status": { "enum": ["comparable", "partially_comparable", "non_comparable", "qualitative_or_sectoral", "no_active_target_found", "not_assessed"] }, "reason_codes": { "$ref": "#/$defs/reasons" }, "fact_ids": { "$ref": "#/$defs/facts" }, "method_id": { "type": ["string", "null"] } }
+    },
+    "ambitionAxis": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason_codes", "fact_ids", "method_id"],
+      "properties": { "status": { "enum": ["aligned", "almost_sufficient", "insufficient", "highly_insufficient", "critically_insufficient", "not_assessed"] }, "reason_codes": { "$ref": "#/$defs/reasons" }, "fact_ids": { "$ref": "#/$defs/facts" }, "method_id": { "type": ["string", "null"] } }
+    },
+    "deliveryAxis": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason_codes", "fact_ids", "method_id"],
+      "properties": { "status": { "enum": ["ahead", "on_pace", "uncertain", "off_course", "not_assessed"] }, "reason_codes": { "$ref": "#/$defs/reasons" }, "fact_ids": { "$ref": "#/$defs/facts" }, "method_id": { "type": ["string", "null"] } }
+    },
+    "fairAxis": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason_codes", "fact_ids", "method_id"],
+      "properties": { "status": { "enum": ["context_only", "not_assessed"] }, "reason_codes": { "$ref": "#/$defs/reasons" }, "fact_ids": { "$ref": "#/$defs/facts" }, "method_id": { "type": ["string", "null"] } }
+    },
+    "evidenceAxis": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason_codes", "fact_ids", "method_id"],
+      "properties": { "status": { "enum": ["A", "B", "C", "D"] }, "reason_codes": { "$ref": "#/$defs/reasons" }, "fact_ids": { "$ref": "#/$defs/facts" }, "method_id": { "type": ["string", "null"] } }
+    },
+    "reasons": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "facts": { "type": "array", "items": { "type": "string", "pattern": "^fact:" }, "uniqueItems": true }
+  }
+}
