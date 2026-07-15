@@ -29,8 +29,8 @@
           "required": ["path", "sha256", "calculation_hash", "review_id", "reviewer_id", "builder_id", "independent_of_builder", "decision"],
           "properties": {
             "path": { "const": "data/climate/reviews/primap-hist-2.6.1-economy-wide-ct10b-review.json" },
-            "sha256": { "const": "2a7feeb62278bacf48234b1b82befbff28bd4ed30e55c5b548eeb54db32bf8a7" },
-            "calculation_hash": { "const": "ceb246700220dfc26bb50460668417f15dea1e7c4b2ffec1fdaf228aaea56135" },
+            "sha256": { "const": "e0c17b4191a0e62a0c91076f054d14df49325c867763f5f9f9907dddff421c84" },
+            "calculation_hash": { "const": "4494782a4e968e8826b192e04fe8dcafdc4c089f9ac87bff7261f04628b7bc20" },
             "review_id": { "type": "string", "minLength": 1 },
             "reviewer_id": { "type": "string", "minLength": 1 },
             "builder_id": { "type": "string", "minLength": 1 },

@@ -5,7 +5,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {
   PINS,
+  SUPERSEDED_ATTESTATION,
   hashBytes,
+  assertAttestationPin,
   assertPromotionSemantics,
   assertPromotionInputs,
   buildPromotion,
@@ -90,9 +92,14 @@ function main() {
   const changedCandidate = clone(candidate);
   changedCandidate.calculation_hash = '0'.repeat(64);
   mustDeny(() => assertPromotionSemantics(changedCandidate, attestation), 'candidate-calculation-mismatch');
-  assert(fixture.fail_closed_cases.length === 8 && fixture.fail_closed_cases.every(item => item.expected === 'deny'), 'fixture denial matrix changed');
+  assert(JSON.stringify(fixture.superseded_attestation) === JSON.stringify(SUPERSEDED_ATTESTATION), 'superseded attestation fixture changed');
+  mustDeny(
+    () => assertAttestationPin(SUPERSEDED_ATTESTATION.sha256, SUPERSEDED_ATTESTATION.calculation_hash),
+    'superseded-attestation-rejected',
+  );
+  assert(fixture.fail_closed_cases.length === 9 && fixture.fail_closed_cases.every(item => item.expected === 'deny'), 'fixture denial matrix changed');
 
-  console.log(`PRIMAP CT-10C: PASS (${output.coverage.promoted_country_series} series; ${output.coverage.promoted_observations} factual observations; artifact ${hashBytes(outputBytes)}; 8 fail-closed mutations; production/scoring/performance false)`);
+  console.log(`PRIMAP CT-10C: PASS (${output.coverage.promoted_country_series} series; ${output.coverage.promoted_observations} factual observations; artifact ${hashBytes(outputBytes)}; 9 fail-closed mutations including superseded attestation; production/scoring/performance false)`);
 }
 
 try { main(); } catch (error) {

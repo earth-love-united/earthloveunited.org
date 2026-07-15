@@ -102,7 +102,8 @@ judgment.
 The promotion has not been loaded by the site. Its own independent review and
 the CT-40 runtime release gate remain required, so
 `production_runtime_release` is explicitly false. Verify the deterministic
-artifact and eight fail-closed mutations with:
+artifact and nine fail-closed mutations—including rejection of the superseded
+CT-10B-R attestation pin—with:
 
 ```sh
 node tools/check-primap-factual-display-promotion.js

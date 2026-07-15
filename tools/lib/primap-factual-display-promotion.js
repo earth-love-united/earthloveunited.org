@@ -8,8 +8,13 @@ const PINS = Object.freeze({
   candidate_sha256: 'e242e5a49ba963eaeafe472c8c6702a193e79f60cf6762083f4ba72e9aa239b6',
   candidate_calculation_hash: '8182081d7ef30e24731aac43e28f5f2b1b1316dd4721100bb8c069972cd1be49',
   attestation_path: 'data/climate/reviews/primap-hist-2.6.1-economy-wide-ct10b-review.json',
-  attestation_sha256: '2a7feeb62278bacf48234b1b82befbff28bd4ed30e55c5b548eeb54db32bf8a7',
-  attestation_calculation_hash: 'ceb246700220dfc26bb50460668417f15dea1e7c4b2ffec1fdaf228aaea56135',
+  attestation_sha256: 'e0c17b4191a0e62a0c91076f054d14df49325c867763f5f9f9907dddff421c84',
+  attestation_calculation_hash: '4494782a4e968e8826b192e04fe8dcafdc4c089f9ac87bff7261f04628b7bc20',
+});
+
+const SUPERSEDED_ATTESTATION = Object.freeze({
+  sha256: '2a7feeb62278bacf48234b1b82befbff28bd4ed30e55c5b548eeb54db32bf8a7',
+  calculation_hash: 'ceb246700220dfc26bb50460668417f15dea1e7c4b2ffec1fdaf228aaea56135',
 });
 
 function hashBytes(bytes) {
@@ -18,6 +23,11 @@ function hashBytes(bytes) {
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function assertAttestationPin(byteHash, contentHash) {
+  assert(byteHash === PINS.attestation_sha256, 'attestation byte hash mismatch');
+  assert(contentHash === PINS.attestation_calculation_hash, 'attestation calculation hash mismatch');
 }
 
 function assertPromotionSemantics(candidate, attestation) {
@@ -39,7 +49,7 @@ function assertPromotionSemantics(candidate, attestation) {
 
 function assertPromotionInputs(candidate, candidateBytes, attestation, attestationBytes) {
   assert(hashBytes(candidateBytes) === PINS.candidate_sha256, 'candidate byte hash mismatch');
-  assert(hashBytes(attestationBytes) === PINS.attestation_sha256, 'attestation byte hash mismatch');
+  assertAttestationPin(hashBytes(attestationBytes), attestation.calculation_hash);
   assertPromotionSemantics(candidate, attestation);
 }
 
@@ -146,4 +156,4 @@ function buildPromotion(candidate, candidateBytes, attestation, attestationBytes
   return artifact;
 }
 
-module.exports = { PINS, hashBytes, assertPromotionSemantics, assertPromotionInputs, buildPromotion };
+module.exports = { PINS, SUPERSEDED_ATTESTATION, hashBytes, assertAttestationPin, assertPromotionSemantics, assertPromotionInputs, buildPromotion };
