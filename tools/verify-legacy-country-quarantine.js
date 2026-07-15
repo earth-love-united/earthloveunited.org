@@ -31,6 +31,24 @@ const quarantinedFields = [
 quarantinedFields.forEach(field => forbidText(globe, field, 'globe runtime'));
 
 [
+  'COUNTRY_STATUS.NO_TARGET',
+  'COUNTRY_STATUS.OVERSHOOTING',
+  'COUNTRY_STATUS.ON_TRACK',
+  'd.gap',
+  'rgba(245,210,160',
+  'rgba(214,184,138',
+  'rgba(255,150,128',
+  'rgba(255,132,112',
+  'rgba(136,245,188',
+  'rgba(116,232,172',
+  'rgba(224,172,110',
+  'rgba(255,84,58',
+  'rgba(46,214,118',
+  'rgba(212,165,116',
+  'rgba(46,204,113',
+].forEach(text => forbidText(globe, text, 'legacy paint semantics'));
+
+[
   'Overshooting',
   'ON TRACK',
   'On track',

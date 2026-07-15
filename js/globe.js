@@ -1225,18 +1225,23 @@ const GlobeModule = {
   },
 
   _countryBorderColorFn(feature) {
-    if (feature === this._countryHoverFeature) return 'rgba(246,255,250,0.96)';
-    if (feature === this._selectedCountryFeature) return 'rgba(123,232,208,0.86)';
+    if (feature === this._countryHoverFeature) return 'rgba(221,238,247,0.96)';
+    if (feature === this._selectedCountryFeature) return 'rgba(141,184,208,0.90)';
 
     const d = _getCountryDisplayData(feature);
     const small = !!feature?.properties?.__smallNation;
     if (!d) return small ? 'rgba(200,230,235,0.7)' : 'rgba(180,215,218,0.34)';
     const statusKey = _getCountryStatusKey(d);
-    // Small-nation dots get a bright rim so they read at a few pixels wide
-    if (statusKey === COUNTRY_STATUS.MISSING) return small ? 'rgba(225,245,248,0.9)' : 'rgba(170,205,214,0.34)';
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) return small ? 'rgba(245,210,160,0.92)' : 'rgba(214,184,138,0.38)';
-    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return small ? 'rgba(255,150,128,0.95)' : 'rgba(255,132,112,0.42)';
-    return small ? 'rgba(136,245,188,0.95)' : 'rgba(116,232,172,0.42)';
+    if (statusKey === COUNTRY_STATUS.MISSING) {
+      return small ? 'rgba(205,225,235,0.82)' : 'rgba(145,170,184,0.32)';
+    }
+
+    const emissions = d.emissions || 0;
+    const magnitude = Math.min(Math.log(Math.max(emissions, 1)) / Math.log(12000), 1);
+    const alpha = small ? 0.82 + magnitude * 0.12 : 0.30 + magnitude * 0.18;
+    return small
+      ? 'rgba(151,188,210,' + Math.min(alpha, 0.96).toFixed(2) + ')'
+      : 'rgba(111,145,168,' + Math.min(alpha, 0.48).toFixed(2) + ')';
   },
 
   _countryPolygonPaintColorFn(feature) {
@@ -1250,10 +1255,13 @@ const GlobeModule = {
     if (feature?.properties?.__smallNation) {
       const boost = hovered ? 0.10 : (selected ? 0.08 : 0);
       const statusKey = d ? _getCountryStatusKey(d) : COUNTRY_STATUS.MISSING;
-      if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(224,172,110,' + (0.88 + boost).toFixed(2) + ')';
-      if (statusKey === COUNTRY_STATUS.OVERSHOOTING) return 'rgba(255,84,58,' + (0.90 + boost).toFixed(2) + ')';
-      if (statusKey === COUNTRY_STATUS.ON_TRACK) return 'rgba(46,214,118,' + (0.88 + boost).toFixed(2) + ')';
-      return 'rgba(150,182,196,' + (0.85 + boost).toFixed(2) + ')';
+      if (statusKey === COUNTRY_STATUS.MISSING) {
+        return 'rgba(150,182,196,' + Math.min(0.85 + boost, 0.98).toFixed(2) + ')';
+      }
+      const emissions = d?.emissions || 0;
+      const magnitude = Math.min(Math.log(Math.max(emissions, 1)) / Math.log(12000), 1);
+      const alpha = Math.min(0.84 + magnitude * 0.08 + boost, 0.98).toFixed(2);
+      return 'rgba(111,145,168,' + alpha + ')';
     }
 
     if (!d) return 'rgba(120,150,165,' + (0.14 + hoverBoost).toFixed(2) + ')';
@@ -1265,16 +1273,8 @@ const GlobeModule = {
     const alpha = Math.min(0.28, 0.16 + te * 0.12) + hoverBoost;
     const cappedAlpha = Math.min(alpha, 0.42).toFixed(2);
 
-    // Status drives hue; emissions only modulates opacity. A low-emissions
-    // country can still be overshooting its pledge target.
-    if (statusKey === COUNTRY_STATUS.NO_TARGET) return 'rgba(212,165,116,' + (0.16 + hoverBoost).toFixed(2) + ')';
-    if (statusKey === COUNTRY_STATUS.OVERSHOOTING) {
-      const intensity = Math.min(d.gap / 500, 1);
-      const red = Math.round(220 + intensity * 35);
-      const green = Math.round(108 - intensity * 40);
-      return 'rgba(' + red + ',' + green + ',58,' + cappedAlpha + ')';
-    }
-    return 'rgba(46,204,113,' + cappedAlpha + ')';
+    // Legacy evidence always uses one neutral hue; magnitude affects opacity.
+    return 'rgba(111,145,168,' + cappedAlpha + ')';
   },
 
   _supportsCountryBorders() {
