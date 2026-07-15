@@ -108,3 +108,20 @@ CT-10B-R attestation pin—with:
 ```sh
 node tools/check-primap-factual-display-promotion.js
 ```
+
+The independent CT-10C review is recorded in
+`reviews/primap-hist-2.6.1-factual-display-ct10c-review.json`. It pins the
+corrected CT-10B attestation and the complete CT-10C artifact, validates the
+schema, reconstructs all fields without importing the promotion builder, and
+compares the result byte-for-byte. Re-run the raw-source prerequisite, review,
+and 14 adversarial denial checks with:
+
+```sh
+node tools/check-primap-factual-display-review.js /path/to/PRIMAP-hist_v2.6.1_final_13-Mar-2025.csv
+```
+
+This review approves only the pinned harmonized facts for descriptive display
+and same-metric 2023 emissions-magnitude comparison or ranking. It does not
+approve target, commitment, delivery, performance, impact-band, composite,
+normative-score, or production-runtime use. CT-40 remains required before any
+site integration.

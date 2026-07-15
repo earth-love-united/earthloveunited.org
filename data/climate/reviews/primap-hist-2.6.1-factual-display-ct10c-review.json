@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0.0",
+  "review_id": "ct-10c-r-primap-hist-2.6.1-factual-display-2026-07-15",
+  "reviewed_at": "2026-07-15T00:00:00Z",
+  "calculation_hash": "1993d3489117dc6a4385eeb33cff866c1ad550f5a1db51a87d5ef5180d1cfc5c",
+  "decision": "pass",
+  "reviewer": {
+    "reviewer_id": "ct-10c-independent-reviewer",
+    "role": "reviewer",
+    "independent_of_builder": true,
+    "builder_id": "ct-10c-display-promotion"
+  },
+  "reviewed_commits": {
+    "promotion_commit_sha": "bf9ce4d1a299e1392e73719e92189240a7866fe8",
+    "input_review_commit_sha": "5f3b7784cfd5818cd8bbb4f5d9fc160a9362fc1b"
+  },
+  "reviewed_inputs": {
+    "raw_source_file": "PRIMAP-hist_v2.6.1_final_13-Mar-2025.csv",
+    "raw_source_sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9",
+    "candidate_path": "data/climate/evidence/primap-hist-2.6.1-histtp-m0el-2014-2023.json",
+    "candidate_sha256": "e242e5a49ba963eaeafe472c8c6702a193e79f60cf6762083f4ba72e9aa239b6",
+    "candidate_calculation_hash": "8182081d7ef30e24731aac43e28f5f2b1b1316dd4721100bb8c069972cd1be49",
+    "input_review_path": "data/climate/reviews/primap-hist-2.6.1-economy-wide-ct10b-review.json",
+    "input_review_sha256": "e0c17b4191a0e62a0c91076f054d14df49325c867763f5f9f9907dddff421c84",
+    "input_review_calculation_hash": "4494782a4e968e8826b192e04fe8dcafdc4c089f9ac87bff7261f04628b7bc20",
+    "promotion_path": "data/climate/releases/primap-hist-2.6.1-factual-display-2026-07-15.json",
+    "promotion_sha256": "129cc563cbad1fa5c71d6953430a8eba510f4c26106d4f6e76cb7cbd11a7e76d",
+    "promotion_calculation_hash": "1301ce57a7f8b9af28fefe9e8fd5507d131f35d689fb30d1da27f6265734decb",
+    "promotion_schema_path": "data/climate/schemas/primap-factual-display-promotion.schema.json",
+    "promotion_schema_sha256": "7b6b92a27bd14e4d2a1969d75209e073339d6099f8b016525cc18b48cc679158"
+  },
+  "methods": [
+    "Revalidated the corrected CT-10B attestation against the exact pinned raw source, candidate, and all recorded sample fields",
+    "Validated the complete CT-10C artifact against its pinned JSON Schema without importing the builder validator",
+    "Independently reconstructed every CT-10C field from the pinned candidate and attestation without importing the promotion implementation",
+    "Compared the independent rebuild byte-for-byte with the committed 697703-byte promotion artifact",
+    "Verified all 206 series, 2060 observations, 2060 normalized IDs, and 4120 combined source and normalized IDs",
+    "Checked representative major, medium, small, and decimal-sensitive entity values and lineage IDs",
+    "Rejected adversarial data, lineage, schema, assessment, ranking-interpretation, scoring, and runtime-gate mutations",
+    "Confirmed the promotion does not load into the production runtime and still requires the CT-40 runtime release gate"
+  ],
+  "counts": {
+    "registry_entities": 249,
+    "promoted_country_series": 206,
+    "source_unavailable": 43,
+    "promoted_observations": 2060,
+    "latest_year_values": 206,
+    "unique_normalized_fact_ids": 2060,
+    "unique_combined_fact_ids": 4120,
+    "representative_entities_checked": 8,
+    "adversarial_mutations_rejected": 14
+  },
+  "representative_latest_values": [
+    { "iso_alpha3": "CHN", "value_2023_mtco2e": "15000.0000", "fact_id_2023": "fact:primap-hist-2.6.1:normalized:histtp:m0el:chn:2023" },
+    { "iso_alpha3": "USA", "value_2023_mtco2e": "6060.0000", "fact_id_2023": "fact:primap-hist-2.6.1:normalized:histtp:m0el:usa:2023" },
+    { "iso_alpha3": "IND", "value_2023_mtco2e": "4430.0000", "fact_id_2023": "fact:primap-hist-2.6.1:normalized:histtp:m0el:ind:2023" },
+    { "iso_alpha3": "IDN", "value_2023_mtco2e": "1380.0000", "fact_id_2023": "fact:primap-hist-2.6.1:normalized:histtp:m0el:idn:2023" },
+    { "iso_alpha3": "BRA", "value_2023_mtco2e": "1270.0000", "fact_id_2023": "fact:primap-hist-2.6.1:normalized:histtp:m0el:bra:2023" },
+    { "iso_alpha3": "NRU", "value_2023_mtco2e": "0.0564", "fact_id_2023": "fact:primap-hist-2.6.1:normalized:histtp:m0el:nru:2023" },
+    { "iso_alpha3": "TUV", "value_2023_mtco2e": "0.0200", "fact_id_2023": "fact:primap-hist-2.6.1:normalized:histtp:m0el:tuv:2023" },
+    { "iso_alpha3": "ATA", "value_2023_mtco2e": "0.00334", "fact_id_2023": "fact:primap-hist-2.6.1:normalized:histtp:m0el:ata:2023" }
+  ],
+  "prior_blocker_resolution": {
+    "incorrect_ata_row_and_2014_value": "resolved",
+    "all_ct10b_sample_fields_checked_against_raw_and_candidate": true,
+    "superseded_attestation_pin_rejected": true
+  },
+  "publication_boundary": {
+    "factual_display_review_passed": true,
+    "emissions_time_series_display_allowed": true,
+    "annual_emissions_magnitude_comparison_allowed": true,
+    "annual_emissions_magnitude_ranking_allowed": true,
+    "ranking_is_performance_judgment": false,
+    "target_or_commitment_assessment_allowed": false,
+    "delivery_assessment_allowed": false,
+    "performance_assessment_allowed": false,
+    "assessed_country_status_allowed": false,
+    "impact_band_allowed": false,
+    "composite_or_normative_score_allowed": false,
+    "production_runtime_release_allowed": false,
+    "ct40_runtime_gate_required": true,
+    "note": "This attestation approves only the pinned harmonized emissions facts for descriptive display and same-metric 2023 magnitude comparison or ranking. It does not approve target, commitment, delivery, performance, impact-band, composite-score, normative-score, or production-runtime use."
+  }
+}
