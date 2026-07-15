@@ -10,7 +10,7 @@
     "builder_id": "ct-42-factual-runtime-builder"
   },
   "reviewed_branch": "agent/generalist/climate-factual-runtime-candidate",
-  "reviewed_commit_sha": "fa3ffce9f0e18482089d58f9e026c32baea64b77",
+  "reviewed_commit_sha": "84b83044225acd766eb69f2453f414b235350f1b",
   "reviewed_input_sha256": {
     "data/climate/country-registry.json": "51fb321661684a88e80254cd5721ee70d0f52d95587222727fb9e9722e86b075",
     "data/climate/releases/primap-hist-2.6.1-factual-display-2026-07-15.json": "129cc563cbad1fa5c71d6953430a8eba510f4c26106d4f6e76cb7cbd11a7e76d",
@@ -19,7 +19,7 @@
     "data/climate/runtime/country-factual-candidate.json": "7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664",
     "data/climate/runtime/published-facts-candidate.json": "307b0a7c9edc59f6360ce05e66ccf54624f3233d809dd0f4232338b324b07e19",
     "data/climate/runtime/ct10c-batch-attestation-wrapper.json": "fd1e5e0a8863b082574a175639abe30b3f5b8722c430019267dac907e09ef034",
-    "data/climate/runtime/candidate-manifest.json": "d0c55a2b2041809c20465349c66e04e32fc519ec79018e1b1ff8c656fec8a06e",
+    "data/climate/runtime/candidate-manifest.json": "96e74966e40a65c838d7030de07c8cead4c05fe28d49876814c8e0cd4b8c7a1c",
     "data/climate/runtime/rollback-plan.json": "c23bd5caf21bf05b6e637c6f599742e13a47b822b298054ca8d56e968d8aeaae"
   },
   "methods": [
@@ -29,6 +29,7 @@
     "Validated the CT-41 published-fact and batch-attestation wrapper boundary with the exact 2,060-fact universe",
     "Rejected adversarial provenance, coverage, decimal, lineage, rank, forbidden-use, release, and rollback mutations",
     "Confirmed candidate build reproducibility with byte-identical generated runtime data",
+    "Confirmed the refreshed deny manifest enumerates the CT-42, CT-40, reviewed-release, browser-accessibility, polygon/fallback, and color-removal gates that remain unpassed",
     "Excluded visual and accessibility approval from this review"
   ],
   "counts": {

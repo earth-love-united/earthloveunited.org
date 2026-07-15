@@ -29,7 +29,7 @@ const EXPECTED_SHA256 = Object.freeze({
   [PATHS.runtime]: '7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664',
   [PATHS.facts]: '307b0a7c9edc59f6360ce05e66ccf54624f3233d809dd0f4232338b324b07e19',
   [PATHS.wrapper]: 'fd1e5e0a8863b082574a175639abe30b3f5b8722c430019267dac907e09ef034',
-  [PATHS.manifest]: 'd0c55a2b2041809c20465349c66e04e32fc519ec79018e1b1ff8c656fec8a06e',
+  [PATHS.manifest]: '96e74966e40a65c838d7030de07c8cead4c05fe28d49876814c8e0cd4b8c7a1c',
   [PATHS.rollback]: 'c23bd5caf21bf05b6e637c6f599742e13a47b822b298054ca8d56e968d8aeaae',
 });
 const REQUIRED_FALSE_USES = Object.freeze([
@@ -228,6 +228,13 @@ function independentlyValidate(input) {
   assert.equal(manifest.release_eligible, false);
   assert.equal(manifest.production_runtime_release, false);
   assert.ok(manifest.reason_codes.includes('ct40_allow_manifest_absent'));
+  assert.deepEqual(manifest.unpassed_gates, [
+    'independent CT-42 runtime review',
+    'CT-40 allow decision',
+    'reviewed runtime manifest and release diff',
+    'screen-reader, formal contrast, 320px/200% zoom, and reduced-motion verification',
+    'polygon and fallback rendering plus color-removal comprehension review',
+  ], 'candidate must disclose every unpassed release and accessibility gate');
   assert.deepEqual(manifest.prohibited_release_files, FORBIDDEN_RELEASE_FILES);
   assert.deepEqual(manifest.inputs.map(item => item.path), [PATHS.registry, PATHS.promotion, PATHS.upstreamReview, PATHS.sourceRegistry]);
   assert.deepEqual(manifest.outputs.map(item => item.path), [PATHS.runtime, PATHS.facts, PATHS.wrapper]);
