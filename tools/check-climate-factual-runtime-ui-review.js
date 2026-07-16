@@ -10,7 +10,7 @@ const { REQUIRED_UI_REVIEW_PIN_PATHS } = require('./lib/globe-runtime-assets');
 
 const ROOT = path.resolve(__dirname, '..');
 const REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
-const EXPECTED_COMMIT = 'bd5b6ef63df2ba17103e78351aedf677fb2d339f';
+const EXPECTED_COMMIT = '0ccf9cf90e25e98cc7b734cb4acf8ee0d85080eb';
 const REQUIRED_GATES = [
   'runtime-boundary', 'truth-language', 'magnitude-and-gaps', 'chart-table-source',
   'screen-reader-semantics', 'keyboard-focus', 'touch-targets', 'responsive-320',

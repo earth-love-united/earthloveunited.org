@@ -1,8 +1,8 @@
 {
   "schema_version": "1.1.0",
-  "review_id": "ct-42-truth-copy-independent-ui-review-2026-07-15T232047Z",
-  "reviewed_at": "2026-07-15T23:20:47Z",
-  "reviewed_commit": "bd5b6ef63df2ba17103e78351aedf677fb2d339f",
+  "review_id": "ct-42-final-globe-runtime-independent-ui-review-2026-07-16T210722Z",
+  "reviewed_at": "2026-07-16T21:07:22Z",
+  "reviewed_commit": "0ccf9cf90e25e98cc7b734cb4acf8ee0d85080eb",
   "reviewer_id": "truth-copy-independent-ui-reviewer",
   "builder_id": "ct-42-runtime-candidate-builder",
   "independent": true,
@@ -11,8 +11,8 @@
   "data_lineage_reviewed": false,
   "data_lineage_boundary": "Displayed source pins and factual-use labels were checked for presence and consistency; upstream data lineage was not independently re-reviewed by CT-42.",
   "reviewed_file_pins": [
-    { "path": "index.html", "sha256": "6cd73740d5b21e942d45c0107dcbd052b3d47bce0647e0681c279c86ae73f4d5" },
-    { "path": "css/globe-system.css", "sha256": "25ba293a9dd7c23826f768cac21b55380a76d1cfae5f377bde16bf4bd23da1af" },
+    { "path": "index.html", "sha256": "7ca761472ae9127f19e06ef859d116f5668d738e1251350b6165427cbdf87662" },
+    { "path": "css/globe-system.css", "sha256": "ad7931358fe1921914c99d0af813f127a15932a4c4effa5fa46fcbce96688ec9" },
     { "path": "js/gaia-utils.js", "sha256": "06b34641d8fffc9c9fb17cad8539035d55758b07992ec8573a41152a14e37e94" },
     { "path": "js/module-contracts.js", "sha256": "e0609b87b686afb7fa7154b2b378b8960136c645a9f07314262a624b621e5c84" },
     { "path": "js/event-bus.js", "sha256": "076e3549298b113308115331d72ed563477630e6850d73704871641b1d1ecd63" },
@@ -20,18 +20,18 @@
     { "path": "js/storage.js", "sha256": "6cb9b3742575eaaa3644ca4cffe42cc4cca6121dce2c49f1add566b7cd7b3734" },
     { "path": "js/data-schema.js", "sha256": "606554d5f0c12f788d98c0fb7e5b0d3e936d9acde8d8460d677e1aaba2a7c815" },
     { "path": "js/data.js", "sha256": "4e691d4ebdad821e85ba70c1db10f961b7211ac487e59df10dc835647fe7d82b" },
-    { "path": "js/globe.js", "sha256": "1a61f2ea364f590754b386503941567a4549de4dc289437353afc78119d36bde" },
+    { "path": "js/globe.js", "sha256": "f4f6cdcd864b4fbff2429ad8516164d96c6d976f0f9e9f02df803df4598150b1" },
     { "path": "js/carbon-clock.js", "sha256": "d577ff8e991b387f27d5f0e531a9aaf3eda47f6ee72ff675998eaad46159519a" },
     { "path": "js/app.js", "sha256": "6c0c387c74d31441bdc85be515b15a01cd1c421b6c2b601fc7971f97ce057b9c" },
     { "path": "tools/smoke-test.js", "sha256": "f02e9f75b2d0034648570a4c637f5cfdb4d7c89ad8493426f5c285d260be7d3f" },
     { "path": "data/climate/runtime/country-factual-candidate.json", "sha256": "7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664" },
     { "path": "data/climate/runtime/candidate-manifest.json", "sha256": "96e74966e40a65c838d7030de07c8cead4c05fe28d49876814c8e0cd4b8c7a1c" },
     { "path": "data/small-nations.json", "sha256": "81086c45ee1a2d10a2859c2bdd1737db4e74be8f50aaad037307dda44cfe670a" },
-    { "path": "sw.js", "sha256": "afdf908dc6b0faf183c5bf83a44659925140bc1306068592517fd78e429d9613" },
-    { "path": "assets/globe/runtime/manifest.json", "sha256": "6f03e630512982f2edfd40097881bae73bbc49110ca79c6fdbb49dc7b44b7da4" },
+    { "path": "sw.js", "sha256": "8ca4208b56a80ed1d723f0d09ff622a82a1983136c2d8583744fe3ffbd0f545b" },
+    { "path": "assets/globe/runtime/manifest.json", "sha256": "5c11517a0f75e1af70169c565b46002c4361cdac18d6a6191f06e9f31ac7f67a" },
     { "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson", "sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0" },
     { "path": "assets/globe/runtime/earth-night.jpg", "sha256": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124" },
-    { "path": "assets/globe/runtime/night-sky.svg", "sha256": "233713fa6ed8a495ed49deb97b89f46228aa49a83460e1379a60b3cee57c5688" },
+    { "path": "assets/globe/runtime/night-sky.png", "sha256": "7e1d5e780301e3a33bd79fd3ac414f7a742465f33ae4605abca743d43a3ab983" },
     { "path": "assets/globe/runtime/earth-blue-marble.jpg", "sha256": "228deba2e4b600146bdcb6cfa359b8ead6aacc2b1c13550a29cd82824cfa1c01" },
     { "path": "assets/globe/runtime/earth-topology.png", "sha256": "839b12da2e4dd346b256cebae72e10c479a102c8980a22084c41275e4b9a0e12" }
   ],
@@ -65,10 +65,10 @@
     },
     "stack_lint_issues": 0,
     "delivery_versions": {
-      "globe_system_css": "v15",
-      "globe_script": "v11",
-      "service_worker_registration": "34-truth-copy",
-      "service_worker_cache": "elu-v34-truth-copy"
+      "globe_system_css": "v19",
+      "globe_script": "v13",
+      "service_worker_registration": "37-return-contrast",
+      "service_worker_cache": "elu-v37-return-contrast"
     },
     "browser_qa": {
       "mobile": {
@@ -105,10 +105,10 @@
           "flip_y": true
         },
         "sky": {
-          "path": "assets/globe/runtime/night-sky.svg",
+          "path": "assets/globe/runtime/night-sky.png",
           "width": 4096,
           "height": 2048,
-          "mime": "image/svg+xml",
+          "mime": "image/png",
           "flip_y": true,
           "mesh": true
         }
@@ -119,29 +119,29 @@
       },
       "cache": {
         "controller_reload_verified": true,
-        "css_key": "/css/globe-system.css?v=v15",
-        "globe_key": "/js/globe.js?v=v11",
-        "service_worker_key": "/sw.js?v=34-truth-copy",
-        "cache_name": "elu-v34-truth-copy"
+        "css_key": "/css/globe-system.css?v=v19",
+        "globe_key": "/js/globe.js?v=v13",
+        "service_worker_key": "/sw.js?v=37-return-contrast",
+        "cache_name": "elu-v37-return-contrast"
       }
     }
   },
   "gates": [
-    { "id": "runtime-boundary", "result": "pass", "evidence": "The exact bd5b6ef runtime passed the checked-in headless lifecycle harness: one 201-entity interactive deck from 177 source features, 194 factual entities plus 7 mapped gaps, and a complete 249-record browser containing 206 factual series plus 43 gaps. review_status remains not_reviewed and production_runtime_release remains false." },
-    { "id": "truth-language", "result": "pass", "evidence": "Fresh normal, Greenland-gap, and candidate-data-unavailable routes exposed no CT, candidate, runtime-boundary, deny, or review-process jargon. China is explicitly not scored; Greenland says no emissions estimate and visible and unranked; commitments and performance remain unassessed." },
-    { "id": "magnitude-and-gaps", "result": "pass", "evidence": "Fresh rendered evidence shows China as rank 1 at 15,000 MtCO2e/yr with the ranking labelled not a performance score. Greenland is an emissions source gap with no numeric value, no factual block, no estimate claim, and explicit visible, unranked, and not-scored labels." },
-    { "id": "chart-table-source", "result": "pass", "evidence": "The current China card exposes the labelled 2014-2023 chart and Year/Value/Unit table, Source & methodology, the canonical PRIMAP-hist v2.6.1 DOI, harmonized-estimate accounting frame, LULUCF exclusion, inventory distinction, and uncertainty limitation." },
-    { "id": "screen-reader-semantics", "result": "pass", "evidence": "The exact runtime retains labelled rank controls, the wrapper-owned modal dialog, heading focus, named chart and table, source and limits, climate-performance boundary, and complete 249-record evidence view. A continuity audit found the same 104 class, id, role, and data-hook tokens before and after the copy change." },
-    { "id": "keyboard-focus", "result": "pass", "evidence": "The checked-in headless harness on bd5b6ef verified heading focus, Tab to Close, reverse Tab to Previous and wrapped Next without background escape, and opener restoration. Focus-control classes, listeners, and CSS are unchanged from the prior independent review." },
-    { "id": "touch-targets", "result": "pass", "evidence": "Fresh 320x720 and 375x720 measurements found a 44px minimum target for China Close, chart summary, and PRIMAP link and Greenland Close. At 640x400 with device scale factor 2 the minimum interactive target also remained 44px." },
-    { "id": "responsive-320", "result": "pass", "evidence": "Fresh 320x720 and 375x720 runs measured zero horizontal overflow and zero heading, pill, or Close overlap for both China and Greenland. Cards were fully visible at 248x582 and 303x582 respectively, with every measured interactive target at least 44px." },
-    { "id": "zoom-200", "result": "pass", "evidence": "Fresh 640x400 CSS-pixel testing at device scale factor 2 measured zero horizontal overflow, zero header overlap, a fully visible 540x262 card container, and 44px minimum controls; longer factual content remains available through the card's existing scroll region." },
-    { "id": "reduced-motion", "result": "pass", "evidence": "The exact bd5b6ef headless lifecycle run verified reduced-motion CSS and disabled auto-rotation while the copy changed. Motion controls and byte-identical globe-system CSS are unchanged from the prior independent dynamic-preference review." },
-    { "id": "contrast", "result": "pass", "evidence": "Continuity inference: css/globe-system.css is byte-identical to the prior independently reviewed 25ba293a9dd7 pin, preserving formal light/dark ratios above 6.28:1 and the 7.51:1 light banner. Fresh China and Greenland reflow measurements show the revised strings introduce no overlap or clipping." },
-    { "id": "color-removal", "result": "pass", "evidence": "Explicit continuity inference: css/globe-system.css is byte-identical and js/globe.js retains the exact same 104 class, id, role, and data-hook tokens as c7ba056. Changes are public strings plus a factual-versus-gap text choice inside the existing tt-candidate element; fresh normal rendering independently verified China rank/value/unit/not-scored labels, Greenland source-gap/unranked/no-estimate labels, focus containment, and non-overlapping reflow. Therefore the prior independently reviewed forced-colors and blocked-font result carries to bd5b6ef; no fresh forced-colors run is claimed." },
-    { "id": "polygon-render", "result": "pass", "evidence": "The checked-in bd5b6ef headless harness rendered one WebGL canvas with the exact 201-entity deck and validated 177-feature geometry. Pinned 3600x1800 surface and 4096x2048 sky textures retained exact MIME, dimensions, orientation, and one-renderer lifecycle." },
-    { "id": "fallback-render", "result": "pass", "evidence": "The exact harness exercised corrupt or unavailable candidate data, geometry, JPEG, SVG, timeout, retry, cancellation, WebGL loss, and recovery with zero-or-one-canvas behavior. A fresh unavailable-data route rendered truthful public text with zero CT, candidate, runtime-boundary, or review-process jargon." },
-    { "id": "smoke-and-stack", "result": "pass", "evidence": "The repository's exact checked-in headless-Chromium harness passed on bd5b6ef: SmokeTest 22 of 22, failed 0, criticalFailed 0; StackLint returned []; CSP violations were 0 and the vendored SVG initiated 0 subrequests." }
+    { "id": "runtime-boundary", "result": "pass", "evidence": "The exact 0ccf9cf runtime passed the complete checked-in lifecycle with one renderer and a 201-entity interactive deck from 177 source features: 194 factual entities plus 7 mapped gaps. The evidence browser contained all 249 records (206 factual and 43 gaps). Fresh service-worker testing installed and controlled with only elu-v37-return-contrast. review_status remains not_reviewed and production_runtime_release remains false." },
+    { "id": "truth-language", "result": "pass", "evidence": "Fresh factual, source-gap, unavailable-data, and neutral-rollback browser routes kept the public language truthful: ranks are not performance scores; source gaps expose no estimate; commitments and performance remain unassessed; and neither candidate nor rollback output implied release or deploy authority." },
+    { "id": "magnitude-and-gaps", "result": "pass", "evidence": "Fresh rendered evidence showed China as rank 1 at 15,000 MtCO2e/yr with the ranking explicitly labelled not a performance score. A source-gap card presented no numeric emissions estimate and remained visibly labelled unranked, not scored, and missing a reviewed source." },
+    { "id": "chart-table-source", "result": "pass", "evidence": "The selected factual card exposed its labelled 2014-2023 chart, Year/Value/Unit table, Source & methodology, canonical PRIMAP-hist v2.6.1 DOI, harmonized-estimate accounting frame, LULUCF exclusion, inventory distinction, and uncertainty limitation." },
+    { "id": "screen-reader-semantics", "result": "pass", "evidence": "The exact runtime retained labelled rank controls, a modal country card with focused heading, named chart and table, source and limits, explicit factual-versus-source-gap statuses, and a complete 249-record evidence view. Forced-colors testing kept the return control, rank rail, selected state, modal controls, statuses, and focus indicators distinguishable and operable with custom fonts blocked." },
+    { "id": "keyboard-focus", "result": "pass", "evidence": "Fresh 320x720, 375x720, 768x600, and 640x400 DPR2 contexts verified heading focus, forward and reverse Tab containment, arrow navigation from CHN to USA and back with heading focus retained, and both Escape and Close restoring the opener." },
+    { "id": "touch-targets", "result": "pass", "evidence": "Every measured interactive country-card control remained at least 44px at 320x720, 375x720, 768x600, and 640x400 with device scale factor 2. The compact return control remained visible, unclipped, focusable, and separate from the legend/dock at desktop and mobile sizes." },
+    { "id": "responsive-320", "result": "pass", "evidence": "Fresh 320x720 and 375x720 contexts measured zero horizontal overflow and no card-header, Close, legend, or return-control overlap. Card containers were 248x582 and 303x582 CSS pixels, used their intended vertical scroll regions, and retained an 18px return-control clearance." },
+    { "id": "zoom-200", "result": "pass", "evidence": "At a 640x400 CSS-pixel viewport with device scale factor 2, the selected card was contained at 540x262, measured zero horizontal overflow and zero header/control overlap, retained usable content scrolling (260px client height, 502px scroll height), and kept 44px minimum targets." },
+    { "id": "reduced-motion", "result": "pass", "evidence": "The exact checked-in headless lifecycle waited for the dynamic reduced-motion preference transition and verified autoRotate false at entry, while selected, after close, and after the preference change; reduced-motion animations remained disabled without the prior immediate race." },
+    { "id": "contrast", "result": "pass", "evidence": "Fresh computed-style measurements of the now-opaque return control passed WCAG AA: dark rgb(78, 205, 196) on rgb(10, 11, 18) measured 10.148:1, and light rgb(31, 94, 70) on rgb(250, 247, 240) measured 7.143:1. The control was visible and unclipped at 1280x800 and 375x720 with a visible focus indicator." },
+    { "id": "color-removal", "result": "pass", "evidence": "A fresh 1280x800 forced-colors context with three custom-font requests blocked kept the return control, rank rail, country modal controls and statuses, selected aria-current state, factual China state, source-gap ATF state, and focus indicators distinguishable and operable without color alone; no control was hidden or clipped and horizontal overflow was zero." },
+    { "id": "polygon-render", "result": "pass", "evidence": "The exact lifecycle rendered one WebGL canvas with the 201-entity deck and 177-feature geometry. It validated the 3600x1800 image/jpeg NASA surface and restored original 4096x2048 image/png Three-Globe sky, including paths, flipY, sky mesh, one-renderer lifecycle, and zero CSP, console, or page errors. A controlled v37 reload still rendered 201 entities." },
+    { "id": "fallback-render", "result": "pass", "evidence": "The checked-in lifecycle exercised corrupt or unavailable candidate data, geometry, JPEG, PNG, timeout, retry, cancellation, WebGL loss, and recovery. The committed deterministic rollback proof materialized 14 of 14 dependencies, rejected all 49 mutations, and its browser harness passed 18 of 18 with 173 retained polygons plus 28 neutral points, one canvas, no candidate/image requests, no prohibited outputs, and no release/deploy authority." },
+    { "id": "smoke-and-stack", "result": "pass", "evidence": "The repository's complete checked-in headless-Chromium runchecks body passed on 0ccf9cf in 27 seconds: SmokeTest 22 of 22, failed 0, criticalFailed 0; StackLint returned []; CSP violations, unexpected console errors, and page errors were all zero." }
   ],
   "publication_boundary": {
     "runtime_ui_review_passed": true,
