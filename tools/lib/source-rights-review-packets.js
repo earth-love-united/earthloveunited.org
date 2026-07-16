@@ -17,10 +17,10 @@ const SOURCE_IDS = Object.freeze([
 ]);
 const EXPECTED_INPUT_SHA256 = Object.freeze({
   source_registry: 'ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d',
-  ct15_readiness: '8b29a6b6eec99f49d8e0c88cce0bae4f26f03b3310151f4fb049505fc58e954a',
-  ct16_policy: 'f6014788a0d25246bc370db54a707b42c320719ec912731f381494d055912e17',
-  ct16_queue: '9b4a4362be11ce36771aab48299c04813908ed35fec7fb123d47c749c07241a3',
-  ct40_result: '1c6d0de6ed95e94292ee3371b5ed851fed8bfb94849eb6f823ff729694d85b18',
+  ct15_readiness: 'db8574dd474eecb5a64c5d37fc4ffe2ee4bb2726e738f93a76a383fc2447ed3e',
+  ct16_policy: '7db6ad6f4b30ce9aaf25092f5d01d3399a72c8de93cdf3167371a4d3dd113169',
+  ct16_queue: '26f70539e4da1ee6d3bd13c13687dbff0d28d1a6595842699eb100ba35775689',
+  ct40_result: 'aa8ba26cd54000615c157e30645d2fc62653630a9de37e4427cdc7c4b8684d10',
 });
 const DECISION_FIELDS = Object.freeze([
   'decision_id',

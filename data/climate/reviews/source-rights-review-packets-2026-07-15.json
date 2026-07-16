@@ -12,19 +12,19 @@
     },
     "ct15_readiness": {
       "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
-      "sha256": "8b29a6b6eec99f49d8e0c88cce0bae4f26f03b3310151f4fb049505fc58e954a"
+      "sha256": "db8574dd474eecb5a64c5d37fc4ffe2ee4bb2726e738f93a76a383fc2447ed3e"
     },
     "ct16_policy": {
       "path": "data/climate/releases/source-routing-policy-v2-2026-07-15.json",
-      "sha256": "f6014788a0d25246bc370db54a707b42c320719ec912731f381494d055912e17"
+      "sha256": "7db6ad6f4b30ce9aaf25092f5d01d3399a72c8de93cdf3167371a4d3dd113169"
     },
     "ct16_queue": {
       "path": "data/climate/releases/top20-source-routing-queue-v2-2026-07-15.json",
-      "sha256": "9b4a4362be11ce36771aab48299c04813908ed35fec7fb123d47c749c07241a3"
+      "sha256": "26f70539e4da1ee6d3bd13c13687dbff0d28d1a6595842699eb100ba35775689"
     },
     "ct40_result": {
       "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
-      "sha256": "1c6d0de6ed95e94292ee3371b5ed851fed8bfb94849eb6f823ff729694d85b18"
+      "sha256": "aa8ba26cd54000615c157e30645d2fc62653630a9de37e4427cdc7c4b8684d10"
     }
   },
   "governance_boundary": {
@@ -778,5 +778,5 @@
       }
     }
   ],
-  "calculation_hash": "3c218b0c09c71f6b6f38cad8c732822cf45a0e33ee6c1a6171b6d23ff644d8f2"
+  "calculation_hash": "8a45d24894370ac4864ab503ecad371196e24006f908cddfd5ab579433c7668e"
 }

@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "queue_id": "ct-16-top20-source-routing-queue-v2-2026-07-15",
   "routing_policy_id": "ct-16-source-routing-policy-v2-2026-07-15",
-  "routing_policy_calculation_hash": "02f0ddd949d52f37d1e49072f4fe6230a40f872d9b099b741ab30870f01f8d09",
+  "routing_policy_calculation_hash": "f01541ce50522766faffa866cd8e6e22b5708280c435d8c5639937a419b79b06",
   "created_at": "2026-07-15T14:00:00Z",
   "review_status": "not_reviewed",
   "release_eligible": false,
@@ -15,7 +15,7 @@
     },
     "source_routing_policy": {
       "path": "data/climate/releases/source-routing-policy-v2-2026-07-15.json",
-      "calculation_hash": "02f0ddd949d52f37d1e49072f4fe6230a40f872d9b099b741ab30870f01f8d09"
+      "calculation_hash": "f01541ce50522766faffa866cd8e6e22b5708280c435d8c5639937a419b79b06"
     }
   },
   "coverage": {
@@ -2552,5 +2552,5 @@
     "climate scores",
     "production runtime facts"
   ],
-  "calculation_hash": "c3d365788791118af7846b52b919411d27f5ec62d7a4ed6c22b9c03c378ac68e"
+  "calculation_hash": "d953a6f4e0b2aba2b144ec91f8d7e5cec62fd572819076c52b064a2b86f1be52"
 }
