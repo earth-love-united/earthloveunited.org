@@ -215,7 +215,8 @@ const hasCandidateLegend = index.includes('Emissions magnitude only—not a clim
 const candidateCache = serviceWorker.includes("const CACHE_NAME = 'elu-v27-ct42-candidate'") && hasCandidateLegend;
 const localizedCandidateCache = (serviceWorker.includes("const CACHE_NAME = 'elu-v33-focus-trap'") ||
   serviceWorker.includes("const CACHE_NAME = 'elu-v35-og-bg'") ||
-  serviceWorker.includes("const CACHE_NAME = 'elu-v36-dock-review'")) &&
+  serviceWorker.includes("const CACHE_NAME = 'elu-v36-dock-review'") ||
+  serviceWorker.includes("const CACHE_NAME = 'elu-v37-return-contrast'")) &&
   serviceWorker.includes("'/assets/globe/runtime/manifest.json'") &&
   serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'") && hasCandidateLegend;
 if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'") && !candidateCache && !localizedCandidateCache) {
@@ -226,7 +227,8 @@ if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=27-ct42-candidate'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=33-focus-trap'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=35-og-bg'") &&
-    !index.includes("navigator.serviceWorker.register('/sw.js?v=36-dock-review'")) {
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=36-dock-review'") &&
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=37-return-contrast'")) {
   failures.push('index.html: service-worker registration is neither v26, candidate v27, nor a supported localized evidence release');
 }
 

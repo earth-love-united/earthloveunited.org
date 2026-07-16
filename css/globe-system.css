@@ -1057,6 +1057,9 @@ body.globe-mode #globe-back-btn {
   width: var(--globe-back-width);
   min-height: var(--globe-back-height);
   padding: 10px 14px;
+  border-color: var(--border-hi);
+  background: var(--bg2);
+  color: var(--teal);
   overflow: hidden;
   font-size: 10px;
   letter-spacing: 1.7px;

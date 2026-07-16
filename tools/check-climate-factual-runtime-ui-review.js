@@ -38,10 +38,10 @@ const EXPECTED_RUNTIME_EVIDENCE = {
   },
   stack_lint_issues: 0,
   delivery_versions: {
-    globe_system_css: 'v18',
+    globe_system_css: 'v19',
     globe_script: 'v13',
-    service_worker_registration: '36-dock-review',
-    service_worker_cache: 'elu-v36-dock-review',
+    service_worker_registration: '37-return-contrast',
+    service_worker_cache: 'elu-v37-return-contrast',
   },
   browser_qa: {
     mobile: {
@@ -92,10 +92,10 @@ const EXPECTED_RUNTIME_EVIDENCE = {
     },
     cache: {
       controller_reload_verified: true,
-      css_key: '/css/globe-system.css?v=v18',
+      css_key: '/css/globe-system.css?v=v19',
       globe_key: '/js/globe.js?v=v13',
-      service_worker_key: '/sw.js?v=36-dock-review',
-      cache_name: 'elu-v36-dock-review',
+      service_worker_key: '/sw.js?v=37-return-contrast',
+      cache_name: 'elu-v37-return-contrast',
     },
   },
 };
@@ -234,11 +234,11 @@ assert.match(boundary.required_next_gate, /CT-40 independent allow decision/);
 
 const index = read('index.html');
 const serviceWorker = read('sw.js');
-assert.ok(index.includes('href="css/globe-system.css?v=v18"'), 'index CSS cache key drift');
+assert.ok(index.includes('href="css/globe-system.css?v=v19"'), 'index CSS cache key drift');
 assert.ok(index.includes('src="js/globe.js?v=v13"'), 'index globe cache key drift');
-assert.ok(index.includes("register('/sw.js?v=36-dock-review'"), 'service-worker registration key drift');
-assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v36-dock-review';"), 'service-worker cache name drift');
-assert.ok(serviceWorker.includes("'/css/globe-system.css?v=v18'"), 'service-worker CSS cache key drift');
+assert.ok(index.includes("register('/sw.js?v=37-return-contrast'"), 'service-worker registration key drift');
+assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v37-return-contrast';"), 'service-worker cache name drift');
+assert.ok(serviceWorker.includes("'/css/globe-system.css?v=v19'"), 'service-worker CSS cache key drift');
 assert.ok(serviceWorker.includes("'/js/globe.js?v=v13'"), 'service-worker globe cache key drift');
 
 const geometry = readJson('assets/globe/runtime/ne_110m_admin_0_countries.geojson');
