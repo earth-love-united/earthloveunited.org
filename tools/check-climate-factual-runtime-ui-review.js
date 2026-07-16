@@ -38,10 +38,10 @@ const EXPECTED_RUNTIME_EVIDENCE = {
   },
   stack_lint_issues: 0,
   delivery_versions: {
-    globe_system_css: 'v15',
+    globe_system_css: 'v17',
     globe_script: 'v11',
-    service_worker_registration: '34-truth-copy',
-    service_worker_cache: 'elu-v34-truth-copy',
+    service_worker_registration: '35-og-bg',
+    service_worker_cache: 'elu-v35-og-bg',
   },
   browser_qa: {
     mobile: {
@@ -78,10 +78,10 @@ const EXPECTED_RUNTIME_EVIDENCE = {
         flip_y: true,
       },
       sky: {
-        path: 'assets/globe/runtime/night-sky.svg',
+        path: 'assets/globe/runtime/night-sky.png',
         width: 4096,
         height: 2048,
-        mime: 'image/svg+xml',
+        mime: 'image/png',
         flip_y: true,
         mesh: true,
       },
@@ -92,10 +92,10 @@ const EXPECTED_RUNTIME_EVIDENCE = {
     },
     cache: {
       controller_reload_verified: true,
-      css_key: '/css/globe-system.css?v=v15',
-      globe_key: '/js/globe.js?v=v11',
-      service_worker_key: '/sw.js?v=34-truth-copy',
-      cache_name: 'elu-v34-truth-copy',
+      css_key: '/css/globe-system.css?v=v17',
+      globe_key: '/js/globe.js?v=v12',
+      service_worker_key: '/sw.js?v=35-og-bg',
+      cache_name: 'elu-v35-og-bg',
     },
   },
 };
@@ -234,12 +234,12 @@ assert.match(boundary.required_next_gate, /CT-40 independent allow decision/);
 
 const index = read('index.html');
 const serviceWorker = read('sw.js');
-assert.ok(index.includes('href="css/globe-system.css?v=v15"'), 'index CSS cache key drift');
-assert.ok(index.includes('src="js/globe.js?v=v11"'), 'index globe cache key drift');
-assert.ok(index.includes("register('/sw.js?v=34-truth-copy'"), 'service-worker registration key drift');
-assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v34-truth-copy';"), 'service-worker cache name drift');
-assert.ok(serviceWorker.includes("'/css/globe-system.css?v=v15'"), 'service-worker CSS cache key drift');
-assert.ok(serviceWorker.includes("'/js/globe.js?v=v11'"), 'service-worker globe cache key drift');
+assert.ok(index.includes('href="css/globe-system.css?v=v17"'), 'index CSS cache key drift');
+assert.ok(index.includes('src="js/globe.js?v=v12"'), 'index globe cache key drift');
+assert.ok(index.includes("register('/sw.js?v=35-og-bg'"), 'service-worker registration key drift');
+assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v35-og-bg';"), 'service-worker cache name drift');
+assert.ok(serviceWorker.includes("'/css/globe-system.css?v=v17'"), 'service-worker CSS cache key drift');
+assert.ok(serviceWorker.includes("'/js/globe.js?v=v12'"), 'service-worker globe cache key drift');
 
 const geometry = readJson('assets/globe/runtime/ne_110m_admin_0_countries.geojson');
 assert.equal(geometry.type, 'FeatureCollection');

@@ -115,7 +115,7 @@
           "const": "assets/globe/runtime/manifest.json"
         },
         "sha256": {
-          "const": "6f03e630512982f2edfd40097881bae73bbc49110ca79c6fdbb49dc7b44b7da4"
+          "const": "5c11517a0f75e1af70169c565b46002c4361cdac18d6a6191f06e9f31ac7f67a"
         }
       }
     },
@@ -148,7 +148,7 @@
           "const": "data/governance/vendor/globe-gl-2.46.1-notices-integration.json"
         },
         "integration_sha256": {
-          "const": "5faec989558a53787fa4c75f70a544348add64516d4ebf1db18f0710905e393e"
+          "const": "a911d998d0336b8ff5649d0a5ff07103a8fa54351cc64607771a98cd8cdeb795"
         },
         "integrity_verified": {
           "const": true
@@ -391,22 +391,22 @@
               "const": "night-sky"
             },
             "path": {
-              "const": "assets/globe/runtime/night-sky.svg"
+              "const": "assets/globe/runtime/night-sky.png"
             },
             "sha256": {
-              "const": "233713fa6ed8a495ed49deb97b89f46228aa49a83460e1379a60b3cee57c5688"
+              "const": "7e1d5e780301e3a33bd79fd3ac414f7a742465f33ae4605abca743d43a3ab983"
             },
             "source_url": {
-              "const": null
+              "const": "https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/night-sky.png"
             },
             "source_path": {
-              "const": "tools/authoring/generate-globe-starfield.js"
+              "const": null
             },
             "source_asset_id": {
-              "const": "elu-night-sky-v1"
+              "const": "night-sky.png"
             },
             "source_type": {
-              "const": "repo_authored_original"
+              "const": "third_party_package_asset"
             }
           }
         }

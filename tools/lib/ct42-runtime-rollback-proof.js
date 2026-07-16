@@ -70,7 +70,7 @@ const RUNTIME_EXCLUSIONS = Object.freeze([
   'data/climate/runtime/country-factual-candidate.json',
   'assets/globe/runtime/manifest.json',
   'assets/globe/runtime/earth-night.jpg',
-  'assets/globe/runtime/night-sky.svg',
+  'assets/globe/runtime/night-sky.png',
   'assets/globe/runtime/earth-blue-marble.jpg',
   'assets/globe/runtime/earth-topology.png',
 ]);
@@ -522,7 +522,7 @@ function validateRollbackState(rehearsalRoot, proof, options = {}) {
   assert.ok(!globe.includes('Data.getClimateCountry') && !globe.includes('Data.getClimateRanking'), 'candidate climate adapter survived rollback');
   assert.ok(globe.includes("surface: null") && globe.includes("backgroundImage: null"), 'solid globe/background configuration is absent');
   assert.ok(!globe.includes('/assets/globe/runtime/earth-night.jpg') &&
-    !globe.includes('/assets/globe/runtime/night-sky.svg') &&
+    !globe.includes('/assets/globe/runtime/night-sky.png') &&
     !globe.includes('/assets/globe/runtime/earth-blue-marble.jpg') &&
     !globe.includes('/assets/globe/runtime/earth-topology.png'), 'visual asset URL survived rollback');
   assert.ok(!/https?:\/\//.test(globe) && !/https?:\/\//.test(data) && !/https?:\/\//.test(sw), 'remote runtime URL survived rollback');

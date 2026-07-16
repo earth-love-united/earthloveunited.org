@@ -162,8 +162,8 @@ inferred climate values.
 Before loading globe.gl, `GlobeModule.prepare()` must preload and validate the
 local 177-feature GeoJSON plus all four local globe visuals. The dark surface is
 a byte-for-byte 3600×1800 NASA Earth Observatory Black Marble 2012 JPEG; the
-4096×2048 sky is a deterministic repository-authored SVG made only from safe,
-seam-twinned geometric primitives and explicitly is not astronomical evidence.
+4096×2048 sky restores the original Three-Globe 2.45.2 PNG as an exact,
+locally pinned decorative asset and is not astronomical evidence.
 Preparation validates exact image dimensions and strong Polygon/MultiPolygon
 structure. The 28 approximate
 small-state points are embedded navigation affordances pinned to a hashed

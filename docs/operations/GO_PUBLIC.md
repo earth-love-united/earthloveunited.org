@@ -259,9 +259,9 @@ other production input is unresolved. Use
 a public preview.
 
 CT-45 now pins the dark surface to the byte-for-byte NASA Earth Observatory
-Black Marble 2012 JPEG and the sky to a deterministic repository-authored SVG.
-This closes the previous origin ambiguity and records NASA acknowledgement and
-no-endorsement terms, but it is provenance remediation only. Human runtime
+Black Marble 2012 JPEG and restores the original Three-Globe 2.45.2 PNG sky as
+an exact local asset. This records the NASA acknowledgement, no-endorsement
+terms, and package provenance, but it is provenance remediation only. Human runtime
 rights review, production approval, and release authority remain false.
 
 The protected Ed25519 registry is intentionally empty and `unprovisioned`.

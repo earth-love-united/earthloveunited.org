@@ -38,7 +38,7 @@
     { "id": "post-service-registration-regressed", "phase": "post", "target": "index.html", "operation": "replace", "from": "/sw.js?v=34-ct42-neutral-rollback", "value": "/sw.js?v=33-focus-trap" },
     { "id": "post-cache-epoch-regressed", "phase": "post", "target": "sw.js", "operation": "replace", "from": "elu-v34-ct42-neutral-rollback", "value": "elu-v33-focus-trap" },
     { "id": "post-candidate-precache-restored", "phase": "post", "target": "sw.js", "operation": "append", "value": "\nconst leakedCandidate = '/data/climate/runtime/country-factual-candidate.json';\n" },
-    { "id": "post-visual-precache-restored", "phase": "post", "target": "sw.js", "operation": "append", "value": "\nconst leakedVisual = '/assets/globe/runtime/night-sky.svg';\n" },
+    { "id": "post-visual-precache-restored", "phase": "post", "target": "sw.js", "operation": "append", "value": "\nconst leakedVisual = '/assets/globe/runtime/night-sky.png';\n" },
     { "id": "post-rollback-smoke-test-weakened", "phase": "post", "target": "tools/smoke-test.js", "operation": "replace", "from": "Exact neutral country navigation boundary", "value": "Country navigation exists" },
     { "id": "post-foundation-dependency-drift", "phase": "post", "target": "js/gaia-utils.js", "operation": "append", "value": "\n// post-materialization drift\n" },
     { "id": "post-geometry-byte-drift", "phase": "post", "target": "assets/globe/runtime/ne_110m_admin_0_countries.geojson", "operation": "append", "value": "\n" },

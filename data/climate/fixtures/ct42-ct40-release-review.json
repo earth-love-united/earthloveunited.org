@@ -16,7 +16,7 @@
     { "id": "ui-pin-missing-service-worker", "operation": "remove-ui-pin", "path": "sw.js", "expected": "reject" },
     { "id": "ui-pin-missing-runtime-manifest", "operation": "remove-ui-pin", "path": "assets/globe/runtime/manifest.json", "expected": "reject" },
     { "id": "ui-pin-missing-runtime-texture", "operation": "remove-ui-pin", "path": "assets/globe/runtime/earth-night.jpg", "expected": "reject" },
-    { "id": "ui-pin-missing-runtime-starfield", "operation": "remove-ui-pin", "path": "assets/globe/runtime/night-sky.svg", "expected": "reject" },
+    { "id": "ui-pin-missing-runtime-starfield", "operation": "remove-ui-pin", "path": "assets/globe/runtime/night-sky.png", "expected": "reject" },
     { "id": "ui-pin-missing-point-provenance", "operation": "remove-ui-pin", "path": "data/small-nations.json", "expected": "reject" },
     { "id": "ui-pin-wrong-app", "operation": "set-ui-pin", "path": "js/app.js", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "expected": "reject" },
     { "id": "ui-pin-list-empty", "operation": "clear-ui-pins", "expected": "reject" },

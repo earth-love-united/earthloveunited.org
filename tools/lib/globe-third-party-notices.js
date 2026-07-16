@@ -19,9 +19,9 @@ const APPROVAL_SCHEMA_PATH = 'data/climate/schemas/globe-runtime-assets-producti
 const EXPECTED_MANIFEST_SHA256 = '542e9bf2043f1c670200be9c9b0455b93048514dfb8b602301ca1245918660c2';
 const EXPECTED_MANIFEST_CALCULATION_HASH = '5b671c6e7357d35863b5bcd390a976939a279adc230ae84d43a702566413a66d';
 const EXPECTED_NOTICE_SHA256 = '741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2';
-const EXPECTED_INTEGRATION_SHA256 = '5faec989558a53787fa4c75f70a544348add64516d4ebf1db18f0710905e393e';
-const EXPECTED_INTEGRATION_CALCULATION_HASH = 'daa2de1dc17a991c3251ca3a5c7709bbba39081a70d1416de5872c927a3f85cf';
-const EXPECTED_APPROVAL_SCHEMA_SHA256 = '4e5b5e6360b280da9055c72daa84e2a3644f308a80c3f4f4c6e24bb92b6447f2';
+const EXPECTED_INTEGRATION_SHA256 = 'a911d998d0336b8ff5649d0a5ff07103a8fa54351cc64607771a98cd8cdeb795';
+const EXPECTED_INTEGRATION_CALCULATION_HASH = 'eb378696e0433079aaa4dad0b8ecad0dab46b2526c1fcc7ad9976a545c75de1a';
+const EXPECTED_APPROVAL_SCHEMA_SHA256 = 'd93c141952e8da7f59f1ac65095775fed5fe86d44e019943a8c33ff52143bb27';
 
 const EXPECTED_BUNDLE = Object.freeze({
   name: 'globe.gl',
@@ -173,13 +173,13 @@ const EXPECTED_ASSET_RIGHTS_ROWS = Object.freeze([
   }),
   Object.freeze({
     asset_id: 'night-sky',
-    path: 'assets/globe/runtime/night-sky.svg',
-    sha256: '233713fa6ed8a495ed49deb97b89f46228aa49a83460e1379a60b3cee57c5688',
-    source_url: null,
-    source_path: 'tools/authoring/generate-globe-starfield.js',
-    source_asset_id: 'elu-night-sky-v1',
-    source_type: 'repo_authored_original',
-    origin_evidence_status: 'repo_authored_original_review_pending'
+    path: 'assets/globe/runtime/night-sky.png',
+    sha256: '7e1d5e780301e3a33bd79fd3ac414f7a742465f33ae4605abca743d43a3ab983',
+    source_url: 'https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/night-sky.png',
+    source_path: null,
+    source_asset_id: 'night-sky.png',
+    source_type: 'third_party_package_asset',
+    origin_evidence_status: 'package_provenance_only_rights_unreviewed'
   }),
   Object.freeze({
     asset_id: 'earth-blue-marble',
@@ -847,9 +847,9 @@ function evaluateNoticeIntegration(input) {
       }) &&
       approvalRows && approvalRows.minItems === 5 && approvalRows.maxItems === 5 &&
       Array.isArray(approvalRows.prefixItems) && approvalRows.prefixItems.length === 5 &&
-      skyProperties && skyProperties.path.const === 'assets/globe/runtime/night-sky.svg' &&
-      skyProperties.source_url.const === null &&
-      skyProperties.source_path.const === 'tools/authoring/generate-globe-starfield.js' &&
+      skyProperties && skyProperties.path.const === 'assets/globe/runtime/night-sky.png' &&
+      skyProperties.source_url.const === 'https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/night-sky.png' &&
+      skyProperties.source_path.const === null &&
       approvalSchema.properties.counsel_resolutions.minItems === 4 &&
       approvalSchema.properties.counsel_resolutions.maxItems === 4,
     'approval_schema',

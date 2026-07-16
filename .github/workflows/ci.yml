@@ -39,9 +39,6 @@ jobs:
       - name: globe.gl vendor delivery policy
         run: node tools/check-globe-vendor-integrity.js
 
-      - name: Verify deterministic globe starfield
-        run: node tools/authoring/generate-globe-starfield.js --check
-
       - name: Verify NASA Black Marble source pin
         run: ./tools/authoring/fetch-nasa-black-marble.sh --check
 
@@ -186,23 +183,6 @@ jobs:
             try { localStorage.setItem('elu-theme', 'dark'); } catch {}
           });
 
-          const cdp = await ctx.newCDPSession(page);
-          await cdp.send('Network.enable');
-          const svgSubrequests = [];
-          cdp.on('Network.requestWillBeSent', event => {
-            const stackUrls = [];
-            let stack = event.initiator?.stack;
-            while (stack) {
-              (stack.callFrames || []).forEach(frame => stackUrls.push(frame.url));
-              stack = stack.parent;
-            }
-            const initiatorUrls = [event.documentURL, event.initiator?.url, ...stackUrls].filter(Boolean);
-            if (initiatorUrls.some(url => url.includes('/assets/globe/runtime/night-sky.svg')) &&
-                !event.request.url.includes('/assets/globe/runtime/night-sky.svg')) {
-              svgSubrequests.push(event.request.url);
-            }
-          });
-
           const consoleErrors = [];
           const trackErrors = (target, options = {}) => {
             target.on('pageerror', e => consoleErrors.push('pageerror: ' + e.message));
@@ -280,8 +260,8 @@ jobs:
           await exercisePreRenderFailure('**/data/climate/runtime/country-factual-candidate.json*', 'candidate_data_unavailable', { status: 503, body: 'candidate unavailable' }, /\[Data\._indexClimateCandidate\(\)\] CT-42 candidate boundary or shape invalid/);
           await exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable', { status: 503, body: 'geometry unavailable' });
           await exercisePreRenderFailure('**/assets/globe/runtime/earth-night.jpg*', 'visual_assets_unavailable', { status: 200, contentType: 'image/jpeg', headers: { 'Cache-Control': 'no-store' }, body: 'invalid image bytes' });
-          await exercisePreRenderFailure('**/assets/globe/runtime/night-sky.svg*', 'visual_assets_unavailable', { status: 200, contentType: 'image/svg+xml', headers: { 'Cache-Control': 'no-store' }, body: 'invalid svg bytes' });
-          await exercisePreRenderTimeout('**/assets/globe/runtime/night-sky.svg*', 'visual_assets_unavailable');
+          await exercisePreRenderFailure('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable', { status: 200, contentType: 'image/png', headers: { 'Cache-Control': 'no-store' }, body: 'invalid png bytes' });
+          await exercisePreRenderTimeout('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable');
 
           const cancellationPage = await ctx.newPage();
           trackErrors(cancellationPage);
@@ -306,14 +286,14 @@ jobs:
 
           await page.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
 
-          const svgResponse = await page.evaluate(async () => {
-            const response = await fetch('/assets/globe/runtime/night-sky.svg?v=233713fa6ed8', { cache: 'no-store' });
+          const skyResponse = await page.evaluate(async () => {
+            const response = await fetch('/assets/globe/runtime/night-sky.png?v=7e1d5e780301', { cache: 'no-store' });
             return {
               ok: response.ok,
-              exactMime: response.headers.get('content-type')?.split(';')[0] === 'image/svg+xml',
+              exactMime: response.headers.get('content-type')?.split(';')[0] === 'image/png',
             };
           });
-          assert(svgResponse.ok && svgResponse.exactMime, 'night-sky.svg must be served with the exact image/svg+xml MIME type');
+          assert(skyResponse.ok && skyResponse.exactMime, 'night-sky.png must be served with the exact image/png MIME type');
 
           const viewportPolicy = await page.locator('meta[name="viewport"]').getAttribute('content');
           assert(viewportPolicy?.includes('width=device-width') && viewportPolicy?.includes('initial-scale=1.0') &&
@@ -352,17 +332,17 @@ jobs:
             const textureState = window.GlobeModule?.getRuntimeTextureState?.();
             return textureState?.surface?.src.includes('/assets/globe/runtime/earth-night.jpg') &&
               textureState?.surface?.width === 3600 && textureState?.surface?.height === 1800 &&
-              textureState?.sky?.src.includes('/assets/globe/runtime/night-sky.svg') &&
+              textureState?.sky?.src.includes('/assets/globe/runtime/night-sky.png') &&
               textureState?.sky?.width === 4096 && textureState?.sky?.height === 2048;
           }, null, { timeout: 30000 });
           let textureState = await page.evaluate(() => window.GlobeModule.getRuntimeTextureState());
           assert(textureState.surface.src.includes('/assets/globe/runtime/earth-night.jpg') &&
             textureState.surface.width === 3600 && textureState.surface.height === 1800 && textureState.surface.flipY === true,
           'live Three.js surface must use the exact NASA JPEG dimensions and orientation');
-          assert(textureState.sky.src.includes('/assets/globe/runtime/night-sky.svg') &&
+          assert(textureState.sky.src.includes('/assets/globe/runtime/night-sky.png') &&
             textureState.sky.width === 4096 && textureState.sky.height === 2048 && textureState.sky.flipY === true &&
             textureState.sky.materialSide === 1 && textureState.sky.mesh === true,
-          'live Three.js skysphere must use the exact local SVG texture on a back-side mesh');
+          'live Three.js skysphere must use the exact local PNG texture on a back-side mesh');
 
           const initialTheme = await page.evaluate(() => document.documentElement.dataset.theme || 'dark');
           assert(initialTheme === 'dark', 'texture lifecycle test must begin on the dark NASA/starfield theme');
@@ -374,7 +354,7 @@ jobs:
           await page.waitForFunction(() => {
             const state = window.GlobeModule?.getRuntimeTextureState?.();
             return state?.surface?.src.includes('/assets/globe/runtime/earth-night.jpg') &&
-              state?.sky?.src.includes('/assets/globe/runtime/night-sky.svg');
+              state?.sky?.src.includes('/assets/globe/runtime/night-sky.png');
           }, null, { timeout: 30000 });
           textureState = await page.evaluate(() => window.GlobeModule.getRuntimeTextureState());
           assert(textureState.surface.width === 3600 && textureState.sky.width === 4096 &&
@@ -456,8 +436,6 @@ jobs:
 
           const cspViolations = await page.evaluate(() => window.__ct45CspViolations || []);
           assert(cspViolations.length === 0, 'live globe must produce no CSP violations: ' + JSON.stringify(cspViolations));
-          assert(svgSubrequests.length === 0, 'night-sky.svg must produce no SVG-initiated subrequests: ' + JSON.stringify(svgSubrequests));
-
           const smoke = await page.evaluate(async () => {
             try { return await window.SmokeTest.run(); }
             catch (e) { return { error: String(e) }; }

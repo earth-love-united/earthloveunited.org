@@ -8,9 +8,8 @@ const MANIFEST_PATH = 'assets/globe/runtime/manifest.json';
 const UI_REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
 const EXPECTED_UI_REVIEW_COMMIT = 'bd5b6ef63df2ba17103e78351aedf677fb2d339f';
 const EXPECTED_UI_REVIEW_SHA256 = 'e8beae7b1f83b15f41f00dad77e1b21f098a8d31fae0b147fa4b1023803862e3';
-const EXPECTED_MANIFEST_SHA256 = '6f03e630512982f2edfd40097881bae73bbc49110ca79c6fdbb49dc7b44b7da4';
-const EXPECTED_MANIFEST_SEMANTIC_SHA256 = '687e6ba28c5ffe422be5a4579f6ebfb910f54598782ddb4702b54cdd0ad3c3d2';
-const EXPECTED_STARFIELD_GENERATOR_SHA256 = '4097bcbcb2bf0a9279ae0c8eeab7c0393b54fd72b4ea9fcf141e8fc6b1f55a25';
+const EXPECTED_MANIFEST_SHA256 = '5c11517a0f75e1af70169c565b46002c4361cdac18d6a6191f06e9f31ac7f67a';
+const EXPECTED_MANIFEST_SEMANTIC_SHA256 = '1bf154b73ddcb4d2ef51397d1e489b22f0bcadb8b13cbcec2bc7d2bbff949a9f';
 const EXPECTED_NASA_FETCHER_SHA256 = 'ade65419169d17404506d2dee5cfdbacb8f2c0c6a76d3d59b34482892edd4466';
 const EXPECTED_NATURAL_EARTH_SOURCES = Object.freeze({
   about_url: 'https://www.naturalearthdata.com/about/',
@@ -31,7 +30,7 @@ const EXPECTED_NASA_SOURCES = Object.freeze({
 const EXPECTED_ASSETS = Object.freeze([
   Object.freeze({ id: 'country-geometry', kind: 'geojson', path: 'assets/globe/runtime/ne_110m_admin_0_countries.geojson', runtime_url: '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75', source_url: 'https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/example/datasets/ne_110m_admin_0_countries.geojson', source_package: 'globe.gl', source_version: '2.46.1', sha256: 'a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0', bytes: 488013, feature_count: 177 }),
   Object.freeze({ id: 'earth-night', kind: 'image', path: 'assets/globe/runtime/earth-night.jpg', runtime_url: '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3', source_url: 'https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/79000/79765/dnb_land_ocean_ice.2012.3600x1800.jpg', sha256: '373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124', bytes: 794479, width: 3600, height: 1800 }),
-  Object.freeze({ id: 'night-sky', kind: 'image', path: 'assets/globe/runtime/night-sky.svg', runtime_url: '/assets/globe/runtime/night-sky.svg?v=233713fa6ed8', source_url: null, sha256: '233713fa6ed8a495ed49deb97b89f46228aa49a83460e1379a60b3cee57c5688', bytes: 264897, width: 4096, height: 2048 }),
+  Object.freeze({ id: 'night-sky', kind: 'image', path: 'assets/globe/runtime/night-sky.png', runtime_url: '/assets/globe/runtime/night-sky.png?v=7e1d5e780301', source_url: 'https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/night-sky.png', source_package: 'three-globe', source_version: '2.45.2', sha256: '7e1d5e780301e3a33bd79fd3ac414f7a742465f33ae4605abca743d43a3ab983', bytes: 904154, width: 4096, height: 2048 }),
   Object.freeze({ id: 'earth-blue-marble', kind: 'image', path: 'assets/globe/runtime/earth-blue-marble.jpg', runtime_url: '/assets/globe/runtime/earth-blue-marble.jpg?v=228deba2e4b6', source_url: 'https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-blue-marble.jpg', source_package: 'three-globe', source_version: '2.45.2', sha256: '228deba2e4b600146bdcb6cfa359b8ead6aacc2b1c13550a29cd82824cfa1c01', bytes: 1461877, width: 4096, height: 2048 }),
   Object.freeze({ id: 'earth-topology', kind: 'image', path: 'assets/globe/runtime/earth-topology.png', runtime_url: '/assets/globe/runtime/earth-topology.png?v=839b12da2e4d', source_url: 'https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-topology.png', source_package: 'three-globe', source_version: '2.45.2', sha256: '839b12da2e4dd346b256cebae72e10c479a102c8980a22084c41275e4b9a0e12', bytes: 378243, width: 2048, height: 1024 }),
 ]);
@@ -66,24 +65,7 @@ const EXPECTED_ASSET_MANIFEST_EXTRAS = Object.freeze({
     production_use_approved: false,
   }),
   'night-sky': Object.freeze({
-    source_type: 'repo_authored_original',
-    source_path: 'tools/authoring/generate-globe-starfield.js',
-    source_version: 'elu-night-sky-v1',
-    source_sha256: EXPECTED_STARFIELD_GENERATOR_SHA256,
-    creator: 'Earth Love United',
-    license: 'MIT',
-    third_party_content: false,
-    origin_evidence_status: 'repo_authored_original',
-    media_type: 'image/svg+xml',
-    generator_seed: '0x454c5531',
-    logical_star_count: 4096,
-    rendered_circle_count: 4103,
-    horizontal_seam_twin_count: 7,
-    opaque_background: '#02040a',
-    synthetic: true,
-    astronomical_data: false,
-    purpose_limitation: 'Decorative deterministic starfield only; not astronomical data, observation, map, or current climate-performance evidence.',
-    rights_basis: 'Repository-authored original deterministic SVG made only from original geometric primitives and distributed under the repository MIT License. It contains no third-party content. Human production approval remains absent.',
+    rights_basis: 'Exact file included in three-globe 2.45.2. Package inclusion establishes provenance, not underlying image-rights clearance.',
     rights_review_status: 'not_reviewed',
     production_use_approved: false,
   }),
@@ -143,7 +125,7 @@ const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
 ]);
 const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v15',
+  '/css/globe-system.css?v=v17',
   '/js/gaia-utils.js',
   '/js/module-contracts.js',
   '/js/event-bus.js',
@@ -151,7 +133,7 @@ const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v2',
-  '/js/globe.js?v=v11',
+  '/js/globe.js?v=v12',
   '/js/carbon-clock.js?v=v1',
   '/js/app.js?v=v3',
 ]);
@@ -159,7 +141,6 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/check-globe-runtime-assets.js',
   '/tools/lib/globe-runtime-assets.js',
   '/tools/fixtures/globe-runtime-assets.json',
-  '/tools/authoring/generate-globe-starfield.js',
   '/tools/authoring/fetch-nasa-black-marble.sh',
   '/tools/check-staged-production-integrity.js',
   '/tools/build-deploy.sh',
@@ -315,14 +296,6 @@ function evaluateRuntimeAssets(input) {
     'The manifest must contain exactly the five approved versioned URLs, paths, digests, sizes, dimensions, and feature count.');
   check('exact-local-bytes', exactLocalAssets(records),
     'Every committed asset must exist and match its approved SHA-256, byte size, dimensions, and GeoJSON structure.');
-  check('deterministic-starfield-generator', crypto.createHash('sha256').update(files.starfield_generator || '').digest('hex') === EXPECTED_STARFIELD_GENERATOR_SHA256 &&
-    files.starfield_generator?.includes('const SEED = 0x454c5531;') &&
-    files.starfield_generator?.includes('const LOGICAL_STAR_COUNT = 4096;') &&
-    files.starfield_generator?.includes('const EXPECTED_CIRCLE_COUNT = 4103;') &&
-    files.starfield_generator?.includes("['--check', '--write']") &&
-    files.starfield_generator?.includes("source !== expectedSource") &&
-    !files.starfield_generator?.includes('Math.random'),
-  'The starfield must be reproducible from the exact xorshift32 authoring source and verify committed bytes in --check mode.');
   check('nasa-fetch-contract', crypto.createHash('sha256').update(files.nasa_fetcher || '').digest('hex') === EXPECTED_NASA_FETCHER_SHA256 &&
     files.nasa_fetcher?.includes(`SOURCE_URL="${EXPECTED_ASSETS[1].source_url}"`) &&
     files.nasa_fetcher?.includes(`EXPECTED_SHA256="${EXPECTED_ASSETS[1].sha256}"`) &&
@@ -352,24 +325,12 @@ function evaluateRuntimeAssets(input) {
     /not human rights review or production approval/.test(nasa?.rights_basis || ''),
   'The NASA JPEG must remain byte-for-byte pinned to the authoritative source, credit, terms, acknowledgement, and no-endorsement boundary.');
   const starfield = manifest?.assets?.find?.(asset => asset.id === 'night-sky');
-  check('repo-authored-starfield-provenance', starfield?.source_type === 'repo_authored_original' &&
-    starfield?.source_path === 'tools/authoring/generate-globe-starfield.js' &&
-    starfield?.source_version === 'elu-night-sky-v1' && starfield?.source_url === null &&
-    starfield?.source_sha256 === EXPECTED_STARFIELD_GENERATOR_SHA256 &&
-    starfield?.creator === 'Earth Love United' && starfield?.license === 'MIT' &&
-    starfield?.third_party_content === false && starfield?.origin_evidence_status === 'repo_authored_original' &&
-    starfield?.synthetic === true && starfield?.astronomical_data === false &&
-    /not astronomical data/.test(starfield?.purpose_limitation || '') &&
-    manifest?.sources?.repository_authored_starfield?.source_sha256 === EXPECTED_STARFIELD_GENERATOR_SHA256 &&
-    manifest?.sources?.repository_authored_starfield?.rights_review_status === 'not_reviewed' &&
-    manifest?.sources?.repository_authored_starfield?.production_use_approved === false,
-  'The sky must be explicitly repository-authored, synthetic decoration with no third-party or astronomical claim.');
-  check('svg-safety-and-seam', records['assets/globe/runtime/night-sky.svg']?.svg_safety?.ok === true &&
-    records['assets/globe/runtime/night-sky.svg']?.svg_safety?.logical_star_count === 4096 &&
-    records['assets/globe/runtime/night-sky.svg']?.svg_safety?.circle_count === 4103 &&
-    records['assets/globe/runtime/night-sky.svg']?.svg_safety?.seam_twin_count === 7 &&
-    records['assets/globe/runtime/night-sky.svg']?.svg_safety?.external_reference_count === 0,
-  'The canonical SVG parser must reject active/external content and prove exact dimensions, primitives, distribution, and horizontal seam twins.');
+  check('three-globe-starfield-provenance', starfield?.source_url === EXPECTED_ASSETS[2].source_url &&
+    starfield?.source_package === 'three-globe' && starfield?.source_version === '2.45.2' &&
+    starfield?.sha256 === EXPECTED_ASSETS[2].sha256 &&
+    manifest?.sources?.repository_authored_starfield === undefined &&
+    /Three-Globe starfield is decorative context/.test(manifest?.runtime_boundary?.limitation || ''),
+  'The restored sky must remain byte-pinned to Three-Globe 2.45.2 and explicitly decorative.');
   const geometry = manifest?.assets?.find?.(asset => asset.id === 'country-geometry');
   check('geometry-rights-and-limits', /public domain/i.test(geometry?.rights_basis || '') && geometry?.rights_review_status === 'not_reviewed' && geometry?.production_use_approved === false &&
     Object.entries(EXPECTED_NATURAL_EARTH_SOURCES).every(([key, value]) => manifest?.sources?.natural_earth?.[key] === value) &&
@@ -477,10 +438,10 @@ function evaluateRuntimeAssets(input) {
   check('public-visual-provenance-limits', index.includes('NASA Earth Observatory Black Marble 2012') &&
     index.includes('image by Robert Simmon') &&
     index.includes('Decorative background only') &&
-    index.includes('Starfield illustration by Earth Love United'),
-    'Public copy must credit NASA and identify the historical surface and synthetic sky as decorative visual context.');
+    index.includes('Original starfield from Three-Globe 2.45.2'),
+    'Public copy must credit NASA and identify the historical surface and restored sky as decorative visual context.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v34-truth-copy';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=34-truth-copy'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v35-og-bg';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=35-og-bg'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&
@@ -550,7 +511,6 @@ function evaluateRuntimeAssets(input) {
     'Candidate staging must carry an explicit non-publication marker and never print public deployment instructions.');
   check('ci-policy-wired',
     hasActiveCiJob(ci, 'static') && hasActiveCiJob(ci, 'smoke') &&
-    hasExactCiStep(ci, 'Verify deterministic globe starfield', 'node tools/authoring/generate-globe-starfield.js --check') &&
     hasExactCiStep(ci, 'Verify NASA Black Marble source pin', './tools/authoring/fetch-nasa-black-marble.sh --check') &&
     hasExactCiStep(ci, 'CT-45 localized runtime asset policy', 'node tools/check-globe-runtime-assets.js') &&
     hasExactCiStep(ci, 'Exact public deploy surface policy self-test', 'node tools/check-public-deploy-surface.js --self-test') &&
@@ -565,13 +525,12 @@ function evaluateRuntimeAssets(input) {
     "exercisePreRenderFailure('**/data/climate/runtime/country-factual-candidate.json*', 'candidate_data_unavailable'",
     "exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable'",
     "exercisePreRenderFailure('**/assets/globe/runtime/earth-night.jpg*', 'visual_assets_unavailable'",
-    "exercisePreRenderFailure('**/assets/globe/runtime/night-sky.svg*', 'visual_assets_unavailable'",
-    "content-type')?.split(';')[0] === 'image/svg+xml'",
+    "exercisePreRenderFailure('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable'",
+    "content-type')?.split(';')[0] === 'image/png'",
     'getRuntimeTextureState()',
     "textureState.surface.src.includes('/assets/globe/runtime/earth-night.jpg')",
-    "textureState.sky.src.includes('/assets/globe/runtime/night-sky.svg')",
+    "textureState.sky.src.includes('/assets/globe/runtime/night-sky.png')",
     'securitypolicyviolation',
-    'svgSubrequests.length === 0',
     'stale async activation must not construct a renderer',
     'countryFeatureCount === 201',
     'browserCounts.factual === 206 && browserCounts.gaps === 43',
@@ -614,7 +573,7 @@ function evaluateRuntimeAssets(input) {
       input?.review_scope?.ui_pins?.includes(item) && input?.review_scope?.runtime_fixed?.includes(item)),
     'Every active index.html globe-truth script must share one canonical UI-pin and runtime-diff scope.');
   check('runtime-diff-boundary', input?.review_scope?.runtime_prefixes?.includes('assets/globe/runtime/') &&
-    [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS, 'tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/generate-globe-starfield.js', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'data/small-nations.json']
+    [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS, 'tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'data/small-nations.json']
       .every(item => input?.review_scope?.runtime_fixed?.includes(item)),
     'Runtime-diff policy must classify localized assets and CT-45 controls as runtime-affecting.');
   check('control-files-owned', REQUIRED_CONTROL_OWNERS.every(required =>
@@ -624,9 +583,9 @@ function evaluateRuntimeAssets(input) {
     'SmokeTest must cover preparation state and all stable pre-render failure reasons.');
   check('credits-provenance-boundary', /globe runtime assets/i.test(files.credits || '') && /NASA Earth Observatory/i.test(files.credits || '') && /Black Marble 2012/i.test(files.credits || '') &&
     /Image by Robert Simmon/.test(files.credits || '') && /no\s+endorsement is implied/i.test(files.credits || '') &&
-    /synthetic[\s\S]*not astronomical data/i.test(files.credits || '') &&
+    /night-sky\.png[\s\S]*three-globe 2\.45\.2/i.test(files.credits || '') &&
     /Package inclusion establishes byte provenance,\s+not production\s+image-rights clearance/.test(files.credits || '') && /not reviewed/i.test(files.credits || ''),
-    'Credits must document NASA attribution and synthetic authorship while preserving unresolved human approval.');
+    'Credits must document NASA attribution and the restored Three-Globe background while preserving unresolved human approval.');
   check('architecture-and-production-docs', /preload and validate/i.test(files.architecture || '') && /CT-45/i.test(files.production_docs || '') && /does not grant texture rights/i.test(files.production_docs || ''),
     'Architecture and production docs must describe pre-render preparation and CT-45 non-authority.');
   check('solid-fallback-background', /background:\s*var\(--bg\);/.test(fallbackCss) && !/url\(|gradient|image/i.test(fallbackCss),

@@ -19,7 +19,7 @@ const EXPECTED_INTERACTIVE_GAP_COUNT = 7;
 const GLOBE_VISUAL_ASSET_TIMEOUT_MS = 8000;
 const GLOBE_VISUAL_ASSETS = Object.freeze({
   darkSurface: Object.freeze({ url: '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3', width: 3600, height: 1800 }),
-  darkBackground: Object.freeze({ url: '/assets/globe/runtime/night-sky.svg?v=233713fa6ed8', width: 4096, height: 2048 }),
+  darkBackground: Object.freeze({ url: '/assets/globe/runtime/night-sky.png?v=7e1d5e780301', width: 4096, height: 2048 }),
   lightSurface: Object.freeze({ url: '/assets/globe/runtime/earth-blue-marble.jpg?v=228deba2e4b6', width: 4096, height: 2048 }),
   bump: Object.freeze({ url: '/assets/globe/runtime/earth-topology.png?v=839b12da2e4d', width: 2048, height: 1024 }),
 });
@@ -2398,7 +2398,7 @@ const GlobeModule = {
         const materials = Array.isArray(object?.material) ? object.material : [object?.material];
         materials.filter(Boolean).forEach(material => {
           const candidate = describe(material.map);
-          if (candidate?.src.includes('/assets/globe/runtime/night-sky.svg')) {
+          if (candidate?.src.includes('/assets/globe/runtime/night-sky.png')) {
             sky = { ...candidate, materialSide: material.side, mesh: object.isMesh === true };
           }
         });

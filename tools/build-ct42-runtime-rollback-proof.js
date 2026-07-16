@@ -94,10 +94,10 @@ function neutralIndex(bytes) {
     '.hex-legend-swatch{width:10px;height:10px;border-radius:2px}.hex-legend-swatch.magnitude-low{background:#5b4a97}.hex-legend-swatch.magnitude-high{background:#f6913a}.hex-legend-swatch.magnitude-gap{background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1}.hex-legend-note{max-width:230px;margin-top:3px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);line-height:1.35}',
     '.hex-legend-swatch{width:10px;height:10px;border-radius:2px;background:rgba(145,160,172,.46);border:1px solid rgba(205,225,235,.52)}.hex-legend-note{max-width:230px;margin-top:3px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);line-height:1.35}',
     'neutral inline legend styles');
-  index = replaceOnce(index, 'href="css/globe-system.css?v=v15"', 'href="css/globe-system.css?v=ct42-neutral-rollback-1"', 'rollback CSS key');
+  index = replaceOnce(index, 'href="css/globe-system.css?v=v17"', 'href="css/globe-system.css?v=ct42-neutral-rollback-1"', 'rollback CSS key');
   index = replaceOnce(index, 'href="js/data.js?v=v2" as="script"', 'href="js/data.js?v=ct42-neutral-rollback-1" as="script"', 'rollback data preload key');
   index = replaceOnce(index, 'src="js/data.js?v=v2"', 'src="js/data.js?v=ct42-neutral-rollback-1"', 'rollback data key');
-  index = replaceOnce(index, 'src="js/globe.js?v=v11"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
+  index = replaceOnce(index, 'src="js/globe.js?v=v12"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
   index = replaceOnce(index, "'tools/smoke-test.js?v=v1'", "'tools/smoke-test.js?v=ct42-neutral-rollback-1'", 'rollback SmokeTest key');
   index = replaceOnce(index,
     '<button id="globe-evidence-browse" class="glass-btn" data-action="browseEvidence" disabled aria-disabled="true" aria-label="Browse all 249 evidence records"><span class="browse-label-full">Browse all 249 evidence records</span><span class="browse-label-short" aria-hidden="true">249 records</span></button>',
@@ -147,7 +147,7 @@ function neutralIndex(bytes) {
     'Choose an item to inspect its emissions series or source-gap state. Climate performance is not scored in this view.',
     'Choose an entity to inspect its explicit evidence-withheld state. No climate value, commitment, target, delivery, performance, impact, finance, rating, or score conclusion is shown here.',
     'neutral fallback detail');
-  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=34-truth-copy'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
+  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=35-og-bg'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
   return Buffer.from(index);
 }
 
@@ -828,15 +828,15 @@ const CACHE_NAME = '${CACHE_NAME}';`,
   const removals = [
     "  '/assets/globe/runtime/manifest.json',\n",
     "  '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3',\n",
-    "  '/assets/globe/runtime/night-sky.svg?v=233713fa6ed8',\n",
+    "  '/assets/globe/runtime/night-sky.png?v=7e1d5e780301',\n",
     "  '/assets/globe/runtime/earth-blue-marble.jpg?v=228deba2e4b6',\n",
     "  '/assets/globe/runtime/earth-topology.png?v=839b12da2e4d',\n",
     "  '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',\n",
   ];
   for (const line of removals) sw = replaceOnce(sw, line, '', `remove precache ${line.trim()}`);
-  sw = replaceOnce(sw, "'/css/globe-system.css?v=v15'", "'/css/globe-system.css?v=ct42-neutral-rollback-1'", 'rollback CSS precache');
+  sw = replaceOnce(sw, "'/css/globe-system.css?v=v17'", "'/css/globe-system.css?v=ct42-neutral-rollback-1'", 'rollback CSS precache');
   sw = replaceOnce(sw, "'/js/data.js?v=v2'", "'/js/data.js?v=ct42-neutral-rollback-1'", 'rollback data precache');
-  sw = replaceOnce(sw, "'/js/globe.js?v=v11'", "'/js/globe.js?v=ct42-neutral-rollback-1'", 'rollback globe precache');
+  sw = replaceOnce(sw, "'/js/globe.js?v=v12'", "'/js/globe.js?v=ct42-neutral-rollback-1'", 'rollback globe precache');
   sw = replaceOnce(sw, "'/data/carbon-projects.json?v=ct42candidate1'", "'/data/carbon-projects.json?v=ct42-neutral-rollback-1'", 'rollback carbon data key');
   return Buffer.from(sw);
 }
@@ -934,7 +934,7 @@ const SmokeTest = (() => {
     }),
     test('resources', 'Runtime made no candidate or globe-image request', true, () => {
       const names = performance.getEntriesByType('resource').map(entry => entry.name);
-      const forbidden = ['country-factual-candidate.json', 'earth-night.jpg', 'night-sky.svg', 'earth-blue-marble.jpg', 'earth-topology.png'];
+      const forbidden = ['country-factual-candidate.json', 'earth-night.jpg', 'night-sky.png', 'earth-blue-marble.jpg', 'earth-topology.png'];
       const leaked = names.filter(name => forbidden.some(token => name.includes(token)));
       return { pass: leaked.length === 0, detail: leaked.length ? leaked.join(', ') : 'No candidate JSON or globe image request observed' };
     }),

@@ -32,7 +32,7 @@ function installBrowserHarness(siteRoot) {
     try {
       smoke = await window.SmokeTest.run();
       stack = window.StackLint.audit();
-      var forbidden = ['country-factual-candidate.json', 'earth-night.jpg', 'night-sky.svg', 'earth-blue-marble.jpg', 'earth-topology.png'];
+      var forbidden = ['country-factual-candidate.json', 'earth-night.jpg', 'night-sky.png', 'earth-blue-marble.jpg', 'earth-topology.png'];
       var resources = performance.getEntriesByType('resource').map(function (entry) { return entry.name; });
       var leaked = resources.filter(function (name) { return forbidden.some(function (token) { return name.indexOf(token) !== -1; }); });
       var external = resources.filter(function (name) {

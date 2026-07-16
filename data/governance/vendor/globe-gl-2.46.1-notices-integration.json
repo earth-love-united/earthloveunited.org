@@ -97,14 +97,14 @@
     },
     {
       "asset_id": "night-sky",
-      "path": "assets/globe/runtime/night-sky.svg",
-      "sha256": "233713fa6ed8a495ed49deb97b89f46228aa49a83460e1379a60b3cee57c5688",
-      "source_url": null,
-      "source_path": "tools/authoring/generate-globe-starfield.js",
-      "source_asset_id": "elu-night-sky-v1",
-      "source_type": "repo_authored_original",
-      "origin_evidence_status": "repo_authored_original_review_pending",
-      "origin_evidence": "The deterministic Earth Love United generator and SVG hashes are pinned; it contains original geometric primitives, no third-party content, and still requires authorized production review.",
+      "path": "assets/globe/runtime/night-sky.png",
+      "sha256": "7e1d5e780301e3a33bd79fd3ac414f7a742465f33ae4605abca743d43a3ab983",
+      "source_url": "https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/night-sky.png",
+      "source_path": null,
+      "source_asset_id": "night-sky.png",
+      "source_type": "third_party_package_asset",
+      "origin_evidence_status": "package_provenance_only_rights_unreviewed",
+      "origin_evidence": "The exact Three-Globe 2.45.2 package bytes, URL, dimensions, and SHA-256 are pinned; underlying image rights and authorized production use remain unreviewed.",
       "rights_review_status": "not_reviewed",
       "notice_disposition_status": "not_reviewed",
       "redistribution_decision": null,
@@ -162,5 +162,5 @@
     "emscripten-musl-runtime",
     "h3-notice-scope"
   ],
-  "calculation_hash": "daa2de1dc17a991c3251ca3a5c7709bbba39081a70d1416de5872c927a3f85cf"
+  "calculation_hash": "eb378696e0433079aaa4dad0b8ecad0dab46b2526c1fcc7ad9976a545c75de1a"
 }

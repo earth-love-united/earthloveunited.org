@@ -393,7 +393,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v15">
+<link rel="stylesheet" href="css/globe-system.css?v=v17">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -594,7 +594,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <span role="listitem"><i style="background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1"></i> Neutral pattern · source gap, visible and unranked</span>
     </div>
     <p class="data-note">Map boundaries use generalized Natural Earth 1:110m geometry for navigation only. Twenty-eight small states absent from that dataset use manually curated approximate navigation points, not boundaries or precise centroids. Disputed subfeatures including Northern Cyprus and Somaliland are excluded from the assessed overlay and never inherit a parent entity’s evidence. None of these representations expresses a position on sovereignty or legal boundaries or assesses climate performance.</p>
-    <p class="data-note">Visual credits: <a href="https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/" target="_blank" rel="noopener">NASA Earth Observatory Black Marble 2012</a>, image by Robert Simmon with Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center. Decorative background only. Starfield illustration by Earth Love United.</p>
+    <p class="data-note">Visual credits: <a href="https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/" target="_blank" rel="noopener">NASA Earth Observatory Black Marble 2012</a>, image by Robert Simmon with Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center. Decorative background only. Original starfield from Three-Globe 2.45.2.</p>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Source &amp; Methodology</div>
@@ -804,7 +804,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v2"></script>
-<script src="js/globe.js?v=v11"></script>
+<script src="js/globe.js?v=v12"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/app.js?v=v3"></script>
 
@@ -951,7 +951,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=34-truth-copy', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=35-og-bg', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

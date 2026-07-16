@@ -23,6 +23,12 @@ body.globe-mode {
   --hud-trajectory-bg: rgba(78, 205, 196, .035);
   --hud-grid: rgba(255, 255, 255, .1);
   --hud-today: rgba(255, 255, 255, .28);
+  --globe-dock-inset: 24px;
+  --globe-dock-gap: 12px;
+  --globe-dock-height: 86px;
+  --globe-back-height: 54px;
+  --globe-back-lift: 16px;
+  --globe-back-width: clamp(260px, 31vw, 470px);
 }
 
 /* The globe remains an instrument, but the shared theme control must still
@@ -639,10 +645,13 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 #elu-country-rank-rail {
   position: fixed;
   top: 72px;
+  bottom: calc(var(--globe-dock-inset) + var(--globe-dock-height) + 12px);
   left: 20px;
   z-index: 50;
+  display: flex;
+  flex-direction: column;
   width: 218px;
-  max-height: calc(100vh - 230px);
+  max-height: none;
   overflow: hidden;
   border: 1px solid var(--hud-border);
   border-radius: 3px;
@@ -693,10 +702,14 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 }
 
 .elu-rank-list {
-  max-height: calc(100vh - 285px);
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
   overflow-y: auto;
   scrollbar-width: thin;
 }
+
+#elu-country-rank-rail.is-collapsed { bottom: auto; }
 
 #elu-country-rank-rail.is-collapsed .elu-rank-list,
 #elu-country-rank-rail.is-collapsed .elu-rank-subtitle {
@@ -1001,20 +1014,52 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 .elu-trajectory-chip.is-red { border-color: var(--st-bd); background: var(--st-bg); color: var(--warn); }
 .elu-trajectory-chip.is-green { border-color: rgba(46, 204, 113, .28); background: rgba(46, 204, 113, .08); color: var(--leaf); }
 
-/* Bottom return band: keeps the instrument controls readable on touch. */
+/* Bottom utility dock: evidence context sits beside the exit action instead
+   of consuming a second layer of the globe or colliding with the rank rail. */
 body.globe-mode .hex-legend {
-  left: 24px;
-  right: auto;
-  bottom: 82px;
-  z-index: 20;
+  left: calc(var(--globe-dock-inset) + var(--globe-back-width) + var(--globe-dock-gap));
+  right: var(--globe-dock-inset);
+  bottom: var(--globe-dock-inset);
+  z-index: 60;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: center;
+  gap: 7px 14px;
+  min-height: var(--globe-dock-height);
+  padding: 10px 14px;
+  border-color: var(--hud-border);
+  border-radius: 3px;
+  background: var(--hud-bg);
+  box-shadow: var(--hud-shadow);
 }
 
-body.globe-mode .hex-legend-note { color: var(--hud-muted); }
+body.globe-mode .hex-legend-row {
+  min-width: 0;
+  line-height: 1.25;
+}
+
+body.globe-mode .hex-legend-note {
+  grid-column: 1 / -1;
+  max-width: none;
+  margin: 0;
+  padding-top: 6px;
+  border-top-color: var(--hud-divider);
+  color: var(--hud-muted);
+  line-height: 1.3;
+}
 
 body.globe-mode #globe-back-btn {
-  left: 24px;
+  left: var(--globe-dock-inset);
   z-index: 200;
-  bottom: 24px;
+  bottom: calc(var(--globe-dock-inset) + var(--globe-back-lift));
+  width: var(--globe-back-width);
+  min-height: var(--globe-back-height);
+  padding: 10px 14px;
+  overflow: hidden;
+  font-size: 10px;
+  letter-spacing: 1.7px;
+  white-space: nowrap;
   transform: none;
   animation: elu-hud-in .7s cubic-bezier(.22,.61,.36,1) .55s both;
 }
@@ -1054,6 +1099,12 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
 }
 
 @media (max-width: 900px) {
+  body.globe-mode {
+    --globe-dock-inset: 12px;
+    --globe-dock-gap: 10px;
+    --globe-back-width: clamp(230px, 32vw, 300px);
+  }
+
   #elu-country-rank-rail { left: 12px; }
   #hex-country-tooltip.selected {
     width: min(461px, calc(100vw - 54px)) !important;
@@ -1064,9 +1115,10 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   #elu-country-rank-rail {
     display: block !important;
     top: 60px;
+    bottom: calc(var(--globe-dock-inset) + var(--globe-dock-height) + 10px);
     left: 8px;
     width: 72px;
-    max-height: calc(100vh - 142px);
+    max-height: none;
     backdrop-filter: blur(10px);
   }
 
@@ -1082,7 +1134,8 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   .elu-rank-toggle { display: none; }
 
   .elu-rank-list {
-    max-height: calc(100vh - 172px);
+    height: calc(100% - 50px);
+    max-height: none;
   }
 
   #elu-country-rank-rail.is-collapsed .elu-rank-list { display: block; }
@@ -1110,14 +1163,20 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
 }
 
 @media (max-width: 720px) {
+  body.globe-mode {
+    --globe-dock-inset: 14px;
+    --globe-dock-height: 46px;
+    --globe-back-height: 46px;
+    --globe-back-lift: 0px;
+    --globe-back-width: calc(100vw - 28px);
+  }
+
   #elu-country-card-wrap .tt-nav,
   body.globe-mode .hex-legend {
     display: none !important;
   }
 
   body.globe-mode #globe-back-btn {
-    left: 16px;
-    bottom: 14px;
     transform: none;
     padding: 9px 13px;
     font-size: 10px;
