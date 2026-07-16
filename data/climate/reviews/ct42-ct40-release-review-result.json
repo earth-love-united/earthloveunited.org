@@ -2,14 +2,14 @@
   "schema_version": "1.0.0",
   "review_candidate_id": "ct-42-to-ct-40-real-release-review-2026-07-15",
   "adapter_version": "1.4.0",
-  "evaluated_input_sha256": "7c29adf0ba5705ac9ae2cb0ee84e326c77cf2de16382e5c12310c9a9502fbc0e",
+  "evaluated_input_sha256": "a6f4b6ab981597ef9d5b164c5bf964d7390caa2f24bc3c7dc371e8e8b4bc996f",
   "ct40_gate_version": "2.0.0",
   "decision_scope": "assessed_climate_release",
   "ct40_manifest_calculation_hash": "0349e269ad4f3caf815ed8836b25a1702b1cf6f577b3a9528bc6a1c994b7e0bd",
   "full_gate_output_sha256": "d0ee51a73a0ae1c97db8bce046d510db4b0f7e6d1979f9c4a1a8ba45f5908618",
   "review_commits": {
     "data_review_commit_sha": "793eade295ae3fa787749e4d6ee112cf374a7634",
-    "ui_review_commit_sha": "bd5b6ef63df2ba17103e78351aedf677fb2d339f",
+    "ui_review_commit_sha": "0ccf9cf90e25e98cc7b734cb4acf8ee0d85080eb",
     "common_commit_required": false,
     "ancestry_evaluated": false
   },

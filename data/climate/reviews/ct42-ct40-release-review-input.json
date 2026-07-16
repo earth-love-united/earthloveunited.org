@@ -17,19 +17,19 @@
     },
     {
       "path": "assets/globe/runtime/manifest.json",
-      "sha256": "6f03e630512982f2edfd40097881bae73bbc49110ca79c6fdbb49dc7b44b7da4"
+      "sha256": "5c11517a0f75e1af70169c565b46002c4361cdac18d6a6191f06e9f31ac7f67a"
     },
     {
       "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
       "sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0"
     },
     {
-      "path": "assets/globe/runtime/night-sky.svg",
-      "sha256": "233713fa6ed8a495ed49deb97b89f46228aa49a83460e1379a60b3cee57c5688"
+      "path": "assets/globe/runtime/night-sky.png",
+      "sha256": "7e1d5e780301e3a33bd79fd3ac414f7a742465f33ae4605abca743d43a3ab983"
     },
     {
       "path": "css/globe-system.css",
-      "sha256": "25ba293a9dd7c23826f768cac21b55380a76d1cfae5f377bde16bf4bd23da1af"
+      "sha256": "ad7931358fe1921914c99d0af813f127a15932a4c4effa5fa46fcbce96688ec9"
     },
     {
       "path": "data/climate/country-registry.json",
@@ -49,7 +49,7 @@
     },
     {
       "path": "data/climate/reviews/climate-factual-runtime-ct42-ui-review.json",
-      "sha256": "e8beae7b1f83b15f41f00dad77e1b21f098a8d31fae0b147fa4b1023803862e3"
+      "sha256": "8b2e8d2b3293b6e332a4abd833aacdf79658b8e492f10c58e6f0b3474adc52a2"
     },
     {
       "path": "data/climate/reviews/primap-hist-2.6.1-factual-display-ct10c-review.json",
@@ -85,7 +85,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "6cd73740d5b21e942d45c0107dcbd052b3d47bce0647e0681c279c86ae73f4d5"
+      "sha256": "7ca761472ae9127f19e06ef859d116f5668d738e1251350b6165427cbdf87662"
     },
     {
       "path": "js/app.js",
@@ -113,7 +113,7 @@
     },
     {
       "path": "js/globe.js",
-      "sha256": "1a61f2ea364f590754b386503941567a4549de4dc289437353afc78119d36bde"
+      "sha256": "f4f6cdcd864b4fbff2429ad8516164d96c6d976f0f9e9f02df803df4598150b1"
     },
     {
       "path": "js/module-contracts.js",
@@ -129,7 +129,7 @@
     },
     {
       "path": "sw.js",
-      "sha256": "afdf908dc6b0faf183c5bf83a44659925140bc1306068592517fd78e429d9613"
+      "sha256": "8ca4208b56a80ed1d723f0d09ff622a82a1983136c2d8583744fe3ffbd0f545b"
     },
     {
       "path": "tools/smoke-test.js",
@@ -154,8 +154,8 @@
       "declared_pin_count": 9
     },
     "ui_review": {
-      "review_id": "ct-42-truth-copy-independent-ui-review-2026-07-15T232047Z",
-      "commit_sha": "bd5b6ef63df2ba17103e78351aedf677fb2d339f",
+      "review_id": "ct-42-final-globe-runtime-independent-ui-review-2026-07-16T210722Z",
+      "commit_sha": "0ccf9cf90e25e98cc7b734cb4acf8ee0d85080eb",
       "required_pin_paths": [
         "index.html",
         "css/globe-system.css",
@@ -177,7 +177,7 @@
         "assets/globe/runtime/manifest.json",
         "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
         "assets/globe/runtime/earth-night.jpg",
-        "assets/globe/runtime/night-sky.svg",
+        "assets/globe/runtime/night-sky.png",
         "assets/globe/runtime/earth-blue-marble.jpg",
         "assets/globe/runtime/earth-topology.png"
       ],
@@ -82688,7 +82688,7 @@
     },
     "review_context": {
       "data_attestation_id": "ct-42-r-factual-runtime-data-2026-07-15",
-      "ui_attestation_id": "ct-42-truth-copy-independent-ui-review-2026-07-15T232047Z",
+      "ui_attestation_id": "ct-42-final-globe-runtime-independent-ui-review-2026-07-16T210722Z",
       "scoped_review_evidence": {
         "data_review": {
           "review_id": "ct-42-r-factual-runtime-data-2026-07-15",
@@ -82707,8 +82707,8 @@
           "declared_pin_count": 9
         },
         "ui_review": {
-          "review_id": "ct-42-truth-copy-independent-ui-review-2026-07-15T232047Z",
-          "commit_sha": "bd5b6ef63df2ba17103e78351aedf677fb2d339f",
+          "review_id": "ct-42-final-globe-runtime-independent-ui-review-2026-07-16T210722Z",
+          "commit_sha": "0ccf9cf90e25e98cc7b734cb4acf8ee0d85080eb",
           "required_pin_paths": [
             "index.html",
             "css/globe-system.css",
@@ -82730,7 +82730,7 @@
             "assets/globe/runtime/manifest.json",
             "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
             "assets/globe/runtime/earth-night.jpg",
-            "assets/globe/runtime/night-sky.svg",
+            "assets/globe/runtime/night-sky.png",
             "assets/globe/runtime/earth-blue-marble.jpg",
             "assets/globe/runtime/earth-topology.png"
           ],
