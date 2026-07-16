@@ -1,0 +1,344 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/source-rights-review-packet.schema.json",
+  "title": "CT-17 source-rights evidence packet bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "created_at",
+    "retrieved_on",
+    "status",
+    "purpose",
+    "immutable_inputs",
+    "governance_boundary",
+    "evidence_method",
+    "required_decision_fields",
+    "prohibited_inferences",
+    "packets",
+    "calculation_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.1.0" },
+    "package_id": { "const": "ct-17-source-rights-review-packets-2026-07-15" },
+    "created_at": { "type": "string", "pattern": "Z$" },
+    "retrieved_on": { "const": "2026-07-15" },
+    "status": { "const": "requires_authorized_review" },
+    "purpose": { "type": "string", "minLength": 1 },
+    "immutable_inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_registry", "ct15_readiness", "ct16_policy", "ct16_queue", "ct40_result"],
+      "properties": {
+        "source_registry": { "$ref": "#/$defs/inputPin" },
+        "ct15_readiness": { "$ref": "#/$defs/inputPin" },
+        "ct16_policy": { "$ref": "#/$defs/inputPin" },
+        "ct16_queue": { "$ref": "#/$defs/inputPin" },
+        "ct40_result": { "$ref": "#/$defs/inputPin" }
+      }
+    },
+    "governance_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_registry_modified",
+        "rights_decisions_made",
+        "ct40_decision_modified",
+        "preexisting_factual_tier_state",
+        "preexisting_factual_facts",
+        "new_normalized_fact_uses_authorized",
+        "scoring_authorized",
+        "release_authority",
+        "production_runtime_release"
+      ],
+      "properties": {
+        "source_registry_modified": { "const": false },
+        "rights_decisions_made": { "const": false },
+        "ct40_decision_modified": { "const": false },
+        "preexisting_factual_tier_state": { "const": "eligible_unchanged" },
+        "preexisting_factual_facts": { "const": 2060 },
+        "new_normalized_fact_uses_authorized": { "const": false },
+        "scoring_authorized": { "const": false },
+        "release_authority": { "const": false },
+        "production_runtime_release": { "const": false }
+      }
+    },
+    "evidence_method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "official_fact_label",
+        "project_analysis_label",
+        "live_page_capture_state",
+        "raw_or_large_downloads_committed",
+        "rule"
+      ],
+      "properties": {
+        "official_fact_label": { "const": "official_primary_page" },
+        "project_analysis_label": { "const": "project_inference_for_authorized_review" },
+        "live_page_capture_state": { "const": "urls_and_retrieval_dates_recorded_no_raw_page_copies" },
+        "raw_or_large_downloads_committed": { "const": false },
+        "rule": { "type": "string", "minLength": 1 }
+      }
+    },
+    "required_decision_fields": {
+      "type": "array",
+      "minItems": 34,
+      "maxItems": 34,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "prohibited_inferences": {
+      "type": "array",
+      "minItems": 6,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "packets": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": { "$ref": "#/$defs/packet" }
+    },
+    "calculation_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "nullableSha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "nullableString": { "type": ["string", "null"] },
+    "emptyArray": { "type": "array", "maxItems": 0 },
+    "stringList": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "inputPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "registrySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshot_kind",
+        "record_hash_sha256",
+        "approval_state",
+        "licence_status",
+        "licence_identifier",
+        "redistribution_status",
+        "source_files_state",
+        "normalized_values_state"
+      ],
+      "properties": {
+        "snapshot_kind": { "const": "pre_existing_registry_state_not_a_ct17_decision" },
+        "record_hash_sha256": { "$ref": "#/$defs/sha256" },
+        "approval_state": { "enum": ["approved", "pending"] },
+        "licence_status": { "enum": ["confirmed", "uncertain"] },
+        "licence_identifier": { "type": "string", "minLength": 1 },
+        "redistribution_status": { "enum": ["permitted", "metadata_only"] },
+        "source_files_state": { "enum": ["recorded_allowed", "recorded_blocked"] },
+        "normalized_values_state": { "enum": ["recorded_allowed", "recorded_blocked"] }
+      }
+    },
+    "exactScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_kind",
+        "source_version",
+        "doi",
+        "artifact_filename",
+        "artifact_sha256",
+        "publisher_checksum_algorithm",
+        "publisher_checksum_value",
+        "captured_document_ids",
+        "captured_document_checksums_sha256",
+        "acquisition_state",
+        "scope_note"
+      ],
+      "properties": {
+        "scope_kind": { "enum": ["frozen_file", "live_registry_family", "live_document_family"] },
+        "source_version": { "type": "string", "minLength": 1 },
+        "doi": { "$ref": "#/$defs/nullableString" },
+        "artifact_filename": { "$ref": "#/$defs/nullableString" },
+        "artifact_sha256": { "$ref": "#/$defs/nullableSha256" },
+        "publisher_checksum_algorithm": { "type": ["string", "null"] },
+        "publisher_checksum_value": { "type": ["string", "null"] },
+        "captured_document_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "captured_document_checksums_sha256": { "type": "array", "items": { "$ref": "#/$defs/sha256" } },
+        "acquisition_state": { "type": "string", "minLength": 1 },
+        "scope_note": { "type": "string", "minLength": 1 }
+      }
+    },
+    "officialEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "evidence_type",
+        "authority",
+        "title",
+        "url",
+        "retrieved_on",
+        "page_state",
+        "evidence_origin",
+        "official_factual_summary"
+      ],
+      "properties": {
+        "evidence_id": { "type": "string", "minLength": 1 },
+        "evidence_type": { "enum": ["terms_page", "repository_record", "licence_legal_code", "source_landing_page", "source_catalogue"] },
+        "authority": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "pattern": "^https://(unfccc\\.int|zenodo\\.org|creativecommons\\.org)/" },
+        "retrieved_on": { "const": "2026-07-15" },
+        "page_state": { "type": "string", "minLength": 1 },
+        "evidence_origin": { "const": "official_primary_page" },
+        "official_factual_summary": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "reviewAnalysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "analysis_origin",
+        "ambiguities",
+        "restrictions_and_conditions_to_evaluate",
+        "attribution_questions",
+        "transformation_questions",
+        "questions_for_authorized_reviewer",
+        "questions_requiring_counsel_or_human_rights_review"
+      ],
+      "properties": {
+        "analysis_origin": { "const": "project_inference_for_authorized_review" },
+        "ambiguities": { "$ref": "#/$defs/stringList" },
+        "restrictions_and_conditions_to_evaluate": { "$ref": "#/$defs/stringList" },
+        "attribution_questions": { "$ref": "#/$defs/stringList" },
+        "transformation_questions": { "$ref": "#/$defs/stringList" },
+        "questions_for_authorized_reviewer": { "$ref": "#/$defs/stringList" },
+        "questions_requiring_counsel_or_human_rights_review": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "blankDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "decision_outcome",
+        "source_registry_id",
+        "reviewer_id",
+        "reviewer_role",
+        "reviewer_independence_confirmed",
+        "reviewed_at",
+        "decision_by",
+        "decision_at",
+        "reviewed_scope_confirmed",
+        "reviewed_source_version",
+        "reviewed_source_checksum_sha256_or_per_document_checksums",
+        "licence_identifier",
+        "terms_url",
+        "licence_evidence_url_or_written_clarification_reference",
+        "rights_holder_or_licensor_authority_confirmed",
+        "conflicting_terms_resolved",
+        "document_specific_exceptions_reviewed",
+        "source_files_approved",
+        "metadata_and_links_approved",
+        "normalized_values_approved",
+        "redistribution_approved",
+        "derivative_database_use_approved",
+        "commercial_use_approved",
+        "transformation_approved",
+        "scoring_approved",
+        "attribution_approved",
+        "attribution_template",
+        "required_change_notice",
+        "restrictions",
+        "decision_scope",
+        "source_registry_change_required",
+        "expires_or_recheck_at",
+        "decision_notes"
+      ],
+      "properties": {
+        "decision_id": { "type": "null" },
+        "decision_outcome": { "type": "null" },
+        "source_registry_id": { "type": "string", "minLength": 1 },
+        "reviewer_id": { "type": "null" },
+        "reviewer_role": { "type": "null" },
+        "reviewer_independence_confirmed": { "const": false },
+        "reviewed_at": { "type": "null" },
+        "decision_by": { "type": "null" },
+        "decision_at": { "type": "null" },
+        "reviewed_scope_confirmed": { "const": false },
+        "reviewed_source_version": { "type": "null" },
+        "reviewed_source_checksum_sha256_or_per_document_checksums": { "$ref": "#/$defs/emptyArray" },
+        "licence_identifier": { "type": "null" },
+        "terms_url": { "type": "null" },
+        "licence_evidence_url_or_written_clarification_reference": { "type": "null" },
+        "rights_holder_or_licensor_authority_confirmed": { "const": false },
+        "conflicting_terms_resolved": { "const": false },
+        "document_specific_exceptions_reviewed": { "const": false },
+        "source_files_approved": { "const": false },
+        "metadata_and_links_approved": { "const": false },
+        "normalized_values_approved": { "const": false },
+        "redistribution_approved": { "const": false },
+        "derivative_database_use_approved": { "const": false },
+        "commercial_use_approved": { "const": false },
+        "transformation_approved": { "const": false },
+        "scoring_approved": { "const": false },
+        "attribution_approved": { "const": false },
+        "attribution_template": { "type": "null" },
+        "required_change_notice": { "type": "null" },
+        "restrictions": { "$ref": "#/$defs/emptyArray" },
+        "decision_scope": { "type": "null" },
+        "source_registry_change_required": { "type": "null" },
+        "expires_or_recheck_at": { "type": "null" },
+        "decision_notes": { "type": "null" }
+      }
+    },
+    "packet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "packet_id",
+        "source_registry_id",
+        "source_title",
+        "status",
+        "purpose",
+        "source_registry_snapshot",
+        "exact_scope",
+        "official_evidence",
+        "review_analysis",
+        "blank_decision_record"
+      ],
+      "properties": {
+        "packet_id": { "type": "string", "minLength": 1 },
+        "source_registry_id": {
+          "enum": [
+            "primap-hist-2.6.1-final",
+            "unfccc-ndc-registry-continuous-2026-07-15",
+            "unfccc-nir-crt-2026-cycle",
+            "unfccc-btr-continuous-2026-07-15",
+            "unfccc-ter-continuous-2026-07-15"
+          ]
+        },
+        "source_title": { "type": "string", "minLength": 1 },
+        "status": { "const": "requires_authorized_review" },
+        "purpose": { "type": "string", "minLength": 1 },
+        "source_registry_snapshot": { "$ref": "#/$defs/registrySnapshot" },
+        "exact_scope": { "$ref": "#/$defs/exactScope" },
+        "official_evidence": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/officialEvidence" }
+        },
+        "review_analysis": { "$ref": "#/$defs/reviewAnalysis" },
+        "blank_decision_record": { "$ref": "#/$defs/blankDecision" }
+      }
+    }
+  }
+}

@@ -4,105 +4,156 @@
 // Must load AFTER storage.js (depends on window.Storage).
 // ═══════════════════════════════════════════════
 
+const CLIMATE_CANDIDATE_SHA256 = '7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664';
+const DATA_FETCH_TIMEOUT_MS = 8000;
+
+function _fetchTextWithTimeout(url, options = {}) {
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  let timer;
+  const timeout = new Promise((resolve, reject) => {
+    timer = setTimeout(() => {
+      controller?.abort();
+      reject(new Error(`Timed out after ${DATA_FETCH_TIMEOUT_MS}ms: ${url}`));
+    }, DATA_FETCH_TIMEOUT_MS);
+  });
+  const request = fetch(url, { ...options, ...(controller ? { signal: controller.signal } : {}) })
+    .then(async response => ({
+      ok: response.ok,
+      status: response.status,
+      text: await response.text(),
+    }));
+  return Promise.race([request, timeout]).finally(() => clearTimeout(timer));
+}
+
 const Data = {
   biomes: null,
   sites: null,
-  pledgeNodes: null,
-  smallNations: null,
   carbonProjects: null,
-  version: 'prod001',
+  climateCandidate: null,
+  climateCountries: null,
+  climateRanking: null,
+  climateCandidateState: 'idle',
+  version: 'ct42candidate1',
 
   async init() {
-    // v1: the bare countries globe only needs pledge-nodes.json.
-    // biomes.json / sites.json were archived with the foundation sections
-    // (see _archive/) — getBiome/getSite degrade to null.
+    // CT-42 loads a denied, explicitly not-reviewed runtime candidate whose
+    // only climate values are CT-10C/R-reviewed factual emissions estimates.
+    // It cannot authorize targets, performance, scores, or production release.
     const v = '?v=' + this.version;
-    const [pledgeNodesRes, smallNationsRes, carbonProjectsRes] = await Promise.allSettled([
-      fetch('data/pledge-nodes.json' + v),
-      fetch('data/small-nations.json' + v),
-      fetch('data/carbon-projects.json' + v)
+    this.climateCandidateState = 'loading';
+    const [carbonProjectsRes, climateCandidateRes] = await Promise.allSettled([
+      _fetchTextWithTimeout('data/carbon-projects.json' + v),
+      _fetchTextWithTimeout('data/climate/runtime/country-factual-candidate.json' + v)
     ]);
 
-    this.pledgeNodes = await this._parseResponse(pledgeNodesRes, 'pledge-nodes');
-    // UN members absent from the 110m country GeoJSON (island + micro
-    // nations) — GlobeModule renders these as small circular markers.
-    this.smallNations = await this._parseResponse(smallNationsRes, 'small-nations');
     // Per-country carbon project slice (top registered projects + totals)
     // baked from the carbon-projects-unified dataset — drives the
     // "Close the Gap" section of the country cards.
     this.carbonProjects = await this._parseResponse(carbonProjectsRes, 'carbon-projects');
+    this.climateCandidate = await this._parseCriticalCandidateResponse(climateCandidateRes);
+    this._indexClimateCandidate();
 
-    // Validate loaded data against schema
-    if (typeof DATA_SCHEMA !== 'undefined') {
-      if (this.pledgeNodes) DATA_SCHEMA.validate('pledge-nodes.json', this.pledgeNodes);
-    }
-
-    if (this.pledgeNodes) {
-      console.log('[Data] Loaded:', this.pledgeNodes.length, 'pledge nodes');
-    } else {
-      console.error('[Data] CRITICAL: pledge-nodes.json failed to load — country layer will be uncolored');
-    }
-
-    // ── Country Hex Color Lookup ──
-    // Built once from pledgeNodes, keyed by ISO_A3
-    // Used by GlobeModule to color hex polygons per-country
-    this.countryHexColors = {};
-    if (this.pledgeNodes) {
-      this.pledgeNodes.forEach(n => {
-        this.countryHexColors[n.iso] = {
-          country: n.country,
-          iso: n.iso,
-          lat: n.lat,
-          lng: n.lng,
-          emissions: n.fossil_co2_mt,
-          perCapita: n.co2_per_capita,
-          gap: n.reality_gap_mt,
-          onTrack: n.on_track,
-          catRating: n.cat_rating,
-          catScore: n.cat_score,
-          globeColor: n.globe_color,
-          targetYear: n.target_year,
-          reductionPct: n.reduction_pct,
-          lulucf: n.lulucf_co2_mt,
-          totalCo2: n.total_co2_mt,
-        };
-      });
-      console.log('[Data] Country hex colors:', Object.keys(this.countryHexColors).length, 'countries');
-    }
     return this;
   },
 
-  /** Parse a settled fetch promise — guards against HTTP errors and bad JSON */
- async _parseResponse(settledResult, name) {
- try {
- if (settledResult.status === 'rejected') {
- console.error(`[Data] Fetch failed for ${name}:`, settledResult.reason?.message || 'network error');
- return null;
- }
- const resp = settledResult.value;
- if (!resp.ok) {
- console.error(`[Data] HTTP ${resp.status} for ${name}.json`);
- return null;
- }
- const raw = await resp.json();
- // Unwrap envelope if present (_meta + data structure)
- if (raw && typeof raw === 'object' && '_meta' in raw && 'data' in raw) {
- this._meta = this._meta || {};
- this._meta[name] = raw._meta;
- return raw.data;
- }
- return raw;
- } catch (e) {
- console.error(`[Data] Parse error for ${name}:`, e.message);
- return null;
- }
- },
+  /** Parse a settled fetch promise — guards against HTTP errors and bad JSON. */
+  async _parseResponse(settledResult, name) {
+    try {
+      if (settledResult.status === 'rejected') {
+        reportWarn('Data', `Fetch failed for ${name}: ${settledResult.reason?.message || 'network error'}`);
+        return null;
+      }
+      const resp = settledResult.value;
+      if (!resp.ok) {
+        reportWarn('Data', `HTTP ${resp.status} for ${name}`);
+        return null;
+      }
+      const raw = JSON.parse(resp.text);
+      // Unwrap envelope if present (_meta + data structure)
+      if (raw && typeof raw === 'object' && '_meta' in raw && 'data' in raw) {
+        this._meta = this._meta || {};
+        this._meta[name] = raw._meta;
+        return raw.data;
+      }
+      return raw;
+    } catch (error) {
+      reportWarn('Data', `Parse error for ${name}: ${error?.message || 'invalid JSON'}`);
+      return null;
+    }
+  },
+
+  async _parseCriticalCandidateResponse(settledResult) {
+    if (settledResult.status === 'rejected') {
+      reportWarn('Data', `Fetch failed for climate-factual-candidate: ${settledResult.reason?.message || 'network error'}`);
+      return null;
+    }
+    const response = settledResult.value;
+    if (!response.ok) {
+      reportWarn('Data', `HTTP ${response.status} for climate-factual-candidate`);
+      return null;
+    }
+    if (!globalThis.crypto?.subtle || typeof TextEncoder !== 'function') {
+      reportError('Data._parseCriticalCandidateResponse()', new Error('WebCrypto SHA-256 is unavailable'));
+      return null;
+    }
+    try {
+      const text = response.text;
+      const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+      const actual = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+      if (actual !== CLIMATE_CANDIDATE_SHA256) {
+        reportError('Data._parseCriticalCandidateResponse()', new Error('Critical candidate SHA-256 mismatch'));
+        return null;
+      }
+      return JSON.parse(text);
+    } catch (error) {
+      reportError('Data._parseCriticalCandidateResponse()', error);
+      return null;
+    }
+  },
+
+  async reloadClimateCandidate() {
+    this.climateCandidateState = 'loading';
+    const v = `?v=${this.version}`;
+    const [result] = await Promise.allSettled([
+      _fetchTextWithTimeout('data/climate/runtime/country-factual-candidate.json' + v, { cache: 'reload' }),
+    ]);
+    this.climateCandidate = await this._parseCriticalCandidateResponse(result);
+    return this._indexClimateCandidate();
+  },
 
   getBiome(key) { return this.biomes ? this.biomes[key] : null; },
   getSite(id) { return this.sites ? this.sites.find(s => s.id === id) : null; },
-  getPledgeNode(iso) { return this.pledgeNodes ? this.pledgeNodes.find(n => n.iso === iso) : null; },
   getCarbonProjects(iso) { return this.carbonProjects ? this.carbonProjects[iso] || null : null; },
-  getCountryHexData(iso) { return this.countryHexColors ? this.countryHexColors[iso] || null : null; },
+  getClimateCountry(iso) { return this.climateCountries ? this.climateCountries[iso] || null : null; },
+  getClimateRanking() { return this.climateRanking; },
+  getClimateMagnitudeDomain() { return this.climateCandidate?.interpretation?.magnitude_domain || null; },
+  isClimateCandidateReady() { return this.climateCandidateState === 'ready'; },
+  _indexClimateCandidate() {
+    const candidate = this.climateCandidate;
+    const countries = Array.isArray(candidate?.countries) ? candidate.countries : [];
+    const factualCount = countries.filter(country => country?.emissions?.status === 'reviewed_factual').length;
+    const gapCount = countries.filter(country => country?.emissions?.status === 'source_gap').length;
+    const isoCodes = countries.map(country => country?.iso_alpha3);
+    const shapeValid = countries.length === 249 && factualCount === 206 && gapCount === 43 &&
+      isoCodes.every(iso => typeof iso === 'string' && /^[A-Z0-9]{3}$/.test(iso)) &&
+      new Set(isoCodes).size === countries.length;
+    if (!candidate || candidate.review_status !== 'not_reviewed' || candidate.production_runtime_release !== false || !shapeValid) {
+      this.climateCandidate = null; this.climateCountries = null; this.climateRanking = null;
+      this.climateCandidateState = 'unavailable';
+      reportError('Data._indexClimateCandidate()', new Error('CT-42 candidate boundary or shape invalid'));
+      return false;
+    }
+    this.climateCountries = Object.fromEntries(countries.map(country => [country.iso_alpha3, country]));
+    this.climateRanking = candidate.ranking;
+    if (!this.climateRanking || this.climateRanking.disclosure?.eligible_count !== 206 || this.climateRanking.disclosure?.unranked_count !== 43) {
+      this.climateCandidate = null; this.climateCountries = null; this.climateRanking = null;
+      this.climateCandidateState = 'unavailable';
+      reportError('Data._indexClimateCandidate()', new Error('CT-31 ranking boundary rejected CT-42 candidate'));
+      return false;
+    }
+    this.climateCandidateState = 'ready';
+    return true;
+  },
   getAllBiomes() { return this.biomes ? Object.entries(this.biomes).filter(([k]) => k !== '_meta').map(([k, v]) => ({ key: k, ...v })) : []; },
 
   // Carbon calculation engine
@@ -142,7 +193,7 @@ const Data = {
     return true;
   },
   getState() {
-    return {};
+    return { climateCandidateState: this.climateCandidateState };
   }
 };
 
@@ -150,7 +201,7 @@ window.Data = Data;
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('Data', {
-    provides: ['init', 'fmt', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'reloadClimateCandidate', 'isClimateCandidateReady', 'fmt', 'getClimateCountry', 'getClimateRanking', 'getClimateMagnitudeDomain', 'reset', 'destroy', 'getState'],
     requires: ['STORAGE_ADAPTER'],
   });
 }

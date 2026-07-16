@@ -1,0 +1,141 @@
+{
+  "schema_version": "1.0.0",
+  "review_candidate_id": "ct-42-to-ct-40-real-release-review-2026-07-15",
+  "adapter_version": "1.4.0",
+  "evaluated_input_sha256": "7c29adf0ba5705ac9ae2cb0ee84e326c77cf2de16382e5c12310c9a9502fbc0e",
+  "ct40_gate_version": "2.0.0",
+  "decision_scope": "assessed_climate_release",
+  "ct40_manifest_calculation_hash": "0349e269ad4f3caf815ed8836b25a1702b1cf6f577b3a9528bc6a1c994b7e0bd",
+  "full_gate_output_sha256": "d0ee51a73a0ae1c97db8bce046d510db4b0f7e6d1979f9c4a1a8ba45f5908618",
+  "review_commits": {
+    "data_review_commit_sha": "793eade295ae3fa787749e4d6ee112cf374a7634",
+    "ui_review_commit_sha": "bd5b6ef63df2ba17103e78351aedf677fb2d339f",
+    "common_commit_required": false,
+    "ancestry_evaluated": false
+  },
+  "decision": "deny",
+  "eligible": false,
+  "reason_codes": [
+    "climate_evidence_not_reviewed",
+    "source_not_reviewed",
+    "licence_not_approved",
+    "evidence_insufficient",
+    "independent_review_required"
+  ],
+  "publication_tiers": {
+    "factual_display": {
+      "status": "eligible",
+      "eligible": true,
+      "reason_codes": [],
+      "eligible_count": 2060,
+      "blocked_count": 0
+    },
+    "magnitude_comparison": {
+      "status": "eligible",
+      "eligible": true,
+      "reason_codes": [],
+      "eligible_count": 2060,
+      "blocked_count": 0
+    },
+    "commitment_display": {
+      "status": "not_present",
+      "eligible": false,
+      "reason_codes": [],
+      "eligible_count": 0,
+      "blocked_count": 0
+    },
+    "derived_metrics": {
+      "status": "not_present",
+      "eligible": false,
+      "reason_codes": [],
+      "eligible_count": 0,
+      "blocked_count": 0
+    },
+    "performance_assessment": {
+      "status": "not_present",
+      "eligible": false,
+      "reason_codes": [],
+      "eligible_count": 0,
+      "blocked_count": 0
+    },
+    "score": {
+      "status": "not_present",
+      "eligible": false,
+      "reason_codes": [],
+      "eligible_count": 0,
+      "blocked_count": 0
+    }
+  },
+  "counts": {
+    "facts_evaluated": 2060,
+    "facts_eligible": 0,
+    "facts_factual_display_eligible": 2060,
+    "facts_magnitude_comparison_eligible": 2060,
+    "profiles_evaluated": 0,
+    "review_queue_items": 2061,
+    "review_queue_by_subject": {
+      "fact": 2060,
+      "release": 1
+    }
+  },
+  "fact_decision_groups": [
+    {
+      "count": 2060,
+      "reason_codes": [
+        "climate_evidence_not_reviewed",
+        "source_not_reviewed",
+        "licence_not_approved",
+        "evidence_insufficient",
+        "independent_review_required"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "gap": "top20_primary_source_review",
+      "canonical_reason_codes": [
+        "source_not_reviewed",
+        "climate_evidence_not_reviewed"
+      ],
+      "status": "missing"
+    },
+    {
+      "gap": "explicit_ct40_licence_decision",
+      "canonical_reason_codes": [
+        "licence_not_approved"
+      ],
+      "status": "missing"
+    },
+    {
+      "gap": "ct40_field_level_fact_reviews",
+      "canonical_reason_codes": [
+        "climate_evidence_not_reviewed",
+        "source_not_reviewed",
+        "evidence_insufficient",
+        "independent_review_required"
+      ],
+      "status": "missing"
+    },
+    {
+      "gap": "independent_ct40_release_review",
+      "canonical_reason_codes": [
+        "climate_evidence_not_reviewed",
+        "independent_review_required"
+      ],
+      "status": "missing"
+    },
+    {
+      "gap": "reviewed_runtime_manifest_release_diff_and_rollback_proof",
+      "canonical_reason_codes": [
+        "climate_evidence_not_reviewed"
+      ],
+      "status": "missing"
+    }
+  ],
+  "prohibited_outputs_absent": [
+    "data/climate/runtime-manifest.json",
+    "data/climate/releases/reviewed-release-diff.json",
+    "data/climate/releases/ct40-allow-manifest.json"
+  ],
+  "release_authority": false
+}

@@ -1,0 +1,572 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/globe-runtime-assets-production-review.schema.json",
+  "title": "Globe runtime assets and third-party notices production review",
+  "description": "Schema for a future authorized human review. The schema is not an approval; release additionally requires the detached three-role Ed25519 signature bundle, and neither artifact is committed while rights and counsel questions remain unresolved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "decision",
+    "reviewed_commit_sha",
+    "reviewed_at",
+    "builder_identity",
+    "reviewer_identity",
+    "counsel_reviewer_identity",
+    "release_authority_identity",
+    "authority_bindings",
+    "independent",
+    "runtime_asset_manifest",
+    "third_party_notice_inventory",
+    "asset_rights_dispositions",
+    "counsel_resolutions",
+    "rights_review_status",
+    "third_party_notices_review_status",
+    "production_use_approved",
+    "release_authority"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "review_id": {
+      "const": "elu-globe-runtime-assets-production-review-v2"
+    },
+    "decision": {
+      "const": "approve"
+    },
+    "reviewed_commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "builder_identity": {
+      "type": "string",
+      "minLength": 5
+    },
+    "reviewer_identity": {
+      "type": "string",
+      "minLength": 5
+    },
+    "counsel_reviewer_identity": {
+      "type": "string",
+      "minLength": 5
+    },
+    "release_authority_identity": {
+      "type": "string",
+      "minLength": 5
+    },
+    "authority_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key_ids",
+        "trust_registry_path",
+        "trust_registry_sha256"
+      ],
+      "properties": {
+        "key_ids": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "asset_rights_reviewer",
+            "licensing_counsel",
+            "release_authorizer"
+          ],
+          "properties": {
+            "asset_rights_reviewer": {
+              "type": "string",
+              "pattern": "^ed25519:[0-9a-f]{64}$"
+            },
+            "licensing_counsel": {
+              "type": "string",
+              "pattern": "^ed25519:[0-9a-f]{64}$"
+            },
+            "release_authorizer": {
+              "type": "string",
+              "pattern": "^ed25519:[0-9a-f]{64}$"
+            }
+          }
+        },
+        "trust_registry_path": {
+          "const": "data/climate/governance/globe-runtime-approval-trust.json"
+        },
+        "trust_registry_sha256": {
+          "const": "9bb47c15abef171c340b9389edf680f5a2d01cac5a505ca3d208281fef63cf73"
+        }
+      }
+    },
+    "independent": {
+      "const": true
+    },
+    "runtime_asset_manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "const": "assets/globe/runtime/manifest.json"
+        },
+        "sha256": {
+          "const": "6f03e630512982f2edfd40097881bae73bbc49110ca79c6fdbb49dc7b44b7da4"
+        }
+      }
+    },
+    "third_party_notice_inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "notice_path",
+        "notice_sha256",
+        "manifest_path",
+        "manifest_sha256",
+        "integration_path",
+        "integration_sha256",
+        "integrity_verified"
+      ],
+      "properties": {
+        "notice_path": {
+          "const": "THIRD_PARTY_NOTICES.txt"
+        },
+        "notice_sha256": {
+          "const": "741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2"
+        },
+        "manifest_path": {
+          "const": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+        },
+        "manifest_sha256": {
+          "const": "542e9bf2043f1c670200be9c9b0455b93048514dfb8b602301ca1245918660c2"
+        },
+        "integration_path": {
+          "const": "data/governance/vendor/globe-gl-2.46.1-notices-integration.json"
+        },
+        "integration_sha256": {
+          "const": "5faec989558a53787fa4c75f70a544348add64516d4ebf1db18f0710905e393e"
+        },
+        "integrity_verified": {
+          "const": true
+        }
+      }
+    },
+    "asset_rights_dispositions": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/countryGeometryDisposition"
+        },
+        {
+          "$ref": "#/$defs/earthNightDisposition"
+        },
+        {
+          "$ref": "#/$defs/nightSkyDisposition"
+        },
+        {
+          "$ref": "#/$defs/earthBlueMarbleDisposition"
+        },
+        {
+          "$ref": "#/$defs/earthTopologyDisposition"
+        }
+      ],
+      "items": false
+    },
+    "counsel_resolutions": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/helvetikerResolution"
+        },
+        {
+          "$ref": "#/$defs/unlicenseResolution"
+        },
+        {
+          "$ref": "#/$defs/emscriptenResolution"
+        },
+        {
+          "$ref": "#/$defs/h3Resolution"
+        }
+      ],
+      "items": false
+    },
+    "rights_review_status": {
+      "const": "reviewed"
+    },
+    "third_party_notices_review_status": {
+      "const": "reviewed"
+    },
+    "production_use_approved": {
+      "const": true
+    },
+    "release_authority": {
+      "const": true
+    }
+  },
+  "$defs": {
+    "assetDispositionBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "source_asset_id",
+        "source_path",
+        "source_type",
+        "source_url",
+        "source_origin_verified",
+        "origin_evidence",
+        "rights_holder_or_authority_basis",
+        "rights_review_status",
+        "notice_disposition_status",
+        "redistribution_decision",
+        "attribution_notice_obligation",
+        "reviewer_identity",
+        "reviewed_at",
+        "decision_reference",
+        "production_use_approved",
+        "release_authority"
+      ],
+      "properties": {
+        "asset_id": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_url": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^https://"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_path": {
+          "type": ["string", "null"]
+        },
+        "source_asset_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_type": {
+          "enum": [
+            "official_publisher_asset",
+            "repo_authored_original",
+            "third_party_package_asset"
+          ]
+        },
+        "source_origin_verified": {
+          "const": true
+        },
+        "origin_evidence": {
+          "type": "string",
+          "minLength": 20
+        },
+        "rights_holder_or_authority_basis": {
+          "type": "string",
+          "minLength": 20
+        },
+        "rights_review_status": {
+          "const": "reviewed"
+        },
+        "notice_disposition_status": {
+          "const": "resolved"
+        },
+        "redistribution_decision": {
+          "const": "approved_for_redistribution"
+        },
+        "attribution_notice_obligation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewer_identity": {
+          "type": "string",
+          "minLength": 5
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "decision_reference": {
+          "type": "string",
+          "minLength": 5
+        },
+        "production_use_approved": {
+          "const": true
+        },
+        "release_authority": {
+          "const": true
+        }
+      }
+    },
+    "countryGeometryDisposition": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/assetDispositionBase"
+        },
+        {
+          "properties": {
+            "asset_id": {
+              "const": "country-geometry"
+            },
+            "path": {
+              "const": "assets/globe/runtime/ne_110m_admin_0_countries.geojson"
+            },
+            "sha256": {
+              "const": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0"
+            },
+            "source_url": {
+              "const": "https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/example/datasets/ne_110m_admin_0_countries.geojson"
+            },
+            "source_path": {
+              "const": null
+            },
+            "source_asset_id": {
+              "const": "ne_110m_admin_0_countries.geojson"
+            },
+            "source_type": {
+              "const": "third_party_package_asset"
+            }
+          }
+        }
+      ]
+    },
+    "earthNightDisposition": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/assetDispositionBase"
+        },
+        {
+          "properties": {
+            "asset_id": {
+              "const": "earth-night"
+            },
+            "path": {
+              "const": "assets/globe/runtime/earth-night.jpg"
+            },
+            "sha256": {
+              "const": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124"
+            },
+            "source_url": {
+              "const": "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/79000/79765/dnb_land_ocean_ice.2012.3600x1800.jpg"
+            },
+            "source_path": {
+              "const": null
+            },
+            "source_asset_id": {
+              "const": "dnb_land_ocean_ice.2012.3600x1800.jpg"
+            },
+            "source_type": {
+              "const": "official_publisher_asset"
+            }
+          }
+        }
+      ]
+    },
+    "nightSkyDisposition": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/assetDispositionBase"
+        },
+        {
+          "properties": {
+            "asset_id": {
+              "const": "night-sky"
+            },
+            "path": {
+              "const": "assets/globe/runtime/night-sky.svg"
+            },
+            "sha256": {
+              "const": "233713fa6ed8a495ed49deb97b89f46228aa49a83460e1379a60b3cee57c5688"
+            },
+            "source_url": {
+              "const": null
+            },
+            "source_path": {
+              "const": "tools/authoring/generate-globe-starfield.js"
+            },
+            "source_asset_id": {
+              "const": "elu-night-sky-v1"
+            },
+            "source_type": {
+              "const": "repo_authored_original"
+            }
+          }
+        }
+      ]
+    },
+    "earthBlueMarbleDisposition": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/assetDispositionBase"
+        },
+        {
+          "properties": {
+            "asset_id": {
+              "const": "earth-blue-marble"
+            },
+            "path": {
+              "const": "assets/globe/runtime/earth-blue-marble.jpg"
+            },
+            "sha256": {
+              "const": "228deba2e4b600146bdcb6cfa359b8ead6aacc2b1c13550a29cd82824cfa1c01"
+            },
+            "source_url": {
+              "const": "https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-blue-marble.jpg"
+            },
+            "source_path": {
+              "const": null
+            },
+            "source_asset_id": {
+              "const": "earth-blue-marble.jpg"
+            },
+            "source_type": {
+              "const": "third_party_package_asset"
+            }
+          }
+        }
+      ]
+    },
+    "earthTopologyDisposition": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/assetDispositionBase"
+        },
+        {
+          "properties": {
+            "asset_id": {
+              "const": "earth-topology"
+            },
+            "path": {
+              "const": "assets/globe/runtime/earth-topology.png"
+            },
+            "sha256": {
+              "const": "839b12da2e4dd346b256cebae72e10c479a102c8980a22084c41275e4b9a0e12"
+            },
+            "source_url": {
+              "const": "https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-topology.png"
+            },
+            "source_path": {
+              "const": null
+            },
+            "source_asset_id": {
+              "const": "earth-topology.png"
+            },
+            "source_type": {
+              "const": "third_party_package_asset"
+            }
+          }
+        }
+      ]
+    },
+    "counselResolutionBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "question_id",
+        "resolved",
+        "resolution",
+        "reviewer_identity",
+        "reviewed_at",
+        "decision_reference"
+      ],
+      "properties": {
+        "question_id": {
+          "type": "string"
+        },
+        "resolved": {
+          "const": true
+        },
+        "resolution": {
+          "type": "string",
+          "minLength": 20
+        },
+        "reviewer_identity": {
+          "type": "string",
+          "minLength": 5
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "decision_reference": {
+          "type": "string",
+          "minLength": 5
+        }
+      }
+    },
+    "helvetikerResolution": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/counselResolutionBase"
+        },
+        {
+          "properties": {
+            "question_id": {
+              "const": "helvetiker-mgopen"
+            }
+          }
+        }
+      ]
+    },
+    "unlicenseResolution": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/counselResolutionBase"
+        },
+        {
+          "properties": {
+            "question_id": {
+              "const": "unlicense-jurisdiction"
+            }
+          }
+        }
+      ]
+    },
+    "emscriptenResolution": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/counselResolutionBase"
+        },
+        {
+          "properties": {
+            "question_id": {
+              "const": "emscripten-musl-runtime"
+            }
+          }
+        }
+      ]
+    },
+    "h3Resolution": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/counselResolutionBase"
+        },
+        {
+          "properties": {
+            "question_id": {
+              "const": "h3-notice-scope"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

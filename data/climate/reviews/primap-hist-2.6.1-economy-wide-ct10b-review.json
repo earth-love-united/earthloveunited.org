@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0.0",
+  "review_id": "ct-10b-r-primap-hist-2.6.1-economy-wide-2026-07-15",
+  "reviewed_at": "2026-07-15T00:00:00Z",
+  "calculation_hash": "4494782a4e968e8826b192e04fe8dcafdc4c089f9ac87bff7261f04628b7bc20",
+  "decision": "pass",
+  "reviewer": {
+    "reviewer_id": "ct-10b-independent-reviewer",
+    "role": "reviewer",
+    "independent_of_builder": true,
+    "builder_id": "ct-10b-ingestion"
+  },
+  "reviewed_commits": {
+    "candidate_commit_sha": "28fdd61d029ed3e3dd97918360624228f5dcd9ee",
+    "amendment_commit_sha": "de6552d37e60db61f5f1ae251ea1bbc3e7d80af3",
+    "source_decision_introducing_commit_sha": "d49b7d062e3805fd50c158bfa3b8f31a0115ff2f",
+    "source_registry_reviewed_state_commit_sha": "8b99e70829ea5d6182fc1c05ec6d8c6ffa3eb8f2"
+  },
+  "reviewed_inputs": {
+    "source_file": "PRIMAP-hist_v2.6.1_final_13-Mar-2025.csv",
+    "source_size_bytes": 74692621,
+    "source_md5": "09b9c61629f87e16012222e5b303bc36",
+    "source_sha256": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9",
+    "artifact_path": "data/climate/evidence/primap-hist-2.6.1-histtp-m0el-2014-2023.json",
+    "artifact_sha256": "e242e5a49ba963eaeafe472c8c6702a193e79f60cf6762083f4ba72e9aa239b6",
+    "artifact_calculation_hash": "8182081d7ef30e24731aac43e28f5f2b1b1316dd4721100bb8c069972cd1be49",
+    "manifest_path": "data/climate/releases/primap-hist-2.6.1-economy-wide-2026-07-15.json",
+    "manifest_sha256": "aa7f841c0d3c17b6b4e75c0d7045a3ae80136db8895808bf62ce2467f07466a7",
+    "manifest_calculation_hash": "ab9371d12cc8bd1637038e490756c1123aa0c53a6d6824ac68ee687e9e088305",
+    "batch_schema_path": "data/climate/schemas/primap-batch-candidate.schema.json",
+    "ct02_observation_schema_path": "data/climate/schemas/observation.schema.json"
+  },
+  "methods": [
+    "Pinned raw byte size, MD5 and SHA-256 verification",
+    "Independent CSV parsing and exact five-field selection",
+    "Batch schema and schema_ref validation",
+    "Compilation and schema validation of every CT-02 boundary observation",
+    "Lexical decimal-point conversion audit against every selected source value",
+    "Global normalized and combined source/normalized fact-ID uniqueness audit",
+    "Independent isolated rebuild with byte-for-byte artifact and manifest comparison",
+    "Same-size one-byte source tamper rejection",
+    "Publication-gate and forbidden-assessment-output audit",
+    "Adversarial rejection tests for a mutated CSV row locator and a mutated non-latest source value"
+  ],
+  "selection": {
+    "source": "PRIMAP-hist_v2.6.1_final",
+    "scenario": "HISTTP",
+    "entity": "KYOTOGHG (AR6GWP100)",
+    "unit": "CO2 * gigagram / yr",
+    "category": "M.0.EL",
+    "years": [2014, 2023],
+    "normalization": "source gigagrams CO2e per year divided by 1000 using exact source decimal text"
+  },
+  "counts": {
+    "selected_source_rows": 215,
+    "mapped_country_series": 206,
+    "aggregate_rows_excluded": 8,
+    "obsolete_rows_excluded": 1,
+    "unmapped_rows": 0,
+    "registry_entities": 249,
+    "registry_gaps": 43,
+    "normalized_observations": 2060,
+    "unique_normalized_fact_ids": 2060,
+    "unique_combined_source_and_normalized_fact_ids": 4120,
+    "long_binary_tail_tokens": 0,
+    "adversarial_sample_mutations_rejected": 2
+  },
+  "sample": [
+    { "iso_alpha3": "USA", "csv_row": 45606, "source_2014_ggco2e": "6530000.0", "normalized_2014_mtco2e": "6530.0000", "source_2023_ggco2e": "6060000.0", "normalized_2023_mtco2e": "6060.0000" },
+    { "iso_alpha3": "CHN", "csv_row": 27699, "source_2014_ggco2e": "12700000.0", "normalized_2014_mtco2e": "12700.0000", "source_2023_ggco2e": "15000000.0", "normalized_2023_mtco2e": "15000.0000" },
+    { "iso_alpha3": "IND", "csv_row": 33239, "source_2014_ggco2e": "3390000.0", "normalized_2014_mtco2e": "3390.0000", "source_2023_ggco2e": "4430000.0", "normalized_2023_mtco2e": "4430.0000" },
+    { "iso_alpha3": "IDN", "csv_row": 33119, "source_2014_ggco2e": "798000.0", "normalized_2014_mtco2e": "798.0000", "source_2023_ggco2e": "1380000.0", "normalized_2023_mtco2e": "1380.0000" },
+    { "iso_alpha3": "IRN", "csv_row": 33486, "source_2014_ggco2e": "836000.0", "normalized_2014_mtco2e": "836.0000", "source_2023_ggco2e": "985000.0", "normalized_2023_mtco2e": "985.0000" },
+    { "iso_alpha3": "BRA", "csv_row": 26723, "source_2014_ggco2e": "1240000.0", "normalized_2014_mtco2e": "1240.0000", "source_2023_ggco2e": "1270000.0", "normalized_2023_mtco2e": "1270.0000" },
+    { "iso_alpha3": "ZAF", "csv_row": 46674, "source_2014_ggco2e": "621000.0", "normalized_2014_mtco2e": "621.0000", "source_2023_ggco2e": "557000.0", "normalized_2023_mtco2e": "557.0000" },
+    { "iso_alpha3": "MCO", "csv_row": 36815, "source_2014_ggco2e": "158.0", "normalized_2014_mtco2e": "0.1580", "source_2023_ggco2e": "133.0", "normalized_2023_mtco2e": "0.1330" },
+    { "iso_alpha3": "AND", "csv_row": 24001, "source_2014_ggco2e": "633.0", "normalized_2014_mtco2e": "0.6330", "source_2023_ggco2e": "556.0", "normalized_2023_mtco2e": "0.5560" },
+    { "iso_alpha3": "LIE", "csv_row": 35881, "source_2014_ggco2e": "187.0", "normalized_2014_mtco2e": "0.1870", "source_2023_ggco2e": "152.0", "normalized_2023_mtco2e": "0.1520" },
+    { "iso_alpha3": "NRU", "csv_row": 39710, "source_2014_ggco2e": "53.7", "normalized_2014_mtco2e": "0.0537", "source_2023_ggco2e": "56.4", "normalized_2023_mtco2e": "0.0564" },
+    { "iso_alpha3": "TUV", "csv_row": 44814, "source_2014_ggco2e": "19.2", "normalized_2014_mtco2e": "0.0192", "source_2023_ggco2e": "20.0", "normalized_2023_mtco2e": "0.0200" },
+    { "iso_alpha3": "ATA", "csv_row": 24735, "source_2014_ggco2e": "4.52", "normalized_2014_mtco2e": "0.00452", "source_2022_ggco2e": "3.47", "normalized_2022_mtco2e": "0.00347", "source_2023_ggco2e": "3.34", "normalized_2023_mtco2e": "0.00334" }
+  ],
+  "prior_blockers": {
+    "typed_batch_schema_and_ct02_boundary": "resolved",
+    "exact_decimal_serialization": "resolved",
+    "full_source_decision_and_registry_commits": "resolved",
+    "global_fact_id_uniqueness": "resolved"
+  },
+  "publication_boundary": {
+    "candidate_redistribution_allowed": true,
+    "review_attestation_passed": true,
+    "assessed_use_allowed": false,
+    "scoring_allowed": false,
+    "reviewed_site_release_allowed": false,
+    "ct40_release_gate_required": true,
+    "attestation_changes_candidate_artifacts": false,
+    "note": "This attestation records an independent candidate review. It does not rewrite the candidate artifacts or publish them as assessed, scored, ranked, or reviewed-site data. A separately designed CT-40 release gate remains required."
+  }
+}

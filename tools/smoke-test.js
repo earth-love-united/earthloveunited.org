@@ -73,15 +73,25 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'Data module loaded with pledge nodes',
+        name: 'CT-42 factual candidate is loaded inside its denied boundary',
         critical: true,
         test: () => {
-          const ok = typeof Data !== 'undefined' && Data.pledgeNodes && Data.pledgeNodes.length > 0;
+          const candidate = window.Data?.climateCandidate;
+          const ranking = window.Data?.getClimateRanking?.();
+          const factualCount = candidate?.countries?.filter(country => country.emissions?.status === 'reviewed_factual').length || 0;
+          const gapCount = candidate?.countries?.filter(country => country.emissions?.status !== 'reviewed_factual').length || 0;
+          const ok = candidate?.review_status === 'not_reviewed'
+            && candidate?.production_runtime_release === false
+            && candidate?.countries?.length === 249
+            && factualCount === 206
+            && gapCount === 43
+            && ranking?.disclosure?.eligible_count === 206
+            && ranking?.disclosure?.unranked_count === 43;
           return {
             pass: ok,
             detail: ok
-              ? `${Data.pledgeNodes.length} pledge nodes, ${Data.countryHexColors ? Object.keys(Data.countryHexColors).length : 0} country colors`
-              : 'Data.pledgeNodes is empty or Data not loaded',
+              ? 'candidate not_reviewed/production false; registry 249 = 206 factual + 43 gaps; ranking 206 + 43; CT-04 separately guards legacy absence'
+              : `boundary/count mismatch (registry ${candidate?.countries?.length || 0}, factual ${factualCount}, gaps ${gapCount}, ranking ${ranking?.disclosure?.eligible_count || 0} + ${ranking?.disclosure?.unranked_count || 0})`,
           };
         },
       },
@@ -178,7 +188,7 @@ const SmokeTest = (() => {
         name: 'Critical DOM elements exist',
         critical: true,
         test: () => {
-          const required = ['globeViz', 'hero', 'topbar', 'hex-legend', 'globe-back-btn', 'hero-carbon-clock'];
+          const required = ['globeViz', 'hero', 'topbar', 'hex-legend', 'globe-back-btn', 'globe-fallback', 'globe-evidence-browse', 'hero-carbon-clock'];
           const missing = required.filter(id => !document.getElementById(id));
           return {
             pass: missing.length === 0,
@@ -193,6 +203,17 @@ const SmokeTest = (() => {
           const gv = document.getElementById('globeViz');
           if (!gv) return { pass: false, detail: '#globeViz not found' };
           const canvas = gv.querySelector('canvas');
+          const fallback = document.body.classList.contains('globe-fallback-active');
+          if (fallback) {
+            const rows = document.querySelectorAll('#globe-fallback [data-fallback-country-iso]').length;
+            const browsing = window.GlobeModule?._fallbackReasonCode === 'evidence_browse_requested';
+            return {
+              pass: rows === 249 && (browsing ? Boolean(canvas && GlobeModule._initialized) : !canvas),
+              detail: browsing
+                ? `User-invoked evidence browser active with ${rows} entities over one live renderer`
+                : `Failure evidence view active with ${rows} entities and no unusable canvas`,
+            };
+          }
           // Globe is lazy-initialized — only rendered after entering globe mode.
           if (!canvas && !window.GlobeModule?._initialized) {
             return { pass: true, detail: 'Globe not yet entered (lazy init) — OK. Re-run after Enter the Living Globe for full check.' };
@@ -225,6 +246,9 @@ const SmokeTest = (() => {
         name: 'Globe has country polygons',
         critical: false,
         test: () => {
+          if (document.body.classList.contains('globe-fallback-active')) {
+            return { pass: true, detail: 'Country polygons intentionally replaced by the accessible evidence view' };
+          }
           if (!window.GlobeModule || !GlobeModule.world) {
             // Lazy init — world only exists after entering globe mode.
             if (!window.GlobeModule?._initialized) return { pass: true, detail: 'Globe not yet entered (lazy init) — OK' };
@@ -235,14 +259,9 @@ const SmokeTest = (() => {
           const polyData = typeof GlobeModule.world.polygonsData === 'function' ? GlobeModule.world.polygonsData() : null;
           const hexData = typeof GlobeModule.world.hexPolygonsData === 'function' ? GlobeModule.world.hexPolygonsData() : null;
           const count = Math.max(polyData?.length || 0, hexData?.length || 0);
-          // GeoJSON fetch is async with an 8s timeout — an empty layer right
-          // after entering is not necessarily a failure.
-          if (!count && GlobeModule._countryDataState === 'loading') {
-            return { pass: true, detail: 'Country GeoJSON still loading — OK' };
-          }
           return {
-            pass: count > 0,
-            detail: count ? `${count} country features on globe` : `No country polygon data (state: ${GlobeModule._countryDataState})`,
+            pass: count === 201,
+            detail: count === 201 ? 'Exact 201-entity candidate overlay is active' : `${count} country features (expected 201)`,
           };
         },
       },
@@ -252,6 +271,49 @@ const SmokeTest = (() => {
     // INTERACTION TESTS
     // ═══════════════════════════════════════════
     interactions: [
+      {
+        name: 'Non-WebGL fallback is body-level, accessible, and fail-closed',
+        critical: true,
+        test: () => {
+          const panel = document.getElementById('globe-fallback');
+          if (!panel) return { pass: false, detail: '#globe-fallback is missing' };
+          if (panel.parentElement !== document.body) return { pass: false, detail: '#globe-fallback is not a direct child of body' };
+          if (!document.body.classList.contains('globe-fallback-active')) {
+            const closed = panel.hidden && panel.getAttribute('aria-hidden') === 'true';
+            return { pass: closed, detail: closed ? 'Fallback is inert and hidden until a renderer failure' : 'Closed fallback remains exposed' };
+          }
+          const factual = panel.querySelectorAll('[data-fallback-evidence-state="factual"]').length;
+          const gaps = panel.querySelectorAll('[data-fallback-evidence-state="gap"]').length;
+          const controls = [...panel.querySelectorAll('button,input,a[href]')];
+          const undersized = controls.filter(control => control.getBoundingClientRect().height < 44);
+          const reason = panel.dataset.reason;
+          const allowed = ['candidate_data_unavailable', 'country_geometry_unavailable', 'visual_assets_unavailable', 'library_load_failed', 'library_unavailable', 'webgl_unavailable', 'globe_construction_failed', 'globe_container_missing'];
+          const browsing = reason === 'evidence_browse_requested';
+          const canvasCount = document.querySelectorAll('#globeViz canvas').length;
+          const rendererStateOk = browsing
+            ? window.GlobeModule?._initialized === true && canvasCount === 1
+            : window.GlobeModule?._initialized !== true && canvasCount === 0;
+          const ok = factual === 206 && gaps === 43 && undersized.length === 0 &&
+            (browsing || allowed.includes(reason)) && rendererStateOk;
+          return {
+            pass: ok,
+            detail: ok
+              ? `${factual} factual candidate series + ${gaps} explicit gaps; reason ${reason}; all ${controls.length} controls >=44px; renderer state is safe`
+              : `factual ${factual}, gaps ${gaps}, undersized ${undersized.length}, reason ${reason}, initialized ${window.GlobeModule?._initialized}, canvases ${canvasCount}`,
+          };
+        },
+      },
+      {
+        name: 'Country card is not open by default',
+        critical: true,
+        test: () => {
+          const dialogs = document.querySelectorAll('#elu-country-card-wrap[role="dialog"][aria-modal="true"]');
+          return {
+            pass: dialogs.length === 0,
+            detail: dialogs.length === 0 ? 'No default country dialog' : `${dialogs.length} country dialog(s) open before user selection`,
+          };
+        },
+      },
       {
         name: 'Hero enter button is wired (data-action="enterGlobe")',
         critical: true,
@@ -284,30 +346,81 @@ const SmokeTest = (() => {
     // ═══════════════════════════════════════════
     resources: [
       {
-        name: 'CSP allows globe resources',
-        critical: false,
+        name: 'CSP keeps globe resources same-origin',
+        critical: true,
         test: () => {
           const meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
-          if (!meta) return { pass: true, detail: 'No CSP meta tag (all connections allowed)' };
+          if (!meta) return { pass: false, detail: 'CSP meta tag is missing' };
           const content = meta.getAttribute('content') || '';
-          const hasCDN = content.includes('cdn.jsdelivr.net');       // globe textures (img-src)
-          const hasGH = content.includes('raw.githubusercontent.com'); // country GeoJSON (connect-src)
+          const selfOnly = content.includes("connect-src 'self';") && content.includes("img-src 'self' data:;");
+          const obsolete = ['cdn.jsdelivr.net', 'raw.githubusercontent.com', 'api.carbonmark.com'].filter(origin => content.includes(origin));
           return {
-            pass: hasCDN && hasGH,
-            detail: `cdn.jsdelivr.net: ${hasCDN ? '✅' : '❌'}, raw.githubusercontent.com: ${hasGH ? '✅' : '❌'}`,
+            pass: selfOnly && obsolete.length === 0,
+            detail: selfOnly && !obsolete.length ? 'connect/img globe resources are same-origin; obsolete origins absent' : `obsolete origins: ${obsolete.join(', ') || 'none'}; self-only ${selfOnly}`,
           };
         },
       },
       {
-        name: 'Data files loaded successfully',
+        name: 'Active critical candidate loaded successfully',
         critical: true,
         test: () => {
           if (typeof Data === 'undefined') return { pass: false, detail: 'Data module not loaded' };
-          const pledges = Data.pledgeNodes ? Data.pledgeNodes.length : 0;
+          const ready = Data.isClimateCandidateReady?.() === true;
           return {
-            pass: pledges > 0,
-            detail: `${pledges} pledge nodes`,
+            pass: ready && Data.climateCandidateState === 'ready',
+            detail: ready ? 'Exact-SHA candidate is ready; carbon projects remain noncritical' : `candidate state ${Data.climateCandidateState}`,
           };
+        },
+      },
+      {
+        name: 'runtime assets are prepared before renderer init',
+        critical: true,
+        test: () => {
+          const state = window.GlobeModule?.getState?.();
+          if (!state) return { pass: false, detail: 'GlobeModule state is unavailable' };
+          if (!window.GlobeModule._initialized) {
+            const safeLazyOrFallback = state.rendererCanvasCount === 0;
+            return { pass: safeLazyOrFallback, detail: safeLazyOrFallback ? `No renderer before successful preparation; failure ${state.preparationFailure || 'none'}` : 'Renderer canvas exists before initialization' };
+          }
+          const ok = state.runtimeAssetsPrepared === true && state.countryDataState === 'ready' &&
+            state.countryFeatureCount === 201 && state.countryDeckCount === 201 && state.rendererCanvasCount === 1;
+          return { pass: ok, detail: ok ? 'Candidate, 201-entity geometry deck, and four images prepared before the single renderer' : JSON.stringify(state) };
+        },
+      },
+      {
+        name: 'All 249 evidence records remain first-class and searchable',
+        critical: true,
+        test: () => {
+          const panel = document.getElementById('globe-fallback');
+          const button = document.getElementById('globe-evidence-browse');
+          const fullLabel = button?.querySelector('.browse-label-full')?.textContent?.trim();
+          const shortLabel = button?.querySelector('.browse-label-short')?.textContent?.trim();
+          if (!panel || !button || button.getAttribute('aria-label') !== 'Browse all 249 evidence records' ||
+              fullLabel !== 'Browse all 249 evidence records' || shortLabel !== '249 records') {
+            return { pass: false, detail: 'Evidence browser entry control is missing or mislabeled' };
+          }
+          if (window.GlobeModule?._fallbackReasonCode !== 'evidence_browse_requested') {
+            const expectedDisabled = window.GlobeModule?._initialized !== true;
+            return { pass: button.disabled === expectedDisabled, detail: `Evidence browser trigger ${button.disabled ? 'disabled before readiness' : 'enabled for the live renderer'}` };
+          }
+          const factual = panel.querySelectorAll('[data-fallback-evidence-state="factual"]').length;
+          const gaps = panel.querySelectorAll('[data-fallback-evidence-state="gap"]').length;
+          const title = document.getElementById('globe-fallback-title')?.textContent || '';
+          const ok = factual === 206 && gaps === 43 && title.includes('Browse all 249') &&
+            document.getElementById('globe-fallback-search') && panel.querySelector('[data-globe-fallback-action="close"]');
+          return { pass: ok, detail: ok ? '249 = 206 factual + 43 gaps; search/detail/guarded return controls present' : `factual ${factual}, gaps ${gaps}, title ${title}` };
+        },
+      },
+      {
+        name: 'Disputed subfeatures and non-registry areas cannot inherit evidence',
+        critical: true,
+        test: () => {
+          if (!window.GlobeModule?.getState?.().runtimeAssetsPrepared) return { pass: true, detail: 'Overlay not prepared yet; CT-45 executable policy covers preparation' };
+          const prohibited = new Set(['N. Cyprus', 'Northern Cyprus', 'Somaliland', 'Kosovo']);
+          const leaked = GlobeModule.getCountryFeatures().filter(feature =>
+            [feature?.properties?.ADMIN, feature?.properties?.NAME].some(name => prohibited.has(name)));
+          const unknownDeck = (GlobeModule._countryDeck || []).filter(entry => !Data.getClimateCountry(entry.iso));
+          return { pass: leaked.length === 0 && unknownDeck.length === 0, detail: leaked.length || unknownDeck.length ? `leaked areas ${leaked.length}, non-registry cards ${unknownDeck.length}` : 'Sensitive subfeatures excluded; every interactive ISO resolves to the candidate registry' };
         },
       },
     ],

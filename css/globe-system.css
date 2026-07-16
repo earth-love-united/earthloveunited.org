@@ -16,7 +16,7 @@ body.globe-mode {
   --hud-divider: rgba(255, 255, 255, .08);
   --hud-divider-soft: rgba(255, 255, 255, .045);
   --hud-muted: rgba(210, 224, 224, .62);
-  --hud-faint: rgba(210, 224, 224, .38);
+  --hud-faint: rgba(210, 224, 224, .62);
   --hud-shadow: 0 16px 42px rgba(0, 0, 0, .28);
   --hud-shadow-strong: 0 18px 54px rgba(0, 0, 0, .42), 0 0 0 1px rgba(123, 232, 208, .025);
   --hud-nav-bg: rgba(6, 11, 18, .9);
@@ -58,7 +58,7 @@ body.globe-mode[data-theme="light"] {
   --hud-divider: rgba(31, 94, 70, .14);
   --hud-divider-soft: rgba(31, 94, 70, .08);
   --hud-muted: rgba(32, 48, 42, .78);
-  --hud-faint: rgba(32, 48, 42, .58);
+  --hud-faint: rgba(32, 48, 42, .78);
   --hud-shadow: 0 16px 38px rgba(62, 49, 25, .14);
   --hud-shadow-strong: 0 18px 48px rgba(62, 49, 25, .16), 0 0 0 1px rgba(31, 94, 70, .04);
   --hud-nav-bg: rgba(255, 253, 248, .96);
@@ -95,6 +95,56 @@ body.globe-mode #topbar .topbar-actions {
   align-items: center;
   gap: 18px;
   min-width: 0;
+}
+
+#globe-evidence-browse {
+  min-height: 32px;
+  padding: 6px 11px;
+  font-size: 10px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+#globe-evidence-browse .browse-label-short { display: none; }
+
+@media (max-width: 480px) {
+  body.globe-mode #topbar {
+    gap: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  body.globe-mode #topbar .logo {
+    flex: 0 0 24px;
+    width: 24px;
+    gap: 0;
+  }
+
+  body.globe-mode #topbar .logo .brand-wordmark,
+  body.globe-mode #topbar .logo .brand-subtitle,
+  body.globe-mode #topbar .logo .brand-sep {
+    display: none;
+  }
+
+  body.globe-mode #topbar .topbar-actions { gap: 6px; }
+
+  #globe-evidence-browse {
+    min-height: 44px;
+    padding: 6px 10px;
+    letter-spacing: 1.2px;
+  }
+
+  #globe-evidence-browse .browse-label-full { display: none; }
+  #globe-evidence-browse .browse-label-short { display: inline; }
+
+  body.globe-mode #globe-theme-toggle {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+body.globe-fallback-active #globe-evidence-browse {
+  display: none;
 }
 
 @keyframes elu-hud-in {
@@ -172,7 +222,8 @@ body.globe-mode .hex-legend { animation: elu-hud-in .7s cubic-bezier(.22,.61,.36
 body:not(.globe-mode) #hex-country-tooltip,
 body:not(.globe-mode) #elu-country-rank-rail,
 body:not(.globe-mode) #elu-country-card-wrap,
-body:not(.globe-mode) #globe-loading {
+body:not(.globe-mode) #globe-loading,
+body:not(.globe-mode) #globe-fallback {
   display: none !important;
 }
 
@@ -222,6 +273,367 @@ body:not(.globe-mode) #globe-loading {
 }
 
 @keyframes elu-globe-spin { to { transform: rotate(360deg); } }
+
+/* Non-WebGL evidence route. This region is a direct child of body so it is
+   never trapped beneath #globeViz or the opaque Foundation sections. */
+#globe-fallback[hidden] { display: none !important; }
+
+body.globe-fallback-active #globeViz {
+  pointer-events: none !important;
+}
+
+body.globe-fallback-active #globe-loading,
+body.globe-fallback-active #elu-country-rank-rail,
+body.globe-fallback-active #elu-country-card-wrap,
+body.globe-fallback-active #hex-country-tooltip,
+body.globe-fallback-active .hex-legend,
+body.globe-fallback-active #globe-back-btn {
+  display: none !important;
+}
+
+#globe-fallback {
+  position: fixed;
+  inset: 54px 0 0;
+  z-index: 60;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 26px clamp(12px, 3vw, 38px) 96px;
+  background: var(--bg);
+  color: var(--text);
+  pointer-events: auto;
+}
+
+.elu-fallback-shell {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.elu-fallback-header,
+.elu-fallback-evidence {
+  border: 1px solid var(--hud-border);
+  border-radius: 4px;
+  background: var(--hud-bg-strong);
+  box-shadow: var(--hud-shadow);
+}
+
+.elu-fallback-header {
+  padding: clamp(20px, 4vw, 34px);
+}
+
+.elu-fallback-eyebrow {
+  margin: 0 0 8px;
+  color: var(--mint);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.elu-fallback-header h2 {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--display);
+  font-size: clamp(30px, 5vw, 50px);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.elu-fallback-reason {
+  margin: 14px 0 0;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.elu-fallback-boundary {
+  max-width: 880px;
+  margin: 10px 0 0;
+  color: var(--hud-muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.elu-fallback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.elu-fallback-actions .glass-btn {
+  min-height: 44px;
+  white-space: normal;
+}
+
+.elu-fallback-evidence {
+  margin-top: 14px;
+  padding: clamp(16px, 3vw, 24px);
+}
+
+.elu-fallback-evidence-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.elu-fallback-evidence h3,
+.elu-fallback-evidence h4 {
+  color: var(--mint);
+  font-family: var(--mono);
+  font-weight: 500;
+  letter-spacing: .8px;
+}
+
+.elu-fallback-evidence h3 {
+  margin: 0;
+  font-size: 13px;
+}
+
+#globe-fallback-summary {
+  margin: 7px 0 0;
+  color: var(--hud-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.elu-fallback-search {
+  display: grid;
+  flex: 0 1 340px;
+  gap: 6px;
+  color: var(--hud-muted);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .65px;
+  text-transform: uppercase;
+}
+
+.elu-fallback-search input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--hud-border);
+  border-radius: 3px;
+  background: var(--hud-cell);
+  color: var(--text);
+  font: 14px/1.35 var(--body);
+}
+
+.elu-fallback-search input:focus-visible,
+#globe-fallback button:focus-visible,
+#globe-fallback a:focus-visible,
+#globe-fallback [tabindex="-1"]:focus-visible {
+  border-color: var(--mint);
+  outline: 2px solid var(--mint);
+  outline-offset: 2px;
+}
+
+.elu-fallback-results {
+  min-height: 18px;
+  margin: 10px 0 6px;
+  color: var(--hud-muted);
+  font-size: 10px;
+}
+
+.elu-fallback-grid {
+  display: grid;
+  grid-template-columns: minmax(250px, .72fr) minmax(0, 1.28fr);
+  gap: 12px;
+  min-height: 430px;
+}
+
+.elu-fallback-list-panel,
+.elu-fallback-detail {
+  min-width: 0;
+  border: 1px solid var(--hud-divider);
+  border-radius: 3px;
+  background: var(--hud-cell);
+}
+
+.elu-fallback-list-panel {
+  max-height: 560px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+#globe-fallback-country-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.elu-fallback-country-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 11px;
+  border: 0;
+  border-bottom: 1px solid var(--hud-divider-soft);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.elu-fallback-country-row:hover,
+.elu-fallback-country-row:focus-visible,
+.elu-fallback-country-row[aria-current="true"] {
+  background: var(--hud-cell-hover);
+}
+
+.elu-fallback-country-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.elu-fallback-country-name small,
+.elu-fallback-country-state {
+  display: block;
+  margin-top: 3px;
+  color: var(--hud-muted);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .35px;
+}
+
+.elu-fallback-country-state {
+  align-self: center;
+  margin: 0;
+  text-align: right;
+}
+
+.elu-fallback-country-state.is-gap { color: var(--hud-muted); }
+
+.elu-fallback-detail {
+  padding: clamp(16px, 3vw, 24px);
+  overflow: auto;
+}
+
+.elu-fallback-detail h3 {
+  color: var(--text);
+  font-family: var(--display);
+  font-size: clamp(25px, 4vw, 36px);
+  letter-spacing: .2px;
+}
+
+.elu-fallback-detail h4 {
+  margin: 20px 0 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.elu-fallback-detail p,
+.elu-fallback-detail li {
+  color: var(--hud-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.elu-fallback-detail ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.elu-fallback-detail-value {
+  margin: 12px 0 0;
+  color: var(--text) !important;
+}
+
+.elu-fallback-detail-value strong {
+  color: #f2b36f;
+  font-family: var(--mono);
+  font-size: clamp(20px, 4vw, 29px);
+  font-weight: 500;
+}
+
+.elu-fallback-detail-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin-top: 9px;
+  padding: 5px 8px;
+  border: 1px solid var(--hud-border);
+  border-radius: 999px;
+  color: var(--hud-muted);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+}
+
+.elu-fallback-table-wrap {
+  max-width: 100%;
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+.elu-fallback-detail table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.elu-fallback-detail caption {
+  padding: 0 0 7px;
+  color: var(--hud-muted);
+  text-align: left;
+}
+
+.elu-fallback-detail th,
+.elu-fallback-detail td {
+  padding: 7px 8px;
+  border-top: 1px solid var(--hud-divider);
+  color: var(--text);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.elu-fallback-source a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--teal);
+}
+
+.elu-fallback-back-to-list {
+  min-height: 44px;
+  margin-top: 18px;
+  padding: 9px 12px;
+  border: 1px solid var(--hud-border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--teal);
+  font: 11px/1.3 var(--body);
+  cursor: pointer;
+}
+
+html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
+  color: #6b3d00;
+}
+
+@media (max-width: 760px) {
+  #globe-fallback { padding: 16px 10px 90px; }
+  .elu-fallback-evidence-head { display: grid; }
+  .elu-fallback-search { width: 100%; }
+  .elu-fallback-grid { grid-template-columns: 1fr; }
+  .elu-fallback-list-panel { max-height: 270px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #globe-fallback,
+  #globe-fallback * {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
 
 /* Ranked rail: worst gap first, outside #globeViz by design. */
 #elu-country-rank-rail {
@@ -297,7 +709,7 @@ body:not(.globe-mode) #globe-loading {
   align-items: center;
   gap: 6px;
   width: 100%;
-  min-height: 31px;
+  min-height: 44px;
   padding: 5px 10px;
   border: 0;
   border-bottom: 1px solid var(--hud-divider-soft);
@@ -338,6 +750,11 @@ body:not(.globe-mode) #globe-loading {
 .elu-rank-dot.is-red { background: #ff786d; box-shadow: 0 0 7px rgba(255, 120, 109, .35); }
 .elu-rank-dot.is-green { background: #63dc8b; box-shadow: 0 0 7px rgba(99, 220, 139, .3); }
 .elu-rank-dot.is-amber { background: var(--amber); }
+.elu-rank-dot.is-magnitude { background: linear-gradient(135deg,#5b4a97,#f6913a); box-shadow:0 0 7px rgba(246,145,58,.28); }
+.elu-rank-dot.is-gap { background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px); border:1px solid #aeb9c1; }
+.elu-rank-gap-heading { margin:0; padding:9px 10px; border-top:1px solid var(--hud-divider); border-bottom:1px solid var(--hud-divider-soft); color:var(--hud-muted); font-family:var(--mono); font-size:8px; font-weight:500; letter-spacing:1px; text-transform:uppercase; }
+.elu-rank-disclosure,.elu-rank-unmapped { padding:7px 10px; color:var(--hud-muted); font-size:9px; line-height:1.4; }
+.elu-rank-unmapped { border-bottom:1px solid var(--hud-divider-soft); }
 
 /* Selected dashboard: the v0.7 461px docked card. */
 #hex-country-tooltip {
@@ -440,8 +857,8 @@ body:not(.globe-mode) #globe-loading {
   position: relative !important;
   inset: auto !important;
   flex: 0 0 auto;
-  width: 28px !important;
-  height: 28px !important;
+  width: 44px !important;
+  height: 44px !important;
   padding: 0 !important;
   border: 1px solid var(--cell-bd);
   border-radius: 50% !important;
@@ -473,6 +890,25 @@ body:not(.globe-mode) #globe-loading {
   letter-spacing: .9px;
 }
 
+#hex-country-tooltip .tt-status-magnitude { color:#f2b36f; border-color:rgba(242,179,111,.38); background:rgba(117,76,151,.16); }
+#hex-country-tooltip .tt-candidate { margin-top:8px; padding:7px 8px; border:1px solid rgba(242,179,111,.34); background:rgba(117,76,151,.14); color:#f7c58d; font-family:var(--mono); font-size:8px; letter-spacing:.55px; line-height:1.4; text-transform:uppercase; }
+#hex-country-tooltip .tt-close { min-width:44px; min-height:44px; }
+#hex-country-tooltip .tt-factual h3 { margin:12px 0 5px; color:var(--mint); font-family:var(--mono); font-size:9px; letter-spacing:1px; text-transform:uppercase; }
+#hex-country-tooltip .tt-factual-value { color:var(--text2); font-size:11px; }
+#hex-country-tooltip .tt-factual-value strong { color:#f2b36f; font-family:var(--mono); font-size:20px; }
+#hex-country-tooltip .tt-factual-value span { color:var(--hud-faint); }
+#hex-country-tooltip .elu-trajectory-current.is-magnitude { stroke:#f2a553; stroke-width:2; fill:none; }
+#hex-country-tooltip .elu-trajectory-point { fill:#fff1dc; stroke:#704f9d; stroke-width:1.2; }
+#hex-country-tooltip .elu-chart-axis { fill:var(--text2); font-family:var(--mono); font-size:7px; }
+#hex-country-tooltip .tt-chart-data { margin-top:8px; color:var(--text2); font-size:10px; }
+#hex-country-tooltip .tt-chart-data summary { min-height:44px; display:flex; align-items:center; color:var(--teal); cursor:pointer; }
+#hex-country-tooltip .tt-chart-data table { width:100%; border-collapse:collapse; font-family:var(--mono); font-size:9px; }
+#hex-country-tooltip .tt-chart-data caption { padding:5px; color:var(--hud-muted); text-align:left; }
+#hex-country-tooltip .tt-chart-data th,#hex-country-tooltip .tt-chart-data td { padding:4px 5px; border-top:1px solid var(--hud-divider-soft); text-align:left; }
+#hex-country-tooltip .tt-source,#hex-country-tooltip .tt-limit { margin-top:8px; color:var(--text2); font-size:10px; line-height:1.45; }
+#hex-country-tooltip .tt-source a { display:inline-flex; align-items:center; min-height:44px; color:var(--teal); }
+#hex-country-tooltip :focus-visible,#elu-country-rank-rail :focus-visible { outline:2px solid var(--mint); outline-offset:2px; }
+
 #hex-country-tooltip.selected .tt-gap {
   border-radius: 3px;
   background: var(--hud-cell);
@@ -499,6 +935,8 @@ body:not(.globe-mode) #globe-loading {
 #hex-country-tooltip.selected .tt-hint {
   padding-top: 6px;
   border-top: 1px solid var(--hud-divider-soft);
+  color: var(--hud-muted);
+  opacity: 1;
 }
 
 /* v0.7 trajectory panel inserted by GlobeModule._renderCountryMetrics. */
@@ -571,6 +1009,8 @@ body.globe-mode .hex-legend {
   z-index: 20;
 }
 
+body.globe-mode .hex-legend-note { color: var(--hud-muted); }
+
 body.globe-mode #globe-back-btn {
   left: 24px;
   z-index: 200;
@@ -597,6 +1037,17 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ndc,
 html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-proj {
   background: var(--hud-cell);
 }
+
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-status-magnitude,
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-candidate,
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-factual-value strong {
+  color: #6b3d00;
+}
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-candidate {
+  border-color: #81521d;
+  background: #f4e7d4;
+}
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .elu-trajectory-current.is-magnitude { stroke: #7a4300; }
 
 html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   border-top-color: var(--hud-divider);
@@ -639,7 +1090,7 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   .elu-rank-row {
     grid-template-columns: 15px 6px minmax(0, 1fr);
     gap: 4px;
-    min-height: 32px;
+    min-height: 44px;
     padding: 5px;
   }
 
@@ -754,7 +1205,7 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
 
   .elu-rank-title { font-size: 0; }
   .elu-rank-title::after {
-    content: 'GAP';
+    content: '2023';
     font-size: 7px;
     letter-spacing: .8px;
   }
@@ -771,6 +1222,41 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   #elu-country-card-wrap {
     left: 64px;
     right: 8px;
+  }
+
+  /* Keep the essential country name and Close control on their own row.
+     The review-status badge moves below them so its intrinsic text width
+     cannot collapse the heading at the 320/375px production breakpoints. */
+  #hex-country-tooltip.selected .tt-topline {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    align-items: start;
+    gap: 6px 8px;
+  }
+
+  #hex-country-tooltip.selected .tt-country {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  #hex-country-tooltip.selected .tt-pill {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  #hex-country-tooltip.selected .tt-close {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    width: 44px;
+    height: 44px;
+    margin: 0;
   }
 }
 

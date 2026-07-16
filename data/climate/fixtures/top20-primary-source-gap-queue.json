@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "fixture_set": "ct14-top20-primary-source-gap-queue",
+  "mutations": [
+    { "id": "release-enabled", "path": "release_eligible", "value": true },
+    { "id": "runtime-enabled", "path": "production_runtime_release", "value": true },
+    { "id": "entity-removed", "path": "entities", "operation": "pop" },
+    { "id": "rank-drift", "path": "entities.0.reviewed_2023_factual_rank", "value": 2 },
+    { "id": "emissions-value-drift", "path": "entities.0.reviewed_2023_emissions.value", "value": 1 },
+    { "id": "inventory-evidence-invented", "path": "entities.0.document_requirements.0.evidence_status", "value": "reviewed" },
+    { "id": "source-owner-removed", "path": "entities.0.document_requirements.1.source_owner.primary", "value": null },
+    { "id": "unknown-source-id", "path": "entities.0.document_requirements.1.acceptable_source_registry_ids.0", "value": "unknown" },
+    { "id": "field-group-removed", "path": "entities.0.field_completeness.methodology", "operation": "delete" },
+    { "id": "missing-field-outside-requirements", "path": "entities.0.field_completeness.scope.missing_fields.0", "value": "target_value" },
+    { "id": "performance-claim-enabled", "path": "entities.0.allowed_uses.performance_claims", "value": true },
+    { "id": "score-leak", "path": "entities.0.assessment_gate.score", "value": 75 },
+    { "id": "calculation-hash-drift", "path": "calculation_hash", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }
+  ]
+}

@@ -19,6 +19,7 @@ const DEFAULT_FILES = [
   'ARCHITECTURE.md',
   'docs/agents/README.md',
   'docs/operations/GO_PUBLIC.md',
+  'docs/LEGACY-COUNTRY-DATA-EXIT.md',
 ].map(file => path.join(ROOT, file));
 
 const RISKY_TERMS = [

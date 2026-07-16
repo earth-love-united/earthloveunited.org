@@ -1,0 +1,192 @@
+{
+  "_meta": {
+    "fixture_set": "ct40-release-eligibility",
+    "fixture_version": "2.0.0",
+    "fictional_entities": true,
+    "notice": "Synthetic identifiers, checksums, permissions, and values are test inputs only. They do not accept or interpret any real source terms."
+  },
+  "base_candidate": {
+    "data_release_id": "climate-2099-01-01.fixture",
+    "methodology_version": "0.1.0",
+    "evaluated_at": "2099-01-01T12:00:00Z",
+    "sources": [
+      {
+        "source_id": "fixture-source-observed",
+        "checksum_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "licence": { "redistribution_approved": true, "scoring_approved": true, "decision_id": "fixture-decision-observed" }
+      },
+      {
+        "source_id": "fixture-source-method",
+        "checksum_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "licence": { "redistribution_approved": true, "scoring_approved": true, "decision_id": "fixture-decision-method" }
+      }
+    ],
+    "facts": [
+      {
+        "fact_id": "fact:fixture:emissions-2098",
+        "metric": "emissions.economy_wide_ghg",
+        "value": 0,
+        "evidence_state": "available",
+        "evidence_class": "harmonized_estimate",
+        "source_id": "fixture-source-observed",
+        "source_checksum_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "methodology_version": "0.1.0",
+        "derivation": null
+      },
+      {
+        "fact_id": "fact:fixture:target-endpoint-2100",
+        "metric": "target.normalized_endpoint",
+        "value": 80,
+        "evidence_state": "available",
+        "evidence_class": "official_reported",
+        "source_id": "fixture-source-observed",
+        "source_checksum_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "methodology_version": "0.1.0",
+        "derivation": null
+      },
+      {
+        "fact_id": "fact:fixture:delivery-required-rate",
+        "metric": "delivery.required_annual_rate",
+        "value": -0.02,
+        "evidence_state": "available",
+        "evidence_class": "derived",
+        "source_id": "fixture-source-method",
+        "source_checksum_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "methodology_version": "0.1.0",
+        "derivation": {
+          "input_fact_ids": ["fact:fixture:emissions-2098", "fact:fixture:target-endpoint-2100"],
+          "transformation": "Fixture compound annual rate",
+          "formula_version": "1.0.0",
+          "methodology_version": "0.1.0",
+          "calculated_at": "2099-01-01T10:00:00Z",
+          "calculation_hash": "3333333333333333333333333333333333333333333333333333333333333333"
+        }
+      }
+    ],
+    "fact_reviews": [
+      {
+        "fact_id": "fact:fixture:emissions-2098",
+        "status": "reviewed",
+        "extractor_id": "fixture-extractor-observed",
+        "reviewer_id": "fixture-reviewer-observed",
+        "reviewed_at": "2099-01-01T11:00:00Z",
+        "source_checksum_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "methodology_version": "0.1.0",
+        "field_reviews": [
+          { "field_path": "metric", "status": "reviewed", "fact_ids": ["fact:fixture:emissions-2098"] },
+          { "field_path": "period", "status": "reviewed", "fact_ids": ["fact:fixture:emissions-2098"] },
+          { "field_path": "scope", "status": "reviewed", "fact_ids": ["fact:fixture:emissions-2098"] },
+          { "field_path": "source", "status": "reviewed", "fact_ids": ["fact:fixture:emissions-2098"] },
+          { "field_path": "evidence", "status": "reviewed", "fact_ids": ["fact:fixture:emissions-2098"] }
+        ]
+      },
+      {
+        "fact_id": "fact:fixture:target-endpoint-2100",
+        "status": "reviewed",
+        "extractor_id": "fixture-extractor-target",
+        "reviewer_id": "fixture-reviewer-target",
+        "reviewed_at": "2099-01-01T11:00:00Z",
+        "source_checksum_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "methodology_version": "0.1.0",
+        "field_reviews": [
+          { "field_path": "metric", "status": "reviewed", "fact_ids": ["fact:fixture:target-endpoint-2100"] },
+          { "field_path": "period", "status": "reviewed", "fact_ids": ["fact:fixture:target-endpoint-2100"] },
+          { "field_path": "scope", "status": "reviewed", "fact_ids": ["fact:fixture:target-endpoint-2100"] },
+          { "field_path": "source", "status": "reviewed", "fact_ids": ["fact:fixture:target-endpoint-2100"] },
+          { "field_path": "evidence", "status": "reviewed", "fact_ids": ["fact:fixture:target-endpoint-2100"] }
+        ]
+      },
+      {
+        "fact_id": "fact:fixture:delivery-required-rate",
+        "status": "reviewed",
+        "extractor_id": "fixture-extractor-method",
+        "reviewer_id": "fixture-reviewer-method",
+        "reviewed_at": "2099-01-01T11:00:00Z",
+        "source_checksum_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "methodology_version": "0.1.0",
+        "field_reviews": [
+          { "field_path": "metric", "status": "reviewed", "fact_ids": ["fact:fixture:delivery-required-rate"] },
+          { "field_path": "period", "status": "reviewed", "fact_ids": ["fact:fixture:delivery-required-rate"] },
+          { "field_path": "scope", "status": "reviewed", "fact_ids": ["fact:fixture:delivery-required-rate"] },
+          { "field_path": "source", "status": "reviewed", "fact_ids": ["fact:fixture:delivery-required-rate"] },
+          { "field_path": "evidence", "status": "reviewed", "fact_ids": ["fact:fixture:delivery-required-rate"] },
+          { "field_path": "derivation", "status": "reviewed", "fact_ids": ["fact:fixture:delivery-required-rate", "fact:fixture:emissions-2098", "fact:fixture:target-endpoint-2100"] }
+        ]
+      }
+    ],
+    "conflicts": [
+      {
+        "conflict_id": "conflict:fixture:resolved",
+        "fact_ids": ["fact:fixture:emissions-2098"],
+        "status": "resolved",
+        "resolution": "Fictional duplicate identifier was retired.",
+        "resolution_fact_ids": ["fact:fixture:emissions-2098"],
+        "reviewer_id": "fixture-conflict-reviewer",
+        "resolved_at": "2099-01-01T11:30:00Z"
+      }
+    ],
+    "profiles": [
+      {
+        "profile_id": "profile:fixture:climate-2099",
+        "methodology_version": "0.1.0",
+        "generated_at": "2099-01-01T11:45:00Z",
+        "calculation_hash": "4444444444444444444444444444444444444444444444444444444444444444",
+        "input_fact_ids": ["fact:fixture:emissions-2098", "fact:fixture:target-endpoint-2100", "fact:fixture:delivery-required-rate"],
+        "review": {
+          "status": "reviewed",
+          "compiler_id": "fixture-profile-compiler",
+          "reviewer_id": "fixture-profile-reviewer",
+          "reviewed_at": "2099-01-01T11:50:00Z",
+          "methodology_version": "0.1.0",
+          "input_fact_ids": ["fact:fixture:emissions-2098", "fact:fixture:target-endpoint-2100", "fact:fixture:delivery-required-rate"]
+        }
+      }
+    ],
+    "review": {
+      "status": "reviewed",
+      "builder_id": "fixture-release-builder",
+      "reviewer_ids": ["fixture-release-reviewer"],
+      "reviewed_at": "2099-01-01T11:55:00Z"
+    }
+  },
+  "cases": [
+    { "id": "fully-reviewed-release", "mutations": [], "expected": { "decision": "allow", "reasons": [], "queue": 0 } },
+    { "id": "fact-self-review", "mutations": [{ "path": "fact_reviews.0.reviewer_id", "value": "fixture-extractor-observed" }], "expected": { "decision": "deny", "reasons_include": ["independent_review_required"], "queue_min": 2 } },
+    { "id": "release-self-review", "mutations": [{ "path": "review.reviewer_ids", "value": ["fixture-release-builder"] }], "expected": { "decision": "deny", "reasons": ["independent_review_required"], "queue": 1 } },
+    { "id": "review-timestamp-missing", "mutations": [{ "path": "fact_reviews.0.reviewed_at", "value": null }], "expected": { "decision": "deny", "reasons_include": ["source_not_reviewed"] } },
+    { "id": "review-source-checksum-mismatch", "mutations": [{ "path": "fact_reviews.0.source_checksum_sha256", "value": "9999999999999999999999999999999999999999999999999999999999999999" }], "expected": { "decision": "deny", "reasons_include": ["source_not_reviewed"] } },
+    { "id": "review-methodology-mismatch", "mutations": [{ "path": "fact_reviews.0.methodology_version", "value": "0.0.9" }], "expected": { "decision": "deny", "reasons_include": ["evidence_insufficient"] } },
+    { "id": "field-level-review-missing", "mutations": [{ "path": "fact_reviews.0.field_reviews.1.fact_ids", "value": [] }], "expected": { "decision": "deny", "reasons_include": ["climate_evidence_not_reviewed"] } },
+    { "id": "redistribution-licence-blocked", "mutations": [{ "path": "sources.0.licence.redistribution_approved", "value": false }], "expected": { "decision": "deny", "reasons_include": ["licence_not_approved"], "queue_field": "source.licence" } },
+    { "id": "licence-decision-id-missing", "mutations": [{ "path": "sources.0.licence.decision_id", "value": null }], "expected": { "decision": "deny", "reasons_include": ["licence_not_approved"], "queue_field": "source.licence" } },
+    { "id": "scoring-permission-blocked", "mutations": [{ "path": "sources.0.licence.scoring_approved", "value": false }], "expected": { "decision": "deny", "reasons": ["licence_not_approved"], "eligible_facts": 3, "eligible_profiles": 0 } },
+    { "id": "source-record-missing", "mutations": [{ "path": "sources", "value": [] }], "expected": { "decision": "deny", "reasons_include": ["source_missing"] } },
+    { "id": "source-checksum-mismatch", "mutations": [{ "path": "sources.0.checksum_sha256", "value": "9999999999999999999999999999999999999999999999999999999999999999" }], "expected": { "decision": "deny", "reasons_include": ["source_missing"] } },
+    { "id": "unresolved-conflict", "mutations": [{ "path": "conflicts.0.status", "value": "open" }, { "path": "conflicts.0.resolution_fact_ids", "value": [] }], "expected": { "decision": "deny", "reasons_include": ["unresolved_source_conflict"], "queue_field": "conflict_resolution" } },
+    { "id": "conflicting-evidence-state-remains-blocked", "mutations": [{ "path": "facts.0.evidence_state", "value": "conflicting" }], "expected": { "decision": "deny", "reasons_include": ["unresolved_source_conflict"] } },
+    { "id": "not-reviewed-evidence", "mutations": [{ "path": "facts.0.evidence_state", "value": "not_reviewed" }], "expected": { "decision": "deny", "reasons_include": ["climate_evidence_not_reviewed"] } },
+    { "id": "review-in-progress", "mutations": [{ "path": "fact_reviews.0.status", "value": "in_review" }], "expected": { "decision": "deny", "reasons_include": ["climate_evidence_not_reviewed"] } },
+    { "id": "withheld-evidence", "mutations": [{ "path": "facts.0.evidence_state", "value": "withheld" }], "expected": { "decision": "deny", "reasons_include": ["value_withheld"], "queue_field": "value_state" } },
+    { "id": "stale-evidence", "mutations": [{ "path": "facts.0.evidence_state", "value": "stale" }], "expected": { "decision": "deny", "reasons_include": ["stale_source"], "queue_field": "source_recency" } },
+    { "id": "source-unavailable", "mutations": [{ "path": "facts.0.evidence_state", "value": "source_unavailable" }], "expected": { "decision": "deny", "reasons_include": ["source_unavailable"] } },
+    { "id": "value-not-reported", "mutations": [{ "path": "facts.0.evidence_state", "value": "not_reported" }], "expected": { "decision": "deny", "reasons_include": ["value_not_reported"] } },
+    { "id": "not-yet-due-context-not-score", "mutations": [{ "path": "facts.0.evidence_state", "value": "not_yet_due" }], "expected": { "decision": "deny", "reasons": ["reporting_not_yet_due"], "eligible_facts": 3, "eligible_profiles": 0, "queue_field": "assessment_eligibility" } },
+    { "id": "reporting-optional-context-not-score", "mutations": [{ "path": "facts.0.evidence_state", "value": "reporting_optional" }], "expected": { "decision": "deny", "reasons": ["reporting_optional"], "eligible_facts": 3, "eligible_profiles": 0, "queue_field": "assessment_eligibility" } },
+    { "id": "not-applicable-context-not-score", "mutations": [{ "path": "facts.0.evidence_state", "value": "not_applicable" }], "expected": { "decision": "deny", "reasons": ["not_applicable"], "eligible_facts": 3, "eligible_profiles": 0, "queue_field": "assessment_eligibility" } },
+    { "id": "high-impact-formula-missing", "mutations": [{ "path": "facts.2.derivation.formula_version", "value": null }], "expected": { "decision": "deny", "reasons_include": ["evidence_insufficient"], "queue_field": "evidence_or_derivation" } },
+    { "id": "high-impact-input-missing", "mutations": [{ "path": "facts.2.derivation.input_fact_ids", "value": ["fact:fixture:absent"] }], "expected": { "decision": "deny", "reasons_include": ["evidence_insufficient"] } },
+    { "id": "high-impact-self-input", "mutations": [{ "path": "facts.2.derivation.input_fact_ids", "value": ["fact:fixture:delivery-required-rate"] }], "expected": { "decision": "deny", "reasons_include": ["evidence_insufficient"] } },
+    { "id": "high-impact-methodology-mismatch", "mutations": [{ "path": "facts.2.derivation.methodology_version", "value": "0.0.9" }], "expected": { "decision": "deny", "reasons_include": ["evidence_insufficient"] } },
+    { "id": "profile-input-missing", "mutations": [{ "path": "profiles.0.input_fact_ids.0", "value": "fact:fixture:absent" }], "expected": { "decision": "deny", "reasons_include": ["source_missing"], "eligible_facts": 3, "eligible_profiles": 0 } },
+    { "id": "profile-methodology-mismatch", "mutations": [{ "path": "profiles.0.methodology_version", "value": "0.0.9" }], "expected": { "decision": "deny", "reasons_include": ["evidence_insufficient"] } },
+    { "id": "profile-hash-missing", "mutations": [{ "path": "profiles.0.calculation_hash", "value": null }], "expected": { "decision": "deny", "reasons_include": ["evidence_insufficient"] } },
+    { "id": "profile-self-review", "mutations": [{ "path": "profiles.0.review.reviewer_id", "value": "fixture-profile-compiler" }], "expected": { "decision": "deny", "reasons_include": ["independent_review_required"] } },
+    { "id": "profile-review-input-lineage-mismatch", "mutations": [{ "path": "profiles.0.review.input_fact_ids", "value": ["fact:fixture:emissions-2098"] }], "expected": { "decision": "deny", "reasons_include": ["evidence_insufficient"] } },
+    { "id": "release-not-reviewed", "mutations": [{ "path": "review.status", "value": "not_reviewed" }, { "path": "review.reviewed_at", "value": null }], "expected": { "decision": "deny", "reasons": ["climate_evidence_not_reviewed"], "queue": 1 } },
+    { "id": "release-reviewer-empty", "mutations": [{ "path": "review.reviewer_ids", "value": [""] }], "expected": { "decision": "deny", "reasons": ["independent_review_required"], "queue": 1 } },
+    { "id": "release-reviewer-duplicate", "mutations": [{ "path": "review.reviewer_ids", "value": ["fixture-release-reviewer", "fixture-release-reviewer"] }], "expected": { "decision": "deny", "reasons": ["independent_review_required"], "queue": 1 } },
+    { "id": "empty-release", "mutations": [{ "path": "facts", "value": [] }, { "path": "fact_reviews", "value": [] }, { "path": "profiles", "value": [] }], "expected": { "decision": "deny", "reasons": ["evidence_insufficient"], "queue": 1 } },
+    { "id": "no-profiles-release", "mutations": [{ "path": "profiles", "value": [] }], "expected": { "decision": "deny", "reasons": ["evidence_insufficient"], "queue": 1 } },
+    { "id": "orphaned-release-fact", "mutations": [{ "path": "profiles.0.input_fact_ids", "value": ["fact:fixture:emissions-2098", "fact:fixture:target-endpoint-2100"] }, { "path": "profiles.0.review.input_fact_ids", "value": ["fact:fixture:emissions-2098", "fact:fixture:target-endpoint-2100"] }], "expected": { "decision": "deny", "reasons": ["evidence_insufficient"], "eligible_facts": 3, "eligible_profiles": 1, "queue": 1 } }
+  ]
+}

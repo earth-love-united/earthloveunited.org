@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/top20-source-routing-queue.schema.json",
+  "title": "CT-16 top-20 source-routing queue",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "queue_id",
+    "routing_policy_id",
+    "routing_policy_calculation_hash",
+    "created_at",
+    "review_status",
+    "release_eligible",
+    "scoring_authorized",
+    "production_runtime_release",
+    "inputs",
+    "coverage",
+    "entities",
+    "prohibited_outputs",
+    "calculation_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.1.0" },
+    "queue_id": { "const": "ct-16-top20-source-routing-queue-v2-2026-07-15" },
+    "routing_policy_id": { "const": "ct-16-source-routing-policy-v2-2026-07-15" },
+    "routing_policy_calculation_hash": { "$ref": "#/$defs/sha256" },
+    "created_at": { "type": "string", "pattern": "Z$" },
+    "review_status": { "const": "not_reviewed" },
+    "release_eligible": { "const": false },
+    "scoring_authorized": { "const": false },
+    "production_runtime_release": { "const": false },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ct14_immutable_snapshot", "source_routing_policy"],
+      "properties": {
+        "ct14_immutable_snapshot": { "$ref": "#/$defs/inputPin" },
+        "source_routing_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "calculation_hash"],
+          "properties": {
+            "path": { "type": "string", "minLength": 1 },
+            "calculation_hash": { "$ref": "#/$defs/sha256" }
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ranked_entities",
+        "primary_inventory_routes_satisfied",
+        "btr_components_governance_approved",
+        "ter_only_inventory_packages_eligible",
+        "active_ndc_or_reviewed_absence_routes_complete",
+        "release_eligible_entities"
+      ],
+      "properties": {
+        "ranked_entities": { "const": 20 },
+        "primary_inventory_routes_satisfied": { "const": 0 },
+        "btr_components_governance_approved": { "const": 0 },
+        "ter_only_inventory_packages_eligible": { "const": 0 },
+        "active_ndc_or_reviewed_absence_routes_complete": { "const": 0 },
+        "release_eligible_entities": { "const": 0 }
+      }
+    },
+    "entities": {
+      "type": "array",
+      "minItems": 20,
+      "maxItems": 20,
+      "items": { "$ref": "#/$defs/entity" }
+    },
+    "prohibited_outputs": { "type": "array", "minItems": 6, "items": { "type": "string", "minLength": 1 } },
+    "calculation_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "nullableSha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "inputPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "primaryCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route_id", "source_registry_id", "source_role", "route_state",
+        "source_document_ids", "explicit_component_id", "document_checksum_sha256",
+        "governance_decision_id", "rights_decision_id", "independent_review_id",
+        "family_level_authorized", "primary_requirement_satisfied"
+      ],
+      "properties": {
+        "route_id": { "type": "string", "minLength": 1 },
+        "source_registry_id": { "type": "string", "minLength": 1 },
+        "source_role": { "enum": ["primary_value_source", "conditional_primary_component"] },
+        "route_state": { "enum": ["blocked_pending_rights_and_review", "blocked_role_domain_mismatch"] },
+        "source_document_ids": { "type": "array", "maxItems": 0 },
+        "explicit_component_id": { "type": "null" },
+        "document_checksum_sha256": { "$ref": "#/$defs/nullableSha256" },
+        "governance_decision_id": { "type": "null" },
+        "rights_decision_id": { "type": "null" },
+        "independent_review_id": { "type": "null" },
+        "family_level_authorized": { "const": false },
+        "primary_requirement_satisfied": { "const": false }
+      }
+    },
+    "corroborationCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route_id", "source_registry_id", "source_role", "route_state",
+        "source_document_ids", "document_checksum_sha256", "rights_decision_id",
+        "independent_review_id", "sufficient_as_primary"
+      ],
+      "properties": {
+        "route_id": { "type": "string", "minLength": 1 },
+        "source_registry_id": { "type": "string", "minLength": 1 },
+        "source_role": { "const": "corroboration_only" },
+        "route_state": { "const": "blocked_normalized_findings_pending" },
+        "source_document_ids": { "type": "array", "maxItems": 0 },
+        "document_checksum_sha256": { "$ref": "#/$defs/nullableSha256" },
+        "rights_decision_id": { "type": "null" },
+        "independent_review_id": { "type": "null" },
+        "sufficient_as_primary": { "const": false }
+      }
+    },
+    "inventoryRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "primary_requirement_satisfied", "normalized_values_eligible",
+        "scoring_eligible", "primary_candidates", "corroboration_candidates", "reason_codes"
+      ],
+      "properties": {
+        "status": { "const": "blocked_primary_source_missing" },
+        "primary_requirement_satisfied": { "const": false },
+        "normalized_values_eligible": { "const": false },
+        "scoring_eligible": { "const": false },
+        "primary_candidates": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "$ref": "#/$defs/primaryCandidate" } },
+        "corroboration_candidates": { "type": "array", "minItems": 1, "maxItems": 1, "items": { "$ref": "#/$defs/corroborationCandidate" } },
+        "reason_codes": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "documentRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "route_id", "source_registry_id", "source_role", "source_document_ids",
+        "exact_artifacts_acquired", "exact_artifact_checksums_sha256",
+        "active_or_reviewed_absence_status_verified", "governance_decision_id",
+        "rights_decision_id", "independent_review_id", "normalized_values_eligible",
+        "scoring_eligible", "reason_codes"
+      ],
+      "properties": {
+        "status": { "enum": ["source_missing", "metadata_only_in_review", "legacy_indc_only", "field_presence_in_review"] },
+        "route_id": { "type": "string", "minLength": 1 },
+        "source_registry_id": { "const": "unfccc-ndc-registry-continuous-2026-07-15" },
+        "source_role": { "const": "primary_document_source" },
+        "source_document_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "exact_artifacts_acquired": { "const": 0 },
+        "exact_artifact_checksums_sha256": { "type": "array", "maxItems": 0 },
+        "active_or_reviewed_absence_status_verified": { "const": false },
+        "governance_decision_id": { "type": "null" },
+        "rights_decision_id": { "type": "null" },
+        "independent_review_id": { "type": "null" },
+        "normalized_values_eligible": { "const": false },
+        "scoring_eligible": { "const": false },
+        "reason_codes": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_sources_complete", "rights_complete", "independent_review_complete",
+        "assessment_eligible", "scoring_eligible", "release_eligible", "production_runtime_release"
+      ],
+      "properties": {
+        "primary_sources_complete": { "const": false },
+        "rights_complete": { "const": false },
+        "independent_review_complete": { "const": false },
+        "assessment_eligible": { "const": false },
+        "scoring_eligible": { "const": false },
+        "release_eligible": { "const": false },
+        "production_runtime_release": { "const": false }
+      }
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["priority", "country_id", "iso_alpha3", "name", "reviewed_2023_factual_rank", "routing", "gates"],
+      "properties": {
+        "priority": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "country_id": { "type": "string", "pattern": "^iso3166-1:[A-Z]{3}$" },
+        "iso_alpha3": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "name": { "type": "string", "minLength": 1 },
+        "reviewed_2023_factual_rank": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "routing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["official_inventory", "active_ndc", "target_methodology"],
+          "properties": {
+            "official_inventory": { "$ref": "#/$defs/inventoryRoute" },
+            "active_ndc": { "$ref": "#/$defs/documentRoute" },
+            "target_methodology": { "$ref": "#/$defs/documentRoute" }
+          }
+        },
+        "gates": { "$ref": "#/$defs/gates" }
+      }
+    }
+  }
+}

@@ -7,9 +7,10 @@
 #  HTML, CSS, JS, runtime data, textures, assets. Excludes scraper
 #  pipelines, build artifacts, internal docs, .git, and bloat.
 #
-#  After running:
+#  After a successful --release build only:
 #    1. Open Cloudflare Pages → Create project → Upload → drag _deploy/
 #    2. (or use `wrangler pages deploy _deploy --project-name earthloveunited`)
+#  A --candidate build is local QA output and must never be uploaded.
 #
 #  Re-run any time to refresh the staging dir from the working tree.
 # ═════════════════════════════════════════════════════════════════
@@ -23,73 +24,87 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
 DEPLOY_DIR="_deploy"
+cleanup_failed_build() {
+  local status=$?
+  if [ "$status" -ne 0 ]; then
+    rm -rf "$DEPLOY_DIR"
+  fi
+  exit "$status"
+}
+trap cleanup_failed_build EXIT
 
+ENV_DEPLOY_MODE="${ELU_DEPLOY_MODE:-}"
+ARG_DEPLOY_MODE=""
+case "${1:-}" in
+  --candidate) ARG_DEPLOY_MODE="candidate" ;;
+  --release) ARG_DEPLOY_MODE="release" ;;
+  "") ;;
+  *)
+    echo "Unknown build mode: $1 (use --candidate or --release)" >&2
+    exit 2
+    ;;
+esac
+case "$ENV_DEPLOY_MODE" in
+  ""|candidate|release) ;;
+  *)
+    echo "Unknown ELU_DEPLOY_MODE: $ENV_DEPLOY_MODE (use candidate or release)" >&2
+    exit 2
+    ;;
+esac
+# Every Cloudflare Pages build is externally reachable, including branch and
+# pull-request previews. Until release readiness passes, none may stage the
+# explicitly local-only candidate path.
+if [ -n "${CF_PAGES_BRANCH:-}" ]; then
+  DEPLOY_MODE="release"
+elif [ -n "$ARG_DEPLOY_MODE" ] && [ -n "$ENV_DEPLOY_MODE" ] && [ "$ARG_DEPLOY_MODE" != "$ENV_DEPLOY_MODE" ]; then
+  echo "Conflicting build modes: CLI=$ARG_DEPLOY_MODE ELU_DEPLOY_MODE=$ENV_DEPLOY_MODE" >&2
+  exit 2
+else
+  DEPLOY_MODE="${ARG_DEPLOY_MODE:-$ENV_DEPLOY_MODE}"
+fi
+case "$DEPLOY_MODE" in
+  candidate|release) ;;
+  "")
+    echo "Build mode is required: use --candidate for local QA or --release for production." >&2
+    exit 2
+    ;;
+  *)
+    echo "Unknown ELU_DEPLOY_MODE: $DEPLOY_MODE (use candidate or release)" >&2
+    exit 2
+    ;;
+esac
+
+# Remove any stale candidate/release output before a release gate can fail.
 echo "🧹 Cleaning $DEPLOY_DIR/ ..."
 rm -rf "$DEPLOY_DIR"
-mkdir -p "$DEPLOY_DIR"
 
-# ── Re-fetch the vendored globe.gl (it's gitignored, so working tree
-#    may or may not have it).
-echo "📦 Ensuring js/vendor/globe.gl.js is present..."
-mkdir -p js/vendor
-if [ ! -f js/vendor/globe.gl.js ]; then
-  curl -fsSL https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js \
-    -o js/vendor/globe.gl.js
-  echo "   ✓ fetched globe.gl@2.46.1"
+echo "📜 Verifying source third-party notices..."
+node tools/check-globe-third-party-notices.js
+
+if [ "$DEPLOY_MODE" = "release" ]; then
+  echo "🔐 Enforcing production release readiness..."
+  node tools/check-climate-production-readiness.js --release
 else
-  echo "   ✓ already present"
+  echo "⚠️  LOCAL QA CANDIDATE ONLY — DO NOT PUBLISH. Production use and release authority remain false."
 fi
 
-# ── Copy ONLY what the browser needs.
-#    Order: HTML pages first, then code, then assets, then runtime data.
+mkdir -p "$DEPLOY_DIR"
+
+# ── Fetch or verify the gitignored globe.gl runtime dependency. The helper
+#    refuses an existing mismatch and installs new bytes by atomic rename only
+#    after the pinned SHA-256 passes.
+echo "📦 Verifying js/vendor/globe.gl.js..."
+"$REPO_ROOT/tools/fetch-globe-vendor.sh"
+
+# ── Copy the readable root notice first. The exact staging tool then copies
+#    only the audited browser/runtime surface and refuses symlinks, missing
+#    files, duplicate destinations, or any pre-existing staged payload.
 echo "📋 Staging files..."
+cp THIRD_PARTY_NOTICES.txt "$DEPLOY_DIR/"
+node tools/stage-public-deploy.js --staged "$DEPLOY_DIR" --mode "$DEPLOY_MODE"
 
-# Entry-point HTML pages
-cp index.html "$DEPLOY_DIR/"
-[ -f gaia.html ] && cp gaia.html "$DEPLOY_DIR/" || true
-
-# PWA: service worker must live at the origin root; manifest is linked from index.html
-cp sw.js manifest.json "$DEPLOY_DIR/"
-
-# Code
-cp -r js  "$DEPLOY_DIR/"
-cp -r css "$DEPLOY_DIR/"
-
-# Static assets
-[ -d assets ]   && cp -r assets   "$DEPLOY_DIR/"
-[ -d textures ] && cp -r textures "$DEPLOY_DIR/"
-
-# Runtime data — use cp (no rsync dependency; CI images may lack rsync).
-mkdir -p "$DEPLOY_DIR/data"
-cp -r data/. "$DEPLOY_DIR/data/"
-find "$DEPLOY_DIR/data" \( -name '*.bak*' -o -name '.DS_Store' \) -delete 2>/dev/null || true
-
-# DIS knowledge JSONs + JS bridges
-mkdir -p "$DEPLOY_DIR/dis"
-find dis -maxdepth 1 -type f \( -name "*.js" -o -name "*.json" -o -name "*.json.gz" -o -name "*.css" \) \
-  -exec cp {} "$DEPLOY_DIR/dis/" \;
-
-# Build artifacts the runtime fetches
-[ -d dist ] && cp -r dist "$DEPLOY_DIR/"
-
-# Tools dir (in-browser dev tools loaded only on localhost via index.html)
-[ -d tools ] && {
-  mkdir -p "$DEPLOY_DIR/tools"
-  # Only copy the in-browser tools (JS), not the bash scripts
-  find tools -maxdepth 1 -type f -name "*.js" -exec cp {} "$DEPLOY_DIR/tools/" \;
-}
-
-# Holocene bifurcation page if it exists
-[ -d holocene-bifurcation ] && cp -r holocene-bifurcation "$DEPLOY_DIR/"
-
-# ── Clean up junk that may have crept in
-echo "🧹 Stripping junk..."
-find "$DEPLOY_DIR" -name ".DS_Store"   -delete 2>/dev/null
-find "$DEPLOY_DIR" -name "Thumbs.db"   -delete 2>/dev/null
-find "$DEPLOY_DIR" -name "*.bak"       -delete 2>/dev/null
-find "$DEPLOY_DIR" -name "*.bak.*"     -delete 2>/dev/null
-find "$DEPLOY_DIR" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null
-find "$DEPLOY_DIR" -name "*.pyc"       -delete 2>/dev/null
+echo "🔎 Verifying exact public deploy surface..."
+node tools/check-public-deploy-surface.js --staged "$DEPLOY_DIR" --mode "$DEPLOY_MODE"
 
 # ── Report
 echo ""
@@ -98,15 +113,23 @@ TOTAL_SIZE=$(du -sh "$DEPLOY_DIR" | cut -f1)
 TOTAL_FILES=$(find "$DEPLOY_DIR" -type f | wc -l | tr -d ' ')
 echo "   Total: $TOTAL_FILES files, $TOTAL_SIZE"
 echo ""
-echo "Biggest files (sanity check — anything > 5MB? should be runtime knowledge data only):"
+echo "Biggest files (sanity check — only audited runtime files belong here):"
 find "$DEPLOY_DIR" -type f -size +1M -exec du -h {} \; | sort -rh | head -5
 echo ""
-echo "Next:"
-echo "   Option A — Drag-and-drop:"
-echo "     1. Open https://dash.cloudflare.com → Workers & Pages → Create"
-echo "     2. Pages → Upload assets → drag the $DEPLOY_DIR folder"
-echo "     3. Project name: earthloveunited"
-echo "     4. Click Deploy"
-echo ""
-echo "   Option B — wrangler CLI (faster on subsequent deploys):"
-echo "     npx wrangler pages deploy $DEPLOY_DIR --project-name earthloveunited"
+if [ "$DEPLOY_MODE" = "release" ]; then
+  echo "Production readiness passed. Publish only this verified $DEPLOY_DIR directory."
+else
+  echo "LOCAL QA ONLY. Do not upload, deploy, or expose this candidate as a public preview."
+fi
+
+# Verify the readable notice, machine inventory, integration record, and future
+# approval schema after copy and cleanup. Integrity does not grant approval.
+echo "📜 Verifying final staged third-party notices..."
+node tools/check-globe-third-party-notices.js --staged "$DEPLOY_DIR"
+
+# Replace the shell with the aggregate verifier so successful shell EXIT
+# handlers cannot write after verification. The verifier removes failed staged
+# output; if exec itself cannot start, the existing shell EXIT trap removes it.
+echo "🔐 Verifying final staged production integrity..."
+export ELU_VERIFIED_DEPLOY_MODE="$DEPLOY_MODE"
+exec node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"

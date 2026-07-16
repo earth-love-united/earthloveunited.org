@@ -17,7 +17,7 @@
 #  Requirements: `gh` CLI installed and authenticated (`gh auth login`).
 #
 #  See AGENTS.md § Operations for the mission lifecycle.
-#  See SWARM_SDK.md for the architectural rules being validated.
+#  See ARCHITECTURE.md for the architectural rules being validated.
 # ═════════════════════════════════════════════════════════════════
 
 set -euo pipefail
@@ -35,6 +35,13 @@ fi
 ROLE="${BASH_REMATCH[1]}"
 SLUG="${BASH_REMATCH[2]}"
 
+# Compare the mission with the fetched remote main when available. Local main
+# may be stale when another mission merged after this clone/worktree was made.
+BASE_REF="main"
+if git show-ref --verify --quiet "refs/remotes/origin/main"; then
+  BASE_REF="origin/main"
+fi
+
 # ── Ensure working tree is committed ──
 if ! git diff --quiet || ! git diff --cached --quiet; then
   echo "❌ Working tree is not clean. Commit your changes first."
@@ -42,7 +49,7 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
   exit 1
 fi
 
-if [ -z "$(git log main..HEAD --oneline 2>/dev/null)" ]; then
+if [ -z "$(git log "${BASE_REF}..HEAD" --oneline 2>/dev/null)" ]; then
   echo "❌ No commits on this branch beyond main. Nothing to merge."
   exit 1
 fi
@@ -57,7 +64,7 @@ fi
 
 echo ""
 echo "🔍 Step 2/4 — node --check on every JS file touched in this mission"
-CHANGED_JS=$(git diff --name-only main..HEAD -- '*.js' || true)
+CHANGED_JS=$(git diff --name-only "${BASE_REF}..HEAD" -- '*.js' || true)
 if [ -n "$CHANGED_JS" ]; then
   echo "$CHANGED_JS" | while read -r f; do
     if [ -f "$f" ]; then
@@ -73,7 +80,7 @@ fi
 echo ""
 echo "🔍 Step 3/4 — protected file scan"
 PROTECTED_PATTERN='^(LICENSE|CREDITS\.md|CODE_OF_CONDUCT\.md|CONTRIBUTING\.md|AGENTS\.md|ARCHITECTURE\.md|README\.md|SWARM_SDK\.md|OPERATIONS\.md|\.github/|\.gitignore|js/gaia-utils\.js|js/module-contracts\.js|js/module-validator\.js|js/app\.js|js/event-bus\.js|js/storage-adapter\.js|js/modules/|infra/|scripts/verify_load_order\.py|tools/agent-precommit|tools/install-hooks\.sh|tools/start-mission\.sh|tools/end-mission\.sh)'
-PROTECTED_TOUCHED=$(git diff --name-only main..HEAD | grep -E "$PROTECTED_PATTERN" || true)
+PROTECTED_TOUCHED=$(git diff --name-only "${BASE_REF}..HEAD" | grep -E "$PROTECTED_PATTERN" || true)
 
 if [ -n "$PROTECTED_TOUCHED" ]; then
   echo "⚠️  Protected files touched (will require human review):"
@@ -90,8 +97,8 @@ echo "🔍 Step 4/4 — push to origin"
 git push -u origin "$BRANCH"
 
 # ── Build the PR body ──
-CHANGED_FILES_COUNT=$(git diff --name-only main..HEAD | wc -l | tr -d ' ')
-COMMITS_LIST=$(git log main..HEAD --format='- %s' | head -20)
+CHANGED_FILES_COUNT=$(git diff --name-only "${BASE_REF}..HEAD" | wc -l | tr -d ' ')
+COMMITS_LIST=$(git log "${BASE_REF}..HEAD" --format='- %s' | head -20)
 
 PR_BODY=$(cat <<EOF
 ## Mission summary
@@ -114,7 +121,7 @@ $COMMITS_LIST
 ## Files touched
 
 \`\`\`
-$(git diff --name-only main..HEAD)
+$(git diff --name-only "${BASE_REF}..HEAD")
 \`\`\`
 
 ---

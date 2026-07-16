@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/country-registry-2.0.0.json",
+  "title": "Debian iso-codes based ISO 3166-1-compatible identity registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "registry_version", "data_release_id", "generated_at", "identity_basis", "source", "separable_asset", "publication_gates", "entity_count", "entities"],
+  "properties": {
+    "schema_version": { "const": "2.0.0" },
+    "registry_version": { "const": "2.0.0" },
+    "data_release_id": { "const": "debian-iso-codes-4.20.1-1-2026-07-15" },
+    "generated_at": { "const": "2026-07-15T00:00:00Z" },
+    "identity_basis": {
+      "type": "object", "additionalProperties": false,
+      "required": ["description", "normative_authorities", "redistribution_source", "political_status_disclaimer"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "normative_authorities": { "type": "array", "minItems": 2, "items": { "type": "string" }, "uniqueItems": true },
+        "redistribution_source": { "const": "Debian iso-codes maintainers" },
+        "political_status_disclaimer": { "type": "string", "minLength": 1 }
+      }
+    },
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_registry_id", "publisher", "title", "version", "source_url", "retrieval_url", "retrieved_at", "source_path", "format", "record_array_path", "source_record_count", "checksum_sha256", "normalized_rows_checksum_sha256", "licence", "transformation"],
+      "properties": {
+        "source_registry_id": { "const": "debian-iso-codes-4.20.1-1-iso-3166-1" },
+        "publisher": { "const": "Debian iso-codes maintainers" },
+        "title": { "const": "iso-codes data/iso_3166-1.json" },
+        "version": { "const": "4.20.1-1" },
+        "source_url": { "const": "https://sources.debian.org/src/iso-codes/4.20.1-1/" },
+        "retrieval_url": { "const": "https://sources.debian.org/data/main/i/iso-codes/4.20.1-1/data/iso_3166-1.json" },
+        "retrieved_at": { "const": "2026-07-15" },
+        "source_path": { "const": "data/iso_3166-1.json" },
+        "format": { "const": "JSON" },
+        "record_array_path": { "const": "3166-1" },
+        "source_record_count": { "const": 249 },
+        "checksum_sha256": { "const": "f01b812b57fba9f31ff621bf33e7c7570a01964dbeb5be2167e94decf538c89f" },
+        "normalized_rows_checksum_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "licence": {
+          "type": "object", "additionalProperties": false,
+          "required": ["identifier", "review_status", "terms_url", "evidence_url", "notice_file", "notice_sha256", "licence_file", "licence_sha256", "attribution", "no_warranty", "legal_review_scope"],
+          "properties": {
+            "identifier": { "const": "LGPL-2.1-or-later" },
+            "review_status": { "const": "confirmed_by_ct01" },
+            "terms_url": { "const": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html" },
+            "evidence_url": { "const": "https://sources.debian.org/src/iso-codes/4.20.1-1/REUSE.toml/" },
+            "notice_file": { "const": "data/climate/IDENTITY-NOTICE.md" },
+            "notice_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            "licence_file": { "const": "data/climate/LGPL-2.1.txt" },
+            "licence_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            "attribution": { "type": "string", "minLength": 1 },
+            "no_warranty": { "const": true },
+            "legal_review_scope": { "type": "string", "minLength": 1 }
+          }
+        },
+        "transformation": {
+          "type": "object", "additionalProperties": false,
+          "required": ["tool", "version", "performed_at", "changes", "preferred_form_source_url"],
+          "properties": {
+            "tool": { "const": "tools/build-country-registry.js" },
+            "version": { "const": "2.0.0" },
+            "performed_at": { "const": "2026-07-15T00:00:00Z" },
+            "changes": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+            "preferred_form_source_url": { "type": "string", "pattern": "^https://" }
+          }
+        }
+      }
+    },
+    "separable_asset": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "scope", "licence", "includes_climate_performance_evidence", "source_access_url", "transformation_source"],
+      "properties": {
+        "path": { "const": "data/climate/country-registry.json" },
+        "scope": { "const": "identity_only" },
+        "licence": { "const": "LGPL-2.1-or-later" },
+        "includes_climate_performance_evidence": { "const": false },
+        "source_access_url": { "type": "string", "pattern": "^https://" },
+        "transformation_source": { "const": "tools/build-country-registry.js" }
+      }
+    },
+    "publication_gates": {
+      "type": "object", "additionalProperties": false,
+      "required": ["identity_redistribution", "assessment_overlays"],
+      "properties": {
+        "identity_redistribution": {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "release_eligible", "source_registry_id", "approval_state", "redistribution_status", "normalized_values", "reason_codes", "obligations"],
+          "properties": {
+            "status": { "const": "approved_with_obligations" },
+            "release_eligible": { "const": true },
+            "source_registry_id": { "const": "debian-iso-codes-4.20.1-1-iso-3166-1" },
+            "approval_state": { "const": "approved" },
+            "redistribution_status": { "const": "permitted" },
+            "normalized_values": { "const": true },
+            "reason_codes": { "type": "array", "maxItems": 0 },
+            "obligations": { "type": "array", "minItems": 4, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+          }
+        },
+        "assessment_overlays": {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "release_eligible", "reason_codes", "rule"],
+          "properties": {
+            "status": { "const": "blocked_not_reviewed" },
+            "release_eligible": { "const": false },
+            "reason_codes": { "type": "array", "minItems": 1, "items": { "type": "string" }, "uniqueItems": true },
+            "rule": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "entity_count": { "const": 249 },
+    "entities": {
+      "type": "array", "minItems": 249, "maxItems": 249,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["country_id", "kind", "name", "official_name", "common_name", "iso_alpha2", "iso_alpha3", "iso_numeric", "flag_emoji", "region", "subregion", "un_membership", "unfccc_party", "groups", "territory_status", "geometry", "assessment_eligibility", "onboarding"],
+        "properties": {
+          "country_id": { "type": "string", "pattern": "^iso3166-1:[A-Z]{3}$" },
+          "kind": { "const": "iso_3166_1_compatible_entry" },
+          "name": { "type": "string", "minLength": 1 },
+          "official_name": { "type": ["string", "null"] },
+          "common_name": { "type": ["string", "null"] },
+          "iso_alpha2": { "type": "string", "pattern": "^[A-Z]{2}$" },
+          "iso_alpha3": { "type": "string", "pattern": "^[A-Z]{3}$" },
+          "iso_numeric": { "type": "string", "pattern": "^[0-9]{3}$" },
+          "flag_emoji": { "type": ["string", "null"] },
+          "region": { "$ref": "#/$defs/unsourcedReview" },
+          "subregion": { "$ref": "#/$defs/unsourcedReview" },
+          "un_membership": { "$ref": "#/$defs/unsourcedReview" },
+          "unfccc_party": { "$ref": "#/$defs/unsourcedReview" },
+          "groups": {
+            "type": "object", "additionalProperties": false, "required": ["ldc", "lldc", "sids"],
+            "properties": { "ldc": { "$ref": "#/$defs/unsourcedReview" }, "lldc": { "$ref": "#/$defs/unsourcedReview" }, "sids": { "$ref": "#/$defs/unsourcedReview" } }
+          },
+          "territory_status": { "$ref": "#/$defs/unsourcedReview" },
+          "geometry": { "$ref": "#/$defs/unsourcedReview" },
+          "assessment_eligibility": {
+            "type": "object", "additionalProperties": false,
+            "required": ["status", "eligible", "reason_codes", "source_id", "reviewed_at"],
+            "properties": {
+              "status": { "const": "not_reviewed" }, "eligible": { "type": "null" },
+              "reason_codes": { "type": "array", "minItems": 1, "items": { "const": "assessment_eligibility_not_reviewed" } },
+              "source_id": { "type": "null" }, "reviewed_at": { "type": "null" }
+            }
+          },
+          "onboarding": {
+            "type": "object", "additionalProperties": false,
+            "required": ["state", "evidence_state", "reason_codes", "reviewed_at"],
+            "properties": {
+              "state": { "const": "identity_registered" }, "evidence_state": { "const": "not_reviewed" },
+              "reason_codes": { "type": "array", "minItems": 1, "items": { "const": "climate_evidence_not_reviewed" } },
+              "reviewed_at": { "type": "null" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "unsourcedReview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "value", "reason_code", "source_id"],
+      "properties": { "status": { "const": "not_reviewed" }, "value": { "type": "null" }, "reason_code": { "type": "string", "minLength": 1 }, "source_id": { "type": "null" } }
+    }
+  }
+}

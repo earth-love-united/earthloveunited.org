@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_id": "ct-42-factual-runtime-candidate-2026-07-15",
+  "review_status": "not_reviewed",
+  "decision": "deny",
+  "release_eligible": false,
+  "production_runtime_release": false,
+  "reason_codes": [
+    "ct42_independent_review_required",
+    "ct40_allow_manifest_absent",
+    "browser_accessibility_gates_pending"
+  ],
+  "inputs": [
+    {
+      "path": "data/climate/country-registry.json",
+      "sha256": "51fb321661684a88e80254cd5721ee70d0f52d95587222727fb9e9722e86b075"
+    },
+    {
+      "path": "data/climate/releases/primap-hist-2.6.1-factual-display-2026-07-15.json",
+      "sha256": "129cc563cbad1fa5c71d6953430a8eba510f4c26106d4f6e76cb7cbd11a7e76d"
+    },
+    {
+      "path": "data/climate/reviews/primap-hist-2.6.1-factual-display-ct10c-review.json",
+      "sha256": "c2f233511db35ff98738a1d7df5b8a3b083009e03a128d9e406f6bd98678cfda"
+    },
+    {
+      "path": "data/climate/source-registry.json",
+      "sha256": "ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "data/climate/runtime/country-factual-candidate.json",
+      "sha256": "7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664"
+    },
+    {
+      "path": "data/climate/runtime/published-facts-candidate.json",
+      "sha256": "307b0a7c9edc59f6360ce05e66ccf54624f3233d809dd0f4232338b324b07e19"
+    },
+    {
+      "path": "data/climate/runtime/ct10c-batch-attestation-wrapper.json",
+      "sha256": "fd1e5e0a8863b082574a175639abe30b3f5b8722c430019267dac907e09ef034"
+    }
+  ],
+  "runtime_files": [
+    "index.html",
+    "css/globe-system.css",
+    "js/data.js",
+    "js/globe.js",
+    "sw.js",
+    "data/climate/runtime/country-factual-candidate.json"
+  ],
+  "compiler_files": [
+    "js/country-ranking-compiler.js",
+    "js/country-climate-view-model.js",
+    "tools/lib/country-card-evidence-model.js",
+    "tools/lib/country-accessibility-model.js"
+  ],
+  "unpassed_gates": [
+    "independent CT-42 runtime review",
+    "CT-40 allow decision",
+    "reviewed runtime manifest and release diff",
+    "screen-reader, formal contrast, 320px/200% zoom, and reduced-motion verification",
+    "polygon and fallback rendering plus color-removal comprehension review"
+  ],
+  "prohibited_release_files": [
+    "data/climate/runtime-manifest.json",
+    "data/climate/releases/reviewed-release-diff.json",
+    "data/climate/releases/ct40-allow-manifest.json"
+  ]
+}

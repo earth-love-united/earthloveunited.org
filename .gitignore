@@ -48,7 +48,7 @@ agents-insights/
 dis/dist/
 build/
 
-# ─── Vendored third-party scripts (re-fetch from upstream CDN) ─
+# ─── Generated third-party scripts (fetch + verify with repository tools) ─
 js/vendor/
 
 # ─── Large data files (live on Hugging Face Datasets) ──────────

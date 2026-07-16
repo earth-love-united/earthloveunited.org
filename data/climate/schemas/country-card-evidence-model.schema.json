@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/country-card-evidence-model-1.0.0.json",
+  "title": "CT-32 country card and chart evidence model",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "compiler_version", "methodology_version", "country_id", "entity_label", "data_release_id", "generated_at", "section_order", "composite_score", "sections", "chart", "provenance", "calculation_hash"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "compiler_version": { "$ref": "#/$defs/version" },
+    "methodology_version": { "$ref": "#/$defs/version" },
+    "country_id": { "type": "string", "pattern": "^iso3166-1:[A-Z]{3}$" },
+    "entity_label": { "type": ["string", "null"] },
+    "data_release_id": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "section_order": { "const": ["responsibility", "commitment", "ambition", "delivery", "evidence", "projects_markets"] },
+    "composite_score": { "const": null },
+    "sections": {
+      "type": "object", "additionalProperties": false,
+      "required": ["responsibility", "commitment", "ambition", "delivery", "evidence", "projects_markets"],
+      "properties": {
+        "responsibility": {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "availability", "latest_measured", "evidence_reason_codes", "fact_ids"],
+          "properties": {
+            "status": { "enum": ["very_high", "high", "medium", "low", "not_assessed"] },
+            "availability": { "$ref": "#/$defs/availability" },
+            "latest_measured": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/latestMeasured" }] },
+            "evidence_reason_codes": { "$ref": "#/$defs/strings" },
+            "fact_ids": { "$ref": "#/$defs/facts" }
+          }
+        },
+        "commitment": {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "availability", "target_endpoints", "evidence_reason_codes", "fact_ids"],
+          "properties": {
+            "status": { "enum": ["comparable", "partially_comparable", "non_comparable", "qualitative_or_sectoral", "no_active_target_found", "not_assessed"] },
+            "availability": { "$ref": "#/$defs/availability" },
+            "target_endpoints": { "type": "array", "items": { "$ref": "#/$defs/targetEndpoint" } },
+            "evidence_reason_codes": { "$ref": "#/$defs/strings" },
+            "fact_ids": { "$ref": "#/$defs/facts" }
+          }
+        },
+        "ambition": { "$ref": "#/$defs/ambitionSection" },
+        "delivery": {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "availability", "evidence_reason_codes", "assessment_basis_codes", "fact_ids", "illustrative_required_path", "scenario_projections"],
+          "properties": {
+            "status": { "enum": ["ahead", "on_pace", "uncertain", "off_course", "not_assessed"] },
+            "availability": { "$ref": "#/$defs/availability" },
+            "evidence_reason_codes": { "$ref": "#/$defs/strings" },
+            "assessment_basis_codes": { "$ref": "#/$defs/strings" },
+            "fact_ids": { "$ref": "#/$defs/facts" },
+            "illustrative_required_path": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/requiredPath" }] },
+            "scenario_projections": { "type": "array", "items": { "$ref": "#/$defs/projection" } }
+          }
+        },
+        "evidence": {
+          "type": "object", "additionalProperties": false,
+          "required": ["grade", "availability", "evidence_reason_codes", "fact_ids", "source_ids", "review_dates", "conflicts"],
+          "properties": {
+            "grade": { "enum": ["A", "B", "C", "D"] },
+            "availability": { "$ref": "#/$defs/availability" },
+            "evidence_reason_codes": { "$ref": "#/$defs/strings" },
+            "fact_ids": { "$ref": "#/$defs/facts" },
+            "source_ids": { "$ref": "#/$defs/strings" },
+            "review_dates": { "type": "array", "uniqueItems": true, "items": { "type": "string", "format": "date-time", "pattern": "Z$" } },
+            "conflicts": { "type": "array", "items": { "$ref": "#/$defs/conflict" } }
+          }
+        },
+        "projects_markets": {
+          "type": "object", "additionalProperties": false,
+          "required": ["heading", "disclaimer", "affects_profile", "state", "items"],
+          "properties": {
+            "heading": { "const": "Projects and markets" },
+            "disclaimer": { "const": "Not part of the national climate performance profile" },
+            "affects_profile": { "const": false },
+            "state": { "type": "string" },
+            "items": { "type": "array" }
+          }
+        }
+      }
+    },
+    "chart": {
+      "type": "object", "additionalProperties": false,
+      "required": ["measured_series", "comparable_target_endpoints", "illustrative_required_path", "scenario_projections", "accessible"],
+      "properties": {
+        "measured_series": { "type": "array", "items": { "$ref": "#/$defs/measuredSeries" } },
+        "comparable_target_endpoints": { "type": "array", "items": { "$ref": "#/$defs/targetEndpoint" } },
+        "illustrative_required_path": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/requiredPath" }] },
+        "scenario_projections": { "type": "array", "items": { "$ref": "#/$defs/projection" } },
+        "accessible": {
+          "type": "object", "additionalProperties": false,
+          "required": ["title", "description", "text_summary"],
+          "properties": { "title": { "type": "string", "minLength": 1 }, "description": { "type": "string", "minLength": 1 }, "text_summary": { "type": "string", "minLength": 1 } }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fact_ids", "source_ids", "review_dates", "profile_calculation_hash"],
+      "properties": {
+        "fact_ids": { "$ref": "#/$defs/facts" }, "source_ids": { "$ref": "#/$defs/strings" },
+        "review_dates": { "type": "array", "items": { "type": "string", "format": "date-time", "pattern": "Z$" } },
+        "profile_calculation_hash": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "calculation_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "availability": { "enum": ["available", "withheld", "not_assessed", "context_only"] },
+    "strings": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "facts": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^fact:" } },
+    "scope": {
+      "type": "object", "additionalProperties": false,
+      "required": ["accounting_frame", "gases", "sectors", "geography", "lulucf", "gwp_convention"],
+      "properties": {
+        "accounting_frame": { "type": "string" }, "gases": { "$ref": "#/$defs/strings" },
+        "sectors": { "$ref": "#/$defs/strings" }, "geography": { "type": "string" },
+        "lulucf": { "type": "string" }, "gwp_convention": { "type": ["string", "null"] }
+      }
+    },
+    "uncertainty": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "required": ["lower", "upper", "confidence", "method"],
+      "properties": { "lower": { "type": "number" }, "upper": { "type": "number" }, "confidence": { "type": ["number", "null"] }, "method": { "type": ["string", "null"] } }
+    },
+    "latestMeasured": {
+      "type": "object", "additionalProperties": false,
+      "required": ["year", "value", "unit", "scope", "evidence_plane", "fact_id", "source_ids", "reviewed_at", "uncertainty"],
+      "properties": {
+        "year": { "type": "integer" }, "value": { "type": "number" }, "unit": { "type": "string" },
+        "scope": { "$ref": "#/$defs/scope" }, "evidence_plane": { "enum": ["official", "harmonized"] },
+        "fact_id": { "type": "string", "pattern": "^fact:" }, "source_ids": { "$ref": "#/$defs/strings" },
+        "reviewed_at": { "type": "string", "format": "date-time", "pattern": "Z$" }, "uncertainty": { "$ref": "#/$defs/uncertainty" }
+      }
+    },
+    "measuredPoint": {
+      "type": "object", "additionalProperties": false,
+      "required": ["year", "value", "unit", "uncertainty", "fact_id", "source_ids", "reviewed_at"],
+      "properties": {
+        "year": { "type": "integer" }, "value": { "type": "number" }, "unit": { "type": "string" },
+        "uncertainty": { "$ref": "#/$defs/uncertainty" }, "fact_id": { "type": "string", "pattern": "^fact:" },
+        "source_ids": { "$ref": "#/$defs/strings" }, "reviewed_at": { "type": "string", "format": "date-time", "pattern": "Z$" }
+      }
+    },
+    "measuredSeries": {
+      "type": "object", "additionalProperties": false,
+      "required": ["series_id", "metric", "unit", "scope", "evidence_plane", "evidence_state", "source_ids", "fact_ids", "reviewed_at", "points"],
+      "properties": {
+        "series_id": { "type": "string" }, "metric": { "type": "string" }, "unit": { "type": "string" },
+        "scope": { "$ref": "#/$defs/scope" }, "evidence_plane": { "enum": ["official", "harmonized"] },
+        "evidence_state": { "enum": ["available", "estimated"] }, "source_ids": { "$ref": "#/$defs/strings" },
+        "fact_ids": { "$ref": "#/$defs/facts" }, "reviewed_at": { "type": "string", "format": "date-time", "pattern": "Z$" },
+        "points": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/measuredPoint" } }
+      }
+    },
+    "quantity": {
+      "type": "object", "additionalProperties": false, "required": ["kind", "unit"],
+      "properties": { "kind": { "enum": ["exact", "range"] }, "amount": { "type": "number" }, "lower": { "type": "number" }, "upper": { "type": "number" }, "unit": { "type": "string" } }
+    },
+    "targetEndpoint": {
+      "type": "object", "additionalProperties": false,
+      "required": ["target_id", "target_type", "condition", "year", "value", "scope", "evidence_plane", "fact_ids", "reviewed_at"],
+      "properties": {
+        "target_id": { "type": "string" }, "target_type": { "type": ["string", "null"] },
+        "condition": { "enum": ["unconditional", "conditional", "combined", "not_stated"] }, "year": { "type": "integer" },
+        "value": { "$ref": "#/$defs/quantity" }, "scope": { "$ref": "#/$defs/scope" }, "evidence_plane": { "const": "official" },
+        "fact_ids": { "$ref": "#/$defs/facts" }, "reviewed_at": { "type": "string", "format": "date-time", "pattern": "Z$" }
+      }
+    },
+    "pathPoint": { "type": "object", "additionalProperties": false, "required": ["year", "value"], "properties": { "year": { "type": "integer" }, "value": { "type": "number" } } },
+    "requiredPath": {
+      "type": "object", "additionalProperties": false,
+      "required": ["data_role", "is_observation", "label", "interpolation", "unit", "target_id", "condition", "points", "fact_ids", "lineage_hash"],
+      "properties": {
+        "data_role": { "const": "illustrative_required_path" }, "is_observation": { "const": false },
+        "label": { "type": "string" }, "interpolation": { "type": "string" }, "unit": { "type": "string" },
+        "target_id": { "type": "string" }, "condition": { "enum": ["unconditional", "conditional", "combined", "not_stated"] },
+        "points": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "$ref": "#/$defs/pathPoint" } },
+        "fact_ids": { "$ref": "#/$defs/facts" }, "lineage_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "projectionPoint": { "type": "object", "additionalProperties": false, "required": ["year", "value", "unit", "uncertainty"], "properties": { "year": { "type": "integer" }, "value": { "type": "number" }, "unit": { "type": "string" }, "uncertainty": { "$ref": "#/$defs/uncertainty" } } },
+    "projection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["projection_id", "data_role", "is_observation", "label", "scenario_name", "scenario_vintage", "unit", "scope", "evidence_plane", "source_ids", "fact_ids", "reviewed_at", "points"],
+      "properties": {
+        "projection_id": { "type": "string" }, "data_role": { "const": "scenario_projection_only" }, "is_observation": { "const": false },
+        "label": { "type": "string" }, "scenario_name": { "type": ["string", "null"] }, "scenario_vintage": { "type": ["string", "null"] },
+        "unit": { "type": "string" }, "scope": { "$ref": "#/$defs/scope" },
+        "evidence_plane": { "enum": ["official", "harmonized", "independent", "context", "derived"] },
+        "source_ids": { "$ref": "#/$defs/strings" }, "fact_ids": { "$ref": "#/$defs/facts" },
+        "reviewed_at": { "type": "string", "format": "date-time", "pattern": "Z$" },
+        "points": { "type": "array", "items": { "$ref": "#/$defs/projectionPoint" } }
+      }
+    },
+    "ambitionSection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "availability", "evidence_reason_codes", "fact_ids", "method_id", "methodology_version"],
+      "properties": {
+        "status": { "enum": ["aligned", "almost_sufficient", "insufficient", "highly_insufficient", "critically_insufficient", "not_assessed"] },
+        "availability": { "$ref": "#/$defs/availability" }, "evidence_reason_codes": { "$ref": "#/$defs/strings" },
+        "fact_ids": { "$ref": "#/$defs/facts" }, "method_id": { "type": ["string", "null"] }, "methodology_version": { "type": ["string", "null"] }
+      }
+    },
+    "conflict": {
+      "type": "object", "additionalProperties": false,
+      "required": ["metric", "unit", "scope", "year", "reason_code", "entries"],
+      "properties": {
+        "metric": { "type": "string" }, "unit": { "type": "string" }, "scope": { "$ref": "#/$defs/scope" },
+        "year": { "type": "integer" }, "reason_code": { "const": "unresolved_source_conflict" },
+        "entries": { "type": "array", "minItems": 2, "items": { "type": "object", "additionalProperties": false, "required": ["plane", "value", "fact_id"], "properties": { "plane": { "enum": ["official", "harmonized"] }, "value": { "type": "number" }, "fact_id": { "type": "string", "pattern": "^fact:" } } } }
+      }
+    }
+  }
+}

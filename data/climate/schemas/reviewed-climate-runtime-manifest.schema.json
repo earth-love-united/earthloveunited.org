@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/reviewed-climate-runtime-manifest-1.0.0.json",
+  "title": "Reviewed climate production runtime manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "manifest_id", "data_release_id", "methodology_version", "runtime", "ct40_reviewed_release_input", "release_eligibility_manifest", "release_diff", "rollback_proof", "published_fact_files", "published_profile_files", "batch_attestation_files", "source_registry", "artifact_pins"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "manifest_id": { "type": "string", "minLength": 5 },
+    "data_release_id": { "type": "string", "minLength": 1 },
+    "methodology_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["review_status", "file_paths", "data_files", "claims", "rankings", "builder_id", "reviewer_id", "reviewed_at"],
+      "properties": {
+        "review_status": { "const": "reviewed" },
+        "file_paths": { "$ref": "#/$defs/nonEmptyPaths" },
+        "data_files": { "$ref": "#/$defs/nonEmptyPaths" },
+        "claims": { "type": "object" },
+        "rankings": { "type": "array" },
+        "builder_id": { "type": "string", "minLength": 5 },
+        "reviewer_id": { "type": "string", "minLength": 5 },
+        "reviewed_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ct40_reviewed_release_input": { "const": "data/climate/releases/ct40-reviewed-release-input.json" },
+    "release_eligibility_manifest": { "const": "data/climate/releases/ct40-allow-manifest.json" },
+    "release_diff": { "const": "data/climate/releases/reviewed-release-diff.json" },
+    "rollback_proof": { "const": "data/climate/releases/reviewed-rollback-proof.json" },
+    "published_fact_files": { "$ref": "#/$defs/nonEmptyPaths" },
+    "published_profile_files": { "$ref": "#/$defs/nonEmptyPaths" },
+    "batch_attestation_files": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/path" } },
+    "source_registry": { "const": "data/climate/source-registry.json" },
+    "artifact_pins": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/pin" } }
+  },
+  "$defs": {
+    "path": { "type": "string", "pattern": "^[A-Za-z0-9._/-]+$" },
+    "nonEmptyPaths": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/path" } },
+    "pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/path" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}

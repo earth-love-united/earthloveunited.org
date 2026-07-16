@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/country-accessibility-1.0.0.json",
+  "title": "CT-33 country globe, card, chart, and ranking accessibility payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "contract_version", "generated_at", "interaction", "statuses", "chart", "ranking", "view_model", "layout", "motion", "contrast", "sources", "headings", "layers", "announcements", "browser_verification_required", "calculation_hash"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "contract_version": { "$ref": "#/$defs/version" },
+    "generated_at": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "interaction": {
+      "type": "object", "additionalProperties": false, "required": ["focus", "dialog", "keyboard_globe_proxy_id"],
+      "properties": {
+        "focus": {
+          "type": "object", "additionalProperties": false, "required": ["order", "logical_order", "minimum_target_css_px", "focus_indicators_removed", "arrow_key_navigation"],
+          "properties": {
+            "order": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/focusItem" } },
+            "logical_order": { "const": true }, "minimum_target_css_px": { "const": 44 },
+            "focus_indicators_removed": { "const": false },
+            "arrow_key_navigation": {
+              "type": "object", "additionalProperties": false,
+              "required": ["scope", "announced", "hijacks_page_scroll"],
+              "properties": { "scope": { "const": "dialog_only" }, "announced": { "const": true }, "hijacks_page_scroll": { "const": false } }
+            }
+          }
+        },
+        "dialog": { "type": "object" },
+        "keyboard_globe_proxy_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "statuses": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/status" } },
+    "chart": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/chart" }] },
+    "ranking": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/ranking" }] },
+    "view_model": { "type": ["object", "null"] },
+    "layout": { "$ref": "#/$defs/layout" },
+    "motion": { "$ref": "#/$defs/motion" },
+    "contrast": { "$ref": "#/$defs/contrast" },
+    "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/source" } },
+    "headings": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/heading" } },
+    "layers": { "type": "object" },
+    "announcements": {
+      "type": "object", "additionalProperties": false,
+      "required": ["card_opened", "card_closed", "ranking_changed"],
+      "properties": { "card_opened": { "type": "string" }, "card_closed": { "type": "string" }, "ranking_changed": { "type": ["string", "null"] } }
+    },
+    "browser_verification_required": { "type": "array", "minItems": 6, "items": { "type": "string" } },
+    "calculation_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "targetSize": {
+      "type": "object", "additionalProperties": false, "required": ["width", "height"],
+      "properties": { "width": { "type": "number", "minimum": 44 }, "height": { "type": "number", "minimum": 44 } }
+    },
+    "focusItem": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sequence", "id", "role", "label", "target_size", "tab_index"],
+      "properties": {
+        "sequence": { "type": "integer", "minimum": 1 }, "id": { "type": "string" },
+        "role": { "type": "string" }, "label": { "type": "string" },
+        "target_size": { "$ref": "#/$defs/targetSize" }, "tab_index": { "const": 0 }
+      }
+    },
+    "status": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "state", "label", "non_color_cue", "color_token", "tone", "glyph_aria_hidden"],
+      "properties": {
+        "id": { "type": "string" }, "state": { "type": "string" }, "label": { "type": "string" },
+        "non_color_cue": { "type": "string", "not": { "const": "color_only" } },
+        "color_token": { "type": "string" }, "tone": { "enum": ["positive", "negative", "neutral", "unknown", "caution"] },
+        "glyph_aria_hidden": { "const": true }
+      }
+    },
+    "pointLabel": {
+      "type": "object", "additionalProperties": false, "required": ["fact_id", "label"],
+      "properties": { "fact_id": { "type": "string", "pattern": "^fact:" }, "label": { "type": "string", "minLength": 1 } }
+    },
+    "chart": {
+      "type": "object", "additionalProperties": false,
+      "required": ["svg", "text_summary", "data_disclosure", "projects"],
+      "properties": {
+        "svg": {
+          "type": "object", "additionalProperties": false,
+          "required": ["role", "title_id", "title", "description_id", "description", "labelledby"],
+          "properties": { "role": { "const": "img" }, "title_id": { "type": "string" }, "title": { "type": "string" }, "description_id": { "type": "string" }, "description": { "type": "string" }, "labelledby": { "type": "string" } }
+        },
+        "text_summary": { "type": "string", "minLength": 1 },
+        "data_disclosure": {
+          "type": "object", "additionalProperties": false, "required": ["control_label", "table_caption", "point_labels"],
+          "properties": {
+            "control_label": { "type": "string" },
+            "table_caption": { "type": "string" },
+            "point_labels": { "type": "array", "items": { "$ref": "#/$defs/pointLabel" } }
+          }
+        },
+        "projects": {
+          "type": "object", "additionalProperties": false, "required": ["heading", "disclaimer", "affects_profile"],
+          "properties": { "heading": { "const": "Projects and markets" }, "disclaimer": { "const": "Not part of the national climate performance profile" }, "affects_profile": { "const": false } }
+        }
+      }
+    },
+    "rankingRow": {
+      "type": "object", "additionalProperties": false, "required": ["country_id", "announcement"],
+      "properties": { "country_id": { "type": "string" }, "announcement": { "type": "string", "minLength": 1 } }
+    },
+    "ranking": {
+      "type": "object", "additionalProperties": false,
+      "required": ["live_region", "denominator", "context", "ranked_rows", "unranked"],
+      "properties": {
+        "live_region": { "type": "object", "additionalProperties": false, "required": ["politeness", "atomic", "announcement"], "properties": { "politeness": { "const": "polite" }, "atomic": { "const": true }, "announcement": { "type": "string" } } },
+        "denominator": { "type": "string" }, "context": { "type": "string" },
+        "ranked_rows": { "type": "array", "items": { "$ref": "#/$defs/rankingRow" } },
+        "unranked": {
+          "type": "object", "additionalProperties": false, "required": ["heading", "numbered", "announcement", "rows"],
+          "properties": { "heading": { "const": "Not ranked — evidence unavailable or incompatible" }, "numbered": { "const": false }, "announcement": { "type": "string" }, "rows": { "type": "array", "items": { "$ref": "#/$defs/rankingRow" } } }
+        }
+      }
+    },
+    "layout": {
+      "type": "object", "additionalProperties": false,
+      "required": ["narrow", "zoom_200", "long_text_wraps", "sticky_controls_cover_content"],
+      "properties": {
+        "narrow": { "type": "object" }, "zoom_200": { "type": "object" },
+        "long_text_wraps": { "const": true }, "sticky_controls_cover_content": { "const": false }
+      }
+    },
+    "motion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reduced_motion", "focus_or_card_open_auto_rotation"],
+      "properties": { "reduced_motion": { "type": "object" }, "focus_or_card_open_auto_rotation": { "const": "paused" } }
+    },
+    "contrastRequirement": {
+      "type": "object", "additionalProperties": false, "required": ["minimum_ratio", "token_pair"],
+      "properties": { "minimum_ratio": { "type": "number" }, "token_pair": { "type": "string", "minLength": 1 } }
+    },
+    "contrast": {
+      "type": "object", "additionalProperties": false,
+      "required": ["normal_text", "large_text", "focus_ring", "meaningful_graphics", "controls", "final_css_values_assigned"],
+      "properties": {
+        "normal_text": { "$ref": "#/$defs/contrastRequirement" }, "large_text": { "$ref": "#/$defs/contrastRequirement" },
+        "focus_ring": { "$ref": "#/$defs/contrastRequirement" }, "meaningful_graphics": { "$ref": "#/$defs/contrastRequirement" },
+        "controls": { "$ref": "#/$defs/contrastRequirement" }, "final_css_values_assigned": { "const": false }
+      }
+    },
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "title", "href", "accessible_name", "focusable"],
+      "properties": { "id": { "type": "string" }, "title": { "type": "string" }, "href": { "type": "string", "pattern": "^https://" }, "accessible_name": { "type": "string" }, "focusable": { "const": true } }
+    },
+    "heading": {
+      "type": "object", "additionalProperties": false, "required": ["id", "level", "text"],
+      "properties": { "id": { "type": "string" }, "level": { "type": "integer", "minimum": 1, "maximum": 6 }, "text": { "type": "string" } }
+    }
+  }
+}

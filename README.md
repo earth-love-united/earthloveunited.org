@@ -24,13 +24,12 @@ is nothing in here we wouldn't want a partner, donor, or researcher to read.
 ## Quick start
 
 ```bash
-git clone https://github.com/gke0op/earthloveunited.org.git
+git clone https://github.com/earth-love-united/earthloveunited.org.git
 cd earthloveunited.org
 
-# Re-fetch the vendored globe.gl (gitignored — see CREDITS.md)
-mkdir -p js/vendor
-curl -L https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js \
-  -o js/vendor/globe.gl.js
+# Fetch or verify the pinned globe.gl browser dependency.
+# The file stays gitignored; URL, HTTPS transport, and SHA-256 are enforced.
+./tools/fetch-globe-vendor.sh
 
 # Serve. That's it.
 python3 -m http.server 8000
@@ -39,9 +38,8 @@ python3 -m http.server 8000
 
 No `npm install`. No `pnpm`. No bundler. No build step at all. The site is one
 HTML file (`index.html`) loading ten classic `<script>` tags. See
-[ARCHITECTURE.md](ARCHITECTURE.md) for the module map, and
-[SWARM_SDK.md](SWARM_SDK.md) for the Standard Module Lifecycle (SML) every
-module follows.
+[ARCHITECTURE.md](ARCHITECTURE.md) for the module map and [AGENTS.md](AGENTS.md)
+for the Standard Module Lifecycle and contribution rules.
 
 ---
 
@@ -80,10 +78,10 @@ earthloveunited.org/
 │   ├── app.js              Init entry point, hero ⇄ globe navigation
 │   ├── globe.js            Globe.gl-backed 3D earth (pledge vs reality)
 │   ├── carbon-clock.js     Live emissions counter
-│   ├── data.js             Loads data/pledge-nodes.json
+│   ├── data.js             Loads active non-climate context; country evidence withheld
 │   └── ...                 10 IIFE modules total
 ├── css/carbon-clock.css    (critical CSS is inlined in index.html)
-├── data/pledge-nodes.json  Country pledge + emissions data
+├── data/pledge-nodes.json  Historical retired payload (not loaded by runtime)
 ├── _archive/v1-cut/        Everything cut for v1 (restorable, see its README)
 ├── dis/                    Gaia knowledge index + climate facts (runtime data)
 ├── docs/                   Architecture, research, operations, and agent notes
@@ -112,12 +110,11 @@ These are the corpus behind Gaia's grounded answers. Built from IPCC AR6,
 Project Drawdown, US EPA, NOAA GML, Our World in Data, Wikipedia, and arXiv.
 Full source attribution lives in [CREDITS.md](CREDITS.md).
 
-Dataset cards and GAIA source guidance are backed by
-[`data/provenance-registry.json`](data/provenance-registry.json). The registry
-tracks each public dataset's readiness label (`production`, `review-stage`, or
-`experimental`), data type, local files, external links, intended use, known
-limits, and GAIA prompt hint. Update the registry before changing public
-readiness language.
+The live country-globe data is currently a review-stage artifact. Its planned
+replacement, source hierarchy, evidence contract, and release gates are defined
+in [`docs/COUNTRY-CLIMATE-TRUTH-PLAN.md`](docs/COUNTRY-CLIMATE-TRUTH-PLAN.md).
+Do not describe country values as policy-grade until that plan's provenance and
+comparability gates pass.
 
 ---
 
@@ -125,7 +122,9 @@ readiness language.
 
 The interactive globe is built on
 [`globe.gl`](https://github.com/vasturiano/globe.gl) by Vasco Asturiano (MIT).
-We re-fetch it from the upstream CDN rather than vendoring a permanent copy.
+We reproducibly fetch its pinned browser build from the upstream CDN rather
+than committing a permanent 1.8 MB copy. The canonical fetcher refuses any
+bytes that do not match the reviewed SHA-256 in [CREDITS.md](CREDITS.md).
 
 All third-party code, data, and visual assets are listed in
 [CREDITS.md](CREDITS.md) with their original sources and licenses preserved.
@@ -146,10 +145,11 @@ the browser console on any page:
 | `Impact.check('globe.js')` | Blast radius — who calls it, what breaks |
 | `DepGraph.mermaid()` | Dependency graph as Mermaid diagram |
 | `node tools/check-public-copy.js` | Static scan for unresolved draft copy and dummy links |
-| `node tools/check-provenance-registry.js` | Validate dataset readiness/source-trail registry |
+| `node tools/check-globe-vendor-integrity.js` | Validate the pinned globe.gl delivery policy and any local copy |
+| `python3 scripts/verify_load_order.py` | Validate module dependency and script load order |
 
-The boot validator (`js/module-validator.js`) runs automatically at page load
-and reports `✅ [BOOT] N/N modules loaded` in the console.
+`App.init()` runs `MODULE_CONTRACTS.validate()` at startup and reports the
+runtime pre-flight result. The static load-order verifier runs in CI.
 
 ---
 

@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0.0",
+  "review_id": "ct-42-r-factual-runtime-data-2026-07-15",
+  "reviewed_at": "2026-07-15T00:00:00Z",
+  "decision": "pass",
+  "reviewer": {
+    "reviewer_id": "ct-42-independent-data-reviewer",
+    "role": "reviewer",
+    "independent_of_builder": true,
+    "builder_id": "ct-42-factual-runtime-builder"
+  },
+  "reviewed_branch": "agent/generalist/climate-factual-runtime-candidate",
+  "reviewed_commit_sha": "793eade295ae3fa787749e4d6ee112cf374a7634",
+  "reviewed_input_sha256": {
+    "data/climate/country-registry.json": "51fb321661684a88e80254cd5721ee70d0f52d95587222727fb9e9722e86b075",
+    "data/climate/releases/primap-hist-2.6.1-factual-display-2026-07-15.json": "129cc563cbad1fa5c71d6953430a8eba510f4c26106d4f6e76cb7cbd11a7e76d",
+    "data/climate/reviews/primap-hist-2.6.1-factual-display-ct10c-review.json": "c2f233511db35ff98738a1d7df5b8a3b083009e03a128d9e406f6bd98678cfda",
+    "data/climate/source-registry.json": "ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d",
+    "data/climate/runtime/country-factual-candidate.json": "7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664",
+    "data/climate/runtime/published-facts-candidate.json": "307b0a7c9edc59f6360ce05e66ccf54624f3233d809dd0f4232338b324b07e19",
+    "data/climate/runtime/ct10c-batch-attestation-wrapper.json": "fd1e5e0a8863b082574a175639abe30b3f5b8722c430019267dac907e09ef034",
+    "data/climate/runtime/candidate-manifest.json": "96e74966e40a65c838d7030de07c8cead4c05fe28d49876814c8e0cd4b8c7a1c",
+    "data/climate/runtime/rollback-plan.json": "c23bd5caf21bf05b6e637c6f599742e13a47b822b298054ca8d56e968d8aeaae"
+  },
+  "methods": [
+    "Verified exact byte pins for CT-02, CT-10C, CT-10C-R, CT-01, all three CT-42 data outputs, the deny manifest, and rollback plan",
+    "Reconstructed all country mappings, annual decimals, numeric values, normalized fact IDs, and source fact IDs without importing the CT-42 builder",
+    "Reconstructed the 2023 magnitude domain and competition ranking independently, including tied ranks and 43 unnumbered gaps",
+    "Validated the CT-41 published-fact and batch-attestation wrapper boundary with the exact 2,060-fact universe",
+    "Rejected adversarial provenance, coverage, decimal, lineage, rank, forbidden-use, release, and rollback mutations",
+    "Confirmed candidate build reproducibility with byte-identical generated runtime data",
+    "Confirmed the refreshed deny manifest enumerates the CT-42, CT-40, reviewed-release, browser-accessibility, polygon/fallback, and color-removal gates that remain unpassed",
+    "Excluded visual and accessibility approval from this review"
+  ],
+  "counts": {
+    "registry_entities": 249,
+    "reviewed_series": 206,
+    "source_gaps": 43,
+    "observations": 2060,
+    "normalized_fact_ids": 2060,
+    "combined_lineage_ids": 4120
+  },
+  "magnitude_domain": {
+    "min_mtco2e_per_year": 0.0023,
+    "max_mtco2e_per_year": 15000,
+    "offset_mtco2e_per_year": 0.01
+  },
+  "calculation_hashes": {
+    "promotion": "1301ce57a7f8b9af28fefe9e8fd5507d131f35d689fb30d1da27f6265734decb",
+    "upstream_review": "1993d3489117dc6a4385eeb33cff866c1ad550f5a1db51a87d5ef5180d1cfc5c",
+    "runtime": "9b0c50bc36ece78d395a4d1e0d1cc4d56f7142bb1469d561b9ca09321440d469",
+    "published_facts": "e0a84e051c7b68ce93cc0320d5a9a6f944cca5eb21520872787fb81b9e4fb2d5",
+    "ranking": "c1d4edb8c6571ccd1e11bcbe5181aed97fff95f253f63bc7af10c4d50e2f01e3"
+  },
+  "universe_hashes": {
+    "registry_ids": "6a4f88e22ac5f11684db2f18fcd5b75b3d88844f58086f36a6fc74f2278b3cc9",
+    "promoted_ids": "2f3e2ab0cf6529af29d9cad7e913a283b83940a3354ac80140ed6496dee3d37d",
+    "gap_ids": "5857c806a0aa683daf5273f8c94aaea008f6a2ffffa269fc29b58b6f2bb864dd",
+    "fact_ids": "267e4e5db28302235580757408076e42192e8f76f58fa5a90fac17f28c8816ca",
+    "source_fact_ids": "f5a54d8d25936053318a87cfbc5ff2d646d5f1dab3e8d0b269f97eecf4eae6bf"
+  },
+  "adversarial_mutations_rejected": 18,
+  "ct41_compatibility": {
+    "status": "pass",
+    "published_fact_count": 2060,
+    "batch_attestation_count": 1
+  },
+  "publication_boundary": {
+    "ct42_data_review_passed": true,
+    "visual_accessibility_reviewed": false,
+    "candidate_manifest_decision": "deny",
+    "production_runtime_release_allowed": false,
+    "ct40_allow_decision_required": true,
+    "note": "This review attests only the pinned data, provenance, calculations, ranking semantics, CT-41 wrapper, deny manifest, and rollback behavior. It does not review visual accessibility and does not authorize production runtime release."
+  }
+}

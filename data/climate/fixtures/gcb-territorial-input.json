@@ -1,0 +1,9 @@
+{
+  "fixture_only": true,
+  "rows": [
+    {"_row": 11, "A": null, "B": "ALPHA", "C": "BETA", "D": "INTERNATIONAL BUNKER FUELS", "E": "WORLD"},
+    {"_row": 12, "A": 2022, "B": 1, "C": null, "D": 0.5, "E": 1.5},
+    {"_row": 13, "A": 2023, "B": 0, "C": -0.01, "D": 0.6, "E": 0.59},
+    {"_row": 14, "A": 2024, "B": 1.2, "C": null, "D": 0.7, "E": 1.9}
+  ]
+}
