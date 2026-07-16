@@ -363,6 +363,10 @@ jobs:
           'returning to dark theme must restore both exact textures without duplicating the renderer');
 
           await page.emulateMedia({ reducedMotion: 'reduce' });
+          await page.waitForFunction(() =>
+            matchMedia('(prefers-reduced-motion: reduce)').matches &&
+            window.GlobeModule?.world?.controls?.().autoRotate === false
+          );
           const reducedMotion = await page.evaluate(() => {
             const loadingMark = getComputedStyle(document.querySelector('.elu-loading-mark'));
             const loadingOverlay = getComputedStyle(document.getElementById('globe-loading'));
@@ -378,6 +382,7 @@ jobs:
             reducedMotion.loadingTransitionsZero && reducedMotion.autoRotate === false,
             'reduced-motion preference must disable globe loading motion and auto-rotation');
           await page.emulateMedia({ reducedMotion: 'no-preference' });
+          await page.waitForFunction(() => !matchMedia('(prefers-reduced-motion: reduce)').matches);
 
           await cdp.send('Emulation.setPageScaleFactor', { pageScaleFactor: 2 });
           const zoomScale = await page.evaluate(() => window.visualViewport?.scale || 1);
