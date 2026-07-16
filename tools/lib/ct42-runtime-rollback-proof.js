@@ -9,7 +9,7 @@ const path = require('node:path');
 const { EXPECTED_ASSETS } = require('./globe-runtime-assets');
 const { EXPECTED_SPEC: EXPECTED_VENDOR_SPEC } = require('./globe-vendor-integrity');
 
-const RUNTIME_CONTROL_COMMIT = 'bd5b6ef63df2ba17103e78351aedf677fb2d339f';
+const RUNTIME_CONTROL_COMMIT = '2758358f1c580f1f94edb867a3ac3a49716120b9';
 const ROLLBACK_PLAN_SHA256 = 'c23bd5caf21bf05b6e637c6f599742e13a47b822b298054ca8d56e968d8aeaae';
 const CACHE_NAME = 'elu-v34-ct42-neutral-rollback';
 const SERVICE_WORKER_REGISTRATION = '/sw.js?v=34-ct42-neutral-rollback';
