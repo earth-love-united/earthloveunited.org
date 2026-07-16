@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "fixture_set": "ct32-country-card-evidence-model",
+    "fixture_version": "1.0.0",
+    "fictional_entities": true,
+    "country_id": "iso3166-1:ZZZ",
+    "warning": "All entities, values, sources, and assessments are synthetic contract fixtures."
+  },
+  "cases": [
+    { "id": "observed-target-required-path", "variant": "base", "expected": { "measured": 1, "endpoints": 1, "path": true, "projections": 0, "latest_value": 80, "headline_fragment": "one illustrative required pathway" } },
+    { "id": "non-comparable-no-fabricated-path", "variant": "non_comparable", "expected": { "measured": 1, "endpoints": 0, "path": false, "projections": 0 } },
+    { "id": "missing-evidence", "variant": "missing", "expected": { "measured": 0, "endpoints": 0, "path": false, "projections": 0, "latest_value": null } },
+    { "id": "conflicting-planes-stay-separate", "variant": "conflict", "expected": { "measured": 2, "endpoints": 1, "path": true, "projections": 0, "conflicts": 1, "reason": "unresolved_source_conflict" } },
+    { "id": "conditional-and-unconditional-distinct", "variant": "dual_targets", "expected": { "measured": 1, "endpoints": 2, "conditions": ["conditional", "unconditional"], "path": true, "projections": 0 } },
+    { "id": "scenario-projection-separated", "variant": "projection", "expected": { "measured": 1, "endpoints": 1, "path": true, "projections": 1, "projection_role": "scenario_projection_only" } },
+    { "id": "real-zero-preserved", "variant": "zero", "expected": { "measured": 1, "endpoints": 1, "path": true, "projections": 0, "latest_value": 0 } },
+    { "id": "synthetic-series-rejected", "variant": "synthetic_series", "expected_error": "must have observed_annual role" },
+    { "id": "project-series-rejected", "variant": "project_series", "expected_error": "project data rejected" },
+    { "id": "synthetic-point-rejected", "variant": "synthetic_point", "expected_error": "synthetic point rejected" },
+    { "id": "deterministic-hash", "variant": "base", "expected": { "measured": 1, "endpoints": 1, "path": true, "projections": 0, "calculation_hash": "2add3a2ebfeaed282670924a212fa13cadffc8da540799d894936554a7416e0e" } }
+  ]
+}

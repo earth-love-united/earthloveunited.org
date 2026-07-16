@@ -1,0 +1,136 @@
+{
+  "_meta": {
+    "fixture_set": "ct-30-country-view-model",
+    "fixture_version": "0.1.0",
+    "fictional_entities": true,
+    "generated": "2026-07-15"
+  },
+  "cases": [
+    {
+      "id": "major-emitter-no-target",
+      "input": {
+        "identity": { "country_id": "ZZZ", "name": "Fixture Major" },
+        "impact": { "state": "available", "band": "very_high", "plane": "harmonized", "latest_observation": { "value": 9000, "year": 2024, "unit": "MtCO2e", "scope": "economy_wide" } },
+        "target_integrity": { "integrity": "no_active_target_found", "type": null, "reason_codes": ["target_not_found"] },
+        "ambition": { "state": "not_assessed", "value": null },
+        "delivery": { "state": "not_assessed", "value": null },
+        "fair_contribution": { "state": "not_assessed", "facts": [] },
+        "evidence": { "grade": "B", "flags": ["value_not_reported"], "last_reviewed_at": "2026-07-01", "provenance": { "source_ids": ["fictional-source"], "fact_ids": ["fictional-fact"] } },
+        "release": { "release_id": "fictional-release", "methodology_version": "0.1.0" }
+      },
+      "expected": { "impact_height": "very_high", "target_tone": "caution", "delivery_tone": "unknown", "delivery_state": "not_assessed", "emissions_state": "eligible_pending_shared_ranking", "overshoot_state": "not_ranked", "headline_contains": ["Very high impact", "No documented active target", "Progress not assessed"] }
+    },
+    {
+      "id": "high-impact-target-non-comparable",
+      "input": {
+        "identity": { "country_id": "ZZZ", "name": "Fixture Non-comparable" },
+        "impact": { "state": "available", "band": "high", "plane": "harmonized", "latest_observation": { "value": 700, "year": 2024, "unit": "MtCO2e", "scope": "economy_wide" } },
+        "target_integrity": { "integrity": "non_comparable", "type": "trajectory", "reason_codes": ["reference_value_missing", "scope_mismatch"] },
+        "ambition": { "state": "not_assessed", "value": null },
+        "delivery": { "state": "available", "value": "ahead" },
+        "evidence": { "grade": "C", "flags": ["not_reviewed"] }
+      },
+      "expected": { "impact_height": "high", "target_tone": "caution", "delivery_tone": "unknown", "delivery_state": "not_assessed", "emissions_state": "eligible_pending_shared_ranking", "overshoot_state": "not_ranked", "headline_contains": ["High impact", "Target not comparable", "Progress not assessed"] }
+    },
+    {
+      "id": "low-impact-no-target",
+      "input": {
+        "identity": { "country_id": "ZZZ", "name": "Fixture Low" },
+        "impact": { "state": "available", "band": "low", "latest_observation": { "value": 0, "year": 2024, "unit": "MtCO2e", "scope": "economy_wide" } },
+        "target_integrity": { "integrity": "no_active_target_found", "reason_codes": ["target_not_found"] },
+        "delivery": { "state": "not_assessed", "value": null },
+        "evidence": { "grade": "B", "flags": [] }
+      },
+      "expected": { "impact_height": "low", "target_tone": "neutral", "delivery_tone": "unknown", "delivery_state": "not_assessed", "latest_value": 0, "emissions_state": "eligible_pending_shared_ranking", "overshoot_state": "not_ranked", "headline_contains": ["Low impact", "No documented active target", "Progress not assessed"] }
+    },
+    {
+      "id": "comparable-on-pace",
+      "input": {
+        "identity": { "country_id": "ZZZ", "name": "Fixture Pace" },
+        "impact": { "state": "available", "band": "high", "latest_observation": { "value": 450, "year": 2024, "unit": "MtCO2e", "scope": "economy_wide" } },
+        "target_integrity": { "integrity": "comparable", "type": "fixed_level", "scope_match": true, "normalized_endpoint": { "year": 2030, "value": { "kind": "exact", "amount": 300, "unit": "MtCO2e" } }, "reason_codes": [] },
+        "ambition": { "state": "available", "value": "insufficient", "benchmark": "fictional-benchmark" },
+        "delivery": { "state": "available", "value": "on_pace", "evidence_gate_passed": true, "level_gap": "positive" },
+        "evidence": { "grade": "A", "flags": [] }
+      },
+      "expected": { "impact_height": "high", "target_tone": "neutral", "delivery_tone": "positive", "delivery_state": "on_pace", "emissions_state": "eligible_pending_shared_ranking", "overshoot_state": "eligible_pending_shared_ranking", "headline_contains": ["High impact", "Insufficient ambition", "On pace"] }
+    },
+    {
+      "id": "comparable-off-course",
+      "input": {
+        "identity": { "country_id": "ZZZ", "name": "Fixture Off Course" },
+        "impact": { "state": "available", "band": "medium", "latest_observation": { "value": 35, "year": 2024, "unit": "MtCO2e", "scope": "economy_wide" } },
+        "target_integrity": { "integrity": "comparable", "scope_match": true, "normalized_endpoint": { "year": 2030, "value": { "kind": "exact", "amount": 20, "unit": "MtCO2e" } }, "reason_codes": [] },
+        "delivery": { "state": "available", "value": "off_course", "evidence_gate_passed": true },
+        "evidence": { "grade": "A", "flags": [] }
+      },
+      "expected": { "impact_height": "medium", "target_tone": "neutral", "delivery_tone": "negative", "delivery_state": "off_course", "emissions_state": "eligible_pending_shared_ranking", "overshoot_state": "eligible_pending_shared_ranking", "headline_contains": ["Medium impact", "Target comparable", "Off course"] }
+    },
+    {
+      "id": "missing-all-evidence",
+      "input": {
+        "identity": { "country_id": "ZZZ", "name": "Fixture Missing" },
+        "impact": { "state": "source_unavailable", "band": "not_assessed" },
+        "target_integrity": { "integrity": "not_assessed", "reason_codes": ["source_unavailable"] },
+        "delivery": { "state": "not_assessed", "value": null },
+        "evidence": { "grade": "D", "flags": ["source_unavailable", "not_reviewed"] }
+      },
+      "expected": { "impact_height": "geographic_minimum_unknown", "target_tone": "unknown", "delivery_tone": "unknown", "delivery_state": "not_assessed", "emissions_state": "not_ranked", "overshoot_state": "not_ranked", "headline_contains": ["Impact not assessed", "Target not assessed", "Progress not assessed", "Evidence D"] }
+    },
+    {
+      "id": "withheld-pending-licence",
+      "input": {
+        "identity": { "country_id": "ZZZ", "name": "Fixture Withheld" },
+        "impact": { "state": "value_withheld", "band": "not_assessed" },
+        "target_integrity": { "integrity": "not_assessed", "reason_codes": ["licence_not_approved"] },
+        "delivery": { "state": "available", "value": "on_pace" },
+        "evidence": { "grade": "D", "flags": ["licence_not_approved", "value_withheld"] }
+      },
+      "expected": { "impact_height": "geographic_minimum_unknown", "target_tone": "unknown", "delivery_tone": "unknown", "delivery_state": "not_assessed", "evidence_cue": "withheld_lock", "emissions_state": "not_ranked", "overshoot_state": "not_ranked", "headline_contains": ["Impact not assessed", "Progress not assessed"] }
+    },
+    {
+      "id": "conflicting-evidence",
+      "input": {
+        "identity": { "country_id": "ZZZ", "name": "Fixture Conflict" },
+        "impact": { "state": "conflicting", "band": "high", "plane": "harmonized", "latest_observation": { "value": 500, "year": 2023, "unit": "MtCO2e", "scope": "economy_wide" } },
+        "target_integrity": { "integrity": "partially_comparable", "reason_codes": ["scope_mismatch"] },
+        "delivery": { "state": "available", "value": "ahead" },
+        "evidence": { "grade": "C", "flags": ["unresolved_source_conflict"] }
+      },
+      "expected": { "impact_height": "high", "target_tone": "caution", "delivery_tone": "unknown", "delivery_state": "not_assessed", "evidence_cue": "split_plane_conflict", "emissions_state": "eligible_pending_shared_ranking", "overshoot_state": "not_ranked", "headline_contains": ["High impact", "Target partly comparable", "Progress not assessed", "Evidence conflict"] }
+    },
+    {
+      "id": "stale-evidence-blocks-positive",
+      "input": {
+        "identity": { "country_id": "ZZZ", "name": "Fixture Stale" },
+        "impact": { "state": "available", "band": "high", "latest_observation": { "value": 40, "year": 2021, "unit": "MtCO2e", "scope": "economy_wide" } },
+        "target_integrity": { "integrity": "comparable", "scope_match": true, "normalized_endpoint": { "year": 2030, "value": { "kind": "exact", "amount": 20, "unit": "MtCO2e" } }, "reason_codes": [] },
+        "delivery": { "state": "available", "value": "on_pace" },
+        "evidence": { "grade": "C", "flags": ["stale_source"] }
+      },
+      "expected": { "impact_height": "high", "target_tone": "neutral", "delivery_tone": "unknown", "delivery_state": "not_assessed", "evidence_cue": "stale_clock", "emissions_state": "eligible_pending_shared_ranking", "overshoot_state": "not_ranked", "headline_contains": ["High impact", "Progress not assessed"] }
+    },
+    {
+      "id": "qualitative-target",
+      "input": {
+        "identity": { "country_id": "ZZZ", "name": "Fixture Qualitative" },
+        "impact": { "state": "available", "band": "low" },
+        "target_integrity": { "integrity": "qualitative_or_sectoral", "type": "qualitative", "reason_codes": ["qualitative_target"] },
+        "delivery": { "state": "not_assessed", "value": null },
+        "evidence": { "grade": "B", "flags": ["reporting_optional"] }
+      },
+      "expected": { "impact_height": "low", "target_tone": "neutral", "delivery_tone": "unknown", "delivery_state": "not_assessed", "emissions_state": "not_ranked", "overshoot_state": "not_ranked", "headline_contains": ["Low impact", "Qualitative or sectoral target", "Progress not assessed"] }
+    },
+    {
+      "id": "sectoral-target",
+      "input": {
+        "identity": { "country_id": "ZZZ", "name": "Fixture Sectoral" },
+        "impact": { "state": "available", "band": "medium" },
+        "target_integrity": { "integrity": "qualitative_or_sectoral", "type": "sectoral", "reason_codes": ["sectoral_target"] },
+        "delivery": { "state": "not_assessed", "value": null },
+        "evidence": { "grade": "B", "flags": [] }
+      },
+      "expected": { "impact_height": "medium", "target_tone": "neutral", "delivery_tone": "unknown", "delivery_state": "not_assessed", "emissions_state": "not_ranked", "overshoot_state": "not_ranked", "headline_contains": ["Medium impact", "Qualitative or sectoral target", "Progress not assessed"] }
+    }
+  ]
+}

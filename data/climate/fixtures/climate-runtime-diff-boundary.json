@@ -1,0 +1,251 @@
+{
+  "_meta": {
+    "fixture_version": "1.0.0",
+    "description": "Fail-closed climate runtime diff boundary. These are fictional control-plane fixtures and confer no release authority."
+  },
+  "base_denied_candidate": {
+    "schema_version": "1.0.0",
+    "candidate_id": "fixture-denied-candidate",
+    "review_status": "not_reviewed",
+    "decision": "deny",
+    "release_eligible": false,
+    "production_runtime_release": false,
+    "prohibited_release_files": [
+      "data/climate/runtime-manifest.json",
+      "data/climate/releases/reviewed-release-diff.json",
+      "data/climate/releases/ct40-allow-manifest.json"
+    ]
+  },
+  "cases": [
+    {
+      "id": "docs-only-needs-no-climate-boundary",
+      "changed_paths": ["docs/operations/README.md"],
+      "expected": { "status": "pass", "mode": "no-runtime-change", "strict_required": false }
+    },
+    {
+      "id": "public-legacy-ledger-is-runtime-affecting",
+      "changed_paths": ["docs/LEGACY-COUNTRY-DATA-EXIT.md"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "explicit-denied-candidate",
+      "changed_paths": ["js/globe.js", "data/climate/runtime/country-factual-candidate.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "missing-candidate-manifest",
+      "changed_paths": ["js/data.js"],
+      "expected": { "status": "fail", "mode": "denied-candidate", "codes": ["candidate_manifest_missing"] }
+    },
+    {
+      "id": "gaia-utils-is-runtime-affecting",
+      "changed_paths": ["js/gaia-utils.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "module-contracts-is-runtime-affecting",
+      "changed_paths": ["js/module-contracts.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "event-bus-is-runtime-affecting",
+      "changed_paths": ["js/event-bus.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "storage-adapter-is-runtime-affecting",
+      "changed_paths": ["js/storage-adapter.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "storage-is-runtime-affecting",
+      "changed_paths": ["js/storage.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "data-schema-is-runtime-affecting",
+      "changed_paths": ["js/data-schema.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "carbon-clock-is-runtime-affecting",
+      "changed_paths": ["js/carbon-clock.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "ui-review-attestation-is-runtime-affecting",
+      "changed_paths": ["data/climate/reviews/climate-factual-runtime-ct42-ui-review.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "candidate-cannot-claim-allow",
+      "changed_paths": ["index.html"],
+      "candidate": "$base_denied_candidate",
+      "mutations": [{ "path": "decision", "value": "allow" }],
+      "expected": { "status": "fail", "mode": "denied-candidate", "codes": ["candidate_decision_not_denied"] }
+    },
+    {
+      "id": "candidate-cannot-be-release-eligible",
+      "changed_paths": ["css/globe-system.css"],
+      "candidate": "$base_denied_candidate",
+      "mutations": [{ "path": "release_eligible", "value": true }],
+      "expected": { "status": "fail", "mode": "denied-candidate", "codes": ["candidate_release_eligibility_not_false"] }
+    },
+    {
+      "id": "candidate-cannot-enable-production",
+      "changed_paths": ["sw.js"],
+      "candidate": "$base_denied_candidate",
+      "mutations": [{ "path": "production_runtime_release", "value": true }],
+      "expected": { "status": "fail", "mode": "denied-candidate", "codes": ["candidate_production_release_not_false"] }
+    },
+    {
+      "id": "candidate-review-state-cannot-be-promoted",
+      "changed_paths": ["js/app.js"],
+      "candidate": "$base_denied_candidate",
+      "mutations": [{ "path": "review_status", "value": "reviewed" }],
+      "expected": { "status": "fail", "mode": "denied-candidate", "codes": ["candidate_review_state_not_denied"] }
+    },
+    {
+      "id": "candidate-must-declare-every-prohibited-path",
+      "changed_paths": ["data/climate/runtime/candidate-manifest.json"],
+      "candidate": "$base_denied_candidate",
+      "mutations": [{ "path": "prohibited_release_files", "operation": "pop" }],
+      "expected": { "status": "fail", "mode": "denied-candidate", "codes": ["candidate_prohibited_path_not_declared:data/climate/releases/ct40-allow-manifest.json"] }
+    },
+    {
+      "id": "release-diff-cannot-leak-into-denied-candidate",
+      "changed_paths": ["data/climate/releases/reviewed-release-diff.json"],
+      "candidate": "$base_denied_candidate",
+      "artifacts_present": { "data/climate/releases/reviewed-release-diff.json": true },
+      "expected": { "status": "fail", "mode": "denied-candidate", "codes": ["prohibited_release_artifact_present:data/climate/releases/reviewed-release-diff.json"] }
+    },
+    {
+      "id": "allow-manifest-cannot-leak-into-denied-candidate",
+      "changed_paths": ["data/climate/releases/ct40-allow-manifest.json"],
+      "candidate": "$base_denied_candidate",
+      "artifacts_present": { "data/climate/releases/ct40-allow-manifest.json": true },
+      "expected": { "status": "fail", "mode": "denied-candidate", "codes": ["prohibited_release_artifact_present:data/climate/releases/ct40-allow-manifest.json"] }
+    },
+    {
+      "id": "arbitrary-runtime-manifest-does-not-bypass-boundary",
+      "changed_paths": ["data/climate/runtime-manifest.json"],
+      "artifacts_present": { "data/climate/runtime-manifest.json": true },
+      "runtime_manifest": { "runtime": { "review_status": "not_reviewed" } },
+      "expected": { "status": "fail", "mode": "reviewed-runtime-strict-required", "strict_required": true, "codes": ["reviewed_runtime_state_missing"] }
+    },
+    {
+      "id": "reviewed-runtime-forces-strict-policy",
+      "changed_paths": ["data/climate/runtime-manifest.json", "js/globe.js"],
+      "artifacts_present": { "data/climate/runtime-manifest.json": true },
+      "runtime_manifest": { "runtime": { "review_status": "reviewed" } },
+      "expected": { "status": "pass", "mode": "reviewed-runtime-strict-required", "strict_required": true }
+    },
+    {
+      "id": "declared-compiler-change-is-runtime-affecting",
+      "changed_paths": ["tools/lib/example-runtime-compiler.js"],
+      "declared_runtime_paths": ["tools/lib/example-runtime-compiler.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "vendor-delivery-change-is-runtime-affecting",
+      "changed_paths": ["tools/fetch-globe-vendor.sh"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "committed-vendor-blob-is-runtime-affecting",
+      "changed_paths": ["js/vendor/globe.gl.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "localized-globe-asset-is-runtime-affecting",
+      "changed_paths": ["assets/globe/runtime/earth-night.jpg"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "ct45-checker-is-runtime-affecting",
+      "changed_paths": ["tools/check-globe-runtime-assets.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "nasa-fetcher-is-runtime-affecting",
+      "changed_paths": ["tools/authoring/fetch-nasa-black-marble.sh"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "public-notice-is-runtime-affecting",
+      "changed_paths": ["THIRD_PARTY_NOTICES.txt"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "notice-inventory-is-runtime-affecting",
+      "changed_paths": ["data/governance/vendor/globe-gl-2.46.1-notices.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "notice-integration-is-runtime-affecting",
+      "changed_paths": ["data/governance/vendor/globe-gl-2.46.1-notices-integration.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "notice-checker-is-runtime-affecting",
+      "changed_paths": ["tools/check-globe-third-party-notices.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "future-approval-schema-is-runtime-affecting",
+      "changed_paths": ["data/climate/schemas/globe-runtime-assets-production-review.schema.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "approval-trust-registry-is-runtime-affecting",
+      "changed_paths": ["data/climate/governance/globe-runtime-approval-trust.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "detached-approval-signatures-are-runtime-affecting",
+      "changed_paths": ["data/climate/reviews/globe-runtime-assets-production-review.signatures.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "approval-crypto-checker-is-runtime-affecting",
+      "changed_paths": ["tools/check-globe-runtime-approval.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "final-staged-integrity-checker-is-runtime-affecting",
+      "changed_paths": ["tools/check-staged-production-integrity.js"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "windows-separator-cannot-bypass-runtime-path",
+      "changed_paths": ["data\\climate\\runtime\\country-factual-candidate.json"],
+      "candidate": "$base_denied_candidate",
+      "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    }
+  ]
+}

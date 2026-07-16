@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "fixture_set": "ct42-factual-runtime-candidate",
+    "fixture_version": "1.0.0",
+    "purpose": "Fail-closed lineage, review-boundary, coverage, licence, and runtime-presentation mutations."
+  },
+  "mutations": [
+    { "id": "review-decision-fail", "target": "review", "path": "decision", "value": "fail", "expected": "CT-10C-R independent pass required" },
+    { "id": "review-not-independent", "target": "review", "path": "reviewer.independent_of_builder", "value": false, "expected": "CT-10C-R independent pass required" },
+    { "id": "runtime-release-leak", "target": "review", "path": "publication_boundary.production_runtime_release_allowed", "value": true, "expected": "must not authorize runtime release" },
+    { "id": "display-boundary-closed", "target": "review", "path": "publication_boundary.factual_display_review_passed", "value": false, "expected": "factual display boundary not passed" },
+    { "id": "promotion-calculation-drift", "target": "promotion", "path": "calculation_hash", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "expected": "calculation pin mismatch" },
+    { "id": "registry-count-drift", "target": "registry", "path": "entity_count", "value": 248, "expected": "249 entities" },
+    { "id": "source-approval-revoked", "target": "source", "path": "approval.state", "value": "pending", "expected": "approved PRIMAP source decision" },
+    { "id": "licence-unconfirmed", "target": "source", "path": "licence.status", "value": "pending", "expected": "licence and normalized redistribution" },
+    { "id": "normalized-redistribution-revoked", "target": "source", "path": "redistribution.normalized_values", "value": false, "expected": "licence and normalized redistribution" },
+    { "id": "observation-removed", "target": "promotion", "path": "series.0.values", "operation": "pop", "expected": "2,060 observations" }
+  ]
+}

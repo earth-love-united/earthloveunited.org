@@ -7,6 +7,8 @@
 // ═══════════════════════════════════════════════
 
 const App = {
+  _globeActivationAttempt: 0,
+
   async init() {
     syncHeroScrollState();
     _bindGlobeLoadingEvents();
@@ -73,6 +75,7 @@ const App = {
 
     const handlers = {
       enterGlobe: () => this.enterGlobe(),
+      browseEvidence: () => this.browseEvidence(),
     };
 
     const runAction = (el, e) => {
@@ -101,44 +104,127 @@ const App = {
     });
   },
 
-  async enterGlobe() {
+  async enterGlobe(options = {}) {
+    const activationAttempt = ++this._globeActivationAttempt;
+    const isCurrentActivation = () =>
+      this._globeActivationAttempt === activationAttempt && document.body.classList.contains('globe-mode');
+    _setEvidenceBrowseEnabled(false);
+    if (!document.body.classList.contains('globe-mode')) {
+      safeCall('GlobeModule', 'rememberFallbackOpener', document.activeElement);
+    }
     _setGlobeLoading(true, 'Preparing the living globe');
     document.body.classList.add('globe-mode');
     document.body.classList.remove('hero-active');
     document.body.setAttribute('aria-busy', 'true');
     $('topbar')?.classList.add('visible');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    // Load globe.gl if not already loaded, then init GlobeModule
-    if (!_globeGLLoaded && !_globeGLLoading) {
-      await loadGlobeGL().catch(err => {
-        reportWarn('App', 'globe.gl failed to load');
-        _setGlobeLoading(true, 'The globe could not be loaded');
-        setTimeout(() => _setGlobeLoading(false), 1800);
-        return err;
-      });
+    _setGlobeLoading(true, 'Verifying country evidence and globe assets');
+    let preparation = { ok: false, reason: 'globe_construction_failed' };
+    try {
+      if (hasModule('GlobeModule')) {
+        preparation = await GlobeModule.prepare({
+          force: options.forcePrepare === true,
+          reloadCandidate: options.reloadCandidate === true,
+        });
+      }
+    } catch (error) {
+      reportError('GlobeModule.prepare()', error);
+      preparation = { ok: false, reason: 'globe_construction_failed' };
     }
+    if (!isCurrentActivation()) return false;
+    if (!preparation?.ok) {
+      const reason = preparation?.reason || 'globe_construction_failed';
+      _setGlobeLoading(false);
+      document.body.removeAttribute('aria-busy');
+      safeCall('GlobeModule', 'showFallback', reason);
+      if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { fallback: true, reason, timestamp: Date.now() });
+      document.addEventListener('keydown', _onGlobeKeyDown);
+      return false;
+    }
+    // Load globe.gl if not already loaded, then init GlobeModule
+    if (!_globeGLLoaded) {
+      try {
+        await loadGlobeGL();
+      } catch (err) {
+        if (!isCurrentActivation()) return false;
+        reportWarn('App', 'globe.gl failed to load: ' + (err?.message || 'unknown error'));
+        _setGlobeLoading(false);
+        document.body.removeAttribute('aria-busy');
+        safeCall('GlobeModule', 'showFallback', 'library_load_failed');
+        if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { fallback: true, reason: 'library_load_failed', timestamp: Date.now() });
+        document.addEventListener('keydown', _onGlobeKeyDown);
+        return false;
+      }
+    }
+    if (!isCurrentActivation()) return false;
     if (hasModule('GlobeModule') && !GlobeModule._initialized) {
-      try { GlobeModule.init(); GlobeModule._initialized = true; } catch (err) { reportError('GlobeModule.init()', err); }
+      try {
+        GlobeModule._initialized = GlobeModule.init() === true;
+      } catch (err) {
+        GlobeModule._initialized = false;
+        reportError('GlobeModule.init()', err);
+        safeCall('GlobeModule', 'teardownFailedRenderer');
+        safeCall('GlobeModule', 'showFallback', 'globe_construction_failed');
+      }
     } else if (hasModule('GlobeModule')) {
       safeCall('GlobeModule', 'selectDefaultCountry');
+    }
+    if (!hasModule('GlobeModule') || !GlobeModule._initialized) {
+      _setGlobeLoading(false);
+      document.body.removeAttribute('aria-busy');
+      if (!$('globe-fallback') || $('globe-fallback').hidden) {
+        safeCall('GlobeModule', 'showFallback', 'globe_construction_failed');
+      }
+      if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { fallback: true, reason: window.GlobeModule?._fallbackReasonCode || 'globe_construction_failed', timestamp: Date.now() });
+      document.addEventListener('keydown', _onGlobeKeyDown);
+      return false;
     }
     // GlobeModule emits readiness during init. If someone enters while the
     // application is still awaiting its bootstrap data, that event can precede
     // the subscription. The rendered canvas is now present, so always close
     // the HUD loader on the next paint as the final, race-safe handoff.
     if (hasModule('GlobeModule') && GlobeModule._initialized) {
-      requestAnimationFrame(() => _setGlobeLoading(false));
+      requestAnimationFrame(() => {
+        if (!isCurrentActivation()) return;
+        _setGlobeLoading(false);
+        document.body.removeAttribute('aria-busy');
+      });
     }
-    if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { timestamp: Date.now() });
+    if (!isCurrentActivation()) return false;
+    _setEvidenceBrowseEnabled(true);
+    if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { fallback: false, timestamp: Date.now() });
     document.addEventListener('keydown', _onGlobeKeyDown);
+    return true;
+  },
+
+  async retryGlobe() {
+    safeCall('GlobeModule', 'hideFallback', { restoreFocus: false, preserveOpener: true });
+    if (hasModule('GlobeModule')) {
+      safeCall('GlobeModule', 'teardownFailedRenderer');
+      GlobeModule._initialized = false;
+    }
+    if (typeof window.Globe !== 'function') _resetGlobeGLLoader();
+    const started = await this.enterGlobe({ forcePrepare: true, reloadCandidate: true });
+    if (started) $('globe-back-btn')?.focus({ preventScroll: true });
+    return started;
+  },
+
+  browseEvidence() {
+    if (!document.body.classList.contains('globe-mode') || document.body.classList.contains('globe-fallback-active')) return false;
+    if (!hasModule('GlobeModule') || GlobeModule._initialized !== true || $('globeViz')?.querySelectorAll('canvas').length !== 1) return false;
+    safeCall('GlobeModule', 'rememberFallbackOpener', document.activeElement);
+    return safeCall('GlobeModule', 'showFallback', 'evidence_browse_requested') === true;
   },
 
   exitGlobe() {
+    this._globeActivationAttempt += 1;
+    _setEvidenceBrowseEnabled(false);
     _setGlobeLoading(false);
     document.body.classList.remove('globe-mode');
     document.body.removeAttribute('aria-busy');
     $('topbar')?.classList.remove('visible');
     safeCall('GlobeModule', 'clearCountrySelection');
+    safeCall('GlobeModule', 'hideFallback', { restoreFocus: true, preserveOpener: false });
     window.scrollTo({ top: 0, behavior: 'smooth' });
     syncHeroScrollState();
     if (hasModule('EventBus')) EventBus.emit('app:globe-exited', { timestamp: Date.now() });
@@ -165,6 +251,11 @@ function exitGlobe() { App.exitGlobe(); }
 
 function _onGlobeKeyDown(e) {
   if (e.key === 'Escape' && document.body.classList.contains('globe-mode')) {
+    if (document.body.classList.contains('globe-fallback-active') && window.GlobeModule?._fallbackReasonCode === 'evidence_browse_requested') {
+      e.preventDefault();
+      safeCall('GlobeModule', 'closeEvidenceBrowser');
+      return;
+    }
     const countryTooltip = $('hex-country-tooltip');
     if (countryTooltip?.classList.contains('visible') && countryTooltip.classList.contains('selected')) {
       safeCall('GlobeModule', 'clearCountrySelection');
@@ -172,6 +263,13 @@ function _onGlobeKeyDown(e) {
     }
     App.exitGlobe();
   }
+}
+
+function _setEvidenceBrowseEnabled(enabled) {
+  const button = $('globe-evidence-browse');
+  if (!button) return;
+  button.disabled = !enabled;
+  button.setAttribute('aria-disabled', String(!enabled));
 }
 
 function syncHeroScrollState() {
@@ -202,6 +300,11 @@ function _bindGlobeLoadingEvents() {
     _setGlobeLoading(true, payload?.message || 'Country layer unavailable');
     setTimeout(() => _setGlobeLoading(false), 1800);
   });
+  EventBus.on('globe:fallback-shown', () => {
+    _setEvidenceBrowseEnabled(false);
+    _setGlobeLoading(false);
+    document.body.removeAttribute('aria-busy');
+  });
 }
 
 // Lazy-load globe.gl — returns Promise that resolves when loaded
@@ -214,12 +317,35 @@ function loadGlobeGL() {
   _globeGLLoading = true;
   _globeGLPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
+    script.id = 'globe-gl-runtime';
     script.src = 'js/vendor/globe.gl.js';
-    script.onload = () => { _globeGLLoaded = true; _globeGLLoading = false; resolve(); };
-    script.onerror = () => { _globeGLLoading = false; _globeGLPromise = null; reject(new Error('Failed to load globe.gl')); };
+    script.onload = () => {
+      _globeGLLoading = false;
+      if (typeof window.Globe !== 'function') {
+        script.remove();
+        _globeGLPromise = null;
+        reject(new Error('globe.gl loaded without a Globe constructor'));
+        return;
+      }
+      _globeGLLoaded = true;
+      resolve();
+    };
+    script.onerror = () => {
+      script.remove();
+      _globeGLLoading = false;
+      _globeGLPromise = null;
+      reject(new Error('Failed to load globe.gl'));
+    };
     document.head.appendChild(script);
   });
   return _globeGLPromise;
+}
+
+function _resetGlobeGLLoader() {
+  $('globe-gl-runtime')?.remove();
+  _globeGLLoading = false;
+  _globeGLLoaded = typeof window.Globe === 'function';
+  _globeGLPromise = _globeGLLoaded ? Promise.resolve() : null;
 }
 
 // Start — modules load synchronously, but Data may register a tick late
@@ -253,9 +379,9 @@ syncHeroScrollState();
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('App', {
-    provides: ['init', 'enterGlobe', 'exitGlobe', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'enterGlobe', 'retryGlobe', 'browseEvidence', 'exitGlobe', 'reset', 'destroy', 'getState'],
     requires: ['MODULE_CONTRACTS', 'CARBON_CLOCK'],
     emits: ['app:ready', 'app:globe-entered', 'app:globe-exited'],
-    listens: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error'],
+    listens: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:fallback-shown'],
   });
 }

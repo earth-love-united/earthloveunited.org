@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0",
+  "review_id": "ct-04-r:legacy-country-data-exit:2026-07-15",
+  "reviewer": {
+    "reviewer_id": "ct04-exit-review",
+    "builder_id": "ct04-final-legacy-exit",
+    "independent_of_builder": true,
+    "transport": "reviewer-message-preserved-by-integration",
+    "artifact_creation_in_reviewer_environment": "denied"
+  },
+  "reviewed_revision": {
+    "commit_sha": "5a507feeccacaaa8ca2d2a0e891ca5ad0f0d99a7",
+    "tree_sha": "2cf44117c8d55b61baf4060eae44f8335b0f5bac"
+  },
+  "verdict": "APPROVED_WITH_LATER_RUNTIME_GATES",
+  "reviewer_verdict_digest_sha256": "a6d52e448979c3569c804ff10db7734e9cb9deefe090cfa5ac5fa2a1ac84cf75",
+  "review_evidence": {
+    "adversarial_mutations_passed": 9,
+    "legitimate_use_controls_passed": 1,
+    "prior_blockers_resolved": true
+  },
+  "scope": {
+    "ct04_legacy_runtime_exit_approved": true,
+    "full_webgl_gate_run_by_reviewer": false,
+    "stacklint_gate_run_by_reviewer": false,
+    "ct33_accessibility_gate_run_by_reviewer": false,
+    "ct40_release_gate_run_by_reviewer": false
+  },
+  "authorization": {
+    "production_runtime_release": false,
+    "country_assessment": false,
+    "performance_assessment": false,
+    "scoring": false,
+    "public_truth_release": false
+  },
+  "note": "This independent verdict approves only the CT-04 removal of legacy country data from live runtime paths. Full WebGL, StackLint, CT-33 accessibility, CT-40 release, and CT-42 runtime/release gates remain separate and unpassed by this reviewer."
+}

@@ -1,43 +1,44 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Version bump (v25) — light atmospheric background and globe halo.
+ * Globe cache (v37) — retain the original pinned Three-Globe sky while shipping
+ * the reviewed HUD dock clearance and opaque high-contrast return control.
  */
-const CACHE_NAME = 'elu-v25';
+const CACHE_NAME = 'elu-v37-return-contrast';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
-  '/css/carbon-clock.css',
-  '/css/globe-system.css',
-  '/assets/globe/light-atmosphere.png?v=v2',
+  '/css/carbon-clock.css?v=v2',
+  '/css/globe-system.css?v=v19',
+  '/assets/globe/runtime/manifest.json',
+  '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75',
+  '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3',
+  '/assets/globe/runtime/night-sky.png?v=7e1d5e780301',
+  '/assets/globe/runtime/earth-blue-marble.jpg?v=228deba2e4b6',
+  '/assets/globe/runtime/earth-topology.png?v=839b12da2e4d',
   // JS — v1 core
   '/js/gaia-utils.js',
   '/js/module-contracts.js',
   '/js/event-bus.js',
   '/js/storage-adapter.js',
   '/js/storage.js',
-  '/js/data-schema.js',
-  '/js/data.js',
-  '/js/globe.js',
-  '/js/carbon-clock.js',
-  '/js/app.js',
+  '/js/data-schema.js?v=v1',
+  '/js/data.js?v=v2',
+  '/js/globe.js?v=v13',
+  '/js/carbon-clock.js?v=v1',
+  '/js/app.js?v=v3',
+  '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
-  '/data/pledge-nodes.json',
-  '/data/small-nations.json',
-  '/data/carbon-projects.json',
+  '/data/carbon-projects.json?v=ct42candidate1',
+  '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',
 ];
 
 // ── Install: pre-cache static assets ──
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch(() => {
-        // Don't fail install if some assets are missing (e.g. CDN refs)
-        console.warn('[SW] Some assets failed to cache');
-      });
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
   );
   self.skipWaiting();
 });

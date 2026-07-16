@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "fictional_entities": true,
+    "purpose": "Compiler boundary and fail-closed mutation cases; no fixture is a real-country climate claim."
+  },
+  "generated_at": "2026-07-15T00:00:00Z",
+  "expected": {
+    "registry_entities": 249,
+    "candidate_entities": 206,
+    "source_gap_entities": 43,
+    "domains_per_entity": 10,
+    "queue_tasks": 2490,
+    "mapped_visibility_and_status_tasks": 249,
+    "critical_evidence_coverage_tasks": 747,
+    "dependent_assessment_coverage_tasks": 1494
+  },
+  "invalid_mutations": [
+    { "id": "inferred-party-status", "path": "matrix.0.status_overlays.unfccc_party.status", "value": "reviewed", "expected_error": "overlay" },
+    { "id": "candidate-value-leak", "path": "matrix.0.domains.harmonized_emissions.value", "value": 0, "expected_error": "climate domain value" },
+    { "id": "performance-assigned", "path": "matrix.0.performance_status", "value": "good", "expected_error": "performance" },
+    { "id": "score-assigned", "path": "matrix.0.score", "value": 0, "expected_error": "score" },
+    { "id": "rank-assigned", "path": "matrix.0.rank", "value": 1, "expected_error": "rank" },
+    { "id": "high-impact-priority", "path": "queue.0.priority_basis", "value": "high impact emitter", "expected_error": "priority basis" },
+    { "id": "missing-target-rewarded", "path": "queue.249.state", "value": "positive", "expected_error": "task state" },
+    { "id": "unknown-route", "path": "queue.0.route_types.0", "value": "web_search", "expected_error": "route type" },
+    { "id": "copied-claim", "path": "queue.0.claims_copied", "value": true, "expected_error": "copied claim" },
+    { "id": "wrong-count", "path": "counts.primap_source_gaps", "value": 42, "expected_error": "counts" },
+    { "id": "malformed-time", "path": "generated_at", "value": "2026-07-15", "expected_error": "generated_at" }
+  ]
+}

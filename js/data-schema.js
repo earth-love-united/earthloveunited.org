@@ -48,26 +48,6 @@ const DATA_SCHEMA = (() => {
         return errors.length ? errors : null;
       },
     },
-    'pledge-nodes': {
-      type: 'array',
-      required: true,
-      validate(value) {
-        if (!Array.isArray(value)) return 'pledge-nodes.json must be an array';
-        const errors = [];
-        const seenIso = new Set();
-        for (let i = 0; i < value.length; i++) {
-          const node = value[i];
-          if (!node.iso) errors.push(`pledge-node[${i}]: missing "iso"`);
-          if (node.iso && !/^[A-Z]{3}$/.test(node.iso)) errors.push(`pledge-node "${node.country || i}": "iso" must be an ISO alpha-3 code`);
-          if (node.iso && seenIso.has(node.iso)) errors.push(`pledge-node "${node.country || i}": duplicate iso "${node.iso}"`);
-          if (node.iso) seenIso.add(node.iso);
-          if (!node.country) errors.push(`pledge-node[${i}]: missing "country"`);
-          if (typeof node.lat !== 'number') errors.push(`pledge-node "${node.country || i}": "lat" must be a number`);
-          if (typeof node.lng !== 'number') errors.push(`pledge-node "${node.country || i}": "lng" must be a number`);
-        }
-        return errors.length ? errors : null;
-      },
-    },
   };
 
   // ── Validate a parsed JSON value against its schema ──

@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/target-comparability-result-1.0.0.json",
+  "title": "CT-20 target comparability result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "engine_version", "methodology_version", "target_id", "country_id",
+    "target_type", "condition", "comparability", "eligible", "reason_codes",
+    "normalized_endpoint", "accounting_frame", "uncertainty",
+    "input_fact_ids", "lineage", "independent_review"
+  ],
+  "properties": {
+    "engine_version": { "const": "1.0.0" },
+    "methodology_version": { "const": "0.1.0" },
+    "target_id": { "type": ["string", "null"] },
+    "country_id": { "type": ["string", "null"] },
+    "target_type": { "type": ["string", "null"] },
+    "condition": { "type": ["string", "null"] },
+    "comparability": { "enum": ["comparable", "partially_comparable", "non_comparable", "qualitative_or_sectoral", "no_active_target_found", "not_assessed"] },
+    "eligible": { "type": "boolean" },
+    "reason_codes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "normalized_endpoint": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["year", "value", "condition"],
+          "properties": {
+            "year": { "type": "integer" },
+            "value": { "$ref": "#/$defs/normalized_quantity" },
+            "condition": { "enum": ["unconditional", "conditional", "combined"] },
+            "residual_emissions": { "const": true },
+            "removals_treatment": { "type": "string" },
+            "offsets_treatment": { "type": "string" },
+            "interim_target_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "accounting_frame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accounting_frame", "gases", "sectors", "geography", "lulucf", "gwp_convention", "article6_treatment"],
+      "properties": {
+        "accounting_frame": { "type": "string" },
+        "gases": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "sectors": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "geography": { "type": ["string", "null"] },
+        "lulucf": { "type": "string" },
+        "gwp_convention": { "type": ["string", "null"] },
+        "article6_treatment": { "type": ["string", "null"] },
+        "target_period_endpoint_year": { "type": "integer" }
+      }
+    },
+    "uncertainty": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "lower", "upper", "unit"],
+          "properties": {
+            "kind": { "const": "bounded_range" },
+            "lower": { "type": "number" },
+            "upper": { "type": "number" },
+            "unit": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "input_fact_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["formula", "formula_version", "target_source_fact_ids", "reviewed_against_fact_ids"],
+      "properties": {
+        "formula": { "type": ["string", "null"] },
+        "formula_version": { "const": "1.0.0" },
+        "target_source_fact_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "reviewed_against_fact_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "independent_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed", "status", "extractor_id", "reviewer_id", "reviewed_at"],
+      "properties": {
+        "passed": { "type": "boolean" },
+        "status": { "enum": ["reviewed", "independent_review_required"] },
+        "extractor_id": { "type": ["string", "null"] },
+        "reviewer_id": { "type": ["string", "null"] },
+        "reviewed_at": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "$defs": {
+    "normalized_quantity": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "amount", "unit"],
+          "properties": { "kind": { "const": "exact" }, "amount": { "type": "number" }, "unit": { "type": "string" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "lower", "upper", "unit"],
+          "properties": { "kind": { "const": "range" }, "lower": { "type": "number" }, "upper": { "type": "number" }, "unit": { "type": "string" } }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "fixture_set": "ct33-country-accessibility",
+    "fixture_version": "1.0.0",
+    "fictional_entities": true,
+    "warning": "All labels, values, sources, and entities are synthetic accessibility contract fixtures."
+  },
+  "cases": [
+    { "id": "valid-full-stack", "mutations": [], "expected": "pass", "calculation_hash": "74df7b12e5467c30b07a39dbca45552209d96da497258e4dcc9ae39165410960" },
+    { "id": "color-only-status", "mutations": [{ "path": "statuses.1.non_color_cue", "value": "color_only" }], "expected_error": "color-only" },
+    { "id": "unlabelled-chart-point-year", "mutations": [{ "path": "artifacts.ct32_card.chart.measured_series.0.points.0.year", "value": null }], "expected_error": "real year" },
+    { "id": "chart-point-missing-unit", "mutations": [{ "path": "artifacts.ct32_card.chart.measured_series.0.points.0.unit", "value": null }], "expected_error": "point unit" },
+    { "id": "positive-unknown", "mutations": [{ "path": "statuses.1.tone", "value": "positive" }], "expected_error": "unknown state cannot be positive" },
+    { "id": "projects-disclaimer-missing", "mutations": [{ "path": "artifacts.ct32_card.sections.projects_markets.disclaimer", "value": "Projects" }], "expected_error": "projects disclaimer" },
+    { "id": "small-touch-target", "mutations": [{ "path": "interaction.focus_order.2.target_size.width", "value": 43 }], "expected_error": "at least 44px" },
+    { "id": "focus-restoration-missing", "mutations": [{ "path": "interaction.dialog.restore_focus_to", "value": "missing-opener" }], "expected_error": "restoration target" },
+    { "id": "heading-level-skipped", "mutations": [{ "path": "heading_order.1.level", "value": 4 }], "expected_error": "heading order skips" },
+    { "id": "dialog-escape-disabled", "mutations": [{ "path": "interaction.dialog.escape_closes", "value": false }], "expected_error": "Escape must close" },
+    { "id": "interactive-child-under-globe", "mutations": [{ "path": "layers.elements.0.parent_id", "value": "globeViz" }], "expected_error": "cannot be under #globeViz" },
+    { "id": "hidden-pointer-interceptor", "mutations": [{ "path": "layers.elements.1.pointer_events", "value": "auto" }], "expected_error": "must disable pointer events" },
+    { "id": "zoom-content-clipped", "mutations": [{ "path": "layout.zoom_200.content_clipped", "value": true }], "expected_error": "200% zoom contract" },
+    { "id": "reduced-motion-transition-retained", "mutations": [{ "path": "motion.reduced_motion.transitions", "value": "animated" }], "expected_error": "reduced-motion contract" },
+    { "id": "source-link-not-focusable", "mutations": [{ "path": "sources.0.focusable", "value": false }], "expected_error": "keyboard reachable" },
+    { "id": "ranking-denominator-mismatch", "mutations": [{ "path": "artifacts.ct31_ranking.disclosure.mapped_count", "value": 4 }], "expected_error": "mapped denominator mismatch" },
+    { "id": "ranking-period-missing", "mutations": [{ "path": "artifacts.ct31_ranking.disclosure.period", "value": null }], "expected_error": "ranking period is required" },
+    { "id": "chart-summary-missing", "mutations": [{ "path": "artifacts.ct32_card.chart.accessible.text_summary", "value": "" }], "expected_error": "chart text summary" },
+    { "id": "contrast-token-missing", "mutations": [{ "path": "contrast.focus_ring.token_pair", "value": null }], "expected_error": "focus_ring contrast token" }
+  ]
+}

@@ -14,13 +14,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ─── Identity & social preview ─────────────────────────────── -->
-<meta name="description" content="Earth Love United Foundation (ELU) is a global nonprofit established in 2020, promoting environmental justice and climate action through innovative, nature-based solutions — with a live carbon clock and a living globe of country pledges vs reality.">
+<meta name="description" content="Earth Love United Foundation (ELU) is a global nonprofit established in 2020, promoting environmental justice and climate action through innovative, nature-based solutions and an evolving country evidence globe.">
 <meta name="theme-color" content="#0a1628">
 <meta name="author" content="Earth Love United Foundation">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Earth Love United | Global Sustainability Nonprofit">
-<meta property="og:description" content="A global nonprofit driving climate action through nature-based solutions — enter the living globe of country pledges vs reality.">
+<meta property="og:description" content="A global nonprofit driving climate action through nature-based solutions and an evolving country evidence globe.">
 <meta property="og:url" content="https://earthloveunited.org">
 <meta property="og:site_name" content="Earth Love United">
 <meta property="og:image" content="https://earthloveunited.org/assets/legacy/elu-logo.png">
@@ -29,7 +29,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@EarthLoveUnited">
 <meta name="twitter:title" content="Earth Love United | Global Sustainability Nonprofit">
-<meta name="twitter:description" content="A global nonprofit driving climate action through nature-based solutions — enter the living globe of country pledges vs reality.">
+<meta name="twitter:description" content="A global nonprofit driving climate action through nature-based solutions and an evolving country evidence globe.">
 <meta name="twitter:image" content="https://earthloveunited.org/assets/legacy/elu-logo.png">
 
 <!-- Organization structured data -->
@@ -55,7 +55,7 @@
     "https://www.linkedin.com/company/earth-love-united",
     "https://twitter.com/EarthLoveUnited",
     "https://www.youtube.com/@earthloveunited502",
-    "https://github.com/gke0op/earthloveunited.org"
+    "https://github.com/earth-love-united/earthloveunited.org"
   ]
 }
 </script>
@@ -67,8 +67,8 @@
   Content Security Policy — v1 surface only.
   - Scripts: self + inline (boot clock, SW registration)
   - Styles: self + fonts.googleapis.com + inline
-  - Connect: self + raw.githubusercontent.com (country GeoJSON)
-  - Images: self + data: + cdn.jsdelivr.net (globe textures)
+  - Connect: self (runtime data and localized country geometry)
+  - Images: self + data: (all globe visuals are localized)
   - Fonts: self + fonts.gstatic.com
   - Frames: youtube-nocookie.com only (volunteer video, injected on click)
 -->
@@ -76,10 +76,12 @@
   default-src 'self';
   script-src 'self' 'unsafe-inline';
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  connect-src 'self' https://raw.githubusercontent.com https://api.carbonmark.com;
-  img-src 'self' data: https://cdn.jsdelivr.net;
+  connect-src 'self';
+  img-src 'self' data:;
   font-src 'self' https://fonts.gstatic.com;
   frame-src https://www.youtube-nocookie.com;
+  object-src 'none';
+  base-uri 'self';
 ">
 <title>Earth Love United | Global Sustainability Nonprofit</title>
 
@@ -94,12 +96,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- Resource hints -->
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="dns-prefetch" href="https://raw.githubusercontent.com">
 <link rel="preload" href="js/gaia-utils.js" as="script">
-<link rel="preload" href="js/data.js?v=v1" as="script">
+<link rel="preload" href="js/data.js?v=v2" as="script">
 
 <!-- ═══ CRITICAL CSS (inlined) ═══ -->
 <style>
@@ -265,7 +265,7 @@ body.globe-mode #globe-back-btn{display:block}
 /* hex legend */
 .hex-legend{position:fixed;bottom:14px;right:56px;z-index:60;display:flex;flex-direction:column;gap:2px;padding:6px 8px;background:rgba(8,10,18,0.8);backdrop-filter:blur(8px);border:1px solid rgba(78,205,196,0.1);border-radius:8px;font-size:9px;color:var(--text3);letter-spacing:0.5px}
 .hex-legend-row{display:flex;align-items:center;gap:6px}
-.hex-legend-swatch{width:10px;height:10px;border-radius:2px}
+.hex-legend-swatch{width:10px;height:10px;border-radius:2px}.hex-legend-swatch.magnitude-low{background:#5b4a97}.hex-legend-swatch.magnitude-high{background:#f6913a}.hex-legend-swatch.magnitude-gap{background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1}.hex-legend-note{max-width:230px;margin-top:3px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);line-height:1.35}
 body:not(.globe-mode) .hex-legend{display:none}
 /* globe.gl scene tooltip */
 .scene-tooltip{font-family:var(--body)!important;font-size:13px!important;background:rgba(8,10,18,.92)!important;color:var(--mint)!important;border:1px solid rgba(78,205,196,.15)!important;border-radius:6px!important;padding:8px 14px!important;backdrop-filter:blur(8px)!important;pointer-events:none!important}
@@ -310,6 +310,7 @@ body.globe-mode #site-nav{display:none}
 .card h3{font-family:var(--display);font-size:23px;font-weight:400;color:var(--text);letter-spacing:.6px;margin-bottom:8px}
 .card p{color:var(--text2);font-size:14px;line-height:1.65}
 .card .card-cta{margin-top:18px;padding:11px 22px;font-size:11px}
+@media(max-width:360px){.card .card-cta{width:100%;max-width:100%;padding-inline:12px;white-space:normal;overflow-wrap:anywhere}}
 .card .card-link{display:inline-flex;align-items:center;margin-top:18px;color:var(--teal);font-family:var(--body);font-size:12px;font-weight:500;letter-spacing:.3px;text-decoration:none}
 .card .card-link:hover,.card .card-link:focus-visible{color:var(--mint);text-decoration:underline;text-underline-offset:4px;outline:none}
 .why-list{list-style:none;margin-top:20px;display:grid;gap:10px;max-width:840px}
@@ -365,7 +366,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 .globe-key{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
 .globe-key span{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid rgba(78,205,196,.14);border-radius:999px;background:var(--bg2);color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:.6px}
 .globe-key i{width:11px;height:11px;border-radius:3px;font-style:normal;flex:0 0 auto}
-.big-cta{margin-top:34px;padding:15px 32px!important;font-size:12px!important}
+.big-cta{max-width:100%;margin-top:34px;padding:15px 32px!important;font-size:12px!important;white-space:normal}@media(max-width:360px){.big-cta{width:100%;padding:14px 12px!important}}
 .data-note{margin-top:24px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--text3);max-width:760px}
 .data-note a{color:var(--teal);text-decoration:none;border-bottom:1px dotted rgba(78,205,196,.4)}
 /* volunteer video (click-to-load; YouTube loads only on demand) */
@@ -392,7 +393,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v12">
+<link rel="stylesheet" href="css/globe-system.css?v=v19">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -494,6 +495,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <span class="brand-subtitle">Living Climate Atlas</span>
   </div>
   <div class="topbar-actions">
+    <button id="globe-evidence-browse" class="glass-btn" data-action="browseEvidence" disabled aria-disabled="true" aria-label="Browse all 249 evidence records"><span class="browse-label-full">Browse all 249 evidence records</span><span class="browse-label-short" aria-hidden="true">249 records</span></button>
     <div class="stats">
       <div class="stat-block">
         <div class="stat-label">Net Human Emissions</div>
@@ -508,15 +510,15 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </div>
 
 <!-- ── HEX LEGEND ── -->
-<div class="hex-legend" id="hex-legend">
-  <div class="hex-legend-row"><span class="hex-legend-swatch" style="background:rgba(120,150,165,0.45)"></span> No pledge data</div>
-  <div class="hex-legend-row"><span class="hex-legend-swatch" style="background:rgba(212,165,116,0.45)"></span> No target</div>
-  <div class="hex-legend-row"><span class="hex-legend-swatch" style="background:rgba(255,84,58,0.55)"></span> Overshooting</div>
-  <div class="hex-legend-row"><span class="hex-legend-swatch" style="background:rgba(46,204,113,0.50)"></span> On track</div>
+<div class="hex-legend" id="hex-legend" role="note" aria-label="Emissions magnitude legend">
+  <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-low" aria-hidden="true"></span> Lower 2023 emissions magnitude</div>
+  <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-high" aria-hidden="true"></span> Higher 2023 emissions magnitude</div>
+  <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-gap" aria-hidden="true"></span> 7 mapped source gaps · all 43 in browser</div>
+  <div class="hex-legend-note">2023 harmonized emissions estimate · PRIMAP-hist v2.6.1 · excludes LULUCF. Emissions magnitude only—not a climate-performance score. Boundaries are for navigation.</div>
 </div>
 
 <!-- ═══ GLOBE ═══ -->
-<div id="globeViz"></div>
+<div id="globeViz" aria-hidden="true"></div>
 
 <!-- ═══ FOUNDATION SECTIONS (legacy site content, June 2025 archive) ═══ -->
 <div class="sections" id="main-content">
@@ -576,7 +578,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <div class="card">
         <div class="card-tag">Climate Innovation &amp; Research</div>
         <h3>Grounded in data. Powered by purpose. Built for a cooler planet.</h3>
-        <p>Our research now lives as an open instrument: a living atlas of country pledges, emissions pathways, and restoration context.</p>
+        <p>Our research is becoming an open instrument: a living atlas whose country evidence is being re-sourced and independently reviewed.</p>
         <a class="card-link" href="#globe">Explore the atlas →</a>
       </div>
     </div>
@@ -586,21 +588,21 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <section class="section" id="globe" aria-labelledby="globe-h">
     <div class="sec-kicker">The key instrument</div>
     <h2 id="globe-h">The Living Globe</h2>
-    <p class="sec-lead">What you enter from the top of this page is a living atlas of climate accountability: 123 countries, each colored by the distance between what it pledged and what it is actually doing. Island and micro nations appear as status dots. Spin it, tap a country, and read its record.</p>
-    <div class="globe-key" role="list" aria-label="Country status colors">
-      <span role="listitem"><i style="background:rgba(120,150,165,0.45)"></i> No pledge data</span>
-      <span role="listitem"><i style="background:rgba(212,165,116,0.45)"></i> No target</span>
-      <span role="listitem"><i style="background:rgba(255,84,58,0.55)"></i> Overshooting</span>
-      <span role="listitem"><i style="background:rgba(46,204,113,0.50)"></i> On track</span>
+    <p class="sec-lead">Explore reviewed annual greenhouse-gas emissions estimates for 206 registry entities. Forty-three source gaps remain visible and unranked.</p>
+    <div class="globe-key" role="list" aria-label="Country evidence availability legend">
+      <span role="listitem"><i style="background:linear-gradient(135deg,#5b4a97,#f6913a)"></i> Non-green sequential color · log-scaled 2023 emissions magnitude, not performance</span>
+      <span role="listitem"><i style="background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1"></i> Neutral pattern · source gap, visible and unranked</span>
     </div>
+    <p class="data-note">Map boundaries use generalized Natural Earth 1:110m geometry for navigation only. Twenty-eight small states absent from that dataset use manually curated approximate navigation points, not boundaries or precise centroids. Disputed subfeatures including Northern Cyprus and Somaliland are excluded from the assessed overlay and never inherit a parent entity’s evidence. None of these representations expresses a position on sovereignty or legal boundaries or assesses climate performance.</p>
+    <p class="data-note">Visual credits: <a href="https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/" target="_blank" rel="noopener">NASA Earth Observatory Black Marble 2012</a>, image by Robert Simmon with Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center. Decorative background only. Original starfield from Three-Globe 2.45.2.</p>
     <div class="card-grid">
       <div class="card">
-        <div class="card-tag">Pledges vs Reality</div>
-        <p>Every country card shows its stated target — how much, by when, against which baseline — next to its measured emissions trajectory. The gap between promise and reality is the number we care about.</p>
+        <div class="card-tag">Source &amp; Methodology</div>
+        <p><a href="https://zenodo.org/records/15016289" target="_blank" rel="noopener">PRIMAP-hist v2.6.1</a> provides harmonized estimates, not official Party inventories. This view excludes LULUCF; the selected rows do not include uncertainty bounds.</p>
       </div>
       <div class="card">
         <div class="card-tag">Country Cards</div>
-        <p>Tap a country for its full record: emissions and per-capita footprint, momentum, climate finance, the official pledge summary in plain words, and an independent rating where one exists.</p>
+        <p>The globe maps 201 registry entities: 194 reviewed emissions series and 7 neutral, unnumbered source gaps. The searchable 249-record evidence browser includes the 48 entities not represented by map geometry.</p>
       </div>
     </div>
     <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
@@ -675,21 +677,21 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <section class="section" id="open" aria-labelledby="open-h">
     <div class="sec-kicker">Trust layer</div>
     <h2 id="open-h">Open by Design</h2>
-    <p class="sec-lead">Most foundations ask you to trust them. We would rather you check. Everything this site claims can be traced to source — the code, the data, and the tests that hold them together.</p>
+    <p class="sec-lead">Most foundations ask you to trust them. We would rather publish what can be checked, disclose what cannot yet be verified, and rebuild the country evidence with explicit sources and tests.</p>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Open Source</div>
         <p>The entire site is readable classic scripts — no build step, no minified mystery. Every line is public and inspectable.</p>
-        <a class="card-cta glass-btn" href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Read the source</a>
+        <a class="card-cta glass-btn" href="https://github.com/earth-love-united/earthloveunited.org" target="_blank" rel="noopener">Read the source</a>
       </div>
       <div class="card">
         <div class="card-tag">Open Data</div>
-        <p>The globe's pledge layer ships as versioned JSON with a declared schema — country, target, baseline, emissions, finance. No number appears on the globe that is not in this file.</p>
-        <a class="card-cta glass-btn" href="data/pledge-nodes.json">Inspect the data</a>
+        <p>The former country payload has been retired from the live site. Its field-by-field exit ledger records what is blocked and what reviewed evidence must replace it.</p>
+        <a class="card-cta glass-btn" href="docs/LEGACY-COUNTRY-DATA-EXIT.md">Inspect the legacy exit ledger</a>
       </div>
       <div class="card">
-        <div class="card-tag">Auditable Claims</div>
-        <p>Built-in smoke tests, schema validation on every load, and a public-copy checker that fails the build on unresolved claims. The site polices its own honesty.</p>
+        <div class="card-tag">Truth Checks</div>
+        <p>Focused regression checks keep legacy gap, score, rating, finance, and market fields out of the public country experience while the reviewed pipeline is built.</p>
       </div>
     </div>
   </section>
@@ -784,7 +786,9 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <a href="#team">Team</a>
       <a href="#tribute">Tribute</a>
       <a href="#contact">Support &amp; Contact</a>
-      <a href="https://github.com/gke0op/earthloveunited.org" target="_blank" rel="noopener">Source</a>
+      <a href="https://github.com/earth-love-united/earthloveunited.org" target="_blank" rel="noopener">Source</a>
+      <a href="https://github.com/earth-love-united/earthloveunited.org/blob/main/CREDITS.md" target="_blank" rel="noopener">Credits</a>
+      <a href="/THIRD_PARTY_NOTICES.txt">Third-party notices</a>
     </div>
     <div class="footer-copy">© 2026 Earth Love United Foundation · earthloveunited.org</div>
   </div>
@@ -799,10 +803,10 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage-adapter.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
-<script src="js/data.js?v=v1"></script>
-<script src="js/globe.js?v=v6"></script>
+<script src="js/data.js?v=v2"></script>
+<script src="js/globe.js?v=v13"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
-<script src="js/app.js?v=v2"></script>
+<script src="js/app.js?v=v3"></script>
 
 <!-- Glass system behavior: scroll reveal + theme toggle (design handoff v1) -->
 <script>
@@ -896,6 +900,47 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   ← Return to the Foundation
 </button>
 
+<!-- Accessible evidence route. GlobeModule reveals this body-level region
+     when critical candidate data, geometry, visual assets, the renderer,
+     WebGL, or globe construction fail closed. -->
+<section id="globe-fallback" hidden aria-hidden="true" aria-labelledby="globe-fallback-title">
+  <div class="elu-fallback-shell">
+    <header class="elu-fallback-header">
+      <p class="elu-fallback-eyebrow">Living Globe · accessible evidence view</p>
+      <h2 id="globe-fallback-title" tabindex="-1">The 3D view is unavailable.</h2>
+      <p id="globe-fallback-reason" class="elu-fallback-reason" role="status" aria-live="polite">The country evidence remains available below.</p>
+      <p class="elu-fallback-boundary">This view shows emissions records and source gaps. Emissions magnitude is not a climate-performance score. Map boundaries are navigational and are not a sovereignty judgment.</p>
+      <div class="elu-fallback-actions" aria-label="3D view recovery options">
+        <button type="button" class="glass-btn" data-globe-fallback-action="retry">Retry the 3D view</button>
+        <button type="button" class="glass-btn" data-globe-fallback-action="exit">Return to the Foundation</button>
+      </div>
+    </header>
+
+    <div class="elu-fallback-evidence" aria-labelledby="globe-fallback-evidence-title">
+      <div class="elu-fallback-evidence-head">
+        <div>
+          <h3 id="globe-fallback-evidence-title">Country emissions evidence</h3>
+          <p id="globe-fallback-summary">Loading emissions coverage…</p>
+        </div>
+        <label class="elu-fallback-search" for="globe-fallback-search">
+          <span>Find a country or ISO code</span>
+          <input id="globe-fallback-search" type="search" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+      <p id="globe-fallback-results" class="elu-fallback-results" aria-live="polite"></p>
+      <div class="elu-fallback-grid">
+        <div class="elu-fallback-list-panel">
+          <ul id="globe-fallback-country-list" aria-label="Countries and registry entities in the emissions dataset"></ul>
+        </div>
+        <article id="globe-fallback-country-detail" class="elu-fallback-detail" tabindex="-1" aria-live="polite">
+          <h3>Select a country or registry entity</h3>
+          <p>Choose an item to inspect its emissions series or source-gap state. Climate performance is not scored in this view.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Service Worker registration — deferred to window load -->
 <script>
 if ('serviceWorker' in navigator) {
@@ -906,7 +951,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=25', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=37-return-contrast', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

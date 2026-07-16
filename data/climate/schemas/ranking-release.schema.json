@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/ranking-release.schema.json",
+  "title": "Country climate ranking release",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["calculation_hash", "ranking_version", "release_id", "compiled_at", "input_hash", "selection", "disclosure", "ranked", "unranked", "composite_score_used", "project_data_used"],
+  "properties": {
+    "calculation_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "ranking_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "release_id": { "type": "string", "minLength": 1 },
+    "compiled_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
+    "input_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "selection": { "$ref": "#/$defs/selection" },
+    "disclosure": { "$ref": "#/$defs/disclosure" },
+    "ranked": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/rankedRow" }
+    },
+    "unranked": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "numbered", "entries"],
+      "properties": {
+        "heading": { "const": "Not ranked — evidence unavailable or incompatible" },
+        "numbered": { "const": false },
+        "entries": { "type": "array", "items": { "$ref": "#/$defs/unrankedRow" } }
+      }
+    },
+    "composite_score_used": { "const": false },
+    "project_data_used": { "const": false }
+  },
+  "$defs": {
+    "nullableString": { "type": ["string", "null"] },
+    "period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_year", "end_year"],
+      "properties": {
+        "start_year": { "type": "integer" },
+        "end_year": { "type": "integer" }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lens", "metric", "period", "plane", "accounting_frame", "scope", "unit", "condition", "target_year"],
+      "properties": {
+        "lens": { "enum": ["annual_emissions", "pledge_overshoot"] },
+        "metric": { "type": "string", "minLength": 1 },
+        "period": { "$ref": "#/$defs/period" },
+        "plane": { "type": "string", "minLength": 1 },
+        "accounting_frame": { "type": "string", "minLength": 1 },
+        "scope": { "type": "string", "minLength": 1 },
+        "unit": { "type": "string", "minLength": 1 },
+        "condition": { "$ref": "#/$defs/nullableString" },
+        "target_year": { "type": ["integer", "null"] }
+      }
+    },
+    "disclosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eligible_count", "mapped_count", "unranked_count", "metric", "period", "plane", "accounting_frame", "scope", "unit", "condition", "target_year"],
+      "properties": {
+        "eligible_count": { "type": "integer", "minimum": 0 },
+        "mapped_count": { "type": "integer", "minimum": 0 },
+        "unranked_count": { "type": "integer", "minimum": 0 },
+        "metric": { "type": "string" },
+        "period": { "$ref": "#/$defs/period" },
+        "plane": { "type": "string" },
+        "accounting_frame": { "type": "string" },
+        "scope": { "type": "string" },
+        "unit": { "type": "string" },
+        "condition": { "$ref": "#/$defs/nullableString" },
+        "target_year": { "type": ["integer", "null"] }
+      }
+    },
+    "rankedRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ordinal", "country_id", "label", "value", "unit", "observation_value", "observation_period", "target_value", "target_year", "condition", "delivery_inferred"],
+      "properties": {
+        "ordinal": { "type": "integer", "minimum": 1 },
+        "country_id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "value": { "type": "number" },
+        "unit": { "type": "string" },
+        "observation_value": { "type": "number" },
+        "observation_period": { "$ref": "#/$defs/period" },
+        "target_value": { "type": ["number", "null"] },
+        "target_year": { "type": ["integer", "null"] },
+        "condition": { "$ref": "#/$defs/nullableString" },
+        "delivery_inferred": { "const": false }
+      }
+    },
+    "unrankedRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["country_id", "label", "ordinal", "reason_codes"],
+      "properties": {
+        "country_id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "ordinal": { "type": "null" },
+        "reason_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "ranking_value_missing",
+              "ranking_value_invalid",
+              "ranking_metric_mismatch",
+              "ranking_period_mismatch",
+              "ranking_plane_mismatch",
+              "ranking_accounting_frame_mismatch",
+              "ranking_scope_mismatch",
+              "ranking_unit_mismatch",
+              "ranking_observation_not_reviewed",
+              "ranking_evidence_gate_not_passed",
+              "ranking_evidence_not_reviewed",
+              "ranking_source_missing",
+              "ranking_source_unavailable",
+              "ranking_licence_blocked",
+              "ranking_value_withheld",
+              "ranking_evidence_stale",
+              "ranking_evidence_conflicting",
+              "ranking_target_not_comparable",
+              "ranking_target_scope_not_matched",
+              "ranking_condition_mismatch",
+              "ranking_target_year_mismatch",
+              "ranking_target_scope_mismatch",
+              "ranking_target_unit_mismatch",
+              "ranking_target_value_missing",
+              "ranking_target_value_invalid",
+              "ranking_target_not_reviewed",
+              "ranking_target_evidence_gate_not_passed"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

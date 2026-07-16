@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "fixture_set": "ct42-independent-data-review",
+  "mutations": [
+    { "id": "duplicate-registry-id", "target": "registry", "path": "entities.1.country_id", "value": "iso3166-1:ABW" },
+    { "id": "source-approval-revoked", "target": "sourceRegistry", "path": "sources.7.approval.state", "value": "pending" },
+    { "id": "upstream-review-not-independent", "target": "upstreamReview", "path": "reviewer.independent_of_builder", "value": false },
+    { "id": "upstream-runtime-authority-leak", "target": "upstreamReview", "path": "publication_boundary.production_runtime_release_allowed", "value": true },
+    { "id": "promotion-series-removed", "target": "promotion", "path": "series", "operation": "pop" },
+    { "id": "promotion-decimal-drift", "target": "promotion", "path": "series.0.values.0.normalized_value_decimal", "value": "0.9040" },
+    { "id": "promotion-normalized-id-drift", "target": "promotion", "path": "series.0.values.0.fact_id", "value": "fact:wrong" },
+    { "id": "promotion-source-id-drift", "target": "promotion", "path": "series.0.values.0.source_fact_id", "value": "fact:wrong-source" },
+    { "id": "runtime-gap-numbered", "target": "runtime", "path": "ranking.unranked.numbered", "value": true },
+    { "id": "runtime-tie-rank-drift", "target": "runtime", "path": "ranking.ranked.42.ordinal", "value": 43 },
+    { "id": "runtime-magnitude-domain-drift", "target": "runtime", "path": "interpretation.magnitude_domain.min_mtco2e_per_year", "value": 0 },
+    { "id": "runtime-performance-inference", "target": "runtime", "path": "countries.0.assessment.performance", "value": "good" },
+    { "id": "published-decimal-drift", "target": "facts", "path": "facts.0.value", "value": "0.9040" },
+    { "id": "forbidden-score-enabled", "target": "facts", "path": "facts.0.allowed_uses.scoring", "value": true },
+    { "id": "wrapper-fact-removed", "target": "wrapper", "path": "fact_ids", "operation": "pop" },
+    { "id": "manifest-release-allowed", "target": "manifest", "path": "release_eligible", "value": true },
+    { "id": "manifest-output-pin-drift", "target": "manifest", "path": "outputs.0.sha256", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+    { "id": "rollback-automatic-authority", "target": "rollback", "path": "automatic_release_authority", "value": true }
+  ]
+}

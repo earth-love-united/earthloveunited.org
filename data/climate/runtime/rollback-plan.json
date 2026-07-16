@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_id": "ct-42-factual-runtime-candidate-2026-07-15",
+  "review_status": "not_reviewed",
+  "trigger": "Any failed CT-42 review, CT-40 denial, factual pin mismatch, browser regression, or accessibility regression.",
+  "actions": [
+    "Remove the candidate data fetch from js/data.js and restore the fail-closed empty country evidence state.",
+    "Restore neutral country surfaces, alphabetical navigation, and the explicit evidence-withheld card copy.",
+    "Remove candidate ranking and chart presentation without changing the reviewed CT-10C/CT-10C-R artifacts.",
+    "Advance the service-worker cache version again and remove the CT-42 candidate JSON from pre-cache so no stale candidate survives rollback.",
+    "Re-run legacy exit, truth CI partial mode, static checks, SmokeTest, and StackLint before another review."
+  ],
+  "automatic_release_authority": false
+}

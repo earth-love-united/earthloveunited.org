@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "plane": "official",
+  "release_status": "metadata_only",
+  "normalized_values": [],
+  "sources": [
+    {
+      "source_registry_id": "unfccc-nir-crt-2026-cycle",
+      "title": "National Inventory Documents and Common Reporting Tables",
+      "landing_url": "https://unfccc.int/reports",
+      "approval_state": "pending",
+      "redistribution": "metadata_only",
+      "reason_code": "normalized_fact_extraction_rights_unresolved"
+    }
+  ],
+  "separation_rule": "Official inventory values may not be copied, normalized, averaged with, or used to overwrite the harmonized GCB plane until source approval changes in the licence registry."
+}

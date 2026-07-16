@@ -1,0 +1,779 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Adversarial mutations that the globe third-party notice evidence checker must reject.",
+  "baseline": {
+    "artifact_id": "globe-gl-2.46.1-third-party-notices-2026-07-15",
+    "manifest_sha256": "542e9bf2043f1c670200be9c9b0455b93048514dfb8b602301ca1245918660c2",
+    "manifest_calculation_hash": "5b671c6e7357d35863b5bcd390a976939a279adc230ae84d43a702566413a66d",
+    "notice_sha256": "741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2",
+    "integration_sha256": "a911d998d0336b8ff5649d0a5ff07103a8fa54351cc64607771a98cd8cdeb795",
+    "integration_calculation_hash": "eb378696e0433079aaa4dad0b8ecad0dab46b2526c1fcc7ad9976a545c75de1a",
+    "approval_schema_sha256": "d93c141952e8da7f59f1ac65095775fed5fe86d44e019943a8c33ff52143bb27",
+    "approval_trust_sha256": "9bb47c15abef171c340b9389edf680f5a2d01cac5a505ca3d208281fef63cf73",
+    "component_count": 44,
+    "source_mapped_package_count": 37,
+    "third_party_source_count": 223,
+    "notice_section_count": 35,
+    "asset_rights_disposition_count": 5
+  },
+  "mutations": [
+    {
+      "id": "schema-version-drift",
+      "kind": "set_manifest",
+      "path": "schema_version",
+      "value": "2.0.0",
+      "expected_failure": "artifact_identity"
+    },
+    {
+      "id": "artifact-id-drift",
+      "kind": "set_manifest",
+      "path": "artifact_id",
+      "value": "globe-gl-unpinned",
+      "expected_failure": "artifact_identity"
+    },
+    {
+      "id": "artifact-status-invented-review",
+      "kind": "set_manifest",
+      "path": "status",
+      "value": "approved",
+      "expected_failure": "artifact_identity"
+    },
+    {
+      "id": "bundle-version-drift",
+      "kind": "set_manifest",
+      "path": "bundle.version",
+      "value": "2.46.0",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "bundle-blob-drift",
+      "kind": "set_manifest",
+      "path": "bundle.blob_sha256",
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "bundle-integrity-drift",
+      "kind": "set_manifest",
+      "path": "bundle.npm_integrity",
+      "value": "sha512-invented",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "bundle-tarball-hash-drift",
+      "kind": "set_manifest",
+      "path": "bundle.npm_tarball_sha256",
+      "value": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "bundle-lockfile-drift",
+      "kind": "set_manifest",
+      "path": "bundle.release_lockfile_sha256",
+      "value": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "bundle-source-map-drift",
+      "kind": "set_manifest",
+      "path": "bundle.source_map_sha256",
+      "value": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "expected_failure": "bundle_identity"
+    },
+    {
+      "id": "source-count-drift",
+      "kind": "set_manifest",
+      "path": "source_inventory.third_party_source_count",
+      "value": 222,
+      "expected_failure": "source_inventory"
+    },
+    {
+      "id": "source-mismatch-invented",
+      "kind": "set_manifest",
+      "path": "source_inventory.source_content_mismatch_count",
+      "value": 1,
+      "expected_failure": "source_inventory"
+    },
+    {
+      "id": "component-count-field-drift",
+      "kind": "set_manifest",
+      "path": "component_count",
+      "value": 43,
+      "expected_failure": "component_inventory"
+    },
+    {
+      "id": "component-removed",
+      "kind": "remove_component",
+      "component_id": "npm:three@0.183.2",
+      "expected_failure": "component_inventory"
+    },
+    {
+      "id": "component-duplicated",
+      "kind": "duplicate_component",
+      "component_id": "npm:d3-array@3.2.4",
+      "expected_failure": "component_inventory"
+    },
+    {
+      "id": "component-version-drift",
+      "kind": "set_component",
+      "component_id": "npm:d3-geo@3.1.1",
+      "path": "version",
+      "value": "3.1.0",
+      "expected_failure": "component_metadata"
+    },
+    {
+      "id": "component-licence-drift",
+      "kind": "set_component",
+      "component_id": "npm:robust-predicates@3.0.3",
+      "path": "licence_expression",
+      "value": "MIT",
+      "expected_failure": "component_metadata"
+    },
+    {
+      "id": "component-source-count-drift",
+      "kind": "set_component",
+      "component_id": "npm:d3-selection@3.0.0",
+      "path": "source_map_source_count",
+      "value": 47,
+      "expected_failure": "component_metadata"
+    },
+    {
+      "id": "component-review-required-cleared",
+      "kind": "set_component",
+      "component_id": "npm:globe.gl@2.46.1",
+      "path": "review_required",
+      "value": false,
+      "expected_failure": "component_metadata"
+    },
+    {
+      "id": "component-notice-reference-removed",
+      "kind": "set_component",
+      "component_id": "npm:h3-js@4.4.0",
+      "path": "notice_ids",
+      "value": [],
+      "expected_failure": "notice_references"
+    },
+    {
+      "id": "insecure-component-url",
+      "kind": "set_component",
+      "component_id": "npm:three@0.183.2",
+      "path": "npm_tarball_url",
+      "value": "http://registry.npmjs.org/three/-/three-0.183.2.tgz",
+      "expected_failure": "source_urls"
+    },
+    {
+      "id": "mutable-default-branch-url",
+      "kind": "set_component",
+      "component_id": "npm:three@0.183.2",
+      "path": "repository_url",
+      "value": "https://github.com/mrdoob/three/main/",
+      "expected_failure": "source_urls"
+    },
+    {
+      "id": "h3-core-version-drift",
+      "kind": "set_component",
+      "component_id": "embedded:h3-core@4.4.1",
+      "path": "version",
+      "value": "4.4.0",
+      "expected_failure": "component_metadata"
+    },
+    {
+      "id": "h3-core-evidence-drift",
+      "kind": "set_component",
+      "component_id": "embedded:h3-core@4.4.1",
+      "path": "source_version_evidence.value",
+      "value": "4.4.0",
+      "expected_failure": "h3_evidence"
+    },
+    {
+      "id": "h3-licence-hash-drift",
+      "kind": "set_component",
+      "component_id": "npm:h3-js@4.4.0",
+      "path": "licence_file_sha256",
+      "value": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "expected_failure": "h3_evidence"
+    },
+    {
+      "id": "dggrid-attribution-hash-drift",
+      "kind": "set_component",
+      "component_id": "attribution:dggrid@2015",
+      "path": "licence_file_sha256",
+      "value": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "expected_failure": "h3_evidence"
+    },
+    {
+      "id": "babel-lockfile-evidence-drift",
+      "kind": "set_component",
+      "component_id": "embedded:@babel/helpers@7.29.2:regenerator",
+      "path": "embedded_evidence.three_globe_lockfile_sha256",
+      "value": "1111111111111111111111111111111111111111111111111111111111111111",
+      "expected_failure": "babel_helper_evidence"
+    },
+    {
+      "id": "babel-licence-hash-drift",
+      "kind": "set_component",
+      "component_id": "embedded:@babel/helpers@7.29.2:regenerator",
+      "path": "licence_file_sha256",
+      "value": "2222222222222222222222222222222222222222222222222222222222222222",
+      "expected_failure": "babel_helper_evidence"
+    },
+    {
+      "id": "font-artifact-hash-drift",
+      "kind": "set_component",
+      "component_id": "embedded:helvetiker-regular@2004",
+      "path": "artifact_sha256",
+      "value": "3333333333333333333333333333333333333333333333333333333333333333",
+      "expected_failure": "font_evidence"
+    },
+    {
+      "id": "font-unmodified-cleared",
+      "kind": "set_component",
+      "component_id": "embedded:helvetiker-regular@2004",
+      "path": "unmodified",
+      "value": false,
+      "expected_failure": "font_evidence"
+    },
+    {
+      "id": "font-notice-removed",
+      "kind": "set_component",
+      "component_id": "embedded:helvetiker-regular@2004",
+      "path": "notice_ids",
+      "value": [
+        "font-license-35e8279356d78908"
+      ],
+      "expected_failure": "font_evidence"
+    },
+    {
+      "id": "emscripten-licence-hash-drift",
+      "kind": "set_component",
+      "component_id": "toolchain:emscripten@1.38.43",
+      "path": "licence_file_sha256",
+      "value": "4444444444444444444444444444444444444444444444444444444444444444",
+      "expected_failure": "toolchain_evidence"
+    },
+    {
+      "id": "emscripten-version-evidence-drift",
+      "kind": "set_component",
+      "component_id": "toolchain:emscripten@1.38.43",
+      "path": "version_evidence",
+      "value": "unknown toolchain",
+      "expected_failure": "toolchain_evidence"
+    },
+    {
+      "id": "musl-notice-hash-drift",
+      "kind": "set_component",
+      "component_id": "linked:musl@emscripten-1.38.43",
+      "path": "licence_file_sha256",
+      "value": "5555555555555555555555555555555555555555555555555555555555555555",
+      "expected_failure": "toolchain_evidence"
+    },
+    {
+      "id": "review-status-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.review_status",
+      "value": "approved",
+      "expected_failure": "rights_review_boundary"
+    },
+    {
+      "id": "reviewer-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.reviewer_id",
+      "value": "agent",
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "decision-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.decision",
+      "value": "approve",
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "notices-approval-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.notices_approved",
+      "value": true,
+      "expected_failure": "rights_review_boundary"
+    },
+    {
+      "id": "redistribution-approval-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.redistribution_approved",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "commercial-approval-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.commercial_use_approved",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "production-approval-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.production_approved",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "release-approval-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.release_approved",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "counsel-review-invented",
+      "kind": "set_manifest",
+      "path": "rights_review.counsel_review_complete",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "rights-decision-governance-invented",
+      "kind": "set_manifest",
+      "path": "governance_boundary.rights_decision_made",
+      "value": true,
+      "expected_failure": "governance_boundary"
+    },
+    {
+      "id": "production-authority-invented",
+      "kind": "set_manifest",
+      "path": "governance_boundary.production_authority",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "release-authority-invented",
+      "kind": "set_manifest",
+      "path": "governance_boundary.release_authority",
+      "value": true,
+      "expected_failure": "invented_authority"
+    },
+    {
+      "id": "runtime-modification-invented",
+      "kind": "set_manifest",
+      "path": "governance_boundary.runtime_modified",
+      "value": true,
+      "expected_failure": "governance_boundary"
+    },
+    {
+      "id": "counsel-question-removed",
+      "kind": "set_manifest",
+      "path": "counsel_questions",
+      "value": [],
+      "expected_failure": "counsel_questions"
+    },
+    {
+      "id": "notice-count-field-drift",
+      "kind": "set_manifest",
+      "path": "notice_section_count",
+      "value": 34,
+      "expected_failure": "notice_inventory"
+    },
+    {
+      "id": "notice-section-removed",
+      "kind": "remove_notice_section",
+      "notice_id": "package-notice-aa869183968dc017",
+      "expected_failure": "notice_inventory"
+    },
+    {
+      "id": "notice-section-duplicated",
+      "kind": "duplicate_notice_section",
+      "notice_id": "package-license-c71d239df91726fc",
+      "expected_failure": "notice_inventory"
+    },
+    {
+      "id": "notice-section-hash-drift",
+      "kind": "set_notice_section",
+      "notice_id": "package-license-c71d239df91726fc",
+      "path": "payload_sha256",
+      "value": "6666666666666666666666666666666666666666666666666666666666666666",
+      "expected_failure": "notice_payloads"
+    },
+    {
+      "id": "notice-payload-resigned-drift",
+      "kind": "replace_notice_text",
+      "from": "DGGRID\nCopyright (c) 2015 Southern Oregon University\n",
+      "to": "DGGRID (altered)\nCopyright (c) 2015 Southern Oregon University\n",
+      "sync_notice_id": "attribution-114bd21151f748d5",
+      "expected_failure": "notice_payloads"
+    },
+    {
+      "id": "notice-block-removed",
+      "kind": "remove_notice_block",
+      "notice_id": "attribution-114bd21151f748d5",
+      "expected_failure": "notice_inventory"
+    },
+    {
+      "id": "notice-block-appended",
+      "kind": "append_notice_block",
+      "notice_id": "invented-notice",
+      "expected_failure": "notice_inventory"
+    },
+    {
+      "id": "durable-disclaimer-removed",
+      "kind": "replace_notice_text",
+      "from": "This notice file itself does not grant redistribution, commercial-use, production, or release authority.",
+      "to": "Rights granted.",
+      "expected_failure": "notice_disclaimer"
+    },
+    {
+      "id": "notice-path-drift",
+      "kind": "set_manifest",
+      "path": "notice_file.path",
+      "value": "NOTICES.txt",
+      "expected_failure": "notice_file_sha256"
+    },
+    {
+      "id": "notice-hash-drift",
+      "kind": "set_manifest",
+      "path": "notice_file.sha256",
+      "value": "7777777777777777777777777777777777777777777777777777777777777777",
+      "expected_failure": "notice_file_sha256"
+    },
+    {
+      "id": "calculation-hash-invalid",
+      "kind": "invalid_calculation_hash",
+      "value": "8888888888888888888888888888888888888888888888888888888888888888",
+      "expected_failure": "manifest_calculation_hash"
+    }
+  ],
+  "integration_mutations": [
+    {
+      "id": "historical-core-scope-removed",
+      "kind": "set_integration",
+      "path": "inventory_core.governance_scope",
+      "value": "These booleans describe current repository state.",
+      "expected_failure": "historical_core_scope"
+    },
+    {
+      "id": "deployment-change-hidden",
+      "kind": "set_integration",
+      "path": "integration_changes.deployment_modified",
+      "value": false,
+      "expected_failure": "integration_changes"
+    },
+    {
+      "id": "public-ui-change-hidden",
+      "kind": "set_integration",
+      "path": "integration_changes.public_ui_modified",
+      "value": false,
+      "expected_failure": "integration_changes"
+    },
+    {
+      "id": "texture-rights-review-invented",
+      "kind": "set_integration",
+      "path": "asset_rights_dispositions.1.rights_review_status",
+      "value": "reviewed",
+      "expected_failure": "asset_rights_unresolved"
+    },
+    {
+      "id": "texture-production-approval-invented",
+      "kind": "set_integration",
+      "path": "asset_rights_dispositions.2.production_use_approved",
+      "value": true,
+      "expected_failure": "asset_rights_unresolved"
+    },
+    {
+      "id": "geometry-redistribution-decision-invented",
+      "kind": "set_integration",
+      "path": "asset_rights_dispositions.0.redistribution_decision",
+      "value": "approved_for_redistribution",
+      "expected_failure": "asset_rights_unresolved"
+    },
+    {
+      "id": "approval-artifact-state-invented",
+      "kind": "set_integration",
+      "path": "approval_boundary.approval_artifact_present",
+      "value": true,
+      "expected_failure": "approval_boundary"
+    },
+    {
+      "id": "signature-bundle-state-invented",
+      "kind": "set_integration",
+      "path": "approval_boundary.signature_bundle_present",
+      "value": true,
+      "expected_failure": "approval_boundary"
+    },
+    {
+      "id": "trust-registry-status-invented",
+      "kind": "set_integration",
+      "path": "approval_boundary.trust_registry_status",
+      "value": "provisioned",
+      "expected_failure": "approval_boundary"
+    },
+    {
+      "id": "integration-production-approval-invented",
+      "kind": "set_integration",
+      "path": "approval_boundary.production_use_approved",
+      "value": true,
+      "expected_failure": "approval_boundary"
+    },
+    {
+      "id": "approval-file-spoofed-present",
+      "kind": "approval_present",
+      "expected_failure": "approval_boundary"
+    },
+    {
+      "id": "approval-schema-notice-hash-drift",
+      "kind": "set_schema",
+      "path": "properties.third_party_notice_inventory.properties.notice_sha256.const",
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expected_failure": "approval_schema"
+    },
+    {
+      "id": "approval-schema-blanket-four-assets",
+      "kind": "set_schema",
+      "path": "properties.asset_rights_dispositions.maxItems",
+      "value": 4,
+      "expected_failure": "approval_schema"
+    },
+    {
+      "id": "approval-schema-counsel-bypass",
+      "kind": "set_schema",
+      "path": "properties.counsel_resolutions.minItems",
+      "value": 0,
+      "expected_failure": "approval_schema"
+    },
+    {
+      "id": "build-source-check-removed",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "node tools/check-globe-third-party-notices.js",
+      "to": "true",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "build-notice-copy-removed",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "cp THIRD_PARTY_NOTICES.txt \"$DEPLOY_DIR/\"",
+      "to": "true",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "build-staged-notice-check-removed",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "node tools/check-globe-third-party-notices.js --staged \"$DEPLOY_DIR\"",
+      "to": "true",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "build-final-aggregate-check-removed",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "exec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
+      "to": "true",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "build-success-exit-tamper",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "exec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
+      "to": "trap 'printf %s forged > \"$DEPLOY_DIR/THIRD_PARTY_NOTICES.txt\"' EXIT\nnode tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "build-background-post-check-writer",
+      "kind": "replace_file",
+      "file": "build_deploy",
+      "from": "exec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
+      "to": "(sleep 1; printf %s forged > \"$DEPLOY_DIR/THIRD_PARTY_NOTICES.txt\") &\nexec node tools/check-staged-production-integrity.js --staged \"$DEPLOY_DIR\"",
+      "expected_failure": "deploy_notice_verification"
+    },
+    {
+      "id": "public-notice-link-removed",
+      "kind": "replace_file",
+      "file": "index",
+      "from": "<a href=\"/THIRD_PARTY_NOTICES.txt\">Third-party notices</a>",
+      "to": "<span>Third-party notices unavailable</span>",
+      "expected_failure": "public_notice_link"
+    },
+    {
+      "id": "public-notice-link-comment-spoof",
+      "kind": "replace_file",
+      "file": "index",
+      "from": "<a href=\"/THIRD_PARTY_NOTICES.txt\">Third-party notices</a>",
+      "to": "<!-- <a href=\"/THIRD_PARTY_NOTICES.txt\">Third-party notices</a> -->",
+      "expected_failure": "public_notice_link"
+    },
+    {
+      "id": "ci-static-notice-step-disabled",
+      "kind": "replace_file",
+      "file": "ci",
+      "from": "- name: Globe third-party notices integrity\n        run: node tools/check-globe-third-party-notices.js",
+      "to": "- name: Globe third-party notices integrity\n        run: node tools/check-globe-third-party-notices.js\n        continue-on-error: true",
+      "expected_failure": "ci_notice_wiring"
+    },
+    {
+      "id": "ci-static-notice-comment-spoof",
+      "kind": "replace_file",
+      "file": "ci",
+      "from": "      - name: Globe third-party notices integrity\n        run: node tools/check-globe-third-party-notices.js",
+      "to": "      # - name: Globe third-party notices integrity\n      #   run: node tools/check-globe-third-party-notices.js",
+      "expected_failure": "ci_notice_wiring"
+    },
+    {
+      "id": "ci-final-aggregate-step-disabled",
+      "kind": "replace_file",
+      "file": "ci",
+      "from": "- name: Verify final staged production integrity independently\n        env:\n          ELU_VERIFIED_DEPLOY_MODE: candidate\n        run: node tools/check-staged-production-integrity.js --staged _deploy",
+      "to": "- name: Verify final staged production integrity independently\n        env:\n          ELU_VERIFIED_DEPLOY_MODE: candidate\n        run: node tools/check-staged-production-integrity.js --staged _deploy\n        if: false",
+      "expected_failure": "ci_notice_wiring"
+    },
+    {
+      "id": "ci-approval-crypto-step-disabled",
+      "kind": "replace_file",
+      "file": "ci",
+      "from": "- name: Globe runtime approval cryptographic policy\n        run: node tools/check-globe-runtime-approval.js",
+      "to": "- name: Globe runtime approval cryptographic policy\n        run: node tools/check-globe-runtime-approval.js\n        continue-on-error: true",
+      "expected_failure": "ci_notice_wiring"
+    },
+    {
+      "id": "truth-component-optional",
+      "kind": "replace_file",
+      "file": "climate_truth_ci",
+      "from": "{ id: 'CT-45-NOTICES', script: 'tools/check-globe-third-party-notices.js', required: true }",
+      "to": "{ id: 'CT-45-NOTICES', script: 'tools/check-globe-third-party-notices.js', required: false }",
+      "expected_failure": "truth_ci_notice_required"
+    },
+    {
+      "id": "truth-component-comment-spoof",
+      "kind": "replace_file",
+      "file": "climate_truth_ci",
+      "from": "  { id: 'CT-45-NOTICES', script: 'tools/check-globe-third-party-notices.js', required: true },",
+      "to": "  // { id: 'CT-45-NOTICES', script: 'tools/check-globe-third-party-notices.js', required: true },",
+      "expected_failure": "truth_ci_notice_required"
+    },
+    {
+      "id": "runtime-diff-notice-path-removed",
+      "kind": "remove_runtime_path",
+      "path": "THIRD_PARTY_NOTICES.txt",
+      "expected_failure": "runtime_diff_notice_scope"
+    },
+    {
+      "id": "runtime-diff-trust-path-removed",
+      "kind": "remove_runtime_path",
+      "path": "data/climate/governance/globe-runtime-approval-trust.json",
+      "expected_failure": "runtime_diff_notice_scope"
+    },
+    {
+      "id": "notice-codeowner-removed",
+      "kind": "replace_file",
+      "file": "codeowners",
+      "from": "/THIRD_PARTY_NOTICES.txt                @earth-love-united/maintainers",
+      "to": "# notice owner removed",
+      "expected_failure": "notice_control_owners"
+    },
+    {
+      "id": "integrity-approval-doc-boundary-removed",
+      "kind": "replace_file",
+      "file": "production_docs",
+      "from": "Inventory integrity is not rights approval",
+      "to": "Inventory integrity grants rights approval",
+      "expected_failure": "notice_integration_docs"
+    }
+  ],
+  "filesystem_cases": [
+    {
+      "id": "source-notice-symlink",
+      "scope": "source",
+      "operation": "symlink",
+      "path": "THIRD_PARTY_NOTICES.txt"
+    },
+    {
+      "id": "source-manifest-symlink",
+      "scope": "source",
+      "operation": "symlink",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "staged-notice-symlink",
+      "scope": "staged",
+      "operation": "symlink",
+      "path": "THIRD_PARTY_NOTICES.txt"
+    },
+    {
+      "id": "staged-manifest-symlink",
+      "scope": "staged",
+      "operation": "symlink",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "source-notice-omitted",
+      "scope": "source",
+      "operation": "omit",
+      "path": "THIRD_PARTY_NOTICES.txt"
+    },
+    {
+      "id": "source-manifest-omitted",
+      "scope": "source",
+      "operation": "omit",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "staged-notice-omitted",
+      "scope": "staged",
+      "operation": "omit",
+      "path": "THIRD_PARTY_NOTICES.txt"
+    },
+    {
+      "id": "staged-manifest-omitted",
+      "scope": "staged",
+      "operation": "omit",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "staged-notice-tamper",
+      "scope": "staged",
+      "operation": "tamper",
+      "path": "THIRD_PARTY_NOTICES.txt"
+    },
+    {
+      "id": "staged-manifest-tamper",
+      "scope": "staged",
+      "operation": "tamper",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "staged-integration-tamper",
+      "scope": "staged",
+      "operation": "tamper",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices-integration.json"
+    },
+    {
+      "id": "staged-schema-symlink",
+      "scope": "staged",
+      "operation": "symlink",
+      "path": "data/climate/schemas/globe-runtime-assets-production-review.schema.json"
+    },
+    {
+      "id": "source-trust-registry-symlink",
+      "scope": "source",
+      "operation": "symlink",
+      "path": "data/climate/governance/globe-runtime-approval-trust.json"
+    },
+    {
+      "id": "staged-trust-registry-tamper",
+      "scope": "staged",
+      "operation": "tamper",
+      "path": "data/climate/governance/globe-runtime-approval-trust.json"
+    },
+    {
+      "id": "staged-vendor-directory-symlink",
+      "scope": "staged",
+      "operation": "directory_symlink",
+      "path": "data/governance/vendor/globe-gl-2.46.1-notices.json"
+    },
+    {
+      "id": "staged-root-intermediate-symlink-escape",
+      "scope": "staged_root",
+      "operation": "intermediate_symlink_escape",
+      "path": "escape/staged"
+    }
+  ]
+}

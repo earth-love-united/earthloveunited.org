@@ -1,0 +1,103 @@
+{
+  "fixture_notice": "FICTIONAL CONTRACT DATA ONLY. ZZZ is not a released country profile and every value below is invented for deterministic validation.",
+  "schema_version": "1.0.0",
+  "policies": [
+    {
+      "schema_version": "1.0.0",
+      "record_kind": "policy_measure",
+      "policy_id": "policy:fixture-zzz:clean-power-law",
+      "country_id": "iso3166-1:ZZZ",
+      "evidence_plane": "official",
+      "jurisdiction": { "level": "national", "name": "Fictional Republic of Zed", "geography": "fictional national territory" },
+      "title": "Fictional Clean Power Law",
+      "legal_status": "in_force",
+      "adoption_date": "2024-02-01",
+      "effective_date": "2025-01-01",
+      "sectors": ["electricity"],
+      "instruments": ["law", "standard"],
+      "implementation": { "status": "partial", "evidence_fact_ids": ["fact:fixture-zzz:implementation-report:2026"], "notes": "Synthetic implementation evidence." },
+      "effects": {
+        "expected": [{ "effect_id": "effect:fixture-zzz:expected-power-emissions:2030", "metric": "emissions.economy_wide_ghg", "value": -12, "unit": "MtCO2e_AR5", "period": { "start_year": 2025, "end_year": 2030 }, "method": "modeled", "source_fact_id": "fact:fixture-zzz:modeled-policy-effect:2030", "uncertainty": { "lower": -16, "upper": -8, "confidence": 0.8, "method": "fictional model interval" } }],
+        "observed": [{ "effect_id": "effect:fixture-zzz:observed-renewables:2026", "metric": "electricity.renewable_generation", "value": 4, "unit": "percentage_points", "period": { "start_year": 2025, "end_year": 2026 }, "method": "measured", "source_fact_id": "fact:fixture-zzz:measured-renewables:2026", "uncertainty": null }]
+      },
+      "source": { "source_registry_id": "fixture-official-source", "document_title": "Fictional Policy Gazette", "document_url": "https://example.org/fictional/policy", "locator": "article 7 and implementation annex 2", "version": "fictional-2026", "retrieved_at": "2026-07-15" },
+      "review": { "status": "reviewed", "extractor_id": "fixture-extractor", "reviewer_id": "fixture-reviewer", "reviewed_at": "2026-07-15T08:00:00Z" }
+    }
+  ],
+  "projections": [
+    {
+      "schema_version": "1.0.0",
+      "record_kind": "policy_projection",
+      "data_role": "scenario_projection_only",
+      "projection_id": "projection:fixture-zzz:wam-2026",
+      "country_id": "iso3166-1:ZZZ",
+      "evidence_plane": "official",
+      "scenario": { "name": "Fictional With Additional Measures", "vintage": "2026", "policy_assumption": "with_additional_measures", "description": "Includes enacted measures plus a fictional specified package." },
+      "scope": { "accounting_frame": "economy_wide_ghg", "gases": ["CO2", "CH4", "N2O"], "gwp_convention": "AR5-100", "sectors": ["economy_wide"], "lulucf": "excluded", "geography": "fictional national territory" },
+      "model": { "name": "Fictional Integrated Policy Model", "version": "1.2", "operator": "Fictional Ministry", "method": "scenario simulation, not observation" },
+      "unit": "MtCO2e_AR5",
+      "points": [{ "year": 2025, "value": 100, "uncertainty": { "lower": 94, "upper": 106, "confidence": 0.8, "method": "fictional model range" } }, { "year": 2030, "value": 78, "uncertainty": { "lower": 68, "upper": 89, "confidence": 0.8, "method": "fictional model range" } }],
+      "source": { "source_registry_id": "unfccc-btr-continuous-2026-07-15", "document_title": "Fictional BTR Projection Annex", "document_url": "https://example.org/fictional/btr", "locator": "table 42, WAM column", "version": "fictional-2026", "retrieved_at": "2026-07-15" },
+      "review": { "status": "reviewed", "extractor_id": "fixture-extractor", "reviewer_id": "fixture-reviewer", "reviewed_at": "2026-07-15T08:00:00Z" }
+    },
+    {
+      "schema_version": "1.0.0",
+      "record_kind": "policy_projection",
+      "data_role": "scenario_projection_only",
+      "projection_id": "projection:fixture-zzz:harmonized-wem-2026",
+      "country_id": "iso3166-1:ZZZ",
+      "evidence_plane": "harmonized",
+      "scenario": { "name": "Fictional Harmonized With Existing Measures", "vintage": "2026-Q2", "policy_assumption": "with_measures", "description": "A fictional harmonized scenario retained separately from the official plane." },
+      "scope": { "accounting_frame": "economy_wide_ghg", "gases": ["CO2", "CH4", "N2O"], "gwp_convention": "AR5-100", "sectors": ["economy_wide"], "lulucf": "excluded", "geography": "fictional national territory" },
+      "model": { "name": "Fictional Comparison Model", "version": "2026.2", "operator": "Fictional Independent Lab", "method": "harmonized scenario simulation, not observation" },
+      "unit": "MtCO2e_AR5",
+      "points": [{ "year": 2025, "value": 102, "uncertainty": null }, { "year": 2030, "value": 91, "uncertainty": { "lower": 82, "upper": 103, "confidence": null, "method": "fictional scenario range" } }],
+      "source": { "source_registry_id": "fixture-harmonized-source", "document_title": "Fictional Harmonized Projection Release", "document_url": "https://example.org/fictional/projection", "locator": "scenario WEM, row ZZZ", "version": "fictional-2026-Q2", "retrieved_at": "2026-07-15" },
+      "review": { "status": "reviewed", "extractor_id": "fixture-extractor", "reviewer_id": "fixture-reviewer", "reviewed_at": "2026-07-15T08:00:00Z" }
+    }
+  ],
+  "finance": [
+    {
+      "schema_version": "1.0.0",
+      "record_kind": "climate_finance_fact",
+      "finance_id": "finance:fixture-zzz:provided-grant:2025",
+      "country_id": "iso3166-1:ZZZ",
+      "country_role": "provider",
+      "counterparty": "Fictional Multilateral Climate Fund",
+      "flow_stage": "provided",
+      "origin": "international",
+      "channel": "fund",
+      "purpose": "adaptation",
+      "instrument": "grant",
+      "amount": 12.5,
+      "currency": "USD",
+      "price_basis": { "type": "constant", "base_year": 2024, "conversion_method": "fictional GDP deflator" },
+      "period": { "start_date": "2025-01-01", "end_date": "2025-12-31" },
+      "evidence_plane": "official",
+      "uncertainty": { "lower": 12, "upper": 13, "confidence": null, "method": "fictional reporting range" },
+      "source": { "source_registry_id": "unfccc-btr-continuous-2026-07-15", "document_title": "Fictional Financial Support CTF", "document_url": "https://example.org/fictional/finance", "locator": "CTF table III.1, row 4", "version": "fictional-2026", "retrieved_at": "2026-07-15" },
+      "review": { "status": "reviewed", "extractor_id": "fixture-extractor", "reviewer_id": "fixture-reviewer", "reviewed_at": "2026-07-15T08:00:00Z" }
+    },
+    {
+      "schema_version": "1.0.0",
+      "record_kind": "climate_finance_fact",
+      "finance_id": "finance:fixture-zzz:received-loan:2025",
+      "country_id": "iso3166-1:ZZZ",
+      "country_role": "recipient",
+      "counterparty": "Fictional Bilateral Provider",
+      "flow_stage": "received",
+      "origin": "international",
+      "channel": "bilateral",
+      "purpose": "mitigation",
+      "instrument": "loan",
+      "amount": 8,
+      "currency": "EUR",
+      "price_basis": { "type": "current", "base_year": null, "conversion_method": null },
+      "period": { "start_date": "2025-01-01", "end_date": "2025-12-31" },
+      "evidence_plane": "official",
+      "uncertainty": null,
+      "source": { "source_registry_id": "unfccc-btr-continuous-2026-07-15", "document_title": "Fictional Support Received Table", "document_url": "https://example.org/fictional/finance-received", "locator": "chapter 5, table 9, row 2", "version": "fictional-2026", "retrieved_at": "2026-07-15" },
+      "review": { "status": "reviewed", "extractor_id": "fixture-extractor", "reviewer_id": "fixture-reviewer", "reviewed_at": "2026-07-15T08:00:00Z" }
+    }
+  ]
+}

@@ -12,9 +12,9 @@
 
 **This site has NO build step. No bundler. No Vite. No Webpack. No npm run anything.**
 
-- 2 HTML files with classic `<script>` tags — that's it
-- 30+ scripts load in `index.html`, 19 in `gaia.html`
-- All modules use the **IIFE pattern**: `const X = (() => { ... })()`
+- 1 public HTML file with classic `<script>` tags — `index.html`
+- 10 runtime scripts load synchronously; globe.gl is loaded lazily on entry
+- Modules use either an IIFE or a plain object and expose one global API
 - Cross-module calls go through `safeCall()`, `hasModule()`, `safeGet()` which use `window[name]`
 - Serve from any static server: nginx, GitHub Pages, `python -m http.server`
 
@@ -30,10 +30,10 @@
 
 ### ✅ DO
 - Add new modules as `<script src="js/your-module.js">` in the HTML
-- Use IIFE pattern: `const YOUR_MODULE = (() => { return { ... }; })()`
+- Prefer the IIFE pattern for new modules: `const YOUR_MODULE = (() => { return { ... }; })()`
 - **ALWAYS** add `window.YOUR_MODULE = YOUR_MODULE;` after the IIFE
 - **ALWAYS** register a contract: `MODULE_CONTRACTS.register('YOUR_MODULE', { provides: [...], requires: [...] })`
-- Add new modules to `MODULE_MANIFEST` in `js/module-validator.js`
+- Run `python3 scripts/verify_load_order.py` after changing modules or load order
 - Use `reportError()` for error reporting, `safeChain()` for fluent APIs
 - Use the safe utilities in `gaia-utils.js` (see below)
 - Read `ARCHITECTURE.md` for the full module map, z-index stack, event flows
@@ -56,10 +56,9 @@ const MY_MODULE = (() => {
 // Missing window.MY_MODULE → safeCall('MY_MODULE', 'doSomething') → undefined
 ```
 
-**Why this matters:** `safeCall()` uses `window[globalName]` to find modules. `const` declarations
-do NOT attach to `window`. Without `window.X = X`, the module is invisible to the entire
-cross-module communication system. This was the root cause of a 2-hour debugging session where
-the GLOBE_OVERLAY sidebar was fully functional but unreachable.
+**Why this matters:** `safeCall()` uses `window[globalName]` to find modules.
+`const` declarations do not attach to `window`. Without the explicit export,
+the module is invisible to the cross-module communication system.
 
 ---
 
@@ -78,15 +77,14 @@ $hide('element-id')      // → el.style.display = 'none' safely
 
 ### Safe Cross-Module Calls
 ```js
-safeCall('GAIA_BUBBLE', 'speak', text, tone, duration)
-const score = safeGet('GAIA_ENGAGEMENT', 'getScore', 0)  // 0 = default if missing
-if (hasModule('GAIA_DATA')) { ... }
+safeCall('GlobeModule', 'clearCountrySelection')
+const state = safeGet('GlobeModule', 'getState', {})
+if (hasModule('Data')) { ... }
 ```
 
 ### ⚠️ NEVER duplicate these patterns:
 - Never write `document.getElementById(...)` without null-checking → use `$()`
 - Never write `typeof X !== 'undefined'` → use `hasModule()` or `safeCall()`
-- Never hardcode voice modifier tables → use `GAIA_VOICE_CONFIG`
 - Never create local `fmt()` functions → use `Data.fmt()`
 
 ### Error Reporting (dev-mode visible)
@@ -103,7 +101,7 @@ reportWarn('MyModule', 'non-critical issue');  // console only
 this.world = safeChain(new Globe(el), 'Globe')
   .globeImageUrl('...')      // exists → called normally
   .specularImageUrl('...')   // doesn't exist → skipped, chain continues!
-  .pointsData(Data.sites);   // still runs!
+  .polygonsData(countryFeatures); // still runs!
 ```
 
 ### Module Contracts
@@ -123,15 +121,17 @@ MODULE_CONTRACTS.register('MY_MODULE', {
 **Must be maintained as single source of truth. Full details in ARCHITECTURE.md.**
 
 ```
-1000  #scroll-progress, #pledge-tooltip
- 300  #pledge-modal, #pledge-wall
- 200  #hero (pe:none when .hidden), #gaia-bubble
+9999  .skip-nav while focused
+1000  #hex-country-tooltip, .country-atlas-card
+ 300  #site-nav
+ 200  #hero, #globe-back-btn
+ 110  .globe-status
  100  #topbar
-  90  #site-panel (pe:none when not .open)
-  85  #panel-backdrop (display:none when not .show)
-  50  #globe-overlay (pe:none when not .open) — MUST BE CHILD OF document.body
-  10  .sections (opaque background)
-   1  #globeViz (pe:none when scrolled past 30vh)
+  60  .hex-legend
+  50  .country-atlas-rail
+  20  .country-atlas-scrim
+  10  .sections, .footer
+   1  #globeViz
 ```
 
 ### Stacking Rules
@@ -142,22 +142,24 @@ MODULE_CONTRACTS.register('MY_MODULE', {
 
 ---
 
-## 🛠️ Dev Toolkit (9 Tools)
+## 🛠️ Validation and Dev Tools
 
-All tools live in `tools/` and are loaded via script tags in `index.html`. Available in browser console.
-`js/module-validator.js` is core infrastructure (not a dev tool) that runs at boot.
+`App.init()` runs `MODULE_CONTRACTS.validate()` after the runtime data load.
+This checks that registered modules exist on `window`, provide their declared
+methods, and have their required dependencies. There is no separate runtime
+manifest.
 
-### Boot Validator (`js/module-validator.js`)
-Auto-runs at page load. Validates all modules in `MODULE_MANIFEST` are on `window`.
-```
-✅ [BOOT] 22/22 modules loaded
-✅ [BOOT] 4 CSS stacking checks passed
-```
+`scripts/verify_load_order.py` is the static counterpart. It reads script tags,
+module exports, and contracts, and fails when a dependency loads too late.
+
+`SmokeTest` and `StackLint` are lazy-loaded by `index.html` for development and
+CI. Other tools in `tools/` are opt-in console utilities rather than production
+runtime dependencies.
 
 ### Testing & Validation
 | Tool | Command | Purpose |
 |------|---------|---------|
-| **SmokeTest** | `SmokeTest.run()` | 22 tests across 5 categories |
+| **SmokeTest** | `SmokeTest.run()` | Runtime module, data, DOM, globe, and accessibility checks |
 | **DiffGuard** | `DiffGuard.before()` / `.after()` | Catch test regressions |
 | **StackLint** | `StackLint.audit()` | Z-index audit, invisible blockers, stacking traps |
 
@@ -192,14 +194,13 @@ Auto-runs at page load. Validates all modules in `MODULE_MANIFEST` are on `windo
 | `ARCHITECTURE.md` | Full module map, z-index stack, event flows, script load order, known traps, key files |
 | `js/gaia-utils.js` | Foundation: $(), safeCall, hasModule, safeGet, reportError, safeChain |
 | `js/module-contracts.js` | Module dependency/interface validation |
-| `js/module-validator.js` | Boot validator — checks all modules are on window |
+| `scripts/verify_load_order.py` | Static module dependency/load-order verifier |
 | `js/event-bus.js` | EventBus — decoupled pub/sub. Extends contracts with `emits` / `listens` |
 | `js/storage-adapter.js` | IndexedDB wrapper (`STORAGE_ADAPTER`) — use for any payload > 5MB |
-| `js/modules/` | **Parallel subsystem** (ES6 classes, NOT IIFE) — declarative learning modules |
 | `js/app.js` | Init entry point (load LAST) — runs pre-flight checks |
 | `infra/bridge.py` | Out-of-band agent↔browser WebSocket router (ports 8765 / 8766) |
-| `css/base.css` | Design tokens (:root variables), reset, animations |
-| `css/layout.css` | Page structure, z-index stack |
+| `css/globe-system.css` | Globe HUD, atlas rail/card, themes, and responsive rules |
+| `index.html` | Public page, critical design tokens/layout, and script order |
 
 ---
 
@@ -227,7 +228,9 @@ EventBus.once('eventName', cb)
 EventBus.off('eventName', cb)
 ```
 
-Live channels so far: `bubble:react`, `engagement:signal`, `engagement:tier-change`.
+Live channels include `app:ready`, `app:globe-entered`, `app:globe-exited`,
+`globe:render-ready`, `globe:country-data-ready`, `globe:data-error`,
+`globe:country-selected`, and `globe:country-closed`.
 When adding a new channel, prefix it with the emitter's module name (`module:verb`).
 
 ### STORAGE_ADAPTER — IndexedDB persistence
@@ -243,7 +246,7 @@ await STORAGE_ADAPTER.clear()
 const keys = await STORAGE_ADAPTER.keys()
 ```
 
-Loaded on both `index.html` and `gaia.html`. Initialised lazily on first call.
+Loaded by `index.html`. Initialised lazily on first call.
 
 ### infra/bridge.py — agent↔browser bridge
 
@@ -259,19 +262,12 @@ to push state from a 10-hour mission into a running tab without reloading.
 
 Smoke test: `python infra/smoke_test.py` (requires the bridge running).
 
-### js/modules/ — declarative learning subsystem
+### Archived subsystems
 
-This directory is a **parallel architecture** using ES6 classes, NOT the IIFE
-pattern. It loads JSON module definitions from `data/modules/*.json` and
-renders the Hook → Explore → Discover → Verify → Connect lifecycle.
-
-Files: `module-engine.js`, `registry.js`, `renderers.js`, `gaia-bridge.js`,
-`calculator.js`.
-
-**Do NOT** try to IIFE-ify these files. The ES6 class pattern is intentional;
-both patterns coexist with different responsibilities (IIFE for global
-orchestration, ES6 classes for declarative content rendering). Both are
-compatible with the bare-metal philosophy because they require no build step.
+The former GAIA, learning-module, pledge-wall, biome, scenario, NDVI, and event
+systems are under `_archive/v1-cut/`. They are historical reference only. Do
+not copy modules out of the archive without a new architecture mission and an
+explicit runtime contract.
 
 ---
 
@@ -286,7 +282,7 @@ const MY_MODULE = (() => {
     if (_initialized) return;
     _initialized = true;
     const el = $('my-element');
-    safeCall('GAIA_ENGAGEMENT', 'addSignal', 'my_event');
+    safeCall('GlobeModule', 'clearCountrySelection');
   }
 
   function doSomething() { /* ... */ }
@@ -298,20 +294,22 @@ window.MY_MODULE = MY_MODULE;  // ← REQUIRED for safeCall/hasModule
 // ← REQUIRED: declare what this module provides and depends on
 MODULE_CONTRACTS.register('MY_MODULE', {
   provides: ['init', 'doSomething'],
-  requires: ['GAIA_ENGAGEMENT'],
+  requires: ['Data'],
 });
 ```
 
 Then:
 1. Add `<script src="js/my-module.js">` in `index.html` at the correct load order position
-2. Add the module to `MODULE_MANIFEST` in `js/module-validator.js`
-3. Update `ARCHITECTURE.md` module table
+2. Run `python3 scripts/verify_load_order.py`
+3. Run `node --check js/my-module.js` and `SmokeTest.run()`
+4. Update `ARCHITECTURE.md` module table and script order
 
 ---
 
-## 🗑️ Dead Code Quarantine
+## 🗑️ Archive Quarantine
 
-The `_dead/` directory contains quarantined files from previous agent sessions. **Do not resurrect them.**
+The `_archive/` directory contains intentionally parked systems from earlier
+versions. **Do not resurrect them outside an approved architecture mission.**
 
 ---
 
@@ -393,7 +391,10 @@ CODEOWNERS enforces this automatically. The list:
 /.gitignore
 /js/gaia-utils.js
 /js/module-contracts.js
-/js/module-validator.js
+/js/app.js
+/js/event-bus.js
+/js/storage-adapter.js
+/scripts/verify_load_order.py
 /tools/agent-precommit
 /tools/start-mission.sh
 /tools/end-mission.sh
@@ -476,7 +477,7 @@ For everything else: keep going. Open PRs. Trust the rails.
 - Bypassing the pre-commit hook with `--no-verify`
 - Editing CODEOWNERS to remove yourself from review
 - Pushing directly to `main`
-- Deleting `_dead/` (it's a deliberate quarantine, not garbage)
+- Deleting `_archive/` (it is a deliberate quarantine, not garbage)
 - Touching the workspace's parent directories outside `earthloveunited.org/`
 
 These restrictions exist so that a 10-hour autonomous mission cannot damage

@@ -1,0 +1,174 @@
+{
+  "schema_version": "1.0.0",
+  "manifest_id": "elu-globe-runtime-assets-2026-07-15",
+  "retrieved_at": "2026-07-15",
+  "rights_review_status": "not_reviewed",
+  "third_party_notices_review_status": "not_reviewed",
+  "production_use_approved": false,
+  "release_authority": false,
+  "transport": {
+    "protocol": "https-only",
+    "redirect_protocol": "https-only",
+    "minimum_tls": "1.2"
+  },
+  "runtime_boundary": {
+    "purpose": "Deterministic country navigation geometry and decorative globe textures.",
+    "geometry_is_navigational_only": true,
+    "visual_assets_are_evidence": false,
+    "sovereignty_judgment": false,
+    "climate_performance_judgment": false,
+    "limitation": "The Natural Earth 1:110m geometry is generalized and reflects de-facto and disputed-boundary cartography. It is used only to navigate the evidence interface; it does not express a position on sovereignty, legal boundaries, commitments, targets, delivery, performance, impact bands, or climate scores. The NASA Earth-at-night surface is a historical 2012 composite and the Three-Globe starfield is decorative context; neither represents current climate performance or astronomical observations."
+  },
+  "navigation_points": {
+    "count": 28,
+    "embedded_in": "js/globe.js",
+    "source_path": "data/small-nations.json",
+    "source_sha256": "81086c45ee1a2d10a2859c2bdd1737db4e74be8f50aaad037307dda44cfe670a",
+    "source": "Manual Natural Earth 110m gap analysis recorded in data/small-nations.json on 2026-07-02.",
+    "source_status": "manually_curated_approximate_points",
+    "display_name_authority": "The exact CT-42 candidate registry entity name keyed by ISO; source_path supplies only the manually curated point provenance.",
+    "display_name_normalizations": [
+      { "iso": "FSM", "source_label": "Micronesia", "candidate_label": "Micronesia, Federated States of" },
+      { "iso": "STP", "source_label": "São Tomé and Príncipe", "candidate_label": "Sao Tome and Principe" }
+    ],
+    "review_status": "not_reviewed",
+    "production_use_approved": false,
+    "limitation": "Approximate national centroid/capital points are clickable navigation affordances only; they are not Natural Earth geometry, boundaries, sovereignty assertions, or precise centroids."
+  },
+  "sources": {
+    "globe_gl": {
+      "package": "globe.gl",
+      "version": "2.46.1",
+      "dependency_note": "globe.gl 2.46.1 declares three-globe ^2.45 as its rendering dependency."
+    },
+    "three_globe": {
+      "package": "three-globe",
+      "version": "2.45.2",
+      "rights_basis": "The three-globe repository and npm package are distributed under the MIT License. Package inclusion establishes byte provenance only; it does not establish the underlying rights of the three package-derived image files.",
+      "texture_rights_review_status": "not_reviewed",
+      "texture_production_use_approved": false
+    },
+    "nasa_earth_observatory": {
+      "publisher": "NASA Earth Observatory",
+      "record_url": "https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/",
+      "feature_context_url": "https://science.nasa.gov/earth/earth-observatory/out-of-the-blue-and-into-the-black/",
+      "flat_maps_url": "https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/",
+      "media_terms_url": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+      "fetch_helper_path": "tools/authoring/fetch-nasa-black-marble.sh",
+      "fetch_helper_sha256": "ade65419169d17404506d2dee5cfdbacb8f2c0c6a76d3d59b34482892edd4466",
+      "acknowledgement": "NASA Earth Observatory",
+      "endorsement_implied": false,
+      "rights_basis": "NASA states that its content is generally not subject to copyright in the United States and permits educational or informational web use subject to its media guidelines. NASA must be acknowledged as the source and use must not imply endorsement; marked third-party material requires separate permission.",
+      "rights_review_status": "not_reviewed",
+      "production_use_approved": false
+    },
+    "natural_earth": {
+      "dataset": "Natural Earth Admin 0 Countries, 1:110m",
+      "rights_basis": "Natural Earth states that its source data are in the public domain. This statement is limited to the source dataset and is not a sovereignty endorsement.",
+      "about_url": "https://www.naturalearthdata.com/about/",
+      "terms_url": "https://www.naturalearthdata.com/about/terms-of-use/",
+      "disputed_boundaries_policy_url": "https://www.naturalearthdata.com/about/disputed-boundaries-policy/"
+    }
+  },
+  "assets": [
+    {
+      "id": "country-geometry",
+      "kind": "geojson",
+      "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
+      "runtime_url": "/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75",
+      "source_url": "https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/example/datasets/ne_110m_admin_0_countries.geojson",
+      "source_package": "globe.gl",
+      "source_version": "2.46.1",
+      "sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0",
+      "bytes": 488013,
+      "feature_collection_type": "FeatureCollection",
+      "feature_count": 177,
+      "geometry_types": ["Polygon", "MultiPolygon"],
+      "rights_basis": "Natural Earth source data: public domain; exact packaged bytes pinned here for reproducible navigation.",
+      "rights_review_status": "not_reviewed",
+      "production_use_approved": false
+    },
+    {
+      "id": "earth-night",
+      "kind": "image",
+      "path": "assets/globe/runtime/earth-night.jpg",
+      "runtime_url": "/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3",
+      "source_url": "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/79000/79765/dnb_land_ocean_ice.2012.3600x1800.jpg",
+      "source_asset_id": "dnb_land_ocean_ice.2012.3600x1800.jpg",
+      "publisher": "NASA Earth Observatory",
+      "source_record_published_at": "2012-11-27",
+      "acquisition_period": {
+        "start": "2012-04-18",
+        "end": "2012-10-23"
+      },
+      "instrument": "Suomi NPP Visible Infrared Imaging Radiometer Suite (VIIRS) day-night band",
+      "creator": "NASA Earth Observatory image by Robert Simmon",
+      "data_credit": "Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center",
+      "record_url": "https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/",
+      "feature_context_url": "https://science.nasa.gov/earth/earth-observatory/out-of-the-blue-and-into-the-black/",
+      "flat_maps_url": "https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/",
+      "media_terms_url": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+      "source_sha256": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124",
+      "sha256": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124",
+      "bytes": 794479,
+      "width": 3600,
+      "height": 1800,
+      "media_type": "image/jpeg",
+      "byte_for_byte_source": true,
+      "elu_transform_applied": false,
+      "acknowledgement": "NASA Earth Observatory",
+      "endorsement_implied": false,
+      "rights_basis": "Byte-for-byte NASA Earth Observatory Black Marble 2012 JPEG. NASA media guidelines require source acknowledgement and prohibit implied endorsement. This provenance remediation is not human rights review or production approval.",
+      "rights_review_status": "not_reviewed",
+      "production_use_approved": false
+    },
+    {
+      "id": "night-sky",
+      "kind": "image",
+      "path": "assets/globe/runtime/night-sky.png",
+      "runtime_url": "/assets/globe/runtime/night-sky.png?v=7e1d5e780301",
+      "source_url": "https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/night-sky.png",
+      "source_package": "three-globe",
+      "source_version": "2.45.2",
+      "sha256": "7e1d5e780301e3a33bd79fd3ac414f7a742465f33ae4605abca743d43a3ab983",
+      "bytes": 904154,
+      "width": 4096,
+      "height": 2048,
+      "rights_basis": "Exact file included in three-globe 2.45.2. Package inclusion establishes provenance, not underlying image-rights clearance.",
+      "rights_review_status": "not_reviewed",
+      "production_use_approved": false
+    },
+    {
+      "id": "earth-blue-marble",
+      "kind": "image",
+      "path": "assets/globe/runtime/earth-blue-marble.jpg",
+      "runtime_url": "/assets/globe/runtime/earth-blue-marble.jpg?v=228deba2e4b6",
+      "source_url": "https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-blue-marble.jpg",
+      "source_package": "three-globe",
+      "source_version": "2.45.2",
+      "sha256": "228deba2e4b600146bdcb6cfa359b8ead6aacc2b1c13550a29cd82824cfa1c01",
+      "bytes": 1461877,
+      "width": 4096,
+      "height": 2048,
+      "rights_basis": "Exact file included in three-globe 2.45.2. Package inclusion establishes provenance, not underlying image-rights clearance.",
+      "rights_review_status": "not_reviewed",
+      "production_use_approved": false
+    },
+    {
+      "id": "earth-topology",
+      "kind": "image",
+      "path": "assets/globe/runtime/earth-topology.png",
+      "runtime_url": "/assets/globe/runtime/earth-topology.png?v=839b12da2e4d",
+      "source_url": "https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-topology.png",
+      "source_package": "three-globe",
+      "source_version": "2.45.2",
+      "sha256": "839b12da2e4dd346b256cebae72e10c479a102c8980a22084c41275e4b9a0e12",
+      "bytes": 378243,
+      "width": 2048,
+      "height": 1024,
+      "rights_basis": "Exact file included in three-globe 2.45.2. Package inclusion establishes provenance, not underlying image-rights clearance.",
+      "rights_review_status": "not_reviewed",
+      "production_use_approved": false
+    }
+  ]
+}
