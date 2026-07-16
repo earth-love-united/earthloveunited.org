@@ -63,7 +63,7 @@
     { "id": "csp-object-guard-removed", "operation": "replace", "path": "files.index", "from": "object-src 'none';", "to": "object-src 'self';", "expected_failure": "csp-minimized" },
     { "id": "boundary-disclaimer-removed", "operation": "replace", "path": "files.index", "from": "Map boundaries are navigational and are not a sovereignty judgment", "to": "Map boundaries are definitive sovereignty claims", "expected_failure": "visible-boundary-disclaimer" },
     { "id": "public-historical-limit-removed", "operation": "replace", "path": "files.index", "from": "Decorative background only", "to": "Current emissions evidence", "expected_failure": "public-visual-provenance-limits" },
-    { "id": "service-worker-epoch-drift", "operation": "replace", "path": "files.sw", "from": "elu-v35-og-bg", "to": "elu-v34-truth-copy", "expected_failure": "service-worker-epoch" },
+    { "id": "service-worker-epoch-drift", "operation": "replace", "path": "files.sw", "from": "elu-v36-dock-review", "to": "elu-v35-og-bg", "expected_failure": "service-worker-epoch" },
     { "id": "sw-vendor-pin-missing", "operation": "replace", "path": "files.sw", "from": "/js/vendor/globe.gl.js", "to": "/js/vendor/missing.js", "expected_failure": "service-worker-required-assets" },
     { "id": "sw-manifest-pin-missing", "operation": "replace", "path": "files.sw", "from": "/assets/globe/runtime/manifest.json", "to": "/assets/globe/runtime/missing-manifest.json", "expected_failure": "service-worker-required-assets" },
     { "id": "sw-geometry-pin-missing", "operation": "replace", "path": "files.sw", "from": "/assets/globe/runtime/ne_110m_admin_0_countries.geojson", "to": "/assets/globe/runtime/missing.geojson", "expected_failure": "service-worker-required-assets" },

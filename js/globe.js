@@ -1798,7 +1798,9 @@ const GlobeModule = {
     wrap.style.right = '24px';
     wrap.style.left = 'auto';
     wrap.style.top = '64px';
-    wrap.style.bottom = '96px';
+    wrap.style.bottom = window.innerWidth <= 900
+      ? 'calc(var(--globe-dock-inset) + var(--globe-dock-height) + 10px)'
+      : '96px';
     wrap.style.width = 'auto';
     wrap.style.alignItems = 'center';
     wrap.style.justifyContent = 'center';

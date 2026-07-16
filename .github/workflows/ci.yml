@@ -179,6 +179,7 @@ jobs:
             });
           });
           const page = await ctx.newPage();
+          const cdp = await ctx.newCDPSession(page);
           await page.addInitScript(() => {
             try { localStorage.setItem('elu-theme', 'dark'); } catch {}
           });
@@ -432,6 +433,63 @@ jobs:
             assert(rects.browse.height >= 44 && rects.theme.height >= 44, width + 'px controls must retain 44px targets');
             assert(rects.browse.right <= rects.theme.left, width + 'px browse/theme controls must not overlap');
           }
+
+          await page.setViewportSize({ width: 768, height: 600 });
+          await page.click('[data-country-rail-iso="CHN"]');
+          await page.waitForFunction(() => document.activeElement?.id === 'country-card-heading');
+          const dockAudit = await page.evaluate(() => {
+            const rect = selector => {
+              const value = document.querySelector(selector).getBoundingClientRect();
+              return { left: value.left, top: value.top, right: value.right, bottom: value.bottom };
+            };
+            const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+            const parse = value => {
+              const channels = value.match(/[\d.]+/g).map(Number);
+              return { r: channels[0], g: channels[1], b: channels[2], a: channels[3] ?? 1 };
+            };
+            const composite = (front, back) => ({
+              r: front.r * front.a + back.r * (1 - front.a),
+              g: front.g * front.a + back.g * (1 - front.a),
+              b: front.b * front.a + back.b * (1 - front.a),
+              a: 1,
+            });
+            const luminance = color => {
+              const linear = channel => {
+                const value = channel / 255;
+                return value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4;
+              };
+              return .2126 * linear(color.r) + .7152 * linear(color.g) + .0722 * linear(color.b);
+            };
+            const contrast = (front, back) => {
+              const first = luminance(front);
+              const second = luminance(back);
+              return (Math.max(first, second) + .05) / (Math.min(first, second) + .05);
+            };
+            const card = rect('#hex-country-tooltip.selected');
+            const legend = rect('#hex-legend');
+            const back = rect('#globe-back-btn');
+            const rail = rect('#elu-country-rank-rail');
+            const legendStyle = getComputedStyle(document.getElementById('hex-legend'));
+            const worstCaseBackdrop = { r: 255, g: 255, b: 255, a: 1 };
+            const effectiveLegendBackground = composite(parse(legendStyle.backgroundColor), worstCaseBackdrop);
+            const labels = [...document.querySelectorAll('.hex-legend-row,.hex-legend-note')];
+            const ratios = labels.map(label => contrast(parse(getComputedStyle(label).color), effectiveLegendBackground));
+            const button = document.getElementById('globe-back-btn');
+            return {
+              cardLegendOverlap: overlaps(card, legend),
+              cardBackOverlap: overlaps(card, back),
+              railLegendOverlap: overlaps(rail, legend),
+              minimumLegendContrast: Math.min(...ratios),
+              backLabelContained: button.scrollWidth <= button.clientWidth,
+            };
+          });
+          assert(!dockAudit.cardLegendOverlap && !dockAudit.cardBackOverlap && !dockAudit.railLegendOverlap,
+            '768x600 card, dock, and rank rail must not overlap');
+          assert(dockAudit.minimumLegendContrast >= 4.5,
+            'dark legend copy must retain at least 4.5:1 worst-case contrast');
+          assert(dockAudit.backLabelContained, '768x600 return label must remain inside its button');
+          await page.click('[data-country-close]');
+          await page.waitForFunction(() => !window.GlobeModule?._selectedCountryFeature);
           await page.setViewportSize({ width: 1280, height: 800 });
 
           const cspViolations = await page.evaluate(() => window.__ct45CspViolations || []);

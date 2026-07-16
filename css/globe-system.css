@@ -1036,6 +1036,7 @@ body.globe-mode .hex-legend {
 
 body.globe-mode .hex-legend-row {
   min-width: 0;
+  color: var(--text2);
   line-height: 1.25;
 }
 
@@ -1045,7 +1046,7 @@ body.globe-mode .hex-legend-note {
   margin: 0;
   padding-top: 6px;
   border-top-color: var(--hud-divider);
-  color: var(--hud-muted);
+  color: var(--text2);
   line-height: 1.3;
 }
 
@@ -1106,6 +1107,9 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   }
 
   #elu-country-rank-rail { left: 12px; }
+  #elu-country-card-wrap {
+    bottom: calc(var(--globe-dock-inset) + var(--globe-dock-height) + 10px);
+  }
   #hex-country-tooltip.selected {
     width: min(461px, calc(100vw - 54px)) !important;
   }

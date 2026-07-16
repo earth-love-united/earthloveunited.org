@@ -214,18 +214,20 @@ const hasCandidateLegend = index.includes('Emissions magnitude only—not a clim
   read('data/climate/runtime/candidate-manifest.json').includes('"release_eligible": false');
 const candidateCache = serviceWorker.includes("const CACHE_NAME = 'elu-v27-ct42-candidate'") && hasCandidateLegend;
 const localizedCandidateCache = (serviceWorker.includes("const CACHE_NAME = 'elu-v33-focus-trap'") ||
-  serviceWorker.includes("const CACHE_NAME = 'elu-v35-og-bg'")) &&
+  serviceWorker.includes("const CACHE_NAME = 'elu-v35-og-bg'") ||
+  serviceWorker.includes("const CACHE_NAME = 'elu-v36-dock-review'")) &&
   serviceWorker.includes("'/assets/globe/runtime/manifest.json'") &&
   serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'") && hasCandidateLegend;
 if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'") && !candidateCache && !localizedCandidateCache) {
-  failures.push('sw.js: cache version is neither legacy-exit v26, denied candidate v27, nor localized evidence cache v33/v34');
+  failures.push('sw.js: cache version is neither legacy-exit v26, denied candidate v27, nor a supported localized evidence cache');
 }
 if (!hasNeutralLegend && !hasCandidateLegend) failures.push('index.html: fail-closed neutral or denied CT-42 candidate legend missing');
 if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=27-ct42-candidate'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=33-focus-trap'") &&
-    !index.includes("navigator.serviceWorker.register('/sw.js?v=35-og-bg'")) {
-  failures.push('index.html: service-worker registration is neither v26, candidate v27, nor localized evidence v33/v34');
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=35-og-bg'") &&
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=36-dock-review'")) {
+  failures.push('index.html: service-worker registration is neither v26, candidate v27, nor a supported localized evidence release');
 }
 
 const ledger = read('docs/LEGACY-COUNTRY-DATA-EXIT.md');
