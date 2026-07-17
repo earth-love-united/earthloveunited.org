@@ -5,6 +5,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const { stable, validateJsonSchema } = require('./json-schema-lite');
+const { validateProofDocument } = require('./ct42-runtime-rollback-proof');
 
 const SCHEMA_PATH = 'data/climate/schemas/ct42-runtime-rollback-review.schema.json';
 const REVIEW_PATH = 'data/climate/reviews/ct42-runtime-rollback-review.json';
@@ -15,6 +16,7 @@ const RUNTIME_DATA_PATH = 'data/climate/runtime/country-factual-candidate.json';
 const PUBLISHED_FACTS_PATH = 'data/climate/runtime/published-facts-candidate.json';
 const ROLLBACK_PLAN_PATH = 'data/climate/runtime/rollback-plan.json';
 const PATCH_PATH = 'data/climate/operations/ct42-runtime-rollback.patch.b64';
+const RAW_EVIDENCE_PATH = 'data/climate/reviews/ct42-runtime-rollback-review-evidence.json';
 
 const SUBJECT_PIN_PATHS = Object.freeze([
   PROOF_PATH,
@@ -44,6 +46,7 @@ const EXPECTED_COUNTS = Object.freeze({
   entities: 201,
   controls: 7,
   runtimeDependencies: 14,
+  smokeTests: 18,
 });
 
 function sha256(value) {
@@ -227,8 +230,8 @@ function deriveResult(observations) {
     runtime.visual_asset_requests === 0,
     runtime.remote_runtime_requests === 0,
     browser.canvas_count === 1,
-    Number.isInteger(browser.smoke_total) && browser.smoke_total > 0,
-    browser.smoke_passed === browser.smoke_total,
+    browser.smoke_total === EXPECTED_COUNTS.smokeTests,
+    browser.smoke_passed === EXPECTED_COUNTS.smokeTests,
     browser.smoke_failed === 0,
     browser.smoke_critical_failed === 0,
     browser.stack_lint_issues === 0,
@@ -237,6 +240,28 @@ function deriveResult(observations) {
     typeof browser.command === 'string' && browser.command.length >= 12,
   ];
   return checks.every(Boolean) ? 'pass' : 'fail';
+}
+
+function validateRawEvidence(root, review, errors) {
+  const evidence = review?.observations?.raw_evidence;
+  if (evidence?.path !== RAW_EVIDENCE_PATH || !/^[a-f0-9]{64}$/.test(evidence?.sha256 || '')) {
+    add(errors, 'review_raw_evidence_pin_invalid', 'Raw evidence must use the canonical path and a SHA-256 digest.');
+    return;
+  }
+  if (!regularNonSymlink(root, RAW_EVIDENCE_PATH)) {
+    add(errors, 'review_raw_evidence_missing', RAW_EVIDENCE_PATH);
+    return;
+  }
+  try {
+    const bytes = readRegular(root, RAW_EVIDENCE_PATH);
+    if (sha256(bytes) !== evidence.sha256) add(errors, 'review_raw_evidence_hash_mismatch', RAW_EVIDENCE_PATH);
+    const parsed = parseJsonNoDuplicateKeys(bytes.toString('utf8'), RAW_EVIDENCE_PATH);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || Object.keys(parsed).length === 0) {
+      add(errors, 'review_raw_evidence_invalid', 'Raw evidence must be a non-empty JSON object.');
+    }
+  } catch (error) {
+    add(errors, 'review_raw_evidence_invalid', error.message);
+  }
 }
 
 function validateProofSemantics(root, proof, pins, errors, ct40Commit, review) {
@@ -314,7 +339,7 @@ function validateProofSemantics(root, proof, pins, errors, ct40Commit, review) {
   }
 }
 
-function validateCurrentArtifacts(root, review, pins, errors) {
+function validateCurrentArtifacts(root, review, pins, errors, options = {}) {
   const proofCommit = review.subject?.rollback_proof_commit_sha;
   const ct40Commit = review.subject?.ct40_review_commit_sha;
   if (!/^[a-f0-9]{40}$/.test(proofCommit || '') || !/^[a-f0-9]{40}$/.test(ct40Commit || '')) {
@@ -357,6 +382,17 @@ function validateCurrentArtifacts(root, review, pins, errors) {
         review.subject?.patch_decoded_sha256 !== proof.rollback?.patch?.decoded_sha256) {
       add(errors, 'subject_derived_proof_binding_mismatch', 'Subject must bind the proof calculation hash and decoded patch hash exactly.');
     }
+    if (!options.allowFixtureIdentities) {
+      try {
+        validateProofDocument(root, proof, {
+          expectedCalculationHash: review.subject?.proof_calculation_hash,
+          expectedPatchSha256: pins.get(PATCH_PATH)?.sha256,
+          allowMissingVendor: !regularNonSymlink(root, 'js/vendor/globe.gl.js'),
+        });
+      } catch (error) {
+        add(errors, 'proof_authoritative_validation_failed', error.message);
+      }
+    }
     validateProofSemantics(root, proof, pins, errors, ct40Commit, review);
   } catch (error) {
     add(errors, 'proof_unavailable', error.message);
@@ -397,7 +433,8 @@ function validateCt42RuntimeRollbackReview(root, review, options = {}) {
   if (!exactPathSet(pinPaths, SUBJECT_PIN_PATHS) || pins.size !== SUBJECT_PIN_PATHS.length) {
     add(errors, 'subject_pin_set_mismatch', 'Subject pins must be the exact canonical proof/tool/input path set in canonical order.');
   }
-  validateCurrentArtifacts(root, review, pins, errors);
+  validateRawEvidence(root, review, errors);
+  validateCurrentArtifacts(root, review, pins, errors, options);
   let manifest;
   let runtime;
   let facts;
@@ -433,6 +470,7 @@ module.exports = {
   EXPECTED_COUNTS,
   PATCH_PATH,
   PROOF_PATH,
+  RAW_EVIDENCE_PATH,
   REVIEW_PATH,
   SCHEMA_PATH,
   SUBJECT_PIN_PATHS,

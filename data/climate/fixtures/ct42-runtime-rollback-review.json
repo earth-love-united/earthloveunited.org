@@ -15,6 +15,8 @@
     { "id": "review-loses-neutral-boundary", "path": "observations.neutral_runtime.entities", "value": 200 },
     { "id": "review-allows-candidate-request", "path": "observations.neutral_runtime.candidate_requests", "value": 1 },
     { "id": "review-fails-browser-smoke", "path": "observations.browser.smoke_failed", "value": 1 },
+    { "id": "review-truncated-smoke-suite", "path": "observations.browser.smoke_passed", "value": 1, "after": { "path": "observations.browser.smoke_total", "value": 1 } },
+    { "id": "review-stale-raw-evidence-pin", "path": "observations.raw_evidence.sha256", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
     { "id": "review-timestamp-precedes-execution", "path": "review.reviewed_at", "value": "2026-07-17T12:00:00Z" },
     { "id": "review-stale-tool-pin", "path": "subject.pins.7.sha256", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }
   ]

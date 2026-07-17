@@ -11,6 +11,7 @@ const {
   EXPECTED_COUNTS,
   PATCH_PATH,
   PROOF_PATH,
+  RAW_EVIDENCE_PATH,
   REVIEW_PATH,
   SUBJECT_PIN_PATHS,
   calculationHash,
@@ -19,6 +20,10 @@ const {
   sha256,
   validateCt42RuntimeRollbackReview,
 } = require('./lib/ct42-runtime-rollback-review');
+const {
+  calculationHash: proofCalculationHash,
+  validateProofDocument,
+} = require('./lib/ct42-runtime-rollback-proof');
 
 const ROOT = path.resolve(__dirname, '..');
 const FIXTURE_PATH = 'data/climate/fixtures/ct42-runtime-rollback-review.json';
@@ -115,6 +120,11 @@ function makeFixtureRoot() {
   proof.calculation_hash = calculationHash(proof);
   write(root, PROOF_PATH, proof);
   const p = commit(root, 'fixture rollback proof P');
+  write(root, RAW_EVIDENCE_PATH, {
+    schema_version: '1.0.0',
+    command: 'fixture browser harness command',
+    events: [{ type: 'browser_summary', smoke_passed: 18, smoke_total: 18, stack_lint_issues: 0 }],
+  });
   write(root, 'fixture-current-head.txt', 'Review record is intentionally held in memory for the fixture.\n');
   commit(root, 'fixture current HEAD');
 
@@ -131,6 +141,7 @@ function makeFixtureRoot() {
     environment: { origin: 'http://127.0.0.1:4173', browser: 'fixture-browser 1.0', operating_system: 'fixture-os 1.0', service_worker_state: 'fresh_profile', network_scope: 'same_origin_only', executed_at: '2026-07-17T12:01:00Z' },
     observations: {
       recorded_at: '2026-07-17T12:02:00Z',
+      raw_evidence: pin(root, RAW_EVIDENCE_PATH),
       materialization: { complete: true, regular_files_only: true, controls: 7, runtime_dependencies: 14 },
       candidate: { review_status: 'not_reviewed', decision: 'deny', release_eligible: false, production_runtime_release: false, countries: 249, reviewed_factual_countries: 206, source_gap_countries: 43, facts: 2060 },
       neutral_runtime: { polygons: 173, small_state_points: 28, entities: 201, climate_values: 0, evidence_state: 'withheld_for_all', surface: null, background: null, candidate_requests: 0, visual_asset_requests: 0, remote_runtime_requests: 0 },
@@ -187,12 +198,24 @@ function verifyFixture() {
   } finally {
     fs.rmSync(context.root, { recursive: true, force: true });
   }
+  const realProof = readJson(ROOT, PROOF_PATH);
+  const proofOptions = {
+    expectedPatchSha256: realProof.rollback.patch.sha256,
+    allowMissingVendor: !regularNonSymlink(ROOT, 'js/vendor/globe.gl.js'),
+  };
+  assert.doesNotThrow(() => validateProofDocument(ROOT, realProof, proofOptions),
+    'authoritative validator rejected the committed rollback proof');
+  const widenedProof = structuredClone(realProof);
+  widenedProof.rollback.runtime_resources.surface = 'https://invalid.example/remote-texture.jpg';
+  widenedProof.calculation_hash = proofCalculationHash(widenedProof);
+  assert.throws(() => validateProofDocument(ROOT, widenedProof, proofOptions),
+    'authoritative validator accepted a remote texture semantic widening');
   return rejected;
 }
 
 if (process.argv.includes('--self-test')) {
   const rejected = verifyFixture();
-  process.stdout.write(`CT-42 rollback review contract self-test: PASS (${rejected} adversarial mutations and a symlink substitution rejected; fixture-only; no review authority)\n`);
+  process.stdout.write(`CT-42 rollback review contract self-test: PASS (${rejected} adversarial mutations, a symlink substitution, and an authoritative proof-semantic widening rejected; fixture-only; no review authority)\n`);
 } else {
   if (!regularNonSymlink(ROOT, REVIEW_PATH)) {
     process.stderr.write(`CT-42 rollback review: FAIL (required independent review artifact is absent or unsafe: ${REVIEW_PATH}; fail closed)\n`);

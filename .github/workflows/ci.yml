@@ -66,6 +66,13 @@ jobs:
       - name: Climate truth CI policy fixtures
         run: node tools/check-climate-truth-ci.js
 
+      - name: CT-42 rollback review contract self-test
+        run: node tools/check-ct42-runtime-rollback-review.js --self-test
+
+      - name: CT-42 rollback review artifact
+        if: ${{ hashFiles('data/climate/reviews/ct42-runtime-rollback-review.json') != '' }}
+        run: node tools/check-ct42-runtime-rollback-review.js
+
       - name: Climate runtime diff boundary fixtures
         run: node tools/check-climate-runtime-diff-boundary.js --self-test
 
