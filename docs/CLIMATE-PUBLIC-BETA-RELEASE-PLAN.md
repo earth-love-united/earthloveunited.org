@@ -1,8 +1,8 @@
 # Climate Public Beta release plan
 
-- Status: protected non-deploying foundation candidate under integration;
-  foundation review/merge, active-package deployment controls/CI, and every
-  human release decision remain pending
+- Status: protected non-deploying foundation candidate clean-verified; draft
+  review/merge, active-package deployment controls/CI, and every human release
+  decision remain pending
 - Publication authority: none
 - Assessed-production authority: none
 - Last updated: 2026-07-17
@@ -32,9 +32,10 @@ full assessed-climate production release.
   and deferred diff classification 7 expected-pass / 14 adversarial. The full
   mixed-tree local regression passed. The in-app local 320px fail-closed
   browser check also passed with no overflow, external automatic assets, or
-  console errors. These applicable results must still be reproduced from the
-  exact clean F commit before the branch is pushed; the protected browser job
-  and full GitHub CI remain pending.
+  console errors. The applicable suite was reproduced from an exact clean F
+  checkout: 63 foundation paths, 24 changed JS/MJS syntax checks, 29 strict
+  JSON parses, zero deployment controls, and zero release artifacts. The
+  protected browser job and full GitHub CI remain pending.
 - Fresh official PRIMAP and Debian `iso-codes` source reads reproduce the
   pinned 249-entity, 206-series, 43-gap, 2,060-observation boundary. This is
   engineering evidence, not rights approval or publication authority.
@@ -1232,12 +1233,11 @@ pass.
 
 ### Foundation governance direction — received for draft F; review pending
 
-There is no foundation PR yet. The task owner has directed engineering to
-proceed with the non-deploying foundation split. Operationally, that permits
-separating the exact diff, committing it normally, reproducing its tests from
-a clean checkout, and opening a draft protected PR. It does not create a
-formal approval artifact and does not authorize merge or any release action.
-The direction being implemented is:
+The exact non-deploying foundation candidate has been separated, committed,
+and reproduced from a clean checkout. The task owner directed engineering to
+perform that work and open a draft protected PR. This operational direction
+does not create a formal approval artifact and does not authorize merge or any
+release action. The direction being implemented is:
 
 > Approve F as a non-deploying foundation PR that excludes
 > `.github/workflows/**`, `climate-public-beta/_headers`,
@@ -1353,8 +1353,8 @@ unchanged.
 
 The complete local design contains the deterministic commands, and their
 listed fixtures have been individually verified in the mixed mission
-worktree; the foundation-eligible subset must still be reproduced from the
-exact clean F commit, and integrated protected CI is pending. This does not
+worktree. The foundation-eligible subset has also been reproduced from an
+exact clean F checkout; integrated protected CI is pending. This does not
 make every command eligible for F: workflow, header, readiness,
 event-relative diff, staging/build/final-integrity, and future
 upload-transaction controls enter only on the active package branch and are

@@ -54,10 +54,11 @@ evidence (10 / 58), readiness (48 cases), governance contracts (4 / 74),
 artifact generation (4 / 8), package validation (7 / 74 plus 18
 schema-semantics cases), and diff classification (7 expected-pass / 14
 adversarial). The in-app local 320px fail-closed browser check passed with no
-overflow, external automatic assets, or console errors. Those results must be
-reproduced from the exact clean F commit where applicable; protected browser
-CI and full GitHub CI remain pending. Fixture and local-browser results grant
-no review or publication authority.
+overflow, external automatic assets, or console errors. The applicable
+foundation results were reproduced from an exact clean F checkout, including
+the 320px fail-closed browser state; protected browser CI and full GitHub CI
+remain pending. Fixture and local-browser results grant no review or
+publication authority.
 
 The protected foundation PR is deliberately non-deploying. It may contain
 schemas, compilers, libraries, review/checker foundations, the fail-closed UI

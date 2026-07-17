@@ -5,10 +5,12 @@ Status date: 2026-07-17
 Current state: the mission branch contains the initial plan and ledger commits,
 while its unstaged tree contains both a deterministic non-deploying foundation
 candidate and later deployment-control/CI candidates that are being split.
-The task owner has directed engineering to prepare, test, and present the
-exact F diff. No foundation PR exists yet, no protected GitHub CI run has
-occurred, and no generated runtime/governance release artifact, complete
-deployable beta package, or authority exists. Verified fixtures currently
+The task owner directed engineering to prepare, test, and present the exact F
+diff. That 63-path diff has been reproduced from a clean checkout with zero
+deployment controls and zero release artifacts. Draft publication and the
+protected GitHub CI run remain pending; no generated runtime/governance
+release artifact, complete deployable beta package, or authority exists.
+Verified fixtures currently
 pass policy 5/55, access bootstrap 6/95, remote evidence 10/58, readiness 48
 cases, governance contracts 4/74, artifact generation 4/8, package 7/74 plus
 18 schema-semantics cases, and diff classification 7/14. The local 320px
@@ -175,7 +177,7 @@ is compatibility evidence only and grants no package authority.
 | `BE-13-diff-boundary` | F proves zero release/approval/workflow/deployment-control paths; later beta changes select unsigned/L1/L2 gates; active package integrity and static/dynamic control discovery run; deletions fail closed | Release engineering | Active-package CI diff report | `tools/check-climate-public-beta-diff-boundary.js` | Readiness/package checker | 7 expected-pass / 14 adversarial classifications pass. Event-relative semantics are reserved for the active BR/BP/BA package PR after protected F merge; fixed `a476…` cannot remain recurring | Diff-boundary self-test and live base/head comparison |
 | `BE-14-assessed-isolation` | Existing assessed readiness/truth results remain exact; beta paths never count as assessed evidence | Climate truth engineering | Assessed-boundary probe | `tools/check-climate-public-beta-assessed-boundary.js` and existing assessed checkers | Clean committed tree | Latest assessed rerun shows no beta regression; CT-44 vendor integrity passes. Pre-existing CT-42 ancestry and missing assessed release artifacts remain L3 requirements; because the unchanged workflow runs candidate readiness and partial truth unconditionally, CT-42 is also a protected F merge blocker | `node tools/check-climate-public-beta-assessed-boundary.js` |
 | `BE-15-browser-accessibility-smoke` | Fail-closed browser at 320px; no values without manifest; disabled feedback; no external automatic requests; verified correction history after hashes | UI engineering | Browser report | `tools/check-climate-public-beta-browser.mjs` | Protected browser CI | In-app local 320px test passed: no horizontal overflow, exact visible fail-closed alert, no external automatic assets, no console errors. Protected CI execution still required | `node tools/check-climate-public-beta-browser.mjs http://127.0.0.1:<port>` |
-| `BE-16-protected-ci` | F leaves `.github/workflows/**` unchanged; active package PR later introduces protected beta CI, event-relative semantics, isolated exact-head authority, distinct merge-result compatibility, static/dynamic control discovery, and nonpublication states | Repository maintainers | `.github/workflows/ci.yml`, branch protection, CODEOWNERS in BA scope | GitHub Actions, package checker, diff boundary | Active BR/BP/BA package; operational F direction | Deferred local wiring must not enter F; no PR or protected CI run exists. Later package review, BA pins, maintainer-applied commit-preserving settings, and exact post-merge ancestry are required. Current assessed CT-42 failures remain a protected F merge blocker and must not be suppressed | Existing protected checks on draft F; later exact-head and distinct merge-result jobs on the active package PR |
+| `BE-16-protected-ci` | F leaves `.github/workflows/**` unchanged; active package PR later introduces protected beta CI, event-relative semantics, isolated exact-head authority, distinct merge-result compatibility, static/dynamic control discovery, and nonpublication states | Repository maintainers | `.github/workflows/ci.yml`, branch protection, CODEOWNERS in BA scope | GitHub Actions, package checker, diff boundary | Active BR/BP/BA package; operational F direction | Deferred local wiring must not enter F; no protected F CI result exists at this checkpoint. Later package review, BA pins, maintainer-applied commit-preserving settings, and exact post-merge ancestry are required. Current assessed CT-42 failures remain a protected F merge blocker and must not be suppressed | Existing protected checks on draft F; later exact-head and distinct merge-result jobs on the active package PR |
 
 ## Human decision and evidence ledger
 
