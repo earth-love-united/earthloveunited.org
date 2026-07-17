@@ -200,6 +200,29 @@ function assertCommitOrLateBound(root, proof) {
   assert.equal(proof.candidate.review_chain_ct40_sha256, proof.candidate.ct40_result.sha256, 'review chain head does not contain the candidate CT-40 result');
 }
 
+function assertRuntimeControlCommit(root, proof) {
+  const value = proof.candidate.runtime_control_commit;
+  assert.match(value, /^[a-f0-9]{40}$/, 'runtime control commit must be a full Git SHA');
+  assert.equal(gitCheck(root, ['cat-file', '-e', `${value}^{commit}`]).status, 0, 'runtime control commit must identify an existing commit object');
+  assert.equal(gitCheck(root, ['merge-base', '--is-ancestor', value, 'HEAD']).status, 0, 'runtime control commit must be an ancestor of the current HEAD');
+
+  const pinnedPaths = [
+    ...CONTROL_FILES,
+    ...RUNTIME_DEPENDENCIES
+      .filter(dependency => dependency.path !== EXPECTED_VENDOR_SPEC.destination)
+      .map(dependency => dependency.path),
+  ];
+  for (const relative of pinnedPaths) {
+    const atCommit = gitCheck(root, ['show', `${value}:${relative}`]);
+    assert.equal(atCommit.status, 0, `runtime control commit must contain ${relative}`);
+    assert.equal(
+      sha256(Buffer.from(atCommit.stdout)),
+      sha256(read(root, relative)),
+      `${relative} is not byte-identical to the runtime control commit`,
+    );
+  }
+}
+
 function validateProofDocument(root, proof, options = {}) {
   assert.equal(proof.schema_version, '2.3.0');
   assert.equal(proof.proof_id, 'ct-42-neutral-runtime-rollback-rehearsal-2026-07-15');
@@ -218,7 +241,7 @@ function validateProofDocument(root, proof, options = {}) {
     assert.equal(proof.calculation_hash, options.expectedCalculationHash, 'rollback proof is not the independently pinned artifact');
   }
 
-  assert.equal(proof.candidate.runtime_control_commit, RUNTIME_CONTROL_COMMIT);
+  assertRuntimeControlCommit(root, proof);
   assertCommitOrLateBound(root, proof);
   assert.equal(proof.candidate.candidate_id, 'ct-42-factual-runtime-candidate-2026-07-15');
   assert.equal(proof.candidate.decision, 'deny');
@@ -238,7 +261,7 @@ function validateProofDocument(root, proof, options = {}) {
   assert.equal(sha256(read(root, proof.candidate.rollback_plan.path)), ROLLBACK_PLAN_SHA256, 'rollback plan bytes changed');
 
   assert.equal(proof.rollback.strategy, 'current_hardened_runtime_to_neutral_surface');
-  assert.equal(proof.rollback.source_runtime_commit, RUNTIME_CONTROL_COMMIT);
+  assert.equal(proof.rollback.source_runtime_commit, proof.candidate.runtime_control_commit);
   assert.equal(proof.rollback.baseline_commit, null, 'rollback must not transplant a historical baseline');
   assert.equal(proof.rollback.cache_name, CACHE_NAME);
   assert.equal(proof.rollback.service_worker_registration, SERVICE_WORKER_REGISTRATION);
@@ -347,7 +370,7 @@ function validateProofDocument(root, proof, options = {}) {
     assert.equal(dependency.role, expected.role, `${expected.path} dependency role drift`);
     assert.equal(
       dependency.source_commit,
-      expected.path === EXPECTED_VENDOR_SPEC.destination ? null : RUNTIME_CONTROL_COMMIT,
+      expected.path === EXPECTED_VENDOR_SPEC.destination ? null : proof.candidate.runtime_control_commit,
       `${expected.path} dependency source commit drift`,
     );
     assert.match(dependency.source_sha256, /^[a-f0-9]{64}$/);
