@@ -19,7 +19,7 @@ function installBrowserHarness(siteRoot) {
   assert.equal(index.split(anchor).length - 1, 1, 'browser harness body anchor drift');
   const harness = `
 <button id="rollback-browser-audit" type="button" style="position:fixed;left:8px;bottom:8px;z-index:10000;min-width:44px;min-height:44px;padding:8px;background:#10242b;color:#fff;border:1px solid #7be8d0;border-radius:4px">Run rollback browser audit</button>
-<pre id="rollback-browser-audit-result" role="status" aria-live="polite" hidden></pre>
+<pre id="rollback-browser-audit-result" role="status" aria-live="polite" hidden style="position:fixed;inset:60px 8px 60px;z-index:10000;box-sizing:border-box;max-width:calc(100vw - 16px);max-height:calc(100vh - 120px);margin:0;padding:8px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#07161b;color:#fff;border:1px solid #7be8d0;border-radius:4px"></pre>
 <script>
 (function () {
   var button = document.getElementById('rollback-browser-audit');

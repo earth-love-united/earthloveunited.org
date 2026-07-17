@@ -37,6 +37,7 @@ function cliValue(flag) {
 
 const reviewChainHead = cliValue('--review-chain-head');
 if (reviewChainHead !== null) assert.match(reviewChainHead, /^[a-f0-9]{40}$/, '--review-chain-head must be a full Git SHA');
+const runtimeControlCommit = reviewChainHead || RUNTIME_CONTROL_COMMIT;
 
 function git(args, options = {}) {
   const run = childProcess.spawnSync('git', args, {
@@ -1016,13 +1017,13 @@ function buildPatch(current, targets) {
 
 const current = Object.fromEntries(CONTROL_FILES.map(relative => {
   const bytes = fs.readFileSync(path.join(ROOT, relative));
-  assert.deepEqual(bytes, gitFile(RUNTIME_CONTROL_COMMIT, relative), `${relative} no longer matches the exact hardened runtime-control commit`);
+  assert.deepEqual(bytes, gitFile(runtimeControlCommit, relative), `${relative} no longer matches the exact hardened runtime-control commit`);
   return [relative, bytes];
 }));
 const dependencyBytes = Object.fromEntries(RUNTIME_DEPENDENCIES.map(dependency => {
   const bytes = fs.readFileSync(path.join(ROOT, dependency.path));
   if (dependency.path !== EXPECTED_VENDOR_SPEC.destination) {
-    assert.deepEqual(bytes, gitFile(RUNTIME_CONTROL_COMMIT, dependency.path), `${dependency.path} no longer matches the exact hardened runtime-control commit`);
+    assert.deepEqual(bytes, gitFile(runtimeControlCommit, dependency.path), `${dependency.path} no longer matches the exact hardened runtime-control commit`);
   }
   return [dependency.path, bytes];
 }));
@@ -1079,7 +1080,7 @@ const proof = {
   },
   candidate: {
     builder_commit: CANDIDATE_BUILDER_COMMIT,
-    runtime_control_commit: RUNTIME_CONTROL_COMMIT,
+    runtime_control_commit: runtimeControlCommit,
     review_chain_head: reviewChainHead,
     review_chain_late_bound: reviewChainHead === null,
     review_chain_ct40_sha256: reviewChainHead === null ? null : sha256(ct40Bytes),
@@ -1100,7 +1101,7 @@ const proof = {
   },
   rollback: {
     strategy: 'current_hardened_runtime_to_neutral_surface',
-    source_runtime_commit: RUNTIME_CONTROL_COMMIT,
+    source_runtime_commit: runtimeControlCommit,
     baseline_commit: null,
     cache_name: CACHE_NAME,
     service_worker_registration: SERVICE_WORKER_REGISTRATION,
@@ -1145,7 +1146,7 @@ const proof = {
     runtime_dependency_closure: RUNTIME_DEPENDENCIES.map(dependency => ({
       path: dependency.path,
       role: dependency.role,
-      source_commit: dependency.path === EXPECTED_VENDOR_SPEC.destination ? null : RUNTIME_CONTROL_COMMIT,
+      source_commit: dependency.path === EXPECTED_VENDOR_SPEC.destination ? null : runtimeControlCommit,
       source_sha256: sha256(dependencyBytes[dependency.path]),
       materialized_sha256: sha256(dependencyBytes[dependency.path]),
     })),
@@ -1170,7 +1171,7 @@ const proof = {
     command: 'node tools/rehearse-ct42-runtime-rollback.js',
     materialize_temporary_site: 'node tools/rehearse-ct42-runtime-rollback.js --site /absolute/new/temp/directory',
     checker: 'node tools/check-ct42-runtime-rollback-proof.js',
-    builder_requires_git_objects: [RUNTIME_CONTROL_COMMIT],
+    builder_requires_git_objects: [runtimeControlCommit],
     late_bound_regeneration: reviewChainHead === null
       ? 'rerun builder with --review-chain-head <final exact review-chain commit>, then refresh checker pins after final CT-40 DENY regeneration'
       : null,
@@ -1206,6 +1207,6 @@ process.stdout.write([
   `CT-42 neutral rollback proof built: ${proof.calculation_hash}`,
   `  patch artifact ${proof.rollback.patch.sha256}`,
   `  decoded patch ${proof.rollback.patch.decoded_sha256}`,
-  `  current runtime ${RUNTIME_CONTROL_COMMIT}`,
+  `  current runtime ${runtimeControlCommit}`,
   `  review chain ${reviewChainHead || 'late-bound (no authority)'}`,
 ].join('\n') + '\n');

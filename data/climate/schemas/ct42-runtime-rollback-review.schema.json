@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/ct42-runtime-rollback-review-1.0.0.json",
+  "title": "CT-42 independently reviewed neutral runtime rollback rehearsal",
+  "description": "A review record for an executable CT-42 rollback rehearsal. It is evidence of a human review only and never authorizes a climate release or deployment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "review_id", "status", "release_authority", "deploy_authority", "subject", "review", "environment", "observations", "outcome", "calculation_hash"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "review_id": { "type": "string", "minLength": 12 },
+    "status": { "const": "reviewed" },
+    "release_authority": { "const": false },
+    "deploy_authority": { "const": false },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ct40_review_commit_sha", "rollback_proof_commit_sha", "proof_calculation_hash", "patch_decoded_sha256", "pins"],
+      "properties": {
+        "ct40_review_commit_sha": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+        "rollback_proof_commit_sha": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+        "proof_calculation_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "patch_decoded_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "pins": { "type": "array", "minItems": 15, "maxItems": 15, "uniqueItems": true, "items": { "$ref": "#/$defs/pin" } }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["builder_id", "reviewer_id", "independent", "reviewed_at"],
+      "properties": {
+        "builder_id": { "type": "string", "minLength": 5 },
+        "reviewer_id": { "type": "string", "minLength": 5 },
+        "independent": { "const": true },
+        "reviewed_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "browser", "operating_system", "service_worker_state", "network_scope", "executed_at"],
+      "properties": {
+        "origin": { "type": "string", "minLength": 12 },
+        "browser": { "type": "string", "minLength": 5 },
+        "operating_system": { "type": "string", "minLength": 5 },
+        "service_worker_state": { "enum": ["fresh_profile", "fresh_origin", "disabled"] },
+        "network_scope": { "const": "same_origin_only" },
+        "executed_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "observations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recorded_at", "raw_evidence", "materialization", "candidate", "neutral_runtime", "browser"],
+      "properties": {
+        "recorded_at": { "type": "string", "format": "date-time" },
+        "raw_evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "sha256"],
+          "properties": {
+            "path": { "const": "data/climate/reviews/ct42-runtime-rollback-review-evidence.json" },
+            "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          }
+        },
+        "materialization": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["complete", "regular_files_only", "controls", "runtime_dependencies"],
+          "properties": {
+            "complete": { "type": "boolean" },
+            "regular_files_only": { "type": "boolean" },
+            "controls": { "type": "integer", "minimum": 0 },
+            "runtime_dependencies": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "candidate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["review_status", "decision", "release_eligible", "production_runtime_release", "countries", "reviewed_factual_countries", "source_gap_countries", "facts"],
+          "properties": {
+            "review_status": { "type": "string", "minLength": 1 },
+            "decision": { "type": "string", "minLength": 1 },
+            "release_eligible": { "type": "boolean" },
+            "production_runtime_release": { "type": "boolean" },
+            "countries": { "type": "integer", "minimum": 0 },
+            "reviewed_factual_countries": { "type": "integer", "minimum": 0 },
+            "source_gap_countries": { "type": "integer", "minimum": 0 },
+            "facts": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "neutral_runtime": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["polygons", "small_state_points", "entities", "climate_values", "evidence_state", "surface", "background", "candidate_requests", "visual_asset_requests", "remote_runtime_requests"],
+          "properties": {
+            "polygons": { "type": "integer", "minimum": 0 },
+            "small_state_points": { "type": "integer", "minimum": 0 },
+            "entities": { "type": "integer", "minimum": 0 },
+            "climate_values": { "type": "integer", "minimum": 0 },
+            "evidence_state": { "type": "string", "minLength": 1 },
+            "surface": { "const": null },
+            "background": { "const": null },
+            "candidate_requests": { "type": "integer", "minimum": 0 },
+            "visual_asset_requests": { "type": "integer", "minimum": 0 },
+            "remote_runtime_requests": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "browser": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["canvas_count", "smoke_passed", "smoke_total", "smoke_failed", "smoke_critical_failed", "stack_lint_issues", "horizontal_overflow_320px", "minimum_control_target_px", "command"],
+          "properties": {
+            "canvas_count": { "const": 1 },
+            "smoke_passed": { "const": 18 },
+            "smoke_total": { "const": 18 },
+            "smoke_failed": { "const": 0 },
+            "smoke_critical_failed": { "const": 0 },
+            "stack_lint_issues": { "const": 0 },
+            "horizontal_overflow_320px": { "const": 0 },
+            "minimum_control_target_px": { "type": "number", "minimum": 44 },
+            "command": { "type": "string", "minLength": 12 }
+          }
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["derived_from_observations", "result", "release_authority", "deploy_authority", "required_next_gate"],
+      "properties": {
+        "derived_from_observations": { "const": true },
+        "result": { "enum": ["pass", "fail"] },
+        "release_authority": { "const": false },
+        "deploy_authority": { "const": false },
+        "required_next_gate": { "type": "string", "minLength": 12 }
+      }
+    },
+    "calculation_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}
