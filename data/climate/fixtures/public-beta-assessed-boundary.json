@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0.0",
+  "fixture_version": "public-beta-assessed-boundary-v1",
+  "fixture_only": true,
+  "publication_authority": false,
+  "description": "Synthetic assessed-rail states for fail-closed boundary testing only; no reviewed release, approval, or publication authority is asserted.",
+  "candidate": {
+    "candidate_readiness": {
+      "exit_code": 1,
+      "status": "blocked",
+      "ready": false,
+      "failure_ids": [
+        "truth-ci-incomplete-only"
+      ]
+    },
+    "release_readiness": {
+      "exit_code": 1,
+      "status": "blocked",
+      "ready": false,
+      "failure_ids": [
+        "canonical-reviewed-release-package",
+        "field-reviews-complete",
+        "independent-release-review",
+        "licence-decisions-complete",
+        "real-ct40-allow",
+        "reviewed-release-artifacts",
+        "rollback-proof",
+        "runtime-approval-signature-bundle-present",
+        "runtime-approval-trust-registry-provisioned",
+        "runtime-asset-exact-independent-approval",
+        "strict-truth-ci",
+        "top20-primary-review-complete"
+      ]
+    },
+    "allow_incomplete_truth": {
+      "exit_code": 1,
+      "status": "fail",
+      "failed_components": [
+        "CT-42-ROLLBACK",
+        "CT-42-UI-R"
+      ],
+      "missing_required_components": [
+        "reviewed-release-diff",
+        "reviewed-runtime-manifest"
+      ],
+      "generated_drift": false,
+      "policy_status": null
+    },
+    "strict_truth": {
+      "exit_code": 1,
+      "status": "fail",
+      "failed_components": [
+        "CT-42-ROLLBACK",
+        "CT-42-UI-R"
+      ],
+      "missing_required_components": [
+        "reviewed-release-diff",
+        "reviewed-runtime-manifest"
+      ],
+      "generated_drift": false,
+      "policy_status": null
+    }
+  },
+  "reviewed_release": {
+    "candidate_readiness": {
+      "exit_code": 1,
+      "status": "blocked",
+      "ready": false,
+      "required_failure_ids": [
+        "release-artifacts-absent",
+        "runtime-assets-candidate-release-blocked",
+        "tiered-ct40-publication-boundary",
+        "truth-ci-incomplete-only"
+      ]
+    },
+    "release_readiness": {
+      "exit_code": 0,
+      "status": "release_ready",
+      "ready": true,
+      "failure_ids": []
+    },
+    "allow_incomplete_truth": {
+      "exit_code": 0,
+      "status": "pass",
+      "failed_components": [],
+      "missing_required_components": [],
+      "generated_drift": false,
+      "policy_status": "pass"
+    },
+    "strict_truth": {
+      "exit_code": 0,
+      "status": "pass",
+      "failed_components": [],
+      "missing_required_components": [],
+      "generated_drift": false,
+      "policy_status": "pass"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta/access-bootstrap-signatures-1.0.0.json",
+  "title": "Climate Public Beta access-bootstrap detached Ed25519 signatures",
+  "description": "Public identifiers and detached signatures over a private access-bootstrap report. Private keys are never part of this bundle.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "signature_bundle_id",
+    "domain",
+    "repository",
+    "beta_release_id",
+    "publication_level",
+    "report_path",
+    "report_sha256",
+    "policy_path",
+    "policy_sha256",
+    "trust_registry_path",
+    "trust_registry_sha256",
+    "approval_path",
+    "approval_sha256",
+    "signed_at",
+    "signatures"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "signature_bundle_id": { "type": "string", "minLength": 12, "maxLength": 256 },
+    "domain": { "const": "ELU-CLIMATE-PUBLIC-BETA-ACCESS-BOOTSTRAP-V1" },
+    "repository": { "const": "earth-love-united/earthloveunited.org" },
+    "beta_release_id": { "$ref": "#/$defs/releaseId" },
+    "publication_level": { "enum": ["invited_beta", "public_beta"] },
+    "report_path": { "type": "string", "minLength": 5 },
+    "report_sha256": { "$ref": "#/$defs/hash" },
+    "policy_path": { "const": "data/climate/public-beta/governance/policy.json" },
+    "policy_sha256": { "$ref": "#/$defs/hash" },
+    "trust_registry_path": { "const": "data/climate/public-beta/governance/approval-trust.json" },
+    "trust_registry_sha256": { "$ref": "#/$defs/hash" },
+    "approval_path": { "type": "string", "minLength": 5 },
+    "approval_sha256": { "$ref": "#/$defs/hash" },
+    "signed_at": { "type": "string", "format": "date-time" },
+    "signatures": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        { "$ref": "#/$defs/operatorSignature" },
+        { "$ref": "#/$defs/reviewerSignature" }
+      ],
+      "items": false
+    }
+  },
+  "$defs": {
+    "releaseId": { "type": "string", "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "signatureBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "identity", "key_id", "signature_base64"],
+      "properties": {
+        "role": { "type": "string" },
+        "identity": { "type": "string", "minLength": 5, "maxLength": 256 },
+        "key_id": { "type": "string", "pattern": "^ed25519:[0-9a-f]{64}$" },
+        "signature_base64": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" }
+      }
+    },
+    "operatorSignature": {
+      "allOf": [
+        { "$ref": "#/$defs/signatureBase" },
+        { "properties": { "role": { "const": "beta_release_operator" } } }
+      ]
+    },
+    "reviewerSignature": {
+      "allOf": [
+        { "$ref": "#/$defs/signatureBase" },
+        { "properties": { "role": { "const": "beta_rollback_reviewer" } } }
+      ]
+    }
+  }
+}

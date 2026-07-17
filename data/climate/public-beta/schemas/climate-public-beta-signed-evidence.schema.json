@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta-signed-evidence.schema.json",
+  "title": "Climate Public Beta signed review or remote evidence",
+  "description": "Review evidence must pin the exact ordered subject artifacts. Remote evidence binds level, origin, commit, scope, expected surface, approval, and prior evidence. This schema does not supply any human decision or authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evidence_id",
+    "evidence_kind",
+    "repository",
+    "beta_release_id",
+    "publication_level",
+    "intended_origin",
+    "intended_aliases",
+    "reviewed_commit_sha",
+    "canonical_scope_sha256",
+    "expected_public_surface_manifest_sha256",
+    "approval_sha256",
+    "prior_evidence_sha256",
+    "observed_at",
+    "observation",
+    "result",
+    "producer_identity",
+    "reviewer_identity",
+    "reviewed_artifacts",
+    "remote_index_sha256",
+    "rollback_subset_sha256",
+    "production_baseline_origin",
+    "production_baseline_inventory_sha256",
+    "assessed_production_authority"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "evidence_id": { "type": "string", "minLength": 5 },
+    "evidence_kind": {
+      "enum": [
+        "data_review",
+        "rights_review",
+        "ui_accessibility_review",
+        "package_review",
+        "rollback_review",
+        "l1_remote_preflight",
+        "l1_invited_evidence_index",
+        "l2_remote_preflight",
+        "public_activation",
+        "live_monitoring"
+      ]
+    },
+    "repository": { "const": "earth-love-united/earthloveunited.org" },
+    "beta_release_id": { "type": "string", "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "publication_level": { "enum": ["package", "invited_beta", "public_beta"] },
+    "intended_origin": { "type": ["string", "null"] },
+    "intended_aliases": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^https://" }
+        }
+      ]
+    },
+    "reviewed_commit_sha": { "type": ["string", "null"], "pattern": "^[0-9a-f]{40}$" },
+    "canonical_scope_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "expected_public_surface_manifest_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "approval_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "prior_evidence_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "observation": {
+      "enum": [
+        "review_complete",
+        "access_controlled_preflight_passed",
+        "invited_review_evidence_complete",
+        "public_activation_preflight_passed",
+        "public_activation_immediate_probes_passed",
+        "monitoring_window_complete"
+      ]
+    },
+    "result": { "const": "pass" },
+    "producer_identity": { "type": "string", "minLength": 5 },
+    "reviewer_identity": { "type": "string", "minLength": 5 },
+    "reviewed_artifacts": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256"],
+            "properties": {
+              "path": { "type": "string", "minLength": 3 },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+            }
+          }
+        }
+      ]
+    },
+    "remote_index_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "rollback_subset_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "production_baseline_origin": { "type": ["string", "null"], "pattern": "^https://" },
+    "production_baseline_inventory_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "assessed_production_authority": { "const": false }
+  }
+}

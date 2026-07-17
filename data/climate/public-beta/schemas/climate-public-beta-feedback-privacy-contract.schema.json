@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta-feedback-privacy-contract.schema.json",
+  "title": "Climate Public Beta feedback and privacy contract",
+  "description": "Human-supplied accountable data-handling, feedback, privacy, security-routing, correction, and withdrawal rules. Schema conformance is not legal advice or publication authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "status",
+    "repository",
+    "product_tier",
+    "accountable_owner",
+    "controller",
+    "processors",
+    "feedback_url",
+    "privacy_notice_url",
+    "feedback_collection",
+    "anonymity",
+    "consent",
+    "retention",
+    "data_subject_requests",
+    "abuse_and_privacy_requests",
+    "security_route_reference",
+    "correction_and_withdrawal",
+    "frozen_at",
+    "decision_reference",
+    "assessed_production_authority"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "contract_id": { "const": "elu-climate-public-beta-feedback-privacy-v1" },
+    "status": { "const": "frozen" },
+    "repository": { "const": "earth-love-united/earthloveunited.org" },
+    "product_tier": { "const": "climate_public_beta" },
+    "accountable_owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "role", "contact_url"],
+      "properties": {
+        "identity": { "$ref": "#/$defs/reference" },
+        "role": { "type": "string", "minLength": 3, "maxLength": 120 },
+        "contact_url": { "$ref": "#/$defs/url" }
+      }
+    },
+    "controller": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["legal_name", "jurisdiction", "contact_url"],
+      "properties": {
+        "legal_name": { "type": "string", "minLength": 3, "maxLength": 256 },
+        "jurisdiction": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "contact_url": { "$ref": "#/$defs/url" }
+      }
+    },
+    "processors": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/processor" }
+    },
+    "feedback_url": { "$ref": "#/$defs/url" },
+    "privacy_notice_url": { "$ref": "#/$defs/url" },
+    "feedback_collection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "collected_fields",
+        "allowed_purposes",
+        "free_text_enabled",
+        "sensitive_data_prohibited",
+        "identity_collection_required"
+      ],
+      "properties": {
+        "collected_fields": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/collectedField" }
+        },
+        "allowed_purposes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/purpose" }
+        },
+        "free_text_enabled": { "type": "boolean" },
+        "sensitive_data_prohibited": { "const": true },
+        "identity_collection_required": { "type": "boolean" }
+      }
+    },
+    "anonymity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anonymous_submission_available",
+        "identity_fields_optional",
+        "anonymous_submissions_unlinked",
+        "public_identity_disclosure_prohibited"
+      ],
+      "properties": {
+        "anonymous_submission_available": { "type": "boolean" },
+        "identity_fields_optional": { "type": "boolean" },
+        "anonymous_submissions_unlinked": { "type": "boolean" },
+        "public_identity_disclosure_prohibited": { "const": true }
+      }
+    },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consent_model",
+        "consent_text_reference",
+        "consent_withdrawal_url",
+        "consent_record_retained"
+      ],
+      "properties": {
+        "consent_model": {
+          "enum": ["explicit_opt_in", "notice_acknowledgement", "no_personal_data"]
+        },
+        "consent_text_reference": { "$ref": "#/$defs/reference" },
+        "consent_withdrawal_url": { "$ref": "#/$defs/url" },
+        "consent_record_retained": { "type": "boolean" }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_retention_seconds",
+        "deletion_completion_target_seconds",
+        "backup_expiry_seconds",
+        "legal_hold_reference"
+      ],
+      "properties": {
+        "primary_retention_seconds": { "type": "integer", "minimum": 1 },
+        "deletion_completion_target_seconds": { "type": "integer", "minimum": 1 },
+        "backup_expiry_seconds": { "type": "integer", "minimum": 1 },
+        "legal_hold_reference": { "$ref": "#/$defs/reference" }
+      }
+    },
+    "data_subject_requests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "access_request_url",
+        "deletion_request_url",
+        "redaction_request_url",
+        "acknowledgement_target_seconds",
+        "response_target_seconds"
+      ],
+      "properties": {
+        "access_request_url": { "$ref": "#/$defs/url" },
+        "deletion_request_url": { "$ref": "#/$defs/url" },
+        "redaction_request_url": { "$ref": "#/$defs/url" },
+        "acknowledgement_target_seconds": { "type": "integer", "minimum": 1 },
+        "response_target_seconds": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "abuse_and_privacy_requests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "abuse_report_url",
+        "privacy_request_url",
+        "triage_target_seconds",
+        "escalation_target_seconds"
+      ],
+      "properties": {
+        "abuse_report_url": { "$ref": "#/$defs/url" },
+        "privacy_request_url": { "$ref": "#/$defs/url" },
+        "triage_target_seconds": { "type": "integer", "minimum": 1 },
+        "escalation_target_seconds": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "security_route_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route_url", "public_safe_description", "sensitive_details_prohibited"],
+      "properties": {
+        "route_url": { "$ref": "#/$defs/url" },
+        "public_safe_description": { "type": "string", "minLength": 20, "maxLength": 1000 },
+        "sensitive_details_prohibited": { "const": true }
+      }
+    },
+    "correction_and_withdrawal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "correction_request_url",
+        "public_correction_log_url",
+        "withdrawal_request_url",
+        "immutable_release_for_corrections_required",
+        "public_correction_log_required",
+        "confirmed_harm_withdrawal_target_seconds",
+        "correction_rule",
+        "withdrawal_rule"
+      ],
+      "properties": {
+        "correction_request_url": { "$ref": "#/$defs/url" },
+        "public_correction_log_url": { "$ref": "#/$defs/url" },
+        "withdrawal_request_url": { "$ref": "#/$defs/url" },
+        "immutable_release_for_corrections_required": { "const": true },
+        "public_correction_log_required": { "const": true },
+        "confirmed_harm_withdrawal_target_seconds": { "type": "integer", "minimum": 1 },
+        "correction_rule": { "type": "string", "minLength": 20, "maxLength": 1500 },
+        "withdrawal_rule": { "type": "string", "minLength": 20, "maxLength": 1500 }
+      }
+    },
+    "frozen_at": { "type": "string", "format": "date-time" },
+    "decision_reference": { "$ref": "#/$defs/reference" },
+    "assessed_production_authority": { "const": false }
+  },
+  "$defs": {
+    "reference": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 512
+    },
+    "url": {
+      "type": "string",
+      "minLength": 9,
+      "maxLength": 2048,
+      "pattern": "^https://"
+    },
+    "processor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "processor_id",
+        "provider_name",
+        "service_purpose",
+        "privacy_url",
+        "data_location",
+        "subprocessor_reference"
+      ],
+      "properties": {
+        "processor_id": { "type": "string", "pattern": "^processor-[a-z0-9][a-z0-9-]*[a-z0-9]$" },
+        "provider_name": { "type": "string", "minLength": 2, "maxLength": 256 },
+        "service_purpose": { "type": "string", "minLength": 20, "maxLength": 1000 },
+        "privacy_url": { "$ref": "#/$defs/url" },
+        "data_location": { "type": "string", "minLength": 2, "maxLength": 256 },
+        "subprocessor_reference": { "$ref": "#/$defs/reference" }
+      }
+    },
+    "collectedField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field_id",
+        "purpose_id",
+        "required",
+        "personal_data",
+        "public_display_allowed"
+      ],
+      "properties": {
+        "field_id": { "type": "string", "pattern": "^field-[a-z0-9][a-z0-9-]*[a-z0-9]$" },
+        "purpose_id": { "type": "string", "pattern": "^purpose-[a-z0-9][a-z0-9-]*[a-z0-9]$" },
+        "required": { "type": "boolean" },
+        "personal_data": { "type": "boolean" },
+        "public_display_allowed": { "type": "boolean" }
+      }
+    },
+    "purpose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["purpose_id", "description"],
+      "properties": {
+        "purpose_id": { "type": "string", "pattern": "^purpose-[a-z0-9][a-z0-9-]*[a-z0-9]$" },
+        "description": { "type": "string", "minLength": 20, "maxLength": 1000 }
+      }
+    }
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta-review-protocol.schema.json",
+  "title": "Climate Public Beta frozen review protocol",
+  "description": "Human-supplied review coverage, comprehension, severity, operational, and withdrawal requirements. Schema conformance grants no human, publication, or assessed-production authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "protocol_id",
+    "status",
+    "repository",
+    "product_tier",
+    "reviewer_role",
+    "protocol_owner_identity",
+    "frozen_at",
+    "decision_reference",
+    "browser_matrix",
+    "required_checks",
+    "comprehension_prompts",
+    "comprehension_pass_criteria",
+    "severity_taxonomy",
+    "no_go_severities",
+    "invited_review",
+    "monitoring",
+    "withdrawal",
+    "assessed_production_authority"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "protocol_id": { "const": "elu-climate-public-beta-review-protocol-v1" },
+    "status": { "const": "frozen" },
+    "repository": { "const": "earth-love-united/earthloveunited.org" },
+    "product_tier": { "const": "climate_public_beta" },
+    "reviewer_role": { "const": "beta_ui_accessibility_reviewer" },
+    "protocol_owner_identity": { "$ref": "#/$defs/reference" },
+    "frozen_at": { "type": "string", "format": "date-time" },
+    "decision_reference": { "$ref": "#/$defs/reference" },
+    "browser_matrix": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/matrixRow" }
+    },
+    "required_checks": {
+      "type": "array",
+      "minItems": 6,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/requiredCheck" }
+    },
+    "comprehension_prompts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/comprehensionPrompt" }
+    },
+    "comprehension_pass_criteria": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_completed_sessions",
+        "minimum_session_pass_rate_basis_points",
+        "maximum_critical_misunderstandings",
+        "all_prompts_required"
+      ],
+      "properties": {
+        "minimum_completed_sessions": { "type": "integer", "minimum": 1 },
+        "minimum_session_pass_rate_basis_points": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "maximum_critical_misunderstandings": { "const": 0 },
+        "all_prompts_required": { "const": true }
+      }
+    },
+    "severity_taxonomy": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/severity" }
+    },
+    "no_go_severities": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["critical", "high", "medium", "low"] }
+    },
+    "invited_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "duration_seconds",
+        "minimum_reviewers",
+        "minimum_sessions",
+        "minimum_accessibility_sessions",
+        "authorized_access_probe_count",
+        "unauthorized_access_probe_count"
+      ],
+      "properties": {
+        "duration_seconds": { "type": "integer", "minimum": 1 },
+        "minimum_reviewers": { "type": "integer", "minimum": 1 },
+        "minimum_sessions": { "type": "integer", "minimum": 1 },
+        "minimum_accessibility_sessions": { "type": "integer", "minimum": 1 },
+        "authorized_access_probe_count": { "type": "integer", "minimum": 1 },
+        "unauthorized_access_probe_count": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "monitoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["window_seconds", "cadence_seconds", "minimum_probe_cycles"],
+      "properties": {
+        "window_seconds": { "type": "integer", "minimum": 1 },
+        "cadence_seconds": { "type": "integer", "minimum": 1 },
+        "minimum_probe_cycles": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "withdrawal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "acknowledgement_target_seconds",
+        "execution_target_seconds",
+        "verification_target_seconds"
+      ],
+      "properties": {
+        "acknowledgement_target_seconds": { "type": "integer", "minimum": 1 },
+        "execution_target_seconds": { "type": "integer", "minimum": 1 },
+        "verification_target_seconds": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "assessed_production_authority": { "const": false }
+  },
+  "$defs": {
+    "reference": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 512
+    },
+    "nameVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 100 }
+      }
+    },
+    "matrixRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "matrix_id",
+        "browser",
+        "operating_system",
+        "device",
+        "viewport",
+        "input_modes",
+        "screen_reader"
+      ],
+      "properties": {
+        "matrix_id": { "type": "string", "pattern": "^matrix-[a-z0-9][a-z0-9-]*[a-z0-9]$" },
+        "browser": { "$ref": "#/$defs/nameVersion" },
+        "operating_system": { "$ref": "#/$defs/nameVersion" },
+        "device": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["class", "model"],
+          "properties": {
+            "class": { "enum": ["desktop", "mobile", "tablet"] },
+            "model": { "type": "string", "minLength": 2, "maxLength": 100 }
+          }
+        },
+        "viewport": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width_css_px", "height_css_px", "device_pixel_ratio"],
+          "properties": {
+            "width_css_px": { "type": "integer", "minimum": 240, "maximum": 10000 },
+            "height_css_px": { "type": "integer", "minimum": 240, "maximum": 10000 },
+            "device_pixel_ratio": { "type": "number", "minimum": 0.5, "maximum": 10 }
+          }
+        },
+        "input_modes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["keyboard", "pointer", "touch", "voice"] }
+        },
+        "screen_reader": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["name", "version"],
+          "properties": {
+            "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+            "version": { "type": "string", "minLength": 1, "maxLength": 100 }
+          }
+        }
+      }
+    },
+    "requiredCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "category",
+        "coverage_rule",
+        "procedure",
+        "pass_criteria",
+        "evidence_required"
+      ],
+      "properties": {
+        "check_id": { "type": "string", "pattern": "^check-[a-z0-9][a-z0-9-]*[a-z0-9]$" },
+        "category": {
+          "enum": ["focus", "forced_colors", "keyboard", "reduced_motion", "screen_reader", "zoom"]
+        },
+        "coverage_rule": { "enum": ["all_matrix_rows", "screen_reader_matrix_rows"] },
+        "procedure": { "type": "string", "minLength": 20, "maxLength": 2000 },
+        "pass_criteria": { "type": "string", "minLength": 20, "maxLength": 2000 },
+        "evidence_required": { "const": true }
+      }
+    },
+    "comprehensionPrompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prompt_id",
+        "prompt_text",
+        "required_concepts",
+        "minimum_concepts_required",
+        "critical_misunderstanding_terms"
+      ],
+      "properties": {
+        "prompt_id": { "type": "string", "pattern": "^prompt-[a-z0-9][a-z0-9-]*[a-z0-9]$" },
+        "prompt_text": { "type": "string", "minLength": 20, "maxLength": 1000 },
+        "required_concepts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^concept-[a-z0-9][a-z0-9-]*[a-z0-9]$" }
+        },
+        "minimum_concepts_required": { "type": "integer", "minimum": 1 },
+        "critical_misunderstanding_terms": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 2, "maxLength": 120 }
+        }
+      }
+    },
+    "severity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["severity", "definition", "release_effect", "triage_target_seconds"],
+      "properties": {
+        "severity": { "enum": ["critical", "high", "medium", "low"] },
+        "definition": { "type": "string", "minLength": 20, "maxLength": 1000 },
+        "release_effect": { "enum": ["no_go", "conditional", "track"] },
+        "triage_target_seconds": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

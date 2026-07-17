@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta/runtime-manifest-1.0.0.json",
+  "title": "Climate Public Beta level-neutral runtime manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "manifest_id",
+    "beta_release_id",
+    "product_tier",
+    "product_label",
+    "content_state",
+    "independent_review_state",
+    "assessed_production_authority",
+    "official_inventory",
+    "climate_performance_assessment",
+    "scope",
+    "feedback",
+    "files"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "manifest_id": { "type": "string", "pattern": "^elu-climate-public-beta-runtime-(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "beta_release_id": { "$ref": "#/$defs/releaseId" },
+    "product_tier": { "const": "climate_public_beta" },
+    "product_label": { "const": "Climate Public Beta — harmonized factual emissions evidence, not a climate-performance assessment." },
+    "content_state": { "enum": ["reviewed_beta_release", "withheld", "withdrawn"] },
+    "independent_review_state": { "enum": ["reviewed", "superseded"] },
+    "assessed_production_authority": { "const": false },
+    "official_inventory": { "const": false },
+    "climate_performance_assessment": { "const": false },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "source_version", "display_years", "counts", "metric_id", "unit", "comparison_year"],
+      "properties": {
+        "source_id": { "const": "primap-hist-2.6.1-final" },
+        "source_version": { "const": "2.6.1 final, 13 March 2025" },
+        "display_years": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["start", "end"],
+          "properties": { "start": { "const": 2014 }, "end": { "const": 2023 } }
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["registry_entities", "factual_series", "source_gaps", "observations"],
+          "properties": {
+            "registry_entities": { "const": 249 },
+            "factual_series": { "const": 206 },
+            "source_gaps": { "const": 43 },
+            "observations": { "const": 2060 }
+          }
+        },
+        "metric_id": { "const": "annual_economy_wide_ghg_excluding_lulucf" },
+        "unit": { "const": "MtCO2e/yr" },
+        "comparison_year": { "const": 2023 }
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approved_feedback_url", "privacy_notice_url"],
+      "properties": {
+        "approved_feedback_url": { "type": ["string", "null"] },
+        "privacy_notice_url": { "type": ["string", "null"] }
+      }
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "country_factual",
+        "country_identity",
+        "country_identity_source",
+        "country_identity_transform",
+        "fact_lineage",
+        "known_limitations",
+        "correction_log"
+      ],
+      "properties": {
+        "country_factual": { "$ref": "#/$defs/file" },
+        "country_identity": { "$ref": "#/$defs/file" },
+        "country_identity_source": { "$ref": "#/$defs/file" },
+        "country_identity_transform": { "$ref": "#/$defs/file" },
+        "fact_lineage": { "$ref": "#/$defs/file" },
+        "known_limitations": { "$ref": "#/$defs/file" },
+        "correction_log": { "$ref": "#/$defs/file" }
+      }
+    }
+  },
+  "$defs": {
+    "releaseId": { "type": "string", "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^data/climate/public-beta/runtime/releases/(?![a-z0-9.-]*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]/[A-Za-z0-9._-]+$" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "bytes": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

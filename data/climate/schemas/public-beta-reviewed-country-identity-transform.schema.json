@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/public-beta-reviewed-country-identity-transform-1.0.0.json",
+  "title": "Reviewed Climate Public Beta identity transformation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "schema_ref", "artifact_kind", "beta_release_id",
+    "content_state", "input_pins", "allocation_scheme", "operations",
+    "output_files", "assessed_production_authority", "calculation_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "schema_ref": { "const": "data/climate/schemas/public-beta-reviewed-country-identity-transform.schema.json" },
+    "artifact_kind": { "const": "public_beta_country_identity_transform" },
+    "beta_release_id": { "$ref": "#/$defs/releaseId" },
+    "content_state": { "const": "reviewed_beta_release" },
+    "input_pins": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/inputPin" }
+    },
+    "allocation_scheme": { "const": "elu-opaque-allocation-v1" },
+    "operations": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "output_files": {
+      "const": ["country-factual.json", "country-identity.json", "fact-lineage.json"]
+    },
+    "assessed_production_authority": { "const": false },
+    "calculation_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "releaseId": { "type": "string", "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "inputPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 3 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

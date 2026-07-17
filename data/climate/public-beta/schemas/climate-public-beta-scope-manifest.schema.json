@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta/scope-manifest-1.0.0.json",
+  "title": "Canonical Climate Public Beta BA scope manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "scope_id",
+    "beta_release_id",
+    "repository",
+    "scope_phase",
+    "release_builder_identity",
+    "assessed_production_authority",
+    "self_path",
+    "excluded_later_authority_paths",
+    "files",
+    "scope_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "scope_id": { "type": "string", "pattern": "^elu-climate-public-beta-ba-scope-(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "beta_release_id": { "$ref": "#/$defs/releaseId" },
+    "repository": { "const": "earth-love-united/earthloveunited.org" },
+    "scope_phase": { "const": "beta_commit_a_package" },
+    "release_builder_identity": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 256,
+      "pattern": "^[^\\u0000-\\u001f]+$"
+    },
+    "assessed_production_authority": { "const": false },
+    "self_path": { "type": "string", "pattern": "^data/climate/public-beta/governance/releases/(?![a-z0-9.-]*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]/scope-manifest\\.json$" },
+    "excluded_later_authority_paths": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^data/climate/public-beta/governance/releases/(?![a-z0-9.-]*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]/approvals/(invited-beta|public-beta)(\\.signatures)?\\.json$" }
+    },
+    "files": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/file" } },
+    "scope_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "releaseId": { "type": "string", "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^[A-Za-z0-9._/-]+$" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "bytes": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

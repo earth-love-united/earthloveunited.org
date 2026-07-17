@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta-trust-registry.schema.json",
+  "title": "Climate Public Beta Ed25519 trust registry",
+  "description": "Allows public Ed25519 SPKI keys only. Private keys and signatures are forbidden in this registry. A registry does not itself approve a release.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "registry_id",
+    "status",
+    "repository",
+    "required_roles",
+    "authorities"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "registry_id": { "const": "elu-climate-public-beta-trust-v1" },
+    "status": { "enum": ["unprovisioned", "incomplete", "provisioned"] },
+    "repository": { "const": "earth-love-united/earthloveunited.org" },
+    "required_roles": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "prefixItems": [
+        { "const": "beta_data_reviewer" },
+        { "const": "beta_rights_reviewer" },
+        { "const": "beta_ui_accessibility_reviewer" },
+        { "const": "beta_package_reviewer" },
+        { "const": "beta_rollback_reviewer" },
+        { "const": "beta_release_operator" },
+        { "const": "beta_release_authorizer" }
+      ],
+      "items": false
+    },
+    "authorities": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/authority" }
+    }
+  },
+  "$defs": {
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "identity",
+        "key_id",
+        "public_key_spki_pem",
+        "revoked_at",
+        "role",
+        "status",
+        "valid_from",
+        "valid_until"
+      ],
+      "properties": {
+        "algorithm": { "const": "Ed25519" },
+        "identity": { "type": "string", "minLength": 5 },
+        "key_id": { "type": "string", "pattern": "^ed25519:[0-9a-f]{64}$" },
+        "public_key_spki_pem": {
+          "type": "string",
+          "pattern": "^-----BEGIN PUBLIC KEY-----\\n"
+        },
+        "revoked_at": { "type": ["string", "null"], "format": "date-time" },
+        "role": {
+          "enum": [
+            "beta_data_reviewer",
+            "beta_rights_reviewer",
+            "beta_ui_accessibility_reviewer",
+            "beta_package_reviewer",
+            "beta_rollback_reviewer",
+            "beta_release_operator",
+            "beta_release_authorizer"
+          ]
+        },
+        "status": { "enum": ["active", "revoked"] },
+        "valid_from": { "type": "string", "format": "date-time" },
+        "valid_until": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

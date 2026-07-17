@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta/access-bootstrap-1.0.0.json",
+  "title": "Climate Public Beta pre-upload project-wide access-lock evidence",
+  "description": "A private, independently signed observation of the access-locked holding deployment. Conformance is not deployment or publication authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "report_id",
+    "repository",
+    "beta_release_id",
+    "publication_level",
+    "policy_path",
+    "policy_sha256",
+    "trust_registry_path",
+    "trust_registry_sha256",
+    "approval_path",
+    "approval_sha256",
+    "approval_reviewed_commit_sha",
+    "canonical_scope_sha256",
+    "expected_public_surface_manifest_sha256",
+    "hosting_project",
+    "intended_origin",
+    "intended_aliases",
+    "holding_deployment",
+    "observation",
+    "prior_bootstrap_report_sha256",
+    "result",
+    "assessed_production_authority",
+    "calculation_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "report_id": { "type": "string", "minLength": 12, "maxLength": 256 },
+    "repository": { "const": "earth-love-united/earthloveunited.org" },
+    "beta_release_id": { "$ref": "#/$defs/releaseId" },
+    "publication_level": { "enum": ["invited_beta", "public_beta"] },
+    "policy_path": { "const": "data/climate/public-beta/governance/policy.json" },
+    "policy_sha256": { "$ref": "#/$defs/hash" },
+    "trust_registry_path": { "const": "data/climate/public-beta/governance/approval-trust.json" },
+    "trust_registry_sha256": { "$ref": "#/$defs/hash" },
+    "approval_path": { "type": "string", "minLength": 5 },
+    "approval_sha256": { "$ref": "#/$defs/hash" },
+    "approval_reviewed_commit_sha": { "$ref": "#/$defs/commit" },
+    "canonical_scope_sha256": { "$ref": "#/$defs/hash" },
+    "expected_public_surface_manifest_sha256": { "$ref": "#/$defs/hash" },
+    "hosting_project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "project_id",
+        "production_branch",
+        "access_scope",
+        "access_policy_reference",
+        "pages_dev_origin",
+        "deployment_alias_hostname_suffix",
+        "holding_content_sha256",
+        "deployment_replacement_lock_required"
+      ],
+      "properties": {
+        "provider": { "const": "cloudflare_pages" },
+        "project_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+        },
+        "production_branch": { "const": "main" },
+        "access_scope": { "const": "project_wide_all_deployments" },
+        "access_policy_reference": { "type": "string", "minLength": 5, "maxLength": 512 },
+        "pages_dev_origin": { "type": "string", "pattern": "^https://[a-z0-9-]+\\.pages\\.dev$" },
+        "deployment_alias_hostname_suffix": { "type": "string", "pattern": "^\\.[a-z0-9-]+\\.pages\\.dev$" },
+        "holding_content_sha256": { "$ref": "#/$defs/hash" },
+        "deployment_replacement_lock_required": { "const": true }
+      }
+    },
+    "intended_origin": { "type": "string", "pattern": "^https://" },
+    "intended_aliases": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^https://" }
+    },
+    "holding_deployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deployment_id",
+        "deployment_reference",
+        "deployment_origin",
+        "content_sha256",
+        "source_file_count",
+        "source_files",
+        "source_inventory_sha256",
+        "contains_beta_release_bytes"
+      ],
+      "properties": {
+        "deployment_id": { "type": "string", "minLength": 5, "maxLength": 256 },
+        "deployment_reference": { "type": "string", "minLength": 5, "maxLength": 512 },
+        "deployment_origin": { "type": "string", "pattern": "^https://[a-z0-9-]+\\.[a-z0-9-]+\\.pages\\.dev$" },
+        "content_sha256": { "$ref": "#/$defs/hash" },
+        "source_file_count": { "type": "integer", "minimum": 1 },
+        "source_files": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/holdingSourceFile" }
+        },
+        "source_inventory_sha256": { "$ref": "#/$defs/hash" },
+        "contains_beta_release_bytes": { "const": false }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observed_at",
+        "operator_identity",
+        "independent_reviewer_identity",
+        "project_configuration_checked",
+        "project_wide_access_lock_active",
+        "deployment_replacement_coverage_checked",
+        "unauthorized_probes",
+        "authorized_holding_probes"
+      ],
+      "properties": {
+        "observed_at": { "type": "string", "format": "date-time" },
+        "operator_identity": { "type": "string", "minLength": 5, "maxLength": 256 },
+        "independent_reviewer_identity": { "type": "string", "minLength": 5, "maxLength": 256 },
+        "project_configuration_checked": { "const": true },
+        "project_wide_access_lock_active": { "const": true },
+        "deployment_replacement_coverage_checked": { "const": true },
+        "unauthorized_probes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/unauthorizedProbe" }
+        },
+        "authorized_holding_probes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/authorizedProbe" }
+        }
+      }
+    },
+    "prior_bootstrap_report_sha256": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/hash" }
+      ]
+    },
+    "result": { "const": "pass" },
+    "assessed_production_authority": { "const": false },
+    "calculation_hash": { "$ref": "#/$defs/hash" }
+  },
+  "$defs": {
+    "releaseId": { "type": "string", "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "unauthorizedProbe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alias", "request_url", "status", "redirect_origin", "observed_at"],
+      "properties": {
+        "alias": { "type": "string", "pattern": "^https://" },
+        "request_url": { "type": "string", "pattern": "^https://" },
+        "status": { "type": "integer", "minimum": 300, "maximum": 599 },
+        "redirect_origin": { "type": ["string", "null"] },
+        "observed_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "authorizedProbe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alias",
+        "request_url",
+        "destination_path",
+        "status",
+        "response_sha256",
+        "matches_beta_release_bytes",
+        "observed_at"
+      ],
+      "properties": {
+        "alias": { "type": "string", "pattern": "^https://" },
+        "request_url": { "type": "string", "pattern": "^https://" },
+        "destination_path": { "type": "string", "minLength": 1 },
+        "status": { "type": "integer", "minimum": 200, "maximum": 599 },
+        "response_sha256": { "$ref": "#/$defs/hash" },
+        "matches_beta_release_bytes": { "const": false },
+        "observed_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "holdingSourceFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "sha256": { "$ref": "#/$defs/hash" },
+        "bytes": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

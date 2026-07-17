@@ -98,6 +98,26 @@
 /docs/LEGACY-COUNTRY-DATA-EXIT.md      @earth-love-united/maintainers
 /tools/climate-truth-ci.js            @earth-love-united/maintainers
 
+# ─── Protected Climate Public Beta paths ───────────────────────
+/climate-public-beta/                 @earth-love-united/maintainers
+/data/climate/public-beta/            @earth-love-united/maintainers
+/data/climate/schemas/public-beta-*.schema.json @earth-love-united/maintainers
+/data/climate/fixtures/public-beta-*.json @earth-love-united/maintainers
+/data/climate/fixtures/climate-public-beta-*.json @earth-love-united/maintainers
+/tools/fixtures/climate-public-beta-*.json @earth-love-united/maintainers
+/docs/CLIMATE-PUBLIC-BETA-RELEASE-PLAN.md @earth-love-united/maintainers
+/docs/CLIMATE-PUBLIC-BETA-ACTION-LEDGER.md @earth-love-united/maintainers
+/tools/build-climate-public-beta.sh   @earth-love-united/maintainers
+/tools/check-climate-public-beta-*.js @earth-love-united/maintainers
+/tools/check-climate-public-beta-browser.mjs @earth-love-united/maintainers
+/tools/check-remote-climate-public-beta.js @earth-love-united/maintainers
+/tools/check-staged-climate-public-beta-integrity.js @earth-love-united/maintainers
+/tools/generate-climate-public-beta-artifacts.js @earth-love-united/maintainers
+/tools/stage-climate-public-beta.js   @earth-love-united/maintainers
+/tools/lib/climate-public-beta-*.js   @earth-love-united/maintainers
+/tools/lib/json-schema-lite.js        @earth-love-united/maintainers
+/tools/lib/primap-hist-ingest.js      @earth-love-united/maintainers
+
 # ─── CI / GitHub config ─────────────────────────────────────────
 /.github/                             @earth-love-united/maintainers
 /.gitignore                           @earth-love-united/maintainers

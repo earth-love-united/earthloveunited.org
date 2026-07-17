@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/public-beta-reviewed-fact-lineage-1.0.0.json",
+  "title": "Reviewed Climate Public Beta factual lineage",
+  "description": "Exact joins from opaque beta fact IDs to the pinned PRIMAP rows and deterministic no-rounding transformation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "schema_ref",
+    "artifact_kind",
+    "beta_release_id",
+    "status",
+    "input_pins",
+    "promotion_evidence",
+    "source",
+    "coverage",
+    "facts",
+    "calculation_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "schema_ref": { "const": "data/climate/schemas/public-beta-reviewed-fact-lineage.schema.json" },
+    "artifact_kind": { "const": "public_beta_fact_lineage" },
+    "beta_release_id": { "$ref": "#/$defs/releaseId" },
+    "status": { "$ref": "#/$defs/finalStatus" },
+    "input_pins": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/inputPin" }
+    },
+    "promotion_evidence": { "$ref": "#/$defs/promotionEvidence" },
+    "source": { "$ref": "#/$defs/source" },
+    "coverage": { "const": { "facts": 2060 } },
+    "facts": {
+      "type": "array",
+      "minItems": 2060,
+      "maxItems": 2060,
+      "items": { "$ref": "#/$defs/fact" }
+    },
+    "calculation_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "releaseId": { "type": "string", "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "finalStatus": {
+      "const": {
+        "content_state": "reviewed_beta_release",
+        "public_beta_source_rights_reviewed": true,
+        "public_beta_redistribution_authorized": true,
+        "independent_review_state": "reviewed",
+        "beta_runtime_release_eligible": true,
+        "assessed_production_authority": false
+      }
+    },
+    "inputPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 3 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "promotionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "promotion_id", "promotion_calculation_hash", "factual_review_id",
+        "factual_review_calculation_hash", "factual_display_review_passed",
+        "production_runtime_release_allowed"
+      ],
+      "properties": {
+        "promotion_id": { "const": "ct-10c:primap-hist-2.6.1:economy-wide:2014-2023" },
+        "promotion_calculation_hash": { "$ref": "#/$defs/sha256" },
+        "factual_review_id": { "const": "ct-10c-r-primap-hist-2.6.1-factual-display-2026-07-15" },
+        "factual_review_calculation_hash": { "$ref": "#/$defs/sha256" },
+        "factual_display_review_passed": { "const": true },
+        "production_runtime_release_allowed": { "const": false }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id", "publisher", "title", "version", "publication_date",
+        "retrieval_date", "source_url", "retrieval_url", "raw_source_sha256",
+        "licence_identifier", "licence_terms_url", "attribution",
+        "transformation_notice", "existing_project_registry_state",
+        "public_beta_rights_review_status", "public_beta_redistribution_authorized"
+      ],
+      "properties": {
+        "source_id": { "const": "primap-hist-2.6.1-final" },
+        "publisher": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "version": { "const": "2.6.1 final, 13 March 2025" },
+        "publication_date": { "const": "2025-03-13" },
+        "retrieval_date": { "const": "2026-07-15" },
+        "source_url": { "type": "string", "minLength": 1 },
+        "retrieval_url": { "type": "string", "minLength": 1 },
+        "raw_source_sha256": { "const": "7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9" },
+        "licence_identifier": { "const": "CC-BY-4.0" },
+        "licence_terms_url": { "type": "string", "minLength": 1 },
+        "attribution": { "type": "string", "minLength": 1 },
+        "transformation_notice": { "type": "string", "minLength": 1 },
+        "existing_project_registry_state": { "const": "approved" },
+        "public_beta_rights_review_status": { "const": "completed" },
+        "public_beta_redistribution_authorized": { "const": true }
+      }
+    },
+    "sourceLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "csv_row", "row_key"],
+      "properties": {
+        "file": { "const": "PRIMAP-hist_v2.6.1_final_13-Mar-2025.csv" },
+        "csv_row": { "type": "integer", "minimum": 2 },
+        "row_key": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "scenario", "provenance", "area", "entity", "unit", "category"],
+          "properties": {
+            "source": { "const": "PRIMAP-hist_v2.6.1_final" },
+            "scenario": { "const": "HISTTP" },
+            "provenance": { "type": "string", "minLength": 1 },
+            "area": { "type": "string", "pattern": "^[A-Z]{3}$" },
+            "entity": { "const": "KYOTOGHG (AR6GWP100)" },
+            "unit": { "const": "CO2 * gigagram / yr" },
+            "category": { "const": "M.0.EL" }
+          }
+        }
+      }
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fact_id", "entity_id", "source_id", "source_entity_id",
+        "source_iso_alpha3", "source_fact_id", "promoted_fact_id", "year",
+        "normalized_value_decimal", "source_locator", "transformation"
+      ],
+      "properties": {
+        "fact_id": { "type": "string", "pattern": "^elu-f-[a-f0-9]{16}$" },
+        "entity_id": { "type": "string", "pattern": "^elu-e-[a-f0-9]{16}$" },
+        "source_id": { "const": "primap-hist-2.6.1-final" },
+        "source_entity_id": { "type": "string", "pattern": "^iso3166-1:[A-Z]{3}$" },
+        "source_iso_alpha3": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "source_fact_id": { "type": "string", "pattern": "^fact:primap-hist-2\\.6\\.1:source:" },
+        "promoted_fact_id": { "type": "string", "pattern": "^fact:primap-hist-2\\.6\\.1:normalized:" },
+        "year": { "type": "integer", "minimum": 2014, "maximum": 2023 },
+        "normalized_value_decimal": { "type": "string", "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$" },
+        "source_locator": { "$ref": "#/$defs/sourceLocator" },
+        "transformation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["input_unit", "output_unit", "operation", "rounding"],
+          "properties": {
+            "input_unit": { "const": "CO2 * gigagram / yr" },
+            "output_unit": { "const": "MtCO2e/yr" },
+            "operation": { "const": "Convert gigagrams to megatonnes by exact decimal division by 1000 using the pinned raw source text." },
+            "rounding": { "const": "none; move the source decimal point three places left using source text and retain source digits, including trailing fractional zeros" }
+          }
+        }
+      }
+    }
+  }
+}

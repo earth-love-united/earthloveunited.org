@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#071712">
+  <meta name="description" content="Climate Public Beta: source-pinned harmonized factual emissions evidence for inspection and correction. Not a climate-performance assessment.">
+  <title>Climate Public Beta | Earth Love United</title>
+  <link rel="stylesheet" href="css/beta.css">
+  <script defer src="js/beta.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to climate evidence</a>
+
+  <header class="beta-masthead" aria-label="Climate Public Beta">
+    <div class="beta-masthead__inner">
+      <p class="beta-brand">Earth Love United</p>
+      <p class="beta-product-label">
+        <span class="beta-badge" aria-hidden="true">BETA</span>
+        <span>Climate Public Beta</span>
+      </p>
+      <p class="beta-masthead__truth">Factual emissions evidence · Not a performance assessment</p>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero__copy">
+        <p class="eyebrow">Open evidence, narrow claims</p>
+        <h1 id="page-title">Climate Public Beta</h1>
+        <p class="hero__promise">Harmonized factual emissions evidence, not a climate-performance assessment.</p>
+        <p class="hero__context">This data-first beta makes source-pinned estimates and explicit source gaps available for inspection and correction. It does not rank climate action, judge ambition, or publish official national inventories.</p>
+      </div>
+
+      <dl class="scope-summary" aria-label="Verified beta scope">
+        <div>
+          <dt>Registry entities</dt>
+          <dd id="entity-count" aria-label="Loading entity count">—</dd>
+        </div>
+        <div>
+          <dt>Factual series</dt>
+          <dd id="factual-count" aria-label="Loading factual series count">—</dd>
+        </div>
+        <div>
+          <dt>Visible gaps</dt>
+          <dd id="gap-count" aria-label="Loading gap count">—</dd>
+        </div>
+        <div>
+          <dt>Observations</dt>
+          <dd id="observation-count" aria-label="Loading observation count">—</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="truth-contract" aria-labelledby="truth-contract-title">
+      <div class="section-heading">
+        <p class="eyebrow">How to read this beta</p>
+        <h2 id="truth-contract-title">What the evidence does—and does not—say</h2>
+      </div>
+      <div class="truth-grid">
+        <article class="truth-card">
+          <span class="truth-card__marker" aria-hidden="true">01</span>
+          <h3>One frozen factual source</h3>
+          <p>PRIMAP-hist v2.6.1 final is frozen through 2023. This beta displays 2014–2023 harmonized estimates.</p>
+        </article>
+        <article class="truth-card">
+          <span class="truth-card__marker" aria-hidden="true">02</span>
+          <h3>Not an official inventory</h3>
+          <p>Values are harmonized estimates, not official Party inventory values. They exclude LULUCF and do not include uncertainty bounds.</p>
+        </article>
+        <article class="truth-card">
+          <span class="truth-card__marker" aria-hidden="true">03</span>
+          <h3>Magnitude is not performance</h3>
+          <p>Any 2023 order compares emissions magnitude among entities using the same metric. It is not a performance, ambition, fairness, or delivery score.</p>
+        </article>
+        <article class="truth-card">
+          <span class="truth-card__marker" aria-hidden="true">04</span>
+          <h3>Gaps remain visible</h3>
+          <p>No value means no value is available in this release. Gaps are unranked, and missing evidence does not indicate better climate performance.</p>
+        </article>
+      </div>
+      <p class="truth-callout"><strong>Climate performance: Not assessed.</strong> Commitments and targets are not included in this beta.</p>
+    </section>
+
+    <section id="release-loading" class="release-state" role="status" aria-live="polite" aria-atomic="true">
+      <span class="release-state__mark" aria-hidden="true">···</span>
+      <div>
+        <h2>Verifying this beta release</h2>
+        <p>Checking the exact manifest, artifact hashes, factual scope, and identity/lineage joins before displaying any values.</p>
+      </div>
+    </section>
+
+    <section id="release-error" class="release-state release-state--error" role="alert" hidden>
+      <span class="release-state__mark" aria-hidden="true">!</span>
+      <div>
+        <h2>Climate evidence is unavailable</h2>
+        <p id="release-error-message">The exact beta release could not be verified. No climate values are displayed.</p>
+        <p class="release-state__safety">This fail-closed state prevents incomplete, unreviewed, withheld, or altered artifacts from appearing as released evidence.</p>
+      </div>
+    </section>
+
+    <section id="evidence-browser" class="evidence-browser" aria-labelledby="browser-title" aria-busy="true" hidden>
+      <div class="section-heading section-heading--browser">
+        <div>
+          <p class="eyebrow">Verified factual browser</p>
+          <h2 id="browser-title">Explore entities and source gaps</h2>
+        </div>
+        <p id="release-meta" class="release-meta"></p>
+      </div>
+
+      <form id="evidence-filters" class="filters" role="search" novalidate>
+        <div class="field field--search">
+          <label for="entity-search">Search by entity name or code</label>
+          <input id="entity-search" name="query" type="search" autocomplete="off" spellcheck="false" placeholder="For example, Türkiye or TUR">
+        </div>
+        <div class="field">
+          <label for="evidence-status">Evidence status</label>
+          <select id="evidence-status" name="status">
+            <option value="all">All entities</option>
+            <option value="factual">Factual series</option>
+            <option value="gap">Source gaps</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="evidence-order">Display order</label>
+          <select id="evidence-order" name="order">
+            <option value="name">Entity name (A–Z)</option>
+            <option value="magnitude">2023 emissions magnitude</option>
+          </select>
+        </div>
+        <button class="button button--filter" type="submit">Apply filters</button>
+      </form>
+
+      <div class="results-bar">
+        <p id="results-summary" role="status" aria-live="polite" aria-atomic="true">Preparing evidence…</p>
+        <p class="results-bar__note"><span aria-hidden="true">◇</span> Gaps remain visible and unranked</p>
+      </div>
+
+      <div class="table-wrap" tabindex="0" role="region" aria-labelledby="browser-title" aria-describedby="table-guidance">
+        <p id="table-guidance" class="sr-only">Use the table to browse entities. Select View evidence to open complete source, method, observations, limitations, and fact identifiers for an entity.</p>
+        <table>
+          <caption class="sr-only">Verified harmonized emissions series and explicit source gaps</caption>
+          <thead>
+            <tr>
+              <th scope="col">Entity</th>
+              <th scope="col">Evidence status</th>
+              <th scope="col">2014 estimate</th>
+              <th scope="col">2023 estimate</th>
+              <th scope="col">2023 magnitude order</th>
+              <th scope="col"><span class="sr-only">Evidence details</span></th>
+            </tr>
+          </thead>
+          <tbody id="evidence-rows"></tbody>
+        </table>
+      </div>
+
+      <p id="no-results" class="empty-state" hidden>No entities match these filters. Try a different name, code, or evidence status.</p>
+    </section>
+
+    <section id="release-history" class="release-history" aria-labelledby="release-history-title" hidden>
+      <div class="section-heading section-heading--history">
+        <div>
+          <p class="eyebrow">Verified release record</p>
+          <h2 id="release-history-title">Release and correction history</h2>
+        </div>
+        <p id="release-history-meta" class="release-meta"></p>
+      </div>
+      <p id="correction-current-statement" class="correction-current-statement"></p>
+      <p id="correction-history-empty" class="correction-history-empty" hidden>No corrections are recorded for this immutable release.</p>
+      <ol id="correction-history-list" class="correction-history-list" aria-label="Privacy-safe corrections in this release"></ol>
+      <p class="release-history__boundary">This public history contains no reporter identity, contact details, or private submission evidence. Every listed correction is exact-byte bound to this reviewed release.</p>
+    </section>
+
+    <section id="methodology" class="methodology" aria-labelledby="methodology-title">
+      <div class="section-heading">
+        <p class="eyebrow">Scope and identity</p>
+        <h2 id="methodology-title">Read the boundary before the numbers</h2>
+      </div>
+      <div class="methodology__grid">
+        <div>
+          <h3>Identity disclosure</h3>
+          <p>The 249 names and codes come from a Debian-maintained ISO-3166-1-compatible asset. They are not an official ISO or UN M49 publication. Inclusion does not establish sovereignty, UN or UNFCCC status, or eligibility for climate assessment.</p>
+        </div>
+        <div>
+          <h3>Accounting boundary</h3>
+          <p>PRIMAP-hist v2.6.1 harmonizes historical emissions. The exact gases, sectors, scenario, unit, GWP convention, transformations, and source hashes appear in each factual series’ evidence details.</p>
+        </div>
+        <div>
+          <h3>Corrections</h3>
+          <p>Feedback never edits a live fact directly. Accepted corrections require a new immutable beta release, independent review, and a visible correction-log entry.</p>
+          <a id="methodology-feedback" class="text-link text-link--disabled" aria-disabled="true" aria-describedby="methodology-feedback-note" tabindex="-1">Report a data or attribution issue</a>
+          <span id="methodology-feedback-note" class="link-note">Feedback route pending human approval.</span>
+          <a id="methodology-feedback-privacy" class="text-link text-link--disabled" aria-disabled="true" tabindex="-1">Feedback privacy notice</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="evidence-dialog" class="evidence-dialog" aria-labelledby="detail-title" aria-describedby="detail-summary">
+    <div class="dialog-shell">
+      <header class="dialog-header">
+        <div>
+          <p class="eyebrow">Climate Public Beta · Evidence details</p>
+          <h2 id="detail-title">Entity evidence</h2>
+          <p id="detail-summary" class="dialog-summary"></p>
+        </div>
+        <button id="detail-close" class="icon-button" type="button" aria-label="Close evidence details">Close <span aria-hidden="true">×</span></button>
+      </header>
+
+      <div id="detail-truth" class="detail-truth" role="note"></div>
+
+      <section id="detail-observations-section" aria-labelledby="observations-title">
+        <div class="detail-section-heading">
+          <h3 id="observations-title">Annual observations</h3>
+          <p id="observations-unit"></p>
+        </div>
+        <div class="detail-table-wrap">
+          <table>
+            <caption class="sr-only">Annual harmonized emissions observations from 2014 through 2023</caption>
+            <thead>
+              <tr><th scope="col">Year</th><th scope="col">Estimate</th><th scope="col">Fact ID</th></tr>
+            </thead>
+            <tbody id="detail-observations"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="detail-gap-section" class="gap-panel" aria-labelledby="gap-title" hidden>
+        <h3 id="gap-title">Explicit source gap</h3>
+        <p id="detail-gap-reason"></p>
+        <p><strong>No value available in this release; visible and unranked.</strong> Missing evidence does not indicate better climate performance.</p>
+      </section>
+
+      <details class="evidence-disclosure" open>
+        <summary>Evidence, source, and transformation lineage</summary>
+        <dl id="detail-lineage" class="evidence-list"></dl>
+      </details>
+
+      <section aria-labelledby="limitations-title">
+        <h3 id="limitations-title">Limitations and known gaps</h3>
+        <ul id="detail-limitations" class="limitations-list"></ul>
+      </section>
+
+      <footer class="dialog-footer">
+        <div>
+          <p><strong>Climate performance: Not assessed.</strong></p>
+          <p>Commitments and targets are not included in this beta.</p>
+        </div>
+        <div>
+          <a id="detail-feedback" class="button button--secondary button--disabled" aria-disabled="true" aria-describedby="detail-feedback-note" tabindex="-1">Report a data or attribution issue</a>
+          <p id="detail-feedback-note" class="link-note">Feedback route pending human approval.</p>
+          <a id="detail-feedback-privacy" class="text-link text-link--disabled" aria-disabled="true" tabindex="-1">Feedback privacy notice</a>
+        </div>
+      </footer>
+    </div>
+  </dialog>
+
+  <footer class="site-footer">
+    <div>
+      <p class="beta-product-label">
+        <span class="beta-badge" aria-hidden="true">BETA</span>
+        <span>Climate Public Beta</span>
+      </p>
+      <p>Harmonized factual emissions evidence · Not an official inventory · Not a climate-performance assessment</p>
+    </div>
+    <div class="site-footer__links">
+      <a href="#methodology">Methodology and identity disclosure</a>
+      <a href="THIRD_PARTY_NOTICES.txt">Third-party notices</a>
+      <a id="footer-feedback" class="text-link--disabled" aria-disabled="true" tabindex="-1">Report a data or attribution issue</a>
+    </div>
+    <p class="site-footer__release">Data release: <span id="footer-release-id">Not loaded</span></p>
+  </footer>
+
+  <noscript>
+    <div class="noscript-notice" role="alert">
+      <strong>Climate evidence is unavailable.</strong> JavaScript is required to verify exact artifact hashes before this beta can display any values.
+    </div>
+  </noscript>
+</body>
+</html>

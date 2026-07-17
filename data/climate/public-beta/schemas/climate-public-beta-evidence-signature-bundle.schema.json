@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta-evidence-signature-bundle.schema.json",
+  "title": "Climate Public Beta detached evidence signatures",
+  "description": "Public identifiers, a signing timestamp, and detached Ed25519 signatures over an exact review or remote-evidence record. Private key material is forbidden.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "signature_bundle_id",
+    "domain",
+    "repository",
+    "beta_release_id",
+    "evidence_id",
+    "evidence_kind",
+    "evidence_sha256",
+    "signed_at",
+    "signatures"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "signature_bundle_id": { "type": "string", "minLength": 12, "maxLength": 256 },
+    "domain": { "const": "ELU-CLIMATE-PUBLIC-BETA-EVIDENCE-V1" },
+    "repository": { "const": "earth-love-united/earthloveunited.org" },
+    "beta_release_id": {
+      "type": "string",
+      "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$"
+    },
+    "evidence_id": { "type": "string", "minLength": 5, "maxLength": 256 },
+    "evidence_kind": {
+      "enum": [
+        "data_review",
+        "rights_review",
+        "ui_accessibility_review",
+        "package_review",
+        "rollback_review",
+        "l1_remote_preflight",
+        "l1_invited_evidence_index",
+        "l2_remote_preflight",
+        "public_activation",
+        "live_monitoring"
+      ]
+    },
+    "evidence_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "signed_at": { "type": "string", "format": "date-time" },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "identity", "key_id", "signature_base64"],
+        "properties": {
+          "role": {
+            "enum": [
+              "beta_data_reviewer",
+              "beta_rights_reviewer",
+              "beta_ui_accessibility_reviewer",
+              "beta_package_reviewer",
+              "beta_rollback_reviewer",
+              "beta_release_operator"
+            ]
+          },
+          "identity": { "type": "string", "minLength": 5, "maxLength": 256 },
+          "key_id": { "type": "string", "pattern": "^ed25519:[0-9a-f]{64}$" },
+          "signature_base64": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" }
+        }
+      }
+    }
+  }
+}

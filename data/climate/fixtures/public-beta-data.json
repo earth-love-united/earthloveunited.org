@@ -1,0 +1,174 @@
+{
+  "schema_version": "1.0.0",
+  "fixture_only": true,
+  "publication_authority": false,
+  "description": "Deterministic preparation boundary and adversarial mutations only. This fixture is not a Climate Public Beta runtime or review artifact.",
+  "expected": {
+    "inputs": {
+      "registry_sha256": "51fb321661684a88e80254cd5721ee70d0f52d95587222727fb9e9722e86b075",
+      "promotion_sha256": "129cc563cbad1fa5c71d6953430a8eba510f4c26106d4f6e76cb7cbd11a7e76d",
+      "review_sha256": "c2f233511db35ff98738a1d7df5b8a3b083009e03a128d9e406f6bd98678cfda",
+      "source_registry_sha256": "ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d",
+      "allocations_sha256": "9c28c27e8b24a7fdde495e0f3e67540ee5ed1df68a823670cc740f4328f573ec"
+    },
+    "coverage": {
+      "entities": 249,
+      "factual_series": 206,
+      "source_gaps": 43,
+      "observations": 2060,
+      "identities": 249,
+      "lineage_facts": 2060
+    },
+    "outputs": {
+      "factual": {
+        "calculation_hash": "3e526784e6c1c3bb2cd395d75bf29bc0f3abf2605593a136cc6e2b785a177a8f",
+        "serialized_sha256": "afa5cfe5685e6c3e793c04eba3ccb00dcc4ee3c2416d874598e33156481b7b0a"
+      },
+      "identity": {
+        "calculation_hash": "8f98c778f28c1afcbd4a2eb2f81af6d13a833720c6c97b356671a8673ed10ec4",
+        "serialized_sha256": "1aad9e483d0b06b3370c34edda61a59d32f1c1c3f7460e7126f6386644d3b5da"
+      },
+      "lineage": {
+        "calculation_hash": "e23ffc28e34a9762dc2b8d78807c31993d4a63dd40c2329fe18348df6a8f1021",
+        "serialized_sha256": "c133241750df759956f6cbc3bb904830a633a5d883203551a587c032776726b3"
+      }
+    }
+  },
+  "mutations": [
+    {
+      "id": "factual-name-leak",
+      "operation": "add_factual_identity_name",
+      "expected_error": "identity field leaked"
+    },
+    {
+      "id": "factual-current-entity-id-leak",
+      "operation": "replace_opaque_entity_with_source_id",
+      "expected_error": "identity value leaked"
+    },
+    {
+      "id": "factual-identity-hash-leak",
+      "operation": "replace_opaque_entity_with_identity_hash",
+      "expected_error": "opaque entity allocation drift"
+    },
+    {
+      "id": "factual-name-hash-leak",
+      "operation": "replace_opaque_entity_with_name_hash",
+      "expected_error": "opaque entity allocation drift"
+    },
+    {
+      "id": "factual-alpha-code-hash-leak",
+      "operation": "replace_opaque_entity_with_alpha_hash",
+      "expected_error": "opaque entity allocation drift"
+    },
+    {
+      "id": "factual-name-encoding-leak",
+      "operation": "replace_opaque_entity_with_name_encoding",
+      "expected_error": "opaque entity allocation drift"
+    },
+    {
+      "id": "factual-alpha-code-encoding-leak",
+      "operation": "replace_opaque_entity_with_alpha_encoding",
+      "expected_error": "opaque entity allocation drift"
+    },
+    {
+      "id": "factual-current-fact-id-leak",
+      "operation": "replace_opaque_fact_with_source_fact_id",
+      "expected_error": "identity value leaked"
+    },
+    {
+      "id": "factual-source-fact-hash-leak",
+      "operation": "replace_opaque_fact_with_source_fact_hash",
+      "expected_error": "opaque fact allocation drift"
+    },
+    {
+      "id": "factual-source-fact-encoding-leak",
+      "operation": "replace_opaque_fact_with_source_fact_encoding",
+      "expected_error": "opaque fact allocation drift"
+    },
+    {
+      "id": "entity-count-drift",
+      "operation": "remove_factual_entity",
+      "expected_error": "factual entity count drift"
+    },
+    {
+      "id": "observation-count-drift",
+      "operation": "remove_factual_observation",
+      "expected_error": "factual observation count drift"
+    },
+    {
+      "id": "factual-value-drift",
+      "operation": "change_factual_value",
+      "expected_error": "factual value drift"
+    },
+    {
+      "id": "identity-join-mismatch",
+      "operation": "swap_identity_entity_ids",
+      "expected_error": "identity mapping drift"
+    },
+    {
+      "id": "lineage-entity-join-mismatch",
+      "operation": "change_lineage_entity_join",
+      "expected_error": "lineage entity join drift"
+    },
+    {
+      "id": "lineage-fact-join-mismatch",
+      "operation": "duplicate_lineage_fact_id",
+      "expected_error": "lineage fact IDs must be unique"
+    },
+    {
+      "id": "lineage-value-mismatch",
+      "operation": "change_lineage_value",
+      "expected_error": "lineage value drift"
+    },
+    {
+      "id": "forbidden-assessed-score",
+      "operation": "add_assessed_score",
+      "expected_error": "forbidden assessed field"
+    },
+    {
+      "id": "rights-authority-fabrication",
+      "operation": "authorize_source_rights",
+      "expected_error": "authorization boundary crossed"
+    },
+    {
+      "id": "factual-calculation-hash-drift",
+      "operation": "change_factual_calculation_hash",
+      "expected_error": "factual calculation hash drift"
+    },
+    {
+      "id": "identity-calculation-hash-drift",
+      "operation": "change_identity_calculation_hash",
+      "expected_error": "identity calculation hash drift"
+    },
+    {
+      "id": "lineage-calculation-hash-drift",
+      "operation": "change_lineage_calculation_hash",
+      "expected_error": "lineage calculation hash drift"
+    },
+    {
+      "id": "pinned-promotion-byte-hash-drift",
+      "operation": "change_promotion_bytes",
+      "expected_error": "promotion byte hash mismatch"
+    },
+    {
+      "id": "pinned-registry-byte-hash-drift",
+      "operation": "change_registry_bytes",
+      "expected_error": "registry byte hash mismatch"
+    },
+    {
+      "id": "pinned-review-byte-hash-drift",
+      "operation": "change_review_bytes",
+      "expected_error": "review byte hash mismatch"
+    },
+    {
+      "id": "pinned-source-registry-byte-hash-drift",
+      "operation": "change_source_registry_bytes",
+      "expected_error": "sourceRegistry byte hash mismatch"
+    },
+    {
+      "id": "pinned-allocation-byte-hash-drift",
+      "operation": "change_allocations_bytes",
+      "expected_error": "allocations byte hash mismatch"
+    }
+  ]
+}

@@ -1,0 +1,1005 @@
+{
+  "schema_version": "1.0.0",
+  "fixture_only": true,
+  "publication_authority": false,
+  "scheme": "elu-opaque-allocation-v1",
+  "statement": "Frozen project assignments generated from an allocation namespace and slot only; no entity name, code, current identifier, or hash of those identity values was used to construct an opaque ID.",
+  "entity_allocations": [
+    {
+      "source_entity_id": "iso3166-1:ABW",
+      "entity_id": "elu-e-acc16a2a43e18cc4"
+    },
+    {
+      "source_entity_id": "iso3166-1:AFG",
+      "entity_id": "elu-e-831d362fb86a384a"
+    },
+    {
+      "source_entity_id": "iso3166-1:AGO",
+      "entity_id": "elu-e-b8620585cca44b28"
+    },
+    {
+      "source_entity_id": "iso3166-1:AIA",
+      "entity_id": "elu-e-f88e9d9dc83714c0"
+    },
+    {
+      "source_entity_id": "iso3166-1:ALA",
+      "entity_id": "elu-e-11c2090a2388ee8c"
+    },
+    {
+      "source_entity_id": "iso3166-1:ALB",
+      "entity_id": "elu-e-bfaa8e153eae9f0e"
+    },
+    {
+      "source_entity_id": "iso3166-1:AND",
+      "entity_id": "elu-e-7400588210654224"
+    },
+    {
+      "source_entity_id": "iso3166-1:ARE",
+      "entity_id": "elu-e-3926adfbbbe57b40"
+    },
+    {
+      "source_entity_id": "iso3166-1:ARG",
+      "entity_id": "elu-e-4a13802c06dadbe0"
+    },
+    {
+      "source_entity_id": "iso3166-1:ARM",
+      "entity_id": "elu-e-9cd6942f32c70ede"
+    },
+    {
+      "source_entity_id": "iso3166-1:ASM",
+      "entity_id": "elu-e-adf249ae12035a13"
+    },
+    {
+      "source_entity_id": "iso3166-1:ATA",
+      "entity_id": "elu-e-fbbd2e003cadc54d"
+    },
+    {
+      "source_entity_id": "iso3166-1:ATF",
+      "entity_id": "elu-e-31bf813ab1f2ce21"
+    },
+    {
+      "source_entity_id": "iso3166-1:ATG",
+      "entity_id": "elu-e-89594ae452220968"
+    },
+    {
+      "source_entity_id": "iso3166-1:AUS",
+      "entity_id": "elu-e-078af45a680c9d74"
+    },
+    {
+      "source_entity_id": "iso3166-1:AUT",
+      "entity_id": "elu-e-e89f6251c0b28c0c"
+    },
+    {
+      "source_entity_id": "iso3166-1:AZE",
+      "entity_id": "elu-e-af2b94034cec8e36"
+    },
+    {
+      "source_entity_id": "iso3166-1:BDI",
+      "entity_id": "elu-e-7fdbfb9af5f50ef4"
+    },
+    {
+      "source_entity_id": "iso3166-1:BEL",
+      "entity_id": "elu-e-1b2a6c70bb6b4d73"
+    },
+    {
+      "source_entity_id": "iso3166-1:BEN",
+      "entity_id": "elu-e-6f530951658425cf"
+    },
+    {
+      "source_entity_id": "iso3166-1:BES",
+      "entity_id": "elu-e-ad88b8f15f29afa7"
+    },
+    {
+      "source_entity_id": "iso3166-1:BFA",
+      "entity_id": "elu-e-8924885dc00c7f1b"
+    },
+    {
+      "source_entity_id": "iso3166-1:BGD",
+      "entity_id": "elu-e-c157e96ede6ed421"
+    },
+    {
+      "source_entity_id": "iso3166-1:BGR",
+      "entity_id": "elu-e-99186eebb8be9c94"
+    },
+    {
+      "source_entity_id": "iso3166-1:BHR",
+      "entity_id": "elu-e-3f3c1907481a0761"
+    },
+    {
+      "source_entity_id": "iso3166-1:BHS",
+      "entity_id": "elu-e-51a166eef00e6b77"
+    },
+    {
+      "source_entity_id": "iso3166-1:BIH",
+      "entity_id": "elu-e-4021ed4e8c9bfff6"
+    },
+    {
+      "source_entity_id": "iso3166-1:BLM",
+      "entity_id": "elu-e-afe3a01b2d3260ba"
+    },
+    {
+      "source_entity_id": "iso3166-1:BLR",
+      "entity_id": "elu-e-d4e8749f3fbe5491"
+    },
+    {
+      "source_entity_id": "iso3166-1:BLZ",
+      "entity_id": "elu-e-2e6db3144230b1a8"
+    },
+    {
+      "source_entity_id": "iso3166-1:BMU",
+      "entity_id": "elu-e-0e6303015e737ed1"
+    },
+    {
+      "source_entity_id": "iso3166-1:BOL",
+      "entity_id": "elu-e-86931feba545b75c"
+    },
+    {
+      "source_entity_id": "iso3166-1:BRA",
+      "entity_id": "elu-e-f7f0f8ef97266c3a"
+    },
+    {
+      "source_entity_id": "iso3166-1:BRB",
+      "entity_id": "elu-e-ce7cafcba47317b2"
+    },
+    {
+      "source_entity_id": "iso3166-1:BRN",
+      "entity_id": "elu-e-89a383f5c1be560e"
+    },
+    {
+      "source_entity_id": "iso3166-1:BTN",
+      "entity_id": "elu-e-7277b32d0653e539"
+    },
+    {
+      "source_entity_id": "iso3166-1:BVT",
+      "entity_id": "elu-e-025cde40ccb30a6d"
+    },
+    {
+      "source_entity_id": "iso3166-1:BWA",
+      "entity_id": "elu-e-6d4c6cba16dd6829"
+    },
+    {
+      "source_entity_id": "iso3166-1:CAF",
+      "entity_id": "elu-e-60c31caebc8224f4"
+    },
+    {
+      "source_entity_id": "iso3166-1:CAN",
+      "entity_id": "elu-e-6d0fd2d3e0c87a20"
+    },
+    {
+      "source_entity_id": "iso3166-1:CCK",
+      "entity_id": "elu-e-22265a844b423bcd"
+    },
+    {
+      "source_entity_id": "iso3166-1:CHE",
+      "entity_id": "elu-e-e31e171b54e2d179"
+    },
+    {
+      "source_entity_id": "iso3166-1:CHL",
+      "entity_id": "elu-e-2a72ee223076b70d"
+    },
+    {
+      "source_entity_id": "iso3166-1:CHN",
+      "entity_id": "elu-e-0228db4fb881e251"
+    },
+    {
+      "source_entity_id": "iso3166-1:CIV",
+      "entity_id": "elu-e-f6ae1c8bf4fec773"
+    },
+    {
+      "source_entity_id": "iso3166-1:CMR",
+      "entity_id": "elu-e-c1177c4b310cc420"
+    },
+    {
+      "source_entity_id": "iso3166-1:COD",
+      "entity_id": "elu-e-abb60f09d9810ebd"
+    },
+    {
+      "source_entity_id": "iso3166-1:COG",
+      "entity_id": "elu-e-d40d0631e5ba068b"
+    },
+    {
+      "source_entity_id": "iso3166-1:COK",
+      "entity_id": "elu-e-7a65cd7af91090ba"
+    },
+    {
+      "source_entity_id": "iso3166-1:COL",
+      "entity_id": "elu-e-13a4d6d0ffb6d707"
+    },
+    {
+      "source_entity_id": "iso3166-1:COM",
+      "entity_id": "elu-e-0308ac71211bda43"
+    },
+    {
+      "source_entity_id": "iso3166-1:CPV",
+      "entity_id": "elu-e-508c8ad0831b92a4"
+    },
+    {
+      "source_entity_id": "iso3166-1:CRI",
+      "entity_id": "elu-e-166cd847be95fc4c"
+    },
+    {
+      "source_entity_id": "iso3166-1:CUB",
+      "entity_id": "elu-e-1701c889bc13a124"
+    },
+    {
+      "source_entity_id": "iso3166-1:CUW",
+      "entity_id": "elu-e-c59e554b6f8d0576"
+    },
+    {
+      "source_entity_id": "iso3166-1:CXR",
+      "entity_id": "elu-e-3550839506a4eb18"
+    },
+    {
+      "source_entity_id": "iso3166-1:CYM",
+      "entity_id": "elu-e-b59d5e9b2a6526f8"
+    },
+    {
+      "source_entity_id": "iso3166-1:CYP",
+      "entity_id": "elu-e-00496719e5c3f0c2"
+    },
+    {
+      "source_entity_id": "iso3166-1:CZE",
+      "entity_id": "elu-e-10e8b42339ecbcb8"
+    },
+    {
+      "source_entity_id": "iso3166-1:DEU",
+      "entity_id": "elu-e-3fd043d0af91123a"
+    },
+    {
+      "source_entity_id": "iso3166-1:DJI",
+      "entity_id": "elu-e-3e0df1b6709e93ca"
+    },
+    {
+      "source_entity_id": "iso3166-1:DMA",
+      "entity_id": "elu-e-a02e0fb5c69d524d"
+    },
+    {
+      "source_entity_id": "iso3166-1:DNK",
+      "entity_id": "elu-e-780be1872ae94f39"
+    },
+    {
+      "source_entity_id": "iso3166-1:DOM",
+      "entity_id": "elu-e-5e3d75b694f73d3a"
+    },
+    {
+      "source_entity_id": "iso3166-1:DZA",
+      "entity_id": "elu-e-aaaee94480f9d808"
+    },
+    {
+      "source_entity_id": "iso3166-1:ECU",
+      "entity_id": "elu-e-0083f361d268abd8"
+    },
+    {
+      "source_entity_id": "iso3166-1:EGY",
+      "entity_id": "elu-e-bcfec75d214bbb1a"
+    },
+    {
+      "source_entity_id": "iso3166-1:ERI",
+      "entity_id": "elu-e-59712f1d17598db5"
+    },
+    {
+      "source_entity_id": "iso3166-1:ESH",
+      "entity_id": "elu-e-5b0c19fe34dcd7dd"
+    },
+    {
+      "source_entity_id": "iso3166-1:ESP",
+      "entity_id": "elu-e-ae6aa4d56311241a"
+    },
+    {
+      "source_entity_id": "iso3166-1:EST",
+      "entity_id": "elu-e-2f3f6cc4aee57903"
+    },
+    {
+      "source_entity_id": "iso3166-1:ETH",
+      "entity_id": "elu-e-82eb44149d8b38ac"
+    },
+    {
+      "source_entity_id": "iso3166-1:FIN",
+      "entity_id": "elu-e-5ed9500b74fda15f"
+    },
+    {
+      "source_entity_id": "iso3166-1:FJI",
+      "entity_id": "elu-e-cfc4be51fcb0afb3"
+    },
+    {
+      "source_entity_id": "iso3166-1:FLK",
+      "entity_id": "elu-e-04626f1bf1eadc5a"
+    },
+    {
+      "source_entity_id": "iso3166-1:FRA",
+      "entity_id": "elu-e-dc91a55aff2741de"
+    },
+    {
+      "source_entity_id": "iso3166-1:FRO",
+      "entity_id": "elu-e-48cf3e894e511dec"
+    },
+    {
+      "source_entity_id": "iso3166-1:FSM",
+      "entity_id": "elu-e-91294eb4e8a26f63"
+    },
+    {
+      "source_entity_id": "iso3166-1:GAB",
+      "entity_id": "elu-e-06eae8fbbd16f772"
+    },
+    {
+      "source_entity_id": "iso3166-1:GBR",
+      "entity_id": "elu-e-f01ffdc3113d2dcc"
+    },
+    {
+      "source_entity_id": "iso3166-1:GEO",
+      "entity_id": "elu-e-768b562b72aeccdb"
+    },
+    {
+      "source_entity_id": "iso3166-1:GGY",
+      "entity_id": "elu-e-a9535b047a77a4f4"
+    },
+    {
+      "source_entity_id": "iso3166-1:GHA",
+      "entity_id": "elu-e-eff8f1eae77d0e1e"
+    },
+    {
+      "source_entity_id": "iso3166-1:GIB",
+      "entity_id": "elu-e-d241285df17bbb5d"
+    },
+    {
+      "source_entity_id": "iso3166-1:GIN",
+      "entity_id": "elu-e-2520f822f6bde7e0"
+    },
+    {
+      "source_entity_id": "iso3166-1:GLP",
+      "entity_id": "elu-e-cf4a075333ae83e6"
+    },
+    {
+      "source_entity_id": "iso3166-1:GMB",
+      "entity_id": "elu-e-1233f39afb109253"
+    },
+    {
+      "source_entity_id": "iso3166-1:GNB",
+      "entity_id": "elu-e-8d466d60b468e381"
+    },
+    {
+      "source_entity_id": "iso3166-1:GNQ",
+      "entity_id": "elu-e-d2d79cdb721af685"
+    },
+    {
+      "source_entity_id": "iso3166-1:GRC",
+      "entity_id": "elu-e-38614a31013558b8"
+    },
+    {
+      "source_entity_id": "iso3166-1:GRD",
+      "entity_id": "elu-e-4486694516d75292"
+    },
+    {
+      "source_entity_id": "iso3166-1:GRL",
+      "entity_id": "elu-e-6b86082592b01bea"
+    },
+    {
+      "source_entity_id": "iso3166-1:GTM",
+      "entity_id": "elu-e-065f969a1d036415"
+    },
+    {
+      "source_entity_id": "iso3166-1:GUF",
+      "entity_id": "elu-e-e886bb949222c649"
+    },
+    {
+      "source_entity_id": "iso3166-1:GUM",
+      "entity_id": "elu-e-6a81a5ca49795de5"
+    },
+    {
+      "source_entity_id": "iso3166-1:GUY",
+      "entity_id": "elu-e-5a9385332bf1a985"
+    },
+    {
+      "source_entity_id": "iso3166-1:HKG",
+      "entity_id": "elu-e-529490d3b6f61bc9"
+    },
+    {
+      "source_entity_id": "iso3166-1:HMD",
+      "entity_id": "elu-e-f4e8e88270ea3a69"
+    },
+    {
+      "source_entity_id": "iso3166-1:HND",
+      "entity_id": "elu-e-6533bb26cb3e0462"
+    },
+    {
+      "source_entity_id": "iso3166-1:HRV",
+      "entity_id": "elu-e-8c2f062702140c5c"
+    },
+    {
+      "source_entity_id": "iso3166-1:HTI",
+      "entity_id": "elu-e-c0470f660d7140dd"
+    },
+    {
+      "source_entity_id": "iso3166-1:HUN",
+      "entity_id": "elu-e-4f3d7b9200dafe37"
+    },
+    {
+      "source_entity_id": "iso3166-1:IDN",
+      "entity_id": "elu-e-80d78743916e1787"
+    },
+    {
+      "source_entity_id": "iso3166-1:IMN",
+      "entity_id": "elu-e-9f66f1921ef432f6"
+    },
+    {
+      "source_entity_id": "iso3166-1:IND",
+      "entity_id": "elu-e-3915218cb898dc45"
+    },
+    {
+      "source_entity_id": "iso3166-1:IOT",
+      "entity_id": "elu-e-aeb0f3481ef14694"
+    },
+    {
+      "source_entity_id": "iso3166-1:IRL",
+      "entity_id": "elu-e-5041c5daa235801c"
+    },
+    {
+      "source_entity_id": "iso3166-1:IRN",
+      "entity_id": "elu-e-b1464d141790afb1"
+    },
+    {
+      "source_entity_id": "iso3166-1:IRQ",
+      "entity_id": "elu-e-c201a93513bc2b0f"
+    },
+    {
+      "source_entity_id": "iso3166-1:ISL",
+      "entity_id": "elu-e-533eb7c9c1b3c53f"
+    },
+    {
+      "source_entity_id": "iso3166-1:ISR",
+      "entity_id": "elu-e-32f4d572f4a877b2"
+    },
+    {
+      "source_entity_id": "iso3166-1:ITA",
+      "entity_id": "elu-e-0efa41fbcda347d8"
+    },
+    {
+      "source_entity_id": "iso3166-1:JAM",
+      "entity_id": "elu-e-937d6a1d3fd21e84"
+    },
+    {
+      "source_entity_id": "iso3166-1:JEY",
+      "entity_id": "elu-e-f9919ae9bf5fcb5d"
+    },
+    {
+      "source_entity_id": "iso3166-1:JOR",
+      "entity_id": "elu-e-e261e377d3e43aa5"
+    },
+    {
+      "source_entity_id": "iso3166-1:JPN",
+      "entity_id": "elu-e-0b08a969e0ff4589"
+    },
+    {
+      "source_entity_id": "iso3166-1:KAZ",
+      "entity_id": "elu-e-6e360f7c75b88f88"
+    },
+    {
+      "source_entity_id": "iso3166-1:KEN",
+      "entity_id": "elu-e-e6a4a328f453b4ae"
+    },
+    {
+      "source_entity_id": "iso3166-1:KGZ",
+      "entity_id": "elu-e-424d6a1700e05523"
+    },
+    {
+      "source_entity_id": "iso3166-1:KHM",
+      "entity_id": "elu-e-d63b75aa4dcc84fa"
+    },
+    {
+      "source_entity_id": "iso3166-1:KIR",
+      "entity_id": "elu-e-712bdf09feb04e74"
+    },
+    {
+      "source_entity_id": "iso3166-1:KNA",
+      "entity_id": "elu-e-482cc6598d7d15ee"
+    },
+    {
+      "source_entity_id": "iso3166-1:KOR",
+      "entity_id": "elu-e-597da7c3385eb38f"
+    },
+    {
+      "source_entity_id": "iso3166-1:KWT",
+      "entity_id": "elu-e-af3abfa85b61d484"
+    },
+    {
+      "source_entity_id": "iso3166-1:LAO",
+      "entity_id": "elu-e-1cb970ccab7d3106"
+    },
+    {
+      "source_entity_id": "iso3166-1:LBN",
+      "entity_id": "elu-e-0a6b4bf32956e4c6"
+    },
+    {
+      "source_entity_id": "iso3166-1:LBR",
+      "entity_id": "elu-e-783fe779a468cbaf"
+    },
+    {
+      "source_entity_id": "iso3166-1:LBY",
+      "entity_id": "elu-e-39a9e1db4c6a6fb1"
+    },
+    {
+      "source_entity_id": "iso3166-1:LCA",
+      "entity_id": "elu-e-eacb5d6b6d406509"
+    },
+    {
+      "source_entity_id": "iso3166-1:LIE",
+      "entity_id": "elu-e-bae1c04df2777ec3"
+    },
+    {
+      "source_entity_id": "iso3166-1:LKA",
+      "entity_id": "elu-e-9c9cf95501fa316f"
+    },
+    {
+      "source_entity_id": "iso3166-1:LSO",
+      "entity_id": "elu-e-39210a0f9d5fe516"
+    },
+    {
+      "source_entity_id": "iso3166-1:LTU",
+      "entity_id": "elu-e-02187722dbbbb81c"
+    },
+    {
+      "source_entity_id": "iso3166-1:LUX",
+      "entity_id": "elu-e-ca8a04144fde6570"
+    },
+    {
+      "source_entity_id": "iso3166-1:LVA",
+      "entity_id": "elu-e-15527de1b73fc318"
+    },
+    {
+      "source_entity_id": "iso3166-1:MAC",
+      "entity_id": "elu-e-fa33c4dc480cbbd0"
+    },
+    {
+      "source_entity_id": "iso3166-1:MAF",
+      "entity_id": "elu-e-7c18623e1a4365f7"
+    },
+    {
+      "source_entity_id": "iso3166-1:MAR",
+      "entity_id": "elu-e-3e060dc594e2f220"
+    },
+    {
+      "source_entity_id": "iso3166-1:MCO",
+      "entity_id": "elu-e-c00f16a631a69388"
+    },
+    {
+      "source_entity_id": "iso3166-1:MDA",
+      "entity_id": "elu-e-d8242b5081c68c5b"
+    },
+    {
+      "source_entity_id": "iso3166-1:MDG",
+      "entity_id": "elu-e-0d3327c21573d9f3"
+    },
+    {
+      "source_entity_id": "iso3166-1:MDV",
+      "entity_id": "elu-e-2ecc98f541222dda"
+    },
+    {
+      "source_entity_id": "iso3166-1:MEX",
+      "entity_id": "elu-e-e7bbddf05d7b7b00"
+    },
+    {
+      "source_entity_id": "iso3166-1:MHL",
+      "entity_id": "elu-e-74c608529d711aa4"
+    },
+    {
+      "source_entity_id": "iso3166-1:MKD",
+      "entity_id": "elu-e-6b7a8d4dd8bd0a06"
+    },
+    {
+      "source_entity_id": "iso3166-1:MLI",
+      "entity_id": "elu-e-00ab60f38e7dab50"
+    },
+    {
+      "source_entity_id": "iso3166-1:MLT",
+      "entity_id": "elu-e-c03cb074ecc922ae"
+    },
+    {
+      "source_entity_id": "iso3166-1:MMR",
+      "entity_id": "elu-e-e11672299cab968d"
+    },
+    {
+      "source_entity_id": "iso3166-1:MNE",
+      "entity_id": "elu-e-b1f2e32ec272e41f"
+    },
+    {
+      "source_entity_id": "iso3166-1:MNG",
+      "entity_id": "elu-e-8e50fca3dc73d026"
+    },
+    {
+      "source_entity_id": "iso3166-1:MNP",
+      "entity_id": "elu-e-e1c526cd1448d615"
+    },
+    {
+      "source_entity_id": "iso3166-1:MOZ",
+      "entity_id": "elu-e-9213ba3522ed6556"
+    },
+    {
+      "source_entity_id": "iso3166-1:MRT",
+      "entity_id": "elu-e-5d84c9534a689aed"
+    },
+    {
+      "source_entity_id": "iso3166-1:MSR",
+      "entity_id": "elu-e-25348ce4d9cc7b07"
+    },
+    {
+      "source_entity_id": "iso3166-1:MTQ",
+      "entity_id": "elu-e-7f1ac8a021defd30"
+    },
+    {
+      "source_entity_id": "iso3166-1:MUS",
+      "entity_id": "elu-e-5e5f9cb228d43ac5"
+    },
+    {
+      "source_entity_id": "iso3166-1:MWI",
+      "entity_id": "elu-e-a1edbb80026bf52d"
+    },
+    {
+      "source_entity_id": "iso3166-1:MYS",
+      "entity_id": "elu-e-0b00321ccf4ee43f"
+    },
+    {
+      "source_entity_id": "iso3166-1:MYT",
+      "entity_id": "elu-e-ef6c0dc3808b684b"
+    },
+    {
+      "source_entity_id": "iso3166-1:NAM",
+      "entity_id": "elu-e-cf45ff7a6b1f111c"
+    },
+    {
+      "source_entity_id": "iso3166-1:NCL",
+      "entity_id": "elu-e-2de8061fe6ba4cbf"
+    },
+    {
+      "source_entity_id": "iso3166-1:NER",
+      "entity_id": "elu-e-25804d7c517dfb5c"
+    },
+    {
+      "source_entity_id": "iso3166-1:NFK",
+      "entity_id": "elu-e-012dd0b83d7df6c0"
+    },
+    {
+      "source_entity_id": "iso3166-1:NGA",
+      "entity_id": "elu-e-959d5a173feb4a7c"
+    },
+    {
+      "source_entity_id": "iso3166-1:NIC",
+      "entity_id": "elu-e-56d058707ef66eca"
+    },
+    {
+      "source_entity_id": "iso3166-1:NIU",
+      "entity_id": "elu-e-22fedb0a7e6202b5"
+    },
+    {
+      "source_entity_id": "iso3166-1:NLD",
+      "entity_id": "elu-e-db279d2c2aeb4fb1"
+    },
+    {
+      "source_entity_id": "iso3166-1:NOR",
+      "entity_id": "elu-e-3e03870a7836d37d"
+    },
+    {
+      "source_entity_id": "iso3166-1:NPL",
+      "entity_id": "elu-e-91649e6aaa78d796"
+    },
+    {
+      "source_entity_id": "iso3166-1:NRU",
+      "entity_id": "elu-e-4b6bd9b5b8d9030c"
+    },
+    {
+      "source_entity_id": "iso3166-1:NZL",
+      "entity_id": "elu-e-5159b86a7ae8a63e"
+    },
+    {
+      "source_entity_id": "iso3166-1:OMN",
+      "entity_id": "elu-e-a94888c0720a37f7"
+    },
+    {
+      "source_entity_id": "iso3166-1:PAK",
+      "entity_id": "elu-e-d334bf5a6bfbb678"
+    },
+    {
+      "source_entity_id": "iso3166-1:PAN",
+      "entity_id": "elu-e-26f8ab26850d0972"
+    },
+    {
+      "source_entity_id": "iso3166-1:PCN",
+      "entity_id": "elu-e-6636e65d07b511aa"
+    },
+    {
+      "source_entity_id": "iso3166-1:PER",
+      "entity_id": "elu-e-cdc0c7e51aa2944a"
+    },
+    {
+      "source_entity_id": "iso3166-1:PHL",
+      "entity_id": "elu-e-1940d3368b114639"
+    },
+    {
+      "source_entity_id": "iso3166-1:PLW",
+      "entity_id": "elu-e-b9666d7615cdbfa2"
+    },
+    {
+      "source_entity_id": "iso3166-1:PNG",
+      "entity_id": "elu-e-02a0586a82b65ea8"
+    },
+    {
+      "source_entity_id": "iso3166-1:POL",
+      "entity_id": "elu-e-da161f7ec8717768"
+    },
+    {
+      "source_entity_id": "iso3166-1:PRI",
+      "entity_id": "elu-e-7b39defe242fad0d"
+    },
+    {
+      "source_entity_id": "iso3166-1:PRK",
+      "entity_id": "elu-e-5feea111da386606"
+    },
+    {
+      "source_entity_id": "iso3166-1:PRT",
+      "entity_id": "elu-e-3a9cecc9854c067d"
+    },
+    {
+      "source_entity_id": "iso3166-1:PRY",
+      "entity_id": "elu-e-f0a75a778a87959b"
+    },
+    {
+      "source_entity_id": "iso3166-1:PSE",
+      "entity_id": "elu-e-94a3a16665711b4b"
+    },
+    {
+      "source_entity_id": "iso3166-1:PYF",
+      "entity_id": "elu-e-2422e160c1c5789f"
+    },
+    {
+      "source_entity_id": "iso3166-1:QAT",
+      "entity_id": "elu-e-c3e7e85ca7332acc"
+    },
+    {
+      "source_entity_id": "iso3166-1:REU",
+      "entity_id": "elu-e-0f5db777b533a689"
+    },
+    {
+      "source_entity_id": "iso3166-1:ROU",
+      "entity_id": "elu-e-79787958f7a5cf79"
+    },
+    {
+      "source_entity_id": "iso3166-1:RUS",
+      "entity_id": "elu-e-1e88346e6d4c2206"
+    },
+    {
+      "source_entity_id": "iso3166-1:RWA",
+      "entity_id": "elu-e-de7ca7acf5cc5e46"
+    },
+    {
+      "source_entity_id": "iso3166-1:SAU",
+      "entity_id": "elu-e-a208e4bd74928c15"
+    },
+    {
+      "source_entity_id": "iso3166-1:SDN",
+      "entity_id": "elu-e-663f2c320c01261c"
+    },
+    {
+      "source_entity_id": "iso3166-1:SEN",
+      "entity_id": "elu-e-259a7a2e63f270dc"
+    },
+    {
+      "source_entity_id": "iso3166-1:SGP",
+      "entity_id": "elu-e-89cefd6075de1486"
+    },
+    {
+      "source_entity_id": "iso3166-1:SGS",
+      "entity_id": "elu-e-fd9f28024e63f5cf"
+    },
+    {
+      "source_entity_id": "iso3166-1:SHN",
+      "entity_id": "elu-e-fcd3f590eca8d053"
+    },
+    {
+      "source_entity_id": "iso3166-1:SJM",
+      "entity_id": "elu-e-d23efd88d6101f0f"
+    },
+    {
+      "source_entity_id": "iso3166-1:SLB",
+      "entity_id": "elu-e-aaf5dad1d27052b5"
+    },
+    {
+      "source_entity_id": "iso3166-1:SLE",
+      "entity_id": "elu-e-75ec5940bfa4d774"
+    },
+    {
+      "source_entity_id": "iso3166-1:SLV",
+      "entity_id": "elu-e-2c7b0c2a0c316a21"
+    },
+    {
+      "source_entity_id": "iso3166-1:SMR",
+      "entity_id": "elu-e-1dda38365084d100"
+    },
+    {
+      "source_entity_id": "iso3166-1:SOM",
+      "entity_id": "elu-e-4c27250c11b02567"
+    },
+    {
+      "source_entity_id": "iso3166-1:SPM",
+      "entity_id": "elu-e-77c19b22fc48cc98"
+    },
+    {
+      "source_entity_id": "iso3166-1:SRB",
+      "entity_id": "elu-e-9836c007e87c57df"
+    },
+    {
+      "source_entity_id": "iso3166-1:SSD",
+      "entity_id": "elu-e-a8d1f8ee4a554729"
+    },
+    {
+      "source_entity_id": "iso3166-1:STP",
+      "entity_id": "elu-e-e7315ff8038b14de"
+    },
+    {
+      "source_entity_id": "iso3166-1:SUR",
+      "entity_id": "elu-e-8ecdea40325ffa58"
+    },
+    {
+      "source_entity_id": "iso3166-1:SVK",
+      "entity_id": "elu-e-8c57b517330a6ae2"
+    },
+    {
+      "source_entity_id": "iso3166-1:SVN",
+      "entity_id": "elu-e-3fe4788e39baf17d"
+    },
+    {
+      "source_entity_id": "iso3166-1:SWE",
+      "entity_id": "elu-e-4052ee510a1f993a"
+    },
+    {
+      "source_entity_id": "iso3166-1:SWZ",
+      "entity_id": "elu-e-5910907b78b66c78"
+    },
+    {
+      "source_entity_id": "iso3166-1:SXM",
+      "entity_id": "elu-e-6fb4299dc5713ddc"
+    },
+    {
+      "source_entity_id": "iso3166-1:SYC",
+      "entity_id": "elu-e-59d4080696da6b9b"
+    },
+    {
+      "source_entity_id": "iso3166-1:SYR",
+      "entity_id": "elu-e-d491e87931c5bbc2"
+    },
+    {
+      "source_entity_id": "iso3166-1:TCA",
+      "entity_id": "elu-e-c85cc296c2dbdf5c"
+    },
+    {
+      "source_entity_id": "iso3166-1:TCD",
+      "entity_id": "elu-e-3dd1dec5b444591c"
+    },
+    {
+      "source_entity_id": "iso3166-1:TGO",
+      "entity_id": "elu-e-ac9f4da275e79714"
+    },
+    {
+      "source_entity_id": "iso3166-1:THA",
+      "entity_id": "elu-e-cf73e0785085732b"
+    },
+    {
+      "source_entity_id": "iso3166-1:TJK",
+      "entity_id": "elu-e-540157d613285573"
+    },
+    {
+      "source_entity_id": "iso3166-1:TKL",
+      "entity_id": "elu-e-ece20139629af621"
+    },
+    {
+      "source_entity_id": "iso3166-1:TKM",
+      "entity_id": "elu-e-0889d1e2bf5f9ae5"
+    },
+    {
+      "source_entity_id": "iso3166-1:TLS",
+      "entity_id": "elu-e-00582f3bc1a8d2cd"
+    },
+    {
+      "source_entity_id": "iso3166-1:TON",
+      "entity_id": "elu-e-826319583324181d"
+    },
+    {
+      "source_entity_id": "iso3166-1:TTO",
+      "entity_id": "elu-e-d45e24a3bccfb772"
+    },
+    {
+      "source_entity_id": "iso3166-1:TUN",
+      "entity_id": "elu-e-60b21ca0ba093bfc"
+    },
+    {
+      "source_entity_id": "iso3166-1:TUR",
+      "entity_id": "elu-e-2c47163e2a5df5ac"
+    },
+    {
+      "source_entity_id": "iso3166-1:TUV",
+      "entity_id": "elu-e-6d5069a536b148f5"
+    },
+    {
+      "source_entity_id": "iso3166-1:TWN",
+      "entity_id": "elu-e-d70c1d26c16c3965"
+    },
+    {
+      "source_entity_id": "iso3166-1:TZA",
+      "entity_id": "elu-e-f73113244d4c9fcf"
+    },
+    {
+      "source_entity_id": "iso3166-1:UGA",
+      "entity_id": "elu-e-ad9bc0edc3d127de"
+    },
+    {
+      "source_entity_id": "iso3166-1:UKR",
+      "entity_id": "elu-e-c110d83bf4f115a4"
+    },
+    {
+      "source_entity_id": "iso3166-1:UMI",
+      "entity_id": "elu-e-7e09052dac89f187"
+    },
+    {
+      "source_entity_id": "iso3166-1:URY",
+      "entity_id": "elu-e-334fcd742f2a3cb8"
+    },
+    {
+      "source_entity_id": "iso3166-1:USA",
+      "entity_id": "elu-e-a4fc69eb5cc03c0f"
+    },
+    {
+      "source_entity_id": "iso3166-1:UZB",
+      "entity_id": "elu-e-f08a2f2885e48f7d"
+    },
+    {
+      "source_entity_id": "iso3166-1:VAT",
+      "entity_id": "elu-e-da200717823436c6"
+    },
+    {
+      "source_entity_id": "iso3166-1:VCT",
+      "entity_id": "elu-e-d20a9837accbc456"
+    },
+    {
+      "source_entity_id": "iso3166-1:VEN",
+      "entity_id": "elu-e-991872d44a03a326"
+    },
+    {
+      "source_entity_id": "iso3166-1:VGB",
+      "entity_id": "elu-e-96accab4ce36a847"
+    },
+    {
+      "source_entity_id": "iso3166-1:VIR",
+      "entity_id": "elu-e-934b58fdfa9942dd"
+    },
+    {
+      "source_entity_id": "iso3166-1:VNM",
+      "entity_id": "elu-e-51256dbb2e1ea193"
+    },
+    {
+      "source_entity_id": "iso3166-1:VUT",
+      "entity_id": "elu-e-2c62b7d1ff630fae"
+    },
+    {
+      "source_entity_id": "iso3166-1:WLF",
+      "entity_id": "elu-e-f440fbfaa3f7a506"
+    },
+    {
+      "source_entity_id": "iso3166-1:WSM",
+      "entity_id": "elu-e-7490cca3530f7d3a"
+    },
+    {
+      "source_entity_id": "iso3166-1:YEM",
+      "entity_id": "elu-e-0803ee0989ef8bdc"
+    },
+    {
+      "source_entity_id": "iso3166-1:ZAF",
+      "entity_id": "elu-e-169d25943fd3d05c"
+    },
+    {
+      "source_entity_id": "iso3166-1:ZMB",
+      "entity_id": "elu-e-a5a4f7066bf54f01"
+    },
+    {
+      "source_entity_id": "iso3166-1:ZWE",
+      "entity_id": "elu-e-6a461f1e2f2788ed"
+    }
+  ]
+}

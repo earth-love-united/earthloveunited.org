@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta/rollback-proof-1.0.0.json",
+  "title": "Executable Climate Public Beta repository rollback and hosted withdrawal proof",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "proof_id",
+    "beta_release_id",
+    "created_at",
+    "proof_state",
+    "assessed_production_authority",
+    "review_authority",
+    "repository_rollback",
+    "hosted_withdrawal",
+    "calculation_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "proof_id": { "type": "string", "pattern": "^elu-climate-public-beta-rollback-(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "beta_release_id": { "$ref": "#/$defs/releaseId" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "proof_state": { "const": "repository_rehearsed_hosted_plan_pending_deployment" },
+    "assessed_production_authority": { "const": false },
+    "review_authority": { "const": false },
+    "repository_rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy",
+        "target_definition",
+        "release_commit_sha",
+        "baseline_commit_sha",
+        "release_files",
+        "baseline_files",
+        "release_tree_hash",
+        "baseline_tree_hash",
+        "universe_definition",
+        "universe_path_count",
+        "universe_sha256",
+        "operations",
+        "procedure",
+        "execution"
+      ],
+      "properties": {
+        "strategy": { "const": "restore_exact_pinned_repository_baseline" },
+        "target_definition": { "const": "exact_beta_release_tree_before_rollback_proof_and_review_v1" },
+        "release_commit_sha": { "$ref": "#/$defs/commit" },
+        "baseline_commit_sha": { "$ref": "#/$defs/commit" },
+        "release_files": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/pin" } },
+        "baseline_files": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/pin" } },
+        "release_tree_hash": { "$ref": "#/$defs/hash" },
+        "baseline_tree_hash": { "$ref": "#/$defs/hash" },
+        "universe_definition": { "const": "union_of_exact_release_and_baseline_git_file_inventories_v1" },
+        "universe_path_count": { "type": "integer", "minimum": 1 },
+        "universe_sha256": { "$ref": "#/$defs/hash" },
+        "operations": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/operation" } },
+        "procedure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["algorithm", "executable", "mode", "requires_isolated_worktree"],
+          "properties": {
+            "algorithm": { "const": "restore-pinned-baseline-v1" },
+            "executable": { "const": "tools/check-climate-public-beta-package.js" },
+            "mode": { "const": "--rehearse-rollback" },
+            "requires_isolated_worktree": { "const": true }
+          }
+        },
+        "execution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "evidence_id", "executed_at", "executor_identity", "execution_subject_identity", "review_relationship", "isolated_worktree", "exit_code", "restored_tree_hash", "evidence_sha256"],
+          "properties": {
+            "status": { "const": "passed" },
+            "evidence_id": { "type": "string", "minLength": 5 },
+            "executed_at": { "type": "string", "format": "date-time" },
+            "executor_identity": { "type": "string", "minLength": 5 },
+            "execution_subject_identity": { "type": "string", "minLength": 5 },
+            "review_relationship": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["required_reviewer_role", "review_state", "reviewer_identity", "executor_must_differ_from_reviewer", "subject_must_differ_from_reviewer"],
+              "properties": {
+                "required_reviewer_role": { "const": "beta_rollback_reviewer" },
+                "review_state": { "const": "pending_external_signed_review" },
+                "reviewer_identity": { "const": null },
+                "executor_must_differ_from_reviewer": { "const": true },
+                "subject_must_differ_from_reviewer": { "const": true }
+              }
+            },
+            "isolated_worktree": { "const": true },
+            "exit_code": { "const": 0 },
+            "restored_tree_hash": { "$ref": "#/$defs/hash" },
+            "evidence_sha256": { "$ref": "#/$defs/hash" }
+          }
+        }
+      }
+    },
+    "hosted_withdrawal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_state",
+        "target_kind",
+        "rollback_target_reference",
+        "hosting_project",
+        "level_contracts",
+        "deployment_id",
+        "credentialed_steps",
+        "access_lock_or_withdraw_action",
+        "cache_purge_action",
+        "expected_unauthorized_statuses",
+        "allowed_redirect_origins",
+        "rollback_response_target_seconds",
+        "post_action_checks",
+        "production_origin_unchanged_required",
+        "production_baseline_origin",
+        "production_baseline_inventory_sha256",
+        "remote_execution_evidence"
+      ],
+      "properties": {
+        "evidence_state": { "const": "plan_only_pending_post_deployment_evidence" },
+        "target_kind": { "enum": ["access_locked_holding_page", "withdrawn_origin", "project_access_lock"] },
+        "rollback_target_reference": { "type": "string", "minLength": 5 },
+        "hosting_project": { "$ref": "#/$defs/hostingProjectBinding" },
+        "level_contracts": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/levelContract" }
+        },
+        "deployment_id": { "const": null },
+        "credentialed_steps": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 5 } },
+        "access_lock_or_withdraw_action": { "type": "string", "minLength": 5 },
+        "cache_purge_action": { "type": "string", "minLength": 5 },
+        "expected_unauthorized_statuses": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": [302, 401, 403, 404] } },
+        "allowed_redirect_origins": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^https://" } },
+        "rollback_response_target_seconds": { "type": "integer", "minimum": 1 },
+        "post_action_checks": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 5 } },
+        "production_origin_unchanged_required": { "const": true },
+        "production_baseline_origin": { "type": "string", "pattern": "^https://" },
+        "production_baseline_inventory_sha256": { "$ref": "#/$defs/hash" },
+        "remote_execution_evidence": { "const": null }
+      }
+    },
+    "calculation_hash": { "$ref": "#/$defs/hash" }
+  },
+  "$defs": {
+    "releaseId": { "type": "string", "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "hostingProjectBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "project_id",
+        "production_branch",
+        "access_scope",
+        "access_policy_reference",
+        "pages_dev_origin",
+        "deployment_alias_hostname_suffix"
+      ],
+      "properties": {
+        "provider": { "const": "cloudflare_pages" },
+        "project_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+        },
+        "production_branch": { "const": "main" },
+        "access_scope": { "const": "project_wide_all_deployments" },
+        "access_policy_reference": { "type": "string", "minLength": 5, "maxLength": 512 },
+        "pages_dev_origin": { "type": "string", "pattern": "^https://[a-z0-9-]+\\.pages\\.dev$" },
+        "deployment_alias_hostname_suffix": { "type": "string", "pattern": "^\\.[a-z0-9-]+\\.pages\\.dev$" }
+      }
+    },
+    "pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^[A-Za-z0-9._/-]+$" },
+        "sha256": { "$ref": "#/$defs/hash" },
+        "git_mode": { "enum": ["100644", "100755"] }
+      }
+    },
+    "levelContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publication_level", "intended_origin", "aliases"],
+      "properties": {
+        "publication_level": { "enum": ["invited_beta", "public_beta"] },
+        "intended_origin": { "type": "string", "pattern": "^https://" },
+        "aliases": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^https://" } }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "operation", "release_sha256", "release_git_mode", "baseline_sha256", "baseline_git_mode"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^[A-Za-z0-9._/-]+$" },
+        "operation": { "enum": ["remove", "restore", "replace"] },
+        "release_sha256": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/hash" }
+          ]
+        },
+        "release_git_mode": { "type": ["string", "null"], "enum": ["100644", "100755", null] },
+        "baseline_sha256": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/hash" }
+          ]
+        },
+        "baseline_git_mode": { "type": ["string", "null"], "enum": ["100644", "100755", null] }
+      }
+    }
+  }
+}

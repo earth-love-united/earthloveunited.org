@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta-approval.schema.json",
+  "title": "Climate Public Beta level-specific publication approval",
+  "description": "Schema for a future genuine L1 or L2 approval. An approval is ineffective without its valid detached Ed25519 signature bundle and exact commit/scope/surface/origin bindings.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "approval_id",
+    "repository",
+    "beta_release_id",
+    "decision",
+    "publication_level",
+    "intended_origin",
+    "intended_aliases",
+    "reviewed_commit_sha",
+    "canonical_scope_sha256",
+    "expected_public_surface_manifest_sha256",
+    "approved_at",
+    "valid_from",
+    "valid_until",
+    "revocation_reference",
+    "revoked_at",
+    "authority_role",
+    "authorizer_identity",
+    "key_id",
+    "decision_reference",
+    "trust_registry_path",
+    "trust_registry_sha256",
+    "prior_l1_approval",
+    "invited_evidence_index",
+    "assessed_production_authority"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "approval_id": { "type": "string", "minLength": 12 },
+    "repository": { "const": "earth-love-united/earthloveunited.org" },
+    "beta_release_id": {
+      "type": "string",
+      "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$"
+    },
+    "decision": { "const": "approve" },
+    "publication_level": { "enum": ["invited_beta", "public_beta"] },
+    "intended_origin": { "type": "string", "pattern": "^https://" },
+    "intended_aliases": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^https://" }
+    },
+    "reviewed_commit_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "canonical_scope_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "expected_public_surface_manifest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "approved_at": { "type": "string", "format": "date-time" },
+    "valid_from": { "type": "string", "format": "date-time" },
+    "valid_until": { "type": "string", "format": "date-time" },
+    "revocation_reference": { "type": "string", "minLength": 5 },
+    "revoked_at": { "type": "null" },
+    "authority_role": { "const": "beta_release_authorizer" },
+    "authorizer_identity": { "type": "string", "minLength": 5 },
+    "key_id": { "type": "string", "pattern": "^ed25519:[0-9a-f]{64}$" },
+    "decision_reference": { "type": "string", "minLength": 5 },
+    "trust_registry_path": {
+      "const": "data/climate/public-beta/governance/approval-trust.json"
+    },
+    "trust_registry_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "prior_l1_approval": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/priorL1Approval" }
+      ]
+    },
+    "invited_evidence_index": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/invitedEvidenceIndex" }
+      ]
+    },
+    "assessed_production_authority": { "const": false }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "publication_level": { "const": "invited_beta" } },
+        "required": ["publication_level"]
+      },
+      "then": {
+        "properties": {
+          "prior_l1_approval": { "type": "null" },
+          "invited_evidence_index": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "publication_level": { "const": "public_beta" } },
+        "required": ["publication_level"]
+      },
+      "then": {
+        "properties": {
+          "prior_l1_approval": { "$ref": "#/$defs/priorL1Approval" },
+          "invited_evidence_index": { "$ref": "#/$defs/invitedEvidenceIndex" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "priorL1Approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approval_path",
+        "approval_sha256",
+        "signature_bundle_path",
+        "signature_bundle_sha256",
+        "approval_commit_sha"
+      ],
+      "properties": {
+        "approval_path": { "type": "string", "minLength": 5 },
+        "approval_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "signature_bundle_path": { "type": "string", "minLength": 5 },
+        "signature_bundle_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "approval_commit_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "invitedEvidenceIndex": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "evidence_sha256",
+        "signature_bundle_sha256"
+      ],
+      "properties": {
+        "evidence_id": { "type": "string", "minLength": 5 },
+        "evidence_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "signature_bundle_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

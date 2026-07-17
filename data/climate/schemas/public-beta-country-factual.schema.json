@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/public-beta-country-factual-1.0.0.json",
+  "title": "Climate Public Beta factual-data preparation",
+  "description": "Preparation-only factual observations keyed exclusively by opaque ELU identifiers. This schema grants no publication authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "schema_ref",
+    "artifact_kind",
+    "preparation_id",
+    "status",
+    "input_pins",
+    "allocation_scheme",
+    "metric",
+    "limitations",
+    "coverage",
+    "entities",
+    "calculation_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "schema_ref": { "const": "data/climate/schemas/public-beta-country-factual.schema.json" },
+    "artifact_kind": { "const": "public_beta_country_factual_preparation" },
+    "preparation_id": { "const": "climate-public-beta-data-preparation-v1" },
+    "status": { "$ref": "#/$defs/status" },
+    "input_pins": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": { "$ref": "#/$defs/inputPin" }
+    },
+    "allocation_scheme": { "const": "elu-opaque-allocation-v1" },
+    "metric": {
+      "const": {
+        "id": "annual_economy_wide_ghg_excluding_lulucf",
+        "label": "Harmonized estimate: economy-wide GHG excluding LULUCF (AR6 GWP100)",
+        "unit": "MtCO2e/yr",
+        "plane": "harmonized",
+        "evidence_class": "harmonized_estimate",
+        "scenario": "HISTTP",
+        "gas_basket": ["CO2", "CH4", "N2O", "HFCs", "PFCs", "SF6", "NF3"],
+        "sectors": ["national_total_excluding_lulucf"],
+        "start_year": 2014,
+        "end_year": 2023,
+        "latest_year": 2023,
+        "gwp_convention": "AR6GWP100",
+        "lulucf": "excluded",
+        "international_bunkers": "not_specified_for_selected_category",
+        "uncertainty_status": "not_provided_in_selected_rows"
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "coverage": {
+      "const": {
+        "entities": 249,
+        "factual_series": 206,
+        "source_gaps": 43,
+        "observations": 2060
+      }
+    },
+    "entities": {
+      "type": "array",
+      "minItems": 249,
+      "maxItems": 249,
+      "items": { "$ref": "#/$defs/entity" }
+    },
+    "calculation_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "opaqueEntityId": { "type": "string", "pattern": "^elu-e-[a-f0-9]{16}$" },
+    "opaqueFactId": { "type": "string", "pattern": "^elu-f-[a-f0-9]{16}$" },
+    "status": {
+      "const": {
+        "preparation_only": true,
+        "public_beta_source_rights_reviewed": false,
+        "public_beta_redistribution_authorized": false,
+        "independent_beta_data_reviewed": false,
+        "public_beta_release_authorized": false,
+        "production_runtime_release": false,
+        "assessed_production_authority": false
+      }
+    },
+    "inputPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fact_id", "year", "value_decimal"],
+      "properties": {
+        "fact_id": { "$ref": "#/$defs/opaqueFactId" },
+        "year": { "type": "integer", "minimum": 2014, "maximum": 2023 },
+        "value_decimal": { "type": "string", "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$" }
+      }
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_id", "evidence_state", "gap_reason", "observations"],
+      "properties": {
+        "entity_id": { "$ref": "#/$defs/opaqueEntityId" },
+        "evidence_state": { "enum": ["factual_series", "source_gap"] },
+        "gap_reason": { "type": ["string", "null"] },
+        "observations": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "$ref": "#/$defs/observation" }
+        }
+      }
+    }
+  }
+}

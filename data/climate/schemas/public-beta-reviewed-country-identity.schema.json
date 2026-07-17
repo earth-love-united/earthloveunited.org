@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/public-beta-reviewed-country-identity-1.0.0.json",
+  "title": "Reviewed Climate Public Beta separately licensed identity data",
+  "description": "The reviewed identity join kept separate from opaque factual observations. Publication still requires independently signed rights and data evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "schema_ref",
+    "artifact_kind",
+    "beta_release_id",
+    "status",
+    "input_pins",
+    "allocation",
+    "identity_source",
+    "coverage",
+    "identities",
+    "calculation_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "schema_ref": { "const": "data/climate/schemas/public-beta-reviewed-country-identity.schema.json" },
+    "artifact_kind": { "const": "public_beta_country_identity" },
+    "beta_release_id": { "$ref": "#/$defs/releaseId" },
+    "status": { "$ref": "#/$defs/finalStatus" },
+    "input_pins": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": { "$ref": "#/$defs/inputPin" }
+    },
+    "allocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scheme", "statement"],
+      "properties": {
+        "scheme": { "const": "elu-opaque-allocation-v1" },
+        "statement": { "type": "string", "minLength": 1 }
+      }
+    },
+    "identity_source": { "$ref": "#/$defs/identitySource" },
+    "coverage": { "const": { "identities": 249 } },
+    "identities": {
+      "type": "array",
+      "minItems": 249,
+      "maxItems": 249,
+      "items": { "$ref": "#/$defs/identity" }
+    },
+    "calculation_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "releaseId": { "type": "string", "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" },
+    "finalStatus": {
+      "const": {
+        "content_state": "reviewed_beta_release",
+        "public_beta_source_rights_reviewed": true,
+        "public_beta_redistribution_authorized": true,
+        "independent_review_state": "reviewed",
+        "beta_runtime_release_eligible": true,
+        "assessed_production_authority": false
+      }
+    },
+    "inputPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 3 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "identitySource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_registry_id", "publisher", "title", "version", "source_url",
+        "retrieval_url", "source_checksum_sha256", "licence_identifier",
+        "licence_terms_url", "attribution", "no_warranty",
+        "existing_project_review_status", "public_beta_rights_review_status",
+        "public_beta_redistribution_authorized"
+      ],
+      "properties": {
+        "source_registry_id": { "const": "debian-iso-codes-4.20.1-1-iso-3166-1" },
+        "publisher": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "version": { "const": "4.20.1-1" },
+        "source_url": { "type": "string", "minLength": 1 },
+        "retrieval_url": { "type": "string", "minLength": 1 },
+        "source_checksum_sha256": { "$ref": "#/$defs/sha256" },
+        "licence_identifier": { "const": "LGPL-2.1-or-later" },
+        "licence_terms_url": { "type": "string", "minLength": 1 },
+        "attribution": { "type": "string", "minLength": 1 },
+        "no_warranty": { "const": true },
+        "existing_project_review_status": { "const": "confirmed_by_ct01" },
+        "public_beta_rights_review_status": { "const": "completed" },
+        "public_beta_redistribution_authorized": { "const": true }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_id", "source_entity_id", "name", "official_name", "common_name",
+        "iso_alpha2", "iso_alpha3", "iso_numeric"
+      ],
+      "properties": {
+        "entity_id": { "type": "string", "pattern": "^elu-e-[a-f0-9]{16}$" },
+        "source_entity_id": { "type": "string", "pattern": "^iso3166-1:[A-Z]{3}$" },
+        "name": { "type": "string", "minLength": 1 },
+        "official_name": { "type": ["string", "null"] },
+        "common_name": { "type": ["string", "null"] },
+        "iso_alpha2": { "type": "string", "pattern": "^[A-Z]{2}$" },
+        "iso_alpha3": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "iso_numeric": { "type": "string", "pattern": "^[0-9]{3}$" }
+      }
+    }
+  }
+}

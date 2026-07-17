@@ -1,0 +1,84 @@
+EARTH LOVE UNITED — CLIMATE PUBLIC BETA
+THIRD-PARTY NOTICES PREPARATION TEMPLATE
+
+STATUS: INCOMPLETE — NOT FOR STAGING, SHARING, OR PUBLICATION
+PUBLICATION AUTHORITY: NONE
+RIGHTS APPROVAL: NONE
+
+This file is an engineering template for the dedicated Climate Public Beta.
+It is not a completed notice, a redistribution decision, legal advice, or
+evidence that any beta artifact may be shared. The beta release-readiness and
+staging controls must reject this template until every bracketed human-review field is replaced by
+exact reviewed text and the completed file is bound into an authenticated
+release package.
+
+The dedicated beta intentionally excludes globe.gl, map geometry, globe
+textures, the production service worker, and all production vendor assets.
+Their notices do not belong here and their omission from this template does
+not grant permission to distribute them.
+
+-------------------------------------------------------------------------------
+1. PRIMAP-hist factual emissions source
+-------------------------------------------------------------------------------
+
+Proposed source family: PRIMAP-hist v2.6.1 final
+Proposed publisher: Potsdam Institute for Climate Impact Research (PIK)
+Proposed licence identifier: CC BY 4.0
+
+Exact reviewed title: [HUMAN RIGHTS REVIEW REQUIRED]
+Exact reviewed publisher attribution: [HUMAN RIGHTS REVIEW REQUIRED]
+Canonical source/DOI URL: [HUMAN RIGHTS REVIEW REQUIRED]
+Licence terms URL: [HUMAN RIGHTS REVIEW REQUIRED]
+Exact source version and publication date: [HUMAN RIGHTS REVIEW REQUIRED]
+Exact source checksum: [HUMAN RIGHTS REVIEW REQUIRED]
+Retrieval date and approved source-access route: [HUMAN RIGHTS REVIEW REQUIRED]
+Required attribution wording: [HUMAN RIGHTS REVIEW REQUIRED]
+Required modification/transformation notice: [HUMAN RIGHTS REVIEW REQUIRED]
+Required warranty or endorsement disclaimer: [HUMAN RIGHTS REVIEW REQUIRED]
+Public-beta redistribution decision reference: [HUMAN RIGHTS REVIEW REQUIRED]
+
+No statement above authorizes factual use or redistribution until the exact
+source, runtime use, attribution, modifications, and output bytes receive the
+required authenticated beta rights decision.
+
+-------------------------------------------------------------------------------
+2. Debian iso-codes identity source
+-------------------------------------------------------------------------------
+
+Proposed source family: Debian iso-codes 4.20.1-1, ISO 3166-1-compatible data
+Proposed licence identifier: LGPL-2.1-or-later
+
+Exact reviewed copyright notice: [HUMAN RIGHTS REVIEW REQUIRED]
+Exact reviewed source attribution: [HUMAN RIGHTS REVIEW REQUIRED]
+Canonical upstream and Debian source URLs: [HUMAN RIGHTS REVIEW REQUIRED]
+Licence terms URL: [HUMAN RIGHTS REVIEW REQUIRED]
+Exact source checksum: [HUMAN RIGHTS REVIEW REQUIRED]
+Retrieval date and approved source-access route: [HUMAN RIGHTS REVIEW REQUIRED]
+Required modification/transformation notice: [HUMAN RIGHTS REVIEW REQUIRED]
+Required warranty disclaimer: [HUMAN RIGHTS REVIEW REQUIRED]
+Complete corresponding-source information: [HUMAN RIGHTS REVIEW REQUIRED]
+Public-beta redistribution decision reference: [HUMAN RIGHTS REVIEW REQUIRED]
+
+The final notice must identify the separately distributed identity artifact,
+its transformation log, and the included LGPL-2.1-or-later licence text. The
+identity names and codes are not an official ISO or UN M49 publication, and
+their inclusion does not establish sovereignty, UN or UNFCCC status, or
+eligibility for climate assessment.
+
+-------------------------------------------------------------------------------
+3. Completion record
+-------------------------------------------------------------------------------
+
+Beta release ID: [UNASSIGNED]
+Public-beta rights decision reference: [HUMAN RIGHTS REVIEW REQUIRED]
+
+The notice does not contain its own hash or the hashes of reviews that are
+created after it. Those exact bindings belong in the later public-surface
+manifest, signed rights review, package review, and canonical BA scope. This
+keeps the artifact order acyclic and makes every hash independently
+recomputable.
+
+This template becomes a public notice only after all unresolved fields are
+completed from genuine reviewed evidence, exact required licence text and
+source-access information are staged, the surface manifest pins the final
+bytes, and the beta readiness checker accepts the authenticated release.

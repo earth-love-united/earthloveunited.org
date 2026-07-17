@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/public-beta-reviewed-known-limitations-1.0.0.json",
+  "title": "Reviewed Climate Public Beta known limitations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "schema_ref", "artifact_kind", "beta_release_id",
+    "content_state", "limitations", "no_assessment_statement",
+    "assessed_production_authority", "calculation_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "schema_ref": { "const": "data/climate/schemas/public-beta-reviewed-known-limitations.schema.json" },
+    "artifact_kind": { "const": "public_beta_known_limitations" },
+    "beta_release_id": { "$ref": "#/$defs/releaseId" },
+    "content_state": { "const": "reviewed_beta_release" },
+    "limitations": {
+      "const": [
+        "Harmonized estimates are not official Party inventories.",
+        "LULUCF is excluded.",
+        "Uncertainty bounds are not included.",
+        "International-bunker treatment is not asserted from the selected rows.",
+        "This factual preparation does not assess commitments, targets, delivery, performance, impact, fairness, or scores."
+      ]
+    },
+    "no_assessment_statement": { "type": "string", "minLength": 1 },
+    "assessed_production_authority": { "const": false },
+    "calculation_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "releaseId": { "type": "string", "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$" }
+  }
+}

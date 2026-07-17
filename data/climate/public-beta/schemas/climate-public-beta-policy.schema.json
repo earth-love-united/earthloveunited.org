@@ -1,0 +1,277 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta-policy.schema.json",
+  "title": "Climate Public Beta frozen transition policy",
+  "description": "Defines the exact beta states, authority roles, origins, independence rules, and human-frozen thresholds. Conformance to this schema is not publication approval.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "policy_id",
+    "status",
+    "repository",
+    "product_tier",
+    "assessed_production_authority",
+    "publication_levels",
+    "release_states",
+    "required_roles",
+    "required_review_roles",
+    "remote_evidence_roles",
+    "approval_role",
+    "approved_origins",
+    "approved_aliases",
+    "hosting_project",
+    "frozen_thresholds",
+    "unauthorized_access_policy",
+    "production_baseline_origin",
+    "production_baseline_inventory_sha256",
+    "rollback_target",
+    "governance_contracts",
+    "independence_rules",
+    "no_assessment_contract",
+    "decision_reference"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "policy_id": { "const": "elu-climate-public-beta-policy-v1" },
+    "status": { "const": "frozen" },
+    "repository": { "const": "earth-love-united/earthloveunited.org" },
+    "product_tier": { "const": "climate_public_beta" },
+    "assessed_production_authority": { "const": false },
+    "publication_levels": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        { "const": "invited_beta" },
+        { "const": "public_beta" }
+      ],
+      "items": false
+    },
+    "release_states": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "prefixItems": [
+        { "const": "package_valid_publication_blocked" },
+        { "const": "shareable_l1" },
+        { "const": "authorized_for_public_activation" },
+        { "const": "live_public_beta_monitoring" },
+        { "const": "verified_live_public_beta" }
+      ],
+      "items": false
+    },
+    "required_roles": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "prefixItems": [
+        { "const": "beta_data_reviewer" },
+        { "const": "beta_rights_reviewer" },
+        { "const": "beta_ui_accessibility_reviewer" },
+        { "const": "beta_package_reviewer" },
+        { "const": "beta_rollback_reviewer" },
+        { "const": "beta_release_operator" },
+        { "const": "beta_release_authorizer" }
+      ],
+      "items": false
+    },
+    "required_review_roles": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "prefixItems": [
+        { "const": "beta_data_reviewer" },
+        { "const": "beta_rights_reviewer" },
+        { "const": "beta_ui_accessibility_reviewer" },
+        { "const": "beta_package_reviewer" },
+        { "const": "beta_rollback_reviewer" }
+      ],
+      "items": false
+    },
+    "remote_evidence_roles": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        { "const": "beta_release_operator" },
+        { "const": "beta_rollback_reviewer" }
+      ],
+      "items": false
+    },
+    "approval_role": { "const": "beta_release_authorizer" },
+    "approved_origins": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["invited_beta", "public_beta"],
+      "properties": {
+        "invited_beta": { "type": "string", "pattern": "^https://" },
+        "public_beta": { "type": "string", "pattern": "^https://" }
+      }
+    },
+    "approved_aliases": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["invited_beta", "public_beta"],
+      "properties": {
+        "invited_beta": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^https://" }
+        },
+        "public_beta": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^https://" }
+        }
+      }
+    },
+    "hosting_project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "project_id",
+        "production_branch",
+        "access_scope",
+        "access_policy_reference",
+        "pages_dev_origin",
+        "deployment_alias_hostname_suffix",
+        "holding_content_sha256",
+        "deployment_replacement_lock_required"
+      ],
+      "properties": {
+        "provider": { "const": "cloudflare_pages" },
+        "project_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+        },
+        "production_branch": { "const": "main" },
+        "access_scope": { "const": "project_wide_all_deployments" },
+        "access_policy_reference": { "type": "string", "minLength": 5, "maxLength": 512 },
+        "pages_dev_origin": { "type": "string", "pattern": "^https://[a-z0-9-]+\\.pages\\.dev$" },
+        "deployment_alias_hostname_suffix": { "type": "string", "pattern": "^\\.[a-z0-9-]+\\.pages\\.dev$" },
+        "holding_content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "deployment_replacement_lock_required": { "const": true }
+      }
+    },
+    "frozen_thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "invited_reviewer_minimum",
+        "invited_session_minimum",
+        "accessibility_session_minimum",
+        "monitoring_window_seconds",
+        "remote_probe_interval_seconds",
+        "rollback_response_target_seconds",
+        "approval_validity_max_seconds",
+        "authorized_access_test_count",
+        "unauthorized_access_test_count"
+      ],
+      "properties": {
+        "invited_reviewer_minimum": { "type": "integer", "minimum": 1 },
+        "invited_session_minimum": { "type": "integer", "minimum": 1 },
+        "accessibility_session_minimum": { "type": "integer", "minimum": 1 },
+        "monitoring_window_seconds": { "type": "integer", "minimum": 1 },
+        "remote_probe_interval_seconds": { "type": "integer", "minimum": 1 },
+        "rollback_response_target_seconds": { "type": "integer", "minimum": 1 },
+        "approval_validity_max_seconds": { "type": "integer", "minimum": 1 },
+        "authorized_access_test_count": { "type": "integer", "minimum": 1 },
+        "unauthorized_access_test_count": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "unauthorized_access_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_statuses", "allowed_redirect_origins"],
+      "properties": {
+        "allowed_statuses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": [302, 401, 403, 404] }
+        },
+        "allowed_redirect_origins": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^https://" }
+        }
+      }
+    },
+    "production_baseline_origin": { "type": "string", "pattern": "^https://" },
+    "production_baseline_inventory_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "rollback_target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "reference"],
+      "properties": {
+        "type": {
+          "enum": ["access_locked_holding_page", "withdrawn_origin", "project_access_lock"]
+        },
+        "reference": { "type": "string", "minLength": 5 }
+      }
+    },
+    "governance_contracts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_protocol_path",
+        "review_protocol_sha256",
+        "feedback_privacy_contract_path",
+        "feedback_privacy_contract_sha256"
+      ],
+      "properties": {
+        "review_protocol_path": {
+          "const": "data/climate/public-beta/governance/review-protocol.json"
+        },
+        "review_protocol_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "feedback_privacy_contract_path": {
+          "const": "data/climate/public-beta/governance/feedback-privacy-contract.json"
+        },
+        "feedback_privacy_contract_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "independence_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "data_builder_differs_from_data_reviewer",
+        "rights_preparer_differs_from_rights_reviewer",
+        "ui_builder_differs_from_ui_accessibility_reviewer",
+        "diff_builder_differs_from_package_reviewer",
+        "rollback_builder_differs_from_rollback_reviewer",
+        "release_builder_differs_from_release_authorizer"
+      ],
+      "properties": {
+        "data_builder_differs_from_data_reviewer": { "const": true },
+        "rights_preparer_differs_from_rights_reviewer": { "const": true },
+        "ui_builder_differs_from_ui_accessibility_reviewer": { "const": true },
+        "diff_builder_differs_from_package_reviewer": { "const": true },
+        "rollback_builder_differs_from_rollback_reviewer": { "const": true },
+        "release_builder_differs_from_release_authorizer": { "const": true }
+      }
+    },
+    "no_assessment_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assessed_production_authority",
+        "official_inventory_claims",
+        "target_or_commitment_claims",
+        "performance_or_normative_claims"
+      ],
+      "properties": {
+        "assessed_production_authority": { "const": false },
+        "official_inventory_claims": { "const": false },
+        "target_or_commitment_claims": { "const": false },
+        "performance_or_normative_claims": { "const": false }
+      }
+    },
+    "decision_reference": { "type": "string", "minLength": 5 }
+  }
+}

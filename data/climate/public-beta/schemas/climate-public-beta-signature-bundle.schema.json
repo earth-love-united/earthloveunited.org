@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate-public-beta-signature-bundle.schema.json",
+  "title": "Climate Public Beta detached Ed25519 approval signature bundle",
+  "description": "The bundle contains public identifiers and detached signatures only. It must never contain private key material.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "signature_bundle_id",
+    "domain",
+    "repository",
+    "beta_release_id",
+    "publication_level",
+    "approval_path",
+    "approval_sha256",
+    "trust_registry_path",
+    "trust_registry_sha256",
+    "reviewed_commit_sha",
+    "canonical_scope_sha256",
+    "expected_public_surface_manifest_sha256",
+    "intended_origin",
+    "intended_aliases",
+    "signatures"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "signature_bundle_id": { "type": "string", "minLength": 12 },
+    "domain": { "const": "ELU-CLIMATE-PUBLIC-BETA-APPROVAL-V1" },
+    "repository": { "const": "earth-love-united/earthloveunited.org" },
+    "beta_release_id": {
+      "type": "string",
+      "pattern": "^(?!.*\\.\\.)[a-z0-9][a-z0-9.-]{1,62}[a-z0-9]$"
+    },
+    "publication_level": { "enum": ["invited_beta", "public_beta"] },
+    "approval_path": { "type": "string", "minLength": 5 },
+    "approval_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "trust_registry_path": {
+      "const": "data/climate/public-beta/governance/approval-trust.json"
+    },
+    "trust_registry_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "reviewed_commit_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "canonical_scope_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "expected_public_surface_manifest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "intended_origin": { "type": "string", "pattern": "^https://" },
+    "intended_aliases": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^https://" }
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "identity", "key_id", "signature_base64"],
+        "properties": {
+          "role": { "const": "beta_release_authorizer" },
+          "identity": { "type": "string", "minLength": 5 },
+          "key_id": { "type": "string", "pattern": "^ed25519:[0-9a-f]{64}$" },
+          "signature_base64": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9+/]{86}==$"
+          }
+        }
+      }
+    }
+  }
+}
