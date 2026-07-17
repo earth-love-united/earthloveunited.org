@@ -32,7 +32,7 @@ const INPUTS = Object.freeze({
   }),
   allocations: Object.freeze({
     path: 'data/climate/fixtures/public-beta-id-allocations.json',
-    sha256: '9c28c27e8b24a7fdde495e0f3e67540ee5ed1df68a823670cc740f4328f573ec',
+    sha256: '84b91dbc660632213ca9038080facff4099bec0449d52921d2e1664226d758a9',
   }),
 });
 

@@ -9,7 +9,7 @@
       "promotion_sha256": "129cc563cbad1fa5c71d6953430a8eba510f4c26106d4f6e76cb7cbd11a7e76d",
       "review_sha256": "c2f233511db35ff98738a1d7df5b8a3b083009e03a128d9e406f6bd98678cfda",
       "source_registry_sha256": "ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d",
-      "allocations_sha256": "9c28c27e8b24a7fdde495e0f3e67540ee5ed1df68a823670cc740f4328f573ec"
+      "allocations_sha256": "84b91dbc660632213ca9038080facff4099bec0449d52921d2e1664226d758a9"
     },
     "coverage": {
       "entities": 249,
@@ -21,16 +21,16 @@
     },
     "outputs": {
       "factual": {
-        "calculation_hash": "3e526784e6c1c3bb2cd395d75bf29bc0f3abf2605593a136cc6e2b785a177a8f",
-        "serialized_sha256": "afa5cfe5685e6c3e793c04eba3ccb00dcc4ee3c2416d874598e33156481b7b0a"
+        "calculation_hash": "7b7f1cdba0a1aca601ea25d445a914f47fd160d9aa46c38bfb43b7fed6a1e3fc",
+        "serialized_sha256": "61b849c6f7fbb61994bb6e1fa8e2224560a66045eaa5637ca013656665533a4f"
       },
       "identity": {
-        "calculation_hash": "8f98c778f28c1afcbd4a2eb2f81af6d13a833720c6c97b356671a8673ed10ec4",
-        "serialized_sha256": "1aad9e483d0b06b3370c34edda61a59d32f1c1c3f7460e7126f6386644d3b5da"
+        "calculation_hash": "8016db3aad57588b1e18d913a116087146ebec34797b3205a19ca664e9d1d9a1",
+        "serialized_sha256": "3da318d8f583f4c6ec02abf5bcc83765cff3c22ccf6ac9b1dcfafa713c56a65e"
       },
       "lineage": {
-        "calculation_hash": "e23ffc28e34a9762dc2b8d78807c31993d4a63dd40c2329fe18348df6a8f1021",
-        "serialized_sha256": "c133241750df759956f6cbc3bb904830a633a5d883203551a587c032776726b3"
+        "calculation_hash": "7a0ce75cfaa0a599682dfe1f74b12796b30cfe407f0d0082280a04ad91da26b8",
+        "serialized_sha256": "c0e13c718c8ad3e7961f79ff1daa5c83523d891723059ae62e9d79c4a3dc0258"
       }
     }
   },
