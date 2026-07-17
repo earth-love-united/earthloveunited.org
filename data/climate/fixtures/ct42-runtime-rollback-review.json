@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "fixture_id": "ct42-runtime-rollback-review-adversarial-2026-07-17",
+  "mutations": [
+    { "id": "review-self-review", "path": "review.reviewer_id", "value": "fixture-rollback-builder" },
+    { "id": "review-outcome-not-derived", "path": "outcome.derived_from_observations", "value": false },
+    { "id": "review-outcome-fabricated-pass", "path": "outcome.result", "value": "pass", "after": { "path": "observations.browser.canvas_count", "value": 2 } },
+    { "id": "review-truthful-failed-observation-still-blocks-gate", "path": "outcome.result", "value": "fail", "after": { "path": "observations.browser.smoke_passed", "value": 17 } },
+    { "id": "review-authorizes-release", "path": "release_authority", "value": true },
+    { "id": "review-authorizes-deploy", "path": "outcome.deploy_authority", "value": true },
+    { "id": "review-proofs-reviewed", "phase": "proof", "path": "review.status", "value": "reviewed" },
+    { "id": "review-proof-authorizes-release", "phase": "proof", "path": "release_authority", "value": true },
+    { "id": "review-breaks-p-u-order", "path": "subject.rollback_proof_commit_sha", "from": "subject.ct40_review_commit_sha" },
+    { "id": "review-loses-candidate-fact-boundary", "path": "observations.candidate.facts", "value": 2059 },
+    { "id": "review-loses-neutral-boundary", "path": "observations.neutral_runtime.entities", "value": 200 },
+    { "id": "review-allows-candidate-request", "path": "observations.neutral_runtime.candidate_requests", "value": 1 },
+    { "id": "review-fails-browser-smoke", "path": "observations.browser.smoke_failed", "value": 1 },
+    { "id": "review-timestamp-precedes-execution", "path": "review.reviewed_at", "value": "2026-07-17T12:00:00Z" },
+    { "id": "review-stale-tool-pin", "path": "subject.pins.7.sha256", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }
+  ]
+}
