@@ -54,6 +54,24 @@ function parseReport(text, label) {
   return parseJsonNoDuplicateKeys(text, label);
 }
 
+function evaluateReviewHistory(result) {
+  assert.equal(result?.exit_code, 0, 'unable to inspect Git review history');
+  assert.equal(String(result?.stdout || '').trim(), 'false',
+    'reviewed factual publication requires a complete, non-shallow Git history');
+  return true;
+}
+
+function inspectReviewHistory() {
+  const result = childProcess.spawnSync('git', ['rev-parse', '--is-shallow-repository'], {
+    cwd: ROOT,
+    encoding: 'utf8',
+  });
+  return {
+    exit_code: result.status,
+    stdout: result.stdout || '',
+  };
+}
+
 function evaluateCandidateReadiness(report) {
   assert.equal(report?.schema_version, '1.0.0', 'candidate readiness schema drift');
   assert.equal(report?.mode, 'candidate', 'factual publication must derive from candidate mode');
@@ -135,7 +153,10 @@ function runSelfTest() {
   const assessed = structuredClone(ct40);
   assessed.decision = 'allow';
   assert.throws(() => evaluateCt40Boundary(assessed), /must remain denied/);
-  process.stdout.write('Climate factual-public readiness policy: PASS (5 fail-closed boundary cases)\n');
+  assert.equal(evaluateReviewHistory({ exit_code: 0, stdout: 'false\n' }), true);
+  assert.throws(() => evaluateReviewHistory({ exit_code: 0, stdout: 'true\n' }), /non-shallow/);
+  assert.throws(() => evaluateReviewHistory({ exit_code: 128, stdout: '' }), /unable to inspect/);
+  process.stdout.write('Climate factual-public readiness policy: PASS (7 fail-closed boundary cases)\n');
 }
 
 function main() {
@@ -144,6 +165,7 @@ function main() {
     throw new Error('usage: check-climate-factual-public-readiness.js [--self-test]');
   }
 
+  evaluateReviewHistory(inspectReviewHistory());
   const readiness = runNode(['tools/check-climate-production-readiness.js', '--candidate', '--json']);
   if (readiness.exit_code !== 0) {
     throw new Error(`candidate readiness failed:\n${readiness.stdout}${readiness.stderr}`.trim());
@@ -176,5 +198,6 @@ module.exports = {
   PROHIBITED_TIERS,
   evaluateCandidateReadiness,
   evaluateCt40Boundary,
+  evaluateReviewHistory,
   runSelfTest,
 };
