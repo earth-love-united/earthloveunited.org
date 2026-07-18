@@ -13,7 +13,7 @@ const STATIC_ASSETS = [
   '/css/carbon-clock.css?v=v2',
   '/css/globe-system.css?v=v19',
   '/assets/legacy/elu-logo.png',
-  '/assets/legacy/elu-logo-light.png',
+  '/assets/legacy/elu-logo-light.png?v=light-title-mint',
   '/assets/globe/runtime/manifest.json',
   '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75',
   '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3',
