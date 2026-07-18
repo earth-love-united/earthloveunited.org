@@ -51,6 +51,8 @@ Primary terms:
 - Build command: `bash tools/build-factual-public-deploy.sh --factual-public`
 - Build output directory: `_deploy`
 - Branch preview builds: refused by the script
+- Shallow production checkouts: expanded from `origin` before review-chain
+  validation; publication fails closed if complete Git ancestry is unavailable
 
 The script stages only the existing marker-free browser allowlist and finishes
 by executing `tools/check-staged-factual-public-integrity.js`. That final gate
