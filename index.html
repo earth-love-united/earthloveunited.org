@@ -145,6 +145,7 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 #hero > *{position:relative;z-index:1}
 .hero-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;max-width:1040px;width:90%;min-height:calc(100vh - 54px);text-align:center}
 .hero-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:0 0 20px;box-sizing:border-box}
+.hero-foundation-logo{order:0;display:block;width:clamp(132px,17vw,188px);height:auto;margin:0 auto 22px;filter:drop-shadow(0 16px 34px rgba(78,205,196,.12));animation:fadeUp .8s ease-out .16s both}
 #hero h1{order:1;font-family:var(--display);font-size:clamp(34px,5vw,58px);font-weight:300;color:var(--mint);margin-bottom:10px;letter-spacing:3px;animation:fadeUp .8s ease-out .3s both}
 .hero-value{order:2;max-width:760px;margin:0 auto 36px;color:var(--text2);font-size:clamp(15px,2vw,21px);line-height:1.55;animation:fadeUp .8s ease-out .42s both}
 .hero-actions{order:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;margin-top:30px;margin-bottom:0;animation:fadeUp .8s ease-out .6s both}
@@ -164,7 +165,7 @@ body.globe-mode #globe-back-btn{display:block}
 #topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 28px;background:linear-gradient(180deg,rgba(5,5,9,.95),rgba(5,5,9,0));pointer-events:none;opacity:0;transition:opacity .6s}
 #topbar.visible{opacity:1;pointer-events:all}
 #topbar .logo{display:flex;align-items:center;gap:10px;min-width:0;overflow:hidden;white-space:nowrap;font-family:var(--display);font-size:17px;font-weight:300;letter-spacing:1px;color:var(--mint)}
-#topbar .logo svg{flex:0 0 auto}
+#topbar .foundation-mark{width:30px;height:auto;flex:0 0 auto}
 #topbar .brand-wordmark,#topbar .brand-subtitle{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #topbar .brand-sep{opacity:.3;flex:0 0 auto}
 #topbar .stats{display:flex;gap:28px;align-items:center;min-width:0}
@@ -285,6 +286,7 @@ body:not(.globe-mode) .hex-legend{display:none}
 /* ── site nav (foundation mode; hidden in globe mode) ── */
 #site-nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 26px;background:var(--nav-bg);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 #site-nav .nav-brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:16px;letter-spacing:1px;color:var(--mint);text-decoration:none;white-space:nowrap}
+#site-nav .foundation-mark{display:block;width:30px;height:auto;flex:0 0 auto}
 #site-nav .nav-links{display:flex;flex-wrap:wrap;align-items:center;gap:3px 17px;justify-content:flex-end}
 #site-nav .nav-links a{color:var(--text2);text-decoration:none;font-size:11px;letter-spacing:1.7px;text-transform:uppercase;transition:color .2s;padding:4px 0}
 #site-nav .nav-links a:hover{color:var(--teal)}
@@ -408,11 +410,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <!-- ═══ SITE NAV (foundation mode; hidden in globe mode) ═══ -->
 <nav id="site-nav" aria-label="Site">
   <a class="nav-brand" href="#top" aria-label="Earth Love United — back to top">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="13" cy="12" r="9" stroke="url(#lgn)" stroke-width="1.2"/>
-      <path d="M7 18C5 16 4 13.5 6 10c1.5-2.5 4-3 5.5-2.8C13 7.4 14 8 14 9.5s-1 2-2 2.5c-1.5.7-2 2-1.5 3.5.3 1 1 2 2 2.5" stroke="#7be8d0" stroke-width="1.2" stroke-linecap="round"/>
-      <defs><linearGradient id="lgn" x1="4" y1="4" x2="22" y2="22"><stop stop-color="#7be8d0"/><stop offset="1" stop-color="#2a8fa3"/></linearGradient></defs>
-    </svg>
+    <img class="foundation-mark" src="assets/legacy/elu-logo.png" alt="" width="512" height="494" decoding="async">
     <span>Earth Love United</span>
   </a>
   <div class="nav-links">
@@ -435,6 +433,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <span id="top"></span>
   <div class="hero-inner">
     <div class="hero-stage">
+      <img class="hero-foundation-logo" src="assets/legacy/elu-logo.png" alt="" width="512" height="494" decoding="async" fetchpriority="high">
       <h1>Earth Love United Foundation</h1>
       <p class="hero-value">A global nonprofit established in 2020, dedicated to promoting environmental justice and driving climate action through innovative, nature-based solutions — reconnecting humanity with the Earth.</p>
 
@@ -485,11 +484,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <!-- ═══ TOP BAR ═══ -->
 <div id="topbar">
   <div class="logo">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <circle cx="13" cy="12" r="9" stroke="url(#lg)" stroke-width="1.2"/>
-      <path d="M7 18C5 16 4 13.5 6 10c1.5-2.5 4-3 5.5-2.8C13 7.4 14 8 14 9.5s-1 2-2 2.5c-1.5.7-2 2-1.5 3.5.3 1 1 2 2 2.5" stroke="#7be8d0" stroke-width="1.2" stroke-linecap="round"/>
-      <defs><linearGradient id="lg" x1="4" y1="4" x2="22" y2="22"><stop stop-color="#7be8d0"/><stop offset="1" stop-color="#2a8fa3"/></linearGradient></defs>
-    </svg>
+    <img class="foundation-mark" src="assets/legacy/elu-logo.png" alt="" width="512" height="494" decoding="async">
     <span class="brand-wordmark">Earth Love United</span>
     <span class="brand-sep">·</span>
     <span class="brand-subtitle">Living Climate Atlas</span>
