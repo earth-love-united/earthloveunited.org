@@ -57,6 +57,12 @@ jobs:
       - name: Exact public deploy surface policy self-test
         run: node tools/check-public-deploy-surface.js --self-test
 
+      - name: Factual-public readiness policy self-test
+        run: node tools/check-climate-factual-public-readiness.js --self-test
+
+      - name: Final staged factual-public integrity policy self-test
+        run: node tools/check-staged-factual-public-integrity.js --self-test
+
       - name: Climate production readiness policy fixtures
         run: node tools/check-climate-production-readiness-policy.js
 
@@ -118,10 +124,37 @@ jobs:
           # Run the hook directly without committing
           ./tools/agent-precommit || true   # informational on a clean tree
 
+  factual_public:
+    name: Factual-public deploy gates
+    runs-on: ubuntu-latest
+    needs: static
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build factual-public deploy directory
+        run: ./tools/build-factual-public-deploy.sh --factual-public
+
+      - name: Verify factual-public exact surface independently
+        run: node tools/check-public-deploy-surface.js --staged ./_deploy --mode release
+
+      - name: Verify factual-public notices independently
+        run: node tools/check-globe-third-party-notices.js --staged ./_deploy
+
+      - name: Verify final factual-public integrity independently
+        run: node tools/check-staged-factual-public-integrity.js --staged ./_deploy
+
   smoke:
     name: Headless SmokeTest + StackLint
     runs-on: ubuntu-latest
-    needs: static
+    needs: [static, factual_public]
     steps:
       - uses: actions/checkout@v4
         with:

@@ -136,6 +136,28 @@ This mode fails closed unless every item below is true:
 
 The only successful production status is `release_ready`.
 
+## Separately governed factual-public deployment
+
+The reviewed factual globe now has a narrower production path that does not
+change or bypass the assessed-production contract above. It runs:
+
+```bash
+./tools/build-factual-public-deploy.sh --factual-public
+```
+
+This path requires candidate integrity, the exact CT-40 tier boundary, CT-42
+data/UI review and deterministic rollback proof, pinned visual provenance and notices, the exact
+marker-free browser allowlist, and a final source/staged rehash. It publishes
+only factual display and magnitude comparison. CT-40 must still deny assessed
+release, while commitments, derived metrics, performance assessment, and scores
+must remain absent.
+
+A protected maintainer-reviewed merge authorizes this narrow deployment. It
+does not claim legal certification and does not satisfy or weaken the separate
+three-role signed approval required by `build-deploy.sh --release`. The visual
+provenance and remaining untested independent rollback-review concern are recorded in
+`docs/FACTUAL-PUBLIC-DEPLOYMENT.md`.
+
 `./tools/build-deploy.sh --candidate` stages a local candidate. Its final
 executable command is `tools/check-staged-production-integrity.js`, which reruns
 CT-45 and notice verification, then rehashes the four notice artifacts, trust
