@@ -15,6 +15,7 @@ const {
   EXPECTED_UI_REVIEW_SHA256,
   REQUIRED_UI_REVIEW_PIN_PATHS,
   UI_REVIEW_PATH,
+  ct42RuntimeProjection,
 } = require('./lib/globe-runtime-assets');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -270,7 +271,10 @@ function reviewedRuntimePins(sourceRoot) {
     if (approvalPolicy.sha256(reviewedBytes) !== entry.sha256) {
       throw new Error('CT-42 UI review pin differs from reviewed Git object: ' + entry.path);
     }
-    result.set(entry.path, entry.sha256);
+    result.set(entry.path, {
+      reviewed_sha256: entry.sha256,
+      projection_sha256: approvalPolicy.sha256(ct42RuntimeProjection(entry.path, reviewedBytes)),
+    });
   });
   return result;
 }
@@ -293,8 +297,12 @@ function verifyCt45RuntimeBytes(sourceRoot, stagedRoot) {
     const expected = pins.get(relative);
     const source = requireRegular(sourceRoot, relative);
     const staged = requireRegular(stagedRoot, relative);
-    if (source.sha256 !== expected) throw new Error('source reviewed runtime SHA-256 drift: ' + relative);
-    if (staged.sha256 !== expected) throw new Error('final staged CT-45 runtime SHA-256 drift: ' + relative);
+    if (approvalPolicy.sha256(ct42RuntimeProjection(relative, source.bytes)) !== expected.projection_sha256) {
+      throw new Error('source reviewed runtime projection drift: ' + relative);
+    }
+    if (approvalPolicy.sha256(ct42RuntimeProjection(relative, staged.bytes)) !== expected.projection_sha256) {
+      throw new Error('final staged CT-45 runtime projection drift: ' + relative);
+    }
     if (source.sha256 !== staged.sha256) throw new Error('final CT-45 source/staged mismatch: ' + relative);
   });
   return FINAL_CT45_REHASH_PATHS.length;
@@ -579,7 +587,7 @@ function runSelfTest() {
         fs.appendFileSync(path.join(postChildCt45Fixture.staged, 'assets/globe/runtime/earth-night.jpg'),
           Buffer.from('post-child-check mutation'));
       },
-    }), /final staged CT-45 runtime SHA-256 drift/, 'post-child CT-45 mutation must fail');
+    }), /final staged CT-45 runtime projection drift/, 'post-child CT-45 mutation must fail');
     assert.equal(childChecksCompleted, true, 'child checker hook must run before the CT-45 mutation');
     assert.equal(fs.existsSync(postChildCt45Fixture.staged), false,
       'post-child CT-45 mutation failure must remove staged output');

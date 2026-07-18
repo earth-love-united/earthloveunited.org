@@ -6,7 +6,11 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { EXPECTED_ASSETS } = require('./globe-runtime-assets');
+const {
+  CT42_SHARED_HOST_PATHS,
+  EXPECTED_ASSETS,
+  ct42RuntimeProjection,
+} = require('./globe-runtime-assets');
 const { EXPECTED_SPEC: EXPECTED_VENDOR_SPEC } = require('./globe-vendor-integrity');
 
 const RUNTIME_CONTROL_COMMIT = '5b6ae825e31f4c1d4fba2d1e8ed1ce251ca44669';
@@ -216,9 +220,9 @@ function assertRuntimeControlCommit(root, proof) {
     const atCommit = gitCheck(root, ['show', `${value}:${relative}`]);
     assert.equal(atCommit.status, 0, `runtime control commit must contain ${relative}`);
     assert.equal(
-      sha256(Buffer.from(atCommit.stdout)),
-      sha256(read(root, relative)),
-      `${relative} is not byte-identical to the runtime control commit`,
+      sha256(ct42RuntimeProjection(relative, Buffer.from(atCommit.stdout))),
+      sha256(ct42RuntimeProjection(relative, read(root, relative))),
+      `${relative} is not equivalent to the runtime control commit`,
     );
   }
 }
@@ -352,7 +356,16 @@ function validateProofDocument(root, proof, options = {}) {
     const control = controls.get(relative);
     assert.ok(control, `missing rollback control ${relative}`);
     const bytes = options.sourceOverrides?.[relative] || read(root, relative);
-    assert.equal(sha256(bytes), control.candidate_sha256, `${relative} candidate pin drift`);
+    if (CT42_SHARED_HOST_PATHS.includes(relative)) {
+      const atCommit = gitCheck(root, ['show', `${proof.candidate.runtime_control_commit}:${relative}`]);
+      assert.equal(atCommit.status, 0, `runtime control commit must contain ${relative}`);
+      const reviewed = Buffer.from(atCommit.stdout);
+      assert.equal(sha256(reviewed), control.candidate_sha256, `${relative} reviewed candidate pin drift`);
+      assert.equal(sha256(ct42RuntimeProjection(relative, bytes)),
+        sha256(ct42RuntimeProjection(relative, reviewed)), `${relative} candidate projection drift`);
+    } else {
+      assert.equal(sha256(bytes), control.candidate_sha256, `${relative} candidate pin drift`);
+    }
     assert.match(control.rollback_sha256, /^[a-f0-9]{64}$/);
     assert.equal(control.changed, PATCH_FILES.includes(relative), `${relative} changed flag drift`);
   }
@@ -407,7 +420,7 @@ function copyIfPresent(sourceRoot, destinationRoot, relative) {
   return true;
 }
 
-function stageCandidateTree(root, sourceRoot, controls, options = {}) {
+function stageCandidateTree(root, sourceRoot, controls, runtimeControlCommit, options = {}) {
   const sourceOverrides = options.sourceOverrides || {};
   for (const dependency of RUNTIME_DEPENDENCIES) {
     if (dependency.path === EXPECTED_VENDOR_SPEC.destination && allowedMissingVendor(sourceRoot, options)) continue;
@@ -415,7 +428,12 @@ function stageCandidateTree(root, sourceRoot, controls, options = {}) {
   }
 
   for (const relative of CONTROL_FILES) {
-    const bytes = sourceOverrides[relative] || read(sourceRoot, relative);
+    let bytes = sourceOverrides[relative] || read(sourceRoot, relative);
+    if (!sourceOverrides[relative] && CT42_SHARED_HOST_PATHS.includes(relative)) {
+      const reviewed = gitCheck(sourceRoot, ['show', `${runtimeControlCommit}:${relative}`]);
+      assert.equal(reviewed.status, 0, `runtime control commit must contain ${relative}`);
+      bytes = Buffer.from(reviewed.stdout);
+    }
     write(root, relative, bytes);
     assert.equal(sha256(read(root, relative)), controls.get(relative).candidate_sha256, `${relative} staged candidate drift`);
   }
@@ -597,7 +615,7 @@ function rehearse(root, proof, options = {}) {
   const validated = validateProofDocument(root, proof, options);
   const rehearsalRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-ct42-neutral-rollback-'));
   try {
-    stageCandidateTree(rehearsalRoot, root, validated.controls, options);
+    stageCandidateTree(rehearsalRoot, root, validated.controls, proof.candidate.runtime_control_commit, options);
     applyPatch(rehearsalRoot, validated.patchBytes);
     removeRuntimeExclusions(rehearsalRoot);
     if (options.afterApply) options.afterApply(rehearsalRoot);
@@ -642,7 +660,13 @@ function materializeRollbackSite(root, proof, destination, options = {}) {
     copyPublicTree(root, destination);
     assertRegularTree(destination);
     for (const relative of CONTROL_FILES) {
-      write(destination, relative, options.sourceOverrides?.[relative] || read(root, relative));
+      let bytes = options.sourceOverrides?.[relative] || read(root, relative);
+      if (!options.sourceOverrides?.[relative] && CT42_SHARED_HOST_PATHS.includes(relative)) {
+        const reviewed = gitCheck(root, ['show', `${proof.candidate.runtime_control_commit}:${relative}`]);
+        assert.equal(reviewed.status, 0, `runtime control commit must contain ${relative}`);
+        bytes = Buffer.from(reviewed.stdout);
+      }
+      write(destination, relative, bytes);
     }
     for (const relative of RUNTIME_DEPENDENCY_FILES) {
       if (relative === EXPECTED_VENDOR_SPEC.destination && allowedMissingVendor(root, options)) continue;

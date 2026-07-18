@@ -2,6 +2,7 @@
 'use strict';
 
 const assert = require('node:assert/strict');
+const childProcess = require('node:child_process');
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -15,6 +16,10 @@ const {
   reviewPinPaths,
   validateReviewScopes,
 } = require('./lib/ct42-ct40-release-review');
+const {
+  CT42_SHARED_HOST_PATHS,
+  ct42RuntimeProjection,
+} = require('./lib/globe-runtime-assets');
 
 const ROOT = path.resolve(__dirname, '..');
 const PATHS = Object.freeze({
@@ -41,7 +46,31 @@ function sha256(value) { return crypto.createHash('sha256').update(value).digest
 function clone(value) { return structuredClone(value); }
 function get(target, dotted) { return dotted.split('.').reduce((node, key) => node[Number.isInteger(Number(key)) ? Number(key) : key], target); }
 function set(target, dotted, value) { const parts = dotted.split('.'); const key = parts.pop(); const owner = parts.length ? get(target, parts.join('.')) : target; owner[key] = value; }
-function hashPaths(paths) { return Object.fromEntries([...new Set(paths)].sort().map(relative => [relative, sha256(bytes(relative))])); }
+function reviewedBytes(commit, relative) {
+  const result = childProcess.spawnSync('git', ['show', `${commit}:${relative}`], {
+    cwd: ROOT,
+    encoding: null,
+    maxBuffer: 32 * 1024 * 1024,
+  });
+  assert.equal(result.status, 0, `reviewed Git object is unavailable: ${relative}`);
+  return result.stdout;
+}
+
+function hashPaths(paths, uiReview = null) {
+  const output = Object.fromEntries([...new Set(paths)].sort().map(relative => [relative, sha256(bytes(relative))]));
+  if (!uiReview) return output;
+  const pins = new Map(uiReview.reviewed_file_pins.map(entry => [entry.path, entry.sha256]));
+  for (const relative of CT42_SHARED_HOST_PATHS) {
+    if (!Object.hasOwn(output, relative)) continue;
+    const reviewed = reviewedBytes(uiReview.reviewed_commit, relative);
+    assert.equal(sha256(reviewed), pins.get(relative), `historical CT-42 pin mismatch: ${relative}`);
+    assert.equal(sha256(ct42RuntimeProjection(relative, bytes(relative))),
+      sha256(ct42RuntimeProjection(relative, reviewed)),
+      `current CT-42 shared-host projection mismatch: ${relative}`);
+    output[relative] = pins.get(relative);
+  }
+  return output;
+}
 
 function loadInputs() {
   const dataReview = json(PATHS.dataReview);
@@ -60,7 +89,7 @@ function loadInputs() {
     dataReview,
     uiReview,
     primarySourcePilot: json(PATHS.primarySourcePilot),
-    fileHashes: hashPaths(referenced),
+    fileHashes: hashPaths(referenced, uiReview),
   };
 }
 

@@ -414,7 +414,7 @@ function applyMutation(input, mutation) {
 
 async function runFixtures(input) {
   const fixture = json(ROOT, FIXTURE_PATH);
-  assert.equal(fixture._meta.policy_version, '1.2.0', 'CT-45 fixture/policy version drift');
+  assert.equal(fixture._meta.policy_version, '1.3.0', 'CT-45 fixture/policy version drift');
   let rejected = 0;
   for (const mutation of fixture.mutations) {
     const changed = structuredClone(input);
