@@ -32,6 +32,14 @@ if [ -n "${CF_PAGES_BRANCH:-}" ] && [ "$CF_PAGES_BRANCH" != "main" ]; then
   exit 1
 fi
 
+# Cloudflare checks out a shallow production commit. The factual gate verifies
+# reviewed commits by Git ancestry and exact historical objects, so restore the
+# repository history before evaluating those unchanged review contracts.
+if [ "$(git rev-parse --is-shallow-repository 2>/dev/null)" = "true" ]; then
+  echo "Fetching complete Git history required by the reviewed release chain ..."
+  git fetch --unshallow --no-tags origin
+fi
+
 echo "Cleaning $DEPLOY_DIR/ ..."
 rm -rf "$DEPLOY_DIR"
 
