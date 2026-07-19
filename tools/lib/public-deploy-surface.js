@@ -47,6 +47,7 @@ const ALWAYS_PUBLIC_PATHS = Object.freeze([
   'assets/legacy/brandon.jpg',
   'assets/legacy/ekmel.jpg',
   'assets/legacy/elu-logo.png',
+  'assets/legacy/elu-logo-light.png',
   'assets/legacy/mike.png',
   'assets/legacy/video-what-is-elu.jpg',
   'assets/partners/avocademy.svg',

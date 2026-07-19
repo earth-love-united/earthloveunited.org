@@ -3,7 +3,7 @@
 const crypto = require('node:crypto');
 const { hasActiveCiJob, hasExactCiStep } = require('./globe-vendor-integrity');
 
-const POLICY_VERSION = '1.2.0';
+const POLICY_VERSION = '1.3.0';
 const MANIFEST_PATH = 'assets/globe/runtime/manifest.json';
 const UI_REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
 const EXPECTED_UI_REVIEW_COMMIT = '0ccf9cf90e25e98cc7b734cb4acf8ee0d85080eb';
@@ -123,6 +123,43 @@ const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
   MANIFEST_PATH,
   ...EXPECTED_ASSETS.map(asset => asset.path),
 ]);
+const CT42_SHARED_HOST_PATHS = Object.freeze(['index.html', 'sw.js']);
+
+/**
+ * Preserve CT-42's exact climate/runtime review while allowing the foundation
+ * brand presentation to evolve inside the two shared host files. Everything
+ * outside these narrowly identified brand slots remains byte-for-byte bound to
+ * the reviewed commit. CT-45 independently validates the climate copy, CSP,
+ * runtime requests, service-worker epoch, critical precache entries, and
+ * fail-closed behavior in these same files.
+ */
+function ct42RuntimeProjection(relativePath, bytes) {
+  const source = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes);
+  if (!CT42_SHARED_HOST_PATHS.includes(relativePath)) return source;
+  let text = source.toString('utf8');
+  if (relativePath === 'sw.js') {
+    text = text.replace(/^\s*['"]\/assets\/legacy\/elu-logo(?:-[a-z0-9-]+)?\.png(?:\?[^'"]*)?['"],?\s*\n/gim, '');
+    return Buffer.from(text);
+  }
+
+  text = text
+    .replace(/^\.foundation-mark,\.hero-foundation-logo\{[^\n]*\}\n?/gm, '')
+    .replace(/^\[data-theme="light"\] \.foundation-mark,\[data-theme="light"\] \.hero-foundation-logo\{[^\n]*\}\n?/gm, '')
+    .replace(/^\.hero-foundation-logo\{[^\n]*\}\n?/gm, '')
+    .replace(/^#topbar \.(?:logo svg|foundation-mark)\{[^\n]*\}\n?/gm, '')
+    .replace(/^#site-nav \.foundation-mark\{[^\n]*\}\n?/gm, '')
+    .replace('#site-nav .nav-brand-text{display:none}', '#site-nav .nav-brand span{display:none}')
+    .replace(
+      /(<a class="nav-brand" href="#top" aria-label="Earth Love United — back to top">\n)[\s\S]*?(\n  <\/a>)/,
+      '$1    <!-- CT-42 shared foundation brand -->$2'
+    )
+    .replace(/^\s*<span class="hero-foundation-logo" aria-hidden="true"><\/span>\n/m, '')
+    .replace(
+      /(<div id="topbar">\n  <div class="logo">\n)[\s\S]*?(    <span class="brand-wordmark">)/,
+      '$1    <!-- CT-42 shared foundation brand -->\n$2'
+    );
+  return Buffer.from(text);
+}
 const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/css/carbon-clock.css?v=v2',
   '/css/globe-system.css?v=v19',
@@ -482,8 +519,10 @@ function evaluateRuntimeAssets(input) {
     finalIntegrity.includes('record.sha256 !== EXPECTED_UI_REVIEW_SHA256') &&
     finalIntegrity.includes('review.reviewed_commit !== EXPECTED_UI_REVIEW_COMMIT') &&
     finalIntegrity.includes('reviewedCommitBytes(ROOT, review.reviewed_commit, entry.path)') &&
+    finalIntegrity.includes('ct42RuntimeProjection(relative, source.bytes)') &&
+    finalIntegrity.includes('ct42RuntimeProjection(relative, staged.bytes)') &&
     finalIntegrity.includes('APPROVAL_REVIEWED_PATHS') && finalIntegrity.includes('UI_REVIEW_PATH,'),
-    'The final verifier must bind the UI-review record itself and every pin to the exact reviewed Git objects.');
+    'The final verifier must bind the UI-review record and every pin to reviewed Git objects, allowing only the narrow shared-brand projection.');
   const releaseGuard = buildDeploy.indexOf('if [ "$DEPLOY_MODE" = "release" ]; then');
   const readinessCommand = buildDeploy.indexOf('node tools/check-climate-production-readiness.js --release');
   const stagingStart = buildDeploy.indexOf('mkdir -p "$DEPLOY_DIR"');
@@ -609,6 +648,7 @@ function evaluateRuntimeAssets(input) {
 
 module.exports = {
   ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
+  CT42_SHARED_HOST_PATHS,
   EXPECTED_ASSETS,
   EXPECTED_INDEX_SW_KEYS,
   EXPECTED_MANIFEST_SEMANTIC_SHA256,
@@ -620,6 +660,7 @@ module.exports = {
   POLICY_VERSION,
   REQUIRED_UI_REVIEW_PIN_PATHS,
   UI_REVIEW_PATH,
+  ct42RuntimeProjection,
   digest,
   evaluateRuntimeAssets,
   exactAssetManifest,

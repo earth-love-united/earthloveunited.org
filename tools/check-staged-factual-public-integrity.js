@@ -15,6 +15,7 @@ const {
   EXPECTED_UI_REVIEW_SHA256,
   REQUIRED_UI_REVIEW_PIN_PATHS,
   UI_REVIEW_PATH,
+  ct42RuntimeProjection,
 } = require('./lib/globe-runtime-assets');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -69,12 +70,17 @@ function verifyReviewedPublicRuntime(sourceRoot, stagedRoot) {
   for (const relative of REQUIRED_UI_REVIEW_PIN_PATHS) {
     const expected = pins.get(relative);
     const source = publicSurface.inspectRegular(sourceRoot, relative);
-    assert.equal(source.sha256, expected, `source reviewed runtime SHA-256 drift: ${relative}`);
-    assert.equal(sha256(reviewedCommitBytes(sourceRoot, review.reviewed_commit, relative)), expected,
+    const reviewedBytes = reviewedCommitBytes(sourceRoot, review.reviewed_commit, relative);
+    assert.equal(sha256(reviewedBytes), expected,
       `CT-42 pin differs from reviewed Git object: ${relative}`);
+    const projectionSha256 = sha256(ct42RuntimeProjection(relative, reviewedBytes));
+    assert.equal(sha256(ct42RuntimeProjection(relative, source.bytes)), projectionSha256,
+      `source reviewed runtime projection drift: ${relative}`);
     if (publicSurface.ALWAYS_PUBLIC_PATHS.includes(relative)) {
       const staged = publicSurface.inspectRegular(stagedRoot, relative);
-      assert.equal(staged.sha256, expected, `staged reviewed runtime SHA-256 drift: ${relative}`);
+      assert.equal(sha256(ct42RuntimeProjection(relative, staged.bytes)), projectionSha256,
+        `staged reviewed runtime projection drift: ${relative}`);
+      assert.equal(staged.sha256, source.sha256, `staged/source runtime byte drift: ${relative}`);
       stagedCount += 1;
     }
   }
