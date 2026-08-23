@@ -9,11 +9,11 @@
   "inputs": {
     "ct40Result": {
       "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
-      "sha256": "aa8ba26cd54000615c157e30645d2fc62653630a9de37e4427cdc7c4b8684d10"
+      "sha256": "068ac29d2fd420e647080addb90be8716feb2de7002ea5da9e002668249db992"
     },
     "ct40Input": {
       "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
-      "sha256": "d72dec7084f06fe218e4a5bf67dc1151224f050c3cfc0fc85915fd1d4228d464"
+      "sha256": "e3826818aabbbaa9d16ce835910d4ac191194081246d7a3c3145cb47311572bd"
     },
     "ct14Queue": {
       "path": "data/climate/releases/top20-primary-source-gap-queue-2026-07-15.json",
@@ -4211,5 +4211,5 @@
     "fill missing country fields from legacy pledge data",
     "create a production runtime manifest or allow manifest from this package"
   ],
-  "calculation_hash": "bf6ec141739c4b7478b738c18c8167c2fbf5335caa45c73bfcd7b2c38b7af004"
+  "calculation_hash": "25165511e7f206037c6f3031fac50bdcce4695510a1b76d584464d1907dfa915"
 }
