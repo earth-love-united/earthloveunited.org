@@ -1,17 +1,17 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v37) — retain the original pinned Three-Globe sky while shipping
- * the reviewed HUD dock clearance and opaque high-contrast return control.
+ * Globe cache (v38) — retain the original pinned Three-Globe sky while shipping
+ * the reviewed compact narrow-screen ranking disclosure.
  */
-const CACHE_NAME = 'elu-v37-return-contrast';
+const CACHE_NAME = 'elu-v38-compact-rank';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v19',
+  '/css/globe-system.css?v=v20',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
   '/assets/globe/runtime/manifest.json',
@@ -28,7 +28,7 @@ const STATIC_ASSETS = [
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v2',
-  '/js/globe.js?v=v13',
+  '/js/globe.js?v=v14',
   '/js/carbon-clock.js?v=v1',
   '/js/app.js?v=v3',
   '/js/vendor/globe.gl.js',

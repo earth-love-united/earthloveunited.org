@@ -41,10 +41,10 @@ const EXPECTED_RUNTIME_EVIDENCE = {
   },
   stack_lint_issues: 0,
   delivery_versions: {
-    globe_system_css: 'v19',
-    globe_script: 'v13',
-    service_worker_registration: '37-return-contrast',
-    service_worker_cache: 'elu-v37-return-contrast',
+    globe_system_css: 'v20',
+    globe_script: 'v14',
+    service_worker_registration: '38-compact-rank',
+    service_worker_cache: 'elu-v38-compact-rank',
   },
   browser_qa: {
     mobile: {
@@ -95,10 +95,10 @@ const EXPECTED_RUNTIME_EVIDENCE = {
     },
     cache: {
       controller_reload_verified: true,
-      css_key: '/css/globe-system.css?v=v19',
-      globe_key: '/js/globe.js?v=v13',
-      service_worker_key: '/sw.js?v=37-return-contrast',
-      cache_name: 'elu-v37-return-contrast',
+      css_key: '/css/globe-system.css?v=v20',
+      globe_key: '/js/globe.js?v=v14',
+      service_worker_key: '/sw.js?v=38-compact-rank',
+      cache_name: 'elu-v38-compact-rank',
     },
   },
 };
@@ -221,7 +221,7 @@ function runSharedHostProjectionTests() {
     sha256Bytes(ct42RuntimeProjection('index.html', reviewedIndex)),
     'canonical drift must remain inside the CT-42 projection');
   const unsafeSw = Buffer.from(currentSw.toString('utf8').replace(
-    "const CACHE_NAME = 'elu-v37-return-contrast';",
+    "const CACHE_NAME = 'elu-v38-compact-rank';",
     "const CACHE_NAME = 'unreviewed-runtime';"
   ));
   assert.notEqual(sha256Bytes(ct42RuntimeProjection('sw.js', unsafeSw)),
@@ -281,12 +281,12 @@ assert.match(boundary.required_next_gate, /CT-40 independent allow decision/);
 
 const index = read('index.html');
 const serviceWorker = read('sw.js');
-assert.ok(index.includes('href="css/globe-system.css?v=v19"'), 'index CSS cache key drift');
-assert.ok(index.includes('src="js/globe.js?v=v13"'), 'index globe cache key drift');
-assert.ok(index.includes("register('/sw.js?v=37-return-contrast'"), 'service-worker registration key drift');
-assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v37-return-contrast';"), 'service-worker cache name drift');
-assert.ok(serviceWorker.includes("'/css/globe-system.css?v=v19'"), 'service-worker CSS cache key drift');
-assert.ok(serviceWorker.includes("'/js/globe.js?v=v13'"), 'service-worker globe cache key drift');
+assert.ok(index.includes('href="css/globe-system.css?v=v20"'), 'index CSS cache key drift');
+assert.ok(index.includes('src="js/globe.js?v=v14"'), 'index globe cache key drift');
+assert.ok(index.includes("register('/sw.js?v=38-compact-rank'"), 'service-worker registration key drift');
+assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v38-compact-rank';"), 'service-worker cache name drift');
+assert.ok(serviceWorker.includes("'/css/globe-system.css?v=v20'"), 'service-worker CSS cache key drift');
+assert.ok(serviceWorker.includes("'/js/globe.js?v=v14'"), 'service-worker globe cache key drift');
 
 const geometry = readJson('assets/globe/runtime/ne_110m_admin_0_countries.geojson');
 assert.equal(geometry.type, 'FeatureCollection');
