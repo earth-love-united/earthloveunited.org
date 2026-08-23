@@ -14,9 +14,9 @@
   "candidate": {
     "builder_commit": "793eade295ae3fa787749e4d6ee112cf374a7634",
     "runtime_control_commit": "4dff6cd951d34ccefb621ad1023f699dd9dbba3f",
-    "review_chain_head": "4dff6cd951d34ccefb621ad1023f699dd9dbba3f",
+    "review_chain_head": "baf9adb936568765595560dc5ebc75787f8c9f4d",
     "review_chain_late_bound": false,
-    "review_chain_ct40_sha256": "aa8ba26cd54000615c157e30645d2fc62653630a9de37e4427cdc7c4b8684d10",
+    "review_chain_ct40_sha256": "068ac29d2fd420e647080addb90be8716feb2de7002ea5da9e002668249db992",
     "candidate_id": "ct-42-factual-runtime-candidate-2026-07-15",
     "decision": "deny",
     "decision_scope": "assessed_climate_release",
@@ -64,7 +64,7 @@
     },
     "ct40_result": {
       "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
-      "sha256": "aa8ba26cd54000615c157e30645d2fc62653630a9de37e4427cdc7c4b8684d10"
+      "sha256": "068ac29d2fd420e647080addb90be8716feb2de7002ea5da9e002668249db992"
     },
     "rollback_plan": {
       "path": "data/climate/runtime/rollback-plan.json",
@@ -338,5 +338,5 @@
     "writes_workspace": false,
     "deploys": false
   },
-  "calculation_hash": "d01b35ee77453943b0ddfda7b42eb2e6936b0330f42cf526dcdfc45671ddc36f"
+  "calculation_hash": "942ffcf13dff856138b35256a931f7a89f97f6713fa89b7b9381d2f8e9e0774a"
 }
