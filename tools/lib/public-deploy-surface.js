@@ -20,10 +20,15 @@ const SIGNATURE_BUNDLE_PATH = 'data/climate/reviews/globe-runtime-assets-product
 // operations patches, authoring tools, knowledge indices, and NDVI experiments
 // are deliberately absent.
 const ALWAYS_PUBLIC_PATHS = Object.freeze([
+  '404.html',
   'THIRD_PARTY_NOTICES.txt',
   '_headers',
+  '_redirects',
+  'favicon.svg',
   'index.html',
   'manifest.json',
+  'robots.txt',
+  'sitemap.xml',
   'sw.js',
   'css/carbon-clock.css',
   'css/globe-system.css',

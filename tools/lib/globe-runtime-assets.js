@@ -126,12 +126,12 @@ const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
 const CT42_SHARED_HOST_PATHS = Object.freeze(['index.html', 'sw.js']);
 
 /**
- * Preserve CT-42's exact climate/runtime review while allowing the foundation
- * brand presentation to evolve inside the two shared host files. Everything
- * outside these narrowly identified brand slots remains byte-for-byte bound to
- * the reviewed commit. CT-45 independently validates the climate copy, CSP,
- * runtime requests, service-worker epoch, critical precache entries, and
- * fail-closed behavior in these same files.
+ * Preserve CT-42's exact climate/runtime review while allowing narrowly scoped
+ * foundation identity changes inside the two shared host files. The projection
+ * excludes the reviewed brand slots plus exact, non-climate canonical/indexing
+ * tags. Everything else remains byte-for-byte bound to the reviewed commit.
+ * CT-45 independently validates the climate copy, CSP, runtime requests,
+ * service-worker epoch, critical precache entries, and fail-closed behavior.
  */
 function ct42RuntimeProjection(relativePath, bytes) {
   const source = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes);
@@ -143,6 +143,8 @@ function ct42RuntimeProjection(relativePath, bytes) {
   }
 
   text = text
+    .replace(/^<meta name="robots" content="index, follow, max-image-preview:large">\n/m, '')
+    .replace(/^<link rel="canonical" href="https:\/\/earthloveunited\.org\/">\n/m, '')
     .replace(/^\.foundation-mark,\.hero-foundation-logo\{[^\n]*\}\n?/gm, '')
     .replace(/^\[data-theme="light"\] \.foundation-mark,\[data-theme="light"\] \.hero-foundation-logo\{[^\n]*\}\n?/gm, '')
     .replace(/^\.hero-foundation-logo\{[^\n]*\}\n?/gm, '')
@@ -185,6 +187,8 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/check-public-deploy-surface.js',
   '/tools/lib/public-deploy-surface.js',
   '/_headers',
+  '/_redirects',
+  '/wrangler.jsonc',
   '/docs/LEGACY-COUNTRY-DATA-EXIT.md',
   '/tools/check-climate-production-readiness.js',
   '/tools/check-climate-production-readiness-policy.js',

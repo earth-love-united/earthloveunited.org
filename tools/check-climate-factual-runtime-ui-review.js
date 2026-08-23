@@ -213,6 +213,13 @@ function runSharedHostProjectionTests() {
   assert.notEqual(sha256Bytes(ct42RuntimeProjection('index.html', unsafeIndex)),
     sha256Bytes(ct42RuntimeProjection('index.html', reviewedIndex)),
     'climate-truth copy drift must remain inside the CT-42 projection');
+  const unsafeCanonical = Buffer.from(currentIndex.toString('utf8').replace(
+    'https://earthloveunited.org/">',
+    'https://example.invalid/">'
+  ));
+  assert.notEqual(sha256Bytes(ct42RuntimeProjection('index.html', unsafeCanonical)),
+    sha256Bytes(ct42RuntimeProjection('index.html', reviewedIndex)),
+    'canonical drift must remain inside the CT-42 projection');
   const unsafeSw = Buffer.from(currentSw.toString('utf8').replace(
     "const CACHE_NAME = 'elu-v37-return-contrast';",
     "const CACHE_NAME = 'unreviewed-runtime';"
@@ -220,7 +227,7 @@ function runSharedHostProjectionTests() {
   assert.notEqual(sha256Bytes(ct42RuntimeProjection('sw.js', unsafeSw)),
     sha256Bytes(ct42RuntimeProjection('sw.js', reviewedSw)),
     'service-worker behavior drift must remain inside the CT-42 projection');
-  return 4;
+  return 5;
 }
 
 const review = readJson(REVIEW_PATH);

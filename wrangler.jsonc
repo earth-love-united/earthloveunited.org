@@ -2,6 +2,7 @@
   "name": "earthloveunited",
   "compatibility_date": "2026-07-24",
   "assets": {
-    "directory": "./_deploy"
+    "directory": "./_deploy",
+    "not_found_handling": "404-page"
   }
 }

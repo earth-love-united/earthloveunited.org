@@ -1,0 +1,6 @@
+# Retired GAIA URLs now resolve to the current Living Globe evidence surface.
+/gaia /#globe 301
+/gaia.html /#globe 301
+
+# Preserve the conventional favicon URL for clients that ignore rel="icon".
+/favicon.ico /favicon.svg 302
