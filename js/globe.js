@@ -1356,8 +1356,10 @@ const GlobeModule = {
         + '<span class="elu-rank-name">' + _escapeHtml(entry.label) + '</span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span><span class="elu-rank-gap">Data gap</span></button>';
     }).join('');
     const unmapped = unmappedRanked.concat(unmappedGaps).map(entry => '<div class="elu-rank-unmapped"><span aria-hidden="true">◇</span> ' + _escapeHtml(entry.label) + ' (' + _escapeHtml(entry.country_id.split(':')[1]) + ') · not mapped on this globe</div>').join('');
+    const reviewedTotal = Number.isInteger(ranking.disclosure?.eligible_count) ? ranking.disclosure.eligible_count : 206;
+    const mappedDisclosure = mappedRanked.length + ' of ' + reviewedTotal + ' reviewed registry entities mapped · competition ties preserved';
     rail.innerHTML = '<div class="elu-rank-head"><div><div class="elu-rank-title">2023 emissions magnitude</div><div class="elu-rank-subtitle">Harmonized estimate · MtCO₂e/yr · not a performance score</div></div><button type="button" class="elu-rank-toggle" aria-label="Collapse emissions ranking" aria-expanded="true">−</button></div>'
-      + '<div class="elu-rank-list"><div class="elu-rank-disclosure">' + mappedRanked.length + ' of 206 reviewed registry entities mapped · competition ties preserved</div>'
+      + '<div class="elu-rank-list"><div class="elu-rank-disclosure" aria-label="' + mappedDisclosure + '"><span class="elu-rank-disclosure-full">' + mappedDisclosure + '</span><span class="elu-rank-disclosure-compact" aria-hidden="true"><strong>' + mappedRanked.length + '/' + reviewedTotal + '</strong><span>mapped</span><span>ties kept</span></span></div>'
       + '<div role="list" aria-label="Mapped registry entities ranked by the same 2023 metric">' + ranked + '</div>'
       + '<h2 class="elu-rank-gap-heading">Source gaps · unnumbered</h2><div role="list" aria-label="Mapped registry entities not ranked because source data are unavailable">' + gaps + '</div>'
       + (unmapped ? '<h2 class="elu-rank-gap-heading">Not mapped · noninteractive</h2><div aria-label="Registry entities without interactive globe geometry">' + unmapped + '</div>' : '') + '</div>';
