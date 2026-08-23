@@ -6,7 +6,13 @@
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
 
-/assets/globe/runtime/*
+/assets/globe/runtime/*.geojson
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/globe/runtime/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/globe/runtime/*.png
   Cache-Control: public, max-age=31536000, immutable
 
 /favicon.svg
