@@ -13,7 +13,7 @@ const {
 
 const ROOT = path.resolve(__dirname, '..');
 const REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
-const EXPECTED_COMMIT = '0ccf9cf90e25e98cc7b734cb4acf8ee0d85080eb';
+const EXPECTED_COMMIT = 'f43b91556d7734a36a69d6a7d8a18a7b8ca2a92b';
 const REQUIRED_GATES = [
   'runtime-boundary', 'truth-language', 'magnitude-and-gaps', 'chart-table-source',
   'screen-reader-semantics', 'keyboard-focus', 'touch-targets', 'responsive-320',
