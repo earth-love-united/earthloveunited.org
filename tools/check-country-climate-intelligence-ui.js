@@ -9,12 +9,13 @@ const { ROOT } = require('./lib/country-climate-intelligence');
 const index = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 const presentation = fs.readFileSync(path.join(ROOT, 'js/country-climate-intelligence.js'), 'utf8');
 const globe = fs.readFileSync(path.join(ROOT, 'js/globe.js'), 'utf8');
+const guidedOrbit = fs.readFileSync(path.join(ROOT, 'js/guided-first-orbit.js'), 'utf8');
 const css = fs.readFileSync(path.join(ROOT, 'css/globe-system.css'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
 const dataAt = index.indexOf('src="js/data.js?v=v5"');
-const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v4"');
-const globeAt = index.indexOf('src="js/globe.js?v=v21"');
+const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v5"');
+const globeAt = index.indexOf('src="js/globe.js?v=v22"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -30,10 +31,21 @@ assert(globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getLegend'"));
 assert(presentation.includes("const reliefKind = lens.visual.extrusion === 'transparent_log' ? 'metric_log' : 'metric_linear'"));
 assert(presentation.includes("relief: metricRelief ? reliefKind : 'base_tile'"));
 assert(presentation.includes('relief_encodes_metric: metricRelief'));
-assert(presentation.includes('Bounded linear tile height and color show clean electricity share.'));
-assert(presentation.includes('Linear tile height and color show projected warming—not vulnerability or damage.'));
+assert(presentation.includes('const RELIEF_BASE_ALTITUDE = 0.007;'));
+assert(presentation.includes('const RELIEF_RANGE = 0.005;'));
+assert(presentation.includes("query.get('carbon-relief') === CARBON_RELIEF_DEMO_VALUE"));
+assert(presentation.includes("relief_direction: inverseCarbonDemo ? 'lower_value_higher' : 'higher_value_higher'"));
+assert(presentation.includes("relief_note: inverseCarbonDemo ? 'Inverse relief demo' : null"));
+assert(presentation.includes('Color and the rail still show raw emissions; this is not a performance score.'));
+assert(presentation.includes('Subtle bounded linear tile relief and color show clean electricity share.'));
+assert(presentation.includes('Subtle linear tile relief and color show projected warming—not vulnerability or damage.'));
+assert(guidedOrbit.includes('Color and subtle tile relief follow the selected metric: Carbon is log-scaled, Power bounded linear, and Physical linear.'));
+assert(!guidedOrbit.includes('Only Carbon uses transparent log-scaled height'));
 assert(globe.includes('_countryPolygonSideColorFn(feature)'));
 assert(globe.includes('.polygonSideColor((f) => this._countryPolygonSideColorFn(f))'));
+assert(globe.includes('class="elu-rank-relief-note"'));
+assert(globe.includes('Inverse relief demo: lower territorial fossil CO₂ sits slightly higher; the raw descending rail is unchanged.'));
+assert(css.includes('.elu-rank-relief-note'));
 
 const controlsAt = index.indexOf('id="climate-lens-controls"');
 const globeVizAt = index.indexOf('id="globeViz"');
@@ -61,8 +73,8 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v46-country-climate-tiled-lenses'"));
-assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v4'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v47-country-climate-subtle-relief'"));
+assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v5'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate3'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired project data must not be pinned by the climate runtime cache');

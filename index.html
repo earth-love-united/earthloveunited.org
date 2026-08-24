@@ -102,7 +102,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="js/gaia-utils.js" as="script">
 <link rel="preload" href="js/data.js?v=v5" as="script">
-<link rel="preload" href="js/country-climate-intelligence.js?v=v4" as="script">
+<link rel="preload" href="js/country-climate-intelligence.js?v=v5" as="script">
 
 <!-- ═══ CRITICAL CSS (inlined) ═══ -->
 <style>
@@ -362,7 +362,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v27">
+<link rel="stylesheet" href="css/globe-system.css?v=v28">
 <link rel="stylesheet" href="css/guided-first-orbit.css?v=v2">
 
 <!-- Non-critical CSS: deferred async load -->
@@ -598,9 +598,9 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <h2 id="globe-h">The Living Globe</h2>
     <p class="sec-lead">Explore a metric-first country dashboard across carbon, power, and physical-climate lenses. All 249 registry entities remain navigable; only exact metric-and-period matches enter each order.</p>
     <div class="globe-key" role="list" aria-label="Country evidence availability legend">
-      <span role="listitem"><i style="background:linear-gradient(135deg,#4d529c,#f47f3b)"></i> Carbon · territorial fossil CO₂ in 2024, with transparent log-scaled height</span>
-      <span role="listitem"><i style="background:linear-gradient(135deg,#4d5382,#30c497)"></i> Power · 2024 clean generation share, color only</span>
-      <span role="listitem"><i style="background:linear-gradient(135deg,#3f6fae,#e85b45)"></i> Physical · SSP2-4.5 median projected warming for 2040–2059, color only</span>
+      <span role="listitem"><i style="background:linear-gradient(135deg,#4d529c,#f47f3b)"></i> Carbon · territorial fossil CO₂ in 2024, with subtle log-scaled relief and color</span>
+      <span role="listitem"><i style="background:linear-gradient(135deg,#4d5382,#30c497)"></i> Power · 2024 clean generation share, with subtle bounded relief and color</span>
+      <span role="listitem"><i style="background:linear-gradient(135deg,#3f6fae,#e85b45)"></i> Physical · SSP2-4.5 median projected warming for 2040–2059, with subtle linear relief and color</span>
       <span role="listitem"><i style="background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1"></i> Neutral pattern · exact comparison metric unavailable, visible and unranked</span>
     </div>
     <p class="data-note">Map boundaries use generalized Natural Earth 1:110m geometry for navigation only. Twenty-eight small states absent from that dataset use manually curated approximate navigation points, not boundaries or precise centroids. Disputed subfeatures including Northern Cyprus and Somaliland are excluded from the data overlay and never inherit a parent entity’s evidence. None of these representations expresses a position on sovereignty or legal boundaries.</p>
@@ -814,10 +814,10 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v5"></script>
-<script src="js/country-climate-intelligence.js?v=v4"></script>
-<script src="js/globe.js?v=v21"></script>
+<script src="js/country-climate-intelligence.js?v=v5"></script>
+<script src="js/globe.js?v=v22"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
-<script src="js/guided-first-orbit.js?v=v2"></script>
+<script src="js/guided-first-orbit.js?v=v3"></script>
 <script src="js/app.js?v=v3"></script>
 
 <!-- Glass system behavior: scroll reveal + theme toggle (design handoff v1) -->
@@ -963,7 +963,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=46-country-climate-tiled-lenses', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=47-country-climate-subtle-relief', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

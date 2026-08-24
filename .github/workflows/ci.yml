@@ -396,6 +396,31 @@ jobs:
                 lensId + ' must use transparent linear tile height for its exact comparison metric');
             }
           }
+          const inverseCarbonDemo = await page.evaluate(() => {
+            const priorUrl = location.href;
+            history.replaceState({}, '', '/?ci-relief-test=1&carbon-relief=low-is-high');
+            window.COUNTRY_CLIMATE_INTELLIGENCE.reset();
+            const state = window.COUNTRY_CLIMATE_INTELLIGENCE.getState();
+            const high = window.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('CHN', 'carbon');
+            const low = window.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('VUT', 'carbon');
+            const gap = window.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('ATA', 'carbon');
+            const rail = window.COUNTRY_CLIMATE_INTELLIGENCE.getRailRows('carbon');
+            const legend = window.COUNTRY_CLIMATE_INTELLIGENCE.getLegend('carbon');
+            history.replaceState({}, '', priorUrl);
+            window.COUNTRY_CLIMATE_INTELLIGENCE.reset();
+            return { state, high, low, gap, railFirst: rail.ordered[0], reliefNote: rail.relief_note, legend };
+          });
+          assert(inverseCarbonDemo.state.carbonReliefMode === 'lower_value_higher' &&
+            inverseCarbonDemo.low.visual.altitude > inverseCarbonDemo.high.visual.altitude &&
+            inverseCarbonDemo.low.visual.altitude <= 0.012 &&
+            inverseCarbonDemo.gap.visual.altitude === 0.007 &&
+            inverseCarbonDemo.gap.visual.relief_encodes_metric === false,
+          'inverse Carbon demo must raise lower values subtly without promoting gaps');
+          assert(inverseCarbonDemo.railFirst.iso_alpha3 === 'CHN' &&
+            inverseCarbonDemo.railFirst.ordinal === 1 && inverseCarbonDemo.reliefNote === 'Inverse relief demo' &&
+            inverseCarbonDemo.legend.relief_demo === true &&
+            inverseCarbonDemo.legend.extrusion_note.includes('not a performance score'),
+          'inverse Carbon demo must preserve the raw descending rail and disclose its presentation direction');
           await page.locator('#country-card-heading').focus();
           await page.waitForFunction(() => document.activeElement?.id === 'country-card-heading');
           await page.keyboard.press('Tab');

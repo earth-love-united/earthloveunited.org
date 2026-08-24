@@ -859,6 +859,21 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   text-transform: uppercase;
 }
 
+.elu-rank-relief-note {
+  display: inline-flex;
+  margin-top: 5px;
+  padding: 3px 5px;
+  border: 1px solid rgba(96, 225, 203, .34);
+  border-radius: 2px;
+  background: rgba(96, 225, 203, .08);
+  color: var(--mint);
+  font-family: var(--mono);
+  font-size: 7px;
+  line-height: 1.2;
+  letter-spacing: .65px;
+  text-transform: uppercase;
+}
+
 .elu-rank-subtitle {
   margin-top: 3px;
   color: var(--hud-faint);
@@ -1510,6 +1525,13 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .elu-trajectory-cu
 
   .elu-rank-head > div { min-width: 0; }
   .elu-rank-title { font-size: 7px; letter-spacing: .8px; }
+  .elu-rank-relief-note {
+    display: block;
+    margin-top: 4px;
+    padding: 2px 3px;
+    font-size: 6px;
+    letter-spacing: .35px;
+  }
   .elu-rank-subtitle,
   .elu-rank-toggle { display: none; }
 
@@ -1705,6 +1727,13 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .elu-trajectory-cu
   body[data-climate-lens="carbon"] .elu-rank-title::after { content: 'CO₂'; }
   body[data-climate-lens="power"] .elu-rank-title::after { content: 'Clean'; }
   body[data-climate-lens="physical"] .elu-rank-title::after { content: 'Warm'; }
+
+  .elu-rank-relief-note { font-size: 0; }
+  .elu-rank-relief-note::after {
+    content: 'Demo';
+    font-size: 6px;
+    letter-spacing: .35px;
+  }
 
   .climate-lens-controls button {
     min-width: 60px;

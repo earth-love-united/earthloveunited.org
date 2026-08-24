@@ -8,7 +8,10 @@
 const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   'use strict';
 
-  const VERSION = '1.1.0';
+  const VERSION = '1.2.0';
+  const RELIEF_BASE_ALTITUDE = 0.007;
+  const RELIEF_RANGE = 0.005;
+  const CARBON_RELIEF_DEMO_VALUE = 'low-is-high';
   const PANEL_METRICS = Object.freeze({
     carbon: Object.freeze([
       'emissions.fossil_co2.territorial',
@@ -85,6 +88,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   let _orderByLens = new Map();
   let _domainByLens = new Map();
   let _countryById = new Map();
+  let _carbonReliefMode = 'higher_value_higher';
 
   function finite(value) {
     return typeof value === 'number' && Number.isFinite(value);
@@ -209,6 +213,17 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     return 'rgba(' + shaded.join(',') + ',0.86)';
   }
 
+  function carbonReliefMode() {
+    try {
+      const query = new URLSearchParams(window.location.search);
+      return query.get('carbon-relief') === CARBON_RELIEF_DEMO_VALUE
+        ? 'lower_value_higher'
+        : 'higher_value_higher';
+    } catch (_) {
+      return 'higher_value_higher';
+    }
+  }
+
   function rankFor(lensId, countryId) {
     const order = _orderByLens.get(lensId);
     if (!order) return null;
@@ -262,6 +277,8 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       : 'Unranked: ' + rank.reason.detail;
     const metricRelief = position !== null && lens.visual.extrusion !== 'none';
     const reliefKind = lens.visual.extrusion === 'transparent_log' ? 'metric_log' : 'metric_linear';
+    const inverseCarbonDemo = lens.id === 'carbon' && _carbonReliefMode === 'lower_value_higher';
+    const reliefPosition = metricRelief && inverseCarbonDemo ? 1 - position : position;
     return {
       version: VERSION,
       lens,
@@ -295,10 +312,13 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
         normalized: position,
         color: color(lens.id, position, 0.7),
         solid_color: color(lens.id, position, 0.92),
-        altitude: metricRelief ? round(0.007 + position * 0.022, 6) : 0.007,
+        altitude: metricRelief ? round(RELIEF_BASE_ALTITUDE + reliefPosition * RELIEF_RANGE, 6) : RELIEF_BASE_ALTITUDE,
         extrusion: lens.visual.extrusion,
         relief: metricRelief ? reliefKind : 'base_tile',
         relief_encodes_metric: metricRelief,
+        relief_normalized: metricRelief ? round(reliefPosition, 6) : null,
+        relief_direction: inverseCarbonDemo ? 'lower_value_higher' : 'higher_value_higher',
+        relief_demo: inverseCarbonDemo,
         side_color: lens.id === 'carbon' ? 'rgba(0,0,0,0)' : tileSideColor(lens.id, position),
       },
       methods: {
@@ -324,6 +344,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     const lens = _lensById.get(lensId) || _lensById.get('carbon');
     const order = _orderByLens.get(lens.id);
     if (!order) return null;
+    const inverseCarbonDemo = lens.id === 'carbon' && _carbonReliefMode === 'lower_value_higher';
     const ordered = order.ordered.map(entry => ({
       ...entry,
       ranked: true,
@@ -344,6 +365,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       eligible_count: order.eligible_count,
       unranked_count: order.unranked_count,
       disclosure: order.rule,
+      relief_note: inverseCarbonDemo ? 'Inverse relief demo' : null,
     };
   }
 
@@ -352,6 +374,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     const lens = _lensById.get(lensId) || _lensById.get('carbon');
     const rows = getRailRows(lens.id);
     const palette = PALETTES[lens.id];
+    const inverseCarbonDemo = lens.id === 'carbon' && _carbonReliefMode === 'lower_value_higher';
     const labels = lens.id === 'power'
       ? ['0% clean', '100% clean']
       : lens.id === 'physical'
@@ -368,10 +391,14 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       high_color: 'rgb(' + palette.end.join(',') + ')',
       gap_color: 'rgb(' + palette.gap.join(',') + ')',
       extrusion_note: lens.id === 'carbon'
-        ? 'Transparent log-scaled tile height and color show magnitude.'
+        ? inverseCarbonDemo
+          ? 'Demo relief is inverted: lower territorial fossil CO₂ sits slightly higher. Color and the rail still show raw emissions; this is not a performance score.'
+          : 'Subtle transparent log-scaled tile relief and color show magnitude.'
         : lens.id === 'power'
-          ? 'Bounded linear tile height and color show clean electricity share.'
-          : 'Linear tile height and color show projected warming—not vulnerability or damage.',
+          ? 'Subtle bounded linear tile relief and color show clean electricity share.'
+          : 'Subtle linear tile relief and color show projected warming—not vulnerability or damage.',
+      relief_direction: inverseCarbonDemo ? 'lower_value_higher' : 'higher_value_higher',
+      relief_demo: inverseCarbonDemo,
       evidence_label: evidenceLabel(lens.evidence_status, lens.comparison_metric_id),
     };
   }
@@ -386,6 +413,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     _lensById = new Map(release.lens_catalog.map(lens => [lens.id, lens]));
     _sourceById = new Map(release.source_catalog.map(source => [source.id, source]));
     _orderByLens = new Map(Object.entries(release.lens_orders));
+    _carbonReliefMode = carbonReliefMode();
     _countryById = new Map();
     release.countries.forEach(country => {
       _countryById.set(country.country_id, country);
@@ -417,6 +445,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     _orderByLens = new Map();
     _domainByLens = new Map();
     _countryById = new Map();
+    _carbonReliefMode = 'higher_value_higher';
     return true;
   }
 
@@ -427,6 +456,13 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       releaseId: _release?.release?.id || null,
       entityCount: _release?.countries?.length || 0,
       lenses: Array.from(_lensById.keys()),
+      carbonReliefMode: _carbonReliefMode,
+      relief: {
+        baseAltitude: RELIEF_BASE_ALTITUDE,
+        range: RELIEF_RANGE,
+        maximumAltitude: RELIEF_BASE_ALTITUDE + RELIEF_RANGE,
+        demoQuery: 'carbon-relief=' + CARBON_RELIEF_DEMO_VALUE,
+      },
     };
   }
 

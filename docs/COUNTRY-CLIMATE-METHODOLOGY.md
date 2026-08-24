@@ -2,7 +2,7 @@
 
 **Status:** normalized factual candidate pending source revalidation; not a production scientific release
 
-**Methodology version:** 1.0.0
+**Methodology version:** 1.0.1
 
 **Candidate date:** 2026-08-24
 
@@ -26,7 +26,9 @@ An upstream record must map to one registry entity or receive one documented `ag
 
 ### Carbon
 
-The default comparison is 2024 territorial fossil CO₂ from [Global Carbon Budget 2025 v1.0](https://meta.icos-cp.eu/collections/AxnIW-ydMBT4BdKjxV63DGQl). The ordered rail is descending by the raw `emissions.fossil_co2.territorial` value. Color is sequential and transparent polygon extrusion is log-scaled for magnitude.
+The default comparison is 2024 territorial fossil CO₂ from [Global Carbon Budget 2025 v1.0](https://meta.icos-cp.eu/collections/AxnIW-ydMBT4BdKjxV63DGQl). The ordered rail is descending by the raw `emissions.fossil_co2.territorial` value. Color is sequential and transparent polygon relief is log-scaled for magnitude. Relief is deliberately subtle: every metric tile stays between `0.007` and `0.012` globe radii above the surface.
+
+The query-only presentation experiment `?carbon-relief=low-is-high` reverses Carbon relief so lower territorial fossil CO₂ sits slightly higher and the largest value remains nearest the base tile. It does not change color, the raw descending rail, eligibility, country facts, or source data. Its legend explicitly identifies the inversion as a demo and not a performance score. Missing values remain at the base rather than being treated as low emissions.
 
 The card keeps these facts separate:
 
@@ -43,17 +45,21 @@ Land-use change never enters the territorial fossil comparison value. Positive n
 
 ### Power
 
-The comparison is Ember's 2024 published clean-generation aggregate. The rail explores descending `electricity.clean_share`. Color and raised country-tile height redundantly encode the same bounded 0–100% clean-share metric on a linear scale; no other power metric affects height.
+The comparison is Ember's 2024 published clean-generation aggregate. The rail explores descending `electricity.clean_share`. Color and subtle country-tile relief redundantly encode the same bounded 0–100% clean-share metric on a linear scale; no other power metric affects height.
 
 The card includes clean, fossil, and wind-and-solar shares, 2019–2024 clean-share change, carbon intensity, and power-sector emissions. Only source-classified annual actuals may enter the comparison order. Source-labelled estimates remain context or gaps.
 
 ### Physical climate
 
-The comparison explores the World Bank Climate Change Knowledge Portal CMIP6 country-area median temperature anomaly for 2040–2059 relative to 1995–2014 under SSP2-4.5. Color and raised country-tile height redundantly encode that same modeled warming median on a linear scale. Height is not vulnerability, damage, or responsibility.
+The comparison explores the World Bank Climate Change Knowledge Portal CMIP6 country-area median temperature anomaly for 2040–2059 relative to 1995–2014 under SSP2-4.5. Color and subtle country-tile relief redundantly encode that same modeled warming median on a linear scale. Height is not vulnerability, damage, or responsibility.
 
 The public fact carries the multi-model p10–p90 range. SSP1-2.6 and SSP5-8.5 medians appear in the analyst detail. The related precipitation anomaly remains context.
 
+The four headline comparison gaps are `ATA`, `ESH`, `FLK`, and `SGS`. Global CCKP rasters cover the required variables and periods, so these are unresolved acquisition/identity cases rather than proven missing climate fields. Antarctica is conditionally fillable after a reviewed geographic polygon and complete model-first aggregation. Western Sahara, Falkland Islands (Malvinas), and South Georgia and the South Sandwich Islands stay explicit gaps until a release-level disputed/NDLSA and multipart-territory boundary policy is approved. Grid-cell percentile rasters cannot be spatially averaged and relabelled as country-level ensemble percentiles; country means must be calculated per model before the cross-model p10/median/p90.
+
 Observed ERA5 country trends are defined as ordinary-least-squares slopes over annual aggregates from 1970 through the last complete snapshot year, reported per decade. The v1 ERA5 API snapshot was empty, so all 249 observed-trend records are explicit `source_snapshot_empty` gaps. No trend is inferred.
+
+A 2026-08-25 recovery audit recommends replacing that unreliable country-API path with direct Copernicus ERA5 monthly `2m_temperature`, aggregated offline to a pinned Admin-0 boundary version with fractional-cell area weighting. The intended label is “ERA5 reanalysis 2 m air-temperature trend, 1970–2024 (°C/decade).” No value enters the candidate until the new source entry, raw checksums, attribution, crosswalk, mapped-area threshold, and complete 55-year compiler output pass review.
 
 ## Source contract
 

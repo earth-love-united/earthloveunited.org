@@ -94,7 +94,7 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 - v2.6.1 present only in detailed citation provenance; v2.7 absent entirely;
 - selection preserved across lenses;
 - metric/value/unit/period/evidence in tooltips;
-- every raised-tile height is a redundant encoding of the active lens's exact comparison metric; Physical height is never described as vulnerability, damage, or responsibility;
+- every tile relief value is a subtle monotonic encoding of the active lens's exact comparison metric; the query-only inverse Carbon demo declares its direction and never changes the raw emissions rail, while Physical height is never described as vulnerability, damage, or responsibility;
 - fallback parity for all 249 records;
 - body-level controls, 44px touch targets, reduced motion, focus restoration, and non-color status cues;
 - stale cache, WebCrypto, WebGL, constructor, and partial-data failures fail closed.
@@ -114,8 +114,8 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v46 service worker composes the reviewed Guided First Orbit assets with the
-candidate dashboard and stages both runtime generations:
+The v47 service worker composes the reviewed Guided First Orbit assets with the
+subtle relief presentation, candidate dashboard, and both runtime generations:
 
 ```text
 data/climate/runtime/country-climate-intelligence.json?v=cci1candidate3
@@ -128,6 +128,12 @@ Rollback is a reviewed runtime/data-loader/service-worker change; it does not de
 
 The independent source-rigor pass and its remaining production blockers are recorded in
 [`COUNTRY-CLIMATE-SOURCE-RIGOR-AUDIT.md`](COUNTRY-CLIMATE-SOURCE-RIGOR-AUDIT.md).
-The next action is completion of the open evidence, rights, scientific, and protected-file
-reviews, not feature expansion. NDC assessment, delivery scoring, finance, vulnerability,
-monthly/YTD views, and composite rankings remain out of scope for v1.
+The four projected-temperature gaps require CCKP individual-model, country-first aggregation;
+Antarctica is conditionally fillable, while ESH, FLK, and SGS retain explicit gaps until a
+reviewed disputed/NDLSA and multipart-territory boundary policy exists. The observed-temperature
+recovery path is direct Copernicus ERA5 monthly 2 m temperature plus a pinned Admin-0
+boundary/crosswalk compiler; existing gaps remain until its complete checksummed 1970–2024
+output passes source, rights, mapping, and scientific review. The next action is completion of
+those evidence, rights, scientific, and protected-file reviews, not unreviewed value insertion.
+NDC assessment, delivery scoring, finance, vulnerability, monthly/YTD views, and composite
+rankings remain out of scope for v1.

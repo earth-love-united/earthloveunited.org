@@ -1310,7 +1310,8 @@ const GlobeModule = {
         + '<span class="elu-rank-name">' + _escapeHtml(entry.name) + '<small>' + _escapeHtml(reason) + '</small></span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span><span class="elu-rank-gap">Data gap</span></button>';
     }).join('');
     const mappedDisclosure = mappedRankedCount + ' of ' + rows.eligible_count + ' ordered entities mapped · all 249 searchable';
-    rail.innerHTML = '<div class="elu-rank-head"><div><div class="elu-rank-title">' + _escapeHtml(rows.lens.heading) + '</div><div class="elu-rank-subtitle">' + _escapeHtml(rows.lens.interpretation) + '</div></div><button type="button" class="elu-rank-toggle" aria-label="Collapse country order" aria-expanded="true">−</button></div>'
+    const reliefNote = rows.relief_note ? '<div class="elu-rank-relief-note">' + _escapeHtml(rows.relief_note) + '</div>' : '';
+    rail.innerHTML = '<div class="elu-rank-head"><div><div class="elu-rank-title">' + _escapeHtml(rows.lens.heading) + '</div>' + reliefNote + '<div class="elu-rank-subtitle">' + _escapeHtml(rows.lens.interpretation) + '</div></div><button type="button" class="elu-rank-toggle" aria-label="Collapse country order" aria-expanded="true">−</button></div>'
       + '<div class="elu-rank-list"><label class="elu-rank-search"><span>Find country or ISO code</span><input type="search" data-country-rail-filter autocomplete="off" spellcheck="false"></label><div class="elu-rank-disclosure" aria-label="' + _escapeHtml(mappedDisclosure) + '"><span class="elu-rank-disclosure-full">' + _escapeHtml(mappedDisclosure) + '</span><span class="elu-rank-disclosure-compact" aria-hidden="true"><strong>' + mappedRankedCount + '/' + rows.eligible_count + '</strong><span>mapped</span><span>' + rows.unranked_count + ' gaps</span></span></div>'
       + '<p class="elu-rank-filter-results" data-country-rail-results aria-live="polite">249 entities shown</p>'
       + '<div role="list" aria-label="Entities ordered by the exact ' + _escapeHtml(rows.lens.heading) + ' metric">' + ranked + '</div>'
@@ -2278,12 +2279,18 @@ const GlobeModule = {
   _syncLensControls() {
     document.body.dataset.climateLens = this.currentLens;
     const lens = (Data.getClimateLensCatalog?.() || []).find(item => item.id === this.currentLens);
+    const legend = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getLegend', this.currentLens);
     document.querySelectorAll('.climate-lens-controls [data-climate-lens]').forEach(button => {
       const active = button.getAttribute('data-climate-lens') === this.currentLens;
       button.classList.toggle('is-active', active);
       button.setAttribute('aria-pressed', String(active));
     });
-    if (lens) $text('climate-lens-status', lens.heading + ' lens selected. Country selection is preserved.');
+    if (lens) {
+      const reliefStatus = legend?.relief_demo
+        ? ' Inverse relief demo: lower territorial fossil CO₂ sits slightly higher; the raw descending rail is unchanged.'
+        : '';
+      $text('climate-lens-status', lens.heading + ' lens selected. Country selection is preserved.' + reliefStatus);
+    }
   },
 
   _renderLegend() {

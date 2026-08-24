@@ -1,17 +1,17 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v46) — compose the responsive Guided First Orbit with the
- * shared raised-tile lenses, pinned candidate runtime, and rollback.
+ * Globe cache (v47) — compose the responsive Guided First Orbit with the
+ * subtle shared tile relief, pinned candidate runtime, and rollback.
  */
-const CACHE_NAME = 'elu-v46-country-climate-tiled-lenses';
+const CACHE_NAME = 'elu-v47-country-climate-subtle-relief';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v27',
+  '/css/globe-system.css?v=v28',
   '/css/guided-first-orbit.css?v=v2',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
@@ -29,10 +29,10 @@ const STATIC_ASSETS = [
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v5',
-  '/js/country-climate-intelligence.js?v=v4',
-  '/js/globe.js?v=v21',
+  '/js/country-climate-intelligence.js?v=v5',
+  '/js/globe.js?v=v22',
   '/js/carbon-clock.js?v=v1',
-  '/js/guided-first-orbit.js?v=v2',
+  '/js/guided-first-orbit.js?v=v3',
   '/js/app.js?v=v3',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)

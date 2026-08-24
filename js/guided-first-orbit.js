@@ -22,7 +22,7 @@ const GUIDED_ORBIT = (() => {
       {
         mode: 'interaction',
         title: 'Read the map',
-        body: 'Color follows the selected metric. Only Carbon uses transparent log-scaled height; a gap is never shown as zero.',
+        body: 'Color and subtle tile relief follow the selected metric: Carbon is log-scaled, Power bounded linear, and Physical linear. Gaps stay at the base and are never shown as zero.',
         hint: 'Change lens, tap the globe, or choose a country code',
         waiting: true,
         legend: true,

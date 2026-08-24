@@ -49,7 +49,7 @@ mission.
 | Persistence facade | `js/storage.js` | Safe storage API over `STORAGE_ADAPTER` |
 | Data validation | `js/data-schema.js` | Runtime JSON validation |
 | Data loader | `js/data.js` | Exact-SHA Country Climate Intelligence loading and 249-entity lookups |
-| Climate view model | `js/country-climate-intelligence.js` | Lens selection policy, rail rows, country facts, legend, gaps, and provenance |
+| Climate view model | `js/country-climate-intelligence.js` | Lens selection policy, rail rows, country facts, legend, gaps, provenance, and disclosed query-only visual experiments |
 | Globe runtime | `js/globe.js` | globe.gl lifecycle, country geometry, atlas rail/card, lens rendering, selection and themes |
 | Carbon clock | `js/carbon-clock.js` | Hero/topbar emissions counter |
 | Globe orientation | `js/guided-first-orbit.js` | First-visit tutorial, real country-choice handoff, completion preference, replay |
@@ -101,7 +101,7 @@ on `window`.
 | `Storage` | `js/storage.js` | yes | Safe persistence facade |
 | `DATA_SCHEMA` | `js/data-schema.js` | yes | Runtime data validation |
 | `Data` | `js/data.js` | yes | Data load and country lookups |
-| `COUNTRY_CLIMATE_INTELLIGENCE` | `js/country-climate-intelligence.js` | yes | Metric/lens presentation contract and scientific selection boundary |
+| `COUNTRY_CLIMATE_INTELLIGENCE` | `js/country-climate-intelligence.js` | yes | Metric/lens presentation contract, scientific selection boundary, and relief direction disclosure |
 | `GlobeModule` | `js/globe.js` | yes | Live globe and country atlas |
 | `Panel` | `js/globe.js` | legacy internal export | Archived-site fallback helpers; not part of current public flow |
 | `PanelSlider` | `js/globe.js` | legacy internal export | Archived-site fallback helpers |
