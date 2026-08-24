@@ -120,7 +120,8 @@ function compile() {
       gaps_unranked: fallbackRuntime.includes('explicit source gap, unranked') &&
         fallbackRuntime.includes('missing data does not indicate better climate performance.'),
       source_and_limits: fallbackRuntime.includes('Source &amp; methodology') &&
-        fallbackRuntime.includes('emissions.limitations') && fallbackRuntime.includes('emissions.source_url'),
+        fallbackRuntime.includes('_getDisplayLimitations(emissions)') &&
+        globe.includes('emissions?.limitations') && fallbackRuntime.includes('emissions.source_url'),
     },
     validation: {
       smoke_contract: smoke.includes('Non-WebGL fallback is body-level, accessible, and fail-closed') &&
