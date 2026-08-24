@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0.0",
-  "release_id": "country-climate-intelligence-2026-08-24-candidate.1",
+  "schema_version": "1.1.0",
+  "release_id": "country-climate-intelligence-2026-08-25-candidate.2",
   "raw_storage_policy": "external_only",
   "reviewed_normalized_recovery": {
     "artifact": "data/climate/runtime/country-climate-intelligence.json before component reassembly",
@@ -49,8 +49,31 @@
     },
     {
       "source_registry_id": "world-bank-cckp-era5-2026-08-24",
-      "status": "exact_empty_response_represented_as_reviewed_gaps",
+      "status": "superseded_empty_endpoint_attempt_retained_for_audit",
       "normalized_component": "cckp-physical.json"
+    },
+    {
+      "source_registry_id": "world-bank-cckp-era5-2026-08-25",
+      "status": "exact_raw_and_normalized_receipts_pinned_pending_independent_scientific_review",
+      "normalized_component": "cckp-physical.json",
+      "raw_receipt": {
+        "path": "data/climate/releases/country-climate-intelligence-v1/cckp-era5-temperature-raw-receipt.json",
+        "receipt_sha256": "019633bc2ebf821b6a3c93e2d5c9bbdf104cfac0610648e06e757a2594664762",
+        "snapshot_bytes": 295983,
+        "snapshot_sha256": "62effa974e359adb02b6e4346d385997af9987a9437e31d58cf0f433cf364824"
+      },
+      "normalized_receipt": {
+        "path": "data/climate/releases/country-climate-intelligence-v1/cckp-era5-temperature-normalized-receipt.json",
+        "receipt_sha256": "b94a028b3ef777fbbf79422d3838ba400270536af49f840063f1a28f0c22343c",
+        "artifact_bytes": 2383822,
+        "artifact_sha256": "7459c3cec0ef835ae3cf007071229296ffb7622af1c3e3a939237a7aad3fba8a"
+      },
+      "identity_accounting": {
+        "upstream_entities": 246,
+        "mapped_registry_entities": 245,
+        "unmapped_exceptions": 1,
+        "registry_gaps": ["ATA", "ESH", "FLK", "SGS"]
+      }
     }
   ],
   "production_gate": {

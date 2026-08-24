@@ -13,7 +13,7 @@
   "component_artifacts": {
     "cckp": {
       "path": "data/climate/releases/country-climate-intelligence-v1/cckp-physical.json",
-      "sha256": "603a90b2d356db3a9c819491d6db8ba2b83eb418e3ac3c875358db12bc12086f"
+      "sha256": "5abe5c72632d203609660eb7ca6b4c1fc8630657afb28f31c537cefb83dab729"
     },
     "ember": {
       "path": "data/climate/releases/country-climate-intelligence-v1/ember-power.json",
@@ -216,8 +216,8 @@
   "release": {
     "comparison_baseline_year": 2024,
     "entity_count": 249,
-    "generated_on": "2026-08-24",
-    "id": "country-climate-intelligence-2026-08-24-candidate.1",
+    "generated_on": "2026-08-25",
+    "id": "country-climate-intelligence-2026-08-25-candidate.2",
     "production_runtime_release": false,
     "review_state": "normalized_factual_candidate_pending_source_revalidation",
     "status": "candidate"
@@ -225,11 +225,11 @@
   "reviewed_candidate_recovery_sha256": "436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09",
   "source_receipts": {
     "path": "data/climate/releases/country-climate-intelligence-v1/source-receipts.json",
-    "sha256": "bf7d9d8fef3c0d80d0cf924528c76099c20f38ef0ba68e80aac7fec70581d4b7"
+    "sha256": "fcc5f81dbf0d697d492fb2eb3c805e5e877f9a60802db055c60c640e93d9e72d"
   },
   "transformation_log": {
     "path": "data/climate/releases/country-climate-intelligence-v1/TRANSFORMATION-LOG.md",
-    "sha256": "97cd949ec47600d61a04a2b9a717ca297722f47cc7b3d4ade5da31dfc45a31ca"
+    "sha256": "96950e67d46a347832cbc844987f702059d87fa7ff2fa7862e68b5e7804d127a"
   },
   "schema_ref": "data/climate/schemas/country-climate-intelligence.schema.json",
   "schema_version": "1.0.0",
@@ -310,6 +310,17 @@
       "title": "CCKP observed climate data: ERA5 country aggregates",
       "values_in_release": false,
       "version": "acquisition attempt 2026-08-24"
+    },
+    {
+      "attribution": "World Bank Climate Change Knowledge Portal, ERA5 0.25-degree annual country temperature aggregates, 1950–2025 snapshot accessed 2026-08-25. Earth Love United selected 1970–2025 and derived an OLS slope per decade.",
+      "id": "world-bank-cckp-era5-2026-08-25",
+      "licence": "CC-BY-4.0",
+      "public_role": "metric_provenance",
+      "review_state": "pending",
+      "source_url": "https://worldbank.github.io/climateknowledgeportal/docs/collections/era5-x0.25.html",
+      "title": "CCKP ERA5 annual country temperature aggregates",
+      "values_in_release": true,
+      "version": "API v1 global-country annual snapshot retrieved 2026-08-25; 1950–2025"
     },
     {
       "attribution": "United Nations, Department of Economic and Social Affairs, Population Division (2024), World Population Prospects 2024, retrieved 2026-08-24. Changes by Earth Love United are identified.",

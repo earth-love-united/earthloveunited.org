@@ -81,6 +81,11 @@ expectFailure('ERA5 empty snapshot bypass', candidate => {
   source.ingestion_gate.normalized_value_redistribution_approved = true;
 }, /must remain an empty-snapshot gap source/);
 
+expectFailure('ERA5 reviewed snapshot checksum gate bypass', candidate => {
+  sourceById(candidate, 'world-bank-cckp-era5-2026-08-25')
+    .ingestion_gate.exact_checksum_required = false;
+}, /must pass every Country Climate Intelligence ingestion gate/);
+
 expectFailure('PRIMAP v2.7 public ingestion', candidate => {
   const source = sourceById(candidate, 'primap-hist-2.7-final');
   source.approval.state = 'approved';
@@ -89,4 +94,4 @@ expectFailure('PRIMAP v2.7 public ingestion', candidate => {
   source.storage.raw = 'external_only';
 }, /must remain blocked from public value ingestion/);
 
-console.log('Climate source registry regression tests passed (10 fail-closed mutations rejected).');
+console.log('Climate source registry regression tests passed (11 fail-closed mutations rejected).');

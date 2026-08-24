@@ -4,7 +4,7 @@
 > this file records the live module graph, data flow, stacking model, and
 > extension points.
 
-**Runtime baseline:** 2026-08-24 Country Climate Intelligence factual candidate
+**Runtime baseline:** 2026-08-25 Country Climate Intelligence factual candidate
 **Architecture:** one HTML page, classic scripts, no bundler or browser build
 
 ## Public surface
@@ -168,7 +168,7 @@ flowchart LR
 
 `Data.init()` applies an eight-second deadline to the critical candidate read.
 The candidate is parsed only after WebCrypto verifies SHA-256
-`3502840bc2ed0b37daee8f81b8920006f109457145faf68d0600741f7d4add8e`.
+`a8a0176e56d23bf409f374b701538ed5573046e787d04ed0bc31b91d24695d14`.
 Schema validation then proves 249 unique registry entities, exactly 18 metric
 records per entity, coverage derived from records, three complete lens
 partitions, explicit gaps, and the non-production release boundary. Candidate
@@ -183,6 +183,13 @@ country-tile height for their exact comparison metric: Carbon is log-scaled,
 Power is bounded linear over 0–100% clean share, and Physical is linear over the
 published warming range. Physical relief is projected warming only—not
 vulnerability, damage, or responsibility.
+
+The Physical card separately renders the compiled 1970–2025 ERA5 annual
+temperature series and supplied OLS endpoints for 245 entities. This chart does
+not affect the Physical comparison order, which remains the exact SSP2-4.5
+modeled projection metric. `COUNTRY_CLIMATE_INTELLIGENCE` removes At-a-glance
+metric IDs from the expanded lens grid while retaining all facts in the methods
+drawer, so the renderer never duplicates a headline fact card.
 
 Before loading globe.gl, `GlobeModule.prepare()` must preload and validate the
 local 177-feature GeoJSON plus all four local globe visuals. The dark surface is
@@ -330,7 +337,7 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v48 precaches the public page, core CSS/JS, Guided First
+`sw.js` cache epoch v49 precaches the public page, core CSS/JS, Guided First
 Orbit UI, the shared raised-tile lenses, verified local globe.gl, the CT-45 manifest
 and localized globe assets, and the exact-version Country Climate Intelligence
 candidate. The prior country-factual candidate is retained for one release

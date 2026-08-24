@@ -4,6 +4,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const vm = require('vm');
 const { ROOT } = require('./lib/country-climate-intelligence');
 
 const index = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
@@ -13,9 +14,9 @@ const guidedOrbit = fs.readFileSync(path.join(ROOT, 'js/guided-first-orbit.js'),
 const css = fs.readFileSync(path.join(ROOT, 'css/globe-system.css'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
-const dataAt = index.indexOf('src="js/data.js?v=v5"');
-const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v5"');
-const globeAt = index.indexOf('src="js/globe.js?v=v23"');
+const dataAt = index.indexOf('src="js/data.js?v=v6"');
+const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v6"');
+const globeAt = index.indexOf('src="js/globe.js?v=v24"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -46,6 +47,39 @@ assert(globe.includes('.polygonSideColor((f) => this._countryPolygonSideColorFn(
 assert(globe.includes('class="elu-rank-relief-note"'));
 assert(globe.includes('Inverse relief demo: lower territorial fossil CO₂ sits slightly higher; the raw descending rail is unchanged.'));
 assert(css.includes('.elu-rank-relief-note'));
+assert(globe.includes('const chart = view.detail_chart;'));
+assert(globe.includes('class="elu-trajectory-trend"'));
+assert(css.includes('.elu-trajectory-trend'));
+
+const release = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/climate/runtime/country-climate-intelligence.json'), 'utf8'));
+const presentationSandbox = {
+  URLSearchParams,
+  console,
+  hasModule: () => false,
+  safeGet(globalName, methodName, fallback) {
+    if (globalName !== 'Data') return fallback;
+    if (methodName === 'getClimateIntelligenceRelease') return release;
+    if (methodName === 'isClimateIntelligenceReady') return true;
+    return fallback;
+  },
+};
+presentationSandbox.window = presentationSandbox;
+presentationSandbox.location = { search: '' };
+vm.runInNewContext(presentation, presentationSandbox, { filename: 'country-climate-intelligence.js' });
+const viewsByLens = Object.fromEntries(['carbon', 'power', 'physical'].map(lensId => [lensId,
+  presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('JPN', lensId)]));
+for (const [lensId, view] of Object.entries(viewsByLens)) {
+  assert(view, `Japan ${lensId} view did not resolve`);
+  const glanceIds = Array.from(view.at_a_glance, fact => fact.id);
+  const panelIds = Array.from(view.active_panel.facts, fact => fact.id);
+  assert.strictEqual(glanceIds.filter(id => panelIds.includes(id)).length, 0, `${lensId} At-a-glance metrics must not repeat in the lens panel`);
+}
+const physicalView = viewsByLens.physical;
+assert.strictEqual(physicalView.detail_chart.id, 'climate.temperature.observed_trend');
+assert.strictEqual(physicalView.detail_chart.series.length, 56);
+assert.strictEqual(physicalView.detail_chart.series_unit, '°C');
+assert.strictEqual(physicalView.detail_chart.evidence_label, 'ERA5 reanalysis');
+assert.strictEqual(physicalView.methods.facts.length, 4, 'Methods drawer must retain all Physical facts after visual de-duplication');
 
 const controlsAt = index.indexOf('id="climate-lens-controls"');
 const globeVizAt = index.indexOf('id="globeViz"');
@@ -73,9 +107,9 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v48-globe-lifecycle'"));
-assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v5'"));
-assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate3'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v49-era5-observed'"));
+assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v6'"));
+assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate4'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired project data must not be pinned by the climate runtime cache');
 

@@ -43,6 +43,7 @@ const INTELLIGENCE_VALUE_SOURCES = new Set([
   'climate-trace-v5.9.0-country-annual',
   'ember-yearly-electricity-data-2026-08-24',
   'world-bank-cckp-cmip6-2026-08-24',
+  'world-bank-cckp-era5-2026-08-25',
 ]);
 
 function isObject(value) {
@@ -338,6 +339,17 @@ function validateSource(source, index, configuredDomains, errors) {
     }
   }
 
+  if (source.id === 'world-bank-cckp-era5-2026-08-25') {
+    if (!source.domains?.includes('observed_climate') || source.approval?.state !== 'approved' ||
+        source.redistribution?.normalized_values !== true || source.ingestion_gate?.normalized_value_redistribution_approved !== true ||
+        source.ingestion_gate?.snapshot_state !== 'non_empty_exact_response') {
+      errors.push(`${source.id} must retain the approved, non-empty observed-temperature snapshot gates.`);
+    }
+    ['iso_alpha3', 'variable', 'year', 'value', 'unit'].forEach(field => {
+      if (!source.ingestion_gate?.field_permitlist?.includes(field)) errors.push(`${source.id} must permitlist ${field}.`);
+    });
+  }
+
   if (source.id === 'legacy-pledge-nodes-climate-watch-wri-family-2025-07-18') {
     if (source.approval?.state !== 'pending' || source.licence?.status !== 'uncertain') {
       errors.push(`${source.id} must remain pending with uncertain mixed-source terms.`);
@@ -403,11 +415,12 @@ function validateRegistry(registry) {
     'ember-yearly-electricity-data-2026-08-24',
     'world-bank-cckp-cmip6-2026-08-24',
     'world-bank-cckp-era5-2026-08-24',
+    'world-bank-cckp-era5-2026-08-25',
   ].forEach(id => {
     if (!ids.has(id)) errors.push(`Registry must include the Country Climate Intelligence component source: ${id}`);
   });
-  if (registry.schema_version !== '1.2.0' || registry.sources?.length !== 20) {
-    errors.push('Country Climate Intelligence registry v1 must contain schema 1.2.0 and exactly 20 reviewed source decisions.');
+  if (registry.schema_version !== '1.3.0' || registry.sources?.length !== 21) {
+    errors.push('Country Climate Intelligence registry v1 must contain schema 1.3.0 and exactly 21 reviewed source decisions.');
   }
 
   return errors;

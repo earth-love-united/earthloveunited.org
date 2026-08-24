@@ -11,6 +11,7 @@ const {
   fileSha256,
   mean,
   olsSlopePerDecade,
+  olsTrendLine,
   populationStdDev,
   readJson,
   round,
@@ -24,7 +25,7 @@ const EXPECTED_COVERAGE = {
   'climate.precipitation.change': 245,
   'climate.precipitation.observed_trend': 0,
   'climate.temperature.change': 245,
-  'climate.temperature.observed_trend': 0,
+  'climate.temperature.observed_trend': 245,
   'electricity.carbon_intensity': 195,
   'electricity.clean_share': 195,
   'electricity.clean_share_change_5y': 195,
@@ -93,7 +94,19 @@ function checkDerived(country) {
     const observed = metrics[metricId];
     if (observed.value !== null && Array.isArray(observed.series)) {
       assert.strictEqual(observed.value, olsSlopePerDecade(observed.series), `${country.iso_alpha3} ${metricId} OLS mismatch`);
+      const fit = olsTrendLine(observed.series);
+      assert.deepStrictEqual(observed.context.trend_line, [fit.start, fit.end], `${country.iso_alpha3} ${metricId} trend-line mismatch`);
     }
+  }
+
+  const observedTemperature = metrics['climate.temperature.observed_trend'];
+  if (observedTemperature.value !== null) {
+    assert.strictEqual(observedTemperature.series.length, 56, `${country.iso_alpha3} ERA5 series must cover 1970–2025`);
+    assert.strictEqual(observedTemperature.series[0].year, 1970);
+    assert.strictEqual(observedTemperature.series.at(-1).year, 2025);
+    assert.strictEqual(observedTemperature.period.label, '1970–2025');
+    assert.strictEqual(observedTemperature.context.series_unit, '°C');
+    assert.strictEqual(observedTemperature.context.reanalysis, 'ERA5');
   }
 }
 
@@ -107,6 +120,12 @@ function checkGoldenCountries(byIso3, runtime) {
   assert(byIso3.get('TUV'), 'Tuvalu must remain navigable');
   assert(byIso3.get('ATA'), 'Antarctica must remain navigable');
   assert.strictEqual(byIso3.get('ATA').metrics['climate.temperature.change'].value, null, 'Antarctica projection must remain an explicit gap');
+  assert(byIso3.get('JPN').metrics['climate.temperature.observed_trend'].value !== null, 'Japan observed temperature trend missing');
+  const observedTemperatureGaps = Array.from(byIso3.values())
+    .filter(country => country.metrics['climate.temperature.observed_trend'].value === null)
+    .map(country => country.iso_alpha3)
+    .sort();
+  assert.deepStrictEqual(observedTemperatureGaps, ['ATA', 'ESH', 'FLK', 'SGS'], 'Observed temperature gaps differ from the reviewed CCKP identity ledger');
 }
 
 function check() {

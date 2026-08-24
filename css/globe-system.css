@@ -1156,6 +1156,8 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 #hex-country-tooltip .tt-factual-value span { color:var(--hud-faint); }
 #hex-country-tooltip .elu-trajectory-current.is-magnitude { stroke:#f2a553; stroke-width:2; fill:none; }
 #hex-country-tooltip .elu-trajectory-point { fill:#fff1dc; stroke:#704f9d; stroke-width:1.2; }
+#hex-country-tooltip .elu-trajectory-current.is-observed { stroke:var(--mint); stroke-width:1.5; fill:none; }
+#hex-country-tooltip .elu-trajectory-point.is-observed { fill:var(--mint); stroke:var(--hud-bg-strong); stroke-width:1; }
 #hex-country-tooltip .elu-chart-axis { fill:var(--text2); font-family:var(--mono); font-size:7px; }
 #hex-country-tooltip .tt-chart-data { margin-top:8px; color:var(--text2); font-size:10px; }
 #hex-country-tooltip .tt-chart-data summary { min-height:44px; display:flex; align-items:center; color:var(--teal); cursor:pointer; }
@@ -1380,6 +1382,7 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 }
 
 .elu-trajectory-grid { stroke: var(--hud-grid); stroke-width: .7; }
+.elu-trajectory-trend { stroke: var(--teal); stroke-width: 1.6; stroke-dasharray: 5 3; vector-effect: non-scaling-stroke; }
 .elu-trajectory-target { fill: none; stroke: var(--teal); stroke-width: 1.6; stroke-dasharray: 3 3; opacity: .65; }
 .elu-trajectory-current { fill: none; stroke: var(--st); stroke-width: 1.6; }
 .elu-trajectory-current.is-red { stroke: var(--warn); }
@@ -1397,6 +1400,9 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 .elu-trajectory-legend span:first-child::before { border-color: var(--warn); }
 .elu-trajectory-legend span:first-child.is-green::before { border-color: var(--leaf); }
 .elu-trajectory-legend span:last-child::before { border-top-style: dashed; border-color: var(--teal); }
+.elu-observed-legend { margin-top: 6px; }
+.elu-trajectory-legend.elu-observed-legend span.elu-observed-series-key::before { border-color: var(--mint); }
+.elu-trajectory-legend.elu-observed-legend span.elu-observed-trend-key::before { border-top-style: dashed; border-color: var(--teal); }
 .elu-trajectory-today-key::before { border-top-style: dotted !important; border-color: var(--hud-today) !important; }
 .elu-trajectory-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
 .elu-trajectory-chip { padding: 4px 7px; border: 1px solid var(--cell-bd); border-radius: 20px; color: var(--hud-muted); font-family: var(--mono); font-size: 8px; line-height: 1; }

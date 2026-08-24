@@ -8,7 +8,7 @@
 const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   'use strict';
 
-  const VERSION = '1.2.0';
+  const VERSION = '1.3.0';
   const RELIEF_BASE_ALTITUDE = 0.007;
   const RELIEF_RANGE = 0.005;
   const CARBON_RELIEF_DEMO_VALUE = 'low-is-high';
@@ -114,6 +114,9 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     if (status === 'modeled' && ['population.estimate', 'emissions.fossil_co2.territorial_per_capita'].includes(metricId)) {
       return 'Uses WPP Medium projection';
     }
+    if (status === 'modeled' && ['climate.temperature.observed_trend', 'climate.precipitation.observed_trend'].includes(metricId)) {
+      return 'ERA5 reanalysis';
+    }
     return EVIDENCE_LABELS[status] || 'Data gap';
   }
 
@@ -176,6 +179,9 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       fact_ids: Array.isArray(metric?.fact_ids) ? metric.fact_ids.slice() : [],
       sources: sourceRecords(metric),
       series: Array.isArray(metric?.series) ? metric.series.slice() : [],
+      series_label: metric?.context?.series_label || null,
+      series_unit: metric?.context?.series_unit || metric?.unit || null,
+      trend_line: Array.isArray(metric?.context?.trend_line) ? metric.context.trend_line.slice() : [],
       context: metric?.context || null,
       scenario_medians: scenarioMedians,
       non_comparable: metricId === 'emissions.ghg.independent',
@@ -267,6 +273,12 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     const position = primary.available ? normalize(lens.id, primary.value) : null;
     const panel = PANEL_COPY[lens.id];
     const activeFacts = PANEL_METRICS[lens.id].map(metricId => factView(metricId, country));
+    const glanceMetricIds = atAGlanceMetrics(lens.id);
+    const glanceMetricSet = new Set(glanceMetricIds);
+    const panelFacts = activeFacts.filter(fact => !glanceMetricSet.has(fact.id));
+    const chartMetricId = lens.id === 'physical' ? 'climate.temperature.observed_trend' : lens.comparison_metric_id;
+    const chartFact = factView(chartMetricId, country);
+    const detailChart = chartFact.series.length > 1 ? chartFact : null;
     const citationOnlySources = _release.source_catalog
       .filter(source => source.public_role === 'citation_only')
       .map(source => ({ id: source.id, title: source.title, version: source.version, url: source.source_url, note: 'Citation retained for historical provenance; no values from this source appear in this release.' }));
@@ -300,12 +312,13 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
         evidence_class: primary.available ? primary.evidence_label : 'Data gap; requires ' + evidenceLabel(lens.evidence_status, lens.comparison_metric_id),
         gap: primary.gap,
       },
-      at_a_glance: atAGlanceMetrics(lens.id).map(metricId => factView(metricId, country)),
+      at_a_glance: glanceMetricIds.map(metricId => factView(metricId, country)),
+      detail_chart: detailChart,
       active_panel: {
         id: lens.id,
         heading: panel.heading,
         description: panel.description,
-        facts: activeFacts,
+        facts: panelFacts,
       },
       visual: {
         eligible: primary.available && rank.eligible,

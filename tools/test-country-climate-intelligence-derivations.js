@@ -3,7 +3,7 @@
 
 const assert = require('assert');
 const { landMetric } = require('./lib/gcb-country-intelligence');
-const { olsSlopePerDecade, populationStdDev, round, scopesExactlyMatch } = require('./lib/country-climate-intelligence');
+const { olsSlopePerDecade, olsTrendLine, populationStdDev, round, scopesExactlyMatch } = require('./lib/country-climate-intelligence');
 const { projectedMetric } = require('./compile-cckp-physical');
 
 assert.strictEqual(round((10 * 1000000) / 2000000), 5, 'MtCO2-to-tCO2/person conversion failed');
@@ -24,6 +24,15 @@ assert.strictEqual(olsSlopePerDecade([
   { year: 1980, value: 3 },
   { year: 1990, value: 5 },
 ]), 2, 'OLS slope per decade failed');
+assert.deepStrictEqual(olsTrendLine([
+  { year: 1970, value: 1 },
+  { year: 1980, value: 3 },
+  { year: 1990, value: 5 },
+]), {
+  start: { year: 1970, value: 1 },
+  end: { year: 1990, value: 5 },
+  slope_per_decade: 2,
+}, 'OLS trend-line endpoints failed');
 
 const entity = { iso_alpha3: 'TST' };
 const rows = [

@@ -10,6 +10,7 @@ const {
   gapMetric,
   loadCountryRegistry,
   olsSlopePerDecade,
+  olsTrendLine,
   option,
   readJson,
   round,
@@ -19,7 +20,7 @@ const {
 } = require('./lib/country-climate-intelligence');
 
 const PROJECTED_SOURCE = 'world-bank-cckp-cmip6-2026-08-24';
-const OBSERVED_SOURCE = 'world-bank-cckp-era5-2026-08-24';
+const OBSERVED_SOURCE = 'world-bank-cckp-era5-2026-08-25';
 const VARIABLE_CONFIG = {
   tas: {
     projected_id: 'climate.temperature.change',
@@ -130,6 +131,7 @@ function observedMetric(entity, variable, rows, lastYear, emptySnapshot) {
   if (series.length < 2) {
     return gapMetric(config.observed_id, OBSERVED_SOURCE, 'source_value_missing', `The ERA5 snapshot lacks a usable 1970–${lastYear} annual country series.`);
   }
+  const fit = olsTrendLine(series);
   const scope = {
     accounting_frame: 'ERA5_country_area_aggregate_reanalysis',
     gases: [],
@@ -143,7 +145,14 @@ function observedMetric(entity, variable, rows, lastYear, emptySnapshot) {
     unit: config.observed_unit,
   };
   return {
-    context: { attribution_claim: false, observations: series.length, reanalysis: 'ERA5' },
+    context: {
+      attribution_claim: false,
+      observations: series.length,
+      reanalysis: 'ERA5',
+      series_label: variable === 'tas' ? 'Annual mean surface air temperature' : 'Annual precipitation',
+      series_unit: variable === 'tas' ? '°C' : 'mm/year',
+      trend_line: [fit.start, fit.end],
+    },
     fact_ids: [`cckp-era5:${entity.iso_alpha3}:${variable}:trend:1970-${lastYear}`],
     gap_reason: null,
     id: config.observed_id,
@@ -153,6 +162,7 @@ function observedMetric(entity, variable, rows, lastYear, emptySnapshot) {
     scope_fingerprint: scopeFingerprint(scope),
     source_ids: [OBSERVED_SOURCE],
     status: 'modeled',
+    series,
     transformation: 'OLS_slope_over_annual_country_aggregates_reported_per_decade',
     uncertainty: { kind: 'not_provided_for_derived_OLS_slope', lower: null, upper: null },
     unit: config.observed_unit,

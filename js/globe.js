@@ -1799,29 +1799,44 @@ const GlobeModule = {
   },
 
   _renderClimateSeries(view, idPrefix = 'country-card') {
-    const points = view.primary.series;
+    const chart = view.detail_chart;
+    const points = chart?.series;
     if (!Array.isArray(points) || points.length < 2) return '';
-    const values = points.map(point => point.value);
+    const trendLine = Array.isArray(chart.trend_line) && chart.trend_line.length === 2 ? chart.trend_line : [];
+    const values = points.map(point => point.value).concat(trendLine.map(point => point.value));
     const min = Math.min(...values), max = Math.max(...values);
     const span = Math.max(max - min, Math.abs(max) * 0.02, 0.001);
-    const coordPoints = points.map((point, index) => {
-      const x = 8 + index * (304 / Math.max(points.length - 1, 1));
-      const y = 51 - ((point.value - min) / span) * 39;
+    const start = points[0].year;
+    const end = points[points.length - 1].year;
+    const xFor = year => 8 + ((year - start) / Math.max(end - start, 1)) * 304;
+    const yFor = value => 51 - ((value - min) / span) * 39;
+    const coordPoints = points.map(point => {
+      const x = xFor(point.year);
+      const y = yFor(point.value);
       return { x: x.toFixed(1), y: y.toFixed(1), point };
     });
     const coords = coordPoints.map(item => item.x + ',' + item.y).join(' ');
-    const markers = coordPoints.map(item => '<circle class="elu-trajectory-point" cx="' + item.x + '" cy="' + item.y + '" r="2.5"><title>' + item.point.year + ': ' + item.point.value.toLocaleString() + ' ' + _escapeHtml(view.primary.unit) + '</title></circle>').join('');
-    const rows = points.map(point => '<tr><th scope="row">' + point.year + '</th><td>' + point.value.toLocaleString() + '</td><td>' + _escapeHtml(view.primary.unit) + '</td></tr>').join('');
-    const start = points[0].year;
-    const end = points[points.length - 1].year;
+    const seriesUnit = chart.series_unit || chart.unit;
+    const observed = chart.id === 'climate.temperature.observed_trend' || chart.id === 'climate.precipitation.observed_trend';
+    const seriesClass = observed ? 'is-observed' : 'is-magnitude';
+    const markerStep = points.length > 40 ? 5 : 1;
+    const markers = coordPoints.filter((item, index) => index === 0 || index === coordPoints.length - 1 || (item.point.year - start) % markerStep === 0)
+      .map(item => '<circle class="elu-trajectory-point ' + seriesClass + '" cx="' + item.x + '" cy="' + item.y + '" r="2.2"><title>' + item.point.year + ': ' + item.point.value.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(seriesUnit) + '</title></circle>').join('');
+    const rows = points.map(point => '<tr><th scope="row">' + point.year + '</th><td>' + point.value.toLocaleString('en-US', { maximumFractionDigits: 2 }) + '</td><td>' + _escapeHtml(seriesUnit) + '</td></tr>').join('');
+    const trend = trendLine.length === 2
+      ? '<line class="elu-trajectory-trend" x1="' + xFor(trendLine[0].year).toFixed(1) + '" y1="' + yFor(trendLine[0].value).toFixed(1) + '" x2="' + xFor(trendLine[1].year).toFixed(1) + '" y2="' + yFor(trendLine[1].value).toFixed(1) + '"></line>'
+      : '';
+    const chartLabel = chart.series_label || chart.label;
+    const chartNote = chart.evidence_label + (trend ? ' · OLS ' + chart.display_value + ' ' + chart.unit : '');
+    const legend = trend ? '<div class="elu-trajectory-legend elu-observed-legend" aria-hidden="true"><span class="elu-observed-series-key">Annual mean</span><span class="elu-observed-trend-key">OLS trend</span></div>' : '';
     const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-' + view.lens.id).replace(/[^a-zA-Z0-9_-]/g, '-');
     const titleId = chartId + '-series-title';
     const descId = chartId + '-series-desc';
-    return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">' + start + '–' + end + ' trend</span><span class="elu-trajectory-note">' + _escapeHtml(view.primary.evidence_label) + '</span></div>'
-      + '<svg viewBox="0 0 320 72" role="img" aria-labelledby="' + titleId + ' ' + descId + '"><title id="' + titleId + '">' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(view.primary.label) + ', ' + start + ' to ' + end + '</title><desc id="' + descId + '">Annual values in ' + _escapeHtml(view.primary.unit) + '. This chart shows the source series without a score or target pathway.</desc>'
-      + '<line class="elu-trajectory-grid" x1="8" y1="51" x2="312" y2="51"></line><text class="elu-chart-axis" x="8" y="9">' + max.toLocaleString() + ' ' + _escapeHtml(view.primary.unit) + '</text><text class="elu-chart-axis" x="8" y="66">' + min.toLocaleString() + ' ' + _escapeHtml(view.primary.unit) + '</text><polyline class="elu-trajectory-current is-magnitude" points="' + coords + '"></polyline>' + markers + '</svg>'
-      + '<div class="elu-trajectory-years"><span>' + start + '</span><span>' + end + '</span></div></div>'
-      + '<details class="tt-chart-data"><summary>Show chart data</summary><table><caption>' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(view.primary.label) + '</caption><thead><tr><th>Year</th><th>Value</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>';
+    return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">' + _escapeHtml(chartLabel) + ' · ' + start + '–' + end + '</span><span class="elu-trajectory-note">' + _escapeHtml(chartNote) + '</span></div>'
+      + '<svg viewBox="0 0 320 72" role="img" aria-labelledby="' + titleId + ' ' + descId + '"><title id="' + titleId + '">' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(chartLabel) + ', ' + start + ' to ' + end + '</title><desc id="' + descId + '">Annual values in ' + _escapeHtml(seriesUnit) + '. The solid line shows the annual source series' + (trend ? ' and the dashed line shows the supplied ordinary least-squares trend' : '') + '. No score or target pathway is shown.</desc>'
+      + '<line class="elu-trajectory-grid" x1="8" y1="51" x2="312" y2="51"></line><text class="elu-chart-axis" x="8" y="9">' + max.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(seriesUnit) + '</text><text class="elu-chart-axis" x="8" y="66">' + min.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(seriesUnit) + '</text><polyline class="elu-trajectory-current ' + seriesClass + '" points="' + coords + '"></polyline>' + trend + markers + '</svg>'
+      + '<div class="elu-trajectory-years"><span>' + start + '</span><span>' + end + '</span></div>' + legend + '</div>'
+      + '<details class="tt-chart-data"><summary>Show chart data</summary><table><caption>' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(chartLabel) + '</caption><thead><tr><th>Year</th><th>Value</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>';
   },
 
   _renderClimateMethods(view) {

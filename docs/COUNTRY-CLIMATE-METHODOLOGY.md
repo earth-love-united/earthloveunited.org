@@ -2,9 +2,9 @@
 
 **Status:** normalized factual candidate pending source revalidation; not a production scientific release
 
-**Methodology version:** 1.0.1
+**Methodology version:** 1.1.0
 
-**Candidate date:** 2026-08-24
+**Candidate date:** 2026-08-25
 
 ## Purpose
 
@@ -57,9 +57,9 @@ The public fact carries the multi-model p10–p90 range. SSP1-2.6 and SSP5-8.5 m
 
 The four headline comparison gaps are `ATA`, `ESH`, `FLK`, and `SGS`. Global CCKP rasters cover the required variables and periods, so these are unresolved acquisition/identity cases rather than proven missing climate fields. Antarctica is conditionally fillable after a reviewed geographic polygon and complete model-first aggregation. Western Sahara, Falkland Islands (Malvinas), and South Georgia and the South Sandwich Islands stay explicit gaps until a release-level disputed/NDLSA and multipart-territory boundary policy is approved. Grid-cell percentile rasters cannot be spatially averaged and relabelled as country-level ensemble percentiles; country means must be calculated per model before the cross-model p10/median/p90.
 
-Observed ERA5 country trends are defined as ordinary-least-squares slopes over annual aggregates from 1970 through the last complete snapshot year, reported per decade. The v1 ERA5 API snapshot was empty, so all 249 observed-trend records are explicit `source_snapshot_empty` gaps. No trend is inferred.
+Observed temperature uses the World Bank CCKP's official `api/v1` global-country ERA5 annual aggregate. The exact-checksummed source response contains 246 country/area series for 1950–2025. The compiler selects 1970–2025, retains the 56 annual values for the public chart, and derives an ordinary-least-squares slope in °C per decade. The two fitted endpoints are compiled with the metric; browser code only renders them.
 
-A 2026-08-25 recovery audit recommends replacing that unreliable country-API path with direct Copernicus ERA5 monthly `2m_temperature`, aggregated offline to a pinned Admin-0 boundary version with fractional-cell area weighting. The intended label is “ERA5 reanalysis 2 m air-temperature trend, 1970–2024 (°C/decade).” No value enters the candidate until the new source entry, raw checksums, attribution, crosswalk, mapped-area threshold, and complete 55-year compiler output pass review.
+The upstream identity ledger maps 245 series to registry entities and records CCKP's `KSV` Kosovo series as the sole non-ISO exception. `ATA`, `ESH`, `FLK`, and `SGS` remain explicit observed-temperature gaps. No boundary overlay or parent-country imputation is performed because CCKP supplies the country aggregates. ERA5 is labeled as reanalysis rather than direct station observation, values retain the API's two-decimal precision, and observed precipitation remains unavailable in this temperature-only refresh.
 
 ## Source contract
 
@@ -70,10 +70,10 @@ A 2026-08-25 recovery audit recommends replacing that unreliable country-API pat
 | Independent GHG context | Climate TRACE v5.9.0 annual 2024 country snapshot, forestry/LULUCF excluded, IPCC AR6 GWP100 |
 | Power | Ember Yearly Electricity Data, exact 2019 and 2024 annual rows under Ember's published taxonomy |
 | Projected physical climate | World Bank CCKP CMIP6 country aggregates |
-| Observed physical climate | World Bank CCKP ERA5; gap provenance only in this candidate because the acquisition payload was empty |
+| Observed physical climate | World Bank CCKP ERA5 annual country temperature aggregates; exact 1950–2025 snapshot, with 1970–2025 series and OLS trend retained |
 | Official context | Existing UNFCCC document title, submission date, and direct-link metadata only |
 
-Every value-contributing component requires a reviewed licence, attribution, field permitlist, exact retrieval receipt/checksum, external raw-storage decision, normalized-value redistribution approval, and versioned source ID. The GCB raw receipts meet that requirement. WPP, Climate TRACE, Ember, and CCKP remain candidate-only pending retained raw-receipt revalidation; Climate TRACE external-data exceptions and the CCKP/CMIP6 derivative licence chain also require release-specific rights review. Browser code calls no source API and uses no API key.
+Every value-contributing component requires a reviewed licence, attribution, field permitlist, exact retrieval receipt/checksum, external raw-storage decision, normalized-value redistribution approval, and versioned source ID. The GCB and refreshed ERA5 temperature inputs have pinned raw receipts; the ERA5 normalized snapshot and complete upstream disposition ledger are also pinned. WPP, Climate TRACE, Ember, and CCKP CMIP6 remain candidate-only pending retained raw-receipt revalidation; Climate TRACE external-data exceptions and the CCKP/CMIP6 derivative licence chain also require release-specific rights review. All optional components, including ERA5, still require independent scientific review before production promotion. Browser code calls no source API and uses no API key.
 
 PRIMAP-hist v2.7 is not acquired or ingested. The reviewed v2.6.1 artifact contributes no value and appears only in detailed citation provenance.
 
@@ -133,6 +133,8 @@ These counts are recomputed from country records during validation; the runtime 
 ## Evidence presentation
 
 Tooltips always state metric, value, unit, period, and evidence class. Country cards show plain-language facts first. “Methods & sources” expands definitions, uncertainty, scope fingerprint, transformation, release/checksum, source links, citation-only provenance, official metadata, and gap reasons.
+
+At-a-glance facts are removed from the expanded lens grid so a metric card appears only once. For Physical records with observed-temperature coverage, a separate chart shows the annual 1970–2025 ERA5 series as a solid line and the compiled OLS fit as a dashed line. Its table exposes every annual value to keyboard and assistive-technology users.
 
 Headings are metric-first. Provider logos and repeated provider names are not used as the visual hierarchy. Evidence remains accessible by compact attribution links and the methods drawer.
 

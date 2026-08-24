@@ -77,7 +77,7 @@ function populationStdDev(values) {
   return Math.sqrt(values.reduce((sum, value) => sum + ((value - centre) ** 2), 0) / values.length);
 }
 
-function olsSlopePerDecade(series) {
+function olsTrendLine(series) {
   if (!Array.isArray(series) || series.length < 2) throw new Error('OLS trend requires at least two observations');
   const points = series.map(point => ({ year: Number(point.year), value: Number(point.value) }));
   if (points.some(point => !Number.isFinite(point.year) || !Number.isFinite(point.value))) {
@@ -88,7 +88,18 @@ function olsSlopePerDecade(series) {
   const numerator = points.reduce((sum, point) => sum + ((point.year - xMean) * (point.value - yMean)), 0);
   const denominator = points.reduce((sum, point) => sum + ((point.year - xMean) ** 2), 0);
   if (denominator === 0) throw new Error('OLS trend requires distinct years');
-  return round((numerator / denominator) * 10);
+  const slopePerYear = numerator / denominator;
+  const startYear = Math.min(...points.map(point => point.year));
+  const endYear = Math.max(...points.map(point => point.year));
+  return {
+    end: { year: endYear, value: round(yMean + (slopePerYear * (endYear - xMean))) },
+    slope_per_decade: round(slopePerYear * 10),
+    start: { year: startYear, value: round(yMean + (slopePerYear * (startYear - xMean))) },
+  };
+}
+
+function olsSlopePerDecade(series) {
+  return olsTrendLine(series).slope_per_decade;
 }
 
 function scopeFingerprint(scope) {
@@ -280,6 +291,7 @@ module.exports = {
   loadCountryRegistry,
   mean,
   olsSlopePerDecade,
+  olsTrendLine,
   option,
   parseCsv,
   populationStdDev,
