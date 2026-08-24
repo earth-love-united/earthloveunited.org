@@ -14,6 +14,7 @@ const StackLint = (() => {
 
   // ── Known z-index assignments (from ARCHITECTURE.md) ──
   const Z_INDEX_MAP = {
+    '#guided-orbit': 1100,
     '#globeViz': 1,
     '.sections': 10,
     '#globe-overlay': 50,

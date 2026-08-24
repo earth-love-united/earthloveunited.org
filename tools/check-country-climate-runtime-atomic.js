@@ -13,13 +13,15 @@ const manifest = readJson(path.join(ROOT, 'data/climate/releases/country-climate
 const runtimePath = path.join(ROOT, 'data/climate/runtime/country-climate-intelligence.json');
 const rollbackPath = path.join(ROOT, manifest.prior_runtime_retained_for_rollback);
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v43-country-climate-intelligence'"), 'service-worker cache epoch is not v43');
-assert(index.includes("navigator.serviceWorker.register('/sw.js?v=43-country-climate-intelligence'"), 'HTML does not request the v43 service worker');
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v44-country-climate-guided-orbit'"), 'service-worker cache epoch is not v44');
+assert(index.includes("navigator.serviceWorker.register('/sw.js?v=44-country-climate-guided-orbit'"), 'HTML does not request the v44 service worker');
 for (const asset of [
-  '/css/globe-system.css?v=v25',
+  '/css/globe-system.css?v=v26',
+  '/css/guided-first-orbit.css?v=v2',
   '/js/data.js?v=v3',
   '/js/country-climate-intelligence.js?v=v2',
-  '/js/globe.js?v=v18',
+  '/js/globe.js?v=v19',
+  '/js/guided-first-orbit.js?v=v2',
   '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate1',
   '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',
 ]) {
@@ -34,4 +36,4 @@ assert(serviceWorker.includes('keys.filter((k) => k !== CACHE_NAME).map((k) => c
 assert(serviceWorker.includes('self.skipWaiting()') && serviceWorker.includes('self.clients.claim()'), 'atomic service-worker activation hooks are missing');
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired carbon-project data remains in the atomic cache set');
 
-console.log(`Country Climate Intelligence atomic staging check passed (elu-v43; runtime ${fileSha256(runtimePath)}; rollback retained).`);
+console.log(`Country Climate Intelligence atomic staging check passed (elu-v44; runtime ${fileSha256(runtimePath)}; rollback retained).`);

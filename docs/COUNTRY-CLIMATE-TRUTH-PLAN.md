@@ -114,7 +114,8 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v43 service worker stages both:
+The v44 service worker composes the reviewed Guided First Orbit assets with the
+candidate dashboard and stages both runtime generations:
 
 ```text
 data/climate/runtime/country-climate-intelligence.json?v=cci1candidate1

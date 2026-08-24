@@ -38,3 +38,4 @@ See `AGENTS.md` § Operations for the full lifecycle.
 | Finished | Role | Slug | PR | Outcome |
 |----------|------|------|----|---------|
 | 2026-08-24T19:15:26Z | architect | country-climate-intelligence-v1 | https://github.com/earth-love-united/earthloveunited.org/pull/67 | pending-review |
+| 2026-08-24T14:07:24Z | designer | guided-first-orbit-production | https://github.com/earth-love-united/earthloveunited.org/pull/66 | pending-review |

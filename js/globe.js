@@ -1820,7 +1820,7 @@ const GlobeModule = {
     if (!tt || !wrap) return;
 
     wrap.style.position = 'fixed';
-    wrap.style.zIndex = '50';
+    wrap.style.zIndex = '1000';
     wrap.style.right = '24px';
     wrap.style.left = 'auto';
     wrap.style.top = window.innerWidth <= 720 ? '114px' : (window.innerWidth <= 1000 ? '126px' : '64px');

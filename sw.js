@@ -1,17 +1,18 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v43) — stage the Country Climate Intelligence factual candidate,
- * its pinned runtime, and the previous country-truth candidate for rollback.
+ * Globe cache (v44) — compose the responsive Guided First Orbit with the
+ * Country Climate Intelligence candidate, its pinned runtime, and rollback.
  */
-const CACHE_NAME = 'elu-v43-country-climate-intelligence';
+const CACHE_NAME = 'elu-v44-country-climate-guided-orbit';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v25',
+  '/css/globe-system.css?v=v26',
+  '/css/guided-first-orbit.css?v=v2',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
   '/assets/globe/runtime/manifest.json',
@@ -29,8 +30,9 @@ const STATIC_ASSETS = [
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v3',
   '/js/country-climate-intelligence.js?v=v2',
-  '/js/globe.js?v=v18',
+  '/js/globe.js?v=v19',
   '/js/carbon-clock.js?v=v1',
+  '/js/guided-first-orbit.js?v=v2',
   '/js/app.js?v=v3',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)

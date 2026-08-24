@@ -23,6 +23,7 @@ hero / Living Globe action
   → App.enterGlobe()
   → lazy-load globe.gl
   → initialize GlobeModule
+  → first visit opens the three-step Guided First Orbit
   → Carbon / Power / Physical lens controls
   → exact-metric country rail + lens-aware selected-country card
   → App.exitGlobe() returns to the foundation page
@@ -39,6 +40,7 @@ mission.
 |---|---|---|
 | Page | `index.html` | Critical tokens/layout, public copy, DOM, script order, theme bootstrap |
 | Globe presentation | `css/globe-system.css` | Globe HUD, atlas rail/card, status visuals, themes, responsive behavior |
+| Globe orientation | `css/guided-first-orbit.css` | First-visit coach marks, compact interaction key, evidence shelf, replay control |
 | Clock presentation | `css/carbon-clock.css` | Carbon-clock typography and layout |
 | Safety utilities | `js/gaia-utils.js` | Safe DOM access, cross-module calls, safe fluent chains, error reporting |
 | Contract registry | `js/module-contracts.js` | Module interfaces, dependencies, events, runtime pre-flight validation |
@@ -50,12 +52,13 @@ mission.
 | Climate view model | `js/country-climate-intelligence.js` | Lens selection policy, rail rows, country facts, legend, gaps, and provenance |
 | Globe runtime | `js/globe.js` | globe.gl lifecycle, country geometry, atlas rail/card, lens rendering, selection and themes |
 | Carbon clock | `js/carbon-clock.js` | Hero/topbar emissions counter |
+| Globe orientation | `js/guided-first-orbit.js` | First-visit tutorial, real country-choice handoff, completion preference, replay |
 | Application | `js/app.js` | Bootstrap, contract pre-flight, hero/globe transitions, lazy globe load |
 | Offline cache | `sw.js` | Static precache and network-first data/code updates |
 
 ## Script load order
 
-The eleven classic scripts load synchronously at the end of `index.html`:
+The twelve classic scripts load synchronously at the end of `index.html`:
 
 ```text
 1.  js/gaia-utils.js
@@ -68,7 +71,8 @@ The eleven classic scripts load synchronously at the end of `index.html`:
 8.  js/country-climate-intelligence.js
 9.  js/globe.js
 10. js/carbon-clock.js
-11. js/app.js
+11. js/guided-first-orbit.js
+12. js/app.js
 ```
 
 `js/vendor/globe.gl.js` is loaded by `App.enterGlobe()` rather than at page
@@ -102,6 +106,7 @@ on `window`.
 | `Panel` | `js/globe.js` | legacy internal export | Archived-site fallback helpers; not part of current public flow |
 | `PanelSlider` | `js/globe.js` | legacy internal export | Archived-site fallback helpers |
 | `CARBON_CLOCK` | `js/carbon-clock.js` | yes | Live counter |
+| `GUIDED_ORBIT` | `js/guided-first-orbit.js` | yes | First-visit globe orientation and replay |
 | `App` | `js/app.js` | yes | Bootstrap and navigation |
 
 `App.init()` calls `MODULE_CONTRACTS.validate()` after `Data.init()`. A
@@ -246,6 +251,15 @@ pointer or keyboard selection
   → renderCountryMetrics()
   → emit globe:country-selected
 
+first globe visit / replay
+  → GUIDED_ORBIT.start()
+  → candidate_data_unavailable suppresses the tour instead of exposing an unfinishable empty route
+  → explain evidence-versus-score boundary
+  → release the globe + rank rail for a real country choice
+  → globe:country-selected collapses the tutorial into a source shelf and mounts completion inside the country dialog
+  → globe:country-closed returns an active final step to country selection
+  → completion or dismissal persists locally; toolbar orbit control replays
+
 Escape / close / App.exitGlobe()
   → clear selection
   → emit globe:country-closed / app:globe-exited
@@ -266,6 +280,10 @@ Escape / close / App.exitGlobe()
 | `globe:country-selected` | `GlobeModule` | External/optional listeners |
 | `globe:country-closed` | `GlobeModule` | External/optional listeners |
 | `globe:lens-changed` | `GlobeModule` | External/optional listeners |
+| `guided-orbit:started` | `GUIDED_ORBIT` | External/optional listeners |
+| `guided-orbit:step` | `GUIDED_ORBIT` | External/optional listeners |
+| `guided-orbit:completed` | `GUIDED_ORBIT` | External/optional listeners |
+| `guided-orbit:dismissed` | `GUIDED_ORBIT` | External/optional listeners |
 
 Event names use an emitter prefix (`module:verb`). Contracts declare emitted
 and listened-to channels so pre-flight can flag orphan listeners.
@@ -276,6 +294,7 @@ Top to bottom:
 
 ```text
 9999  .skip-nav while focused
+1100  #guided-orbit
 1000  #hex-country-tooltip, .country-atlas-card
  300  #site-nav
  200  #hero, #globe-back-btn
@@ -302,11 +321,11 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v43 precaches the public page, core CSS/JS, verified local
-globe.gl, the CT-45 manifest and localized globe assets, and the exact-version
-Country Climate Intelligence candidate. The prior country-factual candidate is
-retained for one release epoch as a rollback artifact; it is not loaded into the
-v1 dashboard. The service worker applies:
+`sw.js` cache epoch v44 precaches the public page, core CSS/JS, Guided First
+Orbit UI, verified local globe.gl, the CT-45 manifest and localized globe
+assets, and the exact-version Country Climate Intelligence candidate. The prior
+country-factual candidate is retained for one release epoch as a rollback
+artifact; it is not loaded into the v1 dashboard. The service worker applies:
 
 - network-first for `/data/`;
 - network-first with browser-cache bypass for HTML, JS, and CSS;

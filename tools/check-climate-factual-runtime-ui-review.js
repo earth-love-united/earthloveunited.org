@@ -13,7 +13,7 @@ const {
 
 const ROOT = path.resolve(__dirname, '..');
 const REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
-const EXPECTED_COMMIT = 'f43b91556d7734a36a69d6a7d8a18a7b8ca2a92b';
+const EXPECTED_COMMIT = '6331b0a304b589e5a671cfaa4cc23b116e10ed0c';
 const REQUIRED_GATES = [
   'runtime-boundary', 'truth-language', 'magnitude-and-gaps', 'chart-table-source',
   'screen-reader-semantics', 'keyboard-focus', 'touch-targets', 'responsive-320',
@@ -34,17 +34,19 @@ const EXPECTED_RUNTIME_EVIDENCE = {
   },
   renderer_canvases: 1,
   smoke_test: {
-    passed: 22,
-    total: 22,
+    passed: 25,
+    total: 25,
     failed: 0,
     critical_failed: 0,
   },
   stack_lint_issues: 0,
   delivery_versions: {
-    globe_system_css: 'v20',
-    globe_script: 'v14',
-    service_worker_registration: '38-compact-rank',
-    service_worker_cache: 'elu-v38-compact-rank',
+    globe_system_css: 'v21',
+    guided_first_orbit_css: 'v2',
+    globe_script: 'v15',
+    guided_first_orbit_script: 'v2',
+    service_worker_registration: '40-guided-orbit-review',
+    service_worker_cache: 'elu-v40-guided-orbit-review',
   },
   browser_qa: {
     mobile: {
@@ -71,6 +73,7 @@ const EXPECTED_RUNTIME_EVIDENCE = {
       forward_wrap_returns_to_heading: true,
       arrow_navigation_retains_heading_focus: true,
       escape_and_close_restore_opener: true,
+      tutorial_completion_after_close: true,
     },
     textures: {
       surface: {
@@ -95,11 +98,22 @@ const EXPECTED_RUNTIME_EVIDENCE = {
     },
     cache: {
       controller_reload_verified: true,
-      css_key: '/css/globe-system.css?v=v20',
-      globe_key: '/js/globe.js?v=v14',
-      service_worker_key: '/sw.js?v=38-compact-rank',
-      cache_name: 'elu-v38-compact-rank',
+      css_key: '/css/globe-system.css?v=v21',
+      guided_css_key: '/css/guided-first-orbit.css?v=v2',
+      globe_key: '/js/globe.js?v=v15',
+      guided_script_key: '/js/guided-first-orbit.js?v=v2',
+      service_worker_key: '/sw.js?v=40-guided-orbit-review',
+      cache_name: 'elu-v40-guided-orbit-review',
     },
+  },
+  guided_first_orbit: {
+    steps: 3,
+    candidate_unavailable_suppressed: true,
+    completion_inside_country_dialog: true,
+    completion_keyboard_reachable: true,
+    country_close_returns_to_selection: true,
+    replay_restores_visible_focus: true,
+    duplicate_lifecycle_handlers: 0,
   },
 };
 
@@ -221,7 +235,7 @@ function runSharedHostProjectionTests() {
     sha256Bytes(ct42RuntimeProjection('index.html', reviewedIndex)),
     'canonical drift must remain inside the CT-42 projection');
   const unsafeSw = Buffer.from(currentSw.toString('utf8').replace(
-    "const CACHE_NAME = 'elu-v38-compact-rank';",
+    "const CACHE_NAME = 'elu-v40-guided-orbit-review';",
     "const CACHE_NAME = 'unreviewed-runtime';"
   ));
   assert.notEqual(sha256Bytes(ct42RuntimeProjection('sw.js', unsafeSw)),
@@ -281,12 +295,16 @@ assert.match(boundary.required_next_gate, /CT-40 independent allow decision/);
 
 const index = read('index.html');
 const serviceWorker = read('sw.js');
-assert.ok(index.includes('href="css/globe-system.css?v=v20"'), 'index CSS cache key drift');
-assert.ok(index.includes('src="js/globe.js?v=v14"'), 'index globe cache key drift');
-assert.ok(index.includes("register('/sw.js?v=38-compact-rank'"), 'service-worker registration key drift');
-assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v38-compact-rank';"), 'service-worker cache name drift');
-assert.ok(serviceWorker.includes("'/css/globe-system.css?v=v20'"), 'service-worker CSS cache key drift');
-assert.ok(serviceWorker.includes("'/js/globe.js?v=v14'"), 'service-worker globe cache key drift');
+assert.ok(index.includes('href="css/globe-system.css?v=v21"'), 'index CSS cache key drift');
+assert.ok(index.includes('href="css/guided-first-orbit.css?v=v2"'), 'index guided-orbit CSS cache key drift');
+assert.ok(index.includes('src="js/globe.js?v=v15"'), 'index globe cache key drift');
+assert.ok(index.includes('src="js/guided-first-orbit.js?v=v2"'), 'index guided-orbit script cache key drift');
+assert.ok(index.includes("register('/sw.js?v=40-guided-orbit-review'"), 'service-worker registration key drift');
+assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v40-guided-orbit-review';"), 'service-worker cache name drift');
+assert.ok(serviceWorker.includes("'/css/globe-system.css?v=v21'"), 'service-worker CSS cache key drift');
+assert.ok(serviceWorker.includes("'/css/guided-first-orbit.css?v=v2'"), 'service-worker guided-orbit CSS cache key drift');
+assert.ok(serviceWorker.includes("'/js/globe.js?v=v15'"), 'service-worker globe cache key drift');
+assert.ok(serviceWorker.includes("'/js/guided-first-orbit.js?v=v2'"), 'service-worker guided-orbit script cache key drift');
 
 const geometry = readJson('assets/globe/runtime/ne_110m_admin_0_countries.geojson');
 assert.equal(geometry.type, 'FeatureCollection');
