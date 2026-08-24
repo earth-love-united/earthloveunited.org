@@ -1,6 +1,6 @@
 # Country Climate Intelligence v1 methodology
 
-**Status:** source-validated factual candidate; not a production scientific release
+**Status:** normalized factual candidate pending source revalidation; not a production scientific release
 
 **Methodology version:** 1.0.0
 
@@ -36,7 +36,7 @@ The card keeps these facts separate:
 - latest available consumption-based fossil CO₂;
 - latest net transfer of embodied fossil CO₂;
 - 2015–2024 land-use CO₂ mean and model spread;
-- territorial fossil CO₂ per person using the year-matched 2024 population estimate;
+- territorial fossil CO₂ per person using the year-matched WPP 2024 Medium population projection;
 - independent 2024 GHG context from Climate TRACE.
 
 Land-use change never enters the territorial fossil comparison value. Positive net transfer follows the GCB territorial-minus-consumption convention and means net exported embodied emissions.
@@ -60,14 +60,14 @@ Observed ERA5 country trends are defined as ordinary-least-squares slopes over a
 | Role | Reviewed v1 component |
 |---|---|
 | Core carbon | Global Carbon Budget 2025 v1.0, including separate national fossil and land-use workbooks |
-| Population denominator | UN World Population Prospects 2024, exact 2024 central estimate only |
+| Population denominator | UN World Population Prospects 2024, exact 2024 Medium projection only |
 | Independent GHG context | Climate TRACE v5.9.0 annual 2024 country snapshot, forestry/LULUCF excluded, IPCC AR6 GWP100 |
 | Power | Ember Yearly Electricity Data, exact 2019 and 2024 annual rows under Ember's published taxonomy |
 | Projected physical climate | World Bank CCKP CMIP6 country aggregates |
 | Observed physical climate | World Bank CCKP ERA5; gap provenance only in this candidate because the acquisition payload was empty |
 | Official context | Existing UNFCCC document title, submission date, and direct-link metadata only |
 
-Every value-contributing component requires a reviewed licence, attribution, field permitlist, exact retrieval receipt/checksum, external raw-storage decision, normalized-value redistribution approval, and versioned source ID. Browser code calls no source API and uses no API key.
+Every value-contributing component requires a reviewed licence, attribution, field permitlist, exact retrieval receipt/checksum, external raw-storage decision, normalized-value redistribution approval, and versioned source ID. The GCB raw receipts meet that requirement. WPP, Climate TRACE, Ember, and CCKP remain candidate-only pending retained raw-receipt revalidation; Climate TRACE external-data exceptions and the CCKP/CMIP6 derivative licence chain also require release-specific rights review. Browser code calls no source API and uses no API key.
 
 PRIMAP-hist v2.7 is not acquired or ingested. The reviewed v2.6.1 artifact contributes no value and appears only in detailed citation provenance.
 
@@ -95,7 +95,7 @@ Stable comparison IDs include `emissions.fossil_co2.territorial`, `electricity.c
 Only these v1 derivations are allowed:
 
 ```text
-territorial per capita = MtCO₂ × 1,000,000 ÷ 2024 population
+territorial per capita = MtCO₂ × 1,000,000 ÷ WPP 2024 Medium population projection
 five-year power change = clean share 2024 − clean share 2019
 land-use central value = mean(BLUE model mean, OSCAR model mean, LUCE model mean)
 land-use uncertainty = population standard deviation of the three model means

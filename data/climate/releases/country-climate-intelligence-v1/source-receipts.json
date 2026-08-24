@@ -54,9 +54,10 @@
     }
   ],
   "production_gate": {
-    "raw_receipt_revalidation_complete": false,
     "independent_scientific_review_complete": false,
     "production_promotion_allowed": false,
-    "rule": "This exact factual candidate may support candidate UI integration. Production promotion remains prohibited until the external raw receipts are independently revalidated."
+    "raw_receipt_revalidation_complete": false,
+    "redistribution_rights_revalidation_complete": false,
+    "rule": "This normalized candidate may support non-production UI integration. Production promotion remains prohibited until external raw receipts and release-specific redistribution rights are independently revalidated."
   }
 }

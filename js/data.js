@@ -4,7 +4,7 @@
 // Must load AFTER storage.js (depends on window.Storage).
 // ═══════════════════════════════════════════════
 
-const CLIMATE_INTELLIGENCE_SHA256 = '4a1eb0665769a62ac0280e0c68a86265dc986b38cae9e77ee5f4fc4263d50a8e';
+const CLIMATE_INTELLIGENCE_SHA256 = '9af7122f02e09b10af7add4ed75a61453d0bd4573ed6bad090561723608d0d7a';
 const DATA_FETCH_TIMEOUT_MS = 8000;
 
 function _fetchTextWithTimeout(url, options = {}) {
@@ -40,7 +40,7 @@ const Data = {
   climateCountries: null,
   climateRanking: null,
   climateCandidateState: 'idle',
-  version: 'cci1candidate1',
+  version: 'cci1candidate2',
 
   async init() {
     // Country Climate Intelligence v1 is a hashed, static factual candidate.
@@ -151,7 +151,7 @@ const Data = {
       ? safeCall('DATA_SCHEMA', 'validateClimateIntelligence', release)
       : { ok: false, errors: ['DATA_SCHEMA unavailable'] };
     const boundaryValid = release?.release?.status === 'candidate' &&
-      release?.release?.review_state === 'source_validated_factual_candidate' &&
+      release?.release?.review_state === 'normalized_factual_candidate_pending_source_revalidation' &&
       release?.release?.production_runtime_release === false;
     if (!validation?.ok || !boundaryValid) {
       const details = validation?.errors?.slice(0, 3).join('; ') || 'candidate release boundary invalid';

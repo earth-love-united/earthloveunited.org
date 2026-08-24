@@ -71,6 +71,19 @@ const COMPONENTS = {
     ],
   },
 };
+const COMPONENT_REVIEW_STATES = Object.freeze({
+  cckp: 'normalized_factual_candidate_pending_source_revalidation',
+  ember: 'normalized_factual_candidate_pending_source_revalidation',
+  gcb: 'source_validated_factual_candidate',
+  trace: 'normalized_factual_candidate_pending_source_revalidation',
+  wpp: 'normalized_factual_candidate_pending_source_revalidation',
+});
+const RELEASE_PENDING_SOURCE_IDS = new Set([
+  'climate-trace-v5.9.0-country-annual',
+  'ember-yearly-electricity-data-2026-08-24',
+  'un-wpp-2024',
+  'world-bank-cckp-cmip6-2026-08-24',
+]);
 
 function main() {
   const args = process.argv.slice(2);
@@ -125,7 +138,7 @@ function main() {
         reusable_for_future_source_release: false,
       },
       release_id: runtime.release.id,
-      review_state: 'source_validated_factual_candidate',
+      review_state: COMPONENT_REVIEW_STATES[componentId],
       schema_version: '1.0.0',
       source_registry_ids: definition.source_registry_ids,
     };
@@ -148,7 +161,9 @@ function main() {
       atomic_service_worker_staging: false,
       independent_scientific_review: false,
       runtime_validation: false,
-      source_approval: true,
+      raw_receipt_revalidation: false,
+      redistribution_rights_revalidation: false,
+      source_registry_approval: true,
       visual_review: false,
     },
     lens_catalog: runtime.lens_catalog,
@@ -177,7 +192,9 @@ function main() {
     } : {}),
     schema_ref: 'data/climate/schemas/country-climate-intelligence.schema.json',
     schema_version: '1.0.0',
-    source_catalog: runtime.source_catalog,
+    source_catalog: runtime.source_catalog.map(source => RELEASE_PENDING_SOURCE_IDS.has(source.id)
+      ? { ...source, review_state: 'pending' }
+      : source),
     validation_receipts: [],
   };
   writeJson(path.join(outputDir, 'release-manifest.json'), manifest);

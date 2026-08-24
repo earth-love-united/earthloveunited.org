@@ -122,7 +122,10 @@ function check() {
   assert.strictEqual(runtime.release.production_runtime_release, false);
   assert.strictEqual(runtime.release.entity_count, ENTITY_COUNT);
   assert.strictEqual(runtime.release.comparison_baseline_year, 2024);
+  assert.strictEqual(runtime.release.review_state, 'normalized_factual_candidate_pending_source_revalidation');
   assert.strictEqual(manifest.gates.independent_scientific_review, false, 'candidate must not claim independent scientific review');
+  assert.strictEqual(manifest.gates.raw_receipt_revalidation, false, 'candidate must not claim raw-receipt revalidation');
+  assert.strictEqual(manifest.gates.redistribution_rights_revalidation, false, 'candidate must not claim release-specific redistribution-rights revalidation');
   checkComponentReceipts(runtime, manifest);
 
   assert.strictEqual(runtime.countries.length, ENTITY_COUNT);
@@ -143,6 +146,11 @@ function check() {
       }
     }
     checkDerived(country);
+    const population = country.metrics['population.estimate'];
+    if (population.value !== null) {
+      assert.strictEqual(population.status, 'modeled', `${country.iso_alpha3} WPP 2024 denominator must be labeled as a projection`);
+      assert.strictEqual(population.context.release_year_classification, 'year_matched_2024_medium_projection');
+    }
   }
   assert.deepStrictEqual(coverage, EXPECTED_COVERAGE, 'candidate metric coverage changed');
   for (const metricId of metricIds) {

@@ -54,7 +54,12 @@ function identityDisposition(row, index, registryByIso3, exceptions, disposition
 
 function projectedMetric(entity, variable, rows) {
   const config = VARIABLE_CONFIG[variable];
-  const byKey = new Map(rows.map(row => [`${row.scenario}:${row.percentile}`, Number(row.value)]));
+  const byKey = new Map();
+  for (const row of rows) {
+    const key = `${row.scenario}:${row.percentile}`;
+    if (byKey.has(key)) throw new Error(`Duplicate CCKP projection tuple for ${entity.iso_alpha3}/${variable}/${key}`);
+    byKey.set(key, Number(row.value));
+  }
   const required = ['SSP1-2.6:median', 'SSP2-4.5:p10', 'SSP2-4.5:median', 'SSP2-4.5:p90', 'SSP5-8.5:median'];
   if (required.some(key => !Number.isFinite(byKey.get(key)))) {
     return gapMetric(config.projected_id, PROJECTED_SOURCE, 'projection_percentile_or_scenario_missing', 'A complete SSP2-4.5 p10/median/p90 and SSP1-2.6/SSP5-8.5 median set is unavailable.');
@@ -119,6 +124,9 @@ function observedMetric(entity, variable, rows, lastYear, emptySnapshot) {
     .filter(row => Number(row.year) >= 1970 && Number(row.year) <= lastYear && Number.isFinite(Number(row.value)))
     .map(row => ({ year: Number(row.year), value: Number(row.value) }))
     .sort((left, right) => left.year - right.year);
+  if (new Set(series.map(point => point.year)).size !== series.length) {
+    throw new Error(`Duplicate CCKP observed year for ${entity.iso_alpha3}/${variable}`);
+  }
   if (series.length < 2) {
     return gapMetric(config.observed_id, OBSERVED_SOURCE, 'source_value_missing', `The ERA5 snapshot lacks a usable 1970–${lastYear} annual country series.`);
   }

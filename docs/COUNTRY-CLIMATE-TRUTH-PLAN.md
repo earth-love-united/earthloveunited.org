@@ -17,7 +17,7 @@ The browser consumes one deterministic static runtime. Source acquisition and no
 ```text
 approved source registry + exact external snapshots
   → component-specific offline compilers
-  → 249-row reviewed normalized artifacts with explicit gaps
+  → 249-row normalized candidate artifacts with explicit gaps and review state
   → deterministic country-climate-intelligence builder
   → exact-SHA static runtime
   → Data
@@ -48,10 +48,10 @@ approved source registry + exact external snapshots
 
 | Gate | Candidate state | Promotion requirement |
 |---|---|---|
-| Source licensing and attribution | passed | re-review on any source/version change |
+| Source-registry licensing and attribution | configured | Climate TRACE exception-backed fields and the CCKP/CMIP6 derivative chain require release-specific revalidation |
 | Field permitlists and compiler denial | passed | no unreviewed source field can be selected |
 | Exact normalized component checksums | passed | deterministic rebuild must match committed runtime |
-| External raw-receipt revalidation | open | independently revalidate the recovered WPP, TRACE, Ember, and CCKP acquisition receipts |
+| External raw-receipt revalidation | open | independently revalidate and retain the WPP, TRACE, Ember, and CCKP acquisition receipts |
 | Core-carbon scientific review | open | independent reviewer verifies GCB identity mapping, scopes, transfer sign, cumulative, land-use mean/σ, and per-capita denominator |
 | Optional-component scientific review | open | independent reviewer verifies TRACE GWP/filter, Ember taxonomy/evidence class, and CCKP scenario/percentile selections |
 | Runtime/static validation | passed for candidate | rerun after any factual or code change |
@@ -75,7 +75,7 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ### Derivations and scope
 
-- per-capita unit conversion and exact 2024 denominator;
+- per-capita unit conversion and exact WPP 2024 Medium projection denominator;
 - 2019–2024 percentage-point change;
 - three-model land-use mean, population σ, and negative removals;
 - observed OLS slope per decade;
@@ -114,11 +114,11 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v44 service worker composes the reviewed Guided First Orbit assets with the
+The v45 service worker composes the reviewed Guided First Orbit assets with the
 candidate dashboard and stages both runtime generations:
 
 ```text
-data/climate/runtime/country-climate-intelligence.json?v=cci1candidate1
+data/climate/runtime/country-climate-intelligence.json?v=cci1candidate2
 data/climate/runtime/country-factual-candidate.json?v=ct42candidate1
 ```
 
@@ -126,4 +126,8 @@ Rollback is a reviewed runtime/data-loader/service-worker change; it does not de
 
 ## Next review
 
-The next action is independent factual review, not feature expansion. NDC assessment, delivery scoring, finance, vulnerability, monthly/YTD views, and composite rankings remain out of scope for v1.
+The independent source-rigor pass and its remaining production blockers are recorded in
+[`COUNTRY-CLIMATE-SOURCE-RIGOR-AUDIT.md`](COUNTRY-CLIMATE-SOURCE-RIGOR-AUDIT.md).
+The next action is completion of the open evidence, rights, scientific, and protected-file
+reviews, not feature expansion. NDC assessment, delivery scoring, finance, vulnerability,
+monthly/YTD views, and composite rankings remain out of scope for v1.

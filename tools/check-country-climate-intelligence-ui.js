@@ -12,9 +12,9 @@ const globe = fs.readFileSync(path.join(ROOT, 'js/globe.js'), 'utf8');
 const css = fs.readFileSync(path.join(ROOT, 'css/globe-system.css'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
-const dataAt = index.indexOf('src="js/data.js?v=v3"');
-const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v2"');
-const globeAt = index.indexOf('src="js/globe.js?v=v19"');
+const dataAt = index.indexOf('src="js/data.js?v=v4"');
+const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v3"');
+const globeAt = index.indexOf('src="js/globe.js?v=v20"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -54,9 +54,9 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v44-country-climate-guided-orbit'"));
-assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v2'"));
-assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate1'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v45-country-climate-fair-hud'"));
+assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v3'"));
+assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate2'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired project data must not be pinned by the climate runtime cache');
 

@@ -1,5 +1,9 @@
 {
   "artifact_type": "reviewed_normalized_country_facts",
+  "candidate_metadata_correction": {
+    "numeric_values_changed": false,
+    "reason": "Independent audit corrected the WPP evidence class and made optional-source revalidation status explicit."
+  },
   "countries": [
     {
       "country_id": "iso3166-1:ABW",
@@ -25,7 +29,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -97,7 +101,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -175,7 +179,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -247,7 +251,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -325,7 +329,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -397,7 +401,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -475,7 +479,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -547,7 +551,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -625,7 +629,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -697,7 +701,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -775,7 +779,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -847,7 +851,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -925,7 +929,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -997,7 +1001,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1075,7 +1079,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1147,7 +1151,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1225,7 +1229,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1297,7 +1301,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1375,7 +1379,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1447,7 +1451,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1525,7 +1529,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1597,7 +1601,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1761,7 +1765,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1833,7 +1837,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1911,7 +1915,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -1983,7 +1987,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2061,7 +2065,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2133,7 +2137,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2211,7 +2215,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2283,7 +2287,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2361,7 +2365,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2433,7 +2437,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2511,7 +2515,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2583,7 +2587,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2661,7 +2665,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2733,7 +2737,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2811,7 +2815,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2883,7 +2887,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -2961,7 +2965,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3033,7 +3037,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3111,7 +3115,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3183,7 +3187,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3261,7 +3265,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3333,7 +3337,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3411,7 +3415,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3483,7 +3487,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3561,7 +3565,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3633,7 +3637,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3711,7 +3715,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3783,7 +3787,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3861,7 +3865,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -3933,7 +3937,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4011,7 +4015,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4083,7 +4087,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4161,7 +4165,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4233,7 +4237,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4311,7 +4315,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4383,7 +4387,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4461,7 +4465,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4533,7 +4537,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4611,7 +4615,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4683,7 +4687,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4761,7 +4765,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4833,7 +4837,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4911,7 +4915,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -4983,7 +4987,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5061,7 +5065,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5133,7 +5137,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5211,7 +5215,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5283,7 +5287,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5361,7 +5365,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5433,7 +5437,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5511,7 +5515,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5583,7 +5587,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5661,7 +5665,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5733,7 +5737,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5811,7 +5815,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5883,7 +5887,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -5961,7 +5965,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6033,7 +6037,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6111,7 +6115,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6183,7 +6187,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6261,7 +6265,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6333,7 +6337,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6411,7 +6415,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6483,7 +6487,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6561,7 +6565,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6633,7 +6637,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6711,7 +6715,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6783,7 +6787,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6861,7 +6865,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -6933,7 +6937,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7011,7 +7015,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7083,7 +7087,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7161,7 +7165,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7233,7 +7237,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7311,7 +7315,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7383,7 +7387,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7461,7 +7465,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7533,7 +7537,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7611,7 +7615,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7683,7 +7687,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7761,7 +7765,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7833,7 +7837,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7911,7 +7915,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -7983,7 +7987,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8061,7 +8065,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8133,7 +8137,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8211,7 +8215,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8283,7 +8287,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8361,7 +8365,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8433,7 +8437,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8511,7 +8515,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8583,7 +8587,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8661,7 +8665,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8733,7 +8737,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8811,7 +8815,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8883,7 +8887,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -8961,7 +8965,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9033,7 +9037,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9111,7 +9115,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9183,7 +9187,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9261,7 +9265,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9333,7 +9337,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9411,7 +9415,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9483,7 +9487,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9561,7 +9565,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9633,7 +9637,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9711,7 +9715,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9783,7 +9787,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9861,7 +9865,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -9933,7 +9937,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10011,7 +10015,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10083,7 +10087,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10247,7 +10251,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10319,7 +10323,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10397,7 +10401,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10469,7 +10473,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10547,7 +10551,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10619,7 +10623,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10697,7 +10701,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10769,7 +10773,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10847,7 +10851,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -10919,7 +10923,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11083,7 +11087,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11155,7 +11159,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11233,7 +11237,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11305,7 +11309,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11383,7 +11387,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11455,7 +11459,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11533,7 +11537,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11605,7 +11609,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11683,7 +11687,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11755,7 +11759,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11833,7 +11837,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11905,7 +11909,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -11983,7 +11987,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12055,7 +12059,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12133,7 +12137,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12205,7 +12209,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12283,7 +12287,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12355,7 +12359,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12433,7 +12437,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12505,7 +12509,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12583,7 +12587,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12655,7 +12659,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12733,7 +12737,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12805,7 +12809,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12883,7 +12887,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -12955,7 +12959,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13033,7 +13037,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13105,7 +13109,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13183,7 +13187,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13255,7 +13259,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13333,7 +13337,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13405,7 +13409,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13483,7 +13487,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13555,7 +13559,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13633,7 +13637,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13705,7 +13709,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13783,7 +13787,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13855,7 +13859,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -13933,7 +13937,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14005,7 +14009,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14083,7 +14087,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14155,7 +14159,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14233,7 +14237,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14305,7 +14309,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14383,7 +14387,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14455,7 +14459,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14533,7 +14537,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14605,7 +14609,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14683,7 +14687,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14755,7 +14759,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14833,7 +14837,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14905,7 +14909,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -14983,7 +14987,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15055,7 +15059,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15133,7 +15137,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15205,7 +15209,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15283,7 +15287,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15355,7 +15359,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15433,7 +15437,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15505,7 +15509,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15583,7 +15587,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15655,7 +15659,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15733,7 +15737,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15805,7 +15809,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15883,7 +15887,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -15955,7 +15959,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16033,7 +16037,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16105,7 +16109,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16183,7 +16187,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16255,7 +16259,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16333,7 +16337,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16405,7 +16409,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16483,7 +16487,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16555,7 +16559,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16633,7 +16637,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16705,7 +16709,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16783,7 +16787,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16855,7 +16859,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -16933,7 +16937,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17005,7 +17009,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17083,7 +17087,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17155,7 +17159,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17233,7 +17237,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17305,7 +17309,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17383,7 +17387,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17455,7 +17459,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17533,7 +17537,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17605,7 +17609,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17683,7 +17687,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17755,7 +17759,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17833,7 +17837,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17905,7 +17909,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -17983,7 +17987,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18055,7 +18059,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18133,7 +18137,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18205,7 +18209,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18283,7 +18287,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18355,7 +18359,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18433,7 +18437,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18505,7 +18509,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18583,7 +18587,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18655,7 +18659,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18733,7 +18737,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18805,7 +18809,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18883,7 +18887,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -18955,7 +18959,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19033,7 +19037,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19105,7 +19109,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19183,7 +19187,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19255,7 +19259,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19333,7 +19337,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19405,7 +19409,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19483,7 +19487,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19555,7 +19559,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19633,7 +19637,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19705,7 +19709,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19783,7 +19787,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19855,7 +19859,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -19933,7 +19937,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20005,7 +20009,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20083,7 +20087,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20155,7 +20159,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20233,7 +20237,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20305,7 +20309,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20383,7 +20387,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20455,7 +20459,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20533,7 +20537,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20605,7 +20609,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20683,7 +20687,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20755,7 +20759,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20833,7 +20837,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20905,7 +20909,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -20983,7 +20987,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21055,7 +21059,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21133,7 +21137,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21205,7 +21209,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21283,7 +21287,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21355,7 +21359,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21433,7 +21437,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21505,7 +21509,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21583,7 +21587,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21655,7 +21659,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21733,7 +21737,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21805,7 +21809,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21883,7 +21887,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -21955,7 +21959,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22033,7 +22037,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22105,7 +22109,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22183,7 +22187,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22255,7 +22259,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22333,7 +22337,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22405,7 +22409,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22483,7 +22487,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22555,7 +22559,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22633,7 +22637,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22705,7 +22709,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22783,7 +22787,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22855,7 +22859,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -22933,7 +22937,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23005,7 +23009,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23083,7 +23087,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23155,7 +23159,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23233,7 +23237,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23305,7 +23309,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23383,7 +23387,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23455,7 +23459,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23533,7 +23537,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23605,7 +23609,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23683,7 +23687,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23755,7 +23759,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23833,7 +23837,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23905,7 +23909,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -23983,7 +23987,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24055,7 +24059,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24133,7 +24137,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24205,7 +24209,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24283,7 +24287,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24355,7 +24359,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24433,7 +24437,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24505,7 +24509,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24583,7 +24587,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24655,7 +24659,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24733,7 +24737,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24805,7 +24809,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24883,7 +24887,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -24955,7 +24959,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25033,7 +25037,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25105,7 +25109,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25183,7 +25187,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25255,7 +25259,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25333,7 +25337,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25405,7 +25409,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25483,7 +25487,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25555,7 +25559,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25633,7 +25637,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25705,7 +25709,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25783,7 +25787,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25855,7 +25859,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -25933,7 +25937,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26005,7 +26009,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26083,7 +26087,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26155,7 +26159,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26233,7 +26237,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26305,7 +26309,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26383,7 +26387,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26455,7 +26459,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26533,7 +26537,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26605,7 +26609,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26683,7 +26687,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26755,7 +26759,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26833,7 +26837,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26905,7 +26909,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -26983,7 +26987,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27055,7 +27059,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27133,7 +27137,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27205,7 +27209,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27283,7 +27287,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27355,7 +27359,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27433,7 +27437,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27505,7 +27509,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27583,7 +27587,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27655,7 +27659,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27733,7 +27737,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27805,7 +27809,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27883,7 +27887,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -27955,7 +27959,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28033,7 +28037,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28105,7 +28109,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28183,7 +28187,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28255,7 +28259,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28333,7 +28337,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28405,7 +28409,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28483,7 +28487,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28555,7 +28559,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28633,7 +28637,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28705,7 +28709,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28783,7 +28787,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28855,7 +28859,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -28933,7 +28937,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29005,7 +29009,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29169,7 +29173,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29241,7 +29245,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29319,7 +29323,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29391,7 +29395,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29469,7 +29473,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29541,7 +29545,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29619,7 +29623,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29691,7 +29695,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29769,7 +29773,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29841,7 +29845,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29919,7 +29923,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -29991,7 +29995,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30069,7 +30073,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30141,7 +30145,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30219,7 +30223,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30291,7 +30295,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30369,7 +30373,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30441,7 +30445,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30519,7 +30523,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30591,7 +30595,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30669,7 +30673,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30741,7 +30745,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30819,7 +30823,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30891,7 +30895,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -30969,7 +30973,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31041,7 +31045,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31119,7 +31123,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31191,7 +31195,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31269,7 +31273,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31341,7 +31345,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31419,7 +31423,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31491,7 +31495,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31569,7 +31573,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31641,7 +31645,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31719,7 +31723,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31791,7 +31795,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31869,7 +31873,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -31941,7 +31945,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32019,7 +32023,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32091,7 +32095,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32169,7 +32173,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32241,7 +32245,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32319,7 +32323,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32391,7 +32395,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32469,7 +32473,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32541,7 +32545,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32619,7 +32623,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32691,7 +32695,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32769,7 +32773,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32841,7 +32845,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32919,7 +32923,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -32991,7 +32995,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33069,7 +33073,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33141,7 +33145,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33219,7 +33223,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33291,7 +33295,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33369,7 +33373,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33441,7 +33445,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33519,7 +33523,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33591,7 +33595,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33669,7 +33673,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33741,7 +33745,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33819,7 +33823,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33891,7 +33895,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -33969,7 +33973,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34041,7 +34045,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34119,7 +34123,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34191,7 +34195,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34269,7 +34273,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34341,7 +34345,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34419,7 +34423,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34491,7 +34495,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34569,7 +34573,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34641,7 +34645,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34719,7 +34723,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34791,7 +34795,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34869,7 +34873,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -34941,7 +34945,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35019,7 +35023,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35091,7 +35095,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35169,7 +35173,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35241,7 +35245,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35319,7 +35323,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35391,7 +35395,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35469,7 +35473,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35541,7 +35545,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35619,7 +35623,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35691,7 +35695,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35769,7 +35773,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35841,7 +35845,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35919,7 +35923,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -35991,7 +35995,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36069,7 +36073,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36141,7 +36145,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36219,7 +36223,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36291,7 +36295,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36369,7 +36373,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36441,7 +36445,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36519,7 +36523,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36591,7 +36595,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36669,7 +36673,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36741,7 +36745,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36819,7 +36823,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36891,7 +36895,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -36969,7 +36973,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -37041,7 +37045,7 @@
             "label": "2040–2059 vs 1995–2014",
             "start": 2040
           },
-          "review_state": "source_validated_candidate",
+          "review_state": "normalized_candidate_pending_source_revalidation",
           "scope": {
             "accounting_frame": "CMIP6_country_area_aggregate_anomaly",
             "ensemble": "multi_model_ensemble",
@@ -37118,7 +37122,7 @@
     "reusable_for_future_source_release": false
   },
   "release_id": "country-climate-intelligence-2026-08-24-candidate.1",
-  "review_state": "source_validated_factual_candidate",
+  "review_state": "normalized_factual_candidate_pending_source_revalidation",
   "schema_version": "1.0.0",
   "source_registry_ids": [
     "world-bank-cckp-cmip6-2026-08-24",

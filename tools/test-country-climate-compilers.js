@@ -34,12 +34,13 @@ function receiptFor(sourceRegistryId, file, extra = {}) {
 
 try {
   const wppInput = write('wpp.csv', 'ISO3_code,Location,Time,Variant,PopTotal\nABW,Aruba,2024,Medium,123.456\n');
-  const wppReceipt = receiptFor('un-wpp-2024', wppInput, { year_classification_2024: 'estimate' });
+  const wppReceipt = receiptFor('un-wpp-2024', wppInput, { year_classification_2024: 'projection' });
   const wppOutput = path.join(temporaryDirectory, 'wpp-output.json');
   compileWpp(['--input', wppInput, '--receipt', wppReceipt, '--output', wppOutput]);
   const wpp = readJson(wppOutput);
   assert.strictEqual(wpp.entity_count, 249);
   assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'ABW').metrics['population.estimate'].value, 123456);
+  assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'ABW').metrics['population.estimate'].status, 'modeled');
   assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'AFG').metrics['population.estimate'].value, null);
 
   const traceInput = write('trace.json', `${JSON.stringify({
@@ -75,6 +76,12 @@ try {
   assert.strictEqual(arubaPower['electricity.clean_share_change_5y'].value, 15);
   assert.strictEqual(arubaPower['electricity.emissions'].value, 0.4);
 
+  const emberCo2eRows = emberRows.map(row => row.slice());
+  emberCo2eRows[emberCo2eRows.length - 1][5] = 'MtCO2e';
+  const emberCo2eInput = write('ember-co2e.csv', `Entity,Entity code,Year,Category,Variable,Unit,Value,Evidence class\n${emberCo2eRows.map(row => row.join(',')).join('\n')}\n`);
+  const emberCo2eReceipt = receiptFor('ember-yearly-electricity-data-2026-08-24', emberCo2eInput, { year_status_2024: 'actual', default_evidence_class: 'actual' });
+  assert.throws(() => compileEmber(['--input', emberCo2eInput, '--receipt', emberCo2eReceipt, '--output', emberOutput]), /unit mismatch/);
+
   const projectionRows = [];
   for (const variable of ['tas', 'pr']) {
     const unit = variable === 'tas' ? '°C' : 'mm/year';
@@ -100,6 +107,14 @@ try {
   const arubaClimate = cckp.countries.find(country => country.iso_alpha3 === 'ABW').metrics;
   assert.strictEqual(arubaClimate['climate.temperature.change'].value, 1.6);
   assert.strictEqual(arubaClimate['climate.temperature.observed_trend'].gap_reason.code, 'source_snapshot_empty');
+
+  const duplicateProjectionInput = write('cckp-projection-duplicate.json', `${JSON.stringify({ rows: projectionRows.concat({ ...projectionRows[0] }) })}\n`);
+  const duplicateProjectionReceipt = receiptFor('world-bank-cckp-cmip6-2026-08-24', duplicateProjectionInput);
+  assert.throws(() => compileCckp([
+    '--projection-input', duplicateProjectionInput, '--projection-receipt', duplicateProjectionReceipt,
+    '--observed-input', observedInput, '--observed-receipt', observedReceipt,
+    '--output', cckpOutput,
+  ]), /Duplicate CCKP projection tuple/);
 
   assert.throws(() => compileEmber(['--input', emberInput, '--receipt', traceReceipt, '--output', emberOutput]), /Ember receipt/);
   console.log('Country Climate Intelligence compiler fixtures passed (WPP, Climate TRACE, Ember, and CCKP; 249-row gap-preserving outputs).');

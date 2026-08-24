@@ -67,9 +67,9 @@ body.globe-mode[data-theme="light"] {
   --text3: #9a9584;
   --border: rgba(31, 94, 70, .20);
   --border-hi: rgba(31, 94, 70, .42);
-  --hud-bg: rgba(250, 247, 240, .94);
-  --hud-bg-strong: rgba(255, 253, 248, .98);
-  --hud-cell: rgba(237, 231, 217, .62);
+  --hud-bg: rgba(246, 250, 247, .91);
+  --hud-bg-strong: rgba(252, 254, 252, .96);
+  --hud-cell: rgba(220, 231, 224, .56);
   --hud-cell-hover: rgba(31, 94, 70, .10);
   --hud-border: rgba(31, 94, 70, .26);
   --hud-border-strong: rgba(31, 94, 70, .46);
@@ -77,9 +77,9 @@ body.globe-mode[data-theme="light"] {
   --hud-divider-soft: rgba(31, 94, 70, .08);
   --hud-muted: rgba(32, 48, 42, .78);
   --hud-faint: rgba(32, 48, 42, .78);
-  --hud-shadow: 0 16px 38px rgba(62, 49, 25, .14);
-  --hud-shadow-strong: 0 18px 48px rgba(62, 49, 25, .16), 0 0 0 1px rgba(31, 94, 70, .04);
-  --hud-nav-bg: rgba(255, 253, 248, .96);
+  --hud-shadow: 0 16px 38px rgba(27, 62, 50, .13);
+  --hud-shadow-strong: 0 18px 48px rgba(27, 62, 50, .16), 0 0 0 1px rgba(31, 94, 70, .05);
+  --hud-nav-bg: rgba(252, 254, 252, .95);
   --hud-trajectory-bg: rgba(31, 94, 70, .04);
   --hud-grid: rgba(31, 94, 70, .15);
   --hud-today: rgba(32, 48, 42, .34);
@@ -94,18 +94,119 @@ html[data-theme="light"] body.globe-mode #globeViz {
 
 html[data-theme="light"] body.globe-mode #topbar {
   opacity: 1;
+  box-sizing: border-box;
+  height: 64px;
+  padding-top: 9px;
+  padding-bottom: 9px;
   transition: none;
-  background: linear-gradient(180deg, rgba(255, 253, 248, .98), rgba(243, 239, 230, .94));
-  border-bottom: 1px solid rgba(31, 94, 70, .16);
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .58), 0 10px 26px rgba(62, 49, 25, .08);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  background: linear-gradient(180deg, rgba(252, 254, 251, .95), rgba(242, 248, 244, .89));
+  border-bottom: 1px solid rgba(31, 94, 70, .22);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .7), 0 10px 28px rgba(27, 62, 50, .09);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
 }
 
 html[data-theme="light"] body.globe-mode .hex-legend {
-  border-color: rgba(31, 94, 70, .22);
-  background: rgba(250, 247, 240, .92);
+  border-color: rgba(31, 94, 70, .3);
+  background: rgba(246, 250, 247, .88);
   color: var(--text2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+/* Keep the fair header to one deliberate instrument band. Its formerly
+   flexible statistic labels could wrap to three lines, making the opaque
+   surface cover both the lens switcher and the rail heading. */
+html[data-theme="light"] body.globe-mode #topbar .logo {
+  flex: 1 1 auto;
+}
+
+html[data-theme="light"] body.globe-mode #topbar .brand-wordmark {
+  flex: 0 0 auto;
+}
+
+html[data-theme="light"] body.globe-mode #topbar .brand-subtitle {
+  flex: 1 1 auto;
+}
+
+html[data-theme="light"] body.globe-mode #topbar .topbar-actions,
+html[data-theme="light"] body.globe-mode #topbar .stats,
+html[data-theme="light"] body.globe-mode #topbar .stat-block,
+html[data-theme="light"] body.globe-mode #topbar .cc-topbar {
+  flex: 0 0 auto;
+}
+
+html[data-theme="light"] body.globe-mode #topbar .stat-label,
+html[data-theme="light"] body.globe-mode #topbar .stat-value {
+  white-space: nowrap;
+}
+
+html[data-theme="light"] body.globe-mode #elu-country-rank-rail,
+html[data-theme="light"] body.globe-mode .climate-lens-controls {
+  border-color: rgba(31, 94, 70, .3);
+}
+
+html[data-theme="light"] body.globe-mode #elu-country-rank-rail {
+  background: rgba(246, 250, 247, .9);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+html[data-theme="light"] body.globe-mode .climate-lens-controls {
+  background: rgba(252, 254, 252, .94);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+html[data-theme="light"] body.globe-mode .elu-rank-search input {
+  background: rgba(255, 255, 255, .64);
+}
+
+html[data-theme="light"] body.globe-mode[data-climate-lens="power"] .elu-rank-gap,
+html[data-theme="light"] body.globe-mode[data-climate-lens="physical"] .elu-rank-gap {
+  white-space: nowrap;
+}
+
+html[data-theme="light"] body.globe-mode[data-climate-lens="power"] .elu-rank-gap small,
+html[data-theme="light"] body.globe-mode[data-climate-lens="physical"] .elu-rank-gap small {
+  display: inline;
+  margin: 0 0 0 2px;
+}
+
+@media (min-width: 901px) and (max-width: 1100px) {
+  html[data-theme="light"] body.globe-mode #topbar {
+    gap: 12px;
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  html[data-theme="light"] body.globe-mode #topbar .brand-subtitle,
+  html[data-theme="light"] body.globe-mode #topbar .brand-sep {
+    display: none;
+  }
+
+  html[data-theme="light"] body.globe-mode #topbar .topbar-actions {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 800px) {
+  html[data-theme="light"] body.globe-mode #topbar {
+    height: 60px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  html[data-theme="light"] body.globe-mode .climate-lens-controls,
+  html[data-theme="light"] body.globe-mode #elu-country-rank-rail {
+    top: 64px;
+  }
+}
+
+@media (max-width: 720px) {
+  html[data-theme="light"] body.globe-mode #elu-country-card-wrap {
+    top: 118px;
+  }
 }
 
 body.globe-mode #topbar .topbar-actions {

@@ -26,8 +26,8 @@ function compile(args) {
   const receiptPath = path.resolve(option(args, '--receipt'));
   const outputPath = path.resolve(option(args, '--output'));
   const receipt = readJson(receiptPath);
-  if (receipt.source_registry_id !== SOURCE_ID || receipt.year_classification_2024 !== 'estimate') {
-    throw new Error('WPP receipt must identify un-wpp-2024 and classify 2024 as an estimate');
+  if (receipt.source_registry_id !== SOURCE_ID || receipt.year_classification_2024 !== 'projection') {
+    throw new Error('WPP receipt must identify un-wpp-2024 and classify the 2024 Medium variant as a projection');
   }
   verifySnapshot(inputPath, receipt);
   const sourceRegistry = readJson(path.join(ROOT, 'data/climate/source-registry.json'));
@@ -64,7 +64,7 @@ function compile(args) {
     const population = values.get(entity.iso_alpha3);
     let metric;
     if (!population) {
-      metric = gapMetric(METRIC_ID, SOURCE_ID, 'source_value_missing', 'WPP 2024 has no year-matched population estimate for this registry entity.');
+      metric = gapMetric(METRIC_ID, SOURCE_ID, 'source_value_missing', 'WPP 2024 has no year-matched Medium population projection for this registry entity.');
     } else {
       const scope = {
         accounting_frame: 'resident_population_mid_year',
@@ -79,9 +79,10 @@ function compile(args) {
       };
       metric = {
         context: {
-          projection_substitution_allowed: false,
-          release_year_classification: 'year_matched_2024_central_estimate',
+          different_year_or_variant_substitution_allowed: false,
+          release_year_classification: 'year_matched_2024_medium_projection',
           source_location_name: population.location,
+          source_variant: 'Medium',
         },
         fact_ids: [`wpp-2024:${entity.iso_alpha3}:population:2024`],
         gap_reason: null,
@@ -91,8 +92,8 @@ function compile(args) {
         scope,
         scope_fingerprint: scopeFingerprint(scope),
         source_ids: [SOURCE_ID],
-        status: 'estimated',
-        transformation: 'PopTotal_thousands_times_1000;year_2024_and_Medium_variant_selected',
+        status: 'modeled',
+        transformation: 'PopTotal_thousands_times_1000;year_2024_and_Medium_projection_selected',
         uncertainty: { kind: 'not_provided_in_selected_table', lower: null, upper: null },
         unit: 'persons',
         value: population.value,

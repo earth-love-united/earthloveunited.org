@@ -18,6 +18,13 @@ const {
 } = require('./lib/country-climate-intelligence');
 
 const COMPONENT_IDS = ['gcb', 'wpp', 'trace', 'ember', 'cckp'];
+const COMPONENT_REVIEW_STATES = Object.freeze({
+  cckp: 'normalized_factual_candidate_pending_source_revalidation',
+  ember: 'normalized_factual_candidate_pending_source_revalidation',
+  gcb: 'source_validated_factual_candidate',
+  trace: 'normalized_factual_candidate_pending_source_revalidation',
+  wpp: 'normalized_factual_candidate_pending_source_revalidation',
+});
 const PER_CAPITA_ID = 'emissions.fossil_co2.territorial_per_capita';
 
 function verifiedJson(receipt) {
@@ -43,7 +50,7 @@ function perCapitaMetric(country) {
       PER_CAPITA_ID,
       'un-wpp-2024',
       'year_matched_population_missing',
-      'Per-capita fossil CO2 is withheld because the year-matched 2024 population estimate is unavailable.'
+      'Per-capita fossil CO2 is withheld because the year-matched 2024 WPP Medium population projection is unavailable.'
     );
     metric.source_ids = ['gcp-gcb-2025-v1.0', 'un-wpp-2024'];
     return metric;
@@ -62,6 +69,7 @@ function perCapitaMetric(country) {
   return {
     context: {
       denominator_metric_id: 'population.estimate',
+      denominator_evidence: 'WPP 2024 Medium projection',
       numerator_metric_id: 'emissions.fossil_co2.territorial',
       source_scope_delta_calculated: false,
     },
@@ -73,12 +81,12 @@ function perCapitaMetric(country) {
     gap_reason: null,
     id: PER_CAPITA_ID,
     period: { end: 2024, label: '2024', start: 2024 },
-    review_state: 'source_validated_candidate',
+    review_state: 'normalized_candidate_pending_source_revalidation',
     scope,
     scope_fingerprint: scopeFingerprint(scope),
     source_ids: ['gcp-gcb-2025-v1.0', 'un-wpp-2024'],
-    status: 'estimated',
-    transformation: 'MtCO2_times_1000000_divided_by_year_matched_population',
+    status: 'modeled',
+    transformation: 'MtCO2_times_1000000_divided_by_year_matched_WPP_Medium_projection',
     uncertainty: { kind: 'not_propagated_from_inputs', lower: null, upper: null },
     unit: 'tCO2/person',
     value: round((territorial.value * 1000000) / population.value),
@@ -109,8 +117,8 @@ function officialContextByCountry(receipt) {
 }
 
 function mergeCountries(registry, components, officialContext) {
-  const componentMaps = components.map(component => {
-    if (component.entity_count !== ENTITY_COUNT || component.review_state !== 'source_validated_factual_candidate') {
+  const componentMaps = components.map(({ id, artifact: component }) => {
+    if (component.entity_count !== ENTITY_COUNT || component.review_state !== COMPONENT_REVIEW_STATES[id]) {
       throw new Error('Component artifact is not a complete reviewed factual candidate');
     }
     assertEntityPartition(component.countries);
@@ -202,7 +210,7 @@ function buildLensOrders(countries, lensCatalog) {
 
 function build(manifest) {
   const registry = loadCountryRegistry();
-  const components = COMPONENT_IDS.map(id => verifiedJson(manifest.component_artifacts[id]));
+  const components = COMPONENT_IDS.map(id => ({ id, artifact: verifiedJson(manifest.component_artifacts[id]) }));
   const officialContext = officialContextByCountry(manifest.official_context);
   const countries = mergeCountries(registry, components, officialContext);
   const metricIds = Object.keys(manifest.metric_definitions).sort();

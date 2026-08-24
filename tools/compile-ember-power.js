@@ -109,7 +109,7 @@ function compile(args) {
     let unit = field(row, ['Unit']);
     let value = Number(field(row, ['Value']));
     if (!Number.isFinite(value)) throw new Error(`Ember upstream row ${upstreamId} has a non-finite value`);
-    if (metricId === 'electricity.emissions' && ['mtCO2', 'MtCO2', 'MtCO2e'].includes(unit)) unit = 'MtCO2/yr';
+    if (metricId === 'electricity.emissions' && ['mtCO2', 'MtCO2'].includes(unit)) unit = 'MtCO2/yr';
     if (unit !== config.unit) throw new Error(`Ember ${metricId} unit mismatch: expected ${config.unit}, received ${unit}`);
     if (config.unit === '%' && (value < 0 || value > 100)) throw new Error(`Ember share outside 0–100 for ${iso3}`);
     const key = `${metricId}:${year}`;

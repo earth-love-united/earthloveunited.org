@@ -1780,7 +1780,7 @@ const GlobeModule = {
       const linkedTitle = safeUrl ? '<a href="' + _escapeHtml(safeUrl) + '" target="_blank" rel="noopener">' + title + '</a>' : title;
       return '<li>' + linkedTitle + ' · submitted ' + _escapeHtml(item.submission_date || 'date not reported') + '</li>';
     }).join('');
-    return '<details class="tt-methods"><summary>Methods &amp; sources</summary><div class="tt-methods-body"><p><strong>Release:</strong> ' + _escapeHtml(view.methods.release_id) + ' · ' + _escapeHtml(view.methods.review_state) + ' · generated ' + _escapeHtml(view.methods.generated_on) + '</p>'
+    return '<details class="tt-methods"><summary>Methods &amp; sources</summary><div class="tt-methods-body"><p><strong>Release:</strong> ' + _escapeHtml(view.methods.release_id) + ' · ' + _escapeHtml(view.methods.review_label) + ' · generated ' + _escapeHtml(view.methods.generated_on) + '</p>'
       + (view.methods.checksum ? '<p><strong>Verified SHA-256:</strong> <code>' + _escapeHtml(view.methods.checksum) + '</code></p>' : '')
       + '<p><strong>Comparison rule:</strong> ' + _escapeHtml(view.methods.comparison_rule) + '</p>' + factMethods
       + (official ? '<h4>Official document context</h4><ul>' + official + '</ul>' : '')

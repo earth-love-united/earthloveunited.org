@@ -13,11 +13,11 @@
   "component_artifacts": {
     "cckp": {
       "path": "data/climate/releases/country-climate-intelligence-v1/cckp-physical.json",
-      "sha256": "7a27525cc8bff5e482049e2da185edfc4c8392a993e29ea84d424027e7c3b0e7"
+      "sha256": "603a90b2d356db3a9c819491d6db8ba2b83eb418e3ac3c875358db12bc12086f"
     },
     "ember": {
       "path": "data/climate/releases/country-climate-intelligence-v1/ember-power.json",
-      "sha256": "975f2bf780cb30da16aa1b618c8dc3ca7e9b76d6bf95d30842b0111841cdad15"
+      "sha256": "aae2955fe115a08e192c5a9abdc2c46ab925be3639f411e86df8cba6925e874c"
     },
     "gcb": {
       "path": "data/climate/releases/country-climate-intelligence-v1/gcb-carbon.json",
@@ -25,18 +25,20 @@
     },
     "trace": {
       "path": "data/climate/releases/country-climate-intelligence-v1/climate-trace-ghg.json",
-      "sha256": "0abe0e471e3afb92d63a7daadb93562b03b77cc41a1a1d310053be2182ca54da"
+      "sha256": "285b44a54584c7e3eba4b5d13eb010b7a8bcb172174962b518c99e5c096d3e9c"
     },
     "wpp": {
       "path": "data/climate/releases/country-climate-intelligence-v1/wpp-population.json",
-      "sha256": "41a44109a7a3ae3816141ec135ac3c0db6008e29669bcccaeecb1539e7a58f07"
+      "sha256": "6fd399e7df24ba779d44fc237477554f8e0ca5f63f55d0b8908f60c88f3a5f30"
     }
   },
   "gates": {
     "atomic_service_worker_staging": true,
     "independent_scientific_review": false,
+    "raw_receipt_revalidation": false,
+    "redistribution_rights_revalidation": false,
     "runtime_validation": true,
-    "source_approval": true,
+    "source_registry_approval": true,
     "visual_review": true
   },
   "lens_catalog": [
@@ -201,7 +203,7 @@
     "population.estimate": {
       "comparison_period": "2024",
       "family": "denominator",
-      "label": "Population estimate",
+      "label": "Population projection (Medium variant)",
       "public_role": "methods"
     }
   },
@@ -217,17 +219,17 @@
     "generated_on": "2026-08-24",
     "id": "country-climate-intelligence-2026-08-24-candidate.1",
     "production_runtime_release": false,
-    "review_state": "source_validated_factual_candidate",
+    "review_state": "normalized_factual_candidate_pending_source_revalidation",
     "status": "candidate"
   },
   "reviewed_candidate_recovery_sha256": "436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09",
   "source_receipts": {
     "path": "data/climate/releases/country-climate-intelligence-v1/source-receipts.json",
-    "sha256": "a40db96295ba7d50bf7ce15a1da5ea9b6430b590ddea7710994f645ffd09104b"
+    "sha256": "bf7d9d8fef3c0d80d0cf924528c76099c20f38ef0ba68e80aac7fec70581d4b7"
   },
   "transformation_log": {
     "path": "data/climate/releases/country-climate-intelligence-v1/TRANSFORMATION-LOG.md",
-    "sha256": "0b86be8875b6c76da3806c41cef248a3c1b25c595cd8bbd13252ef0ad1131d32"
+    "sha256": "97cd949ec47600d61a04a2b9a717ca297722f47cc7b3d4ade5da31dfc45a31ca"
   },
   "schema_ref": "data/climate/schemas/country-climate-intelligence.schema.json",
   "schema_version": "1.0.0",
@@ -270,7 +272,7 @@
       "id": "climate-trace-v5.9.0-country-annual",
       "licence": "CC-BY-4.0",
       "public_role": "metric_provenance",
-      "review_state": "approved",
+      "review_state": "pending",
       "source_url": "https://climatetrace.org/data",
       "title": "Climate TRACE annual country emissions snapshot",
       "values_in_release": true,
@@ -281,7 +283,7 @@
       "id": "ember-yearly-electricity-data-2026-08-24",
       "licence": "CC-BY-4.0",
       "public_role": "metric_provenance",
-      "review_state": "approved",
+      "review_state": "pending",
       "source_url": "https://ember-energy.org/data/yearly-electricity-data/",
       "title": "Yearly Electricity Data",
       "values_in_release": true,
@@ -292,7 +294,7 @@
       "id": "world-bank-cckp-cmip6-2026-08-24",
       "licence": "CC-BY-4.0",
       "public_role": "metric_provenance",
-      "review_state": "approved",
+      "review_state": "pending",
       "source_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
       "title": "CCKP projected climate data: CMIP6 0.25-degree country aggregates",
       "values_in_release": true,
@@ -314,7 +316,7 @@
       "id": "un-wpp-2024",
       "licence": "CC-BY-3.0-IGO",
       "public_role": "metric_provenance",
-      "review_state": "approved",
+      "review_state": "pending",
       "source_url": "https://population.un.org/wpp/",
       "title": "World Population Prospects 2024",
       "values_in_release": true,

@@ -2,7 +2,7 @@
 
 Release: `country-climate-intelligence-2026-08-24-candidate.1`
 
-Status: factual candidate. This is not a production promotion receipt. Independent scientific review and external raw-receipt revalidation remain open.
+Status: normalized factual candidate pending source revalidation. This is not a production promotion receipt. Independent scientific review, external raw-receipt revalidation, and release-specific redistribution-rights review remain open.
 
 ## Reproducibility boundary
 
@@ -18,7 +18,7 @@ Status: factual candidate. This is not a production promotion receipt. Independe
 - Cumulative fossil CO₂: sum of available 1850–2024 territorial MtC values, then multiplied by 3.664.
 - Consumption emissions and net transfers: latest published source value, kept in their own accounting frames. Net transfer follows GCB's territorial-minus-consumption convention; positive means net exported embodied emissions.
 - Land-use CO₂: calculate each model's 2015–2024 arithmetic mean for BLUE, OSCAR, and LUCE; the central value is the arithmetic mean of those three model means; uncertainty is their population standard deviation. Negative values remain removals.
-- Per capita: `territorial MtCO₂ × 1,000,000 ÷ year-matched 2024 population`. No population projection or other-year denominator is substituted.
+- Per capita: `territorial MtCO₂ × 1,000,000 ÷ year-matched WPP 2024 Medium population projection`. No different year or variant is substituted. The denominator and derived result are labeled modeled rather than actual or estimated.
 - Climate TRACE: sum explicit 2024 annual country/gas/sector tonnes after excluding forestry and land use; convert tonnes to megatonnes; retain AR6 GWP100, gas, sector, estimate, and uncertainty-availability context. This independent GHG scope is shown beside—not subtracted from or compared by percentage with—GCB fossil CO₂.
 
 ## Power

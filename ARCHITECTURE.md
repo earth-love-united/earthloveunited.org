@@ -167,7 +167,7 @@ flowchart LR
 
 `Data.init()` applies an eight-second deadline to the critical candidate read.
 The candidate is parsed only after WebCrypto verifies SHA-256
-`4a1eb0665769a62ac0280e0c68a86265dc986b38cae9e77ee5f4fc4263d50a8e`.
+`9af7122f02e09b10af7add4ed75a61453d0bd4573ed6bad090561723608d0d7a`.
 Schema validation then proves 249 unique registry entities, exactly 18 metric
 records per entity, coverage derived from records, three complete lens
 partitions, explicit gaps, and the non-production release boundary. Candidate
@@ -321,11 +321,12 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v44 precaches the public page, core CSS/JS, Guided First
-Orbit UI, verified local globe.gl, the CT-45 manifest and localized globe
-assets, and the exact-version Country Climate Intelligence candidate. The prior
-country-factual candidate is retained for one release epoch as a rollback
-artifact; it is not loaded into the v1 dashboard. The service worker applies:
+`sw.js` cache epoch v45 precaches the public page, core CSS/JS, Guided First
+Orbit UI, the corrected fair HUD, verified local globe.gl, the CT-45 manifest
+and localized globe assets, and the exact-version Country Climate Intelligence
+candidate. The prior country-factual candidate is retained for one release
+epoch as a rollback artifact; it is not loaded into the v1 dashboard. The
+service worker applies:
 
 - network-first for `/data/`;
 - network-first with browser-cache bypass for HTML, JS, and CSS;

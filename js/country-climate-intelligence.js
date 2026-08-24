@@ -50,7 +50,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   });
   const FACT_COPY = Object.freeze({
     'emissions.fossil_co2.territorial': 'Fossil fuel combustion, industrial processes, and cement carbonation sink; land use excluded.',
-    'emissions.fossil_co2.territorial_per_capita': 'Exact 2024 territorial fossil CO₂ divided by the year-matched 2024 population estimate.',
+    'emissions.fossil_co2.territorial_per_capita': 'Exact 2024 territorial fossil CO₂ divided by the year-matched WPP 2024 Medium population projection.',
     'emissions.fossil_co2.cumulative': 'Sum of available territorial fossil CO₂ from 1850 through 2024.',
     'emissions.fossil_co2.consumption': 'Territorial fossil CO₂ adjusted for embodied trade; latest source year shown.',
     'emissions.fossil_co2.net_transfer': 'Territorial minus consumption-based fossil CO₂; positive values indicate net exported emissions embodied in trade.',
@@ -106,7 +106,10 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     return sign + value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: digits });
   }
 
-  function evidenceLabel(status) {
+  function evidenceLabel(status, metricId) {
+    if (status === 'modeled' && ['population.estimate', 'emissions.fossil_co2.territorial_per_capita'].includes(metricId)) {
+      return 'Uses WPP Medium projection';
+    }
     return EVIDENCE_LABELS[status] || 'Data gap';
   }
 
@@ -155,7 +158,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       unit: metric?.unit || null,
       period: metric?.period?.label || null,
       status: metric?.status || null,
-      evidence_label: evidenceLabel(metric?.status),
+      evidence_label: evidenceLabel(metric?.status, metricId),
       explanation: FACT_COPY[metricId] || '',
       gap: available ? null : {
         code: metric?.gap_reason?.code || 'metric_unavailable',
@@ -266,7 +269,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
         value: primary.display_value,
         unit: primary.unit,
         period: primary.period || lens.period,
-        evidence_class: primary.available ? primary.evidence_label : 'Data gap; requires ' + evidenceLabel(lens.evidence_status),
+        evidence_class: primary.available ? primary.evidence_label : 'Data gap; requires ' + evidenceLabel(lens.evidence_status, lens.comparison_metric_id),
         gap: primary.gap,
       },
       at_a_glance: atAGlanceMetrics(lens.id).map(metricId => factView(metricId, country)),
@@ -287,6 +290,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       methods: {
         release_id: _release.release.id,
         release_status: _release.release.status,
+        review_label: 'Normalized candidate · source revalidation pending',
         review_state: _release.release.review_state,
         generated_on: _release.release.generated_on,
         checksum: _release.release.verified_sha256 || null,
@@ -310,7 +314,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       ...entry,
       ranked: true,
       display_value: formatNumber(entry.value, entry.unit),
-      evidence_label: evidenceLabel(entry.evidence_status),
+      evidence_label: evidenceLabel(entry.evidence_status, lens.comparison_metric_id),
     }));
     const unranked = order.unranked.map(entry => ({
       ...entry,
@@ -350,7 +354,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       high_color: 'rgb(' + palette.end.join(',') + ')',
       gap_color: 'rgb(' + palette.gap.join(',') + ')',
       extrusion_note: lens.id === 'carbon' ? 'Transparent log-scaled extrusion shows magnitude.' : 'Color only; extrusion is not used.',
-      evidence_label: evidenceLabel(lens.evidence_status),
+      evidence_label: evidenceLabel(lens.evidence_status, lens.comparison_metric_id),
     };
   }
 
