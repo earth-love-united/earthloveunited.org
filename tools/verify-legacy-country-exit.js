@@ -208,7 +208,8 @@ if (compact(serviceWorker).includes('pledgenodesjson')) failures.push('sw.js: le
 
 if (!index.includes('docs/LEGACY-COUNTRY-DATA-EXIT.md')) failures.push('index.html: public exit-ledger link missing');
 const hasNeutralLegend = index.includes('Uniform neutral surface · country evidence withheld');
-const hasCandidateLegend = index.includes('Emissions magnitude only—not a climate-performance score') &&
+const hasCandidateLegend = index.includes('aria-label="Emissions magnitude legend"') &&
+  index.includes('aria-description="Boundaries are for navigation."') &&
   index.includes('7 mapped source gaps · all 43 in browser') &&
   index.includes('Neutral pattern · source gap, visible and unranked') &&
   read('data/climate/runtime/candidate-manifest.json').includes('"release_eligible": false');

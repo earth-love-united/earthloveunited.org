@@ -270,7 +270,7 @@ body.globe-mode #globe-back-btn{display:block}
 /* hex legend */
 .hex-legend{position:fixed;bottom:14px;right:56px;z-index:60;display:flex;flex-direction:column;gap:2px;padding:6px 8px;background:rgba(8,10,18,0.8);backdrop-filter:blur(8px);border:1px solid rgba(78,205,196,0.1);border-radius:8px;font-size:9px;color:var(--text3);letter-spacing:0.5px}
 .hex-legend-row{display:flex;align-items:center;gap:6px}
-.hex-legend-swatch{width:10px;height:10px;border-radius:2px}.hex-legend-swatch.magnitude-low{background:#5b4a97}.hex-legend-swatch.magnitude-high{background:#f6913a}.hex-legend-swatch.magnitude-gap{background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1}.hex-legend-note{max-width:230px;margin-top:3px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);line-height:1.35}
+.hex-legend-swatch{width:10px;height:10px;border-radius:2px}.hex-legend-swatch.magnitude-low{background:#5b4a97}.hex-legend-swatch.magnitude-high{background:#f6913a}.hex-legend-swatch.magnitude-gap{background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1}
 body:not(.globe-mode) .hex-legend{display:none}
 /* globe.gl scene tooltip */
 .scene-tooltip{font-family:var(--body)!important;font-size:13px!important;background:rgba(8,10,18,.92)!important;color:var(--mint)!important;border:1px solid rgba(78,205,196,.15)!important;border-radius:6px!important;padding:8px 14px!important;backdrop-filter:blur(8px)!important;pointer-events:none!important}
@@ -513,11 +513,10 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </div>
 
 <!-- ── HEX LEGEND ── -->
-<div class="hex-legend" id="hex-legend" role="note" aria-label="Emissions magnitude legend">
+<div class="hex-legend" id="hex-legend" role="note" aria-label="Emissions magnitude legend" aria-description="Boundaries are for navigation." title="Boundaries are for navigation.">
   <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-low" aria-hidden="true"></span> Lower 2023 emissions magnitude</div>
   <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-high" aria-hidden="true"></span> Higher 2023 emissions magnitude</div>
   <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-gap" aria-hidden="true"></span> 7 mapped source gaps · all 43 in browser</div>
-  <div class="hex-legend-note">Emissions magnitude only—not a climate-performance score. Boundaries are for navigation.</div>
 </div>
 
 <!-- ═══ GLOBE ═══ -->
