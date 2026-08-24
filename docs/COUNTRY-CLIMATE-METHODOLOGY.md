@@ -43,13 +43,13 @@ Land-use change never enters the territorial fossil comparison value. Positive n
 
 ### Power
 
-The comparison is Ember's 2024 published clean-generation aggregate. The rail explores descending `electricity.clean_share`. Color is bounded to 0–100%; polygon extrusion is disabled.
+The comparison is Ember's 2024 published clean-generation aggregate. The rail explores descending `electricity.clean_share`. Color and raised country-tile height redundantly encode the same bounded 0–100% clean-share metric on a linear scale; no other power metric affects height.
 
 The card includes clean, fossil, and wind-and-solar shares, 2019–2024 clean-share change, carbon intensity, and power-sector emissions. Only source-classified annual actuals may enter the comparison order. Source-labelled estimates remain context or gaps.
 
 ### Physical climate
 
-The comparison explores the World Bank Climate Change Knowledge Portal CMIP6 country-area median temperature anomaly for 2040–2059 relative to 1995–2014 under SSP2-4.5. Color is sequential; polygon extrusion is disabled.
+The comparison explores the World Bank Climate Change Knowledge Portal CMIP6 country-area median temperature anomaly for 2040–2059 relative to 1995–2014 under SSP2-4.5. Color and raised country-tile height redundantly encode that same modeled warming median on a linear scale. Height is not vulnerability, damage, or responsibility.
 
 The public fact carries the multi-model p10–p90 range. SSP1-2.6 and SSP5-8.5 medians appear in the analyst detail. The related precipitation anomaly remains context.
 

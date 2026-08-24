@@ -167,7 +167,7 @@ flowchart LR
 
 `Data.init()` applies an eight-second deadline to the critical candidate read.
 The candidate is parsed only after WebCrypto verifies SHA-256
-`9af7122f02e09b10af7add4ed75a61453d0bd4573ed6bad090561723608d0d7a`.
+`3502840bc2ed0b37daee8f81b8920006f109457145faf68d0600741f7d4add8e`.
 Schema validation then proves 249 unique registry entities, exactly 18 metric
 records per entity, coverage derived from records, three complete lens
 partitions, explicit gaps, and the non-production release boundary. Candidate
@@ -177,8 +177,11 @@ The three public comparison partitions are Carbon 213/36, Power 195/54, and
 Physical 245/4. `COUNTRY_CLIMATE_INTELLIGENCE` owns scientific selection,
 comparison eligibility, evidence/gap copy, source presentation, legend data,
 and the visual model. `GlobeModule` owns rendering and interaction and must not
-reimplement those policies. Carbon uses transparent log-scaled magnitude
-extrusion; Power and Physical are color-only.
+reimplement those policies. All three lenses use redundant color and raised
+country-tile height for their exact comparison metric: Carbon is log-scaled,
+Power is bounded linear over 0–100% clean share, and Physical is linear over the
+published warming range. Physical relief is projected warming only—not
+vulnerability, damage, or responsibility.
 
 Before loading globe.gl, `GlobeModule.prepare()` must preload and validate the
 local 177-feature GeoJSON plus all four local globe visuals. The dark surface is
@@ -321,8 +324,8 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v45 precaches the public page, core CSS/JS, Guided First
-Orbit UI, the corrected fair HUD, verified local globe.gl, the CT-45 manifest
+`sw.js` cache epoch v46 precaches the public page, core CSS/JS, Guided First
+Orbit UI, the shared raised-tile lenses, verified local globe.gl, the CT-45 manifest
 and localized globe assets, and the exact-version Country Climate Intelligence
 candidate. The prior country-factual candidate is retained for one release
 epoch as a rollback artifact; it is not loaded into the v1 dashboard. The

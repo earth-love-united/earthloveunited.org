@@ -8,7 +8,7 @@
 const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   'use strict';
 
-  const VERSION = '1.0.0';
+  const VERSION = '1.1.0';
   const PANEL_METRICS = Object.freeze({
     carbon: Object.freeze([
       'emissions.fossil_co2.territorial',
@@ -200,6 +200,15 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     return 'rgba(' + rgb.join(',') + ',' + alpha + ')';
   }
 
+  function tileSideColor(lensId, position) {
+    const palette = PALETTES[lensId] || PALETTES.carbon;
+    const rgb = position === null
+      ? palette.gap
+      : palette.start.map((channel, index) => Math.round(channel + (palette.end[index] - channel) * position));
+    const shaded = rgb.map(channel => Math.max(8, Math.round(channel * 0.3)));
+    return 'rgba(' + shaded.join(',') + ',0.86)';
+  }
+
   function rankFor(lensId, countryId) {
     const order = _orderByLens.get(lensId);
     if (!order) return null;
@@ -251,6 +260,8 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
         ? 'Exploration order ' + rank.ordinal + ' of ' + rank.total + ' for the same modeled warming metric.'
         : 'Order ' + rank.ordinal + ' of ' + rank.total + ' for the same metric and period.'
       : 'Unranked: ' + rank.reason.detail;
+    const metricRelief = position !== null && lens.visual.extrusion !== 'none';
+    const reliefKind = lens.visual.extrusion === 'transparent_log' ? 'metric_log' : 'metric_linear';
     return {
       version: VERSION,
       lens,
@@ -284,8 +295,11 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
         normalized: position,
         color: color(lens.id, position, 0.7),
         solid_color: color(lens.id, position, 0.92),
-        altitude: lens.visual.extrusion === 'transparent_log' && position !== null ? round(0.007 + position * 0.022, 6) : 0.007,
+        altitude: metricRelief ? round(0.007 + position * 0.022, 6) : 0.007,
         extrusion: lens.visual.extrusion,
+        relief: metricRelief ? reliefKind : 'base_tile',
+        relief_encodes_metric: metricRelief,
+        side_color: lens.id === 'carbon' ? 'rgba(0,0,0,0)' : tileSideColor(lens.id, position),
       },
       methods: {
         release_id: _release.release.id,
@@ -353,7 +367,11 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       low_color: 'rgb(' + palette.start.join(',') + ')',
       high_color: 'rgb(' + palette.end.join(',') + ')',
       gap_color: 'rgb(' + palette.gap.join(',') + ')',
-      extrusion_note: lens.id === 'carbon' ? 'Transparent log-scaled extrusion shows magnitude.' : 'Color only; extrusion is not used.',
+      extrusion_note: lens.id === 'carbon'
+        ? 'Transparent log-scaled tile height and color show magnitude.'
+        : lens.id === 'power'
+          ? 'Bounded linear tile height and color show clean electricity share.'
+          : 'Linear tile height and color show projected warming—not vulnerability or damage.',
       evidence_label: evidenceLabel(lens.evidence_status, lens.comparison_metric_id),
     };
   }

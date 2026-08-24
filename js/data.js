@@ -4,7 +4,7 @@
 // Must load AFTER storage.js (depends on window.Storage).
 // ═══════════════════════════════════════════════
 
-const CLIMATE_INTELLIGENCE_SHA256 = '9af7122f02e09b10af7add4ed75a61453d0bd4573ed6bad090561723608d0d7a';
+const CLIMATE_INTELLIGENCE_SHA256 = '3502840bc2ed0b37daee8f81b8920006f109457145faf68d0600741f7d4add8e';
 const DATA_FETCH_TIMEOUT_MS = 8000;
 
 function _fetchTextWithTimeout(url, options = {}) {
@@ -40,7 +40,7 @@ const Data = {
   climateCountries: null,
   climateRanking: null,
   climateCandidateState: 'idle',
-  version: 'cci1candidate2',
+  version: 'cci1candidate3',
 
   async init() {
     // Country Climate Intelligence v1 is a hashed, static factual candidate.

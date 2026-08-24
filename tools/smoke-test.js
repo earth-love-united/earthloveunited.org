@@ -415,7 +415,8 @@ const SmokeTest = (() => {
         critical: true,
         test: async () => {
           const orbit = window.GUIDED_ORBIT;
-          const row = document.querySelector('#elu-country-rank-rail [data-country-rail-iso]');
+          const row = Array.from(document.querySelectorAll('#elu-country-rank-rail [data-country-rail-iso]'))
+            .find(candidate => window.GlobeModule?._featureByIso?.[candidate.getAttribute('data-country-rail-iso')]);
           if (!document.body.classList.contains('globe-mode') || document.body.classList.contains('globe-fallback-active') ||
               window.GlobeModule?._initialized !== true || !orbit || !row) {
             return { pass: true, detail: 'Live country-dialog route is not active; headless lifecycle covers it after renderer readiness' };

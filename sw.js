@@ -1,10 +1,10 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v45) — compose the responsive Guided First Orbit with the
- * rigor-corrected candidate, fair HUD, pinned runtime, and rollback.
+ * Globe cache (v46) — compose the responsive Guided First Orbit with the
+ * shared raised-tile lenses, pinned candidate runtime, and rollback.
  */
-const CACHE_NAME = 'elu-v45-country-climate-fair-hud';
+const CACHE_NAME = 'elu-v46-country-climate-tiled-lenses';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -28,15 +28,15 @@ const STATIC_ASSETS = [
   '/js/storage-adapter.js',
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
-  '/js/data.js?v=v4',
-  '/js/country-climate-intelligence.js?v=v3',
-  '/js/globe.js?v=v20',
+  '/js/data.js?v=v5',
+  '/js/country-climate-intelligence.js?v=v4',
+  '/js/globe.js?v=v21',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v2',
   '/js/app.js?v=v3',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
-  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate2',
+  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate3',
   // Retained for one release epoch as the factual rollback artifact.
   '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',
 ];

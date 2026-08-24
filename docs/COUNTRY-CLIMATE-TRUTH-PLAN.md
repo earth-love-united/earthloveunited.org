@@ -94,7 +94,7 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 - v2.6.1 present only in detailed citation provenance; v2.7 absent entirely;
 - selection preserved across lenses;
 - metric/value/unit/period/evidence in tooltips;
-- no non-Carbon extrusion;
+- every raised-tile height is a redundant encoding of the active lens's exact comparison metric; Physical height is never described as vulnerability, damage, or responsibility;
 - fallback parity for all 249 records;
 - body-level controls, 44px touch targets, reduced motion, focus restoration, and non-color status cues;
 - stale cache, WebCrypto, WebGL, constructor, and partial-data failures fail closed.
@@ -114,11 +114,11 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v45 service worker composes the reviewed Guided First Orbit assets with the
+The v46 service worker composes the reviewed Guided First Orbit assets with the
 candidate dashboard and stages both runtime generations:
 
 ```text
-data/climate/runtime/country-climate-intelligence.json?v=cci1candidate2
+data/climate/runtime/country-climate-intelligence.json?v=cci1candidate3
 data/climate/runtime/country-factual-candidate.json?v=ct42candidate1
 ```
 

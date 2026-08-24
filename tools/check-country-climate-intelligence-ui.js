@@ -12,9 +12,9 @@ const globe = fs.readFileSync(path.join(ROOT, 'js/globe.js'), 'utf8');
 const css = fs.readFileSync(path.join(ROOT, 'css/globe-system.css'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
-const dataAt = index.indexOf('src="js/data.js?v=v4"');
-const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v3"');
-const globeAt = index.indexOf('src="js/globe.js?v=v20"');
+const dataAt = index.indexOf('src="js/data.js?v=v5"');
+const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v4"');
+const globeAt = index.indexOf('src="js/globe.js?v=v21"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -27,6 +27,13 @@ assert(globe.includes('getLens()'));
 assert(globe.includes("EventBus.emit('globe:lens-changed'"));
 assert(globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows'"));
 assert(globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getLegend'"));
+assert(presentation.includes("const reliefKind = lens.visual.extrusion === 'transparent_log' ? 'metric_log' : 'metric_linear'"));
+assert(presentation.includes("relief: metricRelief ? reliefKind : 'base_tile'"));
+assert(presentation.includes('relief_encodes_metric: metricRelief'));
+assert(presentation.includes('Bounded linear tile height and color show clean electricity share.'));
+assert(presentation.includes('Linear tile height and color show projected warming—not vulnerability or damage.'));
+assert(globe.includes('_countryPolygonSideColorFn(feature)'));
+assert(globe.includes('.polygonSideColor((f) => this._countryPolygonSideColorFn(f))'));
 
 const controlsAt = index.indexOf('id="climate-lens-controls"');
 const globeVizAt = index.indexOf('id="globeViz"');
@@ -54,9 +61,9 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v45-country-climate-fair-hud'"));
-assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v3'"));
-assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate2'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v46-country-climate-tiled-lenses'"));
+assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v4'"));
+assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate3'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired project data must not be pinned by the climate runtime cache');
 

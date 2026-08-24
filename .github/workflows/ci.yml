@@ -384,11 +384,16 @@ jobs:
               lensSnapshot.cardSummary.includes(lensSnapshot.view.primary.evidence_label),
             lensId + ' card must expose metric, unit, period, and evidence class');
             if (lensId === 'carbon') {
-              assert(lensSnapshot.view.visual.extrusion === 'transparent_log' && lensSnapshot.selectedAltitude > 0.007,
+              assert(lensSnapshot.view.visual.extrusion === 'transparent_log' &&
+                lensSnapshot.view.visual.relief === 'metric_log' &&
+                lensSnapshot.view.visual.relief_encodes_metric === true && lensSnapshot.selectedAltitude > 0.007,
                 'Carbon must use transparent log-scaled magnitude extrusion');
             } else {
-              assert(lensSnapshot.view.visual.extrusion === 'none' && lensSnapshot.selectedAltitude === 0.007,
-                lensId + ' must remain color-only with no magnitude extrusion');
+              const expectedExtrusion = lensId === 'power' ? 'transparent_linear_bounded' : 'transparent_linear';
+              assert(lensSnapshot.view.visual.extrusion === expectedExtrusion &&
+                lensSnapshot.view.visual.relief === 'metric_linear' &&
+                lensSnapshot.view.visual.relief_encodes_metric === true && lensSnapshot.selectedAltitude > 0.007,
+                lensId + ' must use transparent linear tile height for its exact comparison metric');
             }
           }
           await page.locator('#country-card-heading').focus();

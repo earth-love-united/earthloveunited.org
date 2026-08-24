@@ -2,7 +2,7 @@
 
 **Audit date:** 2026-08-24
 
-**Candidate runtime SHA-256:** `9af7122f02e09b10af7add4ed75a61453d0bd4573ed6bad090561723608d0d7a`
+**Candidate runtime SHA-256:** `3502840bc2ed0b37daee8f81b8920006f109457145faf68d0600741f7d4add8e`
 
 **Verdict:** no priority-zero scientific defect found; candidate remains ineligible for production promotion pending the open evidence and rights gates below.
 
@@ -27,6 +27,8 @@ This was an independent read-only review of the committed source registry, norma
 | Optional-source normalized facts appeared more approved than their retained evidence justified. | WPP, Climate TRACE, Ember, and CCKP facts now carry `normalized_candidate_pending_source_revalidation`; release-specific source states and gates remain pending. |
 
 The corrections above change evidence classification, review state, and validation behavior. They do not alter the candidate's country-level numeric values.
+
+The later v46 raised-tile treatment changes only lens visualization metadata. It does not alter source facts, coverage, ordering, or country-level numeric values.
 
 ## Open production blockers
 

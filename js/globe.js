@@ -1908,6 +1908,11 @@ const GlobeModule = {
     return d.view.visual.solid_color;
   },
 
+  _countryPolygonSideColorFn(feature) {
+    const d = _getCountryDisplayData(feature);
+    return d?.view?.visual?.side_color || 'rgba(0,0,0,0)';
+  },
+
   _supportsCountryBorders() {
     if (!this.world) return false;
     return [
@@ -1924,6 +1929,7 @@ const GlobeModule = {
     this.world
       .polygonStrokeColor((f) => this._countryBorderColorFn(f))
       .polygonCapColor((f) => this._countryPolygonPaintColorFn(f))
+      .polygonSideColor((f) => this._countryPolygonSideColorFn(f))
       .polygonAltitude((f) => this._countryHexAltitudeFn(f));
   },
 
@@ -1968,13 +1974,13 @@ const GlobeModule = {
       .polygonsData(this._countryFeatures)
       .polygonAltitude((f) => this._countryHexAltitudeFn(f))
       .polygonCapColor((f) => this._countryPolygonPaintColorFn(f))
-      .polygonSideColor(() => 'rgba(0,0,0,0)')
+      .polygonSideColor((f) => this._countryPolygonSideColorFn(f))
       .polygonStrokeColor((f) => this._countryBorderColorFn(f));
 
     if (typeof this.world.polygonCapCurvatureResolution === 'function') {
       // 1° tessellation on 204 country caps generated millions of triangles
-      // and froze low/mid GPUs. 5° is visually identical at cap altitude
-      // 0.007 and ~25x lighter.
+      // and froze low/mid GPUs. 5° preserves the raised-tile silhouette at
+      // the reviewed 0.007–0.029 altitude range and is ~25x lighter.
       this.world.polygonCapCurvatureResolution(5);
     }
   },
