@@ -29,7 +29,7 @@
     },
     {
       "path": "css/globe-system.css",
-      "sha256": "ad7931358fe1921914c99d0af813f127a15932a4c4effa5fa46fcbce96688ec9"
+      "sha256": "2f1720ebefb1d9095c3a8fbbb56adba58a35ca5f19737f44c67c6e4cce1aefdc"
     },
     {
       "path": "data/climate/country-registry.json",
@@ -49,7 +49,7 @@
     },
     {
       "path": "data/climate/reviews/climate-factual-runtime-ct42-ui-review.json",
-      "sha256": "8b2e8d2b3293b6e332a4abd833aacdf79658b8e492f10c58e6f0b3474adc52a2"
+      "sha256": "cc3b4247cf60e39338fee76471844d459a6c74d3e25afda6474d8510f77969a3"
     },
     {
       "path": "data/climate/reviews/primap-hist-2.6.1-factual-display-ct10c-review.json",
@@ -85,7 +85,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "7ca761472ae9127f19e06ef859d116f5668d738e1251350b6165427cbdf87662"
+      "sha256": "68bcfd50c509703a7b03b9f6f25ef8b9aa9d15b9ae4b27471d28f8ae81e00b40"
     },
     {
       "path": "js/app.js",
@@ -113,7 +113,7 @@
     },
     {
       "path": "js/globe.js",
-      "sha256": "f4f6cdcd864b4fbff2429ad8516164d96c6d976f0f9e9f02df803df4598150b1"
+      "sha256": "acc20c7afc4d27d143507db123e9f9d1c260622aa60e8f72882c758a0714a850"
     },
     {
       "path": "js/module-contracts.js",
@@ -129,7 +129,7 @@
     },
     {
       "path": "sw.js",
-      "sha256": "8ca4208b56a80ed1d723f0d09ff622a82a1983136c2d8583744fe3ffbd0f545b"
+      "sha256": "6b4066167f25d1b0285bc84a1026065fde6c5a74b4ba7928fe3285acb4e6f788"
     },
     {
       "path": "tools/smoke-test.js",
@@ -154,8 +154,8 @@
       "declared_pin_count": 9
     },
     "ui_review": {
-      "review_id": "ct-42-final-globe-runtime-independent-ui-review-2026-07-16T210722Z",
-      "commit_sha": "0ccf9cf90e25e98cc7b734cb4acf8ee0d85080eb",
+      "review_id": "ct-42-final-globe-runtime-independent-ui-review-2026-08-23T163245Z",
+      "commit_sha": "f43b91556d7734a36a69d6a7d8a18a7b8ca2a92b",
       "required_pin_paths": [
         "index.html",
         "css/globe-system.css",
@@ -82688,7 +82688,7 @@
     },
     "review_context": {
       "data_attestation_id": "ct-42-r-factual-runtime-data-2026-07-15",
-      "ui_attestation_id": "ct-42-final-globe-runtime-independent-ui-review-2026-07-16T210722Z",
+      "ui_attestation_id": "ct-42-final-globe-runtime-independent-ui-review-2026-08-23T163245Z",
       "scoped_review_evidence": {
         "data_review": {
           "review_id": "ct-42-r-factual-runtime-data-2026-07-15",
@@ -82707,8 +82707,8 @@
           "declared_pin_count": 9
         },
         "ui_review": {
-          "review_id": "ct-42-final-globe-runtime-independent-ui-review-2026-07-16T210722Z",
-          "commit_sha": "0ccf9cf90e25e98cc7b734cb4acf8ee0d85080eb",
+          "review_id": "ct-42-final-globe-runtime-independent-ui-review-2026-08-23T163245Z",
+          "commit_sha": "f43b91556d7734a36a69d6a7d8a18a7b8ca2a92b",
           "required_pin_paths": [
             "index.html",
             "css/globe-system.css",

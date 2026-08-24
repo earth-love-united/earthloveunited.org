@@ -21,6 +21,8 @@
 /CREDITS.md                           @earth-love-united/maintainers
 /THIRD_PARTY_NOTICES.txt                @earth-love-united/maintainers
 /_headers                              @earth-love-united/maintainers
+/_redirects                            @earth-love-united/maintainers
+/wrangler.jsonc                        @earth-love-united/maintainers
 /CODE_OF_CONDUCT.md                   @earth-love-united/maintainers
 /CONTRIBUTING.md                      @earth-love-united/maintainers
 /README.md                            @earth-love-united/maintainers

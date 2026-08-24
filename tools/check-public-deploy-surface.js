@@ -10,6 +10,8 @@ const {
   CANDIDATE_MARKER_PATH,
   CANDIDATE_MARKER_TEXT,
   CANDIDATE_ONLY_PATHS,
+  RUNTIME_IMMUTABLE_CACHE_CONTROL,
+  RUNTIME_IMMUTABLE_HEADER_PATTERNS,
   expectedSourcePaths,
   inspectRegular,
   verifyPublicDeploySurface,
@@ -62,6 +64,9 @@ function makeSyntheticSource(root) {
     fs.mkdirSync(path.dirname(destination), { recursive: true });
     fs.writeFileSync(destination, 'fixture:' + relative + '\n');
   });
+  fs.writeFileSync(path.join(root, '_headers'), RUNTIME_IMMUTABLE_HEADER_PATTERNS
+    .map(pattern => `${pattern}\n  Cache-Control: ${RUNTIME_IMMUTABLE_CACHE_CONTROL}\n`)
+    .join('\n'));
 }
 
 function withFixture(mode, callback) {
@@ -149,6 +154,17 @@ function runSelfTest() {
       mode: 'candidate',
       expectedVendorSha256: fixture.vendorSha256,
     }), /pinned globe\.gl digest/);
+  }); cases += 1;
+  withFixture('release', fixture => {
+    const unsafeHeaders = `/assets/globe/runtime/*\n  Cache-Control: ${RUNTIME_IMMUTABLE_CACHE_CONTROL}\n`;
+    fs.writeFileSync(path.join(fixture.source, '_headers'), unsafeHeaders);
+    fs.writeFileSync(path.join(fixture.staged, '_headers'), unsafeHeaders);
+    assert.throws(() => verifyPublicDeploySurface({
+      sourceRoot: fixture.source,
+      stagedRoot: fixture.staged,
+      mode: 'release',
+      expectedVendorSha256: fixture.vendorSha256,
+    }), /stable manifest\.json must revalidate/);
   }); cases += 1;
   process.stdout.write(`Public deploy surface self-test: PASS (${cases} fail-closed cases)\n`);
 }

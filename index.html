@@ -15,8 +15,10 @@
 
 <!-- ─── Identity & social preview ─────────────────────────────── -->
 <meta name="description" content="Earth Love United Foundation (ELU) is a global nonprofit established in 2020, promoting environmental justice and climate action through innovative, nature-based solutions and an evolving country evidence globe.">
+<meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#0a1628">
 <meta name="author" content="Earth Love United Foundation">
+<link rel="canonical" href="https://earthloveunited.org/">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Earth Love United | Global Sustainability Nonprofit">
@@ -397,7 +399,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v19">
+<link rel="stylesheet" href="css/globe-system.css?v=v20">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -801,7 +803,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v2"></script>
-<script src="js/globe.js?v=v13"></script>
+<script src="js/globe.js?v=v14"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/app.js?v=v3"></script>
 
@@ -948,7 +950,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=37-return-contrast', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=38-compact-rank', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

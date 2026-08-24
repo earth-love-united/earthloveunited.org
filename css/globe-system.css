@@ -767,6 +767,8 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 .elu-rank-dot.is-gap { background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px); border:1px solid #aeb9c1; }
 .elu-rank-gap-heading { margin:0; padding:9px 10px; border-top:1px solid var(--hud-divider); border-bottom:1px solid var(--hud-divider-soft); color:var(--hud-muted); font-family:var(--mono); font-size:8px; font-weight:500; letter-spacing:1px; text-transform:uppercase; }
 .elu-rank-disclosure,.elu-rank-unmapped { padding:7px 10px; color:var(--hud-muted); font-size:9px; line-height:1.4; }
+.elu-rank-disclosure-full { display:block; }
+.elu-rank-disclosure-compact { display:none; }
 .elu-rank-unmapped { border-bottom:1px solid var(--hud-divider-soft); }
 
 /* Selected dashboard: the v0.7 461px docked card. */
@@ -1139,6 +1141,34 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   .elu-rank-title { font-size: 7px; letter-spacing: .8px; }
   .elu-rank-subtitle,
   .elu-rank-toggle { display: none; }
+
+  .elu-rank-disclosure {
+    padding: 7px 3px;
+    font-family: var(--mono);
+    text-align: center;
+  }
+
+  .elu-rank-disclosure-full { display: none; }
+  .elu-rank-disclosure-compact {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+
+  .elu-rank-disclosure-compact strong {
+    color: var(--mint);
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: .35px;
+  }
+
+  .elu-rank-disclosure-compact span {
+    color: var(--hud-faint);
+    font-size: 6px;
+    letter-spacing: .45px;
+  }
 
   .elu-rank-list {
     height: calc(100% - 50px);

@@ -6,8 +6,8 @@ const { hasActiveCiJob, hasExactCiStep } = require('./globe-vendor-integrity');
 const POLICY_VERSION = '1.3.0';
 const MANIFEST_PATH = 'assets/globe/runtime/manifest.json';
 const UI_REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
-const EXPECTED_UI_REVIEW_COMMIT = '0ccf9cf90e25e98cc7b734cb4acf8ee0d85080eb';
-const EXPECTED_UI_REVIEW_SHA256 = '8b2e8d2b3293b6e332a4abd833aacdf79658b8e492f10c58e6f0b3474adc52a2';
+const EXPECTED_UI_REVIEW_COMMIT = 'f43b91556d7734a36a69d6a7d8a18a7b8ca2a92b';
+const EXPECTED_UI_REVIEW_SHA256 = 'cc3b4247cf60e39338fee76471844d459a6c74d3e25afda6474d8510f77969a3';
 const EXPECTED_MANIFEST_SHA256 = '5c11517a0f75e1af70169c565b46002c4361cdac18d6a6191f06e9f31ac7f67a';
 const EXPECTED_MANIFEST_SEMANTIC_SHA256 = '1bf154b73ddcb4d2ef51397d1e489b22f0bcadb8b13cbcec2bc7d2bbff949a9f';
 const EXPECTED_NASA_FETCHER_SHA256 = 'ade65419169d17404506d2dee5cfdbacb8f2c0c6a76d3d59b34482892edd4466';
@@ -126,12 +126,12 @@ const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
 const CT42_SHARED_HOST_PATHS = Object.freeze(['index.html', 'sw.js']);
 
 /**
- * Preserve CT-42's exact climate/runtime review while allowing the foundation
- * brand presentation to evolve inside the two shared host files. Everything
- * outside these narrowly identified brand slots remains byte-for-byte bound to
- * the reviewed commit. CT-45 independently validates the climate copy, CSP,
- * runtime requests, service-worker epoch, critical precache entries, and
- * fail-closed behavior in these same files.
+ * Preserve CT-42's exact climate/runtime review while allowing narrowly scoped
+ * foundation identity changes inside the two shared host files. The projection
+ * excludes the reviewed brand slots plus exact, non-climate canonical/indexing
+ * tags. Everything else remains byte-for-byte bound to the reviewed commit.
+ * CT-45 independently validates the climate copy, CSP, runtime requests,
+ * service-worker epoch, critical precache entries, and fail-closed behavior.
  */
 function ct42RuntimeProjection(relativePath, bytes) {
   const source = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes);
@@ -143,6 +143,8 @@ function ct42RuntimeProjection(relativePath, bytes) {
   }
 
   text = text
+    .replace(/^<meta name="robots" content="index, follow, max-image-preview:large">\n/m, '')
+    .replace(/^<link rel="canonical" href="https:\/\/earthloveunited\.org\/">\n/m, '')
     .replace(/^\.foundation-mark,\.hero-foundation-logo\{[^\n]*\}\n?/gm, '')
     .replace(/^\[data-theme="light"\] \.foundation-mark,\[data-theme="light"\] \.hero-foundation-logo\{[^\n]*\}\n?/gm, '')
     .replace(/^\.hero-foundation-logo\{[^\n]*\}\n?/gm, '')
@@ -162,7 +164,7 @@ function ct42RuntimeProjection(relativePath, bytes) {
 }
 const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v19',
+  '/css/globe-system.css?v=v20',
   '/js/gaia-utils.js',
   '/js/module-contracts.js',
   '/js/event-bus.js',
@@ -170,7 +172,7 @@ const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v2',
-  '/js/globe.js?v=v13',
+  '/js/globe.js?v=v14',
   '/js/carbon-clock.js?v=v1',
   '/js/app.js?v=v3',
 ]);
@@ -185,6 +187,8 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/check-public-deploy-surface.js',
   '/tools/lib/public-deploy-surface.js',
   '/_headers',
+  '/_redirects',
+  '/wrangler.jsonc',
   '/docs/LEGACY-COUNTRY-DATA-EXIT.md',
   '/tools/check-climate-production-readiness.js',
   '/tools/check-climate-production-readiness-policy.js',
@@ -478,7 +482,7 @@ function evaluateRuntimeAssets(input) {
     index.includes('Original starfield from Three-Globe 2.45.2'),
     'Public copy must credit NASA and identify the historical surface and restored sky as decorative visual context.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v37-return-contrast';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=37-return-contrast'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v38-compact-rank';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=38-compact-rank'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&

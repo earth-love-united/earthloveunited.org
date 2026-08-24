@@ -15,15 +15,26 @@ const CANDIDATE_MARKER_TEXT = [
 ].join('\n');
 const APPROVAL_PATH = 'data/climate/reviews/globe-runtime-assets-production-review.json';
 const SIGNATURE_BUNDLE_PATH = 'data/climate/reviews/globe-runtime-assets-production-review.signatures.json';
+const RUNTIME_IMMUTABLE_CACHE_CONTROL = 'public, max-age=31536000, immutable';
+const RUNTIME_IMMUTABLE_HEADER_PATTERNS = Object.freeze([
+  '/assets/globe/runtime/*.geojson',
+  '/assets/globe/runtime/*.jpg',
+  '/assets/globe/runtime/*.png',
+]);
 
 // This is the complete public artifact surface. Internal fixtures, reviews,
 // operations patches, authoring tools, knowledge indices, and NDVI experiments
 // are deliberately absent.
 const ALWAYS_PUBLIC_PATHS = Object.freeze([
+  '404.html',
   'THIRD_PARTY_NOTICES.txt',
   '_headers',
+  '_redirects',
+  'favicon.svg',
   'index.html',
   'manifest.json',
+  'robots.txt',
+  'sitemap.xml',
   'sw.js',
   'css/carbon-clock.css',
   'css/globe-system.css',
@@ -132,6 +143,38 @@ function approvalPaths(sourceRoot) {
   return [...OPTIONAL_APPROVAL_PATHS];
 }
 
+function immutableCachePatterns(root) {
+  const lines = inspectRegular(root, '_headers').bytes.toString('utf8').split(/\r?\n/);
+  const patterns = [];
+  let activePattern = null;
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) return;
+    if (!/^\s/.test(line)) {
+      activePattern = trimmed;
+      return;
+    }
+    const separator = trimmed.indexOf(':');
+    if (!activePattern || separator === -1) return;
+    const name = trimmed.slice(0, separator).trim().toLowerCase();
+    const value = trimmed.slice(separator + 1).trim();
+    if (name === 'cache-control' && /(?:^|,)\s*immutable\s*(?:,|$)/i.test(value)) {
+      patterns.push(value === RUNTIME_IMMUTABLE_CACHE_CONTROL
+        ? activePattern
+        : `${activePattern} [unexpected policy: ${value}]`);
+    }
+  });
+  return patterns.sort();
+}
+
+function verifyRuntimeCachePolicy(root) {
+  const actual = immutableCachePatterns(root);
+  const expected = [...RUNTIME_IMMUTABLE_HEADER_PATTERNS].sort();
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+    throw new Error('immutable runtime cache patterns must cover only digest-pinned asset types; stable manifest.json must revalidate');
+  }
+}
+
 function expectedSourcePaths(sourceRoot, mode) {
   if (!['candidate', 'release'].includes(mode)) throw new Error('deploy mode must be candidate or release');
   const paths = [
@@ -197,6 +240,8 @@ function verifyPublicDeploySurface(options) {
       }
     }
   });
+  verifyRuntimeCachePolicy(sourceRoot);
+  verifyRuntimeCachePolicy(stagedRoot);
   if (mode === 'candidate') {
     const marker = inspectRegular(stagedRoot, CANDIDATE_MARKER_PATH).bytes.toString('utf8');
     if (marker !== CANDIDATE_MARKER_TEXT) throw new Error('candidate marker must match the exact denied-publication boundary');
@@ -211,11 +256,14 @@ module.exports = {
   CANDIDATE_MARKER_TEXT,
   CANDIDATE_ONLY_PATHS,
   OPTIONAL_APPROVAL_PATHS,
+  RUNTIME_IMMUTABLE_CACHE_CONTROL,
+  RUNTIME_IMMUTABLE_HEADER_PATTERNS,
   SIGNATURE_BUNDLE_PATH,
   expectedSourcePaths,
   expectedStagedPaths,
   inspectRegular,
   listFiles,
   safeRelative,
+  verifyRuntimeCachePolicy,
   verifyPublicDeploySurface,
 };

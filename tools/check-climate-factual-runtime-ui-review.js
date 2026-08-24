@@ -13,7 +13,7 @@ const {
 
 const ROOT = path.resolve(__dirname, '..');
 const REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
-const EXPECTED_COMMIT = '0ccf9cf90e25e98cc7b734cb4acf8ee0d85080eb';
+const EXPECTED_COMMIT = 'f43b91556d7734a36a69d6a7d8a18a7b8ca2a92b';
 const REQUIRED_GATES = [
   'runtime-boundary', 'truth-language', 'magnitude-and-gaps', 'chart-table-source',
   'screen-reader-semantics', 'keyboard-focus', 'touch-targets', 'responsive-320',
@@ -41,10 +41,10 @@ const EXPECTED_RUNTIME_EVIDENCE = {
   },
   stack_lint_issues: 0,
   delivery_versions: {
-    globe_system_css: 'v19',
-    globe_script: 'v13',
-    service_worker_registration: '37-return-contrast',
-    service_worker_cache: 'elu-v37-return-contrast',
+    globe_system_css: 'v20',
+    globe_script: 'v14',
+    service_worker_registration: '38-compact-rank',
+    service_worker_cache: 'elu-v38-compact-rank',
   },
   browser_qa: {
     mobile: {
@@ -95,10 +95,10 @@ const EXPECTED_RUNTIME_EVIDENCE = {
     },
     cache: {
       controller_reload_verified: true,
-      css_key: '/css/globe-system.css?v=v19',
-      globe_key: '/js/globe.js?v=v13',
-      service_worker_key: '/sw.js?v=37-return-contrast',
-      cache_name: 'elu-v37-return-contrast',
+      css_key: '/css/globe-system.css?v=v20',
+      globe_key: '/js/globe.js?v=v14',
+      service_worker_key: '/sw.js?v=38-compact-rank',
+      cache_name: 'elu-v38-compact-rank',
     },
   },
 };
@@ -213,14 +213,21 @@ function runSharedHostProjectionTests() {
   assert.notEqual(sha256Bytes(ct42RuntimeProjection('index.html', unsafeIndex)),
     sha256Bytes(ct42RuntimeProjection('index.html', reviewedIndex)),
     'climate-truth copy drift must remain inside the CT-42 projection');
+  const unsafeCanonical = Buffer.from(currentIndex.toString('utf8').replace(
+    'https://earthloveunited.org/">',
+    'https://example.invalid/">'
+  ));
+  assert.notEqual(sha256Bytes(ct42RuntimeProjection('index.html', unsafeCanonical)),
+    sha256Bytes(ct42RuntimeProjection('index.html', reviewedIndex)),
+    'canonical drift must remain inside the CT-42 projection');
   const unsafeSw = Buffer.from(currentSw.toString('utf8').replace(
-    "const CACHE_NAME = 'elu-v37-return-contrast';",
+    "const CACHE_NAME = 'elu-v38-compact-rank';",
     "const CACHE_NAME = 'unreviewed-runtime';"
   ));
   assert.notEqual(sha256Bytes(ct42RuntimeProjection('sw.js', unsafeSw)),
     sha256Bytes(ct42RuntimeProjection('sw.js', reviewedSw)),
     'service-worker behavior drift must remain inside the CT-42 projection');
-  return 4;
+  return 5;
 }
 
 const review = readJson(REVIEW_PATH);
@@ -274,12 +281,12 @@ assert.match(boundary.required_next_gate, /CT-40 independent allow decision/);
 
 const index = read('index.html');
 const serviceWorker = read('sw.js');
-assert.ok(index.includes('href="css/globe-system.css?v=v19"'), 'index CSS cache key drift');
-assert.ok(index.includes('src="js/globe.js?v=v13"'), 'index globe cache key drift');
-assert.ok(index.includes("register('/sw.js?v=37-return-contrast'"), 'service-worker registration key drift');
-assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v37-return-contrast';"), 'service-worker cache name drift');
-assert.ok(serviceWorker.includes("'/css/globe-system.css?v=v19'"), 'service-worker CSS cache key drift');
-assert.ok(serviceWorker.includes("'/js/globe.js?v=v13'"), 'service-worker globe cache key drift');
+assert.ok(index.includes('href="css/globe-system.css?v=v20"'), 'index CSS cache key drift');
+assert.ok(index.includes('src="js/globe.js?v=v14"'), 'index globe cache key drift');
+assert.ok(index.includes("register('/sw.js?v=38-compact-rank'"), 'service-worker registration key drift');
+assert.ok(serviceWorker.includes("const CACHE_NAME = 'elu-v38-compact-rank';"), 'service-worker cache name drift');
+assert.ok(serviceWorker.includes("'/css/globe-system.css?v=v20'"), 'service-worker CSS cache key drift');
+assert.ok(serviceWorker.includes("'/js/globe.js?v=v14'"), 'service-worker globe cache key drift');
 
 const geometry = readJson('assets/globe/runtime/ne_110m_admin_0_countries.geojson');
 assert.equal(geometry.type, 'FeatureCollection');

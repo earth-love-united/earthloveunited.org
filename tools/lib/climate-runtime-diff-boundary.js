@@ -25,6 +25,8 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'data/small-nations.json',
   'THIRD_PARTY_NOTICES.txt',
   '_headers',
+  '_redirects',
+  'wrangler.jsonc',
   'docs/LEGACY-COUNTRY-DATA-EXIT.md',
   'data/governance/vendor/globe-gl-2.46.1-notices.json',
   'data/governance/vendor/globe-gl-2.46.1-notices-integration.json',
