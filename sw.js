@@ -1,17 +1,17 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v38) — retain the original pinned Three-Globe sky while shipping
- * the reviewed compact narrow-screen ranking disclosure.
+ * Globe cache (v43) — stage the Country Climate Intelligence factual candidate,
+ * its pinned runtime, and the previous country-truth candidate for rollback.
  */
-const CACHE_NAME = 'elu-v38-compact-rank';
+const CACHE_NAME = 'elu-v43-country-climate-intelligence';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v20',
+  '/css/globe-system.css?v=v25',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
   '/assets/globe/runtime/manifest.json',
@@ -27,13 +27,15 @@ const STATIC_ASSETS = [
   '/js/storage-adapter.js',
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
-  '/js/data.js?v=v2',
-  '/js/globe.js?v=v14',
+  '/js/data.js?v=v3',
+  '/js/country-climate-intelligence.js?v=v2',
+  '/js/globe.js?v=v17',
   '/js/carbon-clock.js?v=v1',
   '/js/app.js?v=v3',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
-  '/data/carbon-projects.json?v=ct42candidate1',
+  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate1',
+  // Retained for one release epoch as the factual rollback artifact.
   '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',
 ];
 

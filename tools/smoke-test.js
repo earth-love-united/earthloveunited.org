@@ -25,7 +25,7 @@ const SmokeTest = (() => {
         name: 'Core modules on window',
         critical: true,
         test: () => {
-          const required = ['Data', 'GlobeModule', 'CARBON_CLOCK', 'App'];
+          const required = ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE', 'GlobeModule', 'CARBON_CLOCK', 'App'];
           const missing = required.filter(m => typeof window[m] === 'undefined');
           return {
             pass: missing.length === 0,
@@ -73,25 +73,29 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'CT-42 factual candidate is loaded inside its denied boundary',
+        name: 'Country Climate Intelligence candidate passes its runtime boundary',
         critical: true,
         test: () => {
-          const candidate = window.Data?.climateCandidate;
-          const ranking = window.Data?.getClimateRanking?.();
-          const factualCount = candidate?.countries?.filter(country => country.emissions?.status === 'reviewed_factual').length || 0;
-          const gapCount = candidate?.countries?.filter(country => country.emissions?.status !== 'reviewed_factual').length || 0;
-          const ok = candidate?.review_status === 'not_reviewed'
-            && candidate?.production_runtime_release === false
+          const candidate = window.Data?.getClimateIntelligenceRelease?.();
+          const lenses = candidate?.lens_catalog || [];
+          const partitionsValid = lenses.every(lens => {
+            const order = candidate.lens_orders?.[lens.id];
+            return order?.eligible_count + order?.unranked_count === 249 &&
+              order?.ordered?.length === order?.eligible_count && order?.unranked?.length === order?.unranked_count;
+          });
+          const ok = window.Data?.isClimateIntelligenceReady?.() === true
+            && candidate?.release?.status === 'candidate'
+            && candidate?.release?.production_runtime_release === false
             && candidate?.countries?.length === 249
-            && factualCount === 206
-            && gapCount === 43
-            && ranking?.disclosure?.eligible_count === 206
-            && ranking?.disclosure?.unranked_count === 43;
+            && new Set(candidate.countries.map(country => country.country_id)).size === 249
+            && Object.keys(candidate?.metric_definitions || {}).length === 18
+            && lenses.map(lens => lens.id).join(',') === 'carbon,power,physical'
+            && partitionsValid;
           return {
             pass: ok,
             detail: ok
-              ? 'candidate not_reviewed/production false; registry 249 = 206 factual + 43 gaps; ranking 206 + 43; CT-04 separately guards legacy absence'
-              : `boundary/count mismatch (registry ${candidate?.countries?.length || 0}, factual ${factualCount}, gaps ${gapCount}, ranking ${ranking?.disclosure?.eligible_count || 0} + ${ranking?.disclosure?.unranked_count || 0})`,
+              ? 'exact-SHA candidate; 249 unique entities; 18 metrics; three complete lens partitions; production release false'
+              : `runtime boundary mismatch (registry ${candidate?.countries?.length || 0}, metrics ${Object.keys(candidate?.metric_definitions || {}).length}, lenses ${lenses.length})`,
           };
         },
       },
@@ -188,7 +192,7 @@ const SmokeTest = (() => {
         name: 'Critical DOM elements exist',
         critical: true,
         test: () => {
-          const required = ['globeViz', 'hero', 'topbar', 'hex-legend', 'globe-back-btn', 'globe-fallback', 'globe-evidence-browse', 'hero-carbon-clock'];
+          const required = ['globeViz', 'hero', 'topbar', 'climate-lens-controls', 'climate-lens-status', 'hex-legend', 'globe-back-btn', 'globe-fallback', 'globe-evidence-browse', 'hero-carbon-clock'];
           const missing = required.filter(id => !document.getElementById(id));
           return {
             pass: missing.length === 0,
@@ -261,7 +265,7 @@ const SmokeTest = (() => {
           const count = Math.max(polyData?.length || 0, hexData?.length || 0);
           return {
             pass: count === 201,
-            detail: count === 201 ? 'Exact 201-entity candidate overlay is active' : `${count} country features (expected 201)`,
+            detail: count === 201 ? 'Exact 201-entity climate-intelligence overlay is active' : `${count} country features (expected 201)`,
           };
         },
       },
@@ -284,8 +288,9 @@ const SmokeTest = (() => {
           }
           const factual = panel.querySelectorAll('[data-fallback-evidence-state="factual"]').length;
           const gaps = panel.querySelectorAll('[data-fallback-evidence-state="gap"]').length;
+          const lensRows = window.COUNTRY_CLIMATE_INTELLIGENCE?.getRailRows?.(window.GlobeModule?.getLens?.() || 'carbon');
           const controls = [...panel.querySelectorAll('button,input,a[href]')];
-          const undersized = controls.filter(control => control.getBoundingClientRect().height < 44);
+          const undersized = controls.filter(control => control.getClientRects().length > 0 && control.getBoundingClientRect().height < 44);
           const reason = panel.dataset.reason;
           const allowed = ['candidate_data_unavailable', 'country_geometry_unavailable', 'visual_assets_unavailable', 'library_load_failed', 'library_unavailable', 'webgl_unavailable', 'globe_construction_failed', 'globe_container_missing'];
           const browsing = reason === 'evidence_browse_requested';
@@ -293,12 +298,12 @@ const SmokeTest = (() => {
           const rendererStateOk = browsing
             ? window.GlobeModule?._initialized === true && canvasCount === 1
             : window.GlobeModule?._initialized !== true && canvasCount === 0;
-          const ok = factual === 206 && gaps === 43 && undersized.length === 0 &&
+          const ok = factual === lensRows?.eligible_count && gaps === lensRows?.unranked_count && factual + gaps === 249 && undersized.length === 0 &&
             (browsing || allowed.includes(reason)) && rendererStateOk;
           return {
             pass: ok,
             detail: ok
-              ? `${factual} factual candidate series + ${gaps} explicit gaps; reason ${reason}; all ${controls.length} controls >=44px; renderer state is safe`
+              ? `${factual} exact lens records + ${gaps} explicit gaps; reason ${reason}; all ${controls.length} controls >=44px; renderer state is safe`
               : `factual ${factual}, gaps ${gaps}, undersized ${undersized.length}, reason ${reason}, initialized ${window.GlobeModule?._initialized}, canvases ${canvasCount}`,
           };
         },
@@ -361,14 +366,14 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'Active critical candidate loaded successfully',
+        name: 'Active climate intelligence candidate loaded successfully',
         critical: true,
         test: () => {
           if (typeof Data === 'undefined') return { pass: false, detail: 'Data module not loaded' };
-          const ready = Data.isClimateCandidateReady?.() === true;
+          const ready = Data.isClimateIntelligenceReady?.() === true;
           return {
-            pass: ready && Data.climateCandidateState === 'ready',
-            detail: ready ? 'Exact-SHA candidate is ready; carbon projects remain noncritical' : `candidate state ${Data.climateCandidateState}`,
+            pass: ready && Data.climateIntelligenceState === 'ready',
+            detail: ready ? 'Exact-SHA climate intelligence candidate is ready' : `candidate state ${Data.climateIntelligenceState}`,
           };
         },
       },
@@ -384,7 +389,7 @@ const SmokeTest = (() => {
           }
           const ok = state.runtimeAssetsPrepared === true && state.countryDataState === 'ready' &&
             state.countryFeatureCount === 201 && state.countryDeckCount === 201 && state.rendererCanvasCount === 1;
-          return { pass: ok, detail: ok ? 'Candidate, 201-entity geometry deck, and four images prepared before the single renderer' : JSON.stringify(state) };
+          return { pass: ok, detail: ok ? 'Climate release, 201-entity geometry deck, and four images prepared before the single renderer' : JSON.stringify(state) };
         },
       },
       {
@@ -395,8 +400,8 @@ const SmokeTest = (() => {
           const button = document.getElementById('globe-evidence-browse');
           const fullLabel = button?.querySelector('.browse-label-full')?.textContent?.trim();
           const shortLabel = button?.querySelector('.browse-label-short')?.textContent?.trim();
-          if (!panel || !button || button.getAttribute('aria-label') !== 'Browse all 249 evidence records' ||
-              fullLabel !== 'Browse all 249 evidence records' || shortLabel !== '249 records') {
+          if (!panel || !button || button.getAttribute('aria-label') !== 'Browse all 249 climate intelligence records' ||
+              fullLabel !== 'Browse all 249 records' || shortLabel !== '249 records') {
             return { pass: false, detail: 'Evidence browser entry control is missing or mislabeled' };
           }
           if (window.GlobeModule?._fallbackReasonCode !== 'evidence_browse_requested') {
@@ -405,10 +410,11 @@ const SmokeTest = (() => {
           }
           const factual = panel.querySelectorAll('[data-fallback-evidence-state="factual"]').length;
           const gaps = panel.querySelectorAll('[data-fallback-evidence-state="gap"]').length;
+          const lensRows = window.COUNTRY_CLIMATE_INTELLIGENCE?.getRailRows?.(window.GlobeModule?.getLens?.() || 'carbon');
           const title = document.getElementById('globe-fallback-title')?.textContent || '';
-          const ok = factual === 206 && gaps === 43 && title.includes('Browse all 249') &&
+          const ok = factual === lensRows?.eligible_count && gaps === lensRows?.unranked_count && factual + gaps === 249 && title.includes('Browse all 249') &&
             document.getElementById('globe-fallback-search') && panel.querySelector('[data-globe-fallback-action="close"]');
-          return { pass: ok, detail: ok ? '249 = 206 factual + 43 gaps; search/detail/guarded return controls present' : `factual ${factual}, gaps ${gaps}, title ${title}` };
+          return { pass: ok, detail: ok ? '249 lens records partition into exact matches and explicit gaps; search/detail/guarded return controls present' : `available ${factual}, gaps ${gaps}, title ${title}` };
         },
       },
       {
@@ -419,8 +425,8 @@ const SmokeTest = (() => {
           const prohibited = new Set(['N. Cyprus', 'Northern Cyprus', 'Somaliland', 'Kosovo']);
           const leaked = GlobeModule.getCountryFeatures().filter(feature =>
             [feature?.properties?.ADMIN, feature?.properties?.NAME].some(name => prohibited.has(name)));
-          const unknownDeck = (GlobeModule._countryDeck || []).filter(entry => !Data.getClimateCountry(entry.iso));
-          return { pass: leaked.length === 0 && unknownDeck.length === 0, detail: leaked.length || unknownDeck.length ? `leaked areas ${leaked.length}, non-registry cards ${unknownDeck.length}` : 'Sensitive subfeatures excluded; every interactive ISO resolves to the candidate registry' };
+          const unknownDeck = (GlobeModule._countryDeck || []).filter(entry => !Data.getClimateIntelligenceCountry(entry.iso));
+          return { pass: leaked.length === 0 && unknownDeck.length === 0, detail: leaked.length || unknownDeck.length ? `leaked areas ${leaked.length}, non-registry cards ${unknownDeck.length}` : 'Sensitive subfeatures excluded; every interactive ISO resolves to the climate registry' };
         },
       },
     ],

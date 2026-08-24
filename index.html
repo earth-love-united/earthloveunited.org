@@ -101,7 +101,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="js/gaia-utils.js" as="script">
-<link rel="preload" href="js/data.js?v=v2" as="script">
+<link rel="preload" href="js/data.js?v=v3" as="script">
+<link rel="preload" href="js/country-climate-intelligence.js?v=v2" as="script">
 
 <!-- ═══ CRITICAL CSS (inlined) ═══ -->
 <style>
@@ -212,46 +213,7 @@ body.globe-mode #globe-back-btn{display:block}
 #hex-country-tooltip .tt-grid4 > div{min-width:0;padding:6px 6px;border:1px solid rgba(255,255,255,.07);border-radius:6px;background:rgba(255,255,255,.02);text-align:center}
 #hex-country-tooltip .tt-grid4 span{display:block;color:var(--text3);font-family:var(--mono);font-size:8px;letter-spacing:.6px;text-transform:uppercase}
 #hex-country-tooltip .tt-grid4 strong{display:block;overflow:hidden;text-overflow:ellipsis;color:var(--text);font-family:var(--mono);font-size:12px;font-weight:500;margin-top:2px}
-#hex-country-tooltip .tt-momentum{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 0}
-#hex-country-tooltip .tt-momentum > div{flex:1;padding:7px 8px;border:1px solid rgba(255,255,255,.07);border-radius:6px;background:rgba(255,255,255,.02);text-align:center}
-#hex-country-tooltip .tt-momentum span{display:block;color:var(--text3);font-family:var(--mono);font-size:8px;letter-spacing:.6px;text-transform:uppercase}
-#hex-country-tooltip .tt-momentum strong{display:block;font-family:var(--mono);font-size:13px;font-weight:500;margin-top:2px}
-#hex-country-tooltip .tt-momentum em{color:var(--text3);font-size:10px;font-style:normal}
-#hex-country-tooltip .tt-divergence{margin:6px 0 0;padding:5px 8px;border-radius:6px;background:rgba(255,255,255,.02);font-size:11px;text-align:center}
-#hex-country-tooltip .tt-chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 0}
-#hex-country-tooltip .tt-chip{padding:4px 8px;border:1px solid rgba(255,255,255,.09);border-radius:999px;background:rgba(255,255,255,.025);color:var(--text2);font-family:var(--mono);font-size:9.5px;letter-spacing:.3px}
-#hex-country-tooltip .tt-chip.tt-red{border-color:rgba(255,107,107,.26);background:rgba(255,107,107,.07)}
-#hex-country-tooltip .tt-chip.tt-green{border-color:rgba(46,204,113,.25);background:rgba(46,204,113,.07)}
-#hex-country-tooltip .tt-finance{margin:8px 0 0;padding:8px 10px;border:1px solid rgba(212,165,116,.2);border-radius:6px;background:rgba(212,165,116,.06);color:var(--amber);font-family:var(--mono);font-size:14px}
-#hex-country-tooltip .tt-finance span{display:block;color:var(--text3);font-family:var(--body);font-size:9.5px;letter-spacing:.4px;text-transform:uppercase;margin-top:2px}
-#hex-country-tooltip .tt-ndc{margin:8px 0 0;padding:8px 10px;border-left:2px solid rgba(78,205,196,.25);border-radius:0 6px 6px 0;background:rgba(255,255,255,.02);color:var(--text2);font-size:11px;line-height:1.5}
-#hex-country-tooltip .tt-ndc span{display:block;color:var(--teal);font-family:var(--mono);font-size:8.5px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px}
 #hex-country-tooltip .tt-hint{margin:9px 0 0;color:var(--text3);font-family:var(--mono);font-size:8.5px;letter-spacing:.8px;text-transform:uppercase;text-align:center;opacity:.7}
-/* Close the Gap — credit market bridge */
-#hex-country-tooltip .tt-ctg{margin:10px 0 0;padding:9px 10px;border:1px solid rgba(123,232,208,.16);border-radius:8px;background:linear-gradient(180deg,rgba(78,205,196,.06),rgba(78,205,196,.02))}
-#hex-country-tooltip .tt-ctg-label{display:block;color:var(--mint);font-family:var(--mono);font-size:8.5px;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:5px}
-#hex-country-tooltip .tt-ctg-line{color:var(--text2);font-size:11.5px;line-height:1.45}
-#hex-country-tooltip .tt-ctg-line strong{color:var(--text);font-family:var(--mono);font-size:11.5px;font-weight:500}
-#hex-country-tooltip .tt-ctg-line em{display:block;color:var(--text3);font-size:9.5px;font-style:normal;margin-top:2px}
-#hex-country-tooltip .tt-ctg-supply{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.06);color:var(--text2);font-size:11px;line-height:1.4}
-#hex-country-tooltip .tt-ctg-supply strong{color:var(--text);font-family:var(--mono);font-weight:500}
-#hex-country-tooltip .tt-ctg-none{color:var(--text3)}
-#hex-country-tooltip .tt-projects{display:flex;flex-direction:column;gap:4px;margin-top:6px}
-#hex-country-tooltip .tt-proj{display:grid;grid-template-columns:34px 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:5px 7px;border:1px solid rgba(255,255,255,.06);border-radius:6px;background:rgba(255,255,255,.02);text-decoration:none;transition:border-color .15s,background .15s}
-#hex-country-tooltip .tt-proj:hover{border-color:rgba(78,205,196,.3);background:rgba(78,205,196,.06)}
-#hex-country-tooltip .tt-proj-reg{grid-row:1/3;justify-self:center;padding:3px 5px;border:1px solid rgba(78,205,196,.25);border-radius:4px;color:var(--teal);font-family:var(--mono);font-size:8.5px;letter-spacing:.5px}
-#hex-country-tooltip .tt-proj-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);font-size:10.5px;line-height:1.3}
-#hex-country-tooltip .tt-proj-meta{color:var(--text3);font-family:var(--mono);font-size:8.5px;letter-spacing:.3px}
-#hex-country-tooltip .tt-ctg-note{margin-top:6px;color:var(--text3);font-size:9px;line-height:1.35}
-/* the hook: sourcing brief CTA + watchlist */
-#hex-country-tooltip .tt-brief-btn{display:flex;margin-top:9px;padding:11px 12px;font-family:var(--mono);font-size:10px;letter-spacing:1.2px;text-align:center;white-space:normal}
-#hex-country-tooltip .tt-brief-sub{margin-top:5px;color:var(--text3);font-size:8.5px;letter-spacing:.3px;text-align:center;line-height:1.4}
-#hex-country-tooltip .tt-watch{flex:0 0 auto;width:26px;height:26px;margin:-2px 0 0 2px;border:1px solid rgba(255,255,255,.12);border-radius:50%;background:rgba(255,255,255,.03);color:var(--text2);font-size:12px;line-height:1;cursor:pointer;transition:all .15s}
-#hex-country-tooltip .tt-watch:hover{border-color:var(--amber);color:var(--amber)}
-#hex-country-tooltip .tt-watch.watched{border-color:rgba(212,165,116,.5);background:rgba(212,165,116,.12);color:var(--amber)}
-#hex-country-tooltip .tt-watchline{margin:8px 0 0;color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:.4px;text-align:center}
-#hex-country-tooltip .tt-watchline a{color:var(--amber);text-decoration:none}
-#hex-country-tooltip .tt-watchline a:hover{text-decoration:underline}
 /* deck navigation — swipe physics (ported from agent/designer/swipeable-hover-card) */
 #hex-country-tooltip.selected{touch-action:pan-y;cursor:grab}
 #hex-country-tooltip.tt-dragging{transition:none!important;cursor:grabbing;user-select:none}
@@ -268,7 +230,8 @@ body.globe-mode #globe-back-btn{display:block}
 @media(hover:none){#hex-country-tooltip .tt-nav{opacity:.55}}
 @media(prefers-reduced-motion:reduce){#hex-country-tooltip{transition:none}#hex-country-tooltip.tt-snap,#hex-country-tooltip.tt-fly-left,#hex-country-tooltip.tt-fly-right{transition:none}}
 /* hex legend */
-.hex-legend{position:fixed;bottom:14px;right:56px;z-index:60;display:flex;flex-direction:column;gap:2px;padding:6px 8px;background:rgba(8,10,18,0.8);backdrop-filter:blur(8px);border:1px solid rgba(78,205,196,0.1);border-radius:8px;font-size:9px;color:var(--text3);letter-spacing:0.5px}
+.hex-legend{position:fixed;bottom:14px;right:56px;z-index:60;display:flex;flex-direction:column;gap:3px;padding:8px 10px;background:rgba(8,10,18,0.84);backdrop-filter:blur(8px);border:1px solid rgba(78,205,196,0.14);border-radius:8px;font-size:9px;color:var(--text3);letter-spacing:0.35px}
+.hex-legend-title{font-size:10px;font-weight:700;color:var(--text1);margin-bottom:2px;letter-spacing:.2px}
 .hex-legend-row{display:flex;align-items:center;gap:6px}
 .hex-legend-swatch{width:10px;height:10px;border-radius:2px}.hex-legend-swatch.magnitude-low{background:#5b4a97}.hex-legend-swatch.magnitude-high{background:#f6913a}.hex-legend-swatch.magnitude-gap{background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1}.hex-legend-note{max-width:230px;margin-top:3px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);line-height:1.35}
 body:not(.globe-mode) .hex-legend{display:none}
@@ -399,7 +362,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v20">
+<link rel="stylesheet" href="css/globe-system.css?v=v25">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -494,7 +457,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <span class="brand-subtitle">Living Climate Atlas</span>
   </div>
   <div class="topbar-actions">
-    <button id="globe-evidence-browse" class="glass-btn" data-action="browseEvidence" disabled aria-disabled="true" aria-label="Browse all 249 evidence records"><span class="browse-label-full">Browse all 249 evidence records</span><span class="browse-label-short" aria-hidden="true">249 records</span></button>
+    <button id="globe-evidence-browse" class="glass-btn" data-action="browseEvidence" disabled aria-disabled="true" aria-label="Browse all 249 climate intelligence records"><span class="browse-label-full">Browse all 249 records</span><span class="browse-label-short" aria-hidden="true">249 records</span></button>
     <div class="stats">
       <div class="stat-block">
         <div class="stat-label">Net Human Emissions</div>
@@ -508,12 +471,20 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   </div>
 </div>
 
-<!-- ── HEX LEGEND ── -->
-<div class="hex-legend" id="hex-legend" role="note" aria-label="Emissions magnitude legend">
-  <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-low" aria-hidden="true"></span> Lower 2023 emissions magnitude</div>
-  <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-high" aria-hidden="true"></span> Higher 2023 emissions magnitude</div>
-  <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-gap" aria-hidden="true"></span> 7 mapped source gaps · all 43 in browser</div>
-  <div class="hex-legend-note">2023 harmonized emissions estimate · PRIMAP-hist v2.6.1 · excludes LULUCF. Emissions magnitude only—not a climate-performance score. Boundaries are for navigation.</div>
+<!-- ── COUNTRY CLIMATE LENSES + LEGEND (body-level overlays) ── -->
+<nav class="climate-lens-controls" id="climate-lens-controls" aria-label="Country climate intelligence lens">
+  <span class="climate-lens-label">Lens</span>
+  <button type="button" class="is-active" data-climate-lens="carbon" aria-pressed="true">Carbon</button>
+  <button type="button" data-climate-lens="power" aria-pressed="false">Power</button>
+  <button type="button" data-climate-lens="physical" aria-pressed="false">Physical</button>
+</nav>
+<p id="climate-lens-status" class="sr-only" aria-live="polite">Territorial fossil CO₂ · 2024 lens selected.</p>
+<div class="hex-legend" id="hex-legend" role="note" aria-label="Territorial fossil CO₂ 2024 legend">
+  <div class="hex-legend-title">Territorial fossil CO₂ · 2024</div>
+  <div class="hex-legend-row"><span class="hex-legend-swatch" style="background:rgb(77,82,156)" aria-hidden="true"></span>Lower territorial fossil CO₂</div>
+  <div class="hex-legend-row"><span class="hex-legend-swatch" style="background:rgb(244,127,59)" aria-hidden="true"></span>Higher territorial fossil CO₂</div>
+  <div class="hex-legend-row"><span class="hex-legend-swatch magnitude-gap" aria-hidden="true"></span>36 explicit data gaps</div>
+  <div class="hex-legend-note">Source estimate · Transparent log-scaled extrusion shows magnitude. Land use, targets, finance, and offsets do not alter this record.</div>
 </div>
 
 <!-- ═══ GLOBE ═══ -->
@@ -587,21 +558,23 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <section class="section" id="globe" aria-labelledby="globe-h">
     <div class="sec-kicker">The key instrument</div>
     <h2 id="globe-h">The Living Globe</h2>
-    <p class="sec-lead">Explore reviewed annual greenhouse-gas emissions estimates for 206 registry entities. Forty-three source gaps remain visible and unranked.</p>
+    <p class="sec-lead">Explore a metric-first country dashboard across carbon, power, and physical-climate lenses. All 249 registry entities remain navigable; only exact metric-and-period matches enter each order.</p>
     <div class="globe-key" role="list" aria-label="Country evidence availability legend">
-      <span role="listitem"><i style="background:linear-gradient(135deg,#5b4a97,#f6913a)"></i> Non-green sequential color · log-scaled 2023 emissions magnitude, not performance</span>
-      <span role="listitem"><i style="background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1"></i> Neutral pattern · source gap, visible and unranked</span>
+      <span role="listitem"><i style="background:linear-gradient(135deg,#4d529c,#f47f3b)"></i> Carbon · territorial fossil CO₂ in 2024, with transparent log-scaled height</span>
+      <span role="listitem"><i style="background:linear-gradient(135deg,#4d5382,#30c497)"></i> Power · 2024 clean generation share, color only</span>
+      <span role="listitem"><i style="background:linear-gradient(135deg,#3f6fae,#e85b45)"></i> Physical · SSP2-4.5 median projected warming for 2040–2059, color only</span>
+      <span role="listitem"><i style="background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1"></i> Neutral pattern · exact comparison metric unavailable, visible and unranked</span>
     </div>
-    <p class="data-note">Map boundaries use generalized Natural Earth 1:110m geometry for navigation only. Twenty-eight small states absent from that dataset use manually curated approximate navigation points, not boundaries or precise centroids. Disputed subfeatures including Northern Cyprus and Somaliland are excluded from the assessed overlay and never inherit a parent entity’s evidence. None of these representations expresses a position on sovereignty or legal boundaries or assesses climate performance.</p>
+    <p class="data-note">Map boundaries use generalized Natural Earth 1:110m geometry for navigation only. Twenty-eight small states absent from that dataset use manually curated approximate navigation points, not boundaries or precise centroids. Disputed subfeatures including Northern Cyprus and Somaliland are excluded from the data overlay and never inherit a parent entity’s evidence. None of these representations expresses a position on sovereignty or legal boundaries.</p>
     <p class="data-note">Visual credits: <a href="https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/" target="_blank" rel="noopener">NASA Earth Observatory Black Marble 2012</a>, image by Robert Simmon with Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center. Decorative background only. Original starfield from Three-Globe 2.45.2.</p>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Source &amp; Methodology</div>
-        <p><a href="https://zenodo.org/records/15016289" target="_blank" rel="noopener">PRIMAP-hist v2.6.1</a> provides harmonized estimates, not official Party inventories. This view excludes LULUCF; the selected rows do not include uncertainty bounds.</p>
+        <p>Five independently scoped data streams support the dashboard: <a href="https://meta.icos-cp.eu/collections/AxnIW-ydMBT4BdKjxV63DGQl" target="_blank" rel="noopener">carbon</a>, <a href="https://population.un.org/wpp/" target="_blank" rel="noopener">population</a>, <a href="https://climatetrace.org/data" target="_blank" rel="noopener">independent GHG context</a>, <a href="https://api.ember-energy.org/v1/docs" target="_blank" rel="noopener">electricity</a>, and <a href="https://climateknowledgeportal.worldbank.org/index.php/metadata" target="_blank" rel="noopener">physical climate</a>. Definitions, scopes, uncertainty, checksums, and citations expand inside every country card.</p>
       </div>
       <div class="card">
         <div class="card-tag">Country Cards</div>
-        <p>The globe maps 201 registry entities: 194 reviewed emissions series and 7 neutral, unnumbered source gaps. The searchable 249-record evidence browser includes the 48 entities not represented by map geometry.</p>
+        <p>Plain-language facts come first; an analyst drawer preserves method, uncertainty, scope, transformation, release checksum, citations, and explicit gap reasons. Fossil CO₂, land use, independent GHG, electricity, and modeled climate remain separately labelled.</p>
       </div>
     </div>
     <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
@@ -685,12 +658,12 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       </div>
       <div class="card">
         <div class="card-tag">Open Data</div>
-        <p>The former country payload has been retired from the live site. Its field-by-field exit ledger records what is blocked and what reviewed evidence must replace it.</p>
-        <a class="card-cta glass-btn" href="docs/LEGACY-COUNTRY-DATA-EXIT.md">Inspect the legacy exit ledger</a>
+        <p>The live atlas reads one hashed, reproducible 249-entity factual candidate. Source receipts, explicit gaps, scope fingerprints, transformations, and the rollback boundary are published with it.</p>
+        <a class="card-cta glass-btn" href="docs/COUNTRY-CLIMATE-METHODOLOGY.md">Read the climate methodology</a>
       </div>
       <div class="card">
         <div class="card-tag">Truth Checks</div>
-        <p>Focused regression checks keep legacy gap, score, rating, finance, and market fields out of the public country experience while the reviewed pipeline is built.</p>
+        <p>Deterministic checks verify source checksums, all 249 identities, exact lens coverage, permitted derivations, scope separation, accessible fallback parity, and the candidate-only release boundary.</p>
       </div>
     </div>
   </section>
@@ -802,8 +775,9 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage-adapter.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
-<script src="js/data.js?v=v2"></script>
-<script src="js/globe.js?v=v14"></script>
+<script src="js/data.js?v=v3"></script>
+<script src="js/country-climate-intelligence.js?v=v2"></script>
+<script src="js/globe.js?v=v17"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/app.js?v=v3"></script>
 
@@ -908,7 +882,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <p class="elu-fallback-eyebrow">Living Globe · accessible evidence view</p>
       <h2 id="globe-fallback-title" tabindex="-1">The 3D view is unavailable.</h2>
       <p id="globe-fallback-reason" class="elu-fallback-reason" role="status" aria-live="polite">The country evidence remains available below.</p>
-      <p class="elu-fallback-boundary">This view shows emissions records and source gaps. Emissions magnitude is not a climate-performance score. Map boundaries are navigational and are not a sovereignty judgment.</p>
+      <p class="elu-fallback-boundary">This view preserves the same carbon, power, and physical-climate metrics, evidence classes, and explicit gaps. No composite score, target assessment, finance judgment, or offset adjustment is produced.</p>
       <div class="elu-fallback-actions" aria-label="3D view recovery options">
         <button type="button" class="glass-btn" data-globe-fallback-action="retry">Retry the 3D view</button>
         <button type="button" class="glass-btn" data-globe-fallback-action="exit">Return to the Foundation</button>
@@ -918,8 +892,8 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <div class="elu-fallback-evidence" aria-labelledby="globe-fallback-evidence-title">
       <div class="elu-fallback-evidence-head">
         <div>
-          <h3 id="globe-fallback-evidence-title">Country emissions evidence</h3>
-          <p id="globe-fallback-summary">Loading emissions coverage…</p>
+          <h3 id="globe-fallback-evidence-title">Territorial fossil CO₂ · 2024</h3>
+          <p id="globe-fallback-summary">Loading country climate intelligence…</p>
         </div>
         <label class="elu-fallback-search" for="globe-fallback-search">
           <span>Find a country or ISO code</span>
@@ -929,11 +903,11 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <p id="globe-fallback-results" class="elu-fallback-results" aria-live="polite"></p>
       <div class="elu-fallback-grid">
         <div class="elu-fallback-list-panel">
-          <ul id="globe-fallback-country-list" aria-label="Countries and registry entities in the emissions dataset"></ul>
+          <ul id="globe-fallback-country-list" aria-label="Countries and registry entities in the climate intelligence release"></ul>
         </div>
         <article id="globe-fallback-country-detail" class="elu-fallback-detail" tabindex="-1" aria-live="polite">
           <h3>Select a country or registry entity</h3>
-          <p>Choose an item to inspect its emissions series or source-gap state. Climate performance is not scored in this view.</p>
+          <p>Choose an item to inspect its lens metrics, evidence class, methods, sources, or explicit gap state.</p>
         </article>
       </div>
     </div>
@@ -950,7 +924,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=38-compact-rank', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=43-country-climate-intelligence', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

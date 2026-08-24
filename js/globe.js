@@ -1,4 +1,4 @@
-// GLOBE v2.0 — Elevation + diverging colors + hover fix
+// GLOBE v3.0 — Country Climate Intelligence renderer
 // ═══════════════════════════════════════════════
 // GLOBE — Globe.gl init, panel open/close
 // ═══════════════════════════════════════════════
@@ -14,8 +14,6 @@ const COUNTRY_GEOJSON_URL = '/assets/globe/runtime/ne_110m_admin_0_countries.geo
 const COUNTRY_GEOJSON_TIMEOUT_MS = 8000;
 const COUNTRY_GEOJSON_FEATURE_COUNT = 177;
 const EXPECTED_INTERACTIVE_ENTITY_COUNT = 201;
-const EXPECTED_INTERACTIVE_FACTUAL_COUNT = 194;
-const EXPECTED_INTERACTIVE_GAP_COUNT = 7;
 const GLOBE_VISUAL_ASSET_TIMEOUT_MS = 8000;
 const GLOBE_VISUAL_ASSETS = Object.freeze({
   darkSurface: Object.freeze({ url: '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3', width: 3600, height: 1800 }),
@@ -137,8 +135,8 @@ const COUNTRY_STATUS = {
 };
 
 const COUNTRY_STATUS_LABELS = {
-  [COUNTRY_STATUS.FACTUAL]: 'Reviewed emissions data',
-  [COUNTRY_STATUS.MISSING]: 'Emissions source gap',
+  [COUNTRY_STATUS.FACTUAL]: 'Metric available',
+  [COUNTRY_STATUS.MISSING]: 'Data gap',
 };
 
 const COUNTRY_STATUS_BADGE_CLASSES = {
@@ -147,15 +145,15 @@ const COUNTRY_STATUS_BADGE_CLASSES = {
 };
 
 const GLOBE_FALLBACK_REASONS = Object.freeze({
-  evidence_browse_requested: 'All 249 registry entities are available here, including those without reliable 1:110m geometry. This is an evidence browser, not a 3D failure state.',
-  candidate_data_unavailable: 'Country emissions data are unavailable or invalid. No climate values or assessments are being inferred.',
-  country_geometry_unavailable: 'The navigational country geometry is unavailable or invalid. The country evidence remains available below.',
-  visual_assets_unavailable: 'One or more verified globe images could not be loaded. The country evidence remains available below.',
-  library_load_failed: 'The 3D globe library could not be loaded. The country evidence remains available below.',
-  library_unavailable: 'The 3D globe library is unavailable. The country evidence remains available below.',
-  webgl_unavailable: 'This browser or device could not start WebGL. The country evidence remains available below.',
-  globe_construction_failed: 'The 3D globe could not start safely. The country evidence remains available below.',
-  globe_container_missing: 'The 3D globe container is unavailable. The country evidence remains available below.',
+  evidence_browse_requested: 'All 249 registry entities are available here, including those without reliable 1:110m geometry. The same metrics and lens summaries appear in this accessible view.',
+  candidate_data_unavailable: 'Country climate intelligence is unavailable or invalid. No values are being inferred.',
+  country_geometry_unavailable: 'The navigational country geometry is unavailable or invalid. The complete country evidence remains available below.',
+  visual_assets_unavailable: 'One or more verified globe images could not be loaded. The complete country evidence remains available below.',
+  library_load_failed: 'The 3D globe library could not be loaded. The complete country evidence remains available below.',
+  library_unavailable: 'The 3D globe library is unavailable. The complete country evidence remains available below.',
+  webgl_unavailable: 'This browser or device could not start WebGL. The complete country evidence remains available below.',
+  globe_construction_failed: 'The 3D globe could not start safely. The complete country evidence remains available below.',
+  globe_container_missing: 'The 3D globe container is unavailable. The complete country evidence remains available below.',
 });
 
 function _resolveCountryIso(feature) {
@@ -181,23 +179,25 @@ function _getCountryDisplayData(feature) {
   const props = feature.properties || {};
   const iso = _resolveCountryIso(feature);
   const mapArea = props.ADMIN || props.NAME || props.name || iso;
-  const climate = Data.getClimateCountry ? Data.getClimateCountry(iso) : null;
-  const country = climate?.name || mapArea;
+  const lens = window.GlobeModule?.currentLens || 'carbon';
+  const view = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView', iso, lens);
+  const climate = Data.getClimateIntelligenceCountry ? Data.getClimateIntelligenceCountry(iso) : null;
+  const country = view?.country?.name || climate?.name || mapArea;
   return {
     iso,
     country,
     mapArea,
     mapAreaDiffers: Boolean(climate?.name && climate.name !== mapArea),
-    emissions: climate?.emissions || null,
+    view,
     lat: _isFiniteNumber(Number(props.__lat)) ? Number(props.__lat) : null,
     lng: _isFiniteNumber(Number(props.__lng)) ? Number(props.__lng) : null,
-    hasData: climate?.emissions?.status === 'reviewed_factual',
+    hasData: view?.primary?.available === true,
     climate,
   };
 }
 
-// Pledge records contain a deliberate country focus point. Countries without
-// a record still need to be navigable from the full atlas, so use the small
+// Mapped country records may contain a deliberate focus point. Entities without
+// one still need to be navigable from the full atlas, so use the small
 // nation's injected point, a Natural Earth label point, or a lightweight
 // geometry centroid in that order.
 function _getCountryFocus(feature, data) {
@@ -280,34 +280,6 @@ const GLOBE_THEME_CONFIG = Object.freeze({
 
 function _getGlobeThemeConfig(theme) {
   return theme === 'light' ? GLOBE_THEME_CONFIG.light : GLOBE_THEME_CONFIG.dark;
-}
-
-function _renderCountryTrajectory() {
-  return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">Climate performance</span><span class="elu-trajectory-note">Not scored</span></div><div class="elu-trajectory-empty">Commitments and targets are not reviewed. Delivery and performance are not assessed.</div></div>';
-}
-
-function _getCountryGaiaComment(d, projectCount) {
-  return d?.hasData
-    ? 'Reviewed harmonized emissions facts are available; no performance judgment is made.'
-    : 'This country remains equally navigable while its emissions source gap is resolved.';
-}
-
-function _magnitudePosition(value) {
-  if (!_isFiniteNumber(value) || value < 0) return null;
-  const domain = Data.getClimateMagnitudeDomain ? Data.getClimateMagnitudeDomain() : null;
-  if (!domain || !_isFiniteNumber(domain.min_mtco2e_per_year) || !_isFiniteNumber(domain.max_mtco2e_per_year) || !_isFiniteNumber(domain.offset_mtco2e_per_year)) return null;
-  const min = Math.log10(domain.min_mtco2e_per_year + domain.offset_mtco2e_per_year);
-  const max = Math.log10(domain.max_mtco2e_per_year + domain.offset_mtco2e_per_year);
-  return Math.max(0, Math.min(1, (Math.log10(value + domain.offset_mtco2e_per_year) - min) / (max - min)));
-}
-
-function _magnitudeColor(value, alpha) {
-  const t = _magnitudePosition(value);
-  if (t === null) return 'rgba(145,160,172,' + alpha + ')';
-  const start = [91, 74, 151];
-  const end = [246, 145, 58];
-  const rgb = start.map((channel, index) => Math.round(channel + (end[index] - channel) * t));
-  return 'rgba(' + rgb.join(',') + ',' + alpha + ')';
 }
 
 function _isCountryModeActive() {
@@ -400,7 +372,7 @@ const GlobeModule = {
   _initialized: false,
   world: null,
   userTotal: 0,
-  currentLens: 'gap', // 'gap' | 'forest' | 'cat'
+  currentLens: 'carbon', // 'carbon' | 'power' | 'physical'
   isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     navigator.userAgent
   ) || (window.innerWidth < 768),
@@ -425,6 +397,7 @@ const GlobeModule = {
   _fallbackEntries: [],
   _fallbackBound: false,
   _fallbackSelectedIso: null,
+  _lensControlsBound: false,
   _reducedMotionMedia: null,
   _onReducedMotionChange: null,
   _prepared: false,
@@ -459,15 +432,16 @@ const GlobeModule = {
   },
 
   async _prepareRuntimeAssets(options) {
-    if (!Data.isClimateCandidateReady?.() && options.reloadCandidate) {
+    if (!Data.isClimateIntelligenceReady?.() && options.reloadCandidate) {
       try {
-        await Data.reloadClimateCandidate?.();
+        await Data.reloadClimateIntelligence?.();
+        safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'init');
       } catch (error) {
-        reportWarn('GlobeModule', 'Candidate reload failed: ' + (error?.message || 'unknown error'));
+        reportWarn('GlobeModule', 'Climate intelligence reload failed: ' + (error?.message || 'unknown error'));
       }
     }
-    if (!Data.isClimateCandidateReady?.()) {
-      return this._failPreparation('candidate_data_unavailable', new Error('CT-42 candidate is unavailable or invalid'));
+    if (!Data.isClimateIntelligenceReady?.() || !safeGet('COUNTRY_CLIMATE_INTELLIGENCE', 'getState', {}).initialized) {
+      return this._failPreparation('candidate_data_unavailable', new Error('Country Climate Intelligence candidate is unavailable or invalid'));
     }
 
     let countries;
@@ -490,11 +464,9 @@ const GlobeModule = {
 
     this._countryFeatures = countries.features.filter(feature =>
       feature.properties.ISO_A2 !== 'AQ' && !_isNonAssessingMapArea(feature) &&
-      Boolean(Data.getClimateCountry?.(_resolveCountryIso(feature))));
+      Boolean(Data.getClimateIntelligenceCountry?.(_resolveCountryIso(feature))));
     this._appendSmallNationFeatures();
     this._buildCountryDeck();
-    const factualMapped = this._countryDeck.filter(entry => entry.data?.emissions?.status === 'reviewed_factual').length;
-    const gapMapped = this._countryDeck.filter(entry => entry.data?.emissions?.status === 'source_gap').length;
     const featureIsos = this._countryFeatures.map(feature => _resolveCountryIso(feature));
     const deckIsos = this._countryDeck.map(entry => entry.iso);
     const uniqueFeatureIsos = new Set(featureIsos);
@@ -505,8 +477,7 @@ const GlobeModule = {
         uniqueFeatureIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT ||
         this._countryDeck.length !== EXPECTED_INTERACTIVE_ENTITY_COUNT ||
         uniqueDeckIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT || !setsMatch ||
-        factualMapped !== EXPECTED_INTERACTIVE_FACTUAL_COUNT || gapMapped !== EXPECTED_INTERACTIVE_GAP_COUNT ||
-        this._countryDeck.some(entry => !Data.getClimateCountry?.(entry.iso))) {
+        this._countryDeck.some(entry => !Data.getClimateIntelligenceCountry?.(entry.iso))) {
       return this._failPreparation('country_geometry_unavailable', new Error('Prepared country navigation deck failed its exact 201-entity registry boundary'));
     }
     this._countryDataState = 'ready';
@@ -640,13 +611,16 @@ const GlobeModule = {
     // (the Proxy target IS the Globe, so direct property access still works)
     console.log('[Globe] init — ' + (this.world.pointsData()?.length || 0) + ' points loaded');
 
-    // Country climate point layers remain disabled until reviewed evidence is
-    // explicitly released. Country polygons stay navigable without values.
+    // Country intelligence is rendered on the polygon layer. Project and site
+    // points remain separate from every country climate record.
 
     // Country geometry and every globe image were prepared and validated before
     // the renderer was constructed. Activation is synchronous so render-ready
     // cannot race ahead of the country deck.
     try {
+        this._bindLensControls();
+        this._syncLensControls();
+        this._renderLegend();
         this._renderRankRail();
         // Only build the H3 hex layer when the solid polygon-border layer is
         // NOT available (old globe.gl builds). Building world-wide hexes just
@@ -1091,51 +1065,41 @@ const GlobeModule = {
     const list = $('globe-fallback-country-list');
     const summary = $('globe-fallback-summary');
     const detail = $('globe-fallback-country-detail');
-    const candidate = Data.climateCandidate;
-    const ranking = Data.getClimateRanking ? Data.getClimateRanking() : null;
     if (!list || !summary || !detail) return false;
-
-    const candidateReady = candidate && candidate.review_status === 'not_reviewed' &&
-      candidate.production_runtime_release === false && Array.isArray(candidate.countries) && ranking;
-    if (!candidateReady) {
+    const rows = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows', this.currentLens);
+    if (!rows) {
       this._fallbackEntries = [];
       list.replaceChildren();
-      summary.textContent = 'Country evidence is unavailable. No climate values or assessments are being inferred.';
+      summary.textContent = 'Country climate intelligence is unavailable. No values are being inferred.';
       $text('globe-fallback-results', '0 entities available');
-      detail.innerHTML = '<h3>Evidence unavailable</h3><p>Country emissions data could not be verified for display. Return to the Foundation and try again later.</p>';
+      detail.innerHTML = '<h3>Evidence unavailable</h3><p>The verified country snapshot could not be displayed. Return to the Foundation and try again later.</p>';
       return false;
     }
 
-    const rankById = new Map((ranking.ranked || []).map(entry => [entry.country_id, entry]));
-    this._fallbackEntries = candidate.countries.map(country => ({
-      country,
-      rank: rankById.get(country.country_id) || null,
-      factual: country.emissions?.status === 'reviewed_factual',
-    })).sort((a, b) => {
-      if (a.rank && b.rank) return a.rank.ordinal - b.rank.ordinal || a.country.iso_alpha3.localeCompare(b.country.iso_alpha3);
-      if (a.rank) return -1;
-      if (b.rank) return 1;
-      return String(a.country.name).localeCompare(String(b.country.name));
-    });
-
-    const factualCount = this._fallbackEntries.filter(entry => entry.factual).length;
-    const gapCount = this._fallbackEntries.length - factualCount;
-    summary.textContent = this._fallbackEntries.length + ' registry entities · ' + factualCount +
-      ' reviewed emissions series · ' + gapCount +
-      ' explicit source gaps. The 2023 order uses one harmonized magnitude metric and is not a performance score.';
+    this._fallbackEntries = rows.all.map(row => ({
+      row,
+      country: Data.getClimateIntelligenceCountry(row.country_id),
+      view: safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView', row.country_id, this.currentLens),
+    })).filter(entry => entry.country && entry.view);
+    const lens = rows.lens;
+    $text('globe-fallback-evidence-title', lens.heading);
+    summary.textContent = this._fallbackEntries.length + ' registry entities · ' + rows.eligible_count +
+      ' in the exact ' + lens.period + ' comparison set · ' + rows.unranked_count +
+      ' explicit gaps. ' + lens.interpretation;
 
     list.innerHTML = this._fallbackEntries.map(entry => {
       const country = entry.country;
       const iso = _escapeHtml(country.iso_alpha3);
       const name = _escapeHtml(country.name);
       const flag = _escapeHtml(country.flag_emoji || '');
-      if (entry.factual) {
-        const latest = country.emissions.latest;
-        const value = Number(latest.value).toLocaleString('en-US', { maximumFractionDigits: 4 });
-        const rank = entry.rank ? entry.rank.ordinal : '—';
-        return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="factual" aria-label="' + name + ', reviewed emissions series, 2023 ' + value + ' ' + _escapeHtml(country.emissions.unit) + ', magnitude rank ' + rank + ', not a performance score"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · magnitude rank ' + rank + '</small></span><span class="elu-fallback-country-state">' + value + '<small>' + _escapeHtml(country.emissions.unit) + '</small></span></button></li>';
+      const primary = entry.view.primary;
+      if (entry.row.ranked) {
+        const value = _escapeHtml(primary.display_value);
+        const rank = entry.row.ordinal;
+        return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="factual" aria-label="' + name + ', ' + _escapeHtml(primary.label) + ', ' + value + ' ' + _escapeHtml(primary.unit) + ', ' + _escapeHtml(primary.period) + ', ' + _escapeHtml(primary.evidence_label) + ', order ' + rank + '"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · order ' + rank + '</small></span><span class="elu-fallback-country-state">' + value + '<small>' + _escapeHtml(primary.unit) + '</small></span></button></li>';
       }
-      return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="gap" aria-label="' + name + ', explicit source gap, unranked"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · unranked</small></span><span class="elu-fallback-country-state is-gap">Source gap</span></button></li>';
+      const reason = _escapeHtml(entry.row.reason?.detail || 'Exact comparison metric unavailable.');
+      return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3 + ' ' + reason).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="gap" aria-label="' + name + ', explicit data gap, unranked, ' + reason + '"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · unranked</small></span><span class="elu-fallback-country-state is-gap">Data gap<small>' + reason + '</small></span></button></li>';
     }).join('');
     this._filterFallbackEntries($('globe-fallback-search')?.value || '');
     return true;
@@ -1165,25 +1129,16 @@ const GlobeModule = {
       else row.removeAttribute('aria-current');
     });
 
-    const country = entry.country;
+    const view = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView', iso, this.currentLens);
+    if (!view) return false;
+    const country = view.country;
     const name = _escapeHtml(country.name);
     const code = _escapeHtml(country.iso_alpha3);
     const flag = _escapeHtml(country.flag_emoji || '');
-    const boundary = '<h4>Climate performance</h4><p>Commitments and targets are not reviewed. Delivery and performance are not assessed.</p>';
-    if (!entry.factual) {
-      detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3><span class="elu-fallback-detail-badge">' + code + ' · emissions source gap</span><p class="elu-fallback-detail-value"><strong>No emissions value shown</strong></p><p>No PRIMAP series is available for this registry entity. It remains visible and unranked; missing data does not indicate better climate performance.</p>' + boundary + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
-    } else {
-      const emissions = country.emissions;
-      const latestValue = Number(emissions.latest.value).toLocaleString('en-US', { maximumFractionDigits: 4 });
-      const rankText = entry.rank ? 'Magnitude rank ' + entry.rank.ordinal + ' of 206 for the same 2023 metric; not a performance score.' : 'Not present in the 2023 magnitude order.';
-      const rows = emissions.series.map(point => '<tr><th scope="row">' + point.year + '</th><td>' + Number(point.value).toLocaleString('en-US', { maximumFractionDigits: 4 }) + '</td><td>' + _escapeHtml(emissions.unit) + '</td></tr>').join('');
-      const limitations = (emissions.limitations || []).map(item => '<li>' + _escapeHtml(item) + '</li>').join('');
-      const safeSource = /^https:\/\//.test(emissions.source_url || '') ? emissions.source_url : '';
-      const source = safeSource
-        ? '<a href="' + _escapeHtml(safeSource) + '" target="_blank" rel="noopener">' + _escapeHtml(emissions.source_id) + '</a>'
-        : _escapeHtml(emissions.source_id || 'Source unavailable');
-      detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3><span class="elu-fallback-detail-badge">' + code + ' · reviewed emissions data</span><p class="elu-fallback-detail-value"><strong>' + latestValue + '</strong> ' + _escapeHtml(emissions.unit) + ' · ' + emissions.latest.year + '</p><p>' + _escapeHtml(emissions.label) + '. ' + _escapeHtml(rankText) + '</p><div class="elu-fallback-table-wrap"><table><caption>' + name + ' annual harmonized emissions estimates</caption><thead><tr><th scope="col">Year</th><th scope="col">Value</th><th scope="col">Unit</th></tr></thead><tbody>' + rows + '</tbody></table></div><h4>Source &amp; methodology</h4><p class="elu-fallback-source">Source: ' + source + '</p><ul>' + limitations + '</ul>' + boundary + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
-    }
+    detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3>'
+      + '<span class="elu-fallback-detail-badge">' + code + ' · ' + _escapeHtml(view.primary.evidence_label) + '</span>'
+      + this._renderCountryMetrics(view, 'fallback')
+      + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
     if (focusDetail) detail.focus({ preventScroll: true });
     return true;
   },
@@ -1289,24 +1244,22 @@ const GlobeModule = {
       });
   },
 
-  // CT-42 candidate: factual magnitude only. This is deliberately not a
-  // performance, target, delivery, impact-band, or score color channel.
+  // Scientific visual decisions come from COUNTRY_CLIMATE_INTELLIGENCE.
   _countryHexColorFn(feature) {
     const d = _getCountryDisplayData(feature);
-    return d?.hasData ? _magnitudeColor(d.emissions.latest.value, 0.72) : 'rgba(145,160,172,0.34)';
+    return d?.view?.visual?.color || 'rgba(145,160,172,0.34)';
   },
 
   _countryHexAltitudeFn(feature) {
     const d = _getCountryDisplayData(feature);
-    const position = d?.hasData ? _magnitudePosition(d.emissions.latest.value) : null;
-    return position === null ? 0.004 : 0.004 + position * 0.022;
+    return d?.view?.visual?.altitude || 0.007;
   },
 
-  // Same-metric 2023 magnitude order from CT-31; gaps follow alphabetically.
+  // Exact lens order first; explicit gaps follow alphabetically.
   _buildCountryDeck() {
     const featureByIso = this._featureByIso || {};
-    const ranking = Data.getClimateRanking ? Data.getClimateRanking() : null;
-    const ranks = new Map((ranking?.ranked || []).map(entry => [entry.country_id.split(':')[1], entry]));
+    const rows = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows', this.currentLens);
+    const ranks = new Map((rows?.ordered || []).map(entry => [entry.iso_alpha3, entry]));
     const entries = Object.keys(featureByIso)
       .filter(iso => iso && iso !== 'UNK' && iso !== '-99' && iso !== 'ATA')
       .map(iso => {
@@ -1333,36 +1286,35 @@ const GlobeModule = {
   _renderRankRail() {
     const previous = $('elu-country-rank-rail');
     if (previous) previous.remove();
-    const ranking = Data.getClimateRanking ? Data.getClimateRanking() : null;
-    if (!ranking || !document.body) { this._rankRail = null; return; }
+    const rows = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows', this.currentLens);
+    if (!rows || !document.body) { this._rankRail = null; return; }
     const rail = document.createElement('aside');
     rail.id = 'elu-country-rank-rail';
-    rail.setAttribute('aria-label', '2023 harmonized emissions magnitude ranking and data gaps');
-    const mappedRanked = ranking.ranked.filter(entry => this._featureByIso?.[entry.country_id.split(':')[1]]);
-    const unmappedRanked = ranking.ranked.filter(entry => !this._featureByIso?.[entry.country_id.split(':')[1]]);
-    const mappedGaps = ranking.unranked.entries.filter(entry => this._featureByIso?.[entry.country_id.split(':')[1]]);
-    const unmappedGaps = ranking.unranked.entries.filter(entry => !this._featureByIso?.[entry.country_id.split(':')[1]]);
-    const ranked = mappedRanked.map(entry => {
-      const iso = entry.country_id.split(':')[1];
-      return '<button type="button" class="elu-rank-row" data-country-rail-iso="' + _escapeHtml(iso) + '" aria-label="Rank ' + entry.ordinal + ', ' + _escapeHtml(entry.label) + ', ' + entry.value.toLocaleString() + ' ' + _escapeHtml(entry.unit) + '">'
+    rail.setAttribute('aria-label', rows.lens.heading + ' ordered entities and data gaps');
+    const mappedRankedCount = rows.ordered.filter(entry => this._featureByIso?.[entry.iso_alpha3]).length;
+    const ranked = rows.ordered.map(entry => {
+      const iso = entry.iso_alpha3;
+      const mapped = Boolean(this._featureByIso?.[iso]);
+      const mapNote = mapped ? '' : ', opens in evidence browser because globe geometry is unavailable';
+      return '<button type="button" class="elu-rank-row' + (mapped ? '' : ' is-unmapped') + '" data-country-rail-iso="' + _escapeHtml(iso) + '" data-country-rail-search="' + _escapeHtml((entry.name + ' ' + iso).toLowerCase()) + '" aria-label="Order ' + entry.ordinal + ', ' + _escapeHtml(entry.name) + ', ' + _escapeHtml(entry.display_value) + ' ' + _escapeHtml(entry.unit) + ', ' + _escapeHtml(entry.period) + ', ' + _escapeHtml(entry.evidence_label) + mapNote + '">'
         + '<span class="elu-rank-number">' + entry.ordinal + '</span><span class="elu-rank-dot is-magnitude" aria-hidden="true"></span>'
-        + '<span class="elu-rank-name">' + _escapeHtml(entry.label) + '</span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span>'
-        + '<span class="elu-rank-gap">' + entry.value.toLocaleString() + '</span></button>';
+        + '<span class="elu-rank-name">' + _escapeHtml(entry.name) + '</span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span>'
+        + '<span class="elu-rank-gap">' + _escapeHtml(entry.display_value) + '<small>' + _escapeHtml(entry.unit) + '</small></span></button>';
     }).join('');
-    const gaps = mappedGaps.map(entry => {
-      const iso = entry.country_id.split(':')[1];
-      return '<button type="button" class="elu-rank-row is-gap" data-country-rail-iso="' + _escapeHtml(iso) + '" aria-label="Data gap, ' + _escapeHtml(entry.label) + ', not ranked">'
+    const gaps = rows.unranked.map(entry => {
+      const iso = entry.iso_alpha3;
+      const mapped = Boolean(this._featureByIso?.[iso]);
+      const reason = entry.reason?.detail || 'Exact comparison metric unavailable.';
+      return '<button type="button" class="elu-rank-row is-gap' + (mapped ? '' : ' is-unmapped') + '" data-country-rail-iso="' + _escapeHtml(iso) + '" data-country-rail-search="' + _escapeHtml((entry.name + ' ' + iso + ' ' + reason).toLowerCase()) + '" aria-label="Data gap, ' + _escapeHtml(entry.name) + ', unranked, ' + _escapeHtml(reason) + '">'
         + '<span class="elu-rank-number" aria-hidden="true">—</span><span class="elu-rank-dot is-gap" aria-hidden="true"></span>'
-        + '<span class="elu-rank-name">' + _escapeHtml(entry.label) + '</span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span><span class="elu-rank-gap">Data gap</span></button>';
+        + '<span class="elu-rank-name">' + _escapeHtml(entry.name) + '<small>' + _escapeHtml(reason) + '</small></span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span><span class="elu-rank-gap">Data gap</span></button>';
     }).join('');
-    const unmapped = unmappedRanked.concat(unmappedGaps).map(entry => '<div class="elu-rank-unmapped"><span aria-hidden="true">◇</span> ' + _escapeHtml(entry.label) + ' (' + _escapeHtml(entry.country_id.split(':')[1]) + ') · not mapped on this globe</div>').join('');
-    const reviewedTotal = Number.isInteger(ranking.disclosure?.eligible_count) ? ranking.disclosure.eligible_count : 206;
-    const mappedDisclosure = mappedRanked.length + ' of ' + reviewedTotal + ' reviewed registry entities mapped · competition ties preserved';
-    rail.innerHTML = '<div class="elu-rank-head"><div><div class="elu-rank-title">2023 emissions magnitude</div><div class="elu-rank-subtitle">Harmonized estimate · MtCO₂e/yr · not a performance score</div></div><button type="button" class="elu-rank-toggle" aria-label="Collapse emissions ranking" aria-expanded="true">−</button></div>'
-      + '<div class="elu-rank-list"><div class="elu-rank-disclosure" aria-label="' + mappedDisclosure + '"><span class="elu-rank-disclosure-full">' + mappedDisclosure + '</span><span class="elu-rank-disclosure-compact" aria-hidden="true"><strong>' + mappedRanked.length + '/' + reviewedTotal + '</strong><span>mapped</span><span>ties kept</span></span></div>'
-      + '<div role="list" aria-label="Mapped registry entities ranked by the same 2023 metric">' + ranked + '</div>'
-      + '<h2 class="elu-rank-gap-heading">Source gaps · unnumbered</h2><div role="list" aria-label="Mapped registry entities not ranked because source data are unavailable">' + gaps + '</div>'
-      + (unmapped ? '<h2 class="elu-rank-gap-heading">Not mapped · noninteractive</h2><div aria-label="Registry entities without interactive globe geometry">' + unmapped + '</div>' : '') + '</div>';
+    const mappedDisclosure = mappedRankedCount + ' of ' + rows.eligible_count + ' ordered entities mapped · all 249 searchable';
+    rail.innerHTML = '<div class="elu-rank-head"><div><div class="elu-rank-title">' + _escapeHtml(rows.lens.heading) + '</div><div class="elu-rank-subtitle">' + _escapeHtml(rows.lens.interpretation) + '</div></div><button type="button" class="elu-rank-toggle" aria-label="Collapse country order" aria-expanded="true">−</button></div>'
+      + '<div class="elu-rank-list"><label class="elu-rank-search"><span>Find country or ISO code</span><input type="search" data-country-rail-filter autocomplete="off" spellcheck="false"></label><div class="elu-rank-disclosure" aria-label="' + _escapeHtml(mappedDisclosure) + '"><span class="elu-rank-disclosure-full">' + _escapeHtml(mappedDisclosure) + '</span><span class="elu-rank-disclosure-compact" aria-hidden="true"><strong>' + mappedRankedCount + '/' + rows.eligible_count + '</strong><span>mapped</span><span>' + rows.unranked_count + ' gaps</span></span></div>'
+      + '<p class="elu-rank-filter-results" data-country-rail-results aria-live="polite">249 entities shown</p>'
+      + '<div role="list" aria-label="Entities ordered by the exact ' + _escapeHtml(rows.lens.heading) + ' metric">' + ranked + '</div>'
+      + '<h2 class="elu-rank-gap-heading">Data gaps · searchable and unnumbered</h2><div role="list" aria-label="Entities unranked because the exact comparison metric is unavailable">' + gaps + '</div></div>';
     rail.addEventListener('click', event => {
       const toggle = event.target.closest('.elu-rank-toggle');
       if (toggle) {
@@ -1374,8 +1326,27 @@ const GlobeModule = {
       }
       const row = event.target.closest('[data-country-rail-iso]');
       if (!row) return;
-      const feature = this._featureByIso?.[row.getAttribute('data-country-rail-iso')];
-      if (feature) this._selectCountryFeature(feature, { focus: true });
+      const iso = row.getAttribute('data-country-rail-iso');
+      const feature = this._featureByIso?.[iso];
+      if (feature) {
+        this._selectCountryFeature(feature, { focus: true });
+      } else {
+        this.rememberFallbackOpener(row);
+        this.showFallback('evidence_browse_requested');
+        requestAnimationFrame(() => this._renderFallbackCountry(iso, true));
+      }
+    });
+    rail.addEventListener('input', event => {
+      if (!event.target.matches('[data-country-rail-filter]')) return;
+      const query = event.target.value.trim().toLowerCase();
+      let shown = 0;
+      rail.querySelectorAll('[data-country-rail-search]').forEach(row => {
+        const visible = !query || row.dataset.countryRailSearch.includes(query);
+        row.hidden = !visible;
+        if (visible) shown++;
+      });
+      const results = rail.querySelector('[data-country-rail-results]');
+      if (results) results.textContent = shown + ' of 249 entities shown';
     });
     document.body.appendChild(rail);
     this._rankRail = rail;
@@ -1424,6 +1395,7 @@ const GlobeModule = {
       document.body.appendChild(wrap);
     }
     if (!wrap.contains(tt)) wrap.insertBefore(tt, wrap.querySelector('.tt-nav-next'));
+    document.body.classList.add('country-card-open');
     this._countryCardWrap = wrap;
     return wrap;
   },
@@ -1433,6 +1405,7 @@ const GlobeModule = {
     const wrap = this._countryCardWrap || $('elu-country-card-wrap');
     if (tt && wrap && wrap.contains(tt) && document.body) document.body.appendChild(tt);
     if (wrap) wrap.remove();
+    document.body?.classList.remove('country-card-open');
     this._countryCardWrap = null;
   },
 
@@ -1604,13 +1577,14 @@ const GlobeModule = {
       }, { passive: false });
     }
 
-    const statusText = _getCountryStatusText(d);
+    const view = d.view;
+    if (!view) return;
+    const statusText = view.primary.available ? view.primary.evidence_label : 'Data gap';
     const statusClass = _getCountryStatusClass(d);
     const statusAttr = _getCountryStatusAttr(d);
-    const evidenceSummary = d.hasData
-      ? d.emissions.label + ' · 2014–2023 · ' + d.emissions.unit
-      : 'No PRIMAP emissions series available';
-    const comment = _getCountryGaiaComment(d);
+    const evidenceSummary = view.primary.available
+      ? view.primary.label + ' · ' + view.primary.display_value + ' ' + view.primary.unit + ' · ' + view.primary.period + ' · ' + view.primary.evidence_label
+      : view.primary.label + ' · data gap · required period ' + view.lens.period + ' · ' + view.tooltip.evidence_class;
     const approximatePointNote = feature?.properties?.__smallNation
       ? '<div class="tt-detail">Approximate navigation point; not a boundary or precise centroid.</div>'
       : '';
@@ -1633,7 +1607,7 @@ const GlobeModule = {
     if (selected) tt.removeAttribute('role');
     else tt.setAttribute('role', 'tooltip');
     if (selected) tt.removeAttribute('aria-label');
-    else tt.setAttribute('aria-label', d.country + (d.hasData ? ' emissions facts' : ' emissions data gap') +
+    else tt.setAttribute('aria-label', view.accessible_summary +
       (feature?.properties?.__smallNation ? ', approximate navigation point, not a boundary or precise centroid' : ''));
     if (!selected) tt.removeAttribute('tabindex');
 
@@ -1645,15 +1619,12 @@ const GlobeModule = {
       + '<div class="tt-detail">' + _escapeHtml(evidenceSummary) + '</div>'
       + approximatePointNote
       + mapAreaNote
-      + (selected ? '<div class="tt-candidate">' + (d.hasData
-        ? '2023 harmonized estimate · excludes LULUCF'
-        : 'No emissions estimate · visible and unranked') + '</div>' : '');
+      + (selected ? '<div class="tt-candidate">' + _escapeHtml(view.rank_text) + '</div>' : '');
 
     if (!selected) {
-      html += '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
+      html += '<div class="tt-comment">' + _escapeHtml(view.primary.available ? view.lens.interpretation : view.primary.gap.detail) + '</div>';
     } else {
-      // Pinned card: explicit fail-closed disclosure only.
-      html += this._renderCountryMetrics(d);
+      html += this._renderCountryMetrics(view);
     }
 
     tt.innerHTML = html;
@@ -1744,13 +1715,27 @@ const GlobeModule = {
     }
   },
 
-  _renderCountryMetrics(d) {
-    if (!d.hasData) {
-      return '<div class="tt-comment" style="margin-top:8px"><strong>Emissions source gap.</strong> No PRIMAP series is available for this registry entity. It is visible and unranked.</div>'
-        + _renderCountryTrajectory()
-        + '<div class="tt-hint">Unnumbered data gap · ← → or swipe · esc closes</div>';
+  _renderClimateFact(fact) {
+    const value = fact.available
+      ? '<strong>' + _escapeHtml(fact.display_value) + '</strong>' + (fact.unit ? ' <span>' + _escapeHtml(fact.unit) + '</span>' : '')
+      : '<strong>Not available</strong>';
+    const context = [];
+    if (fact.non_comparable) context.push('<p class="tt-fact-warning"><strong>Separate scope:</strong> shown alongside fossil CO₂, never as a numerical disagreement or delta.</p>');
+    if (fact.id === 'emissions.land_use_co2.net' && fact.available && fact.value < 0) context.push('<p class="tt-fact-note">Negative value: modeled net removal.</p>');
+    if (fact.id === 'emissions.ghg.independent' && fact.context) {
+      const gases = Object.entries(fact.context.gas_breakdown || {}).map(([gas, item]) => '<li><span>' + _escapeHtml(gas.toUpperCase()) + '</span><strong>' + _escapeHtml(String(item.value)) + ' ' + _escapeHtml(item.unit) + '</strong></li>').join('');
+      const sectors = Object.entries(fact.context.sector_breakdown_mtco2e || {}).map(([sector, valueMt]) => '<li><span>' + _escapeHtml(sector.replace(/-/g, ' ')) + '</span><strong>' + _escapeHtml(String(valueMt)) + ' MtCO₂e/yr</strong></li>').join('');
+      if (gases || sectors) context.push('<details class="tt-breakdown"><summary>Gas and sector breakdowns</summary>' + (gases ? '<h5>Gases</h5><ul>' + gases + '</ul>' : '') + (sectors ? '<h5>Sectors</h5><ul>' + sectors + '</ul>' : '') + '</details>');
     }
-    const points = d.emissions.series;
+    return '<article class="tt-fact' + (fact.available ? '' : ' is-gap') + '"><h4>' + _escapeHtml(fact.label) + '</h4><div class="tt-fact-value">' + value + '</div>'
+      + '<p class="tt-fact-meta">' + _escapeHtml(fact.period || 'Period unavailable') + ' · ' + _escapeHtml(fact.evidence_label) + '</p>'
+      + '<p>' + _escapeHtml(fact.available ? fact.explanation : fact.gap.detail) + '</p>'
+      + (fact.available ? '<p class="tt-fact-uncertainty">' + _escapeHtml(fact.uncertainty_text) + '</p>' : '') + context.join('') + '</article>';
+  },
+
+  _renderClimateSeries(view, idPrefix = 'country-card') {
+    const points = view.primary.series;
+    if (!Array.isArray(points) || points.length < 2) return '';
     const values = points.map(point => point.value);
     const min = Math.min(...values), max = Math.max(...values);
     const span = Math.max(max - min, Math.abs(max) * 0.02, 0.001);
@@ -1760,21 +1745,60 @@ const GlobeModule = {
       return { x: x.toFixed(1), y: y.toFixed(1), point };
     });
     const coords = coordPoints.map(item => item.x + ',' + item.y).join(' ');
-    const markers = coordPoints.map(item => '<circle class="elu-trajectory-point" cx="' + item.x + '" cy="' + item.y + '" r="2.5"><title>' + item.point.year + ': ' + item.point.value.toLocaleString() + ' ' + _escapeHtml(d.emissions.unit) + '</title></circle>').join('');
-    const rows = points.map(point => '<tr><th scope="row">' + point.year + '</th><td>' + point.value.toLocaleString() + '</td><td>' + _escapeHtml(d.emissions.unit) + '</td></tr>').join('');
-    const latest = d.emissions.latest;
-    const sourceLabel = 'PRIMAP-hist v2.6.1 final';
-    return '<section class="tt-factual" aria-labelledby="country-emissions-heading"><h3 id="country-emissions-heading">Annual harmonized emissions estimates</h3>'
-      + '<div class="tt-factual-value"><strong>' + latest.value.toLocaleString() + '</strong> ' + _escapeHtml(d.emissions.unit) + ' <span>in ' + latest.year + '</span></div>'
-      + '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">2014–2023 series</span><span class="elu-trajectory-note">Harmonized estimate</span></div>'
-      + '<svg viewBox="0 0 320 72" role="img" aria-labelledby="emissions-chart-title emissions-chart-desc"><title id="emissions-chart-title">' + _escapeHtml(d.country) + ' annual harmonized emissions estimates, 2014 to 2023</title><desc id="emissions-chart-desc">Ten annual harmonized estimates in ' + _escapeHtml(d.emissions.unit) + '. Points and line show emissions magnitude, not a performance pathway.</desc>'
-      + '<line class="elu-trajectory-grid" x1="8" y1="51" x2="312" y2="51"></line><text class="elu-chart-axis" x="8" y="9">' + max.toLocaleString() + ' ' + _escapeHtml(d.emissions.unit) + '</text><text class="elu-chart-axis" x="8" y="66">' + min.toLocaleString() + ' ' + _escapeHtml(d.emissions.unit) + '</text><polyline class="elu-trajectory-current is-magnitude" points="' + coords + '"></polyline>' + markers + '</svg>'
-      + '<div class="elu-trajectory-years"><span>2014</span><span>2023</span></div></div>'
-      + '<details class="tt-chart-data"><summary>Show chart data</summary><table><caption>' + _escapeHtml(d.country) + ' annual harmonized emissions</caption><thead><tr><th>Year</th><th>Value</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>'
-      + '<p class="tt-source"><strong>Source &amp; methodology:</strong> <a href="' + _escapeHtml(d.emissions.source_url) + '" target="_blank" rel="noopener">' + sourceLabel + '</a></p>'
-      + '<p class="tt-limit"><strong>Limits:</strong> Harmonized estimate, not an official Party inventory. Excludes LULUCF; uncertainty bounds are not included.</p></section>'
-      + _renderCountryTrajectory()
-      + '<div class="tt-hint">2023 magnitude rank only · ← → or swipe · esc closes</div>';
+    const markers = coordPoints.map(item => '<circle class="elu-trajectory-point" cx="' + item.x + '" cy="' + item.y + '" r="2.5"><title>' + item.point.year + ': ' + item.point.value.toLocaleString() + ' ' + _escapeHtml(view.primary.unit) + '</title></circle>').join('');
+    const rows = points.map(point => '<tr><th scope="row">' + point.year + '</th><td>' + point.value.toLocaleString() + '</td><td>' + _escapeHtml(view.primary.unit) + '</td></tr>').join('');
+    const start = points[0].year;
+    const end = points[points.length - 1].year;
+    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-' + view.lens.id).replace(/[^a-zA-Z0-9_-]/g, '-');
+    const titleId = chartId + '-series-title';
+    const descId = chartId + '-series-desc';
+    return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">' + start + '–' + end + ' trend</span><span class="elu-trajectory-note">' + _escapeHtml(view.primary.evidence_label) + '</span></div>'
+      + '<svg viewBox="0 0 320 72" role="img" aria-labelledby="' + titleId + ' ' + descId + '"><title id="' + titleId + '">' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(view.primary.label) + ', ' + start + ' to ' + end + '</title><desc id="' + descId + '">Annual values in ' + _escapeHtml(view.primary.unit) + '. This chart shows the source series without a score or target pathway.</desc>'
+      + '<line class="elu-trajectory-grid" x1="8" y1="51" x2="312" y2="51"></line><text class="elu-chart-axis" x="8" y="9">' + max.toLocaleString() + ' ' + _escapeHtml(view.primary.unit) + '</text><text class="elu-chart-axis" x="8" y="66">' + min.toLocaleString() + ' ' + _escapeHtml(view.primary.unit) + '</text><polyline class="elu-trajectory-current is-magnitude" points="' + coords + '"></polyline>' + markers + '</svg>'
+      + '<div class="elu-trajectory-years"><span>' + start + '</span><span>' + end + '</span></div></div>'
+      + '<details class="tt-chart-data"><summary>Show chart data</summary><table><caption>' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(view.primary.label) + '</caption><thead><tr><th>Year</th><th>Value</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>';
+  },
+
+  _renderClimateMethods(view) {
+    const factMethods = view.methods.facts.map(fact => {
+      const scope = fact.scope ? Object.entries(fact.scope).map(([key, value]) => '<li><strong>' + _escapeHtml(key.replace(/_/g, ' ')) + ':</strong> ' + _escapeHtml(Array.isArray(value) ? value.join(', ') : value) + '</li>').join('') : '';
+      const sources = fact.sources.map(source => {
+        const safeUrl = /^https:\/\//.test(source.url || '') ? source.url : '';
+        return '<li>' + (safeUrl ? '<a href="' + _escapeHtml(safeUrl) + '" target="_blank" rel="noopener">' + _escapeHtml(source.title) + '</a>' : _escapeHtml(source.title)) + ' · ' + _escapeHtml(source.version) + '</li>';
+      }).join('');
+      const scenarios = fact.scenario_medians ? '<p><strong>Scenario medians:</strong> ' + Object.entries(fact.scenario_medians).map(([scenario, value]) => _escapeHtml(scenario) + ' ' + _escapeHtml(String(value)) + ' ' + _escapeHtml(fact.unit)).join(' · ') + '</p>' : '';
+      return '<details class="tt-method-fact"><summary>' + _escapeHtml(fact.label) + (fact.available ? '' : ' · gap') + '</summary>'
+        + (fact.available ? '<p><strong>Transformation:</strong> ' + _escapeHtml(fact.transformation || 'Source value selected without an additional derivation.') + '</p><p><strong>Uncertainty:</strong> ' + _escapeHtml(fact.uncertainty_text) + '</p>' : '<p><strong>Gap reason:</strong> ' + _escapeHtml(fact.gap.detail) + '</p>')
+        + scenarios + (scope ? '<h5>Scope fingerprint</h5><code>' + _escapeHtml(fact.scope_fingerprint) + '</code><ul>' + scope + '</ul>' : '')
+        + (sources ? '<h5>Citations</h5><ul>' + sources + '</ul>' : '')
+        + (fact.fact_ids.length ? '<p><strong>Fact IDs:</strong> <code>' + _escapeHtml(fact.fact_ids.join(', ')) + '</code></p>' : '') + '</details>';
+    }).join('');
+    const historical = view.methods.citation_only_sources.map(source => '<li><a href="' + _escapeHtml(source.url) + '" target="_blank" rel="noopener">' + _escapeHtml(source.title) + '</a> · ' + _escapeHtml(source.note) + '</li>').join('');
+    const official = view.methods.official_context.map(item => {
+      const safeUrl = /^https:\/\//.test(item.direct_url || '') ? item.direct_url : '';
+      const title = _escapeHtml(item.document_title);
+      const linkedTitle = safeUrl ? '<a href="' + _escapeHtml(safeUrl) + '" target="_blank" rel="noopener">' + title + '</a>' : title;
+      return '<li>' + linkedTitle + ' · submitted ' + _escapeHtml(item.submission_date || 'date not reported') + '</li>';
+    }).join('');
+    return '<details class="tt-methods"><summary>Methods &amp; sources</summary><div class="tt-methods-body"><p><strong>Release:</strong> ' + _escapeHtml(view.methods.release_id) + ' · ' + _escapeHtml(view.methods.review_state) + ' · generated ' + _escapeHtml(view.methods.generated_on) + '</p>'
+      + (view.methods.checksum ? '<p><strong>Verified SHA-256:</strong> <code>' + _escapeHtml(view.methods.checksum) + '</code></p>' : '')
+      + '<p><strong>Comparison rule:</strong> ' + _escapeHtml(view.methods.comparison_rule) + '</p>' + factMethods
+      + (official ? '<h4>Official document context</h4><ul>' + official + '</ul>' : '')
+      + (historical ? '<h4>Historical citation-only provenance</h4><ul>' + historical + '</ul>' : '')
+      + '</div></details>';
+  },
+
+  _renderCountryMetrics(view, idPrefix = 'country-card') {
+    const glance = view.at_a_glance.map(fact => this._renderClimateFact(fact)).join('');
+    const facts = view.active_panel.facts.map(fact => this._renderClimateFact(fact)).join('');
+    const sectionId = (idPrefix + '-' + view.country.iso_alpha3 + '-' + view.lens.id).replace(/[^a-zA-Z0-9_-]/g, '-');
+    const glanceId = sectionId + '-glance-heading';
+    const lensId = sectionId + '-lens-heading';
+    return '<section class="tt-glance" aria-labelledby="' + glanceId + '"><h3 id="' + glanceId + '">At a glance</h3><div class="tt-fact-grid">' + glance + '</div></section>'
+      + this._renderClimateSeries(view, idPrefix)
+      + '<section class="tt-lens-panel" aria-labelledby="' + lensId + '"><h3 id="' + lensId + '">' + _escapeHtml(view.active_panel.heading) + '</h3><p>' + _escapeHtml(view.active_panel.description) + '</p><div class="tt-fact-grid">' + facts + '</div></section>'
+      + this._renderClimateMethods(view)
+      + '<div class="tt-hint">← → or swipe changes country · esc closes · lens buttons preserve selection</div>';
   },
 
   // ── Project markers: the pinned country's top projects on the globe ──
@@ -1799,10 +1823,10 @@ const GlobeModule = {
     wrap.style.zIndex = '50';
     wrap.style.right = '24px';
     wrap.style.left = 'auto';
-    wrap.style.top = '64px';
+    wrap.style.top = window.innerWidth <= 720 ? '114px' : (window.innerWidth <= 1000 ? '126px' : '64px');
     wrap.style.bottom = window.innerWidth <= 900
       ? 'calc(var(--globe-dock-inset) + var(--globe-dock-height) + 10px)'
-      : '96px';
+      : 'calc(var(--globe-dock-inset) + var(--globe-dock-height) + var(--globe-dock-gap))';
     wrap.style.width = 'auto';
     wrap.style.alignItems = 'center';
     wrap.style.justifyContent = 'center';
@@ -1828,7 +1852,7 @@ const GlobeModule = {
       const phoneRail = window.innerWidth <= 480;
       wrap.style.left = phoneRail ? '64px' : '90px';
       wrap.style.right = phoneRail ? '8px' : '10px';
-      wrap.style.top = '60px';
+      wrap.style.top = '114px';
       wrap.style.bottom = '78px';
       wrap.style.alignItems = 'flex-end';
     }
@@ -1874,14 +1898,14 @@ const GlobeModule = {
     // Small-nation dot markers: a few pixels wide, so the usual low-alpha
     // country wash would vanish. Paint them near-solid for contrast.
     if (feature?.properties?.__smallNation) {
-      return d?.hasData
-        ? _magnitudeColor(d.emissions.latest.value, Math.min(0.84 + hoverBoost, 0.98).toFixed(2))
-        : 'rgba(165,178,188,' + Math.min(0.82 + hoverBoost, 0.96).toFixed(2) + ')';
+      if (!d?.view?.primary?.available) return 'rgba(165,178,188,' + Math.min(0.82 + hoverBoost, 0.96).toFixed(2) + ')';
+      return d.view.visual.solid_color;
     }
 
-    return d?.hasData
-      ? _magnitudeColor(d.emissions.latest.value, (0.54 + hoverBoost).toFixed(2))
-      : 'rgba(145,160,172,' + (0.32 + hoverBoost).toFixed(2) + ')';
+    if (!d?.view?.primary?.available) return 'rgba(145,160,172,' + (0.32 + hoverBoost).toFixed(2) + ')';
+    const base = d.view.visual.color;
+    if (!hoverBoost) return base;
+    return d.view.visual.solid_color;
   },
 
   _supportsCountryBorders() {
@@ -1899,7 +1923,8 @@ const GlobeModule = {
     if (!this.world || !this._countryBordersVisible || !this._supportsCountryBorders()) return;
     this.world
       .polygonStrokeColor((f) => this._countryBorderColorFn(f))
-      .polygonCapColor((f) => this._countryPolygonPaintColorFn(f));
+      .polygonCapColor((f) => this._countryPolygonPaintColorFn(f))
+      .polygonAltitude((f) => this._countryHexAltitudeFn(f));
   },
 
   // ── Mode API — used by GLOBE_MODES orchestrator ──
@@ -1941,7 +1966,7 @@ const GlobeModule = {
 
     this.world
       .polygonsData(this._countryFeatures)
-      .polygonAltitude(() => 0.007)
+      .polygonAltitude((f) => this._countryHexAltitudeFn(f))
       .polygonCapColor((f) => this._countryPolygonPaintColorFn(f))
       .polygonSideColor(() => 'rgba(0,0,0,0)')
       .polygonStrokeColor((f) => this._countryBorderColorFn(f));
@@ -2232,9 +2257,85 @@ const GlobeModule = {
   },
 
   // ── Lens switching ──
-  setLens(lens) {
-    this.currentLens = lens;
-    this.updateNodeVisuals();
+  _bindLensControls() {
+    if (this._lensControlsBound) return;
+    const controls = $('climate-lens-controls');
+    if (!controls) return;
+    this._lensControlsBound = true;
+    controls.addEventListener('click', event => {
+      const button = event.target.closest('[data-climate-lens]');
+      if (!button) return;
+      this.setLens(button.getAttribute('data-climate-lens'));
+    });
+  },
+
+  _syncLensControls() {
+    document.body.dataset.climateLens = this.currentLens;
+    const lens = (Data.getClimateLensCatalog?.() || []).find(item => item.id === this.currentLens);
+    document.querySelectorAll('[data-climate-lens]').forEach(button => {
+      const active = button.getAttribute('data-climate-lens') === this.currentLens;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    if (lens) $text('climate-lens-status', lens.heading + ' lens selected. Country selection is preserved.');
+  },
+
+  _renderLegend() {
+    const legend = $('hex-legend');
+    const model = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getLegend', this.currentLens);
+    if (!legend || !model) return false;
+    legend.setAttribute('aria-label', model.heading + ' legend');
+    legend.innerHTML = '<div class="hex-legend-title">' + _escapeHtml(model.heading) + '</div>'
+      + '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:' + _escapeHtml(model.low_color) + '" aria-hidden="true"></span>' + _escapeHtml(model.low_label) + '</div>'
+      + '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:' + _escapeHtml(model.high_color) + '" aria-hidden="true"></span>' + _escapeHtml(model.high_label) + '</div>'
+      + '<div class="hex-legend-row"><span class="hex-legend-swatch magnitude-gap" aria-hidden="true"></span>' + _escapeHtml(model.gap_label) + '</div>'
+      + '<div class="hex-legend-note">' + _escapeHtml(model.evidence_label) + ' · ' + _escapeHtml(model.extrusion_note) + ' ' + _escapeHtml(model.interpretation) + '</div>';
+    return true;
+  },
+
+  setLens(lensId) {
+    const catalog = Data.getClimateLensCatalog?.() || [];
+    const lens = catalog.find(item => item.id === lensId);
+    if (!lens) {
+      reportWarn('GlobeModule', 'Unknown climate lens: ' + lensId);
+      return false;
+    }
+    const changed = this.currentLens !== lens.id;
+    this.currentLens = lens.id;
+    this._buildCountryDeck();
+    this._renderRankRail();
+    this._syncLensControls();
+    this._renderLegend();
+    this._updateRankRail();
+    if (this._selectedCountryFeature) {
+      this._renderCountryInfoCard(this._selectedCountryFeature, true);
+      this._dockCountryCard();
+    } else if (this._countryHoverFeature) {
+      this._renderCountryInfoCard(this._countryHoverFeature, false);
+    }
+    if (this._countryBordersVisible) this._refreshCountryBorders();
+    if (this.world && typeof this.world.hexPolygonColor === 'function') {
+      this.world.hexPolygonColor(feature => this._countryHexColorFn(feature));
+      if (typeof this.world.hexPolygonAltitude === 'function') this.world.hexPolygonAltitude(feature => this._countryHexAltitudeFn(feature));
+    }
+    if (document.body.classList.contains('globe-fallback-active')) {
+      const selectedIso = this._fallbackSelectedIso;
+      this._renderFallbackEvidence();
+      if (selectedIso) this._renderFallbackCountry(selectedIso, false);
+    }
+    if (changed && hasModule('EventBus')) {
+      EventBus.emit('globe:lens-changed', {
+        id: lens.id,
+        heading: lens.heading,
+        selectedCountryIso: this._selectedCountryFeature ? _resolveCountryIso(this._selectedCountryFeature) : null,
+        timestamp: Date.now(),
+      });
+    }
+    return true;
+  },
+
+  getLens() {
+    return this.currentLens;
   },
 
   // ── Update node visual states based on engagement ──
@@ -2376,6 +2477,7 @@ const GlobeModule = {
       countryDataError: this._countryDataError,
       countryFeatureCount: this._countryFeatures?.length || 0,
       countryDeckCount: this._countryDeck.length,
+      climateLens: this.currentLens,
       selectedCountryIso: this._selectedCountryFeature ? _resolveCountryIso(this._selectedCountryFeature) : null,
       fallbackActive: document.body?.classList.contains('globe-fallback-active') || false,
       fallbackReasonCode: this._fallbackReasonCode,
@@ -2562,8 +2664,8 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['prepare', 'init', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState'],
-    requires: ['Data'],
-    emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown'],
+    provides: ['prepare', 'init', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'getLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState'],
+    requires: ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE'],
+    emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown', 'globe:lens-changed'],
   });
 }

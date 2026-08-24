@@ -42,6 +42,13 @@ const App = {
       // Continue init -- modules that depend on Data will handle undefined gracefully
     }
 
+    if (hasModule('COUNTRY_CLIMATE_INTELLIGENCE')) {
+      const ready = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'init');
+      if (!ready && safeGet('Data', 'isClimateIntelligenceReady', false)) {
+        reportError('App.COUNTRY_CLIMATE_INTELLIGENCE.init()', new Error('Climate intelligence presentation layer did not initialize'));
+      }
+    }
+
     // ── Pre-flight: validate module contracts ──
     if (hasModule('MODULE_CONTRACTS')) {
       const result = MODULE_CONTRACTS.validate();
@@ -60,7 +67,7 @@ const App = {
     // Emit app:ready event via EventBus
     if (hasModule('EventBus')) {
       window.EventBus.emit('app:ready', {
-        modules: ['Data', 'GlobeModule', 'CARBON_CLOCK'],
+        modules: ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE', 'GlobeModule', 'CARBON_CLOCK'],
         timestamp: Date.now(),
       });
     }
