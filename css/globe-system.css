@@ -684,6 +684,8 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   font-size: 9px;
 }
 
+.elu-rank-boundary-compact { display: none; }
+
 .elu-rank-toggle {
   width: 23px;
   height: 23px;
@@ -1131,6 +1133,17 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   .elu-rank-title { font-size: 7px; letter-spacing: .8px; }
   .elu-rank-subtitle,
   .elu-rank-toggle { display: none; }
+
+  .elu-rank-boundary-compact {
+    display: block;
+    margin-top: 3px;
+    color: var(--hud-faint);
+    font-family: var(--mono);
+    font-size: 6px;
+    line-height: 1.15;
+    letter-spacing: .35px;
+    text-transform: uppercase;
+  }
 
   .elu-rank-disclosure {
     padding: 7px 3px;

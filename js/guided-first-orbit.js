@@ -64,7 +64,9 @@ const GUIDED_ORBIT = (() => {
   let step = 0;
   let route = 'globe';
   let opener = null;
+  let fallbackReason = null;
   let startTimer = 0;
+  let transitionTimer = 0;
   let subscriptions = [];
 
   function _emit(name, payload = {}) {
@@ -121,6 +123,57 @@ const GUIDED_ORBIT = (() => {
     if (!startTimer) return;
     window.clearTimeout(startTimer);
     startTimer = 0;
+  }
+
+  function _clearTransitionTimer() {
+    if (!transitionTimer) return;
+    window.clearTimeout(transitionTimer);
+    transitionTimer = 0;
+  }
+
+  function _isVisibleFocusTarget(target) {
+    if (!(target instanceof HTMLElement) || !document.contains(target)) return false;
+    if (target.hidden || target.closest('[hidden],[aria-hidden="true"]')) return false;
+    const style = window.getComputedStyle(target);
+    return target.getClientRects().length > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+  }
+
+  function _removeDialogCompletion() {
+    const button = $('guided-orbit-dialog-complete');
+    if (!button) return;
+    button.removeEventListener('click', _onDialogCompleteClick);
+    button.remove();
+  }
+
+  function _mountDialogCompletion() {
+    _removeDialogCompletion();
+    if (!active || route !== 'globe' || step !== 2) return false;
+    const card = $('hex-country-tooltip');
+    const wrap = $('elu-country-card-wrap');
+    if (!card || !wrap || !wrap.contains(card) || card.getAttribute('aria-hidden') === 'true') return false;
+    const button = document.createElement('button');
+    button.id = 'guided-orbit-dialog-complete';
+    button.className = 'guided-orbit-button guided-orbit-dialog-complete';
+    button.type = 'button';
+    button.textContent = 'Explore freely';
+    button.setAttribute('aria-label', 'Finish tutorial and explore freely');
+    button.addEventListener('click', _onDialogCompleteClick);
+    const anchor = card.querySelector('.tt-detail');
+    if (anchor) anchor.after(button);
+    else card.prepend(button);
+    return true;
+  }
+
+  function _suppressUnavailableEvidence(options = {}) {
+    _clearStartTimer();
+    _clearTransitionTimer();
+    active = false;
+    step = 0;
+    _hide();
+    _announce('Guided First Orbit is unavailable because country evidence could not be loaded.');
+    const heading = $('globe-fallback-title');
+    if (options.focus !== false && _isVisibleFocusTarget(heading)) heading.focus({ preventScroll: true });
+    return false;
   }
 
   function _clearStepClasses() {
@@ -188,6 +241,9 @@ const GUIDED_ORBIT = (() => {
     root.dataset.mode = definition.mode;
     root.dataset.route = route;
     root.dataset.step = String(step + 1);
+    const completesInsideCountryDialog = route === 'globe' && step === 2;
+    if (completesInsideCountryDialog) root.dataset.completion = 'country-dialog';
+    else delete root.dataset.completion;
     kicker.textContent = `Guided first orbit · ${step + 1} of 3`;
     title.textContent = definition.title;
     body.textContent = definition.body;
@@ -197,7 +253,7 @@ const GUIDED_ORBIT = (() => {
     progress.style.width = `${((step + 1) / 3) * 100}%`;
     progress.parentElement?.setAttribute('aria-valuenow', String(step + 1));
     back.hidden = step === 0 || step === 2;
-    primary.hidden = definition.waiting === true;
+    primary.hidden = definition.waiting === true || completesInsideCountryDialog;
     primary.textContent = definition.action || 'Continue';
     _applyStepClasses();
 
@@ -206,6 +262,11 @@ const GUIDED_ORBIT = (() => {
       _focusInteractionTarget();
     } else if (options.focus !== false) {
       window.setTimeout(() => title.focus({ preventScroll: true }), 50);
+    }
+    if (completesInsideCountryDialog) {
+      _mountDialogCompletion();
+    } else {
+      _removeDialogCompletion();
     }
     _emit('guided-orbit:step');
     return true;
@@ -219,7 +280,9 @@ const GUIDED_ORBIT = (() => {
       delete root.dataset.mode;
       delete root.dataset.route;
       delete root.dataset.step;
+      delete root.dataset.completion;
     }
+    _removeDialogCompletion();
     _clearStepClasses();
   }
 
@@ -227,14 +290,21 @@ const GUIDED_ORBIT = (() => {
     const selectedHeading = $('country-card-heading');
     const fallbackHeading = $('globe-fallback-detail-title');
     const replay = $('guided-orbit-replay');
-    const target = selectedHeading || fallbackHeading || opener || replay;
+    const target = [selectedHeading, fallbackHeading, opener, replay].find(_isVisibleFocusTarget);
     if (target && typeof target.focus === 'function') target.focus({ preventScroll: true });
   }
 
   function start(options = {}) {
     if (!initialized || !document.body.classList.contains('globe-mode')) return false;
     _clearStartTimer();
+    _clearTransitionTimer();
     route = options.route || (document.body.classList.contains('globe-fallback-active') ? 'fallback' : 'globe');
+    fallbackReason = route === 'fallback'
+      ? (options.reason || fallbackReason || window.GlobeModule?._fallbackReasonCode || null)
+      : null;
+    if (route === 'fallback' && fallbackReason === 'candidate_data_unavailable') {
+      return _suppressUnavailableEvidence(options);
+    }
     opener = options.opener || document.activeElement;
     step = 0;
     active = true;
@@ -274,29 +344,73 @@ const GUIDED_ORBIT = (() => {
   }
 
   function _onCountrySelected() {
-    if (!active || step !== 1 || route !== 'globe') return;
-    window.setTimeout(() => goToStep(2, { focus: false }), 120);
+    if (!active || route !== 'globe') return;
+    _clearTransitionTimer();
+    transitionTimer = window.setTimeout(() => {
+      transitionTimer = 0;
+      if (!active || route !== 'globe') return;
+      if (step === 1) goToStep(2, { focus: false });
+      else if (step === 2) _mountDialogCompletion();
+    }, 120);
   }
 
-  function _onFallbackShown() {
+  function _onCountryClosed() {
+    if (!active || route !== 'globe' || (step !== 1 && step !== 2)) return;
+    _clearTransitionTimer();
+    if (step === 2) goToStep(1, { focus: false });
+    _announce('Country card closed. Choose another country to finish the tutorial.');
+  }
+
+  function _onFallbackShown(payload) {
     route = 'fallback';
+    fallbackReason = payload?.reason || window.GlobeModule?._fallbackReasonCode || null;
+    if (fallbackReason === 'candidate_data_unavailable') {
+      _suppressUnavailableEvidence({ focus: false });
+      return;
+    }
     if (active) _render({ focus: false });
   }
 
   function _onGlobeEntered(payload) {
     route = payload?.fallback === true ? 'fallback' : 'globe';
+    fallbackReason = route === 'fallback'
+      ? (payload?.reason || window.GlobeModule?._fallbackReasonCode || null)
+      : null;
+    if (route === 'fallback' && fallbackReason === 'candidate_data_unavailable') {
+      _suppressUnavailableEvidence({ focus: false });
+      return;
+    }
     if (!_shouldAutoStart()) return;
     _clearStartTimer();
     startTimer = window.setTimeout(() => {
       startTimer = 0;
-      start({ route, focus: false });
+      start({ route, reason: fallbackReason, focus: false });
     }, 320);
   }
 
   function _onGlobeExited() {
     _clearStartTimer();
+    _clearTransitionTimer();
     active = false;
+    fallbackReason = null;
     _hide();
+  }
+
+  function _onPrimaryClick() {
+    if (step === 2) complete();
+    else goToStep(step + 1);
+  }
+
+  function _onBackClick() {
+    goToStep(step - 1);
+  }
+
+  function _onCloseClick() {
+    skip();
+  }
+
+  function _onDialogCompleteClick() {
+    complete();
   }
 
   function _onDocumentClick(event) {
@@ -335,12 +449,9 @@ const GUIDED_ORBIT = (() => {
     }
     initialized = true;
 
-    $('guided-orbit-primary')?.addEventListener('click', () => {
-      if (step === 2) complete();
-      else goToStep(step + 1);
-    });
-    $('guided-orbit-back')?.addEventListener('click', () => goToStep(step - 1));
-    $('guided-orbit-close')?.addEventListener('click', skip);
+    $('guided-orbit-primary')?.addEventListener('click', _onPrimaryClick);
+    $('guided-orbit-back')?.addEventListener('click', _onBackClick);
+    $('guided-orbit-close')?.addEventListener('click', _onCloseClick);
     document.addEventListener('click', _onDocumentClick);
     document.addEventListener('keydown', _onKeyDown, true);
 
@@ -349,6 +460,7 @@ const GUIDED_ORBIT = (() => {
         EventBus.on('app:globe-entered', _onGlobeEntered),
         EventBus.on('app:globe-exited', _onGlobeExited),
         EventBus.on('globe:country-selected', _onCountrySelected),
+        EventBus.on('globe:country-closed', _onCountryClosed),
         EventBus.on('globe:fallback-shown', _onFallbackShown),
       ];
     } else {
@@ -366,20 +478,31 @@ const GUIDED_ORBIT = (() => {
     active = false;
     step = 0;
     route = 'globe';
+    fallbackReason = null;
+    _clearStartTimer();
+    _clearTransitionTimer();
     _hide();
     return true;
   }
 
   function destroy() {
     _clearStartTimer();
+    _clearTransitionTimer();
     subscriptions.forEach(unsubscribe => {
       if (typeof unsubscribe === 'function') unsubscribe();
     });
     subscriptions = [];
     document.removeEventListener('click', _onDocumentClick);
     document.removeEventListener('keydown', _onKeyDown, true);
+    $('guided-orbit-primary')?.removeEventListener('click', _onPrimaryClick);
+    $('guided-orbit-back')?.removeEventListener('click', _onBackClick);
+    $('guided-orbit-close')?.removeEventListener('click', _onCloseClick);
     initialized = false;
     active = false;
+    step = 0;
+    route = 'globe';
+    fallbackReason = null;
+    opener = null;
     _hide();
     return true;
   }
@@ -390,6 +513,8 @@ const GUIDED_ORBIT = (() => {
       active,
       route,
       step: step + 1,
+      fallbackReason,
+      dialogCompletionMounted: !!$('guided-orbit-dialog-complete'),
       storedStatus: _readStoredStatus(),
     };
   }
@@ -403,7 +528,7 @@ MODULE_CONTRACTS.register('GUIDED_ORBIT', {
   provides: ['init', 'start', 'goToStep', 'complete', 'skip', 'reset', 'destroy', 'getState'],
   requires: ['EventBus', 'GlobeModule'],
   emits: ['guided-orbit:started', 'guided-orbit:step', 'guided-orbit:completed', 'guided-orbit:dismissed'],
-  listens: ['app:globe-entered', 'app:globe-exited', 'globe:country-selected', 'globe:fallback-shown'],
+  listens: ['app:globe-entered', 'app:globe-exited', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown'],
 });
 
 if (document.readyState === 'loading') {

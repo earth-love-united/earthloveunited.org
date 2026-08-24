@@ -399,8 +399,8 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v20">
-<link rel="stylesheet" href="css/guided-first-orbit.css?v=v1">
+<link rel="stylesheet" href="css/globe-system.css?v=v21">
+<link rel="stylesheet" href="css/guided-first-orbit.css?v=v2">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -840,9 +840,9 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v2"></script>
-<script src="js/globe.js?v=v14"></script>
+<script src="js/globe.js?v=v15"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
-<script src="js/guided-first-orbit.js?v=v1"></script>
+<script src="js/guided-first-orbit.js?v=v2"></script>
 <script src="js/app.js?v=v3"></script>
 
 <!-- Glass system behavior: scroll reveal + theme toggle (design handoff v1) -->
@@ -988,7 +988,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=39-guided-orbit', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=40-guided-orbit-review', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

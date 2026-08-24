@@ -188,6 +188,7 @@ assertLegitimateUseAllowed(
 );
 
 const index = read('index.html');
+const globeSource = read('js/globe.js');
 const runtimeFiles = [
   'index.html',
   'sw.js',
@@ -212,6 +213,9 @@ const hasCandidateLegend = index.includes('aria-label="Emissions magnitude legen
   index.includes('aria-description="Boundaries are for navigation."') &&
   index.includes('7 mapped source gaps · all 43 in browser') &&
   index.includes('Neutral pattern · source gap, visible and unranked') &&
+  globeSource.includes('MtCO₂e/yr · not a performance score') &&
+  globeSource.includes('Magnitude ordering is not a climate-performance score.') &&
+  globeSource.includes('elu-rank-boundary-compact') &&
   read('data/climate/runtime/candidate-manifest.json').includes('"release_eligible": false');
 const candidateCache = serviceWorker.includes("const CACHE_NAME = 'elu-v27-ct42-candidate'") && hasCandidateLegend;
 const localizedCandidateCache = (serviceWorker.includes("const CACHE_NAME = 'elu-v33-focus-trap'") ||
@@ -219,7 +223,8 @@ const localizedCandidateCache = (serviceWorker.includes("const CACHE_NAME = 'elu
   serviceWorker.includes("const CACHE_NAME = 'elu-v36-dock-review'") ||
   serviceWorker.includes("const CACHE_NAME = 'elu-v37-return-contrast'") ||
   serviceWorker.includes("const CACHE_NAME = 'elu-v38-compact-rank'") ||
-  serviceWorker.includes("const CACHE_NAME = 'elu-v39-guided-orbit'")) &&
+  serviceWorker.includes("const CACHE_NAME = 'elu-v39-guided-orbit'") ||
+  serviceWorker.includes("const CACHE_NAME = 'elu-v40-guided-orbit-review'")) &&
   serviceWorker.includes("'/assets/globe/runtime/manifest.json'") &&
   serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'") && hasCandidateLegend;
 if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'") && !candidateCache && !localizedCandidateCache) {
@@ -233,7 +238,8 @@ if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=36-dock-review'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=37-return-contrast'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=38-compact-rank'") &&
-    !index.includes("navigator.serviceWorker.register('/sw.js?v=39-guided-orbit'")) {
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=39-guided-orbit'") &&
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=40-guided-orbit-review'")) {
   failures.push('index.html: service-worker registration is neither v26, candidate v27, nor a supported localized evidence release');
 }
 

@@ -33,12 +33,15 @@ function compile() {
   const globe = text('js/globe.js');
   const html = text('index.html');
   const css = text('css/globe-system.css');
+  const guided = text('js/guided-first-orbit.js');
+  const guidedCss = text('css/guided-first-orbit.css');
   const smoke = text('tools/smoke-test.js');
   const architecture = text('ARCHITECTURE.md');
   const candidate = json('data/climate/runtime/country-factual-candidate.json');
   const fallbackHtml = between(html, '<section id="globe-fallback"', '</section>');
   const fallbackRuntime = between(globe, '  showFallback(reasonCode)', '  setTheme(theme)');
   const detailRuntime = between(globe, '  _renderFallbackCountry(iso, focusDetail)', '  hideFallback(options = {})');
+  const rankRuntime = between(globe, '  _renderRankRail()', '  _updateRankRail()');
   const factual = candidate.countries.filter(country => country.emissions?.status === 'reviewed_factual').length;
   const gaps = candidate.countries.filter(country => country.emissions?.status === 'source_gap').length;
 
@@ -117,6 +120,9 @@ function compile() {
       no_assessment_field_reads: !/country\.assessment|assessment\?\.|\.score\b/.test(detailRuntime),
       performance_disclaimer: fallbackHtml.includes('Climate performance is not scored in this view') &&
         fallbackRuntime.includes('not a performance score'),
+      persistent_rank_disclaimer: rankRuntime.includes('MtCO₂e/yr · not a performance score') &&
+        rankRuntime.includes('Magnitude ordering is not a climate-performance score.') &&
+        rankRuntime.includes('elu-rank-boundary-compact') && rankRuntime.includes('Not a performance score'),
       gaps_unranked: fallbackRuntime.includes('explicit source gap, unranked') &&
         fallbackRuntime.includes('missing data does not indicate better climate performance.'),
       source_and_limits: fallbackRuntime.includes('Source &amp; methodology') &&
@@ -127,7 +133,25 @@ function compile() {
       smoke_contract: smoke.includes('Non-WebGL fallback is body-level, accessible, and fail-closed') &&
         smoke.includes('data-fallback-evidence-state="factual"') &&
         smoke.includes('data-fallback-evidence-state="gap"') &&
-        smoke.includes('All 249 evidence records remain first-class and searchable'),
+        smoke.includes('All 249 evidence records remain first-class and searchable') &&
+        smoke.includes('Guided orbit suppresses no-data routes and owns one control lifecycle') &&
+        smoke.includes('Country ranking persistently identifies magnitude as not performance') &&
+        smoke.includes('Guided orbit completion is keyboard-reachable inside the country dialog'),
+      guided_no_data_terminal: guided.includes("fallbackReason === 'candidate_data_unavailable'") &&
+        guided.includes('_suppressUnavailableEvidence(options = {})') &&
+        guided.includes("payload?.reason || window.GlobeModule?._fallbackReasonCode") &&
+        guided.includes('Guided First Orbit is unavailable because country evidence could not be loaded.'),
+      guided_modal_completion: guided.includes("button.id = 'guided-orbit-dialog-complete'") &&
+        guided.includes("root.dataset.completion = 'country-dialog'") &&
+        guided.includes("anchor.after(button)") &&
+        guided.includes("EventBus.on('globe:country-closed', _onCountryClosed)") &&
+        guided.includes("goToStep(1, { focus: false })") &&
+        guidedCss.includes('.guided-orbit-dialog-complete'),
+      guided_visible_focus_restore: guided.includes("target.closest('[hidden],[aria-hidden=\"true\"]')") &&
+        guided.includes('target.getClientRects().length > 0') &&
+        guided.includes('[selectedHeading, fallbackHeading, opener, replay].find(_isVisibleFocusTarget)'),
+      guided_listener_teardown: ['_onPrimaryClick', '_onBackClick', '_onCloseClick'].every(handler =>
+        guided.includes(`addEventListener('click', ${handler})`) && guided.includes(`removeEventListener('click', ${handler})`)),
       architecture_route: architecture.includes('load failure → show body-level #globe-fallback evidence view') &&
         architecture.includes('60  #globe-fallback (failure or user-invoked evidence browser), .hex-legend') &&
         architecture.includes('Close/Escape validates the renderer again before returning'),

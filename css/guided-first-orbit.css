@@ -300,6 +300,16 @@
   cursor: pointer;
 }
 
+.guided-orbit-dialog-complete {
+  display: block;
+  width: 100%;
+  margin: 9px 0 2px;
+}
+
+.guided-orbit[data-completion="country-dialog"] .guided-orbit-actions {
+  display: none;
+}
+
 .guided-orbit[data-mode="interaction"] .guided-orbit-progress {
   margin: 0 0 8px;
 }

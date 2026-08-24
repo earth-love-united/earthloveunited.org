@@ -245,9 +245,11 @@ pointer or keyboard selection
 
 first globe visit / replay
   → GUIDED_ORBIT.start()
+  → candidate_data_unavailable suppresses the tour instead of exposing an unfinishable empty route
   → explain evidence-versus-score boundary
   → release the globe + rank rail for a real country choice
-  → globe:country-selected collapses the tutorial into a source shelf
+  → globe:country-selected collapses the tutorial into a source shelf and mounts completion inside the country dialog
+  → globe:country-closed returns an active final step to country selection
   → completion or dismissal persists locally; toolbar orbit control replays
 
 Escape / close / App.exitGlobe()
@@ -308,7 +310,7 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v39 precaches the concise public truth-copy page, core CSS/JS,
+`sw.js` cache epoch v40 precaches the concise public truth-copy page, core CSS/JS,
 the Guided First Orbit UI, verified local globe.gl, the CT-45 manifest and five
 localized assets, and exact-version candidate/carbon data requests. It applies:
 
