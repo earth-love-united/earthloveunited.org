@@ -390,24 +390,34 @@ body.guided-orbit-step-3.globe-fallback-active #globe-fallback-country-detail {
   }
 }
 
-@media (max-width: 720px) {
-  .guided-orbit-card {
-    max-height: calc(100dvh - 20px);
-    overflow-y: auto;
-  }
-
+/* Between phone and wide-desktop layouts, the 420px tutorial shelf and the
+   complete country-card assembly cannot reliably sit side by side. Reserve a
+   lower lane for the shelf; the evidence surface remains independently
+   scrollable when the viewport is also short. */
+@media (max-width: 1048px) {
   body.guided-orbit-step-3:not(.globe-fallback-active) #elu-country-card-wrap {
     bottom: 164px !important;
   }
+}
 
+/* The searchable fallback uses a wider two-column evidence surface, so its
+   dedicated shelf lane remains necessary slightly farther into desktop widths. */
+@media (max-width: 1187px) {
   body.guided-orbit-step-3.globe-fallback-active #globe-fallback {
-    padding-bottom: 164px;
+    bottom: 164px;
   }
 
   body.guided-orbit-step-3.globe-fallback-active #globe-fallback-country-detail {
     max-height: calc(100dvh - 220px);
     overflow: auto;
     overscroll-behavior: contain;
+  }
+}
+
+@media (max-width: 720px) {
+  .guided-orbit-card {
+    max-height: calc(100dvh - 20px);
+    overflow-y: auto;
   }
 }
 
@@ -439,7 +449,7 @@ body.guided-orbit-step-3.globe-fallback-active #globe-fallback-country-detail {
   }
 
   body.guided-orbit-step-3.globe-fallback-active #globe-fallback {
-    padding-bottom: 150px;
+    bottom: 152px;
   }
 
   body.guided-orbit-step-3.globe-fallback-active #globe-fallback-country-detail {
