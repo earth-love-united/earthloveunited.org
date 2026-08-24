@@ -4,7 +4,7 @@
 // Must load AFTER storage.js (depends on window.Storage).
 // ═══════════════════════════════════════════════
 
-const CLIMATE_INTELLIGENCE_SHA256 = '436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09';
+const CLIMATE_INTELLIGENCE_SHA256 = '4a1eb0665769a62ac0280e0c68a86265dc986b38cae9e77ee5f4fc4263d50a8e';
 const DATA_FETCH_TIMEOUT_MS = 8000;
 
 function _fetchTextWithTimeout(url, options = {}) {

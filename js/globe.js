@@ -2272,7 +2272,7 @@ const GlobeModule = {
   _syncLensControls() {
     document.body.dataset.climateLens = this.currentLens;
     const lens = (Data.getClimateLensCatalog?.() || []).find(item => item.id === this.currentLens);
-    document.querySelectorAll('[data-climate-lens]').forEach(button => {
+    document.querySelectorAll('.climate-lens-controls [data-climate-lens]').forEach(button => {
       const active = button.getAttribute('data-climate-lens') === this.currentLens;
       button.classList.toggle('is-active', active);
       button.setAttribute('aria-pressed', String(active));

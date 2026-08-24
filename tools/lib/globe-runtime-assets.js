@@ -3,7 +3,7 @@
 const crypto = require('node:crypto');
 const { hasActiveCiJob, hasExactCiStep } = require('./globe-vendor-integrity');
 
-const POLICY_VERSION = '1.3.0';
+const POLICY_VERSION = '1.4.0';
 const MANIFEST_PATH = 'assets/globe/runtime/manifest.json';
 const UI_REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
 const EXPECTED_UI_REVIEW_COMMIT = 'f43b91556d7734a36a69d6a7d8a18a7b8ca2a92b';
@@ -11,6 +11,7 @@ const EXPECTED_UI_REVIEW_SHA256 = 'cc3b4247cf60e39338fee76471844d459a6c74d3e25af
 const EXPECTED_MANIFEST_SHA256 = '5c11517a0f75e1af70169c565b46002c4361cdac18d6a6191f06e9f31ac7f67a';
 const EXPECTED_MANIFEST_SEMANTIC_SHA256 = '1bf154b73ddcb4d2ef51397d1e489b22f0bcadb8b13cbcec2bc7d2bbff949a9f';
 const EXPECTED_NASA_FETCHER_SHA256 = 'ade65419169d17404506d2dee5cfdbacb8f2c0c6a76d3d59b34482892edd4466';
+const EXPECTED_CLIMATE_INTELLIGENCE_SHA256 = '4a1eb0665769a62ac0280e0c68a86265dc986b38cae9e77ee5f4fc4263d50a8e';
 const EXPECTED_NATURAL_EARTH_SOURCES = Object.freeze({
   about_url: 'https://www.naturalearthdata.com/about/',
   terms_url: 'https://www.naturalearthdata.com/about/terms-of-use/',
@@ -107,15 +108,42 @@ const ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS = Object.freeze([
   'js/storage.js',
   'js/data-schema.js',
   'js/data.js',
+  'js/country-climate-intelligence.js',
   'js/globe.js',
   'js/carbon-clock.js',
   'js/app.js',
 ]);
+// This exact list is the historical CT-42 human-review scope. It is retained
+// unchanged so the old attestation cannot silently authorize the v1 module or
+// runtime. CURRENT_RUNTIME_PIN_PATHS is the structural/staging scope for the
+// new factual candidate; promotion still requires a new reviewer artifact.
 const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
+  'index.html',
+  'css/globe-system.css',
+  'js/gaia-utils.js',
+  'js/module-contracts.js',
+  'js/event-bus.js',
+  'js/storage-adapter.js',
+  'js/storage.js',
+  'js/data-schema.js',
+  'js/data.js',
+  'js/globe.js',
+  'js/carbon-clock.js',
+  'js/app.js',
+  'tools/smoke-test.js',
+  'data/climate/runtime/country-factual-candidate.json',
+  'data/climate/runtime/candidate-manifest.json',
+  'data/small-nations.json',
+  'sw.js',
+  MANIFEST_PATH,
+  ...EXPECTED_ASSETS.map(asset => asset.path),
+]);
+const CURRENT_RUNTIME_PIN_PATHS = Object.freeze([
   'index.html',
   'css/globe-system.css',
   ...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
   'tools/smoke-test.js',
+  'data/climate/runtime/country-climate-intelligence.json',
   'data/climate/runtime/country-factual-candidate.json',
   'data/climate/runtime/candidate-manifest.json',
   'data/small-nations.json',
@@ -164,15 +192,16 @@ function ct42RuntimeProjection(relativePath, bytes) {
 }
 const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v20',
+  '/css/globe-system.css?v=v25',
   '/js/gaia-utils.js',
   '/js/module-contracts.js',
   '/js/event-bus.js',
   '/js/storage-adapter.js',
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
-  '/js/data.js?v=v2',
-  '/js/globe.js?v=v14',
+  '/js/data.js?v=v3',
+  '/js/country-climate-intelligence.js?v=v2',
+  '/js/globe.js?v=v18',
   '/js/carbon-clock.js?v=v1',
   '/js/app.js?v=v3',
 ]);
@@ -205,6 +234,15 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/smoke-test.js',
   '/tools/check-globe-webgl-fallback.js',
   '/data/climate/fixtures/globe-webgl-fallback.json',
+  '/js/country-climate-intelligence.js',
+  '/data/climate/source-registry.json',
+  '/data/climate/schemas/country-climate-intelligence.schema.json',
+  '/data/climate/releases/country-climate-intelligence-v1/',
+  '/data/climate/runtime/country-climate-intelligence.json',
+  '/tools/build-country-climate-intelligence.js',
+  '/tools/check-country-climate-intelligence-ci.js',
+  '/tools/check-country-climate-runtime-atomic.js',
+  '/tools/lib/country-climate-intelligence.js',
   '/assets/globe/runtime/',
   '/data/small-nations.json',
 ]);
@@ -310,6 +348,8 @@ function evaluateRuntimeAssets(input) {
   const globe = stripComments(files.globe);
   const app = stripComments(files.app);
   const data = stripComments(files.data);
+  const dataSchema = stripComments(files.data_schema);
+  const climateIntelligence = stripComments(files.climate_intelligence);
   const sw = stripComments(files.sw);
   const buildDeploy = stripComments(files.build_deploy);
   const stagePublicDeploy = stripComments(files.stage_public_deploy);
@@ -396,23 +436,23 @@ function evaluateRuntimeAssets(input) {
     globe.includes('Approximate navigation point; not a boundary or precise centroid.') &&
     index.includes('Twenty-eight small states absent from that dataset use manually curated approximate navigation points'),
     'Exactly 28 unique, finite, range-valid point affordances must retain source/review/approval and visible representation limits.');
-  check('canonical-evidence-headings', globe.includes('const country = climate?.name || mapArea;') &&
+  check('canonical-evidence-headings', globe.includes('const country = view?.country?.name || climate?.name || mapArea;') &&
     globe.includes('Map geometry label: ') && globe.includes('. Evidence entity: '),
     'Assessed card headings must use canonical candidate entity names and disclose any differing map-geometry label.');
   check('disputed-subfeatures-nonassessing', globe.includes('NON_ASSESSING_MAP_AREAS') &&
     globe.includes("'Northern Cyprus'") && globe.includes("'Somaliland'") && globe.includes("'Kosovo'") &&
     globe.includes("feature.properties.ISO_A2 !== 'AQ' && !_isNonAssessingMapArea(feature)") &&
     !globe.includes("'Northern Cyprus': 'CYP'") && !globe.includes("Somaliland: 'SOM'") &&
-    index.includes('excluded from the assessed overlay and never inherit a parent entity’s evidence'),
+    index.includes('excluded from the data overlay and never inherit a parent entity’s evidence'),
     'Disputed Natural Earth subfeatures must be noninteractive and must never inherit Cyprus or Somalia evidence.');
-  check('complete-evidence-browser', index.includes('Browse all 249 evidence records') &&
-    index.includes('aria-label="Browse all 249 evidence records"') && index.includes('browse-label-short') &&
+  check('complete-evidence-browser', index.includes('Browse all 249 records') &&
+    index.includes('aria-label="Browse all 249 climate intelligence records"') && index.includes('browse-label-short') &&
     globe.includes("evidence_browse_requested: 'All 249 registry entities") &&
     globe.includes("stableReason === 'evidence_browse_requested'") &&
     app.includes("browseEvidence: () => this.browseEvidence()") &&
     app.includes("GlobeModule._initialized !== true") && app.includes("querySelectorAll('canvas').length !== 1") &&
     globe.includes("this._fallbackEntries.length + ' registry entities") &&
-    globe.includes("factualCount") && globe.includes("gapCount") &&
+    globe.includes('rows.eligible_count') && globe.includes('rows.unranked_count') &&
     globe.includes("if (name === 'close')") && globe.includes('const hasLiveRenderer = this._initialized === true') &&
     files.globe_css?.includes('body.globe-fallback-active #globe-evidence-browse'),
     'A first-class, searchable 249-entity evidence browser must remain reachable from a live globe and unable to hide a genuine failure.');
@@ -427,14 +467,23 @@ function evaluateRuntimeAssets(input) {
   check('visual-preload-validation', globe.includes('Promise.all(Object.values(GLOBE_VISUAL_ASSETS)') && globe.includes('image.naturalWidth !== asset.width') && globe.includes('image.naturalHeight !== asset.height') && globe.includes('GLOBE_VISUAL_ASSET_TIMEOUT_MS = 8000') &&
     globe.includes('image.onload = null') && globe.includes('image.onerror = null') && globe.includes('Image timeout: '),
     'Every globe image must preload with timeout and exact natural dimensions.');
-  check('candidate-fail-closed', data.includes("climateCandidateState = 'unavailable'") && data.includes('countries.length === 249') && data.includes('factualCount === 206') && data.includes('gapCount === 43') && data.includes('new Set(isoCodes).size === countries.length') && data.includes("CLIMATE_CANDIDATE_SHA256 = '7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664'") && data.includes('if (actual !== CLIMATE_CANDIDATE_SHA256)') && data.includes("crypto.subtle.digest('SHA-256'") && data.includes('DATA_FETCH_TIMEOUT_MS = 8000') && app.includes("reason: 'globe_construction_failed'") && globe.includes("'candidate_data_unavailable'"),
-    'Missing or malformed candidate data must become a deterministic unavailable state before rendering.');
+  check('candidate-fail-closed', data.includes("climateIntelligenceState = 'unavailable'") &&
+    data.includes(`CLIMATE_INTELLIGENCE_SHA256 = '${EXPECTED_CLIMATE_INTELLIGENCE_SHA256}'`) &&
+    data.includes('if (actual !== CLIMATE_INTELLIGENCE_SHA256)') && data.includes("crypto.subtle.digest('SHA-256'") &&
+    data.includes('DATA_FETCH_TIMEOUT_MS = 8000') && data.includes("release?.release?.status === 'candidate'") &&
+    data.includes('release?.release?.production_runtime_release === false') &&
+    dataSchema.includes("value.countries.length !== 249") && dataSchema.includes('recordIds.join(\'|\') !== metricIds.join(\'|\')') &&
+    dataSchema.includes('partition.length !== 249') && dataSchema.includes("['carbon', 'power', 'physical']") &&
+    climateIntelligence.includes("window.COUNTRY_CLIMATE_INTELLIGENCE = COUNTRY_CLIMATE_INTELLIGENCE") &&
+    app.includes("reason: 'globe_construction_failed'") && globe.includes("'candidate_data_unavailable'"),
+    'Missing, malformed, checksum-drifted, or non-candidate Country Climate Intelligence data must become unavailable before rendering.');
   check('exact-interactive-boundary', globe.includes('EXPECTED_INTERACTIVE_ENTITY_COUNT = 201') &&
-    globe.includes('EXPECTED_INTERACTIVE_FACTUAL_COUNT = 194') && globe.includes('EXPECTED_INTERACTIVE_GAP_COUNT = 7') &&
     globe.includes('this._countryFeatures.length !== EXPECTED_INTERACTIVE_ENTITY_COUNT') &&
     globe.includes('uniqueFeatureIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT') &&
-    globe.includes('uniqueDeckIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT') && globe.includes('!setsMatch'),
-    'The rendered feature set and evidence deck must be the same 201 unique registry ISOs with exactly 194 factual and 7 gap records.');
+    globe.includes('uniqueDeckIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT') && globe.includes('!setsMatch') &&
+    globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView'") &&
+    globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows'"),
+    'The rendered feature set and active-lens deck must be the same 201 unique registry ISOs; lens eligibility stays in the view model.');
   check('stable-preparation-failures', ['candidate_data_unavailable', 'country_geometry_unavailable', 'visual_assets_unavailable'].every(reason => occurrences(globe, reason) >= 2) && app.includes("safeCall('GlobeModule', 'showFallback', reason)"),
     'Candidate, geometry, and image failures must route to stable accessible fallback reasons.');
   const prepareCall = app.indexOf('preparation = await GlobeModule.prepare(');
@@ -474,7 +523,9 @@ function evaluateRuntimeAssets(input) {
     index.includes("object-src 'none';") && index.includes("base-uri 'self';") &&
     !/raw\.githubusercontent\.com|api\.carbonmark\.com|cdn\.jsdelivr\.net/.test(index),
     'CSP and resource hints must not retain obsolete runtime origins or the unused Carbonmark permission.');
-  check('visible-boundary-disclaimer', index.includes('None of these representations expresses a position on sovereignty or legal boundaries') && index.includes('Map boundaries are navigational and are not a sovereignty judgment') && index.includes('Map boundaries use generalized Natural Earth 1:110m geometry for navigation only.'),
+  check('visible-boundary-disclaimer', index.includes('None of these representations expresses a position on sovereignty or legal boundaries') &&
+    index.includes('Map boundaries use generalized Natural Earth 1:110m geometry for navigation only.') &&
+    index.includes('approximate navigation points, not boundaries or precise centroids'),
     'Foundation, globe, and fallback surfaces must expose the navigational boundary limitation.');
   check('public-visual-provenance-limits', index.includes('NASA Earth Observatory Black Marble 2012') &&
     index.includes('image by Robert Simmon') &&
@@ -482,7 +533,7 @@ function evaluateRuntimeAssets(input) {
     index.includes('Original starfield from Three-Globe 2.45.2'),
     'Public copy must credit NASA and identify the historical surface and restored sky as decorative visual context.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v38-compact-rank';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=38-compact-rank'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v43-country-climate-intelligence';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=43-country-climate-intelligence'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&
@@ -496,11 +547,12 @@ function evaluateRuntimeAssets(input) {
     EXPECTED_INDEX_SW_KEYS.every(key => input?.service_worker?.static_assets?.filter(item => item === key).length === 1),
     'Every versioned CSS/JS request used by the globe entry path must have the exact same service-worker precache key.');
   check('service-worker-data-fallback', sw.includes("url.pathname.startsWith('/data/')") &&
-    data.includes("version: 'ct42candidate1'") &&
-    sw.includes("'/data/carbon-projects.json?v=ct42candidate1'") &&
+    data.includes("version: 'cci1candidate1'") &&
+    sw.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate1'") &&
     sw.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'") &&
+    !sw.includes('/data/carbon-projects.json') &&
     occurrences(sw, 'caches.match(request)') >= 2 && !sw.includes('ignoreSearch'),
-    'Runtime data remain network-first with exact versioned precache keys and exact-request fallback.');
+    'Current and rollback climate artifacts remain network-first with exact versioned precache keys and exact-request fallback.');
 
   const stagedVerifier = 'node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"';
   const stagedBuildCommand = `exec ${stagedVerifier}`;
@@ -565,7 +617,7 @@ function evaluateRuntimeAssets(input) {
   const browserLifecycleStep = workflowStep(ci, 'Run SmokeTest + StackLint in headless Chromium');
   check('ci-browser-runtime-lifecycle', occurrences(ci, '- name: Run SmokeTest + StackLint in headless Chromium') === 1 && [
     "serviceWorkers: 'block'",
-    "exercisePreRenderFailure('**/data/climate/runtime/country-factual-candidate.json*', 'candidate_data_unavailable'",
+    "exercisePreRenderFailure('**/data/climate/runtime/country-climate-intelligence.json*', 'candidate_data_unavailable'",
     "exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable'",
     "exercisePreRenderFailure('**/assets/globe/runtime/earth-night.jpg*', 'visual_assets_unavailable'",
     "exercisePreRenderFailure('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable'",
@@ -576,13 +628,19 @@ function evaluateRuntimeAssets(input) {
     'securitypolicyviolation',
     'stale async activation must not construct a renderer',
     'countryFeatureCount === 201',
-    'browserCounts.factual === 206 && browserCounts.gaps === 43',
+    'const expected = expectedFallbackCounts[lensId];',
+    'browserCounts.total === 249 && browserCounts.canvases === 1',
+    "for (const lensId of ['power', 'physical', 'carbon'])",
+    "lensSnapshot.state.selectedCountryIso === 'CHN'",
+    "lensSnapshot.view.visual.extrusion === 'none'",
+    "await page.locator('#country-card-heading').focus()",
     "new Event('webglcontextlost', { cancelable: true })",
     'reducedMotion.autoRotate === false',
     'backward country-card focus trap must wrap to Next country without reaching the background rail',
     'rendererCanvasCount === 0',
     'for (const width of [320, 375])',
     'rects.browse.height >= 44 && rects.theme.height >= 44',
+    'rects.lenses.every(rect => rect.width >= 44 && rect.height >= 44)',
     'if (!condition) throw new Error(message);',
     "document.querySelector('#globeViz canvas').dispatchEvent(new Event('webglcontextlost', { cancelable: true }))",
   ].every(token => browserLifecycleStep.includes(token)) &&
@@ -604,8 +662,8 @@ function evaluateRuntimeAssets(input) {
   check('truth-ci-required', climateTruthCi.split('\n').filter(line => line.trim().replace(/,$/, '') === truthComponent).length === 1,
     'Climate truth CI must require exactly one active CT-45 component.');
 
-  check('ui-review-pin-scope', JSON.stringify(input?.review_scope?.ui_pins) === JSON.stringify(REQUIRED_UI_REVIEW_PIN_PATHS),
-  'Independent UI review must pin every active globe-truth script plus CSS, data, SW, manifest, and all five committed assets.');
+  check('ui-review-pin-scope', JSON.stringify(input?.review_scope?.ui_pins) === JSON.stringify(CURRENT_RUNTIME_PIN_PATHS),
+  'The candidate staging scope must pin every active globe-truth script plus CSS, current and rollback data, SW, manifest, and all five committed assets.');
   const activeIndexScripts = (input?.index_runtime_requests || [])
     .filter(item => item.startsWith('/js/'))
     .map(item => item.slice(1).split('?')[0]);
@@ -614,8 +672,9 @@ function evaluateRuntimeAssets(input) {
     JSON.stringify(activeIndexScripts) === JSON.stringify(ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS) &&
     ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS.every(item =>
       input?.review_scope?.ui_pins?.includes(item) && input?.review_scope?.runtime_fixed?.includes(item)),
-    'Every active index.html globe-truth script must share one canonical UI-pin and runtime-diff scope.');
+    'Every active index.html globe-truth script must share one canonical candidate pin and runtime-diff scope.');
   check('runtime-diff-boundary', input?.review_scope?.runtime_prefixes?.includes('assets/globe/runtime/') &&
+    input?.review_scope?.runtime_prefixes?.includes('data/climate/releases/country-climate-intelligence-v1/') &&
     [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS, 'tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'data/small-nations.json']
       .every(item => input?.review_scope?.runtime_fixed?.includes(item)),
     'Runtime-diff policy must classify localized assets and CT-45 controls as runtime-affecting.');
@@ -652,8 +711,10 @@ function evaluateRuntimeAssets(input) {
 
 module.exports = {
   ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
+  CURRENT_RUNTIME_PIN_PATHS,
   CT42_SHARED_HOST_PATHS,
   EXPECTED_ASSETS,
+  EXPECTED_CLIMATE_INTELLIGENCE_SHA256,
   EXPECTED_INDEX_SW_KEYS,
   EXPECTED_MANIFEST_SEMANTIC_SHA256,
   EXPECTED_MANIFEST_SHA256,

@@ -189,6 +189,13 @@ function artifact(series, input, compiledOn) {
 
 function main() {
   const args = process.argv.slice(2);
+  if (args.includes('--land-input') || args.includes('--intelligence-output')) {
+    const { compile } = require('./lib/gcb-country-intelligence');
+    const result = compile(args);
+    console.log(`Compiled Country Climate Intelligence GCB component for ${result.artifact.entity_count} registry entities.`);
+    console.log(`Artifact SHA-256: ${result.digest}`);
+    return;
+  }
   const outputAt = args.indexOf('--output-dir');
   const outputDir = path.resolve(outputAt === -1 ? DEFAULT_DIR : args[outputAt + 1]);
   const dateAt = args.indexOf('--compiled-on');

@@ -29,7 +29,7 @@ const STATIC_ASSETS = [
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v3',
   '/js/country-climate-intelligence.js?v=v2',
-  '/js/globe.js?v=v17',
+  '/js/globe.js?v=v18',
   '/js/carbon-clock.js?v=v1',
   '/js/app.js?v=v3',
   '/js/vendor/globe.gl.js',

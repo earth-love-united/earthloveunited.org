@@ -69,6 +69,12 @@ jobs:
       - name: Verify script load-order DAG
         run: python3 scripts/verify_load_order.py
 
+      - name: Country Climate Intelligence v1 candidate contract
+        run: node tools/check-country-climate-intelligence-ci.js
+
+      - name: Country Climate Intelligence WebGL fallback parity
+        run: node tools/check-globe-webgl-fallback.js
+
       - name: Climate truth CI policy fixtures
         run: node tools/check-climate-truth-ci.js
 
@@ -239,7 +245,8 @@ jobs:
             if (!condition) throw new Error(message);
           };
           const waitForApp = target => target.waitForFunction(
-            () => window.App && window.GlobeModule && window.Data && ['ready', 'unavailable'].includes(window.Data.climateCandidateState),
+            () => window.App && window.GlobeModule && window.Data && window.COUNTRY_CLIMATE_INTELLIGENCE &&
+              ['ready', 'unavailable'].includes(window.Data.climateIntelligenceState),
             null,
             { timeout: 15000 }
           );
@@ -298,7 +305,7 @@ jobs:
             await target.close();
           }
 
-          await exercisePreRenderFailure('**/data/climate/runtime/country-factual-candidate.json*', 'candidate_data_unavailable', { status: 503, body: 'candidate unavailable' }, /\[Data\._indexClimateCandidate\(\)\] CT-42 candidate boundary or shape invalid/);
+          await exercisePreRenderFailure('**/data/climate/runtime/country-climate-intelligence.json*', 'candidate_data_unavailable', { status: 503, body: 'candidate unavailable' }, /\[Data\._indexClimateIntelligence\(\)\] Country Climate Intelligence schema rejected/);
           await exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable', { status: 503, body: 'geometry unavailable' });
           await exercisePreRenderFailure('**/assets/globe/runtime/earth-night.jpg*', 'visual_assets_unavailable', { status: 200, contentType: 'image/jpeg', headers: { 'Cache-Control': 'no-store' }, body: 'invalid image bytes' });
           await exercisePreRenderFailure('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable', { status: 200, contentType: 'image/png', headers: { 'Cache-Control': 'no-store' }, body: 'invalid png bytes' });
@@ -355,6 +362,36 @@ jobs:
             'live globe must expose the exact 201-entity deck on one canvas');
 
           await page.click('[data-country-rail-iso="CHN"]');
+          await page.waitForFunction(() => document.activeElement?.id === 'country-card-heading');
+          for (const lensId of ['power', 'physical', 'carbon']) {
+            await page.click('[data-climate-lens="' + lensId + '"]');
+            await page.waitForFunction(id => window.GlobeModule?.getLens?.() === id, lensId);
+            const lensSnapshot = await page.evaluate(id => {
+              const state = window.GlobeModule.getState();
+              const view = window.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('CHN', id);
+              const cardSummary = document.querySelector('#hex-country-tooltip .tt-detail')?.textContent || '';
+              return {
+                state,
+                view,
+                cardSummary,
+                selectedAltitude: window.GlobeModule._countryHexAltitudeFn(window.GlobeModule._selectedCountryFeature),
+              };
+            }, lensId);
+            assert(lensSnapshot.state.selectedCountryIso === 'CHN', lensId + ' lens change must preserve China selection');
+            assert(lensSnapshot.cardSummary.includes(lensSnapshot.view.primary.label) &&
+              lensSnapshot.cardSummary.includes(lensSnapshot.view.primary.unit) &&
+              lensSnapshot.cardSummary.includes(lensSnapshot.view.primary.period) &&
+              lensSnapshot.cardSummary.includes(lensSnapshot.view.primary.evidence_label),
+            lensId + ' card must expose metric, unit, period, and evidence class');
+            if (lensId === 'carbon') {
+              assert(lensSnapshot.view.visual.extrusion === 'transparent_log' && lensSnapshot.selectedAltitude > 0.007,
+                'Carbon must use transparent log-scaled magnitude extrusion');
+            } else {
+              assert(lensSnapshot.view.visual.extrusion === 'none' && lensSnapshot.selectedAltitude === 0.007,
+                lensId + ' must remain color-only with no magnitude extrusion');
+            }
+          }
+          await page.locator('#country-card-heading').focus();
           await page.waitForFunction(() => document.activeElement?.id === 'country-card-heading');
           await page.keyboard.press('Tab');
           assert(await page.evaluate(() => document.activeElement?.matches('[data-country-close]')),
@@ -431,13 +468,26 @@ jobs:
 
           await page.click('#globe-evidence-browse');
           await page.waitForFunction(() => window.GlobeModule?._fallbackReasonCode === 'evidence_browse_requested');
-          const browserCounts = await page.evaluate(() => ({
-            factual: document.querySelectorAll('[data-fallback-evidence-state="factual"]').length,
-            gaps: document.querySelectorAll('[data-fallback-evidence-state="gap"]').length,
-            canvases: document.querySelectorAll('#globeViz canvas').length,
-          }));
-          assert(browserCounts.factual === 206 && browserCounts.gaps === 43 && browserCounts.canvases === 1,
-            'evidence browser must retain one live canvas and expose 206 factual + 43 gap records');
+          const expectedFallbackCounts = {
+            carbon: { factual: 213, gaps: 36 },
+            power: { factual: 195, gaps: 54 },
+            physical: { factual: 245, gaps: 4 },
+          };
+          for (const lensId of ['carbon', 'power', 'physical']) {
+            await page.evaluate(id => window.GlobeModule.setLens(id), lensId);
+            await page.waitForFunction(id => window.GlobeModule?.getLens?.() === id, lensId);
+            const browserCounts = await page.evaluate(() => ({
+              factual: document.querySelectorAll('[data-fallback-evidence-state="factual"]').length,
+              gaps: document.querySelectorAll('[data-fallback-evidence-state="gap"]').length,
+              total: document.querySelectorAll('[data-fallback-country-iso]').length,
+              canvases: document.querySelectorAll('#globeViz canvas').length,
+            }));
+            const expected = expectedFallbackCounts[lensId];
+            assert(browserCounts.factual === expected.factual && browserCounts.gaps === expected.gaps &&
+              browserCounts.total === 249 && browserCounts.canvases === 1,
+            lensId + ' evidence browser must retain one live canvas and expose its exact 249-entity factual/gap partition');
+          }
+          await page.evaluate(() => window.GlobeModule.setLens('carbon'));
           await page.fill('#globe-fallback-search', 'Andorra');
           const visibleRows = page.locator('[data-fallback-country-iso]:visible');
           assert(await visibleRows.count() === 1, 'evidence search must narrow to one Andorra record');
@@ -472,11 +522,19 @@ jobs:
                 const rect = button.getBoundingClientRect();
                 return { id: button.id, left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
               });
-              return { viewport: innerWidth, browse: { left: browse.left, right: browse.right, height: browse.height }, theme: { left: theme.left, right: theme.right, height: theme.height }, controls };
+              const lenses = [...document.querySelectorAll('[data-climate-lens]')].map(button => {
+                const rect = button.getBoundingClientRect();
+                return { id: button.dataset.climateLens, left: rect.left, right: rect.right, width: rect.width, height: rect.height };
+              });
+              return { viewport: innerWidth, browse: { left: browse.left, right: browse.right, height: browse.height }, theme: { left: theme.left, right: theme.right, height: theme.height }, controls, lenses };
             });
             assert(rects.controls.every(rect => rect.left >= 0 && rect.right <= rects.viewport), width + 'px topbar controls must remain inside the viewport');
             assert(rects.browse.height >= 44 && rects.theme.height >= 44, width + 'px controls must retain 44px targets');
             assert(rects.browse.right <= rects.theme.left, width + 'px browse/theme controls must not overlap');
+            assert(rects.lenses.length === 3 && rects.lenses.every(rect => rect.left >= 0 && rect.right <= rects.viewport),
+              width + 'px climate lens controls must remain inside the viewport');
+            assert(rects.lenses.every(rect => rect.width >= 44 && rect.height >= 44),
+              width + 'px climate lens controls must retain 44px targets');
           }
 
           await page.setViewportSize({ width: 768, height: 600 });

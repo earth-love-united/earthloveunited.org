@@ -4,7 +4,7 @@
 > this file records the live module graph, data flow, stacking model, and
 > extension points.
 
-**Runtime baseline:** 2026-07-15
+**Runtime baseline:** 2026-08-24 Country Climate Intelligence factual candidate
 **Architecture:** one HTML page, classic scripts, no bundler or browser build
 
 ## Public surface
@@ -23,7 +23,8 @@ hero / Living Globe action
   → App.enterGlobe()
   → lazy-load globe.gl
   → initialize GlobeModule
-  → country atlas rail + selected-country card
+  → Carbon / Power / Physical lens controls
+  → exact-metric country rail + lens-aware selected-country card
   → App.exitGlobe() returns to the foundation page
 ```
 
@@ -45,15 +46,16 @@ mission.
 | Persistence | `js/storage-adapter.js` | IndexedDB adapter and migrations |
 | Persistence facade | `js/storage.js` | Safe storage API over `STORAGE_ADAPTER` |
 | Data validation | `js/data-schema.js` | Runtime JSON validation |
-| Data loader | `js/data.js` | Country, small-nation, and carbon-project data loading/lookups |
-| Globe runtime | `js/globe.js` | globe.gl lifecycle, country geometry, atlas rail/card, selection and themes |
+| Data loader | `js/data.js` | Exact-SHA Country Climate Intelligence loading and 249-entity lookups |
+| Climate view model | `js/country-climate-intelligence.js` | Lens selection policy, rail rows, country facts, legend, gaps, and provenance |
+| Globe runtime | `js/globe.js` | globe.gl lifecycle, country geometry, atlas rail/card, lens rendering, selection and themes |
 | Carbon clock | `js/carbon-clock.js` | Hero/topbar emissions counter |
 | Application | `js/app.js` | Bootstrap, contract pre-flight, hero/globe transitions, lazy globe load |
 | Offline cache | `sw.js` | Static precache and network-first data/code updates |
 
 ## Script load order
 
-The ten classic scripts load synchronously at the end of `index.html`:
+The eleven classic scripts load synchronously at the end of `index.html`:
 
 ```text
 1.  js/gaia-utils.js
@@ -63,9 +65,10 @@ The ten classic scripts load synchronously at the end of `index.html`:
 5.  js/storage.js
 6.  js/data-schema.js
 7.  js/data.js
-8.  js/globe.js
-9.  js/carbon-clock.js
-10. js/app.js
+8.  js/country-climate-intelligence.js
+9.  js/globe.js
+10. js/carbon-clock.js
+11. js/app.js
 ```
 
 `js/vendor/globe.gl.js` is loaded by `App.enterGlobe()` rather than at page
@@ -94,6 +97,7 @@ on `window`.
 | `Storage` | `js/storage.js` | yes | Safe persistence facade |
 | `DATA_SCHEMA` | `js/data-schema.js` | yes | Runtime data validation |
 | `Data` | `js/data.js` | yes | Data load and country lookups |
+| `COUNTRY_CLIMATE_INTELLIGENCE` | `js/country-climate-intelligence.js` | yes | Metric/lens presentation contract and scientific selection boundary |
 | `GlobeModule` | `js/globe.js` | yes | Live globe and country atlas |
 | `Panel` | `js/globe.js` | legacy internal export | Archived-site fallback helpers; not part of current public flow |
 | `PanelSlider` | `js/globe.js` | legacy internal export | Archived-site fallback helpers |
@@ -139,25 +143,37 @@ view model.
 
 ```mermaid
 flowchart LR
-    C["data/carbon-projects.json"] --> D
-    F["CT-42 factual candidate<br/>exact SHA-256"] --> D["Data.init()"]
-    D --> L["candidate country lookups"]
-    L --> P["GlobeModule.prepare()"]
+    SR["fail-closed source registry"] --> C["offline component compilers"]
+    C --> F["five reviewed normalized<br/>249-row component artifacts"]
+    F --> X["deterministic intelligence builder"]
+    X --> J["country-climate-intelligence.json<br/>exact SHA-256"]
+    J --> D["Data.init()"]
+    D --> M["COUNTRY_CLIMATE_INTELLIGENCE"]
+    M --> P["GlobeModule.prepare()"]
     N["Pinned local Natural Earth 110m<br/>177-feature GeoJSON"] --> P
     I["Four pinned local images<br/>exact dimensions"] --> P
-    S["28 embedded approximate<br/>navigation points"] --> P
+    PTS["28 embedded approximate<br/>navigation points"] --> P
     P --> G["GlobeModule.init()"]
-    G --> R["atlas rail"]
-    G --> K["country card"]
-    G --> V["polygon visuals"]
-    D --> B["searchable 249-entity<br/>evidence browser"]
+    M --> R["exact-metric rail"]
+    M --> K["lens-aware country card"]
+    M --> V["lens legend + visual model"]
+    G --> B["same 249-entity model<br/>in WebGL and fallback"]
 ```
 
-`Data.init()` applies an eight-second deadline to carbon-project and critical
-candidate reads. The CT-42 candidate is parsed only after WebCrypto verifies
-its exact SHA-256 and its 249 / 206 factual / 43 gap boundary. Carbon-project
-data are noncritical; candidate failure blocks 3D rendering and exposes no
-inferred climate values.
+`Data.init()` applies an eight-second deadline to the critical candidate read.
+The candidate is parsed only after WebCrypto verifies SHA-256
+`4a1eb0665769a62ac0280e0c68a86265dc986b38cae9e77ee5f4fc4263d50a8e`.
+Schema validation then proves 249 unique registry entities, exactly 18 metric
+records per entity, coverage derived from records, three complete lens
+partitions, explicit gaps, and the non-production release boundary. Candidate
+failure blocks 3D rendering and exposes no inferred climate values.
+
+The three public comparison partitions are Carbon 213/36, Power 195/54, and
+Physical 245/4. `COUNTRY_CLIMATE_INTELLIGENCE` owns scientific selection,
+comparison eligibility, evidence/gap copy, source presentation, legend data,
+and the visual model. `GlobeModule` owns rendering and interaction and must not
+reimplement those policies. Carbon uses transparent log-scaled magnitude
+extrusion; Power and Physical are color-only.
 
 Before loading globe.gl, `GlobeModule.prepare()` must preload and validate the
 local 177-feature GeoJSON plus all four local globe visuals. The dark surface is
@@ -165,14 +181,12 @@ a byte-for-byte 3600×1800 NASA Earth Observatory Black Marble 2012 JPEG; the
 4096×2048 sky restores the original Three-Globe 2.45.2 PNG as an exact,
 locally pinned decorative asset and is not astronomical evidence.
 Preparation validates exact image dimensions and strong Polygon/MultiPolygon
-structure. The 28 approximate
-small-state points are embedded navigation affordances pinned to a hashed
-manual source; disputed subfeatures and non-registry entities are excluded.
-The interactive candidate deck must resolve exactly 201 registry entities
-(194 factual and 7 gaps). The first-class evidence browser remains the route
-to all 249 entities. CT-45 proves byte integrity and these fail-closed runtime
-boundaries; it does not grant texture rights, third-party-notice completeness,
-production approval, or release authority.
+structure. The 28 approximate small-state points are embedded navigation
+affordances pinned to a hashed manual source; disputed subfeatures and
+non-registry entities are excluded. The interactive geometry deck resolves
+exactly 201 registry entities. The first-class evidence browser remains the
+route to all 249 entities and renders the active lens's same ordered/gap
+partition. Geometry availability never determines factual eligibility.
 
 The deploy surface also exposes `/THIRD_PARTY_NOTICES.txt` from the origin
 root and retains its machine inventory under `data/governance/vendor/`. The
@@ -185,25 +199,10 @@ asset-specific rights dispositions plus four counsel resolutions in an exact
 commit approval, followed by distinct verified Ed25519 signatures from the
 asset-rights reviewer, licensing counsel, and release authorizer.
 
-### Target country-truth flow
-
-The approved direction is documented in:
+The implemented data contract is documented in:
 
 - `docs/COUNTRY-CLIMATE-TRUTH-PLAN.md`
 - `docs/COUNTRY-CLIMATE-METHODOLOGY.md`
-- `docs/decisions/CLI-100-country-climate-profile.md`
-
-```mermaid
-flowchart LR
-    O["official evidence"] --> E["reviewed evidence packets"]
-    H["harmonized evidence"] --> E
-    E --> Q["schema + comparability gates"]
-    Q --> X["offline profile compiler"]
-    X --> J["compact runtime JSON"]
-    J --> D["Data"]
-    D --> M["country-profile module"]
-    M --> G["GlobeModule presentation"]
-```
 
 The browser remains static. Fetching, normalization, review, and compilation
 are publication tasks, not a frontend build.
@@ -213,6 +212,7 @@ are publication tasks, not a frontend build.
 ```text
 App.enterGlobe()
   → show loading state and enter globe mode
+  → COUNTRY_CLIMATE_INTELLIGENCE.init()
   → GlobeModule.prepare()
       ├─ candidate unavailable → #globe-fallback (candidate_data_unavailable)
       ├─ geometry invalid/unavailable → #globe-fallback (country_geometry_unavailable)
@@ -224,7 +224,15 @@ App.enterGlobe()
       → create globe.gl instance through safeChain()
       → activate prepared geometry and exact 201-entity deck
       → emit globe:render-ready / globe:country-data-ready
+  → set Carbon as the initial lens
   → selectDefaultCountry()
+
+Carbon / Power / Physical lens selection
+  → GlobeModule.setLens(id)
+  → COUNTRY_CLIMATE_INTELLIGENCE supplies the exact rail, legend, card, and visual model
+  → preserve the selected country while rebuilding the lens view
+  → emit globe:lens-changed
+  → if fallback is open, rebuild its list and detail with the same active lens
 
 Browse all 249 evidence records
   → requires initialized renderer + exactly one live canvas
@@ -250,12 +258,14 @@ Escape / close / App.exitGlobe()
 | `app:ready` | `App` | External/optional listeners |
 | `app:globe-entered` | `App` | External/optional listeners |
 | `app:globe-exited` | `App` | External/optional listeners |
+| `climate-intelligence:ready` | `COUNTRY_CLIMATE_INTELLIGENCE` | External/optional listeners |
 | `globe:render-ready` | `GlobeModule` | `App` loading state |
 | `globe:country-data-ready` | `GlobeModule` | `App` loading state |
 | `globe:data-error` | `GlobeModule` | `App` user-visible loading/error state |
 | `globe:fallback-shown` | `GlobeModule` | `App` loading and `aria-busy` state |
 | `globe:country-selected` | `GlobeModule` | External/optional listeners |
 | `globe:country-closed` | `GlobeModule` | External/optional listeners |
+| `globe:lens-changed` | `GlobeModule` | External/optional listeners |
 
 Event names use an emitter prefix (`module:verb`). Contracts declare emitted
 and listened-to channels so pre-flight can flag orphan listeners.
@@ -271,6 +281,7 @@ Top to bottom:
  200  #hero, #globe-back-btn
  110  .globe-status
  100  #topbar
+  80  .climate-lens-controls
   60  #globe-fallback (failure or user-invoked evidence browser), .hex-legend
   50  .country-atlas-rail
   20  .country-atlas-scrim
@@ -291,18 +302,20 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v34 precaches the concise public truth-copy page, core CSS/JS, verified local
-globe.gl, the CT-45 manifest and five localized assets, and exact-version
-candidate/carbon data requests. It applies:
+`sw.js` cache epoch v43 precaches the public page, core CSS/JS, verified local
+globe.gl, the CT-45 manifest and localized globe assets, and the exact-version
+Country Climate Intelligence candidate. The prior country-factual candidate is
+retained for one release epoch as a rollback artifact; it is not loaded into the
+v1 dashboard. The service worker applies:
 
 - network-first for `/data/`;
 - network-first with browser-cache bypass for HTML, JS, and CSS;
 - cache-first for other same-origin static assets. Geometry and visual-asset requests
   use digest-versioned query keys coupled to the precache entries.
 
-Any runtime data filename or script addition requires a service-worker asset
-and cache-version review. A reviewed data release must not pair new HTML with
-an old profile artifact.
+Any runtime data filename or script addition requires an atomic service-worker
+asset, query pin, and cache-epoch review. A reviewed release must not pair new
+HTML or code with an old runtime artifact.
 
 ## Validation layers
 
@@ -313,33 +326,39 @@ an old profile artifact.
 | Runtime contracts | `MODULE_CONTRACTS.validate()` | Registered globals and methods exist |
 | Runtime behavior | `SmokeTest.run()` | Modules, data, DOM, globe, and selected interactions work |
 | Stacking | `StackLint.audit()` | No known invisible blockers/z-index regressions |
+| Country intelligence aggregate | `node tools/check-country-climate-intelligence-ci.js` | Registry gates, exact component receipts, compiler derivations, 249×18 runtime, lens coverage, UI contract, and atomic pin agree |
+| WebGL/fallback parity | `node tools/check-globe-webgl-fallback.js` | Three lenses share the 249-entity evidence model and explicit gaps |
 | Country truth | `tools/verify-globe-country-truth.js` | Intended country-status invariants; currently requires repair for v1 |
 | Public copy | `node tools/check-public-copy.js` | No unresolved draft markers; not scientific fact-checking |
 | Third-party notices | `node tools/check-globe-third-party-notices.js` | Exact notice/inventory/integration bytes and active deploy/CI controls; no rights approval |
 | Approval authority | `node tools/check-globe-runtime-approval.js` | Empty trust is fail closed; future detached three-role Ed25519 signatures and bindings verify |
 | Final staged aggregate | `node tools/check-staged-production-integrity.js --staged _deploy` | Last-write rehash of CT-45, notices, trust, footer, and any signed approval pair |
 
-The existing CI runs syntax, static load order, SmokeTest, and StackLint. It
-does not yet prove country-source truth, target comparability, or scientific
-lineage; those gates are part of the country-truth plan.
+CI runs the existing governance and production-denial gates plus the v1
+Country Climate Intelligence aggregate, syntax, static load order, SmokeTest,
+StackLint, theme/responsive checks, and WebGL/fallback parity. Passing those
+checks validates a factual candidate; it does not satisfy the independent
+scientific-review or production-promotion gates.
 
 ## Known traps and debt
 
 | Trap/debt | Consequence | Direction |
 |---|---|---|
 | `const X` without `window.X` | `safeCall()` cannot see the module | Export every cross-module API |
-| Ad hoc status logic in `js/globe.js` | Missing and non-comparable targets collapse together | Move policy to reviewed profile module |
-| Flat `pledge-nodes.json` | No field-level lineage or scope | Replace through evidence/compiler missions |
-| Remote unpinned country geometry | Availability/version drift | Pin or vendor in a later evidence mission |
-| Color/opacity as status | Missing evidence can appear visually calm | Persistent impact cue plus text/icon/reason states |
-| Modeled CAGR chart described as measured | Public claim exceeds evidence | Plot reviewed annual observations only |
-| Carbon projects beside performance | Can soften national accountability | Separate and label as outside profile |
+| Scientific policy added to `js/globe.js` | Renderer and evidence semantics can silently diverge | Keep eligibility, gaps, provenance, and visual models in `COUNTRY_CLIMATE_INTELLIGENCE` |
+| Missing upstream row treated as zero | Gaps become false measurements | Compile an enumerated gap or documented mapping exception |
+| Cross-source delta without exact scope equality | Accounting-frame differences look like disagreement | Require an identical scope fingerprint before computing a delta |
+| Raw snapshot retained in Git | Redistribution and repository-size risk | Keep raw files external; commit receipts, logs, reviewed normalized facts, and the compact runtime only |
+| Color alone conveys a lens value | Low vision and grayscale users lose the evidence class | Pair color with metric text, units, period, ordering, and explicit gap copy |
+| Geometry used as factual eligibility | Small states disappear from the dashboard | Keep the 249-entity evidence browser authoritative |
 | Archived subsystems copied into v1 | Reintroduces dead dependencies | Architecture review before restoration |
 
 ## Before shipping
 
 ```bash
 python3 scripts/verify_load_order.py
+node tools/check-country-climate-intelligence-ci.js
+node tools/check-globe-webgl-fallback.js
 node --check js/changed-file.js
 node tools/check-public-copy.js
 node tools/check-globe-third-party-notices.js
@@ -352,6 +371,7 @@ SmokeTest.run()
 StackLint.audit()
 ```
 
-For country-profile releases, also require the methodology, provenance,
-comparability, golden-country, coverage, visual-truth, change-control, and
-independent-review gates in `docs/COUNTRY-CLIMATE-TRUTH-PLAN.md`.
+For Country Climate Intelligence releases, also require the methodology,
+provenance, comparability, golden-country, coverage, visual-truth,
+change-control, and independent-review gates in
+`docs/COUNTRY-CLIMATE-TRUTH-PLAN.md`.

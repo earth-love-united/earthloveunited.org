@@ -11,6 +11,7 @@ const notices = require('./lib/globe-third-party-notices');
 const approvalPolicy = require('./lib/globe-runtime-approval');
 const publicSurface = require('./lib/public-deploy-surface');
 const {
+  CURRENT_RUNTIME_PIN_PATHS,
   EXPECTED_UI_REVIEW_COMMIT,
   EXPECTED_UI_REVIEW_SHA256,
   REQUIRED_UI_REVIEW_PIN_PATHS,
@@ -30,6 +31,7 @@ const PINNED_FILES = Object.freeze([
 ]);
 const APPROVAL_REVIEWED_PATHS = Object.freeze([...new Set([
   ...REQUIRED_UI_REVIEW_PIN_PATHS,
+  ...CURRENT_RUNTIME_PIN_PATHS,
   UI_REVIEW_PATH,
   notices.NOTICE_PATH,
   notices.MANIFEST_PATH,

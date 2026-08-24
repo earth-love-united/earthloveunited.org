@@ -112,6 +112,33 @@
 /docs/LEGACY-COUNTRY-DATA-EXIT.md      @earth-love-united/maintainers
 /tools/climate-truth-ci.js            @earth-love-united/maintainers
 
+# ─── Country Climate Intelligence factual pipeline ─────────────
+/js/country-climate-intelligence.js   @earth-love-united/architects @earth-love-united/maintainers
+/data/climate/source-registry.json    @earth-love-united/maintainers
+/data/climate/schemas/country-climate-intelligence.schema.json @earth-love-united/maintainers
+/data/climate/releases/country-climate-intelligence-v1/ @earth-love-united/maintainers
+/data/climate/runtime/country-climate-intelligence.json @earth-love-united/maintainers
+/docs/COUNTRY-CLIMATE-METHODOLOGY.md  @earth-love-united/maintainers
+/docs/COUNTRY-CLIMATE-TRUTH-PLAN.md   @earth-love-united/maintainers
+/tools/acquire-gcb-2025.js            @earth-love-united/maintainers
+/tools/build-country-climate-intelligence.js @earth-love-united/maintainers
+/tools/extract-reviewed-country-climate-components.js @earth-love-united/maintainers
+/tools/compile-gcb-emissions.js       @earth-love-united/maintainers
+/tools/compile-wpp-population.js      @earth-love-united/maintainers
+/tools/compile-climate-trace.js       @earth-love-united/maintainers
+/tools/compile-ember-power.js         @earth-love-united/maintainers
+/tools/compile-cckp-physical.js       @earth-love-united/maintainers
+/tools/check-climate-source-registry.js @earth-love-united/maintainers
+/tools/test-climate-source-registry.js @earth-love-united/maintainers
+/tools/check-country-climate-intelligence.js @earth-love-united/maintainers
+/tools/check-country-climate-intelligence-ui.js @earth-love-united/maintainers
+/tools/check-country-climate-intelligence-ci.js @earth-love-united/maintainers
+/tools/check-country-climate-runtime-atomic.js @earth-love-united/maintainers
+/tools/test-country-climate-compilers.js @earth-love-united/maintainers
+/tools/test-country-climate-intelligence-derivations.js @earth-love-united/maintainers
+/tools/lib/country-climate-intelligence.js @earth-love-united/maintainers
+/tools/lib/gcb-country-intelligence.js @earth-love-united/maintainers
+
 # ─── CI / GitHub config ─────────────────────────────────────────
 /.github/                             @earth-love-united/maintainers
 /.gitignore                           @earth-love-united/maintainers

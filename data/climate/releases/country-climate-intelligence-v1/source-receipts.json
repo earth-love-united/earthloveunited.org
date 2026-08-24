@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "release_id": "country-climate-intelligence-2026-08-24-candidate.1",
+  "raw_storage_policy": "external_only",
+  "reviewed_normalized_recovery": {
+    "artifact": "data/climate/runtime/country-climate-intelligence.json before component reassembly",
+    "sha256": "436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09",
+    "status": "exact_sha_verified",
+    "reason": "The reviewed candidate survived in the browser's same-origin cache after an uncommitted temporary mission worktree was purged. Component values were separated without recalculation."
+  },
+  "sources": [
+    {
+      "source_registry_id": "gcp-gcb-2025-v1.0",
+      "status": "raw_receipts_pinned",
+      "artifacts": [
+        {
+          "file_name": "National_Fossil_Carbon_Emissions_2025_v1.0.xlsx",
+          "bytes": 755198,
+          "sha256": "968097cacb1a6a5bfa0cf74ee90763f74a90ef10499e060ab43d1a74c671d46b",
+          "object_url": "https://meta.icos-cp.eu/objects/loCXyssaalv6DPdO6Qdj90qQ"
+        },
+        {
+          "file_name": "National_LandUseChange_Carbon_Emissions_2025_v1.0.xlsx",
+          "bytes": 1271678,
+          "sha256": "9a29536d6925d06f8c4a97581b720121fcf219732c240e970bc24167d74e38d1",
+          "object_url": "https://meta.icos-cp.eu/objects/milTbWkl0G-MSpdYG3IBIfzy"
+        }
+      ]
+    },
+    {
+      "source_registry_id": "un-wpp-2024",
+      "status": "normalized_candidate_receipt_recovered_raw_receipt_revalidation_required",
+      "normalized_component": "wpp-population.json"
+    },
+    {
+      "source_registry_id": "climate-trace-v5.9.0-country-annual",
+      "status": "normalized_candidate_receipt_recovered_raw_receipt_revalidation_required",
+      "normalized_component": "climate-trace-ghg.json"
+    },
+    {
+      "source_registry_id": "ember-yearly-electricity-data-2026-08-24",
+      "status": "normalized_candidate_receipt_recovered_raw_receipt_revalidation_required",
+      "normalized_component": "ember-power.json"
+    },
+    {
+      "source_registry_id": "world-bank-cckp-cmip6-2026-08-24",
+      "status": "normalized_candidate_receipt_recovered_raw_receipt_revalidation_required",
+      "normalized_component": "cckp-physical.json"
+    },
+    {
+      "source_registry_id": "world-bank-cckp-era5-2026-08-24",
+      "status": "exact_empty_response_represented_as_reviewed_gaps",
+      "normalized_component": "cckp-physical.json"
+    }
+  ],
+  "production_gate": {
+    "raw_receipt_revalidation_complete": false,
+    "independent_scientific_review_complete": false,
+    "production_promotion_allowed": false,
+    "rule": "This exact factual candidate may support candidate UI integration. Production promotion remains prohibited until the external raw receipts are independently revalidated."
+  }
+}
