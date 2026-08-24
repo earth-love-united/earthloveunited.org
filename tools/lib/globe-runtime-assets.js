@@ -3,7 +3,7 @@
 const crypto = require('node:crypto');
 const { hasActiveCiJob, hasExactCiStep } = require('./globe-vendor-integrity');
 
-const POLICY_VERSION = '1.3.0';
+const POLICY_VERSION = '1.4.0';
 const MANIFEST_PATH = 'assets/globe/runtime/manifest.json';
 const UI_REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
 const EXPECTED_UI_REVIEW_COMMIT = 'f43b91556d7734a36a69d6a7d8a18a7b8ca2a92b';
@@ -109,11 +109,13 @@ const ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS = Object.freeze([
   'js/data.js',
   'js/globe.js',
   'js/carbon-clock.js',
+  'js/guided-first-orbit.js',
   'js/app.js',
 ]);
 const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
   'index.html',
   'css/globe-system.css',
+  'css/guided-first-orbit.css',
   ...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
   'tools/smoke-test.js',
   'data/climate/runtime/country-factual-candidate.json',
@@ -165,6 +167,7 @@ function ct42RuntimeProjection(relativePath, bytes) {
 const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/css/carbon-clock.css?v=v2',
   '/css/globe-system.css?v=v20',
+  '/css/guided-first-orbit.css?v=v1',
   '/js/gaia-utils.js',
   '/js/module-contracts.js',
   '/js/event-bus.js',
@@ -174,6 +177,7 @@ const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/js/data.js?v=v2',
   '/js/globe.js?v=v14',
   '/js/carbon-clock.js?v=v1',
+  '/js/guided-first-orbit.js?v=v1',
   '/js/app.js?v=v3',
 ]);
 const REQUIRED_CONTROL_OWNERS = Object.freeze([
@@ -482,7 +486,7 @@ function evaluateRuntimeAssets(input) {
     index.includes('Original starfield from Three-Globe 2.45.2'),
     'Public copy must credit NASA and identify the historical surface and restored sky as decorative visual context.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v38-compact-rank';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=38-compact-rank'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v39-guided-orbit';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=39-guided-orbit'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&

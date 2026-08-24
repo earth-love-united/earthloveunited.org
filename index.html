@@ -400,6 +400,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
 <link rel="stylesheet" href="css/globe-system.css?v=v20">
+<link rel="stylesheet" href="css/guided-first-orbit.css?v=v1">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -501,6 +502,9 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
         <div class="stat-value negative">+20 Gt CO₂/yr</div>
       </div>
     </div>
+    <button id="guided-orbit-replay" type="button" aria-label="Show how the Living Globe works" title="Guided First Orbit">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-18 12 12)"></ellipse><circle cx="20.2" cy="9.3" r="1.1" fill="currentColor" stroke="none"></circle></svg>
+    </button>
     <button id="globe-theme-toggle" aria-label="Toggle light / dark theme" title="Toggle theme">
       <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg>
       <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.4 14.2A8.4 8.4 0 0 1 9.8 3.6a8.4 8.4 0 1 0 10.6 10.6z"/></svg>
@@ -518,6 +522,41 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 
 <!-- ═══ GLOBE ═══ -->
 <div id="globeViz" aria-hidden="true"></div>
+
+<!-- First-visit globe orientation. This remains a direct child of body so it
+     cannot be trapped inside the globe renderer's stacking context. -->
+<aside id="guided-orbit" class="guided-orbit" role="dialog" aria-modal="false" aria-hidden="true" aria-labelledby="guided-orbit-title" aria-describedby="guided-orbit-body" hidden>
+  <div class="guided-orbit-card">
+    <header class="guided-orbit-topline">
+      <button id="guided-orbit-back" class="guided-orbit-icon-button" type="button" aria-label="Previous tutorial step" hidden>←</button>
+      <p id="guided-orbit-kicker" class="guided-orbit-kicker">Guided first orbit · 1 of 3</p>
+      <button id="guided-orbit-close" class="guided-orbit-icon-button" type="button" aria-label="Skip tutorial">×</button>
+    </header>
+
+    <div class="guided-orbit-progress" role="progressbar" aria-label="Tutorial progress" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1">
+      <span id="guided-orbit-progress"></span>
+    </div>
+
+    <div class="guided-orbit-content">
+      <span class="guided-orbit-mark" aria-hidden="true"></span>
+      <h2 id="guided-orbit-title" class="guided-orbit-title" tabindex="-1">A climate evidence atlas.</h2>
+      <p id="guided-orbit-body" class="guided-orbit-body">Compare 2023 country emissions estimates. This is evidence—not a performance score.</p>
+    </div>
+
+    <div id="guided-orbit-legend" class="guided-orbit-legend" aria-label="Emissions map key" hidden>
+      <span class="guided-orbit-signal"><i class="guided-orbit-swatch is-low" aria-hidden="true"></i>Lower</span>
+      <span class="guided-orbit-signal"><i class="guided-orbit-swatch is-high" aria-hidden="true"></i>Higher</span>
+      <span class="guided-orbit-signal"><i class="guided-orbit-swatch is-gap" aria-hidden="true"></i>Source gap</span>
+    </div>
+
+    <p id="guided-orbit-hint" class="guided-orbit-hint">Three ideas · about twenty seconds</p>
+
+    <footer class="guided-orbit-actions">
+      <button id="guided-orbit-primary" class="guided-orbit-button" type="button">Read the map</button>
+    </footer>
+  </div>
+</aside>
+<div id="guided-orbit-announcer" class="guided-orbit-announcer" aria-live="polite" aria-atomic="true"></div>
 
 <!-- ═══ FOUNDATION SECTIONS (legacy site content, June 2025 archive) ═══ -->
 <div class="sections" id="main-content">
@@ -805,6 +844,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/data.js?v=v2"></script>
 <script src="js/globe.js?v=v14"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
+<script src="js/guided-first-orbit.js?v=v1"></script>
 <script src="js/app.js?v=v3"></script>
 
 <!-- Glass system behavior: scroll reveal + theme toggle (design handoff v1) -->
@@ -950,7 +990,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=38-compact-rank', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=39-guided-orbit', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

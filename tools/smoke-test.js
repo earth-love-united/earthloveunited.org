@@ -25,7 +25,7 @@ const SmokeTest = (() => {
         name: 'Core modules on window',
         critical: true,
         test: () => {
-          const required = ['Data', 'GlobeModule', 'CARBON_CLOCK', 'App'];
+          const required = ['Data', 'GlobeModule', 'CARBON_CLOCK', 'GUIDED_ORBIT', 'App'];
           const missing = required.filter(m => typeof window[m] === 'undefined');
           return {
             pass: missing.length === 0,
@@ -188,7 +188,7 @@ const SmokeTest = (() => {
         name: 'Critical DOM elements exist',
         critical: true,
         test: () => {
-          const required = ['globeViz', 'hero', 'topbar', 'hex-legend', 'globe-back-btn', 'globe-fallback', 'globe-evidence-browse', 'hero-carbon-clock'];
+          const required = ['globeViz', 'hero', 'topbar', 'hex-legend', 'globe-back-btn', 'globe-fallback', 'globe-evidence-browse', 'hero-carbon-clock', 'guided-orbit', 'guided-orbit-replay'];
           const missing = required.filter(id => !document.getElementById(id));
           return {
             pass: missing.length === 0,
