@@ -37,7 +37,7 @@ function cliValue(flag) {
 
 const reviewChainHead = cliValue('--review-chain-head');
 if (reviewChainHead !== null) assert.match(reviewChainHead, /^[a-f0-9]{40}$/, '--review-chain-head must be a full Git SHA');
-const runtimeControlCommit = reviewChainHead || RUNTIME_CONTROL_COMMIT;
+const runtimeControlCommit = RUNTIME_CONTROL_COMMIT;
 
 function git(args, options = {}) {
   const run = childProcess.spawnSync('git', args, {
@@ -91,15 +91,26 @@ function neutralIndex(bytes) {
   index = index.replace(/^<link href="https:\/\/fonts\.googleapis\.com\/css2[^\n]*\n/m, '');
   index = index.replace(/^<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">\n/m, '');
   index = index.replace(/^<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>\n/m, '');
+  index = replaceOnce(index, '<link rel="stylesheet" href="css/guided-first-orbit.css?v=v2">\n', '', 'remove guided orbit CSS');
   index = replaceOnce(index,
-    '.hex-legend-swatch{width:10px;height:10px;border-radius:2px}.hex-legend-swatch.magnitude-low{background:#5b4a97}.hex-legend-swatch.magnitude-high{background:#f6913a}.hex-legend-swatch.magnitude-gap{background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1}.hex-legend-note{max-width:230px;margin-top:3px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);line-height:1.35}',
+    '.hex-legend-swatch{width:10px;height:10px;border-radius:2px}.hex-legend-swatch.magnitude-low{background:#5b4a97}.hex-legend-swatch.magnitude-high{background:#f6913a}.hex-legend-swatch.magnitude-gap{background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1}',
     '.hex-legend-swatch{width:10px;height:10px;border-radius:2px;background:rgba(145,160,172,.46);border:1px solid rgba(205,225,235,.52)}.hex-legend-note{max-width:230px;margin-top:3px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);line-height:1.35}',
     'neutral inline legend styles');
-  index = replaceOnce(index, 'href="css/globe-system.css?v=v20"', 'href="css/globe-system.css?v=ct42-neutral-rollback-1"', 'rollback CSS key');
+  index = replaceOnce(index, 'href="css/globe-system.css?v=v21"', 'href="css/globe-system.css?v=ct42-neutral-rollback-1"', 'rollback CSS key');
   index = replaceOnce(index, 'href="js/data.js?v=v2" as="script"', 'href="js/data.js?v=ct42-neutral-rollback-1" as="script"', 'rollback data preload key');
   index = replaceOnce(index, 'src="js/data.js?v=v2"', 'src="js/data.js?v=ct42-neutral-rollback-1"', 'rollback data key');
-  index = replaceOnce(index, 'src="js/globe.js?v=v14"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
+  index = replaceOnce(index, 'src="js/globe.js?v=v15"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
+  index = replaceOnce(index, '<script src="js/guided-first-orbit.js?v=v2"></script>\n', '', 'remove guided orbit script');
   index = replaceOnce(index, "'tools/smoke-test.js?v=v1'", "'tools/smoke-test.js?v=ct42-neutral-rollback-1'", 'rollback SmokeTest key');
+  index = replaceOnce(index,
+    '    <button id="guided-orbit-replay" type="button" aria-label="Show how the Living Globe works" title="Guided First Orbit">\n      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-18 12 12)"></ellipse><circle cx="20.2" cy="9.3" r="1.1" fill="currentColor" stroke="none"></circle></svg>\n    </button>\n',
+    '',
+    'remove guided orbit replay control');
+  index = replaceSection(index,
+    '<!-- First-visit globe orientation.',
+    '<!-- ═══ FOUNDATION SECTIONS (legacy site content, June 2025 archive) ═══ -->',
+    '',
+    'remove guided orbit dialog');
   index = replaceOnce(index,
     '<button id="globe-evidence-browse" class="glass-btn" data-action="browseEvidence" disabled aria-disabled="true" aria-label="Browse all 249 evidence records"><span class="browse-label-full">Browse all 249 evidence records</span><span class="browse-label-short" aria-hidden="true">249 records</span></button>',
     '<button id="globe-evidence-browse" class="glass-btn" data-action="browseEvidence" disabled aria-disabled="true" aria-label="Browse 201 neutral navigation entities"><span class="browse-label-full">Browse 201 neutral entities</span><span class="browse-label-short" aria-hidden="true">201 entities</span></button>',
@@ -148,7 +159,7 @@ function neutralIndex(bytes) {
     'Choose an item to inspect its emissions series or source-gap state. Climate performance is not scored in this view.',
     'Choose an entity to inspect its explicit evidence-withheld state. No climate value, commitment, target, delivery, performance, impact, finance, rating, or score conclusion is shown here.',
     'neutral fallback detail');
-  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=38-compact-rank'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
+  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=40-guided-orbit-review'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
   return Buffer.from(index);
 }
 
@@ -833,11 +844,13 @@ const CACHE_NAME = '${CACHE_NAME}';`,
     "  '/assets/globe/runtime/earth-blue-marble.jpg?v=228deba2e4b6',\n",
     "  '/assets/globe/runtime/earth-topology.png?v=839b12da2e4d',\n",
     "  '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',\n",
+    "  '/css/guided-first-orbit.css?v=v2',\n",
+    "  '/js/guided-first-orbit.js?v=v2',\n",
   ];
   for (const line of removals) sw = replaceOnce(sw, line, '', `remove precache ${line.trim()}`);
-  sw = replaceOnce(sw, "'/css/globe-system.css?v=v20'", "'/css/globe-system.css?v=ct42-neutral-rollback-1'", 'rollback CSS precache');
+  sw = replaceOnce(sw, "'/css/globe-system.css?v=v21'", "'/css/globe-system.css?v=ct42-neutral-rollback-1'", 'rollback CSS precache');
   sw = replaceOnce(sw, "'/js/data.js?v=v2'", "'/js/data.js?v=ct42-neutral-rollback-1'", 'rollback data precache');
-  sw = replaceOnce(sw, "'/js/globe.js?v=v14'", "'/js/globe.js?v=ct42-neutral-rollback-1'", 'rollback globe precache');
+  sw = replaceOnce(sw, "'/js/globe.js?v=v15'", "'/js/globe.js?v=ct42-neutral-rollback-1'", 'rollback globe precache');
   sw = replaceOnce(sw, "'/data/carbon-projects.json?v=ct42candidate1'", "'/data/carbon-projects.json?v=ct42-neutral-rollback-1'", 'rollback carbon data key');
   return Buffer.from(sw);
 }

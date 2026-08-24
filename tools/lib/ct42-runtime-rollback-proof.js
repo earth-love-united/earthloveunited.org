@@ -13,7 +13,7 @@ const {
 } = require('./globe-runtime-assets');
 const { EXPECTED_SPEC: EXPECTED_VENDOR_SPEC } = require('./globe-vendor-integrity');
 
-const RUNTIME_CONTROL_COMMIT = '4dff6cd951d34ccefb621ad1023f699dd9dbba3f';
+const RUNTIME_CONTROL_COMMIT = '6331b0a304b589e5a671cfaa4cc23b116e10ed0c';
 const ROLLBACK_PLAN_SHA256 = 'c23bd5caf21bf05b6e637c6f599742e13a47b822b298054ca8d56e968d8aeaae';
 const CACHE_NAME = 'elu-v34-ct42-neutral-rollback';
 const SERVICE_WORKER_REGISTRATION = '/sw.js?v=34-ct42-neutral-rollback';
@@ -77,6 +77,8 @@ const RUNTIME_EXCLUSIONS = Object.freeze([
   'assets/globe/runtime/night-sky.png',
   'assets/globe/runtime/earth-blue-marble.jpg',
   'assets/globe/runtime/earth-topology.png',
+  'css/guided-first-orbit.css',
+  'js/guided-first-orbit.js',
 ]);
 
 const PROHIBITED_OUTPUTS = Object.freeze([

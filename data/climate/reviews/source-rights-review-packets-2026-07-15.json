@@ -24,7 +24,7 @@
     },
     "ct40_result": {
       "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
-      "sha256": "068ac29d2fd420e647080addb90be8716feb2de7002ea5da9e002668249db992"
+      "sha256": "684f38b3741a57e86e60e92873ecaa36336eb496f0443647ec067c2ee885444a"
     }
   },
   "governance_boundary": {
@@ -778,5 +778,5 @@
       }
     }
   ],
-  "calculation_hash": "8de5a1bde712a7813afb7c3864e73281b7d06572f0e29e2e7b66cbdc2c4252d8"
+  "calculation_hash": "5b6e69585d51ab94ead6f3a3ce8a6188af5b31c3564eb048ae02c26ff2cd7744"
 }

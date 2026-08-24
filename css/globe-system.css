@@ -25,9 +25,9 @@ body.globe-mode {
   --hud-today: rgba(255, 255, 255, .28);
   --globe-dock-inset: 24px;
   --globe-dock-gap: 12px;
-  --globe-dock-height: 86px;
+  --globe-dock-height: 54px;
   --globe-back-height: 54px;
-  --globe-back-lift: 16px;
+  --globe-back-lift: 0px;
   --globe-back-width: clamp(260px, 31vw, 470px);
 }
 
@@ -684,6 +684,8 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   font-size: 9px;
 }
 
+.elu-rank-boundary-compact { display: none; }
+
 .elu-rank-toggle {
   width: 23px;
   height: 23px;
@@ -1027,7 +1029,7 @@ body.globe-mode .hex-legend {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-content: center;
-  gap: 7px 14px;
+  gap: 14px;
   min-height: var(--globe-dock-height);
   padding: 10px 14px;
   border-color: var(--hud-border);
@@ -1040,16 +1042,6 @@ body.globe-mode .hex-legend-row {
   min-width: 0;
   color: var(--text2);
   line-height: 1.25;
-}
-
-body.globe-mode .hex-legend-note {
-  grid-column: 1 / -1;
-  max-width: none;
-  margin: 0;
-  padding-top: 6px;
-  border-top-color: var(--hud-divider);
-  color: var(--text2);
-  line-height: 1.3;
 }
 
 body.globe-mode #globe-back-btn {
@@ -1141,6 +1133,17 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   .elu-rank-title { font-size: 7px; letter-spacing: .8px; }
   .elu-rank-subtitle,
   .elu-rank-toggle { display: none; }
+
+  .elu-rank-boundary-compact {
+    display: block;
+    margin-top: 3px;
+    color: var(--hud-faint);
+    font-family: var(--mono);
+    font-size: 6px;
+    line-height: 1.15;
+    letter-spacing: .35px;
+    text-transform: uppercase;
+  }
 
   .elu-rank-disclosure {
     padding: 7px 3px;

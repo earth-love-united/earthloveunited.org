@@ -18,6 +18,7 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'index.html',
   'sw.js',
   'css/globe-system.css',
+  'css/guided-first-orbit.css',
   ...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
   'js/country-climate-view-model.js',
   'js/country-ranking-compiler.js',

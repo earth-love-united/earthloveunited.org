@@ -25,7 +25,7 @@ const SmokeTest = (() => {
         name: 'Core modules on window',
         critical: true,
         test: () => {
-          const required = ['Data', 'GlobeModule', 'CARBON_CLOCK', 'App'];
+          const required = ['Data', 'GlobeModule', 'CARBON_CLOCK', 'GUIDED_ORBIT', 'App'];
           const missing = required.filter(m => typeof window[m] === 'undefined');
           return {
             pass: missing.length === 0,
@@ -188,7 +188,7 @@ const SmokeTest = (() => {
         name: 'Critical DOM elements exist',
         critical: true,
         test: () => {
-          const required = ['globeViz', 'hero', 'topbar', 'hex-legend', 'globe-back-btn', 'globe-fallback', 'globe-evidence-browse', 'hero-carbon-clock'];
+          const required = ['globeViz', 'hero', 'topbar', 'hex-legend', 'globe-back-btn', 'globe-fallback', 'globe-evidence-browse', 'hero-carbon-clock', 'guided-orbit', 'guided-orbit-replay'];
           const missing = required.filter(id => !document.getElementById(id));
           return {
             pass: missing.length === 0,
@@ -336,6 +336,141 @@ const SmokeTest = (() => {
           return {
             pass: exists,
             detail: exists ? 'exitGlobe() global function exists' : 'exitGlobe() not found — back button will not work',
+          };
+        },
+      },
+      {
+        name: 'Guided orbit suppresses no-data routes and owns one control lifecycle',
+        critical: true,
+        test: () => {
+          const orbit = window.GUIDED_ORBIT;
+          const replay = document.getElementById('guided-orbit-replay');
+          const primary = document.getElementById('guided-orbit-primary');
+          if (!orbit || !replay || !primary) return { pass: false, detail: 'Guided orbit controls are unavailable' };
+          if (!document.body.classList.contains('globe-mode')) {
+            return { pass: true, detail: 'Guided lifecycle is exercised by the headless globe route' };
+          }
+          const stored = localStorage.getItem('elu-guided-first-orbit-v1');
+          let blocked = false;
+          let advancedOnce = false;
+          let restoredVisibleOpener = false;
+          try {
+            orbit.destroy();
+            orbit.init();
+            orbit.destroy();
+            orbit.init();
+            blocked = orbit.start({ route: 'fallback', reason: 'candidate_data_unavailable', force: true, opener: replay, focus: false }) === false &&
+              orbit.getState().active === false && document.getElementById('guided-orbit').hidden;
+            const started = orbit.start({ route: 'globe', force: true, opener: replay, focus: false });
+            primary.click();
+            const state = orbit.getState();
+            advancedOnce = started === true && state.active === true && state.step === 2;
+            orbit.skip();
+            restoredVisibleOpener = document.activeElement === replay && replay.getClientRects().length > 0;
+          } finally {
+            orbit.destroy();
+            orbit.init();
+            if (stored === null) localStorage.removeItem('elu-guided-first-orbit-v1');
+            else localStorage.setItem('elu-guided-first-orbit-v1', stored);
+          }
+          const pass = blocked && advancedOnce && restoredVisibleOpener;
+          return {
+            pass,
+            detail: pass
+              ? 'No-data tour suppressed; destroy/re-init leaves one click handler; skip restores the visible replay control'
+              : `blocked ${blocked}, one-step advance ${advancedOnce}, visible focus restore ${restoredVisibleOpener}`,
+          };
+        },
+      },
+      {
+        name: 'Country ranking persistently identifies magnitude as not performance',
+        critical: true,
+        test: () => {
+          if (!document.body.classList.contains('globe-mode')) {
+            return { pass: true, detail: 'Persistent ranking disclosure is exercised by the headless globe route' };
+          }
+          const rail = document.getElementById('elu-country-rank-rail');
+          const full = rail?.querySelector('.elu-rank-subtitle');
+          const compact = rail?.querySelector('.elu-rank-boundary-compact');
+          const visible = node => !!node && node.getClientRects().length > 0 && getComputedStyle(node).display !== 'none';
+          const accessible = rail?.getAttribute('aria-label')?.includes('Magnitude ordering is not a climate-performance score.') === true;
+          const fullVisible = visible(full) && full.textContent.includes('not a performance score');
+          const compactVisible = visible(compact) && compact.textContent.trim() === 'Not a performance score';
+          const pass = !!rail && accessible && (fullVisible || compactVisible);
+          return {
+            pass,
+            detail: pass
+              ? 'The visible rank rail and its accessible name preserve the performance-score qualification'
+              : `rail ${!!rail}, accessible ${accessible}, full visible ${fullVisible}, compact visible ${compactVisible}`,
+          };
+        },
+      },
+      {
+        name: 'Guided orbit completion is keyboard-reachable inside the country dialog',
+        critical: true,
+        test: async () => {
+          const orbit = window.GUIDED_ORBIT;
+          const row = document.querySelector('#elu-country-rank-rail [data-country-rail-iso]');
+          if (!document.body.classList.contains('globe-mode') || document.body.classList.contains('globe-fallback-active') ||
+              window.GlobeModule?._initialized !== true || !orbit || !row) {
+            return { pass: true, detail: 'Live country-dialog route is not active; headless lifecycle covers it after renderer readiness' };
+          }
+          const stored = localStorage.getItem('elu-guided-first-orbit-v1');
+          let earlyCloseRecoversSelection = false;
+          let insideDialog = false;
+          let nextAfterClose = false;
+          let closeRecoversSelection = false;
+          let completed = false;
+          const waitForDialogCompletion = () => new Promise(resolve => {
+            const deadline = Date.now() + 3500;
+            const poll = () => {
+              if (document.getElementById('guided-orbit-dialog-complete') || Date.now() >= deadline) resolve();
+              else window.setTimeout(poll, 40);
+            };
+            poll();
+          });
+          try {
+            orbit.reset();
+            orbit.start({ route: 'globe', force: true, opener: document.getElementById('guided-orbit-replay'), focus: false });
+            orbit.goToStep(1, { focus: false });
+            row.click();
+            document.querySelector('#elu-country-card-wrap [data-country-close]')?.click();
+            await new Promise(resolve => setTimeout(resolve, 180));
+            earlyCloseRecoversSelection = orbit.getState().active === true && orbit.getState().step === 2 &&
+              !document.getElementById('guided-orbit-dialog-complete');
+            row.click();
+            await waitForDialogCompletion();
+            const wrap = document.getElementById('elu-country-card-wrap');
+            const close = wrap?.querySelector('[data-country-close]');
+            const finish = document.getElementById('guided-orbit-dialog-complete');
+            const tabbable = wrap ? Array.from(wrap.querySelectorAll('button,a[href],summary,[tabindex="0"]')).filter(node => {
+              if (node.disabled || node.hidden || node.getAttribute('aria-hidden') === 'true') return false;
+              const style = window.getComputedStyle(node);
+              return node.getClientRects().length > 0 && style.visibility !== 'hidden';
+            }) : [];
+            insideDialog = !!(wrap && finish && wrap.contains(finish) &&
+              document.getElementById('guided-orbit-primary').hidden && orbit.getState().dialogCompletionMounted);
+            nextAfterClose = !!(close && finish && tabbable.indexOf(finish) === tabbable.indexOf(close) + 1);
+            close?.click();
+            closeRecoversSelection = orbit.getState().active === true && orbit.getState().step === 2 &&
+              !document.getElementById('guided-orbit-dialog-complete');
+            row.click();
+            await waitForDialogCompletion();
+            document.getElementById('guided-orbit-dialog-complete')?.click();
+            completed = orbit.getState().active === false && !document.getElementById('guided-orbit-dialog-complete');
+          } finally {
+            safeCall('GlobeModule', 'clearCountrySelection');
+            orbit.destroy();
+            orbit.init();
+            if (stored === null) localStorage.removeItem('elu-guided-first-orbit-v1');
+            else localStorage.setItem('elu-guided-first-orbit-v1', stored);
+          }
+          const pass = earlyCloseRecoversSelection && insideDialog && nextAfterClose && closeRecoversSelection && completed;
+          return {
+            pass,
+            detail: pass
+              ? 'Explore freely follows Close inside the modal tab order and completes without leaving a hidden control'
+              : `early close recovery ${earlyCloseRecoversSelection}, inside dialog ${insideDialog}, follows Close ${nextAfterClose}, close recovery ${closeRecoversSelection}, completed ${completed}`,
           };
         },
       },
