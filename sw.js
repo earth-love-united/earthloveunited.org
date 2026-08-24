@@ -1,10 +1,10 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v47) — compose the responsive Guided First Orbit with the
- * subtle shared tile relief, pinned candidate runtime, and rollback.
+ * Globe cache (v48) — retain the responsive Guided First Orbit and subtle
+ * shared tile relief while pausing hidden WebGL work.
  */
-const CACHE_NAME = 'elu-v47-country-climate-subtle-relief';
+const CACHE_NAME = 'elu-v48-globe-lifecycle';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -30,10 +30,10 @@ const STATIC_ASSETS = [
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v5',
   '/js/country-climate-intelligence.js?v=v5',
-  '/js/globe.js?v=v22',
+  '/js/globe.js?v=v23',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v3',
-  '/js/app.js?v=v3',
+  '/js/app.js?v=v4',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
   '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate3',

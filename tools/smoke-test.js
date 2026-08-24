@@ -529,6 +529,28 @@ const SmokeTest = (() => {
         },
       },
       {
+        name: 'Globe renderer follows the visible application lifecycle',
+        critical: true,
+        test: () => {
+          const state = window.GlobeModule?.getState?.();
+          if (!state) return { pass: false, detail: 'GlobeModule state is unavailable' };
+          if (!window.GlobeModule._initialized) {
+            const safeLazyState = state.rendererCanvasCount === 0 && state.animationPaused === false;
+            return { pass: safeLazyState, detail: safeLazyState ? 'No renderer exists before lazy initialization' : JSON.stringify(state) };
+          }
+          const shouldPause = document.visibilityState === 'hidden' ||
+            !document.body.classList.contains('globe-mode') ||
+            document.body.classList.contains('globe-fallback-active');
+          const lifecycleSafe = state.animationPaused === shouldPause;
+          return {
+            pass: lifecycleSafe,
+            detail: lifecycleSafe
+              ? `Renderer is ${state.animationPaused ? 'paused' : 'active'} for the current visible route`
+              : `Renderer lifecycle mismatch: expected paused ${shouldPause}, state ${state.animationPaused}`,
+          };
+        },
+      },
+      {
         name: 'All 249 evidence records remain first-class and searchable',
         critical: true,
         test: () => {

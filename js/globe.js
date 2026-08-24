@@ -400,6 +400,8 @@ const GlobeModule = {
   _lensControlsBound: false,
   _reducedMotionMedia: null,
   _onReducedMotionChange: null,
+  _animationPaused: false,
+  _onVisibilityChange: null,
   _prepared: false,
   _preparationPromise: null,
   _preparationFailure: null,
@@ -595,6 +597,7 @@ const GlobeModule = {
           SITE_PANEL.open(site);
         }
       });
+    this._animationPaused = false;
 
     // onGlobeClick MUST be set AFTER safeChain, directly on the world object
     // (safeChain Proxy can silently swallow unknown methods)
@@ -849,6 +852,8 @@ const GlobeModule = {
     this.world.controls().enableDamping = true;
     this.world.controls().dampingFactor = 0.1;
     this._bindReducedMotionPreference();
+    this._bindVisibilityLifecycle();
+    this._syncAnimationLifecycle();
     this._syncAutoRotation();
 
     const m = this.world.globeMaterial();
@@ -902,6 +907,58 @@ const GlobeModule = {
     }
   },
 
+  pause() {
+    if (!this.world || typeof this.world.pauseAnimation !== 'function') return false;
+    if (this._animationPaused) return true;
+    try {
+      this.world.pauseAnimation();
+      this._animationPaused = true;
+      return true;
+    } catch (error) {
+      reportWarn('GlobeModule', 'Renderer animation could not be paused.');
+      return false;
+    }
+  },
+
+  resume() {
+    const canRender = this.world && typeof this.world.resumeAnimation === 'function' &&
+      document.visibilityState !== 'hidden' &&
+      document.body?.classList.contains('globe-mode') &&
+      !document.body.classList.contains('globe-fallback-active');
+    if (!canRender) return false;
+    if (!this._animationPaused) return true;
+    try {
+      this.world.resumeAnimation();
+      this._animationPaused = false;
+      this._syncAutoRotation();
+      return true;
+    } catch (error) {
+      reportWarn('GlobeModule', 'Renderer animation could not be resumed.');
+      return false;
+    }
+  },
+
+  _syncAnimationLifecycle() {
+    const shouldRender = this.world &&
+      document.visibilityState !== 'hidden' &&
+      document.body?.classList.contains('globe-mode') &&
+      !document.body.classList.contains('globe-fallback-active');
+    return shouldRender ? this.resume() : this.pause();
+  },
+
+  _bindVisibilityLifecycle() {
+    this._unbindVisibilityLifecycle();
+    this._onVisibilityChange = () => this._syncAnimationLifecycle();
+    document.addEventListener('visibilitychange', this._onVisibilityChange);
+  },
+
+  _unbindVisibilityLifecycle() {
+    if (this._onVisibilityChange) {
+      document.removeEventListener('visibilitychange', this._onVisibilityChange);
+      this._onVisibilityChange = null;
+    }
+  },
+
   _syncAutoRotation() {
     const controls = typeof this.world?.controls === 'function' ? this.world.controls() : null;
     if (!controls) return false;
@@ -935,6 +992,7 @@ const GlobeModule = {
 
   _teardownFailedRenderer() {
     this._unbindReducedMotionPreference();
+    this._unbindVisibilityLifecycle();
     if (this._canvasEl) {
       if (this._onCanvasPointerMove) this._canvasEl.removeEventListener('pointermove', this._onCanvasPointerMove);
       if (this._onCanvasClick) this._canvasEl.removeEventListener('click', this._onCanvasClick);
@@ -959,6 +1017,7 @@ const GlobeModule = {
     }
     this.world = null;
     this._initialized = false;
+    this._animationPaused = false;
     this._canvasEl = null;
     this._onCanvasWebGLContextLost = null;
     this._canvasDragGuardBound = false;
@@ -1011,6 +1070,7 @@ const GlobeModule = {
     panel.hidden = false;
     panel.setAttribute('aria-hidden', 'false');
     document.body.classList.add('globe-fallback-active');
+    this.pause();
     $text('globe-fallback-reason', GLOBE_FALLBACK_REASONS[stableReason]);
     const browseRequested = stableReason === 'evidence_browse_requested';
     $text('globe-fallback-title', browseRequested ? 'Browse all 249 country evidence records' : 'The 3D view is unavailable.');
@@ -1170,7 +1230,11 @@ const GlobeModule = {
 
   closeEvidenceBrowser() {
     const hasLiveRenderer = this._initialized === true && $('globeViz')?.querySelectorAll('canvas').length === 1;
-    if (hasLiveRenderer) return this.hideFallback({ restoreFocus: true, preserveOpener: false });
+    if (hasLiveRenderer) {
+      const hidden = this.hideFallback({ restoreFocus: true, preserveOpener: false });
+      this._syncAnimationLifecycle();
+      return hidden;
+    }
     this._teardownFailedRenderer();
     return this.showFallback('globe_construction_failed');
   },
@@ -2415,6 +2479,7 @@ const GlobeModule = {
     document.removeEventListener('keydown', this._onCountryKeydown);
     this._countryKeydownBound = false;
     this._unbindReducedMotionPreference();
+    this._unbindVisibilityLifecycle();
 
     // Remove canvas listeners
     if (this._canvasEl) {
@@ -2450,6 +2515,7 @@ const GlobeModule = {
       }
       this.world = null;
     }
+    this._animationPaused = false;
 
     // Nullify country features (large GeoJSON)
     this._countryFeatures = null;
@@ -2498,6 +2564,7 @@ const GlobeModule = {
       runtimeAssetsPrepared: this._prepared,
       preparationFailure: this._preparationFailure,
       rendererCanvasCount: $('globeViz')?.querySelectorAll('canvas').length || 0,
+      animationPaused: this._animationPaused,
     };
   },
 
@@ -2677,7 +2744,7 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['prepare', 'init', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'getLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState'],
+    provides: ['prepare', 'init', 'pause', 'resume', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'getLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState'],
     requires: ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE'],
     emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown', 'globe:lens-changed'],
   });

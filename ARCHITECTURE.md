@@ -23,10 +23,11 @@ hero / Living Globe action
   → App.enterGlobe()
   → lazy-load globe.gl
   → initialize GlobeModule
+  → resume the renderer only while the live globe route is visible
   → first visit opens the three-step Guided First Orbit
   → Carbon / Power / Physical lens controls
   → exact-metric country rail + lens-aware selected-country card
-  → App.exitGlobe() returns to the foundation page
+  → App.exitGlobe() pauses WebGL and returns to the foundation page
 ```
 
 The former GAIA, quiz, biome, scenario, pledge-wall, declarative-learning,
@@ -265,7 +266,12 @@ first globe visit / replay
 
 Escape / close / App.exitGlobe()
   → clear selection
+  → pause the globe.gl animation loop without destroying the prepared renderer
   → emit globe:country-closed / app:globe-exited
+
+Document visibility / evidence browser
+  → pause WebGL while the tab or 3D surface is hidden
+  → resume the existing renderer only when the visible globe route returns
 ```
 
 ## Event channels
@@ -324,7 +330,7 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v46 precaches the public page, core CSS/JS, Guided First
+`sw.js` cache epoch v48 precaches the public page, core CSS/JS, Guided First
 Orbit UI, the shared raised-tile lenses, verified local globe.gl, the CT-45 manifest
 and localized globe assets, and the exact-version Country Climate Intelligence
 candidate. The prior country-factual candidate is retained for one release

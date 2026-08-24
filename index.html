@@ -815,10 +815,10 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v5"></script>
 <script src="js/country-climate-intelligence.js?v=v5"></script>
-<script src="js/globe.js?v=v22"></script>
+<script src="js/globe.js?v=v23"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/guided-first-orbit.js?v=v3"></script>
-<script src="js/app.js?v=v3"></script>
+<script src="js/app.js?v=v4"></script>
 
 <!-- Glass system behavior: scroll reveal + theme toggle (design handoff v1) -->
 <script>
@@ -963,7 +963,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=47-country-climate-subtle-relief', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=48-globe-lifecycle', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

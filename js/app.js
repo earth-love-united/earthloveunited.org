@@ -186,6 +186,7 @@ const App = {
       document.addEventListener('keydown', _onGlobeKeyDown);
       return false;
     }
+    safeCall('GlobeModule', 'resume');
     // GlobeModule emits readiness during init. If someone enters while the
     // application is still awaiting its bootstrap data, that event can precede
     // the subscription. The rendered canvas is now present, so always close
@@ -227,6 +228,7 @@ const App = {
     this._globeActivationAttempt += 1;
     _setEvidenceBrowseEnabled(false);
     _setGlobeLoading(false);
+    safeCall('GlobeModule', 'pause');
     document.body.classList.remove('globe-mode');
     document.body.removeAttribute('aria-busy');
     $('topbar')?.classList.remove('visible');

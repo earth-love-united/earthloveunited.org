@@ -55,6 +55,8 @@ const RUNTIME_DEPENDENCY_FILES = Object.freeze(RUNTIME_DEPENDENCIES.map(entry =>
 const APP_CALLED_GLOBE_APIS = Object.freeze([
   'prepare',
   'init',
+  'pause',
+  'resume',
   'teardownFailedRenderer',
   'rememberFallbackOpener',
   'showFallback',

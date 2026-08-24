@@ -57,7 +57,12 @@ function compile() {
       user_invoked_browser: html.includes('aria-label="Browse all 249 climate intelligence records"') && globe.includes("stableReason === 'evidence_browse_requested'") && globe.includes("evidence_browse_requested: 'All 249 registry entities"),
       guarded_browser_return: globe.includes('closeEvidenceBrowser()') && globe.includes("querySelectorAll('canvas').length === 1") && globe.includes('this._teardownFailedRenderer();'),
       context_loss_route: globe.includes("addEventListener('webglcontextlost', this._onCanvasWebGLContextLost)") && globe.includes("this.showFallback('webgl_unavailable')"),
-      contracts_registered: globe.includes("'hasWebGLSupport'") && globe.includes("'showFallback'") && globe.includes("'hideFallback'") && globe.includes("'closeEvidenceBrowser'") && globe.includes("'globe:fallback-shown'") && app.includes("'retryGlobe'") && app.includes("'browseEvidence'") && app.includes("'globe:fallback-shown'"),
+      renderer_lifecycle: app.includes("safeCall('GlobeModule', 'pause')") &&
+        app.includes("safeCall('GlobeModule', 'resume')") &&
+        globe.includes("document.addEventListener('visibilitychange', this._onVisibilityChange)") &&
+        globe.includes('this.world.pauseAnimation()') && globe.includes('this.world.resumeAnimation()') &&
+        fallbackRuntime.includes('this.pause();') && fallbackRuntime.includes('this._syncAnimationLifecycle();'),
+      contracts_registered: globe.includes("'pause'") && globe.includes("'resume'") && globe.includes("'hasWebGLSupport'") && globe.includes("'showFallback'") && globe.includes("'hideFallback'") && globe.includes("'closeEvidenceBrowser'") && globe.includes("'globe:fallback-shown'") && app.includes("'retryGlobe'") && app.includes("'browseEvidence'") && app.includes("'globe:fallback-shown'"),
       lens_parity: globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows'") && globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView'") && globe.includes('this._renderFallbackEvidence();'),
     },
     accessibility: {
@@ -95,6 +100,7 @@ function compile() {
         smoke.includes('data-fallback-evidence-state="factual"') &&
         smoke.includes('data-fallback-evidence-state="gap"') &&
         smoke.includes('All 249 evidence records remain first-class and searchable') &&
+        smoke.includes('Globe renderer follows the visible application lifecycle') &&
         smoke.includes('Guided orbit suppresses no-data routes and owns one control lifecycle') &&
         smoke.includes('Country rail exposes the exact lens metric and searchable gaps') &&
         smoke.includes('Guided orbit completion is keyboard-reachable inside the country dialog'),

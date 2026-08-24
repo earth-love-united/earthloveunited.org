@@ -15,7 +15,7 @@ const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
 const dataAt = index.indexOf('src="js/data.js?v=v5"');
 const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v5"');
-const globeAt = index.indexOf('src="js/globe.js?v=v22"');
+const globeAt = index.indexOf('src="js/globe.js?v=v23"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -73,7 +73,7 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v47-country-climate-subtle-relief'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v48-globe-lifecycle'"));
 assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v5'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate3'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
