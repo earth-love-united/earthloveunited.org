@@ -88,13 +88,13 @@ const SmokeTest = (() => {
             && candidate?.release?.production_runtime_release === false
             && candidate?.countries?.length === 249
             && new Set(candidate.countries.map(country => country.country_id)).size === 249
-            && Object.keys(candidate?.metric_definitions || {}).length === 18
+            && Object.keys(candidate?.metric_definitions || {}).length === 27
             && lenses.map(lens => lens.id).join(',') === 'carbon,power,physical'
             && partitionsValid;
           return {
             pass: ok,
             detail: ok
-              ? 'exact-SHA candidate; 249 unique entities; 18 metrics; three complete lens partitions; production release false'
+              ? 'exact-SHA candidate; 249 unique entities; 27 metrics; three complete lens partitions; production release false'
               : `runtime boundary mismatch (registry ${candidate?.countries?.length || 0}, metrics ${Object.keys(candidate?.metric_definitions || {}).length}, lenses ${lenses.length})`,
           };
         },

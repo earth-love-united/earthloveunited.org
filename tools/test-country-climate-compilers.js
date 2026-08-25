@@ -59,15 +59,24 @@ try {
   assert.strictEqual(trace.countries.find(country => country.iso_alpha3 === 'AFG').metrics['emissions.ghg.independent'].value, null);
 
   const emberRows = [
-    ['Aruba', 'ABW', 2019, 'Electricity generation', 'Clean', '%', 10, 'actual'],
-    ['Aruba', 'ABW', 2024, 'Electricity generation', 'Clean', '%', 25, 'actual'],
-    ['Aruba', 'ABW', 2024, 'Electricity generation', 'Fossil', '%', 75, 'actual'],
-    ['Aruba', 'ABW', 2024, 'Electricity generation', 'Wind and solar', '%', 20, 'actual'],
-    ['Aruba', 'ABW', 2024, 'Electricity generation', 'Carbon intensity', 'gCO2/kWh', 400, 'actual'],
-    ['Aruba', 'ABW', 2024, 'Power sector emissions', 'Total', 'MtCO2', 0.4, 'actual'],
+    ['Aruba', 'ABW', 2019, 'Country or economy', 'Electricity generation', 'Aggregate fuel', 'Clean', '%', 10, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Aggregate fuel', 'Clean', '%', 25, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Aggregate fuel', 'Fossil', '%', 75, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Aggregate fuel', 'Wind and Solar', '%', 20, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Fuel', 'Bioenergy', '%', 0, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Fuel', 'Coal', '%', 20, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Fuel', 'Gas', '%', 50, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Fuel', 'Hydro', '%', 5, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Fuel', 'Nuclear', '%', 0, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Fuel', 'Other Fossil', '%', 5, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Fuel', 'Other Renewables', '%', 0, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Fuel', 'Solar', '%', 10, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Electricity generation', 'Fuel', 'Wind', '%', 10, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Power sector emissions', 'CO2 intensity', 'CO2 intensity', 'gCO2/kWh', 400, 'actual'],
+    ['Aruba', 'ABW', 2024, 'Country or economy', 'Power sector emissions', 'Total', 'Total emissions', 'mtCO2', 0.4, 'actual'],
   ];
-  const emberInput = write('ember.csv', `Entity,Entity code,Year,Category,Variable,Unit,Value,Evidence class\n${emberRows.map(row => row.join(',')).join('\n')}\n`);
-  const emberReceipt = receiptFor('ember-yearly-electricity-data-2026-08-24', emberInput, { year_status_2024: 'actual', default_evidence_class: 'actual' });
+  const emberInput = write('ember.csv', `Area,ISO 3 code,Year,Area type,Category,Subcategory,Variable,Unit,Value,Evidence class\n${emberRows.map(row => row.join(',')).join('\n')}\n`);
+  const emberReceipt = receiptFor('ember-yearly-electricity-data-2026-08-25', emberInput, { year_status_2019: 'actual', year_status_2024: 'actual', default_evidence_class: 'actual' });
   const emberOutput = path.join(temporaryDirectory, 'ember-output.json');
   compileEmber(['--input', emberInput, '--receipt', emberReceipt, '--output', emberOutput]);
   const ember = readJson(emberOutput);
@@ -75,11 +84,15 @@ try {
   assert.strictEqual(arubaPower['electricity.clean_share'].value, 25);
   assert.strictEqual(arubaPower['electricity.clean_share_change_5y'].value, 15);
   assert.strictEqual(arubaPower['electricity.emissions'].value, 0.4);
+  assert.strictEqual(arubaPower['electricity.generation_share.nuclear'].value, 0);
+  assert.strictEqual(arubaPower['electricity.generation_share.solar'].value, 10);
+  assert.strictEqual(arubaPower['electricity.clean_share'].context.fuel_mix_reconciliation.published_component_sum, 100);
+  assert.strictEqual(arubaPower['electricity.clean_share'].context.fuel_mix_reconciliation.visual_normalization_applied, false);
 
   const emberCo2eRows = emberRows.map(row => row.slice());
-  emberCo2eRows[emberCo2eRows.length - 1][5] = 'MtCO2e';
-  const emberCo2eInput = write('ember-co2e.csv', `Entity,Entity code,Year,Category,Variable,Unit,Value,Evidence class\n${emberCo2eRows.map(row => row.join(',')).join('\n')}\n`);
-  const emberCo2eReceipt = receiptFor('ember-yearly-electricity-data-2026-08-24', emberCo2eInput, { year_status_2024: 'actual', default_evidence_class: 'actual' });
+  emberCo2eRows[emberCo2eRows.length - 1][7] = 'MtCO2e';
+  const emberCo2eInput = write('ember-co2e.csv', `Area,ISO 3 code,Year,Area type,Category,Subcategory,Variable,Unit,Value,Evidence class\n${emberCo2eRows.map(row => row.join(',')).join('\n')}\n`);
+  const emberCo2eReceipt = receiptFor('ember-yearly-electricity-data-2026-08-25', emberCo2eInput, { year_status_2019: 'actual', year_status_2024: 'actual', default_evidence_class: 'actual' });
   assert.throws(() => compileEmber(['--input', emberCo2eInput, '--receipt', emberCo2eReceipt, '--output', emberOutput]), /unit mismatch/);
 
   const projectionRows = [];

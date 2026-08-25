@@ -13,22 +13,22 @@ const manifest = readJson(path.join(ROOT, 'data/climate/releases/country-climate
 const runtimePath = path.join(ROOT, 'data/climate/runtime/country-climate-intelligence.json');
 const rollbackPath = path.join(ROOT, manifest.prior_runtime_retained_for_rollback);
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v56-power-field'"), 'service-worker cache epoch is not v56');
-assert(index.includes("navigator.serviceWorker.register('/sw.js?v=56-power-field'"), 'HTML does not request the v56 service worker');
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v57-segmented-power-mix'"), 'service-worker cache epoch is not v57');
+assert(index.includes("navigator.serviceWorker.register('/sw.js?v=57-segmented-power-mix'"), 'HTML does not request the v57 service worker');
 for (const asset of [
-  '/css/globe-system.css?v=v35',
+  '/css/globe-system.css?v=v36',
   '/css/guided-first-orbit.css?v=v2',
-  '/js/data.js?v=v8',
-  '/js/country-climate-intelligence.js?v=v12',
-  '/js/globe.js?v=v30',
+  '/js/data.js?v=v9',
+  '/js/country-climate-intelligence.js?v=v13',
+  '/js/globe.js?v=v31',
   '/js/guided-first-orbit.js?v=v3',
   '/js/app.js?v=v4',
-  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate6',
+  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7',
   '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',
 ]) {
   assert(serviceWorker.includes(`'${asset}'`), `service worker does not stage ${asset}`);
 }
-assert(dataSource.includes("version: 'cci1candidate6'"), 'Data runtime query does not match service-worker staging');
+assert(dataSource.includes("version: 'cci1candidate7'"), 'Data runtime query does not match service-worker staging');
 assert.strictEqual(dataSource.match(/CLIMATE_INTELLIGENCE_SHA256 = '([a-f0-9]{64})'/)?.[1], fileSha256(runtimePath), 'Data runtime checksum pin is stale');
 assert(fs.existsSync(rollbackPath), 'prior runtime rollback artifact is missing');
 assert.notStrictEqual(fileSha256(runtimePath), fileSha256(rollbackPath), 'current and rollback runtime artifacts must be distinct');
@@ -37,4 +37,4 @@ assert(serviceWorker.includes('keys.filter((k) => k !== CACHE_NAME).map((k) => c
 assert(serviceWorker.includes('self.skipWaiting()') && serviceWorker.includes('self.clients.claim()'), 'atomic service-worker activation hooks are missing');
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired carbon-project data remains in the atomic cache set');
 
-console.log(`Country Climate Intelligence atomic staging check passed (elu-v56; runtime ${fileSha256(runtimePath)}; rollback retained).`);
+console.log(`Country Climate Intelligence atomic staging check passed (elu-v57; runtime ${fileSha256(runtimePath)}; rollback retained).`);

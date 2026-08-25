@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1.0",
-  "release_id": "country-climate-intelligence-2026-08-25-candidate.3",
+  "release_id": "country-climate-intelligence-2026-08-25-candidate.4",
   "raw_storage_policy": "external_only",
   "reviewed_normalized_recovery": {
     "artifact": "data/climate/runtime/country-climate-intelligence.json before component reassembly",
@@ -38,9 +38,33 @@
       "normalized_component": "climate-trace-ghg.json"
     },
     {
-      "source_registry_id": "ember-yearly-electricity-data-2026-08-24",
-      "status": "normalized_candidate_receipt_recovered_raw_receipt_revalidation_required",
-      "normalized_component": "ember-power.json"
+      "source_registry_id": "ember-yearly-electricity-data-2026-08-25",
+      "status": "exact_raw_receipt_pinned_normalized_candidate_pending_independent_scientific_review",
+      "normalized_component": "ember-power.json",
+      "raw_receipt": {
+        "path": "data/climate/releases/country-climate-intelligence-v1/ember-2026-08-25-raw-receipt.json",
+        "receipt_sha256": "31fb254288f93d429e538d57fe4f049d9279fa6b44283ad37bf18abf44b65eb6",
+        "snapshot_bytes": 49079981,
+        "snapshot_sha256": "259e1095ee8ffeaf0aff37ad557916ae1823a2da13312da50ba4cec6b4574c3b"
+      },
+      "normalized_receipt": {
+        "artifact_bytes": 6132827,
+        "artifact_sha256": "2f566e0035353dd7b8d67aed7b2211e6a164ca16ba98c431d6f3e14d45c8e24a"
+      },
+      "identity_accounting": {
+        "selected_rows": 3107,
+        "mapped_rows": 2897,
+        "regional_aggregate_exceptions": 195,
+        "unmapped_exceptions": 15,
+        "registry_entities": 249
+      },
+      "fuel_mix_reconciliation": {
+        "reconciled_entities": 194,
+        "explicit_fuel_mix_gaps": ["LSO"],
+        "tolerance_percentage_points": 0.02,
+        "missing_as_zero_allowed": false,
+        "visual_normalization_applied": false
+      }
     },
     {
       "source_registry_id": "world-bank-cckp-cmip6-2026-08-24",

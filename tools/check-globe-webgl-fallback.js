@@ -140,7 +140,7 @@ function validate(snapshot) {
   assert.equal(snapshot.data.carbon_eligible, 213);
   assert.equal(snapshot.data.carbon_gaps, 36);
   assert.equal(snapshot.data.mapped_entities, 201);
-  assert.equal(snapshot.data.metric_count, 18);
+  assert.equal(snapshot.data.metric_count, 27);
   assert.equal(snapshot.data.lens_count, 3);
   assert.equal(snapshot.data.review_status, 'normalized_factual_candidate_pending_source_revalidation');
   assert.equal(snapshot.data.production_runtime_release, false);

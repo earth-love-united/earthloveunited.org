@@ -168,8 +168,8 @@ flowchart LR
 
 `Data.init()` applies an eight-second deadline to the critical candidate read.
 The candidate is parsed only after WebCrypto verifies SHA-256
-`fb4272a37aba8841484c216104bdba51606a584ab51ca77351c459413bbc6e1a`.
-Schema validation then proves 249 unique registry entities, exactly 18 metric
+`1b9c59d0ec912f8ec75f45ef6bab885a45661eea7b68add50ac2138e778ad198`.
+Schema validation then proves 249 unique registry entities, exactly 27 metric
 records per entity, coverage derived from records, three complete lens
 partitions, explicit gaps, and the non-production release boundary. Candidate
 failure blocks 3D rendering and exposes no inferred climate values.
@@ -185,15 +185,18 @@ published warming range. Physical relief is projected warming only—not
 vulnerability, damage, or responsibility.
 
 The Power card renders one static generation field from the exact 2024 Ember
-share facts. Its three aligned lanes copy clean, fossil, and wind-plus-solar
-shares on one absolute 0–100% generation scale. Solid, diagonal, and vertical
-patterns make the lanes distinguishable without color. The view model requires
-a shared period, evidence class, and source taxonomy before a secondary lane can
-render; missing or mismatched shares stay explicit gaps. Wind plus solar is
-labelled as a subset of clean, the lanes are not added, and the field is neither
-a ranking metric nor a whole-economy assessment. Facts represented by valid
-lanes are visually de-duplicated from the generic fact grids but remain in the
-methods drawer.
+share facts. Two aligned 0–100% tracks copy the clean and fossil aggregates;
+each track is subdivided by Ember's nine standardized generation-fuel rows:
+Bioenergy, Coal, Gas, Hydro, Nuclear, Other Fossil, Other Renewables, Solar,
+and Wind. Color and distinct static textures make the fuels legible without
+color alone. The view model requires a shared period, actual evidence class,
+source, fuel group, and taxonomy before drawing a segment. Blank cells remain
+labelled data gaps, source zeroes remain zero, and 99.98–100.02 totals are
+disclosed as source rounding. No browser normalization is allowed. `Other
+Renewables` is explicitly Ember's combined geothermal, tidal, and wave bucket,
+not a geothermal-only value. The field is neither a new ranking metric nor a
+whole-economy assessment. All represented fuel facts are visually
+de-duplicated from generic fact grids but remain in the methods drawer.
 
 The Physical card separately renders the compiled 1970–2025 ERA5 annual
 temperature and precipitation series and supplied OLS endpoints for 245 entities. It groups
@@ -380,9 +383,9 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v56 precaches the public page, core CSS/JS, Guided First
+`sw.js` cache epoch v57 precaches the public page, core CSS/JS, Guided First
 Orbit UI, the shared raised-tile lenses, evidence-only Physical-card percentile
-range, the Power-card generation field, verified local globe.gl, the CT-45
+range, the two-track segmented Power generation mix, verified local globe.gl, the CT-45
 manifest and localized globe assets, the scroll-proof selected-country identity
 header, and the exact-version Country Climate Intelligence candidate. The prior
 country-factual candidate is retained for one release
@@ -407,7 +410,7 @@ HTML or code with an old runtime artifact.
 | Runtime contracts | `MODULE_CONTRACTS.validate()` | Registered globals and methods exist |
 | Runtime behavior | `SmokeTest.run()` | Modules, data, DOM, globe, and selected interactions work |
 | Stacking | `StackLint.audit()` | No known invisible blockers/z-index regressions |
-| Country intelligence aggregate | `node tools/check-country-climate-intelligence-ci.js` | Registry gates, exact component receipts, compiler derivations, 249×18 runtime, lens coverage, UI contract, and atomic pin agree |
+| Country intelligence aggregate | `node tools/check-country-climate-intelligence-ci.js` | Registry gates, exact component receipts, compiler derivations, 249×27 runtime, lens coverage, UI contract, and atomic pin agree |
 | WebGL/fallback parity | `node tools/check-globe-webgl-fallback.js` | Three lenses share the 249-entity evidence model and explicit gaps |
 | Country truth | `tools/verify-globe-country-truth.js` | Intended country-status invariants; currently requires repair for v1 |
 | Public copy | `node tools/check-public-copy.js` | No unresolved draft markers; not scientific fact-checking |

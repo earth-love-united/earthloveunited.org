@@ -41,7 +41,7 @@ const INTELLIGENCE_VALUE_SOURCES = new Set([
   'gcp-gcb-2025-v1.0',
   'un-wpp-2024',
   'climate-trace-v5.9.0-country-annual',
-  'ember-yearly-electricity-data-2026-08-24',
+  'ember-yearly-electricity-data-2026-08-25',
   'world-bank-cckp-cmip6-2026-08-24',
   'world-bank-cckp-era5-2026-08-25',
 ]);
@@ -314,13 +314,32 @@ function validateSource(source, index, configuredDomains, errors) {
     });
   }
 
-  if (source.id === 'ember-yearly-electricity-data-2026-08-24') {
+  if (source.id === 'ember-yearly-electricity-data-2026-08-25') {
     if (!source.domains?.includes('power') || source.licence?.identifier !== 'CC-BY-4.0') {
       errors.push(`${source.id} must retain the reviewed power domain and CC BY 4.0 terms.`);
     }
-    ['Year', 'Category', 'Variable', 'Unit', 'Value', 'Evidence class'].forEach(field => {
+    ['Year', 'Area type', 'Category', 'Subcategory', 'Variable', 'Unit', 'Value', 'Evidence class'].forEach(field => {
       if (!source.ingestion_gate?.field_permitlist?.includes(field)) errors.push(`${source.id} must permitlist ${field}.`);
     });
+    const requiredMetrics = [
+      'electricity.clean_share',
+      'electricity.fossil_share',
+      'electricity.wind_solar_share',
+      'electricity.carbon_intensity',
+      'electricity.emissions',
+      'electricity.generation_share.bioenergy',
+      'electricity.generation_share.coal',
+      'electricity.generation_share.gas',
+      'electricity.generation_share.hydro',
+      'electricity.generation_share.nuclear',
+      'electricity.generation_share.other_fossil',
+      'electricity.generation_share.other_renewables',
+      'electricity.generation_share.solar',
+      'electricity.generation_share.wind',
+    ];
+    if (JSON.stringify(source.ingestion_gate?.metric_permitlist || []) !== JSON.stringify(requiredMetrics)) {
+      errors.push(`${source.id} must retain the exact maintainer-authorized metric permitlist.`);
+    }
   }
 
   if (source.id === 'world-bank-cckp-cmip6-2026-08-24') {
@@ -412,15 +431,15 @@ function validateRegistry(registry) {
   }
   [
     'climate-trace-v5.9.0-country-annual',
-    'ember-yearly-electricity-data-2026-08-24',
+    'ember-yearly-electricity-data-2026-08-25',
     'world-bank-cckp-cmip6-2026-08-24',
     'world-bank-cckp-era5-2026-08-24',
     'world-bank-cckp-era5-2026-08-25',
   ].forEach(id => {
     if (!ids.has(id)) errors.push(`Registry must include the Country Climate Intelligence component source: ${id}`);
   });
-  if (registry.schema_version !== '1.3.0' || registry.sources?.length !== 21) {
-    errors.push('Country Climate Intelligence registry v1 must contain schema 1.3.0 and exactly 21 reviewed source decisions.');
+  if (registry.schema_version !== '1.4.0' || registry.sources?.length !== 21) {
+    errors.push('Country Climate Intelligence registry v1 must contain schema 1.4.0 and exactly 21 reviewed source decisions.');
   }
 
   return errors;

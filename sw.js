@@ -1,18 +1,18 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v56) — replace the Power rings with an exact-source generation
- * field while retaining the scroll-proof country identity and reviewed v53
- * factual runtime.
+ * Globe cache (v57) — subdivide the two exact-source Power generation bars by
+ * published fuel while retaining the scroll-proof country identity and the
+ * reviewed factual runtime boundary.
  */
-const CACHE_NAME = 'elu-v56-power-field';
+const CACHE_NAME = 'elu-v57-segmented-power-mix';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v35',
+  '/css/globe-system.css?v=v36',
   '/css/guided-first-orbit.css?v=v2',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
@@ -29,15 +29,15 @@ const STATIC_ASSETS = [
   '/js/storage-adapter.js',
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
-  '/js/data.js?v=v8',
-  '/js/country-climate-intelligence.js?v=v12',
-  '/js/globe.js?v=v30',
+  '/js/data.js?v=v9',
+  '/js/country-climate-intelligence.js?v=v13',
+  '/js/globe.js?v=v31',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v3',
   '/js/app.js?v=v4',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
-  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate6',
+  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7',
   // Retained for one release epoch as the factual rollback artifact.
   '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',
 ];

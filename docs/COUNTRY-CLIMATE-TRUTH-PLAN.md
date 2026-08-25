@@ -2,7 +2,7 @@
 
 **Mission:** `country-climate-intelligence-v1`
 
-**Release:** `country-climate-intelligence-2026-08-25-candidate.3`
+**Release:** `country-climate-intelligence-2026-08-25-candidate.4`
 
 **State:** implemented factual candidate; production promotion withheld
 
@@ -35,7 +35,7 @@ approved source registry + exact external snapshots
 | `tools/compile-gcb-emissions.js` | Existing GCB compiler plus Country Climate Intelligence fossil/consumption/transfer/land-use mode |
 | `tools/compile-wpp-population.js` | Exact-year WPP population normalization |
 | `tools/compile-climate-trace.js` | 2024 AR6 GWP100 independent GHG context, forestry/LULUCF excluded |
-| `tools/compile-ember-power.js` | Exact 2019/2024 published power aggregates and five-year change |
+| `tools/compile-ember-power.js` | Exact 2019/2024 power aggregates, five-year change, nine 2024 fuel shares, blank-preserving reconciliation, and identity dispositions |
 | `tools/compile-cckp-physical.js` | CMIP6 projection ranges and ERA5 OLS trends/gaps |
 | `tools/normalize-cckp-era5-country-timeseries.js` | Exact CCKP country-response validation, 246-series identity ledger, and variable-aware 1970–2025 annual temperature/precipitation normalization |
 | `tools/refresh-cckp-observed-temperature.js` | Checksum-pinned observed-temperature replacement that leaves projections and precipitation unchanged |
@@ -54,7 +54,7 @@ approved source registry + exact external snapshots
 | Source-registry licensing and attribution | configured | Climate TRACE exception-backed fields and the CCKP/CMIP6 derivative chain require release-specific revalidation |
 | Field permitlists and compiler denial | passed | no unreviewed source field can be selected |
 | Exact normalized component checksums | passed | deterministic rebuild must match committed runtime |
-| External raw-receipt revalidation | ERA5 temperature and precipitation receipts pinned; other optional components open | independently revalidate and retain the WPP, TRACE, Ember, and CCKP CMIP6 acquisition receipts |
+| External raw-receipt revalidation | Ember and ERA5 temperature/precipitation receipts pinned; other optional components open | independently revalidate and retain the WPP, TRACE, and CCKP CMIP6 acquisition receipts |
 | Core-carbon scientific review | open | independent reviewer verifies GCB identity mapping, scopes, transfer sign, cumulative, land-use mean/σ, and per-capita denominator |
 | Optional-component scientific review | open | independent reviewer verifies TRACE GWP/filter, Ember taxonomy/evidence class, and CCKP scenario/percentile selections |
 | Runtime/static validation | passed for candidate | rerun after any factual or code change |
@@ -84,7 +84,7 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 - observed OLS slope per decade;
 - exact 56-value 1970–2025 ERA5 temperature and precipitation series, compiled fitted endpoints, 245 mappings per variable, one `KSV` exception per variable, and four explicit registry gaps;
 - CMIP6 p10 ≤ median ≤ p90;
-- deterministic Physical-card projection samples reproduce exactly for the same country and factual release, remain inside the published SSP2-4.5 p10–p90 range, and never enter metric records, rankings, or comparisons;
+- the Physical-card range copies only the published SSP2-4.5 p10, median, and p90 without fitting a distribution, sampling, or drawing an annual trajectory;
 - complete SSP2-4.5 range plus SSP1-2.6/SSP5-8.5 medians;
 - exact scope matching before any numerical source delta;
 - estimates or models rejected from a lens requiring actual evidence.
@@ -92,13 +92,15 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 ### Runtime and UI
 
 - exact runtime SHA-256 and schema v1;
-- 249 unique registry IDs and exactly 18 metric records per entity;
+- 249 unique registry IDs and exactly 27 metric records per entity;
 - deterministic coverage and complete lens partitions;
 - China, United States, India, Brazil, France, Norway, Tuvalu, and Antarctica fixtures;
 - PRIMAP absent from headings, legends, tooltips, ordered rails, and primary charts;
 - v2.6.1 present only in detailed citation provenance; v2.7 absent entirely;
 - selection preserved across lenses;
 - metric/value/unit/period/evidence in tooltips;
+- Power uses two aligned 0–100% aggregate tracks subdivided by the nine permitlisted fuel slots; 194 mixes reconcile, Lesotho remains an explicit mix-level gap, blank fuel cells remain gaps, source zeroes remain zero, and no browser normalization is applied;
+- France retains the exact 94.9% clean aggregate and 67.7% nuclear segment; `Other Renewables` remains the combined geothermal/tidal/wave category;
 - no overlap among At a glance, observed charts, the published projection range, and projected fact cards; Physical groups observed temperature, the evidence-only p10/median/p90 range, the unchanged projected-temperature fact, the projected-precipitation fact, and observed precipitation while its ordered rail remains the modeled projection metric;
 - the temperature range copies only the source-published p10, median, and p90, distinguishes them by shape as well as color, and explicitly rejects probabilistic, annual-trajectory, simulation, and ranking interpretations;
 - every tile relief value is a subtle monotonic encoding of the active lens's exact comparison metric; the query-only inverse Carbon demo declares its direction and never changes the raw emissions rail, while Physical height is never described as vulnerability, damage, or responsibility;
@@ -121,11 +123,11 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v53 service worker composes the reviewed Guided First Orbit assets with the
+The v57 service worker composes the reviewed Guided First Orbit assets with the
 subtle relief presentation, candidate dashboard, and both runtime generations:
 
 ```text
-data/climate/runtime/country-climate-intelligence.json?v=cci1candidate6
+data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7
 data/climate/runtime/country-factual-candidate.json?v=ct42candidate1
 ```
 

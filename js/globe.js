@@ -1915,26 +1915,36 @@ const GlobeModule = {
 
   _renderPowerField(view, idPrefix = 'country-card') {
     const field = view.power_story?.field;
-    if (!field || !Array.isArray(field.lanes) || field.lanes.length !== 3) return '';
-    const summary = field.lanes.map(lane => lane.available
-      ? lane.label + ' ' + lane.display_value + '%'
-      : lane.label + ' data gap').join('. ');
-    const renderLane = lane => {
-      const laneClass = 'is-' + lane.pattern;
-      const value = lane.available ? Math.max(0, Math.min(100, Number(lane.value))) : null;
-      const meterAttrs = lane.available
-        ? ' role="meter" aria-label="' + _escapeHtml(lane.label) + ' share" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + value.toFixed(2) + '" aria-valuetext="' + _escapeHtml(lane.display_value) + ' percent of electricity generation"'
-        : ' aria-label="' + _escapeHtml(lane.label) + ' data gap"';
-      const fill = lane.available
-        ? '<span class="elu-power-lane-fill ' + laneClass + '" style="width:' + value.toFixed(2) + '%"></span>'
-        : '<span class="elu-power-lane-gap">Data gap</span>';
-      return '<div class="elu-power-lane ' + laneClass + '"><div class="elu-power-lane-head"><span><i class="elu-power-lane-mark" aria-hidden="true"></i>' + _escapeHtml(lane.label) + '</span><strong>' + _escapeHtml(lane.available ? lane.display_value + '%' : 'Data gap') + '</strong></div><div class="elu-power-lane-track"' + meterAttrs + '>' + fill + '</div></div>';
-    };
-    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-power-field').replace(/[^a-zA-Z0-9_-]/g, '-');
+    if (!field) return '';
+    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-power-mix').replace(/[^a-zA-Z0-9_-]/g, '-');
     const titleId = chartId + '-title';
     const descId = chartId + '-desc';
+    if (!field.available) {
+      return '<figure class="elu-power-field is-gap" aria-labelledby="' + titleId + ' ' + descId + '"><div class="elu-power-field-head"><span id="' + titleId + '">' + _escapeHtml(field.title) + ' · ' + _escapeHtml(field.period) + '</span><span>Fuel detail gap</span></div><p class="elu-power-mix-gap" id="' + descId + '">' + _escapeHtml(field.gap) + '</p><figcaption><strong>Gap preserved:</strong> ' + _escapeHtml(field.disclosure) + '</figcaption></figure>';
+    }
+    if (!Array.isArray(field.lanes) || field.lanes.length !== 2) return '';
+    const allSegments = field.lanes.flatMap(lane => lane.segments);
+    const summary = field.lanes.map(lane => lane.label + ' ' + lane.display_value + ' percent. '
+      + lane.segments.map(segment => segment.available
+        ? segment.label + ' ' + segment.display_value + ' percent'
+        : segment.label + ' data gap').join(', ')).join('. ');
+    const renderSegment = segment => {
+      if (!segment.available || segment.value <= 0) return '';
+      const value = Math.max(0, Math.min(100, Number(segment.value)));
+      const segmentClass = 'is-' + segment.pattern;
+      return '<span class="elu-power-segment ' + segmentClass + '" style="width:' + value.toFixed(2) + '%" title="' + _escapeHtml(segment.label) + ': ' + _escapeHtml(segment.display_value) + '%"><span class="sr-only">' + _escapeHtml(segment.label) + ' ' + _escapeHtml(segment.display_value) + ' percent</span></span>';
+    };
+    const renderLane = lane => {
+      const value = Math.max(0, Math.min(100, Number(lane.value)));
+      return '<div class="elu-power-lane is-' + _escapeHtml(lane.id) + '"><div class="elu-power-lane-head"><span><i class="elu-power-lane-mark" aria-hidden="true"></i>' + _escapeHtml(lane.label) + '</span><strong>' + _escapeHtml(lane.display_value) + '%</strong></div><div class="elu-power-lane-track" role="meter" aria-label="' + _escapeHtml(lane.label) + ' share with published fuel components" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + value.toFixed(2) + '" aria-valuetext="' + _escapeHtml(lane.display_value) + ' percent of electricity generation">' + lane.segments.map(renderSegment).join('') + '</div></div>';
+    };
+    const legend = allSegments.map(segment => '<li class="' + (segment.available ? (segment.value === 0 ? 'is-zero' : 'is-available') : 'is-gap') + '"><i class="elu-power-segment-key is-' + _escapeHtml(segment.pattern) + '" aria-hidden="true"></i><span>' + _escapeHtml(segment.label) + '</span><strong>' + _escapeHtml(segment.available ? segment.display_value + '%' : 'Data gap') + '</strong></li>').join('');
+    const roundingClass = Math.abs(field.rounding_variance_pp) > 0.000001 ? ' has-rounding' : '';
     return '<figure class="elu-power-field" aria-labelledby="' + titleId + ' ' + descId + '"><div class="elu-power-field-head"><span id="' + titleId + '">' + _escapeHtml(field.title) + ' · ' + _escapeHtml(field.period) + '</span><span>' + _escapeHtml(field.evidence_label) + '</span></div><span class="sr-only" id="' + descId + '">' + _escapeHtml(summary) + '. ' + _escapeHtml(field.disclosure) + '</span>'
       + '<div class="elu-power-field-scale" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100%</span></div><div class="elu-power-lanes">' + field.lanes.map(renderLane).join('') + '</div>'
+      + '<ul class="elu-power-mix-legend" aria-label="Published generation-fuel shares and explicit gaps">' + legend + '</ul>'
+      + '<p class="elu-power-reconciliation' + roundingClass + '"><strong>Published total:</strong> ' + _escapeHtml(field.published_component_sum.toFixed(2)) + '%</p>'
+      + (field.taxonomy_note ? '<p class="elu-power-taxonomy-note">' + _escapeHtml(field.taxonomy_note) + '</p>' : '')
       + '<figcaption><strong>One shared scale:</strong> ' + _escapeHtml(field.disclosure) + '</figcaption></figure>';
   },
 

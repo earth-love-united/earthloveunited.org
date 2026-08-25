@@ -21,16 +21,39 @@ const {
 
 const RUNTIME_PATH = path.join(ROOT, 'data/climate/runtime/country-climate-intelligence.json');
 const MANIFEST_PATH = path.join(ROOT, 'data/climate/releases/country-climate-intelligence-v1/release-manifest.json');
+const CLEAN_FUEL_IDS = [
+  'electricity.generation_share.bioenergy',
+  'electricity.generation_share.hydro',
+  'electricity.generation_share.nuclear',
+  'electricity.generation_share.other_renewables',
+  'electricity.generation_share.solar',
+  'electricity.generation_share.wind',
+];
+const FOSSIL_FUEL_IDS = [
+  'electricity.generation_share.coal',
+  'electricity.generation_share.gas',
+  'electricity.generation_share.other_fossil',
+];
+const FUEL_IDS = [...CLEAN_FUEL_IDS, ...FOSSIL_FUEL_IDS];
 const EXPECTED_COVERAGE = {
   'climate.precipitation.change': 245,
   'climate.precipitation.observed_trend': 245,
   'climate.temperature.change': 245,
   'climate.temperature.observed_trend': 245,
-  'electricity.carbon_intensity': 195,
+  'electricity.carbon_intensity': 194,
   'electricity.clean_share': 195,
   'electricity.clean_share_change_5y': 195,
   'electricity.emissions': 195,
   'electricity.fossil_share': 195,
+  'electricity.generation_share.bioenergy': 194,
+  'electricity.generation_share.coal': 192,
+  'electricity.generation_share.gas': 191,
+  'electricity.generation_share.hydro': 191,
+  'electricity.generation_share.nuclear': 183,
+  'electricity.generation_share.other_fossil': 194,
+  'electricity.generation_share.other_renewables': 170,
+  'electricity.generation_share.solar': 194,
+  'electricity.generation_share.wind': 192,
   'electricity.wind_solar_share': 195,
   'emissions.fossil_co2.consumption': 120,
   'emissions.fossil_co2.cumulative': 213,
@@ -54,6 +77,14 @@ function checkComponentReceipts(runtime, manifest) {
     assert.strictEqual(fileSha256(path.join(ROOT, receipt.path)), receipt.sha256, `${receipt.path} checksum mismatch`);
   }
   const sourceReceipts = readJson(path.join(ROOT, manifest.source_receipts.path));
+  const ember = sourceReceipts.sources.find(source => source.source_registry_id === 'ember-yearly-electricity-data-2026-08-25');
+  assert(ember?.raw_receipt?.path && ember.raw_receipt.receipt_sha256, 'Ember exact raw receipt is missing');
+  assert.strictEqual(fileSha256(path.join(ROOT, ember.raw_receipt.path)), ember.raw_receipt.receipt_sha256, 'Ember raw receipt checksum mismatch');
+  assert.strictEqual(ember.raw_receipt.snapshot_sha256, '259e1095ee8ffeaf0aff37ad557916ae1823a2da13312da50ba4cec6b4574c3b', 'Ember external snapshot pin changed');
+  assert.strictEqual(ember.fuel_mix_reconciliation.reconciled_entities, 194, 'Ember reconciled fuel-mix count changed');
+  assert.deepStrictEqual(ember.fuel_mix_reconciliation.explicit_fuel_mix_gaps, ['LSO'], 'Ember fuel-mix gap ledger changed');
+  assert.strictEqual(ember.fuel_mix_reconciliation.missing_as_zero_allowed, false, 'Ember blanks must never become zero');
+  assert.strictEqual(ember.fuel_mix_reconciliation.visual_normalization_applied, false, 'Ember fuel bars must not silently normalize shares');
   const observed = sourceReceipts.sources.find(source => source.source_registry_id === 'world-bank-cckp-era5-2026-08-25');
   assert(observed, 'ERA5 source receipt bundle is missing');
   for (const key of ['raw_receipt', 'normalized_receipt', 'precipitation_raw_receipt', 'precipitation_normalized_receipt']) {
@@ -78,6 +109,33 @@ function checkDerived(country) {
   if (change.value !== null) {
     assert.strictEqual(change.transformation, 'clean_share_2024_minus_clean_share_2019');
     assert.strictEqual(change.status, 'actual');
+  }
+
+  const cleanShare = metrics['electricity.clean_share'];
+  const fossilShare = metrics['electricity.fossil_share'];
+  const reconciliation = cleanShare.context?.fuel_mix_reconciliation || null;
+  const availableFuelIds = FUEL_IDS.filter(metricId => metrics[metricId].value !== null);
+  for (const metricId of FUEL_IDS) {
+    const fuel = metrics[metricId];
+    if (fuel.value === null) continue;
+    assert(fuel.value >= 0 && fuel.value <= 100, `${country.iso_alpha3} ${metricId} must remain a published 0–100 share`);
+    assert.strictEqual(fuel.status, 'actual', `${country.iso_alpha3} ${metricId} must be annual actual`);
+    assert.strictEqual(fuel.transformation, 'source_value_selected_without_derivation');
+  }
+  if (reconciliation) {
+    const cleanComponents = round(CLEAN_FUEL_IDS.reduce((sum, metricId) => sum + (metrics[metricId].value || 0), 0));
+    const fossilComponents = round(FOSSIL_FUEL_IDS.reduce((sum, metricId) => sum + (metrics[metricId].value || 0), 0));
+    assert(availableFuelIds.length > 0, `${country.iso_alpha3} reconciliation has no published fuel rows`);
+    assert.strictEqual(reconciliation.clean_component_sum, cleanComponents, `${country.iso_alpha3} clean components changed`);
+    assert.strictEqual(reconciliation.fossil_component_sum, fossilComponents, `${country.iso_alpha3} fossil components changed`);
+    assert.strictEqual(reconciliation.clean_aggregate, cleanShare.value, `${country.iso_alpha3} clean anchor changed`);
+    assert.strictEqual(reconciliation.fossil_aggregate, fossilShare.value, `${country.iso_alpha3} fossil anchor changed`);
+    assert(Math.abs(reconciliation.clean_delta_pp) <= reconciliation.tolerance_pp, `${country.iso_alpha3} clean mix does not reconcile`);
+    assert(Math.abs(reconciliation.fossil_delta_pp) <= reconciliation.tolerance_pp, `${country.iso_alpha3} fossil mix does not reconcile`);
+    assert(Math.abs(reconciliation.published_component_sum - 100) <= reconciliation.tolerance_pp, `${country.iso_alpha3} published mix exceeds rounding boundary`);
+    assert.strictEqual(reconciliation.visual_normalization_applied, false, `${country.iso_alpha3} fuel mix must copy, not rescale, source values`);
+  } else {
+    assert.strictEqual(availableFuelIds.length, 0, `${country.iso_alpha3} fuel rows exist without a reconciliation receipt`);
   }
 
   const land = metrics['emissions.land_use_co2.net'];
@@ -143,6 +201,15 @@ function checkGoldenCountries(byIso3, runtime) {
   assert.strictEqual(byIso3.get('ATA').metrics['climate.temperature.change'].value, null, 'Antarctica projection must remain an explicit gap');
   assert(byIso3.get('JPN').metrics['climate.temperature.observed_trend'].value !== null, 'Japan observed temperature trend missing');
   assert(byIso3.get('JPN').metrics['climate.precipitation.observed_trend'].value !== null, 'Japan observed precipitation trend missing');
+  assert.strictEqual(byIso3.get('FRA').metrics['electricity.clean_share'].value, 94.9, 'France clean-share anchor changed');
+  assert.strictEqual(byIso3.get('FRA').metrics['electricity.generation_share.nuclear'].value, 67.7, 'France nuclear share changed');
+  assert.strictEqual(byIso3.get('COD').metrics['electricity.generation_share.hydro'].value, 84.17, 'DR Congo hydro share changed');
+  assert.strictEqual(byIso3.get('ISL').metrics['electricity.generation_share.other_renewables'].value, 29.24, 'Iceland Other Renewables share changed');
+  assert(byIso3.get('ISL').metrics['electricity.generation_share.other_renewables'].context.taxonomy_note.includes('geothermal, tidal, and wave'), 'Other Renewables taxonomy must stay aggregated');
+  assert.strictEqual(byIso3.get('KEN').metrics['electricity.clean_share'].context.fuel_mix_reconciliation.published_component_sum, 100.01, 'Kenya rounding disclosure fixture changed');
+  assert.strictEqual(byIso3.get('LSO').metrics['electricity.carbon_intensity'].value, null, 'Lesotho blank intensity must remain a gap');
+  assert(FUEL_IDS.every(metricId => byIso3.get('LSO').metrics[metricId].value === null), 'Lesotho blank fuel cells must not become zeroes');
+  assert.strictEqual(byIso3.get('LSO').metrics['electricity.clean_share'].context.fuel_mix_reconciliation, null, 'Lesotho must not receive a fabricated fuel mix');
   const observedTemperatureGaps = Array.from(byIso3.values())
     .filter(country => country.metrics['climate.temperature.observed_trend'].value === null)
     .map(country => country.iso_alpha3)
@@ -179,7 +246,7 @@ function check() {
   assert.strictEqual(new Set(countryIds).size, ENTITY_COUNT, 'country_id values must be unique');
   assert.deepStrictEqual(new Set(countryIds), new Set(registry.entities.map(entity => entity.country_id)), 'runtime and registry entity universes differ');
   const metricIds = Object.keys(runtime.metric_definitions).sort();
-  assert.strictEqual(metricIds.length, 18);
+  assert.strictEqual(metricIds.length, 27);
   const coverage = Object.fromEntries(metricIds.map(id => [id, 0]));
   for (const country of runtime.countries) {
     assert.deepStrictEqual(Object.keys(country.metrics).sort(), metricIds, `${country.country_id} metric set differs`);
@@ -240,7 +307,7 @@ function check() {
 
 function main() {
   const result = check();
-  console.log(`Country Climate Intelligence runtime check passed (SHA-256 ${result.runtimeSha}; 249 entities; 18 metrics; 3 lenses).`);
+  console.log(`Country Climate Intelligence runtime check passed (SHA-256 ${result.runtimeSha}; 249 entities; 27 metrics; 3 lenses).`);
 }
 
 if (require.main === module) {

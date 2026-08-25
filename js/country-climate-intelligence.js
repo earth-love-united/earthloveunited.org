@@ -8,7 +8,7 @@
 const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   'use strict';
 
-  const VERSION = '1.8.0';
+  const VERSION = '1.9.0';
   const RELIEF_BASE_ALTITUDE = 0.007;
   const RELIEF_RANGE = 0.005;
   const CARBON_RELIEF_DEMO_VALUE = 'low-is-high';
@@ -26,6 +26,15 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       'electricity.clean_share',
       'electricity.fossil_share',
       'electricity.wind_solar_share',
+      'electricity.generation_share.bioenergy',
+      'electricity.generation_share.coal',
+      'electricity.generation_share.gas',
+      'electricity.generation_share.hydro',
+      'electricity.generation_share.nuclear',
+      'electricity.generation_share.other_fossil',
+      'electricity.generation_share.other_renewables',
+      'electricity.generation_share.solar',
+      'electricity.generation_share.wind',
       'electricity.clean_share_change_5y',
       'electricity.carbon_intensity',
       'electricity.emissions',
@@ -62,6 +71,15 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     'electricity.clean_share': 'Share of electricity generation in the published clean aggregate.',
     'electricity.fossil_share': 'Share of electricity generation in the published fossil aggregate.',
     'electricity.wind_solar_share': 'Combined wind and solar share of electricity generation.',
+    'electricity.generation_share.bioenergy': 'Bioenergy share of total electricity generation in Ember’s standardized fuel taxonomy.',
+    'electricity.generation_share.coal': 'Coal share of total electricity generation in Ember’s standardized fuel taxonomy.',
+    'electricity.generation_share.gas': 'Gas share of total electricity generation in Ember’s standardized fuel taxonomy.',
+    'electricity.generation_share.hydro': 'Hydro share of total electricity generation in Ember’s standardized fuel taxonomy.',
+    'electricity.generation_share.nuclear': 'Nuclear share of total electricity generation in Ember’s standardized fuel taxonomy.',
+    'electricity.generation_share.other_fossil': 'Other fossil share of total electricity generation in Ember’s standardized fuel taxonomy.',
+    'electricity.generation_share.other_renewables': 'Other Renewables combines geothermal, tidal, and wave generation; Ember does not separate those technologies here.',
+    'electricity.generation_share.solar': 'Solar share of total electricity generation in Ember’s standardized fuel taxonomy.',
+    'electricity.generation_share.wind': 'Wind share of total electricity generation in Ember’s standardized fuel taxonomy.',
     'electricity.clean_share_change_5y': '2024 clean share minus 2019 clean share, in percentage points.',
     'electricity.carbon_intensity': 'Carbon dioxide emitted per unit of electricity generated.',
     'electricity.emissions': 'Annual power-sector carbon dioxide emissions.',
@@ -229,6 +247,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   function buildPowerField(facts) {
     const byId = new Map(facts.map(fact => [fact.id, fact]));
     const clean = byId.get('electricity.clean_share');
+    const fossil = byId.get('electricity.fossil_share');
     const validShare = fact => fact?.available
       && fact.unit === '%'
       && finite(fact.value)
@@ -241,41 +260,98 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       && fact.period === clean.period
       && fact.status === clean.status
       && fact.context?.source_evidence_class === clean.context?.source_evidence_class
-      && fact.context?.taxonomy === clean.context?.taxonomy
       && fact.sources.some(source => cleanSourceIds.has(source.id));
-    const laneDefinitions = [
-      ['electricity.clean_share', 'Clean generation', 'clean'],
-      ['electricity.fossil_share', 'Fossil generation', 'fossil'],
-      ['electricity.wind_solar_share', 'Wind + solar', 'wind-solar'],
+    if (!compatibleShare(fossil)) return null;
+
+    const reconciliation = clean.context?.fuel_mix_reconciliation || null;
+    const mixGap = clean.context?.fuel_mix_gap_reason || 'Exact 2024 fuel shares are unavailable for this entity.';
+    const shareLabel = value => value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    const segmentDefinitions = [
+      ['electricity.generation_share.nuclear', 'Nuclear', 'nuclear', 'clean'],
+      ['electricity.generation_share.hydro', 'Hydro', 'hydro', 'clean'],
+      ['electricity.generation_share.wind', 'Wind', 'wind', 'clean'],
+      ['electricity.generation_share.solar', 'Solar', 'solar', 'clean'],
+      ['electricity.generation_share.bioenergy', 'Bioenergy', 'bioenergy', 'clean'],
+      ['electricity.generation_share.other_renewables', 'Other renewables', 'other-renewables', 'clean'],
+      ['electricity.generation_share.coal', 'Coal', 'coal', 'fossil'],
+      ['electricity.generation_share.gas', 'Gas', 'gas', 'fossil'],
+      ['electricity.generation_share.other_fossil', 'Other fossil', 'other-fossil', 'fossil'],
     ];
-    const lanes = laneDefinitions.map(([metricId, label, pattern]) => {
+    const segments = segmentDefinitions.map(([metricId, label, pattern, group]) => {
       const fact = byId.get(metricId);
-      const available = metricId === 'electricity.clean_share' ? true : compatibleShare(fact);
+      const available = compatibleShare(fact)
+        && fact.context?.fuel_group === group
+        && fact.context?.taxonomy === 'Ember published generation-fuel taxonomy';
       return Object.freeze({
         id: metricId,
         label,
         pattern,
+        group,
         available,
         value: available ? fact.value : null,
-        display_value: available ? fact.display_value : 'Data gap',
+        display_value: available ? shareLabel(fact.value) : 'Data gap',
         unit: available ? fact.unit : null,
         gap: available
           ? null
           : (fact?.available
-              ? 'Not drawn because its period, evidence class, or source taxonomy does not match the clean-share anchor.'
-              : fact?.gap?.detail || 'The exact generation share is unavailable.'),
+              ? 'Not drawn because its period, evidence class, fuel group, or source taxonomy does not match the clean-share anchor.'
+              : fact?.gap?.detail || 'The exact generation-fuel share is unavailable.'),
       });
     });
+    if (!reconciliation || reconciliation.available !== true) {
+      return Object.freeze({
+        id: 'electricity.generation_mix',
+        title: 'Generation mix',
+        period: clean.period,
+        evidence_label: clean.evidence_label,
+        available: false,
+        gap: mixGap,
+        ranking_eligible: false,
+        lanes: Object.freeze([]),
+        visualized_fact_ids: Object.freeze([]),
+        method: 'No fuel mix is rendered without non-blank source fuel rows and an exact reconciliation receipt.',
+        disclosure: 'Missing fuel values remain gaps and are never converted to zero.',
+      });
+    }
+
+    const lanes = [
+      ['clean', 'Clean generation', clean, reconciliation.clean_component_sum],
+      ['fossil', 'Fossil generation', fossil, reconciliation.fossil_component_sum],
+    ].map(([id, label, fact, componentSum]) => Object.freeze({
+      id,
+      label,
+      available: true,
+      value: fact.value,
+      component_sum: componentSum,
+      display_value: shareLabel(fact.value),
+      unit: fact.unit,
+      segments: Object.freeze(segments.filter(segment => segment.group === id)),
+    }));
+    const variance = reconciliation.rounding_variance_from_100_pp;
+    const roundingDisclosure = Math.abs(variance) < 0.000001
+      ? 'Published non-blank fuel components reconcile to 100.00%.'
+      : 'Published non-blank fuel components sum to ' + shareLabel(reconciliation.published_component_sum) + '%; '
+        + (variance > 0 ? '+' : '') + shareLabel(variance) + ' percentage points is source rounding.';
     return Object.freeze({
-      id: 'electricity.generation_field',
-      title: 'Generation field',
+      id: 'electricity.generation_mix',
+      title: 'Generation mix',
       period: clean.period,
       evidence_label: clean.evidence_label,
+      available: true,
       ranking_eligible: false,
       lanes: Object.freeze(lanes),
-      visualized_fact_ids: Object.freeze(lanes.filter(lane => lane.available).map(lane => lane.id)),
-      method: 'Each lane copies an absolute share of total electricity generation from the same published annual electricity taxonomy.',
-      disclosure: 'All lanes use the same 0–100% scale. Wind + solar is a subset of the clean aggregate; the lanes are not additive and do not describe the whole economy.',
+      published_component_sum: reconciliation.published_component_sum,
+      rounding_variance_pp: variance,
+      tolerance_pp: reconciliation.tolerance_pp,
+      visual_normalization_applied: reconciliation.visual_normalization_applied,
+      visualized_fact_ids: Object.freeze([
+        'electricity.clean_share',
+        'electricity.fossil_share',
+        ...segments.map(segment => segment.id),
+      ]),
+      method: 'Two aligned bars copy exact shares of total electricity generation. Each bar is subdivided by the non-blank published fuel rows in the same annual Ember taxonomy.',
+      disclosure: 'Clean and fossil use one 0–100% scale and form the published generation total. ' + roundingDisclosure + ' Blank fuel cells remain labelled data gaps; no browser rescaling is applied.',
+      taxonomy_note: 'Other renewables is Ember’s combined geothermal, tidal, and wave category.',
     });
   }
 

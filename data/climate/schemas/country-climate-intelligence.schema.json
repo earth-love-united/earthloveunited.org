@@ -41,6 +41,15 @@
         "electricity.clean_share_change_5y",
         "electricity.fossil_share",
         "electricity.wind_solar_share",
+        "electricity.generation_share.bioenergy",
+        "electricity.generation_share.coal",
+        "electricity.generation_share.gas",
+        "electricity.generation_share.hydro",
+        "electricity.generation_share.nuclear",
+        "electricity.generation_share.other_fossil",
+        "electricity.generation_share.other_renewables",
+        "electricity.generation_share.solar",
+        "electricity.generation_share.wind",
         "electricity.carbon_intensity",
         "electricity.emissions",
         "climate.temperature.observed_trend",
@@ -184,8 +193,8 @@
         "flag_emoji": {"type": "string", "minLength": 1},
         "metrics": {
           "type": "object",
-          "minProperties": 18,
-          "maxProperties": 18,
+          "minProperties": 27,
+          "maxProperties": 27,
           "additionalProperties": {"$ref": "#/$defs/metric"}
         },
         "official_context": {"type": "array", "items": {"type": "object"}}

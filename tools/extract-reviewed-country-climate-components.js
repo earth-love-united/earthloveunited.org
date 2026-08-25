@@ -54,8 +54,17 @@ const COMPONENTS = {
       'electricity.carbon_intensity',
       'electricity.emissions',
       'electricity.clean_share_change_5y',
+      'electricity.generation_share.bioenergy',
+      'electricity.generation_share.coal',
+      'electricity.generation_share.gas',
+      'electricity.generation_share.hydro',
+      'electricity.generation_share.nuclear',
+      'electricity.generation_share.other_fossil',
+      'electricity.generation_share.other_renewables',
+      'electricity.generation_share.solar',
+      'electricity.generation_share.wind',
     ],
-    source_registry_ids: ['ember-yearly-electricity-data-2026-08-24'],
+    source_registry_ids: ['ember-yearly-electricity-data-2026-08-25'],
   },
   cckp: {
     file: 'cckp-physical.json',
@@ -80,7 +89,7 @@ const COMPONENT_REVIEW_STATES = Object.freeze({
 });
 const RELEASE_PENDING_SOURCE_IDS = new Set([
   'climate-trace-v5.9.0-country-annual',
-  'ember-yearly-electricity-data-2026-08-24',
+  'ember-yearly-electricity-data-2026-08-25',
   'un-wpp-2024',
   'world-bank-cckp-cmip6-2026-08-24',
 ]);

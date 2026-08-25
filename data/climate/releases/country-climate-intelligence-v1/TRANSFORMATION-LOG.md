@@ -1,6 +1,6 @@
 # Country Climate Intelligence v1 — transformation log
 
-Release: `country-climate-intelligence-2026-08-25-candidate.3`
+Release: `country-climate-intelligence-2026-08-25-candidate.4`
 
 Status: normalized factual candidate pending source revalidation. This is not a production promotion receipt. Independent scientific review, external raw-receipt revalidation, and release-specific redistribution-rights review remain open.
 
@@ -10,7 +10,7 @@ Status: normalized factual candidate pending source revalidation. This is not a 
 - The repository stores exact source/component receipts, reviewed normalized country facts, explicit gap records, transformation code, and the compact runtime.
 - The browser runtime uses recursively key-sorted, newline-terminated compact JSON. Human-review component artifacts remain indented; formatting never changes values or ordering.
 - Every compiler starts from the 249-entry country registry. A source row must map once or receive one enumerated aggregate, territory, or unmapped exception. Missing data is never converted to zero and a territory never inherits its parent country's value.
-- The prior reviewed normalized facts were recovered byte-for-byte from candidate SHA-256 `436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09` after an uncommitted temporary worktree was purged. Carbon, population, independent GHG, power, and CMIP6 projections are unchanged. Observed temperature and precipitation are the only planes refreshed from new exact-checksummed ERA5 snapshots.
+- The prior reviewed normalized facts were recovered byte-for-byte from candidate SHA-256 `436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09` after an uncommitted temporary worktree was purged. Carbon, population, independent GHG, and CMIP6 projections are unchanged. Observed temperature/precipitation and the Ember power component are refreshed from exact-checksummed snapshots.
 
 ## Carbon
 
@@ -23,9 +23,13 @@ Status: normalized factual candidate pending source revalidation. This is not a 
 
 ## Power
 
-- Select exact 2024 annual actuals under Ember's published clean, fossil, wind-and-solar, intensity, and power-emissions taxonomy.
+- Select exact 2024 annual actuals under Ember's published clean, fossil, wind-and-solar, intensity, power-emissions, and generation-fuel taxonomy. The pinned 49,079,981-byte CSV has SHA-256 `259e1095ee8ffeaf0aff37ad557916ae1823a2da13312da50ba4cec6b4574c3b`; raw bytes remain external.
 - Five-year change is `clean share 2024 − clean share 2019`, reported in percentage points.
 - Source-labelled estimates cannot enter the 2024 clean-share order.
+- The nine standardized generation types are Bioenergy, Coal, Gas, Hydro, Nuclear, Other Fossil, Other Renewables, Solar, and Wind. `Other Renewables` remains Ember's combined geothermal, tidal, and wave category; the dashboard does not relabel it as geothermal.
+- All 3,107 selected 2019/2024 rows receive one identity disposition: 2,897 map to registry entities, 195 are documented regional aggregates, and 15 Kosovo rows are documented unmapped exceptions. No parent-country imputation is performed.
+- A country fuel mix is publishable only when its non-blank fuel rows reconcile separately to the published clean and fossil anchors and both published sums remain within ±0.02 percentage points of 100. The 194 accepted mixes pass; Lesotho's nine blank fuel cells remain an explicit fuel-mix gap.
+- Missing fuel rows remain gaps even when another published component completes the total. Exact source zeroes remain zero. The browser copies raw shares without rescaling; 99.98–100.02 totals are identified as source rounding rather than silently normalized.
 
 ## Physical climate
 

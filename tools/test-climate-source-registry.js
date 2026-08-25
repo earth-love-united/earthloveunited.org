@@ -69,9 +69,14 @@ expectFailure('Climate TRACE checksum gate bypass', candidate => {
 }, /must pass every Country Climate Intelligence ingestion gate/);
 
 expectFailure('Ember field permit removal', candidate => {
-  const source = sourceById(candidate, 'ember-yearly-electricity-data-2026-08-24');
-  source.ingestion_gate.field_permitlist = source.ingestion_gate.field_permitlist.filter(field => field !== 'Evidence class');
-}, /must permitlist Evidence class/);
+  const source = sourceById(candidate, 'ember-yearly-electricity-data-2026-08-25');
+  source.ingestion_gate.field_permitlist = source.ingestion_gate.field_permitlist.filter(field => field !== 'Subcategory');
+}, /must permitlist Subcategory/);
+
+expectFailure('Ember metric permit extension bypass', candidate => {
+  const source = sourceById(candidate, 'ember-yearly-electricity-data-2026-08-25');
+  source.ingestion_gate.metric_permitlist = source.ingestion_gate.metric_permitlist.filter(metric => metric !== 'electricity.generation_share.nuclear');
+}, /must retain the exact maintainer-authorized metric permitlist/);
 
 expectFailure('ERA5 empty snapshot bypass', candidate => {
   const source = sourceById(candidate, 'world-bank-cckp-era5-2026-08-24');
@@ -94,4 +99,4 @@ expectFailure('PRIMAP v2.7 public ingestion', candidate => {
   source.storage.raw = 'external_only';
 }, /must remain blocked from public value ingestion/);
 
-console.log('Climate source registry regression tests passed (11 fail-closed mutations rejected).');
+console.log('Climate source registry regression tests passed (12 fail-closed mutations rejected).');

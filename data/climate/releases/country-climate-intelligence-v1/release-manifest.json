@@ -17,7 +17,7 @@
     },
     "ember": {
       "path": "data/climate/releases/country-climate-intelligence-v1/ember-power.json",
-      "sha256": "aae2955fe115a08e192c5a9abdc2c46ab925be3639f411e86df8cba6925e874c"
+      "sha256": "2f566e0035353dd7b8d67aed7b2211e6a164ca16ba98c431d6f3e14d45c8e24a"
     },
     "gcb": {
       "path": "data/climate/releases/country-climate-intelligence-v1/gcb-carbon.json",
@@ -151,6 +151,60 @@
       "label": "Fossil electricity share",
       "public_role": "context"
     },
+    "electricity.generation_share.bioenergy": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Bioenergy generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.coal": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Coal generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.gas": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Gas generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.hydro": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Hydro generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.nuclear": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Nuclear generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.other_fossil": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Other fossil generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.other_renewables": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Other renewables generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.solar": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Solar generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.wind": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Wind generation share",
+      "public_role": "context"
+    },
     "electricity.wind_solar_share": {
       "comparison_period": "2024",
       "family": "power",
@@ -217,7 +271,7 @@
     "comparison_baseline_year": 2024,
     "entity_count": 249,
     "generated_on": "2026-08-25",
-    "id": "country-climate-intelligence-2026-08-25-candidate.3",
+    "id": "country-climate-intelligence-2026-08-25-candidate.4",
     "production_runtime_release": false,
     "review_state": "normalized_factual_candidate_pending_source_revalidation",
     "status": "candidate"
@@ -225,11 +279,11 @@
   "reviewed_candidate_recovery_sha256": "436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09",
   "source_receipts": {
     "path": "data/climate/releases/country-climate-intelligence-v1/source-receipts.json",
-    "sha256": "589a1a5c78214c4229c6ecb28025f8332461cb0433c923dba606db2be822685f"
+    "sha256": "b74177988d7be9a2face76fcdbdedc6117554990db208b7dc87e234ae8aad76b"
   },
   "transformation_log": {
     "path": "data/climate/releases/country-climate-intelligence-v1/TRANSFORMATION-LOG.md",
-    "sha256": "19f5ac1ce1098c9965a20b5ef648d86c00093d2371ea84b998b47f7507082edd"
+    "sha256": "ff628f42b74feecbbbf451485e897adf8c2f8f2f4d81ab5da2da934f64baa262"
   },
   "schema_ref": "data/climate/schemas/country-climate-intelligence.schema.json",
   "schema_version": "1.0.0",
@@ -279,15 +333,15 @@
       "version": "inventory v5.9.0; API v7 snapshot retrieved 2026-08-24"
     },
     {
-      "attribution": "Ember, Yearly Electricity Data, full release retrieved 2026-08-24, https://ember-energy.org/data/yearly-electricity-data/. Earth Love United transformations are identified.",
-      "id": "ember-yearly-electricity-data-2026-08-24",
+      "attribution": "Ember, Yearly Electricity Data, full release retrieved 2026-08-25, https://ember-energy.org/data/yearly-electricity-data/. Earth Love United transformations are identified.",
+      "id": "ember-yearly-electricity-data-2026-08-25",
       "licence": "CC-BY-4.0",
       "public_role": "metric_provenance",
       "review_state": "pending",
       "source_url": "https://ember-energy.org/data/yearly-electricity-data/",
       "title": "Yearly Electricity Data",
       "values_in_release": true,
-      "version": "full long-format release retrieved 2026-08-24"
+      "version": "full long-format release retrieved 2026-08-25"
     },
     {
       "attribution": "World Bank Climate Change Knowledge Portal, CMIP6 0.25-degree projected climate data, API snapshot 2026-08-24. Earth Love United transformations are identified.",

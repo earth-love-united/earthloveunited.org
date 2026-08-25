@@ -14,9 +14,9 @@ const guidedOrbit = fs.readFileSync(path.join(ROOT, 'js/guided-first-orbit.js'),
 const css = fs.readFileSync(path.join(ROOT, 'css/globe-system.css'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
-const dataAt = index.indexOf('src="js/data.js?v=v8"');
-const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v12"');
-const globeAt = index.indexOf('src="js/globe.js?v=v30"');
+const dataAt = index.indexOf('src="js/data.js?v=v9"');
+const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v13"');
+const globeAt = index.indexOf('src="js/globe.js?v=v31"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -73,13 +73,26 @@ assert(css.includes('.elu-projection-marker.is-p10'));
 assert(css.includes('.elu-projection-marker.is-median'));
 assert(css.includes('.elu-projection-marker.is-p90'));
 assert(presentation.includes('buildPowerField(facts)'));
-assert(presentation.includes('All lanes use the same 0–100% scale.'));
+assert(presentation.includes('Two aligned bars copy exact shares of total electricity generation.'));
+assert(presentation.includes('Missing fuel values remain gaps and are never converted to zero.'));
+assert(presentation.includes('no browser rescaling is applied.'));
+assert(presentation.includes('combined geothermal, tidal, and wave category'));
 assert(globe.includes('_renderPowerField(view'));
 assert(globe.includes('class="elu-power-field"'));
 assert(globe.includes('visualizedPowerFacts'));
-assert(css.includes('.elu-power-lane-fill.is-clean'));
-assert(css.includes('.elu-power-lane-fill.is-fossil'));
-assert(css.includes('.elu-power-lane-fill.is-wind-solar'));
+assert(css.includes('.elu-power-lane-track'));
+assert(css.includes('.elu-power-segment.is-nuclear'));
+assert(css.includes('.elu-power-segment.is-hydro'));
+assert(css.includes('.elu-power-segment.is-wind'));
+assert(css.includes('.elu-power-segment.is-solar'));
+assert(css.includes('.elu-power-segment.is-bioenergy'));
+assert(css.includes('.elu-power-segment.is-other-renewables'));
+assert(css.includes('.elu-power-segment.is-coal'));
+assert(css.includes('.elu-power-segment.is-gas'));
+assert(css.includes('.elu-power-segment.is-other-fossil'));
+assert(css.includes('.elu-power-mix-legend'));
+assert(css.includes('.elu-power-reconciliation.has-rounding'));
+assert(!css.includes('.elu-power-lane-fill.is-wind-solar'));
 const physicalLayout = globe.slice(globe.indexOf('return \'<section class="tt-physical-story"'), globe.indexOf('  _renderClimateMethods(view)'));
 assert(globe.includes('const futureProjectionBlock = projectionHtml'));
 assert(globe.includes('<h4>Future projection</h4>'));
@@ -115,21 +128,52 @@ const powerView = viewsByLens.power;
 const powerField = powerView.power_story.field;
 assert(powerField, 'Japan must expose an exact-source Power generation field');
 assert.strictEqual(powerField.ranking_eligible, false, 'the Power field is not a new ranking metric');
-assert.deepStrictEqual(Array.from(powerField.lanes, lane => lane.id), [
-  'electricity.clean_share',
-  'electricity.fossil_share',
-  'electricity.wind_solar_share',
-]);
-assert.deepStrictEqual(Array.from(powerField.lanes, lane => lane.pattern), ['clean', 'fossil', 'wind-solar']);
-assert(powerField.disclosure.includes('Wind + solar is a subset of the clean aggregate'));
-for (const lane of powerField.lanes) {
-  const fact = powerView.methods.facts.find(item => item.id === lane.id);
-  assert(fact && lane.available, `Japan ${lane.id} must be available in the field`);
-  assert.strictEqual(lane.value, fact.value, `${lane.id} must copy the reviewed fact exactly`);
-  assert.strictEqual(lane.display_value, fact.display_value, `${lane.id} display value must not be recomputed`);
+assert.strictEqual(powerField.available, true);
+assert.deepStrictEqual(Array.from(powerField.lanes, lane => lane.id), ['clean', 'fossil']);
+assert.strictEqual(powerField.visual_normalization_applied, false);
+assert(powerField.disclosure.includes('Clean and fossil use one 0–100% scale'));
+assert(powerField.disclosure.includes('no browser rescaling is applied'));
+const fuelMetricIds = [
+  'electricity.generation_share.bioenergy',
+  'electricity.generation_share.coal',
+  'electricity.generation_share.gas',
+  'electricity.generation_share.hydro',
+  'electricity.generation_share.nuclear',
+  'electricity.generation_share.other_fossil',
+  'electricity.generation_share.other_renewables',
+  'electricity.generation_share.solar',
+  'electricity.generation_share.wind',
+];
+const japanSegments = powerField.lanes.flatMap(lane => lane.segments);
+assert.deepStrictEqual(
+  Array.from(japanSegments, segment => segment.id).sort(),
+  fuelMetricIds.slice().sort(),
+  'Japan must expose all nine source-permitted fuel slots'
+);
+const japanOtherRenewables = japanSegments.find(segment => segment.id === 'electricity.generation_share.other_renewables');
+assert.strictEqual(japanOtherRenewables.available, false, 'Japan Other Renewables must remain an explicit blank source cell');
+assert.strictEqual(japanOtherRenewables.value, null, 'Japan blank fuel cell must not become zero');
+for (const [laneId, factId] of [['clean', 'electricity.clean_share'], ['fossil', 'electricity.fossil_share']]) {
+  const lane = powerField.lanes.find(item => item.id === laneId);
+  const fact = powerView.methods.facts.find(item => item.id === factId);
+  assert(lane && fact && lane.available, `Japan ${laneId} lane must be available`);
+  assert.strictEqual(lane.value, fact.value, `${laneId} lane must copy the reviewed anchor exactly`);
 }
+const francePower = presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('FRA', 'power');
+const franceField = francePower.power_story.field;
+const franceNuclear = franceField.lanes.flatMap(lane => lane.segments).find(segment => segment.id === 'electricity.generation_share.nuclear');
+assert.strictEqual(franceField.lanes.find(lane => lane.id === 'clean').value, 94.9, 'France clean electricity share must remain the exact 2024 aggregate');
+assert.strictEqual(franceField.lanes.find(lane => lane.id === 'fossil').value, 5.1, 'France fossil electricity share must remain the exact 2024 aggregate');
+assert.strictEqual(franceNuclear.value, 67.7, 'France nuclear share must be visibly represented from the exact source row');
+assert.strictEqual(franceField.published_component_sum, 100);
+assert.strictEqual(franceField.visual_normalization_applied, false);
 const antarcticaPower = presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('ATA', 'power');
 assert.strictEqual(antarcticaPower.power_story.field, null, 'a missing clean-share anchor must not receive a fabricated Power field');
+const lesothoPower = presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('LSO', 'power');
+assert.strictEqual(lesothoPower.power_story.field.available, false, 'Lesotho aggregate may render while its fuel-detail gap stays explicit');
+assert.strictEqual(lesothoPower.power_story.field.lanes.length, 0);
+assert(lesothoPower.power_story.field.disclosure.includes('never converted to zero'));
+let reconciledMixCount = 0;
 for (const country of release.countries) {
   const view = presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView(country.iso_alpha3, 'power');
   const clean = view.methods.facts.find(fact => fact.id === 'electricity.clean_share');
@@ -138,13 +182,35 @@ for (const country of release.countries) {
     assert.strictEqual(field, null, `${country.iso_alpha3} clean-share gap must not receive a Power field`);
     continue;
   }
-  assert(field && field.lanes.length === 3, `${country.iso_alpha3} must expose the three bounded Power lanes`);
-  for (const lane of field.lanes.filter(item => item.available)) {
-    const fact = view.methods.facts.find(item => item.id === lane.id);
-    assert.strictEqual(lane.value, fact.value, `${country.iso_alpha3} ${lane.id} must copy the exact source value`);
-    assert(lane.value >= 0 && lane.value <= 100, `${country.iso_alpha3} ${lane.id} must remain on the published 0–100% scale`);
+  if (!field.available) {
+    assert.strictEqual(country.iso_alpha3, 'LSO', `${country.iso_alpha3} has an unexpected fuel-detail gap`);
+    continue;
   }
+  reconciledMixCount += 1;
+  assert.strictEqual(field.lanes.length, 2, `${country.iso_alpha3} must expose the two aligned generation lanes`);
+  assert.strictEqual(field.visual_normalization_applied, false, `${country.iso_alpha3} must not rescale source shares`);
+  const segments = field.lanes.flatMap(lane => lane.segments);
+  assert.strictEqual(segments.length, 9, `${country.iso_alpha3} must retain all nine fuel slots, including explicit zeroes and gaps`);
+  for (const segment of segments) {
+    const fact = view.methods.facts.find(item => item.id === segment.id);
+    assert(fact, `${country.iso_alpha3} ${segment.id} must remain in the methods facts`);
+    assert.strictEqual(segment.available, fact.available, `${country.iso_alpha3} ${segment.id} availability must remain exact`);
+    assert.strictEqual(segment.value, fact.value, `${country.iso_alpha3} ${segment.id} must copy the source value or null exactly`);
+    if (!fact.available) assert.notStrictEqual(segment.value, 0, `${country.iso_alpha3} ${segment.id} gap must not become zero`);
+  }
+  for (const [laneId, factId] of [['clean', 'electricity.clean_share'], ['fossil', 'electricity.fossil_share']]) {
+    const lane = field.lanes.find(item => item.id === laneId);
+    const fact = view.methods.facts.find(item => item.id === factId);
+    assert.strictEqual(lane.value, fact.value, `${country.iso_alpha3} ${laneId} anchor must remain exact`);
+    const componentSum = Math.round(lane.segments.filter(segment => segment.available).reduce((sum, segment) => sum + segment.value, 0) * 1e6) / 1e6;
+    assert.strictEqual(componentSum, lane.component_sum, `${country.iso_alpha3} ${laneId} segments must reconcile to the compiler receipt`);
+  }
+  const visualTotal = Math.round(segments.filter(segment => segment.available).reduce((sum, segment) => sum + segment.value, 0) * 1e6) / 1e6;
+  assert.strictEqual(visualTotal, field.published_component_sum, `${country.iso_alpha3} visual total must copy the compiler reconciliation`);
+  assert(Math.abs(field.published_component_sum - 100) <= field.tolerance_pp + 1e-9, `${country.iso_alpha3} source total exceeds its explicit rounding tolerance`);
+  if (field.published_component_sum !== 100) assert(field.disclosure.includes('source rounding'), `${country.iso_alpha3} must disclose its non-100 published total`);
 }
+assert.strictEqual(reconciledMixCount, 194, 'exact fuel-mix coverage must remain deterministic');
 const cachedPhysicalVisual = presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryVisual('JPN', 'physical');
 assert.strictEqual(cachedPhysicalVisual, presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryVisual('JPN', 'physical'), 'compact visual models must be cached per country and lens');
 assert.strictEqual(JSON.stringify(cachedPhysicalVisual), JSON.stringify(physicalView.visual), 'country-card and renderer visual contracts must match');
@@ -234,11 +300,12 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v56-power-field'"));
-assert(serviceWorker.includes("'/css/globe-system.css?v=v35'"));
-assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v12'"));
-assert(serviceWorker.includes("'/js/globe.js?v=v30'"));
-assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate6'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v57-segmented-power-mix'"));
+assert(serviceWorker.includes("'/css/globe-system.css?v=v36'"));
+assert(serviceWorker.includes("'/js/data.js?v=v9'"));
+assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v13'"));
+assert(serviceWorker.includes("'/js/globe.js?v=v31'"));
+assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired project data must not be pinned by the climate runtime cache');
 

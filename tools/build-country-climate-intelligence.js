@@ -225,7 +225,7 @@ function build(manifest) {
   const metricIds = Object.keys(manifest.metric_definitions).sort();
   for (const country of countries) {
     const actual = Object.keys(country.metrics).sort();
-    if (JSON.stringify(actual) !== JSON.stringify(metricIds)) throw new Error(`${country.country_id} does not contain the deterministic 18-metric contract`);
+    if (JSON.stringify(actual) !== JSON.stringify(metricIds)) throw new Error(`${country.country_id} does not contain the deterministic ${metricIds.length}-metric contract`);
   }
   const inputArtifacts = Object.fromEntries(COMPONENT_IDS.map(id => [id, manifest.component_artifacts[id]]));
   inputArtifacts.official_context = manifest.official_context;

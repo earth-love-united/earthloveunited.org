@@ -47,7 +47,9 @@ Land-use change never enters the territorial fossil comparison value. Positive n
 
 The comparison is Ember's 2024 published clean-generation aggregate. The rail explores descending `electricity.clean_share`. Color and subtle country-tile relief redundantly encode the same bounded 0–100% clean-share metric on a linear scale; no other power metric affects height.
 
-The card includes clean, fossil, and wind-and-solar shares, 2019–2024 clean-share change, carbon intensity, and power-sector emissions. Only source-classified annual actuals may enter the comparison order. Source-labelled estimates remain context or gaps.
+The card leads with two aligned 0–100% electricity-generation bars: one for Ember's published clean aggregate and one for its published fossil aggregate. The bars preserve the source's nine standardized fuel rows—Bioenergy, Coal, Gas, Hydro, Nuclear, Other Fossil, Other Renewables, Solar, and Wind—as individually textured segments. The card also retains the published wind-and-solar aggregate as supporting evidence, plus 2019–2024 clean-share change, carbon intensity, and power-sector emissions. Only source-classified annual actuals may enter the comparison order. Source-labelled estimates remain context or gaps.
+
+Fuel segments are copied exactly and never rescaled to make a visually perfect 100%. The compiler separately reconciles non-blank clean and fossil components to their aggregate anchors within ±0.02 percentage points. Exact source zeroes remain zero; blank cells remain labelled data gaps. Published totals from 99.98% through 100.02% are identified as source rounding. `Other Renewables` is Ember's combined geothermal, tidal, and wave category, so the dashboard does not claim a separate geothermal share. The fuel mix is context inside the Power card and does not change the clean-share comparison order.
 
 ### Physical climate
 
@@ -70,12 +72,12 @@ Each upstream identity ledger maps 245 series to registry entities and records C
 | Core carbon | Global Carbon Budget 2025 v1.0, including separate national fossil and land-use workbooks |
 | Population denominator | UN World Population Prospects 2024, exact 2024 Medium projection only |
 | Independent GHG context | Climate TRACE v5.9.0 annual 2024 country snapshot, forestry/LULUCF excluded, IPCC AR6 GWP100 |
-| Power | Ember Yearly Electricity Data, exact 2019 and 2024 annual rows under Ember's published taxonomy |
+| Power | Ember Yearly Electricity Data, exact 2019/2024 annual aggregates and nine exact 2024 generation-fuel rows under Ember's published taxonomy |
 | Projected physical climate | World Bank CCKP CMIP6 country aggregates |
 | Observed physical climate | World Bank CCKP ERA5 annual country temperature and precipitation aggregates; exact variable-specific 1950–2025 snapshots, with both 1970–2025 series and OLS trends retained |
 | Official context | Existing UNFCCC document title, submission date, and direct-link metadata only |
 
-Every value-contributing component requires a reviewed licence, attribution, field permitlist, exact retrieval receipt/checksum, external raw-storage decision, normalized-value redistribution approval, and versioned source ID. The GCB and refreshed ERA5 temperature and precipitation inputs have pinned raw receipts; both ERA5 normalized snapshots and complete upstream disposition ledgers are also pinned. WPP, Climate TRACE, Ember, and CCKP CMIP6 remain candidate-only pending retained raw-receipt revalidation; Climate TRACE external-data exceptions and the CCKP/CMIP6 derivative licence chain also require release-specific rights review. All optional components, including ERA5, still require independent scientific review before production promotion. Browser code calls no source API and uses no API key.
+Every value-contributing component requires a reviewed licence, attribution, field and metric permitlists, exact retrieval receipt/checksum, external raw-storage decision, normalized-value redistribution approval, and versioned source ID. The GCB, Ember, and refreshed ERA5 temperature and precipitation inputs have pinned raw receipts; their normalized snapshots and complete upstream disposition ledgers are also pinned. WPP, Climate TRACE, and CCKP CMIP6 remain candidate-only pending retained raw-receipt revalidation; Climate TRACE external-data exceptions and the CCKP/CMIP6 derivative licence chain also require release-specific rights review. Ember and all other optional components still require independent scientific review before production promotion. Browser code calls no source API and uses no API key.
 
 PRIMAP-hist v2.7 is not acquired or ingested. The reviewed v2.6.1 artifact contributes no value and appears only in detailed citation provenance.
 

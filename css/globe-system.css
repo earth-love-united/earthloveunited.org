@@ -1258,6 +1258,15 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 }
 
 .elu-power-field {
+  --power-nuclear: #a991ff;
+  --power-hydro: #2e91b7;
+  --power-wind: #56d8cf;
+  --power-solar: #f2ba55;
+  --power-bioenergy: #64a965;
+  --power-other-renewables: #b97acb;
+  --power-coal: #626a73;
+  --power-gas: #df8856;
+  --power-other-fossil: #a85248;
   margin: 0 0 8px;
   padding: 10px;
   overflow: hidden;
@@ -1345,12 +1354,11 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 .elu-power-lane.is-fossil .elu-power-lane-mark {
   background: repeating-linear-gradient(135deg, var(--amber) 0 3px, transparent 3px 6px);
 }
-.elu-power-lane.is-wind-solar .elu-power-lane-mark {
-  background: repeating-linear-gradient(90deg, var(--teal) 0 3px, transparent 3px 6px);
-}
 
 .elu-power-lane-track {
   position: relative;
+  display: flex;
+  align-items: stretch;
   height: 14px;
   overflow: hidden;
   border: 1px solid var(--hud-divider);
@@ -1367,32 +1375,156 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   pointer-events: none;
 }
 
-.elu-power-lane-fill {
-  position: absolute;
-  inset: 2px auto 2px 0;
+.elu-power-segment {
+  position: relative;
+  z-index: 0;
+  display: block;
   min-width: 0;
-  border-radius: 0 1px 1px 0;
+  height: 100%;
+  flex: 0 0 auto;
+  box-shadow: inset -1px 0 rgba(6, 11, 18, .38);
 }
 
-.elu-power-lane-fill.is-clean { background: var(--mint); }
-.elu-power-lane-fill.is-fossil {
-  background: repeating-linear-gradient(135deg, var(--amber) 0 4px, rgba(0, 0, 0, .12) 4px 7px);
-}
-.elu-power-lane-fill.is-wind-solar {
-  background: repeating-linear-gradient(90deg, var(--teal) 0 4px, rgba(0, 0, 0, .1) 4px 8px);
+/* Color carries the fuel family; texture keeps the mix legible without color.
+   These are static fills so the evidence card adds no animation-frame work. */
+.elu-power-segment.is-nuclear,
+.elu-power-segment-key.is-nuclear {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .65) 0 1px, transparent 1.5px) 0 0 / 8px 8px,
+    linear-gradient(90deg, #7463c6, var(--power-nuclear) 48%, #7463c6);
 }
 
-.elu-power-lane-gap {
-  position: absolute;
-  inset: 0;
+.elu-power-segment.is-nuclear {
+  z-index: 1;
+  box-shadow:
+    inset 0 0 8px rgba(234, 229, 255, .72),
+    inset -1px 0 rgba(6, 11, 18, .42),
+    0 0 7px rgba(169, 145, 255, .38);
+}
+
+.elu-power-segment.is-hydro,
+.elu-power-segment-key.is-hydro {
+  background: repeating-linear-gradient(135deg, var(--power-hydro) 0 5px, #236b8e 5px 8px);
+}
+
+.elu-power-segment.is-wind,
+.elu-power-segment-key.is-wind {
+  background: repeating-linear-gradient(90deg, var(--power-wind) 0 3px, #248a87 3px 5px);
+}
+
+.elu-power-segment.is-solar,
+.elu-power-segment-key.is-solar {
+  background:
+    radial-gradient(circle, #fff0b0 0 1px, transparent 1.3px) 0 0 / 6px 6px,
+    var(--power-solar);
+}
+
+.elu-power-segment.is-bioenergy,
+.elu-power-segment-key.is-bioenergy {
+  background: repeating-linear-gradient(45deg, var(--power-bioenergy) 0 4px, #347447 4px 6px);
+}
+
+.elu-power-segment.is-other-renewables,
+.elu-power-segment-key.is-other-renewables {
+  background: repeating-radial-gradient(ellipse at 0 50%, var(--power-other-renewables) 0 3px, #765080 3px 5px);
+}
+
+.elu-power-segment.is-coal,
+.elu-power-segment-key.is-coal {
+  background: repeating-linear-gradient(135deg, #30363d 0 4px, var(--power-coal) 4px 7px);
+}
+
+.elu-power-segment.is-gas,
+.elu-power-segment-key.is-gas {
+  background: repeating-linear-gradient(90deg, var(--power-gas) 0 5px, #9c573d 5px 7px);
+}
+
+.elu-power-segment.is-other-fossil,
+.elu-power-segment-key.is-other-fossil {
+  background:
+    radial-gradient(circle, #d88b77 0 1px, transparent 1.4px) 0 0 / 6px 6px,
+    var(--power-other-fossil);
+}
+
+.elu-power-mix-legend {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px 12px;
+  margin: 10px 0 0;
+  padding: 9px 0 0;
+  border-top: 1px solid var(--hud-divider-soft);
+  list-style: none;
+}
+
+.elu-power-mix-legend li {
+  display: grid;
+  grid-template-columns: 17px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  color: var(--hud-muted);
+  font-size: 7px;
+  line-height: 1.25;
+}
+
+.elu-power-mix-legend li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.elu-power-mix-legend li strong {
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 7px;
+  font-weight: 600;
+}
+
+.elu-power-mix-legend li.is-zero { opacity: .68; }
+
+.elu-power-mix-legend li.is-gap .elu-power-segment-key {
+  background: repeating-linear-gradient(135deg, transparent 0 3px, var(--hud-divider) 3px 5px);
+}
+
+.elu-power-mix-legend li.is-gap strong {
+  color: var(--hud-faint);
+  font-size: 6px;
+  text-transform: uppercase;
+}
+
+.elu-power-segment-key {
+  display: block;
+  width: 17px;
+  height: 7px;
+  border: 1px solid var(--hud-divider);
+  border-radius: 1px;
+}
+
+.elu-power-reconciliation,
+.elu-power-taxonomy-note,
+.elu-power-mix-gap {
+  margin: 7px 0 0;
+  color: var(--hud-muted);
+  font-size: 7px;
+  line-height: 1.45;
+}
+
+.elu-power-reconciliation strong { color: var(--text2); }
+
+.elu-power-reconciliation.has-rounding {
+  padding-left: 7px;
+  border-left: 2px solid var(--amber);
+}
+
+.elu-power-taxonomy-note { color: var(--hud-faint); }
+
+.elu-power-mix-gap {
+  min-height: 44px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: var(--hud-faint);
-  font-family: var(--mono);
-  font-size: 6px;
-  letter-spacing: .6px;
-  text-transform: uppercase;
+  padding: 9px;
+  border: 1px dashed var(--hud-divider);
+  background: var(--hud-cell);
 }
 
 .elu-power-field figcaption {
@@ -1405,6 +1537,25 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 }
 
 .elu-power-field figcaption strong { color: var(--text2); }
+
+html[data-theme="light"] body.globe-mode .elu-power-field {
+  --power-nuclear: #7564b4;
+  --power-hydro: #2f718f;
+  --power-wind: #2d8981;
+  --power-solar: #b77b19;
+  --power-bioenergy: #4d8050;
+  --power-other-renewables: #80558a;
+  --power-coal: #555d63;
+  --power-gas: #ac603c;
+  --power-other-fossil: #87443e;
+}
+
+html[data-theme="light"] body.globe-mode .elu-power-segment.is-nuclear {
+  box-shadow:
+    inset 0 0 5px rgba(255, 255, 255, .55),
+    inset -1px 0 rgba(32, 48, 42, .28),
+    0 0 3px rgba(117, 100, 180, .24);
+}
 .tt-power-support-grid { margin-top: 7px; }
 .tt-glance .tt-power-support-grid .tt-fact:first-child { grid-column: auto; }
 
@@ -2022,6 +2173,7 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .elu-trajectory-cu
   .tt-fact-grid { grid-template-columns: 1fr; }
   .tt-glance .tt-fact:first-child { grid-column: auto; }
   .elu-power-field-head { align-items: flex-start; flex-direction: column; gap: 2px; }
+  .elu-power-mix-legend { grid-template-columns: 1fr; }
 
   .elu-rank-row {
     grid-template-columns: 6px minmax(0, 1fr);
