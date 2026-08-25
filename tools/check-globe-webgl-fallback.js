@@ -40,6 +40,7 @@ function compile() {
   const candidate = json('data/climate/runtime/country-climate-intelligence.json');
   const carbon = candidate.lens_orders.carbon;
   const fallbackHtml = between(html, '<section id="globe-fallback"', '</section>');
+  const fallbackOpenTag = (fallbackHtml.match(/^<section\b[^>]*>/) || [''])[0];
   const fallbackRuntime = between(globe, '  showFallback(reasonCode)', '  setTheme(theme)');
   const detailRuntime = between(globe, '  _renderFallbackCountry(iso, focusDetail)', '  hideFallback(options = {})');
 
@@ -67,7 +68,9 @@ function compile() {
     },
     accessibility: {
       body_level_region: html.indexOf('<section id="globe-fallback"') > html.indexOf('<div id="globeViz" aria-hidden="true"></div>') && fallbackHtml.includes('aria-labelledby="globe-fallback-title"'),
-      closed_inert: fallbackHtml.includes('hidden aria-hidden="true"') && css.includes('#globe-fallback[hidden] { display: none !important; }'),
+      closed_inert: /\shidden(?:\s|>)/.test(fallbackOpenTag) &&
+        /\saria-hidden="true"(?:\s|>)/.test(fallbackOpenTag) &&
+        css.includes('#globe-fallback[hidden] { display: none !important; }'),
       labelled_status: fallbackHtml.includes('id="globe-fallback-title" tabindex="-1"') && fallbackHtml.includes('role="status" aria-live="polite"'),
       searchable_evidence: fallbackHtml.includes('id="globe-fallback-search"') && fallbackHtml.includes('id="globe-fallback-country-list"') && fallbackRuntime.includes('data-fallback-country-iso') && fallbackRuntime.includes("if (name === 'close')"),
       focus_restoration: app.includes("safeCall('GlobeModule', 'rememberFallbackOpener', document.activeElement)") && app.includes("safeCall('GlobeModule', 'hideFallback', { restoreFocus: true, preserveOpener: false })") && globe.includes('requestAnimationFrame(() => opener.focus({ preventScroll: true }))'),
