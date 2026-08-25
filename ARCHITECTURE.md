@@ -184,6 +184,16 @@ Power is bounded linear over 0–100% clean share, and Physical is linear over t
 published warming range. Physical relief is projected warming only—not
 vulnerability, damage, or responsibility.
 
+The Power card renders one static SVG generation fingerprint from the exact 2024
+Ember share facts. Its outer, middle, and inner rings copy clean, fossil, and
+wind-plus-solar shares on the same absolute 0–100% generation scale. The view
+model requires a shared period, evidence class, and source taxonomy before a
+secondary ring can render; missing or mismatched shares stay explicit gaps.
+Wind plus solar is labelled as a subset of clean, the rings are not added, and
+the fingerprint is neither a ranking metric nor a whole-economy assessment.
+Facts represented by valid rings are visually de-duplicated from the generic
+fact grids but remain in the methods drawer.
+
 The Physical card separately renders the compiled 1970–2025 ERA5 annual
 temperature and precipitation series and supplied OLS endpoints for 245 entities. It groups
 observed temperature analysis, an evidence-only published projection range, and the unchanged
@@ -369,8 +379,8 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v54 precaches the public page, core CSS/JS, Guided First
-Orbit UI, the shared raised-tile lenses, evidence-only Physical-card percentile range, verified local globe.gl, the CT-45 manifest
+`sw.js` cache epoch v55 precaches the public page, core CSS/JS, Guided First
+Orbit UI, the shared raised-tile lenses, evidence-only Physical-card percentile range, the Power-card generation fingerprint, verified local globe.gl, the CT-45 manifest
 and localized globe assets, the scroll-proof selected-country identity header, and the exact-version Country Climate Intelligence
 candidate. The prior country-factual candidate is retained for one release
 epoch as a rollback artifact; it is not loaded into the v1 dashboard. The

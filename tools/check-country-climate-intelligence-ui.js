@@ -15,8 +15,8 @@ const css = fs.readFileSync(path.join(ROOT, 'css/globe-system.css'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
 const dataAt = index.indexOf('src="js/data.js?v=v8"');
-const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v10"');
-const globeAt = index.indexOf('src="js/globe.js?v=v28"');
+const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v11"');
+const globeAt = index.indexOf('src="js/globe.js?v=v29"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -72,6 +72,14 @@ assert(!/ensemble draws|deterministic uncertainty samples|visual bridges/i.test(
 assert(css.includes('.elu-projection-marker.is-p10'));
 assert(css.includes('.elu-projection-marker.is-median'));
 assert(css.includes('.elu-projection-marker.is-p90'));
+assert(presentation.includes('buildPowerSignature(facts)'));
+assert(presentation.includes('The three rings are not additive and do not describe the whole economy.'));
+assert(globe.includes('_renderPowerSignature(view'));
+assert(globe.includes('class="elu-power-signature"'));
+assert(globe.includes('visualizedPowerFacts'));
+assert(css.includes('.elu-power-ring-value.is-clean'));
+assert(css.includes('.elu-power-ring-value.is-fossil'));
+assert(css.includes('.elu-power-ring-value.is-wind-solar'));
 const physicalLayout = globe.slice(globe.indexOf('return \'<section class="tt-physical-story"'), globe.indexOf('  _renderClimateMethods(view)'));
 assert(globe.includes('const futureProjectionBlock = projectionHtml'));
 assert(globe.includes('<h4>Future projection</h4>'));
@@ -103,6 +111,40 @@ for (const [lensId, view] of Object.entries(viewsByLens)) {
   assert.strictEqual(glanceIds.filter(id => panelIds.includes(id)).length, 0, `${lensId} At-a-glance metrics must not repeat in the lens panel`);
 }
 const physicalView = viewsByLens.physical;
+const powerView = viewsByLens.power;
+const powerSignature = powerView.power_story.signature;
+assert(powerSignature, 'Japan must expose an exact-source Power generation fingerprint');
+assert.strictEqual(powerSignature.ranking_eligible, false, 'the Power fingerprint is not a new ranking metric');
+assert.deepStrictEqual(Array.from(powerSignature.tracks, track => track.id), [
+  'electricity.clean_share',
+  'electricity.fossil_share',
+  'electricity.wind_solar_share',
+]);
+assert.deepStrictEqual(Array.from(powerSignature.tracks, track => track.ring), ['outer', 'middle', 'inner']);
+assert(powerSignature.disclosure.includes('Wind + solar is a subset of the clean aggregate'));
+for (const track of powerSignature.tracks) {
+  const fact = powerView.methods.facts.find(item => item.id === track.id);
+  assert(fact && track.available, `Japan ${track.id} must be available in the fingerprint`);
+  assert.strictEqual(track.value, fact.value, `${track.id} must copy the reviewed fact exactly`);
+  assert.strictEqual(track.display_value, fact.display_value, `${track.id} display value must not be recomputed`);
+}
+const antarcticaPower = presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('ATA', 'power');
+assert.strictEqual(antarcticaPower.power_story.signature, null, 'a missing clean-share anchor must not receive a fabricated Power fingerprint');
+for (const country of release.countries) {
+  const view = presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView(country.iso_alpha3, 'power');
+  const clean = view.methods.facts.find(fact => fact.id === 'electricity.clean_share');
+  const signature = view.power_story.signature;
+  if (!clean.available) {
+    assert.strictEqual(signature, null, `${country.iso_alpha3} clean-share gap must not receive a Power fingerprint`);
+    continue;
+  }
+  assert(signature && signature.tracks.length === 3, `${country.iso_alpha3} must expose the three bounded Power tracks`);
+  for (const track of signature.tracks.filter(item => item.available)) {
+    const fact = view.methods.facts.find(item => item.id === track.id);
+    assert.strictEqual(track.value, fact.value, `${country.iso_alpha3} ${track.id} must copy the exact source value`);
+    assert(track.value >= 0 && track.value <= 100, `${country.iso_alpha3} ${track.id} must remain on the published 0–100% scale`);
+  }
+}
 const cachedPhysicalVisual = presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryVisual('JPN', 'physical');
 assert.strictEqual(cachedPhysicalVisual, presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryVisual('JPN', 'physical'), 'compact visual models must be cached per country and lens');
 assert.strictEqual(JSON.stringify(cachedPhysicalVisual), JSON.stringify(physicalView.visual), 'country-card and renderer visual contracts must match');
@@ -192,10 +234,10 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v54-sticky-country-header'"));
-assert(serviceWorker.includes("'/css/globe-system.css?v=v33'"));
-assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v10'"));
-assert(serviceWorker.includes("'/js/globe.js?v=v28'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v55-power-signature'"));
+assert(serviceWorker.includes("'/css/globe-system.css?v=v34'"));
+assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v11'"));
+assert(serviceWorker.includes("'/js/globe.js?v=v29'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate6'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired project data must not be pinned by the climate runtime cache');

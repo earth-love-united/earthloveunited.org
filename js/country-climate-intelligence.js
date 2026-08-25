@@ -8,7 +8,7 @@
 const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   'use strict';
 
-  const VERSION = '1.6.0';
+  const VERSION = '1.7.0';
   const RELIEF_BASE_ALTITUDE = 0.007;
   const RELIEF_RANGE = 0.005;
   const CARBON_RELIEF_DEMO_VALUE = 'low-is-high';
@@ -226,6 +226,59 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     });
   }
 
+  function buildPowerSignature(facts) {
+    const byId = new Map(facts.map(fact => [fact.id, fact]));
+    const clean = byId.get('electricity.clean_share');
+    const validShare = fact => fact?.available
+      && fact.unit === '%'
+      && finite(fact.value)
+      && fact.value >= 0
+      && fact.value <= 100;
+    if (!validShare(clean)) return null;
+
+    const cleanSourceIds = new Set(clean.sources.map(source => source.id));
+    const compatibleShare = fact => validShare(fact)
+      && fact.period === clean.period
+      && fact.status === clean.status
+      && fact.context?.source_evidence_class === clean.context?.source_evidence_class
+      && fact.context?.taxonomy === clean.context?.taxonomy
+      && fact.sources.some(source => cleanSourceIds.has(source.id));
+    const trackDefinitions = [
+      ['electricity.clean_share', 'Clean generation', 'outer'],
+      ['electricity.fossil_share', 'Fossil generation', 'middle'],
+      ['electricity.wind_solar_share', 'Wind + solar', 'inner'],
+    ];
+    const tracks = trackDefinitions.map(([metricId, label, ring]) => {
+      const fact = byId.get(metricId);
+      const available = metricId === 'electricity.clean_share' ? true : compatibleShare(fact);
+      return Object.freeze({
+        id: metricId,
+        label,
+        ring,
+        available,
+        value: available ? fact.value : null,
+        display_value: available ? fact.display_value : 'Data gap',
+        unit: available ? fact.unit : null,
+        gap: available
+          ? null
+          : (fact?.available
+              ? 'Not drawn because its period, evidence class, or source taxonomy does not match the clean-share anchor.'
+              : fact?.gap?.detail || 'The exact generation share is unavailable.'),
+      });
+    });
+    return Object.freeze({
+      id: 'electricity.generation_fingerprint',
+      title: 'Generation fingerprint',
+      period: clean.period,
+      evidence_label: clean.evidence_label,
+      ranking_eligible: false,
+      tracks: Object.freeze(tracks),
+      visualized_fact_ids: Object.freeze(tracks.filter(track => track.available).map(track => track.id)),
+      method: 'Each ring copies an absolute share of total electricity generation from the same published annual electricity taxonomy.',
+      disclosure: 'Wind + solar is a subset of the clean aggregate. The three rings are not additive and do not describe the whole economy.',
+    });
+  }
+
   function normalize(lensId, value) {
     if (!finite(value)) return null;
     const domain = _domainByLens.get(lensId);
@@ -387,6 +440,9 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
           },
         }
       : null;
+    const powerStory = lens.id === 'power'
+      ? { signature: buildPowerSignature(activeFacts) }
+      : null;
     const citationOnlySources = _release.source_catalog
       .filter(source => source.public_role === 'citation_only')
       .map(source => ({ id: source.id, title: source.title, version: source.version, url: source.source_url, note: 'Citation retained for historical provenance; no values from this source appear in this release.' }));
@@ -420,6 +476,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       detail_chart: detailChart,
       detail_chart_heading: lens.id === 'physical' && detailCharts.length ? 'Observed reanalysis' : null,
       detail_charts: detailCharts,
+      power_story: powerStory,
       physical_story: physicalStory,
       active_panel: {
         id: lens.id,
