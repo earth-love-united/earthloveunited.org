@@ -119,7 +119,9 @@ function projectedMetric(entity, variable, rows) {
 function observedMetric(entity, variable, rows, lastYear, emptySnapshot) {
   const config = VARIABLE_CONFIG[variable];
   if (emptySnapshot) {
-    return gapMetric(config.observed_id, OBSERVED_SOURCE, 'source_snapshot_empty', 'The CCKP ERA5 country API returned an empty payload at compilation time; no observed trend is inferred.');
+    const metric = gapMetric(config.observed_id, OBSERVED_SOURCE, 'source_snapshot_empty', 'The CCKP ERA5 country API returned an empty payload at compilation time; no observed trend is inferred.');
+    metric.evidence_kind = 'reanalysis';
+    return metric;
   }
   const series = rows
     .filter(row => Number(row.year) >= 1970 && Number(row.year) <= lastYear && Number.isFinite(Number(row.value)))
@@ -129,7 +131,9 @@ function observedMetric(entity, variable, rows, lastYear, emptySnapshot) {
     throw new Error(`Duplicate CCKP observed year for ${entity.iso_alpha3}/${variable}`);
   }
   if (series.length < 2) {
-    return gapMetric(config.observed_id, OBSERVED_SOURCE, 'source_value_missing', `The ERA5 snapshot lacks a usable 1970–${lastYear} annual country series.`);
+    const metric = gapMetric(config.observed_id, OBSERVED_SOURCE, 'source_value_missing', `The ERA5 snapshot lacks a usable 1970–${lastYear} annual country series.`);
+    metric.evidence_kind = 'reanalysis';
+    return metric;
   }
   const fit = olsTrendLine(series);
   const scope = {
@@ -155,6 +159,7 @@ function observedMetric(entity, variable, rows, lastYear, emptySnapshot) {
       trend_line: [fit.start, fit.end],
     },
     fact_ids: [`cckp-era5:${entity.iso_alpha3}:${variable}:trend:1970-${lastYear}`],
+    evidence_kind: 'reanalysis',
     gap_reason: null,
     id: config.observed_id,
     period: { end: lastYear, label: `1970–${lastYear}`, start: 1970 },

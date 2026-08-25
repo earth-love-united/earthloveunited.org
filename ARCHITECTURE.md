@@ -168,7 +168,7 @@ flowchart LR
 
 `Data.init()` applies an eight-second deadline to the critical candidate read.
 The candidate is parsed only after WebCrypto verifies SHA-256
-`825675dc8f6ee2a0fc79c67aabbfa6a0f96bcab938101afb61d74d49d566b6c1`.
+`fb4272a37aba8841484c216104bdba51606a584ab51ca77351c459413bbc6e1a`.
 Schema validation then proves 249 unique registry entities, exactly 18 metric
 records per entity, coverage derived from records, three complete lens
 partitions, explicit gaps, and the non-production release boundary. Candidate
@@ -186,13 +186,12 @@ vulnerability, damage, or responsibility.
 
 The Physical card separately renders the compiled 1970–2025 ERA5 annual
 temperature and precipitation series and supplied OLS endpoints for 245 entities. It groups
-observed temperature analysis, a deterministic five-draw projection illustration, and the
-unchanged projected-temperature fact before the projected-precipitation fact and observed
-precipitation data. `COUNTRY_CLIMATE_INTELLIGENCE` samples the illustration from a
-piecewise-linear quantile model anchored to the published SSP2-4.5 p10, median, and p90,
-truncated to that range and seeded by country plus factual release checksum. The renderer
-labels the paths as visual interpolation—not CMIP6 model runs, annual forecasts, evidence,
-or ranking inputs. These views do not affect the Physical comparison order, which remains
+observed temperature analysis, an evidence-only published projection range, and the unchanged
+projected-temperature fact before the projected-precipitation fact and observed precipitation
+data. `COUNTRY_CLIMATE_INTELLIGENCE` copies the published SSP2-4.5 p10, median, and p90
+without fitting a distribution or generating samples. The renderer distinguishes the three
+statistics with square, diamond, and circle markers and draws no path through intervening
+years. These views do not affect the Physical comparison order, which remains
 the exact SSP2-4.5 modeled projection metric. At-a-glance, observed-series, and projected
 fact IDs are removed from the expanded lens grid while all facts remain in the methods
 drawer, so the renderer never duplicates a headline fact card.
@@ -369,8 +368,8 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v52 precaches the public page, core CSS/JS, Guided First
-Orbit UI, the shared raised-tile lenses, deterministic Physical-card ensemble, verified local globe.gl, the CT-45 manifest
+`sw.js` cache epoch v53 precaches the public page, core CSS/JS, Guided First
+Orbit UI, the shared raised-tile lenses, evidence-only Physical-card percentile range, verified local globe.gl, the CT-45 manifest
 and localized globe assets, and the exact-version Country Climate Intelligence
 candidate. The prior country-factual candidate is retained for one release
 epoch as a rollback artifact; it is not loaded into the v1 dashboard. The

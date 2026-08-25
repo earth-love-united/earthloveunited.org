@@ -101,8 +101,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="js/gaia-utils.js" as="script">
-<link rel="preload" href="js/data.js?v=v7" as="script">
-<link rel="preload" href="js/country-climate-intelligence.js?v=v9" as="script">
+<link rel="preload" href="js/data.js?v=v8" as="script">
+<link rel="preload" href="js/country-climate-intelligence.js?v=v10" as="script">
 
 <!-- ═══ CRITICAL CSS (inlined) ═══ -->
 <style>
@@ -362,7 +362,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v31">
+<link rel="stylesheet" href="css/globe-system.css?v=v32">
 <link rel="stylesheet" href="css/guided-first-orbit.css?v=v2">
 
 <!-- Non-critical CSS: deferred async load -->
@@ -813,9 +813,9 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage-adapter.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
-<script src="js/data.js?v=v7"></script>
-<script src="js/country-climate-intelligence.js?v=v9"></script>
-<script src="js/globe.js?v=v27"></script>
+<script src="js/data.js?v=v8"></script>
+<script src="js/country-climate-intelligence.js?v=v10"></script>
+<script src="js/globe.js?v=v28"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/guided-first-orbit.js?v=v3"></script>
 <script src="js/app.js?v=v4"></script>
@@ -915,7 +915,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <!-- Accessible evidence route. GlobeModule reveals this body-level region
      when critical candidate data, geometry, visual assets, the renderer,
      WebGL, or globe construction fail closed. -->
-<section id="globe-fallback" hidden aria-hidden="true" aria-labelledby="globe-fallback-title">
+<section id="globe-fallback" hidden role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="globe-fallback-title">
   <div class="elu-fallback-shell">
     <header class="elu-fallback-header">
       <p class="elu-fallback-eyebrow">Living Globe · accessible evidence view</p>
@@ -963,7 +963,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=52-physical-ensemble', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=53-red-team-fixes', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

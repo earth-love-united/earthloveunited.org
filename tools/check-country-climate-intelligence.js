@@ -100,6 +100,7 @@ function checkDerived(country) {
 
   for (const metricId of ['climate.temperature.observed_trend', 'climate.precipitation.observed_trend']) {
     const observed = metrics[metricId];
+    assert.strictEqual(observed.evidence_kind, 'reanalysis', `${country.iso_alpha3} ${metricId} must expose reanalysis evidence semantics`);
     if (observed.value !== null && Array.isArray(observed.series)) {
       assert.strictEqual(observed.value, olsSlopePerDecade(observed.series), `${country.iso_alpha3} ${metricId} OLS mismatch`);
       const fit = olsTrendLine(observed.series);

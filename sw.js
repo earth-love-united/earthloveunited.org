@@ -1,17 +1,17 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v52) — stage the deterministic physical-climate ensemble,
- * regrouped evidence card, and 120 Hz renderer contract atomically.
+ * Globe cache (v53) — stage the evidence-only physical-climate range,
+ * red-team hardening, and 120 Hz renderer contract atomically.
  */
-const CACHE_NAME = 'elu-v52-physical-ensemble';
+const CACHE_NAME = 'elu-v53-red-team-fixes';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v31',
+  '/css/globe-system.css?v=v32',
   '/css/guided-first-orbit.css?v=v2',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
@@ -28,15 +28,15 @@ const STATIC_ASSETS = [
   '/js/storage-adapter.js',
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
-  '/js/data.js?v=v7',
-  '/js/country-climate-intelligence.js?v=v9',
-  '/js/globe.js?v=v27',
+  '/js/data.js?v=v8',
+  '/js/country-climate-intelligence.js?v=v10',
+  '/js/globe.js?v=v28',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v3',
   '/js/app.js?v=v4',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
-  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate5',
+  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate6',
   // Retained for one release epoch as the factual rollback artifact.
   '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',
 ];

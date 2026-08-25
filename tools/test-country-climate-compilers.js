@@ -120,6 +120,7 @@ try {
     { year: 1990, value: 22 },
   ]);
   assert.strictEqual(arubaClimate['climate.temperature.observed_trend'].context.series_unit, '°C');
+  assert.strictEqual(arubaClimate['climate.temperature.observed_trend'].evidence_kind, 'reanalysis');
   assert.strictEqual(arubaClimate['climate.temperature.observed_trend'].context.annual_statistic_label, 'Annual mean');
   assert.deepStrictEqual(arubaClimate['climate.temperature.observed_trend'].context.trend_line, [
     { year: 1970, value: 20 },
@@ -128,10 +129,12 @@ try {
   assert.strictEqual(arubaClimate['climate.precipitation.observed_trend'].value, 20);
   assert.strictEqual(arubaClimate['climate.precipitation.observed_trend'].unit, 'mm/year/decade');
   assert.strictEqual(arubaClimate['climate.precipitation.observed_trend'].context.series_unit, 'mm/year');
+  assert.strictEqual(arubaClimate['climate.precipitation.observed_trend'].evidence_kind, 'reanalysis');
   assert.strictEqual(arubaClimate['climate.precipitation.observed_trend'].context.annual_statistic_label, 'Annual total');
   assert.strictEqual(arubaClimate['climate.precipitation.observed_trend'].context.series_label, 'Annual total precipitation');
   assert.strictEqual(cckp.countries.find(country => country.iso_alpha3 === 'AFG').metrics['climate.temperature.observed_trend'].gap_reason.code, 'source_value_missing');
   assert.strictEqual(cckp.countries.find(country => country.iso_alpha3 === 'AFG').metrics['climate.precipitation.observed_trend'].gap_reason.code, 'source_value_missing');
+  assert.strictEqual(cckp.countries.find(country => country.iso_alpha3 === 'AFG').metrics['climate.temperature.observed_trend'].evidence_kind, 'reanalysis');
 
   const duplicateProjectionInput = write('cckp-projection-duplicate.json', `${JSON.stringify({ rows: projectionRows.concat({ ...projectionRows[0] }) })}\n`);
   const duplicateProjectionReceipt = receiptFor('world-bank-cckp-cmip6-2026-08-24', duplicateProjectionInput);

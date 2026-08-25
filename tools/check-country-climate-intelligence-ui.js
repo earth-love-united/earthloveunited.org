@@ -14,9 +14,9 @@ const guidedOrbit = fs.readFileSync(path.join(ROOT, 'js/guided-first-orbit.js'),
 const css = fs.readFileSync(path.join(ROOT, 'css/globe-system.css'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
-const dataAt = index.indexOf('src="js/data.js?v=v7"');
-const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v9"');
-const globeAt = index.indexOf('src="js/globe.js?v=v27"');
+const dataAt = index.indexOf('src="js/data.js?v=v8"');
+const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v10"');
+const globeAt = index.indexOf('src="js/globe.js?v=v28"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -62,15 +62,16 @@ assert(!/_positionCountryInfoCard\(event\)[\s\S]{0,600}tt\.offset(Width|Height)/
 assert(globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryVisual'"), 'polygon accessors must use the compact visual contract');
 assert(!/_countryHexColorFn\(feature\)\s*\{[\s\S]{0,160}_getCountryDisplayData\(feature\)/.test(globe), 'hot color accessor must not build the country-card model');
 assert(globe.includes('polygonCapCurvatureResolution(8)'), 'country caps must retain the bounded 8-degree tessellation');
-assert(presentation.includes('buildTemperatureProjectionEnsemble(country, fact)'));
-assert(presentation.includes('Five deterministic stratified draws from a piecewise-linear quantile model'));
-assert(presentation.includes('Sampling is truncated to p10–p90.'));
-assert(!presentation.includes('Math.random('), 'projection illustration must be reproducible and must not use runtime randomness');
-assert(globe.includes('_renderTemperatureProjectionEnsemble(view'));
-assert(globe.includes('Illustrative layer:'));
-assert(globe.includes('not annual forecasts or climate-model runs'));
-assert(css.includes('.elu-projection-draw.is-coolest'));
-assert(css.includes('.elu-projection-fan'));
+assert(presentation.includes('buildTemperatureProjectionRange(fact)'));
+assert(presentation.includes('copied directly without interpolation or sampling'));
+assert(!/Monte Carlo|seededUnit|sampling_method|projection_ensemble|deterministic draw/i.test(presentation), 'projection view model must not generate or describe synthetic samples');
+assert(globe.includes('_renderTemperatureProjectionRange(view'));
+assert(globe.includes('No intervening years or probabilities are shown.'));
+assert(globe.includes('Evidence boundary:'));
+assert(!/ensemble draws|deterministic uncertainty samples|visual bridges/i.test(globe), 'projection renderer must not imply samples or trajectories');
+assert(css.includes('.elu-projection-marker.is-p10'));
+assert(css.includes('.elu-projection-marker.is-median'));
+assert(css.includes('.elu-projection-marker.is-p90'));
 const physicalLayout = globe.slice(globe.indexOf('return \'<section class="tt-physical-story"'), globe.indexOf('  _renderClimateMethods(view)'));
 assert(globe.includes('const futureProjectionBlock = projectionHtml'));
 assert(globe.includes('<h4>Future projection</h4>'));
@@ -110,39 +111,38 @@ assert.deepStrictEqual(Array.from(physicalView.detail_charts, chart => chart.id)
 assert.deepStrictEqual(Array.from(physicalView.detail_charts, chart => chart.series.length), [56, 56]);
 assert.deepStrictEqual(Array.from(physicalView.detail_charts, chart => chart.series_unit), ['°C', 'mm/year']);
 assert(physicalView.detail_charts.every(chart => chart.evidence_label === 'ERA5 reanalysis'));
+assert(physicalView.detail_charts.every(chart => chart.evidence_kind === 'reanalysis'));
 assert.strictEqual(physicalView.at_a_glance.length, 0, 'Physical facts must be grouped with their own evidence rather than repeated at a generic glance');
 assert.strictEqual(physicalView.active_panel.facts.length, 0, 'Physical facts must not repeat in the generic lens panel');
 assert.strictEqual(physicalView.physical_story.temperature.observed.id, 'climate.temperature.observed_trend');
 assert.strictEqual(physicalView.physical_story.temperature.projected_fact.id, 'climate.temperature.change');
 assert.strictEqual(physicalView.physical_story.precipitation.projected_fact.id, 'climate.precipitation.change');
 assert.strictEqual(physicalView.physical_story.precipitation.observed.id, 'climate.precipitation.observed_trend');
-const ensemble = physicalView.physical_story.temperature.projection_ensemble;
-assert(ensemble, 'Japan must expose the illustrative temperature projection ensemble');
-assert.strictEqual(ensemble.draws.length, 5);
-assert.strictEqual(ensemble.sample_count, 5);
-assert.strictEqual(ensemble.scenario, 'SSP2-4.5');
-assert.strictEqual(ensemble.evidence_class, 'illustrative_ui');
-assert.strictEqual(ensemble.ranking_eligible, false);
-assert.strictEqual(ensemble.annual_timing, false);
-assert(ensemble.draws.every(draw => draw.quantile >= 0.1 && draw.quantile <= 0.9));
-assert(ensemble.draws.every(draw => draw.value >= ensemble.p10 && draw.value <= ensemble.p90));
-assert(ensemble.draws.every((draw, index) => index === 0 || draw.quantile > ensemble.draws[index - 1].quantile));
-assert(ensemble.disclosure.includes('not CMIP6 model runs, annual forecasts, new evidence, or ranking inputs'));
-assert.strictEqual(JSON.stringify(ensemble), JSON.stringify(presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('JPN', 'physical').physical_story.temperature.projection_ensemble), 'projection sampling must be deterministic for the same factual release and country');
+const projectionRange = physicalView.physical_story.temperature.projection_range;
+assert(projectionRange, 'Japan must expose the published temperature projection range');
+assert.strictEqual(projectionRange.scenario, 'SSP2-4.5');
+assert.strictEqual(projectionRange.evidence_class, 'modeled_projection_summary');
+assert.strictEqual(projectionRange.ranking_eligible, false);
+assert.strictEqual(projectionRange.annual_timing, false);
+assert.deepStrictEqual(Array.from(projectionRange.markers, marker => marker.id), ['p10', 'median', 'p90']);
+assert.deepStrictEqual(Array.from(projectionRange.markers, marker => marker.shape), ['square', 'diamond', 'circle']);
+assert.deepStrictEqual(Array.from(projectionRange.markers, marker => marker.value), [projectionRange.p10, projectionRange.median, projectionRange.p90]);
+assert(!Object.prototype.hasOwnProperty.call(projectionRange, 'draws'));
+assert(!Object.prototype.hasOwnProperty.call(projectionRange, 'seed'));
+assert(projectionRange.disclosure.includes('not a probabilistic forecast, annual trajectory, or new simulation'));
 const antarcticaPhysical = presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('ATA', 'physical');
-assert.strictEqual(antarcticaPhysical.physical_story.temperature.projection_ensemble, null, 'documented projection gaps must not receive simulated values');
+assert.strictEqual(antarcticaPhysical.physical_story.temperature.projection_range, null, 'documented projection gaps must not receive a fabricated range');
 assert.strictEqual(antarcticaPhysical.physical_story.temperature.projected_fact.available, false);
 for (const country of release.countries) {
   const view = presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView(country.iso_alpha3, 'physical');
   const projected = view.physical_story.temperature.projected_fact;
-  const countryEnsemble = view.physical_story.temperature.projection_ensemble;
+  const countryRange = view.physical_story.temperature.projection_range;
   if (!projected.available) {
-    assert.strictEqual(countryEnsemble, null, `${country.iso_alpha3} gap must not receive projection draws`);
+    assert.strictEqual(countryRange, null, `${country.iso_alpha3} gap must not receive a projection range`);
     continue;
   }
-  assert(countryEnsemble && countryEnsemble.draws.length === 5, `${country.iso_alpha3} must expose five deterministic projection draws`);
-  assert(countryEnsemble.draws.every(draw => draw.value >= countryEnsemble.p10 && draw.value <= countryEnsemble.p90), `${country.iso_alpha3} draws escaped the published p10–p90 range`);
-  assert(countryEnsemble.draws.every((draw, index) => index === 0 || draw.quantile > countryEnsemble.draws[index - 1].quantile), `${country.iso_alpha3} draw quantiles are not strictly ordered`);
+  assert(countryRange && countryRange.markers.length === 3, `${country.iso_alpha3} must expose exactly three published projection statistics`);
+  assert.deepStrictEqual(Array.from(countryRange.markers, marker => marker.value), [projected.uncertainty.p10, projected.value, projected.uncertainty.p90], `${country.iso_alpha3} range must copy source values exactly`);
 }
 const physicalGlanceIds = new Set(Array.from(physicalView.at_a_glance, fact => fact.id));
 const physicalPanelIds = new Set(Array.from(physicalView.active_panel.facts, fact => fact.id));
@@ -161,6 +161,13 @@ assert(index.includes('aria-live="polite"'));
 assert(index.includes('Browse all 249 records'));
 assert(index.includes('id="globe-fallback-country-list"'));
 assert(index.includes('id="globe-fallback-search"'));
+assert(index.includes('id="globe-fallback" hidden role="dialog" aria-modal="true"'));
+assert(globe.includes('_setFallbackIsolation(true)'));
+assert(globe.includes("panel.addEventListener('keydown', this._onFallbackKeydown)"));
+assert(globe.includes("window.removeEventListener('resize', this._onCountryCardResize)"));
+assert(!/on(?:click|input)="Panel/.test(globe), 'legacy panel must not use inline event handlers');
+assert(globe.includes('${_escapeHtml(site.name)}'));
+assert(globe.includes('${_escapeHtml(ctx.summary)}'));
 assert(index.includes('No composite score, target assessment, finance judgment, or offset adjustment is produced.'));
 
 assert(presentation.includes('citation_only_sources'));
@@ -177,11 +184,11 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v52-physical-ensemble'"));
-assert(serviceWorker.includes("'/css/globe-system.css?v=v31'"));
-assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v9'"));
-assert(serviceWorker.includes("'/js/globe.js?v=v27'"));
-assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate5'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v53-red-team-fixes'"));
+assert(serviceWorker.includes("'/css/globe-system.css?v=v32'"));
+assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v10'"));
+assert(serviceWorker.includes("'/js/globe.js?v=v28'"));
+assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate6'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired project data must not be pinned by the climate runtime cache');
 

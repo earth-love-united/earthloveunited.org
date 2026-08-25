@@ -426,6 +426,11 @@ const GlobeModule = {
   _fallbackEntries: [],
   _fallbackBound: false,
   _fallbackSelectedIso: null,
+  _fallbackInertSiblings: [],
+  _onFallbackClick: null,
+  _onFallbackInput: null,
+  _onFallbackKeydown: null,
+  _onCountryCardResize: null,
   _lensControlsBound: false,
   _reducedMotionMedia: null,
   _onReducedMotionChange: null,
@@ -1090,6 +1095,24 @@ const GlobeModule = {
     return false;
   },
 
+  _setFallbackIsolation(active) {
+    const panel = $('globe-fallback');
+    if (!panel || !document.body) return false;
+    if (active) {
+      if (this._fallbackInertSiblings.length) return true;
+      this._fallbackInertSiblings = Array.from(document.body.children)
+        .filter(element => element !== panel && !['SCRIPT', 'STYLE'].includes(element.tagName))
+        .map(element => ({ element, inert: element.inert === true }));
+      this._fallbackInertSiblings.forEach(entry => { entry.element.inert = true; });
+      return true;
+    }
+    this._fallbackInertSiblings.forEach(entry => {
+      if (entry.element?.isConnected) entry.element.inert = entry.inert;
+    });
+    this._fallbackInertSiblings = [];
+    return true;
+  },
+
   showFallback(reasonCode) {
     const panel = $('globe-fallback');
     if (!panel || !document.body) {
@@ -1112,6 +1135,7 @@ const GlobeModule = {
     panel.hidden = false;
     panel.setAttribute('aria-hidden', 'false');
     document.body.classList.add('globe-fallback-active');
+    this._setFallbackIsolation(true);
     this.pause();
     $text('globe-fallback-reason', GLOBE_FALLBACK_REASONS[stableReason]);
     const browseRequested = stableReason === 'evidence_browse_requested';
@@ -1140,7 +1164,7 @@ const GlobeModule = {
     if (!panel || !search) return;
     this._fallbackBound = true;
 
-    panel.addEventListener('click', event => {
+    this._onFallbackClick = event => {
       const action = event.target.closest('[data-globe-fallback-action]');
       if (action) {
         const name = action.getAttribute('data-globe-fallback-action');
@@ -1158,9 +1182,35 @@ const GlobeModule = {
       const country = event.target.closest('[data-fallback-country-iso]');
       if (!country) return;
       this._renderFallbackCountry(country.getAttribute('data-fallback-country-iso'), true);
-    });
-
-    search.addEventListener('input', () => this._filterFallbackEntries(search.value));
+    };
+    this._onFallbackInput = () => this._filterFallbackEntries(search.value);
+    this._onFallbackKeydown = event => {
+      if (event.key !== 'Tab') return;
+      const focusable = Array.from(panel.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),summary,[tabindex="0"]')).filter(node => {
+        if (node.hidden || node.getAttribute('aria-hidden') === 'true') return false;
+        const style = window.getComputedStyle(node);
+        return node.getClientRects().length > 0 && style.visibility !== 'hidden';
+      });
+      const heading = $('globe-fallback-title');
+      if (!heading || !focusable.length) {
+        event.preventDefault();
+        heading?.focus({ preventScroll: true });
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const focusAtStart = document.activeElement === heading || document.activeElement === first;
+      if (event.shiftKey && focusAtStart) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        heading.focus();
+      }
+    };
+    panel.addEventListener('click', this._onFallbackClick);
+    panel.addEventListener('keydown', this._onFallbackKeydown);
+    search.addEventListener('input', this._onFallbackInput);
   },
 
   _renderFallbackEvidence() {
@@ -1250,6 +1300,7 @@ const GlobeModule = {
     const opener = this._fallbackOpener;
     const wasEvidenceBrowse = this._fallbackReasonCode === 'evidence_browse_requested';
     document.body?.classList.remove('globe-fallback-active');
+    this._setFallbackIsolation(false);
     if (panel) {
       panel.hidden = true;
       panel.setAttribute('aria-hidden', 'true');
@@ -1683,12 +1734,14 @@ const GlobeModule = {
       tt.addEventListener('pointerup', _dragRelease);
       tt.addEventListener('pointercancel', _dragRelease);
 
-      // Keep the docked card on-screen when the window resizes
-      window.addEventListener('resize', () => {
+      // Keep the docked card on-screen when the window resizes. Store the
+      // callback so Standard Module Lifecycle teardown can remove it.
+      this._onCountryCardResize = () => {
         if (tt.classList.contains('selected') && tt.classList.contains('visible')) {
           this._dockCountryCard();
         }
-      });
+      };
+      window.addEventListener('resize', this._onCountryCardResize, { passive: true });
 
       // Horizontal trackpad / shift-wheel browses the deck; vertical keeps scrolling the card
       let _wheelNavAt = 0;
@@ -1902,34 +1955,26 @@ const GlobeModule = {
       + '<details class="tt-chart-data"><summary>Show chart data</summary><table><caption>' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(chartLabel) + '</caption><thead><tr><th>Year</th><th>Value</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>';
   },
 
-  _renderTemperatureProjectionEnsemble(view, idPrefix = 'country-card', ensemble = null) {
-    if (!ensemble || !Array.isArray(ensemble.draws) || !ensemble.draws.length) return '';
-    const min = Math.min(0, ensemble.p10);
-    const max = Math.max(0, ensemble.p90);
-    const span = Math.max(max - min, 0.001);
-    const steps = [0, 0.16, 0.32, 0.5, 0.68, 0.84, 1];
-    const xFor = step => 8 + step * 304;
-    const yFor = value => 51 - ((value - min) / span) * 39;
-    const smooth = step => step * step * (3 - 2 * step);
-    const coordinates = value => steps.map(step => xFor(step).toFixed(1) + ',' + yFor(value * smooth(step)).toFixed(1)).join(' ');
-    const upper = steps.map(step => xFor(step).toFixed(1) + ',' + yFor(ensemble.p90 * smooth(step)).toFixed(1));
-    const lower = steps.slice().reverse().map(step => xFor(step).toFixed(1) + ',' + yFor(ensemble.p10 * smooth(step)).toFixed(1));
-    const fan = '<polygon class="elu-projection-fan" points="' + upper.concat(lower).join(' ') + '"></polygon>';
-    const median = '<polyline class="elu-projection-median" points="' + coordinates(ensemble.median) + '"></polyline>';
-    const paths = ensemble.draws.map(draw => '<polyline class="elu-projection-draw is-' + _escapeHtml(draw.tone) + '" points="' + coordinates(draw.value) + '"><title>Deterministic draw at q' + Math.round(draw.quantile * 100) + ': ' + draw.value.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(ensemble.unit) + '</title></polyline>').join('');
-    const endpoints = ensemble.draws.map(draw => '<circle class="elu-projection-endpoint is-' + _escapeHtml(draw.tone) + '" cx="312" cy="' + yFor(draw.value).toFixed(1) + '" r="2"><title>q' + Math.round(draw.quantile * 100) + ': ' + draw.value.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(ensemble.unit) + '</title></circle>').join('');
-    const rows = ensemble.draws.map((draw, index) => '<tr><th scope="row">Draw ' + (index + 1) + '</th><td>q' + Math.round(draw.quantile * 100) + '</td><td>' + draw.value.toLocaleString('en-US', { maximumFractionDigits: 2 }) + '</td><td>' + _escapeHtml(ensemble.unit) + '</td></tr>').join('');
-    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-projection-ensemble').replace(/[^a-zA-Z0-9_-]/g, '-');
+  _renderTemperatureProjectionRange(view, idPrefix = 'country-card', projection = null) {
+    if (!projection || !Array.isArray(projection.markers) || projection.markers.length !== 3) return '';
+    const span = projection.p90 - projection.p10;
+    const xFor = value => span > 0 ? 24 + ((value - projection.p10) / span) * 272 : 160;
+    const medianX = xFor(projection.median);
+    const format = value => value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    const rows = projection.markers.map(marker => '<tr><th scope="row">' + _escapeHtml(marker.label) + '</th><td>' + format(marker.value) + '</td><td>' + _escapeHtml(projection.unit) + '</td><td>' + _escapeHtml(marker.shape) + '</td></tr>').join('');
+    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-projection-range').replace(/[^a-zA-Z0-9_-]/g, '-');
     const titleId = chartId + '-title';
     const descId = chartId + '-desc';
-    return '<div class="elu-projection-ensemble"><div class="elu-trajectory-head"><span class="elu-trajectory-title">' + _escapeHtml(ensemble.title) + '</span><span class="elu-trajectory-note">' + _escapeHtml(ensemble.scenario) + '</span></div>'
-      + '<svg viewBox="0 0 320 72" role="img" aria-labelledby="' + titleId + ' ' + descId + '"><title id="' + titleId + '">' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(ensemble.scenario) + ' illustrative temperature-change ensemble</title><desc id="' + descId + '">Five deterministic colored samples are drawn inside the published p10 to p90 uncertainty range around the mid-century median. The path shapes are visual interpolation only and are not annual forecasts or climate-model runs.</desc>'
-      + '<line class="elu-trajectory-grid" x1="8" y1="' + yFor(0).toFixed(1) + '" x2="312" y2="' + yFor(0).toFixed(1) + '"></line>' + fan + median + paths + endpoints
-      + '<text class="elu-chart-axis" x="8" y="9">p90 ' + ensemble.p90.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(ensemble.unit) + '</text><text class="elu-chart-axis" x="8" y="66">p10 ' + ensemble.p10.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(ensemble.unit) + '</text></svg>'
-      + '<div class="elu-projection-axis"><span>' + _escapeHtml(ensemble.baseline) + ' baseline</span><span>' + _escapeHtml(ensemble.period) + ' mean</span></div>'
-      + '<div class="elu-projection-legend" aria-hidden="true"><span class="is-draws">' + ensemble.sample_count + ' deterministic draws</span><span class="is-fan">Published p10–p90</span><span class="is-median">Published median</span></div>'
-      + '<p class="elu-projection-disclosure"><strong>Illustrative layer:</strong> ' + _escapeHtml(ensemble.disclosure) + '</p></div>'
-      + '<details class="tt-chart-data"><summary>Show ensemble draws</summary><table><caption>' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(ensemble.scenario) + ' deterministic uncertainty samples</caption><thead><tr><th>Sample</th><th>Quantile</th><th>Change</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>';
+    return '<div class="elu-projection-range"><div class="elu-trajectory-head"><span class="elu-trajectory-title">' + _escapeHtml(projection.title) + '</span><span class="elu-trajectory-note">' + _escapeHtml(projection.scenario) + ' · ' + _escapeHtml(projection.period) + ' mean</span></div>'
+      + '<svg viewBox="0 0 320 72" role="img" aria-labelledby="' + titleId + ' ' + descId + '"><title id="' + titleId + '">' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(projection.scenario) + ' published temperature-change range</title><desc id="' + descId + '">Published multi-model p10, median, and p90 changes for the 2040 to 2059 mean relative to 1995 to 2014. Square marks p10, diamond marks the median, and circle marks p90. No intervening years or probabilities are shown.</desc>'
+      + '<rect class="elu-projection-range-band" x="24" y="31" width="272" height="10" rx="5"></rect>'
+      + '<line class="elu-projection-range-line" x1="24" y1="36" x2="296" y2="36"></line>'
+      + '<rect class="elu-projection-marker is-p10" x="19" y="31" width="10" height="10"><title>p10: ' + format(projection.p10) + ' ' + _escapeHtml(projection.unit) + '</title></rect>'
+      + '<polygon class="elu-projection-marker is-median" points="' + medianX.toFixed(1) + ',28 ' + (medianX + 8).toFixed(1) + ',36 ' + medianX.toFixed(1) + ',44 ' + (medianX - 8).toFixed(1) + ',36"><title>Median: ' + format(projection.median) + ' ' + _escapeHtml(projection.unit) + '</title></polygon>'
+      + '<circle class="elu-projection-marker is-p90" cx="296" cy="36" r="6"><title>p90: ' + format(projection.p90) + ' ' + _escapeHtml(projection.unit) + '</title></circle></svg>'
+      + '<div class="elu-projection-values"><span><i class="is-p10" aria-hidden="true"></i><strong>p10</strong> ' + format(projection.p10) + ' ' + _escapeHtml(projection.unit) + '</span><span><i class="is-median" aria-hidden="true"></i><strong>Median</strong> ' + format(projection.median) + ' ' + _escapeHtml(projection.unit) + '</span><span><i class="is-p90" aria-hidden="true"></i><strong>p90</strong> ' + format(projection.p90) + ' ' + _escapeHtml(projection.unit) + '</span></div>'
+      + '<p class="elu-projection-disclosure"><strong>Evidence boundary:</strong> ' + _escapeHtml(projection.disclosure) + '</p></div>'
+      + '<details class="tt-chart-data"><summary>Show published projection values</summary><table><caption>' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(projection.scenario) + ' published multi-model percentile summary</caption><thead><tr><th>Statistic</th><th>Change</th><th>Unit</th><th>Visual marker</th></tr></thead><tbody>' + rows + '</tbody></table></details>';
   },
 
   _renderPhysicalClimateMetrics(view, idPrefix = 'country-card') {
@@ -1945,7 +1990,7 @@ const GlobeModule = {
     const precipitationObservedHtml = Array.isArray(precipitationObserved?.series) && precipitationObserved.series.length > 1
       ? this._renderClimateSeries(view, idPrefix, precipitationObserved, 1)
       : (precipitationObserved ? this._renderClimateFact(precipitationObserved) : '');
-    const projectionHtml = this._renderTemperatureProjectionEnsemble(view, idPrefix, story.temperature.projection_ensemble);
+    const projectionHtml = this._renderTemperatureProjectionRange(view, idPrefix, story.temperature.projection_range);
     const futureProjectionBlock = projectionHtml
       ? '<div class="tt-climate-evidence"><h4>Future projection</h4>' + projectionHtml + '</div>'
       : '';
@@ -1977,9 +2022,9 @@ const GlobeModule = {
         + (sources ? '<h5>Citations</h5><ul>' + sources + '</ul>' : '')
         + (fact.fact_ids.length ? '<p><strong>Fact IDs:</strong> <code>' + _escapeHtml(fact.fact_ids.join(', ')) + '</code></p>' : '') + '</details>';
     }).join('');
-    const ensemble = view.physical_story?.temperature?.projection_ensemble;
-    const ensembleMethod = ensemble
-      ? '<details class="tt-method-fact"><summary>Illustrative temperature-change ensemble · UI method</summary><p><strong>Sampling:</strong> ' + _escapeHtml(ensemble.sampling_method) + '</p><p><strong>Visual interpolation:</strong> ' + _escapeHtml(ensemble.interpolation_note) + '</p><p><strong>Boundary:</strong> ' + _escapeHtml(ensemble.disclosure) + '</p><p><strong>Reproducibility seed:</strong> <code>' + _escapeHtml(ensemble.seed) + '</code></p></details>'
+    const projectionRange = view.physical_story?.temperature?.projection_range;
+    const projectionMethod = projectionRange
+      ? '<details class="tt-method-fact"><summary>Published temperature-change range · source summary</summary><p><strong>Basis:</strong> ' + _escapeHtml(projectionRange.method) + '</p><p><strong>Source uncertainty:</strong> ' + _escapeHtml(projectionRange.source_uncertainty_kind.replace(/_/g, ' ')) + '.</p><p><strong>Boundary:</strong> ' + _escapeHtml(projectionRange.disclosure) + '</p></details>'
       : '';
     const historical = view.methods.citation_only_sources.map(source => '<li><a href="' + _escapeHtml(source.url) + '" target="_blank" rel="noopener">' + _escapeHtml(source.title) + '</a> · ' + _escapeHtml(source.note) + '</li>').join('');
     const official = view.methods.official_context.map(item => {
@@ -1990,7 +2035,7 @@ const GlobeModule = {
     }).join('');
     return '<details class="tt-methods"><summary>Methods &amp; sources</summary><div class="tt-methods-body"><p><strong>Release:</strong> ' + _escapeHtml(view.methods.release_id) + ' · ' + _escapeHtml(view.methods.review_label) + ' · generated ' + _escapeHtml(view.methods.generated_on) + '</p>'
       + (view.methods.checksum ? '<p><strong>Verified SHA-256:</strong> <code>' + _escapeHtml(view.methods.checksum) + '</code></p>' : '')
-      + '<p><strong>Comparison rule:</strong> ' + _escapeHtml(view.methods.comparison_rule) + '</p>' + ensembleMethod + factMethods
+      + '<p><strong>Comparison rule:</strong> ' + _escapeHtml(view.methods.comparison_rule) + '</p>' + projectionMethod + factMethods
       + (official ? '<h4>Official document context</h4><ul>' + official + '</ul>' : '')
       + (historical ? '<h4>Historical citation-only provenance</h4><ul>' + historical + '</ul>' : '')
       + '</div></details>';
@@ -2635,8 +2680,10 @@ const GlobeModule = {
 
     // Remove event listeners (named references)
     window.removeEventListener('pledgeHover', this._onPledgeHover);
+    window.removeEventListener('resize', this._onCountryCardResize);
     document.removeEventListener('mousemove', this._onMouseMove);
     document.removeEventListener('keydown', this._onCountryKeydown);
+    this._onCountryCardResize = null;
     this._countryKeydownBound = false;
     this._unbindReducedMotionPreference();
     this._unbindVisibilityLifecycle();
@@ -2708,6 +2755,15 @@ const GlobeModule = {
     // Nullify click handler
     _globeClickHandler = null;
     this.hideFallback({ restoreFocus: false, preserveOpener: false });
+    const fallbackPanel = $('globe-fallback');
+    const fallbackSearch = $('globe-fallback-search');
+    fallbackPanel?.removeEventListener('click', this._onFallbackClick);
+    fallbackPanel?.removeEventListener('keydown', this._onFallbackKeydown);
+    fallbackSearch?.removeEventListener('input', this._onFallbackInput);
+    this._onFallbackClick = null;
+    this._onFallbackInput = null;
+    this._onFallbackKeydown = null;
+    this._fallbackBound = false;
     this._fallbackEntries = [];
     this._fallbackSelectedIso = null;
 
@@ -2789,6 +2845,8 @@ const Panel = {
   selectedArea: 100,
 
   open(site) {
+    const panelContent = $('panel-content');
+    if (!panelContent || !site) return false;
     this.currentSite = site;
     this.selectedAction = null;
     PanelSlider.reset();
@@ -2797,63 +2855,80 @@ const Panel = {
     GlobeModule.world.controls().autoRotate = false;
 
     const biome = Data.getBiome(site.currentBiome) || { density: 0, name: 'Unknown' };
-    const stock = biome.density * (site.area || 0) * 3.67;
-    const latest = (site.ndvi && site.ndvi.length) ? site.ndvi[site.ndvi.length - 1] : { year: '—', value: 0, label: 'No data' };
-    const cFirst = (site.climate && site.climate.length) ? site.climate[0] : { temp: 0, precip: 1, year: '—' };
-    const cLast = (site.climate && site.climate.length) ? site.climate[site.climate.length - 1] : cFirst;
+    const siteArea = Number.isFinite(Number(site.area)) ? Math.max(10, Number(site.area)) : 100;
+    const ndvi = Array.isArray(site.ndvi) ? site.ndvi : [];
+    const sandbox = Array.isArray(site.sandbox) ? site.sandbox : [];
+    const climate = Array.isArray(site.climate) ? site.climate : [];
+    const normalizeClimatePoint = point => ({
+      temp: Number.isFinite(Number(point?.temp)) ? Number(point.temp) : 0,
+      precip: Number.isFinite(Number(point?.precip)) ? Number(point.precip) : 0,
+      year: point?.year ?? '—',
+    });
+    const initialArea = Math.min(100, siteArea);
+    this.selectedArea = initialArea;
+    const stock = biome.density * siteArea * 3.67;
+    const latest = ndvi.length ? ndvi[ndvi.length - 1] : { year: '—', value: 0, label: 'No data' };
+    const cFirst = climate.length ? normalizeClimatePoint(climate[0]) : { temp: 0, precip: 1, year: '—' };
+    const cLast = climate.length ? normalizeClimatePoint(climate[climate.length - 1]) : cFirst;
     const tD = (cLast.temp - cFirst.temp).toFixed(1);
     const pD = cFirst.precip ? ((cLast.precip - cFirst.precip) / cFirst.precip * 100).toFixed(0) : '0';
 
-    $('panel-content').innerHTML = `
-      <div class="site-title">${site.name}</div>
-      <div class="site-subtitle">${site.subtitle}</div>
-      <div class="site-narrative">${site.narrative}</div>
+    panelContent.innerHTML = `
+      <div class="site-title">${_escapeHtml(site.name)}</div>
+      <div class="site-subtitle">${_escapeHtml(site.subtitle)}</div>
+      <div class="site-narrative">${_escapeHtml(site.narrative)}</div>
       <div class="slider-section">
         <h3>Vegetation Health Over Time</h3>
-        <div class="year-display" id="year-disp">${latest.year}</div>
-        <input type="range" class="time-slider" min="0" max="${site.ndvi.length - 1}" value="${site.ndvi.length - 1}" oninput="PanelSlider.update(this.value)">
-        <div class="slider-labels">${site.ndvi.map(n => `<span>${n.year}</span>`).join('')}</div>
-        <div class="ndvi-bar" id="ndvi-bar" style="width:${latest.value * 100}%;background:${PanelSlider.ndviCol(latest.value)}"></div>
-        <div class="ndvi-label" id="ndvi-lbl">${latest.label} · NDVI ${latest.value.toFixed(2)}</div>
+        <div class="year-display" id="year-disp">${_escapeHtml(latest.year)}</div>
+        <input type="range" class="time-slider" min="0" max="${Math.max(0, ndvi.length - 1)}" value="${Math.max(0, ndvi.length - 1)}" data-panel-control="ndvi">
+        <div class="slider-labels">${ndvi.map(n => `<span>${_escapeHtml(n.year)}</span>`).join('')}</div>
+        <div class="ndvi-bar" id="ndvi-bar" style="width:${Math.max(0, Math.min(100, Number(latest.value) * 100))}%;background:${PanelSlider.ndviCol(Number(latest.value))}"></div>
+        <div class="ndvi-label" id="ndvi-lbl">${_escapeHtml(latest.label)} · NDVI ${_escapeHtml(Number(latest.value).toFixed(2))}</div>
       </div>
       <div class="carbon-card">
-        <div class="big-number">${Data.fmt(stock)}<span class="big-unit">t CO₂</span></div>
-        <div class="big-label">Current carbon stock · ${biome.name} · ${Data.fmt(site.area)} ha</div>
+        <div class="big-number">${_escapeHtml(Data.fmt(stock))}<span class="big-unit">t CO₂</span></div>
+        <div class="big-label">Current carbon stock · ${_escapeHtml(biome.name)} · ${_escapeHtml(Data.fmt(siteArea))} ha</div>
       </div>
       <div class="climate-row">
         <div class="climate-mini">
           <div class="cm-label">Temperature</div>
-          <div class="cm-value">${cLast.temp.toFixed(1)}°C</div>
-          <div class="cm-delta warming">+${tD}°C since ${cFirst.year}</div>
+          <div class="cm-value">${_escapeHtml(cLast.temp.toFixed(1))}°C</div>
+          <div class="cm-delta warming">+${_escapeHtml(tD)}°C since ${_escapeHtml(cFirst.year)}</div>
         </div>
         <div class="climate-mini">
           <div class="cm-label">Precipitation</div>
-          <div class="cm-value">${cLast.precip} mm</div>
-          <div class="cm-delta drying">${pD}% since ${cFirst.year}</div>
+          <div class="cm-value">${_escapeHtml(cLast.precip)} mm</div>
+          <div class="cm-delta drying">${_escapeHtml(pD)}% since ${_escapeHtml(cFirst.year)}</div>
         </div>
       </div>
       <div class="sandbox-section">
         <h3>🧪 Carbon Sandbox</h3>
         <p style="font-size:13px;color:var(--text3);margin-bottom:12px">Pick a restoration strategy and adjust the area.</p>
-        <div class="sandbox-options">${site.sandbox.map((s, i) => `<button class="sandbox-btn" onclick="Panel.pickAction(${i})" id="sb-${i}"><span class="sb-icon">${s.icon}</span>${s.label}</button>`).join('')}</div>
+        <div class="sandbox-options">${sandbox.map((s, i) => `<button type="button" class="sandbox-btn" data-panel-action-index="${i}" id="sb-${i}"><span class="sb-icon">${_escapeHtml(s.icon)}</span>${_escapeHtml(s.label)}</button>`).join('')}</div>
         <div class="area-control">
           <label>Area to restore (hectares)</label>
-          <input type="range" class="area-slider" min="10" max="${site.area}" value="100" oninput="PanelSlider.setArea(this.value)">
-          <div class="area-value" id="area-val">100 hectares</div>
+          <input type="range" class="area-slider" min="10" max="${siteArea}" value="${initialArea}" data-panel-control="area">
+          <div class="area-value" id="area-val">${_escapeHtml(initialArea)} hectares</div>
         </div>
         <div id="sandbox-result"></div>
       </div>
-      <div class="elu-connection"><strong>ELU Connection:</strong> ${site.connection}</div>
+      <div class="elu-connection"><strong>ELU Connection:</strong> ${_escapeHtml(site.connection)}</div>
       <div style="margin-top:24px;text-align:center">
-        <button onclick="Panel.close()" style="padding:12px 32px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.04);color:var(--text2);font-family:var(--body);font-size:13px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px">
+        <button type="button" data-panel-action="close" style="padding:12px 32px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.04);color:var(--text2);font-family:var(--body);font-size:13px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px">
           <span style="font-size:16px">✕</span> Close
         </button>
       </div>
     `;
 
+    panelContent.querySelector('[data-panel-control="ndvi"]')?.addEventListener('input', event => PanelSlider.update(event.currentTarget.value));
+    panelContent.querySelector('[data-panel-control="area"]')?.addEventListener('input', event => PanelSlider.setArea(event.currentTarget.value));
+    panelContent.querySelectorAll('[data-panel-action-index]').forEach(button => button.addEventListener('click', () => this.pickAction(Number(button.dataset.panelActionIndex))));
+    panelContent.querySelector('[data-panel-action="close"]')?.addEventListener('click', () => this.close());
+
     $('site-panel').classList.add('open');
     $('panel-backdrop').classList.add('show');
     $('globeViz').style.transform = 'translateX(-100vw)';
+    return true;
   },
 
   close() {
@@ -2883,10 +2958,10 @@ const Panel = {
     $text('user-total', Data.fmt(GlobeModule.userTotal) + ' t CO₂');
     $('sandbox-result').innerHTML = `
       <div class="result-card">
-        <div class="big-number" style="color:${pos ? 'var(--leaf)' : 'var(--warn)'}">${pos ? '+' : ''}${Data.fmt(Math.abs(r.cumulative_co2))} t CO₂</div>
-        <div class="big-label">${pos ? 'sequestered' : 'released'} over ${r.years} years · ${this.selectedArea} ha</div>
-        <div class="context-line">${ctx.summary}</div>
-        <div class="fraction-line">${(ctx.fraction * 100).toExponential(2)}% of global annual net emissions</div>
+        <div class="big-number" style="color:${pos ? 'var(--leaf)' : 'var(--warn)'}">${pos ? '+' : ''}${_escapeHtml(Data.fmt(Math.abs(r.cumulative_co2)))} t CO₂</div>
+        <div class="big-label">${pos ? 'sequestered' : 'released'} over ${_escapeHtml(r.years)} years · ${_escapeHtml(this.selectedArea)} ha</div>
+        <div class="context-line">${_escapeHtml(ctx.summary)}</div>
+        <div class="fraction-line">${_escapeHtml((ctx.fraction * 100).toExponential(2))}% of global annual net emissions</div>
       </div>`;
   }
 };

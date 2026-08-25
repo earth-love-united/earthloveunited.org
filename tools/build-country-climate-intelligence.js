@@ -26,6 +26,15 @@ const COMPONENT_REVIEW_STATES = Object.freeze({
   wpp: 'normalized_factual_candidate_pending_source_revalidation',
 });
 const PER_CAPITA_ID = 'emissions.fossil_co2.territorial_per_capita';
+const REANALYSIS_METRIC_IDS = new Set([
+  'climate.temperature.observed_trend',
+  'climate.precipitation.observed_trend',
+]);
+
+function withRuntimeEvidenceKind(metric, metricId) {
+  if (!REANALYSIS_METRIC_IDS.has(metricId)) return metric;
+  return { ...metric, evidence_kind: 'reanalysis' };
+}
 
 function verifiedJson(receipt) {
   const file = path.join(ROOT, receipt.path);
@@ -132,7 +141,7 @@ function mergeCountries(registry, components, officialContext) {
       for (const [metricId, metric] of Object.entries(row.metrics)) {
         if (metrics[metricId]) throw new Error(`Duplicate normalized metric ${metricId} for ${entity.country_id}`);
         assertMetricRecord(metric, metricId);
-        metrics[metricId] = metric;
+        metrics[metricId] = withRuntimeEvidenceKind(metric, metricId);
       }
     }
     const country = {

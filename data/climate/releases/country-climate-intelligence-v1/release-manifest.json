@@ -229,7 +229,7 @@
   },
   "transformation_log": {
     "path": "data/climate/releases/country-climate-intelligence-v1/TRANSFORMATION-LOG.md",
-    "sha256": "17f8a366814aef1aeda8014074a99d84ddc2b3a2a50dff036749dabae7aa2e29"
+    "sha256": "19f5ac1ce1098c9965a20b5ef648d86c00093d2371ea84b998b47f7507082edd"
   },
   "schema_ref": "data/climate/schemas/country-climate-intelligence.schema.json",
   "schema_version": "1.0.0",

@@ -99,8 +99,8 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 - v2.6.1 present only in detailed citation provenance; v2.7 absent entirely;
 - selection preserved across lenses;
 - metric/value/unit/period/evidence in tooltips;
-- no overlap among At a glance, observed charts, projection illustration, and projected fact cards; Physical groups observed temperature, the explicitly non-forecast illustrative ensemble, the unchanged projected-temperature fact, the projected-precipitation fact, and observed precipitation while its ordered rail remains the modeled projection metric;
-- the illustrative temperature ensemble is labelled as deterministic in-house Monte Carlo, discloses its truncated piecewise-linear p10/median/p90 sampling method and seed, and never calls its colored paths CMIP6 model runs or annual forecasts;
+- no overlap among At a glance, observed charts, the published projection range, and projected fact cards; Physical groups observed temperature, the evidence-only p10/median/p90 range, the unchanged projected-temperature fact, the projected-precipitation fact, and observed precipitation while its ordered rail remains the modeled projection metric;
+- the temperature range copies only the source-published p10, median, and p90, distinguishes them by shape as well as color, and explicitly rejects probabilistic, annual-trajectory, simulation, and ranking interpretations;
 - every tile relief value is a subtle monotonic encoding of the active lens's exact comparison metric; the query-only inverse Carbon demo declares its direction and never changes the raw emissions rail, while Physical height is never described as vulnerability, damage, or responsibility;
 - fallback parity for all 249 records;
 - body-level controls, 44px touch targets, reduced motion, focus restoration, and non-color status cues;
@@ -121,11 +121,11 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v50 service worker composes the reviewed Guided First Orbit assets with the
+The v53 service worker composes the reviewed Guided First Orbit assets with the
 subtle relief presentation, candidate dashboard, and both runtime generations:
 
 ```text
-data/climate/runtime/country-climate-intelligence.json?v=cci1candidate5
+data/climate/runtime/country-climate-intelligence.json?v=cci1candidate6
 data/climate/runtime/country-factual-candidate.json?v=ct42candidate1
 ```
 
