@@ -2,15 +2,15 @@
 // GUIDED FIRST ORBIT — concise, first-visit Climate Intelligence orientation
 //
 // The tour is deliberately non-modal. Step two releases the globe and ordered
-// rail for a real country choice; steps three and four keep the selected
-// evidence card visible while the tutorial collapses into a compact shelf.
+// rail for a real country choice; step three keeps the selected evidence card
+// visible, cues one deck move, and completes after that navigation.
 // ═══════════════════════════════════════════════════════════════════════════
 
 const GUIDED_ORBIT = (() => {
   const STORAGE_KEY = 'elu-guided-first-orbit-v1';
-  const STORAGE_VERSION = 2;
+  const STORAGE_VERSION = 3;
   const COUNTRY_STEP = 2;
-  const FINAL_STEP = 3;
+  const FINAL_STEP = 2;
   const LENS_LABELS = {
     carbon: 'Territorial fossil CO₂ · 2024',
     power: 'Clean electricity share · 2024',
@@ -23,30 +23,24 @@ const GUIDED_ORBIT = (() => {
         mode: 'intro',
         title: 'Three lenses. No single score.',
         body: 'Carbon, Power, and Physical answer different questions. They are never combined into a score.',
-        hint: 'Four ideas · under a minute',
+        hint: 'Three moves · under a minute',
         action: 'Read the atlas',
         lenses: true,
       },
       {
         mode: 'interaction',
-        title: 'Order only like with like.',
-        body: 'Color, subtle relief, and the rail follow the selected metric. Only entities with its exact metric and period enter the order; source gaps stay searchable, unnumbered, and never become zero.',
-        hint: 'Switch lenses, move the globe, or choose a country',
+        title: 'Change the lens. Choose a country.',
+        body: 'Switch Carbon, Power, or Physical, then select a country on the globe or in the sidebar. The sidebar reorders countries for the active lens; only exact metric-and-period matches are numbered.',
+        hint: 'Try another lens, then choose from the globe or sidebar',
         waiting: true,
         legend: true,
       },
       {
         mode: 'source',
-        title: 'Keep scopes separate.',
-        body: 'The country card leads with the active lens. Territorial and consumption fossil CO₂, land-use CO₂, independent GHG context, electricity, reanalysis, and modeled projections remain separately labelled. Side by side does not make them directly comparable.',
-        action: 'Trace the evidence',
-      },
-      {
-        mode: 'source',
-        title: 'Follow every fact.',
-        body: 'Methods & sources exposes definitions, evidence class, uncertainty or gap reason, scope fingerprint, transformation, release checksum, and citations—the trail behind each displayed fact.',
-        action: 'Explore freely',
-        methods: true,
+        title: 'Swipe through the country deck.',
+        body: 'Swipe the country card left or right to inspect the next country in this lens order. The previous/next controls, arrow keys, and a horizontal trackpad gesture do the same thing.',
+        hint: 'Move once to complete your first orbit',
+        waiting: true,
       },
     ],
     fallback: [
@@ -54,30 +48,24 @@ const GUIDED_ORBIT = (() => {
         mode: 'intro',
         title: 'Three lenses. No single score.',
         body: 'The searchable evidence view carries Carbon, Power, and Physical without 3D. Each answers a different question; they are never combined into a score.',
-        hint: 'Four ideas · under a minute',
+        hint: 'Three moves · under a minute',
         action: 'Read the evidence',
         lenses: true,
       },
       {
         mode: 'interaction',
-        title: 'Order only like with like.',
-        body: 'Each lens orders only entities with its exact metric and period. Source gaps stay searchable, unnumbered, and never become zero.',
-        hint: 'Switch lenses, search, or choose a country',
+        title: 'Change the lens. Choose a country.',
+        body: 'Switch Carbon, Power, or Physical, then search or choose a country. The evidence list reorders for the active lens; only exact metric-and-period matches are numbered.',
+        hint: 'Try another lens, then choose from the evidence list',
         waiting: true,
         legend: true,
       },
       {
         mode: 'source',
-        title: 'Keep scopes separate.',
-        body: 'The country record leads with the active lens. Carbon, electricity, independent GHG context, reanalysis, and modeled projections remain separately labelled. Side by side does not make them directly comparable.',
-        action: 'Trace the evidence',
-      },
-      {
-        mode: 'source',
-        title: 'Follow every fact.',
-        body: 'Methods & sources exposes definitions, evidence class, uncertainty or gap reason, scope fingerprint, transformation, release checksum, and citations—the trail behind each displayed fact.',
-        action: 'Explore freely',
-        methods: true,
+        title: 'Move through the country records.',
+        body: 'Choose another country in the evidence list. This accessible view mirrors the globe card deck without 3D.',
+        hint: 'Choose once more to complete your first orbit',
+        waiting: true,
       },
     ],
   };
@@ -190,58 +178,6 @@ const GUIDED_ORBIT = (() => {
     return target.getClientRects().length > 0 && style.display !== 'none' && style.visibility !== 'hidden';
   }
 
-  function _removeDialogCompletion() {
-    const button = $('guided-orbit-dialog-complete');
-    if (!button) return;
-    button.removeEventListener('click', _onDialogActionClick);
-    button.remove();
-  }
-
-  function _mountDialogCompletion() {
-    _removeDialogCompletion();
-    if (!active || route !== 'globe' || step < COUNTRY_STEP || step > FINAL_STEP) return false;
-    const card = $('hex-country-tooltip');
-    const wrap = $('elu-country-card-wrap');
-    if (!card || !wrap || !wrap.contains(card) || card.getAttribute('aria-hidden') === 'true') return false;
-    const button = document.createElement('button');
-    button.id = 'guided-orbit-dialog-complete';
-    button.className = 'guided-orbit-button guided-orbit-dialog-complete';
-    button.type = 'button';
-    button.textContent = step === COUNTRY_STEP ? 'Trace the evidence' : 'Explore freely';
-    button.setAttribute('aria-label', step === COUNTRY_STEP
-      ? 'Open Methods and sources and continue the tutorial'
-      : 'Finish tutorial and explore freely');
-    button.addEventListener('click', _onDialogActionClick);
-    const methods = card.querySelector('.tt-methods');
-    const anchor = card.querySelector('.tt-detail');
-    if (step === FINAL_STEP && methods) methods.before(button);
-    else if (anchor) anchor.after(button);
-    else card.prepend(button);
-    return true;
-  }
-
-  function _openMethods(options = {}) {
-    const surface = route === 'globe' ? $('hex-country-tooltip') : $('globe-fallback-country-detail');
-    const methods = surface?.querySelector('.tt-methods');
-    if (!methods) return false;
-    methods.open = true;
-    if (options.focus === true) {
-      _scheduleFocus(() => {
-        const visibleHandoff = route === 'globe' ? $('guided-orbit-dialog-complete') : methods;
-        visibleHandoff?.scrollIntoView({ block: 'start' });
-        const summary = methods.querySelector('summary');
-        if (_isVisibleFocusTarget(summary)) summary.focus({ preventScroll: true });
-      });
-    }
-    return true;
-  }
-
-  function _openMethodsAndAdvance() {
-    if (step !== COUNTRY_STEP) return false;
-    if (!goToStep(FINAL_STEP, { focus: false })) return false;
-    return _openMethods({ focus: true });
-  }
-
   function _suppressUnavailableEvidence(options = {}) {
     _clearStartTimer();
     _clearTransitionTimer();
@@ -260,7 +196,6 @@ const GUIDED_ORBIT = (() => {
       'guided-orbit-step-1',
       'guided-orbit-step-2',
       'guided-orbit-step-3',
-      'guided-orbit-step-4',
       'guided-orbit-route-fallback'
     );
   }
@@ -356,9 +291,7 @@ const GUIDED_ORBIT = (() => {
     root.dataset.mode = definition.mode;
     root.dataset.route = route;
     root.dataset.step = String(step + 1);
-    const usesCountryDialogAction = route === 'globe' && step >= COUNTRY_STEP;
-    if (usesCountryDialogAction) root.dataset.actionLocation = 'country-dialog';
-    else delete root.dataset.actionLocation;
+    delete root.dataset.actionLocation;
     kicker.textContent = `Climate Intelligence · first orbit · ${step + 1} of ${stepCount}`;
     title.textContent = definition.title;
     body.textContent = definition.body;
@@ -370,7 +303,7 @@ const GUIDED_ORBIT = (() => {
     progress.parentElement?.setAttribute('aria-valuenow', String(step + 1));
     progress.parentElement?.setAttribute('aria-valuemax', String(stepCount));
     back.hidden = step === 0 || (route === 'globe' && step >= COUNTRY_STEP);
-    primary.hidden = definition.waiting === true || usesCountryDialogAction;
+    primary.hidden = definition.waiting === true;
     primary.textContent = definition.action || 'Continue';
     _syncLensContext();
     _applyStepClasses();
@@ -381,12 +314,7 @@ const GUIDED_ORBIT = (() => {
     } else if (options.focus !== false) {
       _scheduleFocus(() => title.focus({ preventScroll: true }), 50);
     }
-    if (definition.methods === true) _openMethods({ focus: false });
-    if (usesCountryDialogAction) {
-      _mountDialogCompletion();
-    } else {
-      _removeDialogCompletion();
-    }
+    if (route === 'globe' && step === COUNTRY_STEP) safeCall('GlobeModule', 'cueCountrySwipe');
     _emit('guided-orbit:step');
     return true;
   }
@@ -404,7 +332,7 @@ const GUIDED_ORBIT = (() => {
       delete root.dataset.actionLocation;
       delete root.dataset.lens;
     }
-    _removeDialogCompletion();
+    safeCall('GlobeModule', 'clearCountrySwipeCue');
     _clearStepClasses();
   }
 
@@ -456,14 +384,14 @@ const GUIDED_ORBIT = (() => {
     return _render(options);
   }
 
-  function complete() {
+  function complete(options = {}) {
     if (!active) return false;
     active = false;
     _storeStatus('completed');
     _hide();
     _restoreFocus();
     _announce('Climate Intelligence first orbit complete. Explore freely.');
-    _emit('guided-orbit:completed');
+    _emit('guided-orbit:completed', { source: options.source || 'tutorial' });
     return true;
   }
 
@@ -479,17 +407,18 @@ const GUIDED_ORBIT = (() => {
   }
 
   function _onCountrySelected() {
-    if (!active || route !== 'globe') return;
+    if (!active || route !== 'globe' || step !== 1) return;
     _clearTransitionTimer();
     transitionTimer = window.setTimeout(() => {
       transitionTimer = 0;
-      if (!active || route !== 'globe') return;
-      if (step === 1) goToStep(COUNTRY_STEP, { focus: false });
-      else if (step >= COUNTRY_STEP) {
-        if (_definition()?.methods === true) _openMethods({ focus: false });
-        _mountDialogCompletion();
-      }
+      if (!active || route !== 'globe' || step !== 1) return;
+      goToStep(COUNTRY_STEP, { focus: false });
     }, 120);
+  }
+
+  function _onCountryNavigated(payload) {
+    if (!active || route !== 'globe' || step !== COUNTRY_STEP) return;
+    complete({ source: payload?.source || 'deck' });
   }
 
   function _onCountryClosed() {
@@ -501,9 +430,6 @@ const GUIDED_ORBIT = (() => {
 
   function _onLensChanged(payload) {
     _syncLensContext(payload?.id);
-    if (!active || step < COUNTRY_STEP) return;
-    if (_definition()?.methods === true) _openMethods({ focus: false });
-    if (route === 'globe') _mountDialogCompletion();
   }
 
   function _onFallbackShown(payload) {
@@ -552,7 +478,6 @@ const GUIDED_ORBIT = (() => {
 
   function _onPrimaryClick() {
     if (step === FINAL_STEP) complete();
-    else if (step === COUNTRY_STEP) _openMethodsAndAdvance();
     else goToStep(step + 1);
   }
 
@@ -564,11 +489,6 @@ const GUIDED_ORBIT = (() => {
     skip();
   }
 
-  function _onDialogActionClick() {
-    if (step === COUNTRY_STEP) _openMethodsAndAdvance();
-    else complete();
-  }
-
   function _onDocumentClick(event) {
     if (!(event.target instanceof Element)) return;
     const replay = event.target.closest('#guided-orbit-replay');
@@ -578,18 +498,20 @@ const GUIDED_ORBIT = (() => {
       return;
     }
 
-    if (!active || step !== 1 || route !== 'fallback') return;
+    if (!active || route !== 'fallback' || (step !== 1 && step !== COUNTRY_STEP)) return;
     const fallbackCountry = event.target.closest('[data-fallback-country-iso]');
     if (!fallbackCountry) return;
+    const expectedStep = step;
     _clearTransitionTimer();
     transitionTimer = window.setTimeout(() => {
       transitionTimer = 0;
-      if (!active || step !== 1 || route !== 'fallback') return;
+      if (!active || step !== expectedStep || route !== 'fallback') return;
       const detail = $('globe-fallback-country-detail');
       if (detail && window.matchMedia('(max-width: 720px)').matches) {
         detail.scrollIntoView({ block: 'start' });
       }
-      goToStep(COUNTRY_STEP, { focus: false });
+      if (expectedStep === 1) goToStep(COUNTRY_STEP, { focus: false });
+      else complete({ source: 'fallback-list' });
     }, 120);
   }
 
@@ -619,6 +541,7 @@ const GUIDED_ORBIT = (() => {
         EventBus.on('app:globe-entered', _onGlobeEntered),
         EventBus.on('app:globe-exited', _onGlobeExited),
         EventBus.on('globe:country-selected', _onCountrySelected),
+        EventBus.on('globe:country-navigated', _onCountryNavigated),
         EventBus.on('globe:country-closed', _onCountryClosed),
         EventBus.on('globe:fallback-shown', _onFallbackShown),
         EventBus.on('globe:fallback-hidden', _onFallbackHidden),
@@ -673,7 +596,6 @@ const GUIDED_ORBIT = (() => {
   }
 
   function getState() {
-    const evidenceSurface = route === 'globe' ? $('hex-country-tooltip') : $('globe-fallback-country-detail');
     return {
       initialized,
       active,
@@ -681,8 +603,7 @@ const GUIDED_ORBIT = (() => {
       step: step + 1,
       fallbackReason,
       stepCount: _stepCount(),
-      dialogCompletionMounted: !!$('guided-orbit-dialog-complete'),
-      methodsOpen: evidenceSurface?.querySelector('.tt-methods')?.open === true,
+      awaitingDeckMove: active && step === COUNTRY_STEP,
       storedStatus: _readStoredStatus(),
     };
   }
@@ -696,7 +617,7 @@ MODULE_CONTRACTS.register('GUIDED_ORBIT', {
   provides: ['init', 'start', 'goToStep', 'complete', 'skip', 'reset', 'destroy', 'getState'],
   requires: ['EventBus', 'GlobeModule', 'COUNTRY_CLIMATE_INTELLIGENCE'],
   emits: ['guided-orbit:started', 'guided-orbit:step', 'guided-orbit:completed', 'guided-orbit:dismissed'],
-  listens: ['app:globe-entered', 'app:globe-exited', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown', 'globe:fallback-hidden', 'globe:lens-changed'],
+  listens: ['app:globe-entered', 'app:globe-exited', 'globe:country-selected', 'globe:country-navigated', 'globe:country-closed', 'globe:fallback-shown', 'globe:fallback-hidden', 'globe:lens-changed'],
 });
 
 if (document.readyState === 'loading') {

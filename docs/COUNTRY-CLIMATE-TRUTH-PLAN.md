@@ -46,7 +46,7 @@ approved source registry + exact external snapshots
 | `js/data.js` | Exact SHA-256 verification and public runtime API |
 | `js/country-climate-intelligence.js` | Lens-aware view model and evidence presentation contract |
 | `js/globe.js` | Globe/fallback rendering, selection, rail/card interactions, and lens-change event |
-| `js/guided-first-orbit.js` | Four-moment Climate Intelligence orientation, real country selection, and Methods & sources handoff |
+| `js/guided-first-orbit.js` | Three-move Climate Intelligence orientation, lens-ranked country selection, and source-labelled deck navigation |
 
 ## Release gates
 
@@ -99,8 +99,9 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 - PRIMAP absent from headings, legends, tooltips, ordered rails, and primary charts;
 - v2.6.1 present only in detailed citation provenance; v2.7 absent entirely;
 - selection preserved across lenses;
-- four-moment first orbit explains the three separate lenses, exact comparison order, scope boundaries, and per-fact provenance without producing a score;
-- Trace the evidence opens and focuses Methods & sources; closing the non-modal country panel during either evidence moment returns to country selection;
+- three-move first orbit explains the separate lenses, encourages a lens change, and makes the active lens order explicit before country selection;
+- the selected country card receives one reduced-motion-safe horizontal cue; a swipe, previous/next control, arrow key, or horizontal trackpad move emits the same source-labelled navigation event and completes the tutorial;
+- closing the non-modal country panel during the deck moment returns to country selection; the fallback evidence view completes after one additional list selection;
 - metric/value/unit/period/evidence in tooltips;
 - Power uses two aligned 0–100% aggregate tracks subdivided by the nine permitlisted fuel slots; 194 mixes reconcile, Lesotho remains an explicit mix-level gap, blank fuel cells remain gaps, source zeroes remain zero, and no browser normalization is applied;
 - France retains the exact 94.9% clean aggregate and 67.7% nuclear segment; `Other Renewables` remains the combined geothermal/tidal/wave category;
@@ -126,7 +127,7 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v61 service worker composes the four-moment Climate Intelligence first
+The v62 service worker composes the three-move Climate Intelligence first
 orbit with the subtle relief presentation, candidate dashboard, and both
 runtime generations:
 

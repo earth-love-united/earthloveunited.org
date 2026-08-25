@@ -13,11 +13,12 @@ const globe = fs.readFileSync(path.join(ROOT, 'js/globe.js'), 'utf8');
 const guidedOrbit = fs.readFileSync(path.join(ROOT, 'js/guided-first-orbit.js'), 'utf8');
 const app = fs.readFileSync(path.join(ROOT, 'js/app.js'), 'utf8');
 const css = fs.readFileSync(path.join(ROOT, 'css/globe-system.css'), 'utf8');
+const guidedCss = fs.readFileSync(path.join(ROOT, 'css/guided-first-orbit.css'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
 const dataAt = index.indexOf('src="js/data.js?v=v9"');
 const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v13"');
-const globeAt = index.indexOf('src="js/globe.js?v=v33"');
+const globeAt = index.indexOf('src="js/globe.js?v=v34"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -42,17 +43,23 @@ assert(presentation.includes('Color and the rail still show raw emissions; this 
 assert(presentation.includes('Subtle bounded linear tile relief and color show clean electricity share.'));
 assert(presentation.includes('Subtle linear tile relief and color show projected warming—not vulnerability or damage.'));
 assert(guidedOrbit.includes('Three lenses. No single score.'));
-assert(guidedOrbit.includes('Order only like with like.'));
-assert(guidedOrbit.includes('Keep scopes separate.'));
-assert(guidedOrbit.includes('Follow every fact.'));
-assert(guidedOrbit.includes('source gaps stay searchable, unnumbered, and never become zero'));
-assert(guidedOrbit.includes('Side by side does not make them directly comparable.'));
-assert(guidedOrbit.includes('Methods & sources exposes definitions, evidence class, uncertainty or gap reason'));
-assert(guidedOrbit.includes('const STORAGE_VERSION = 2;'));
-assert(guidedOrbit.includes('const FINAL_STEP = 3;'));
+assert(guidedOrbit.includes('Change the lens. Choose a country.'));
+assert(guidedOrbit.includes('The sidebar reorders countries for the active lens'));
+assert(guidedOrbit.includes('Swipe through the country deck.'));
+assert(guidedOrbit.includes('arrow keys, and a horizontal trackpad gesture do the same thing'));
+assert(guidedOrbit.includes('const STORAGE_VERSION = 3;'));
+assert(guidedOrbit.includes('const FINAL_STEP = 2;'));
+assert(guidedOrbit.includes("EventBus.on('globe:country-navigated', _onCountryNavigated)"));
+assert(globe.includes("EventBus.emit('globe:country-navigated'"));
+assert(globe.includes("source: navigationSource"));
+assert(globe.includes('cueCountrySwipe()'));
+assert(globe.includes('clearCountrySwipeCue()'));
+assert(guidedCss.includes('body.guided-orbit-step-3:not(.globe-fallback-active) #elu-country-card-wrap #hex-country-tooltip.tt-swipe-cue'));
+assert(guidedCss.includes('animation: none !important;'));
 assert(guidedOrbit.includes("EventBus.on('globe:fallback-hidden', _onFallbackHidden)"));
 assert(globe.includes("EventBus.emit('globe:fallback-hidden'"));
-assert(index.includes('aria-valuemax="4"'));
+assert(index.includes('aria-valuemax="3"'));
+assert(!guidedOrbit.includes('guided-orbit-dialog-complete'));
 assert(!guidedOrbit.includes('Only Carbon uses transparent log-scaled height'));
 assert(globe.includes('_countryPolygonSideColorFn(feature)'));
 assert(globe.includes('.polygonSideColor((f) => this._countryPolygonSideColorFn(f))'));
@@ -335,16 +342,16 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v61-climate-intelligence-orbit'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v62-three-move-orbit'"));
 assert(serviceWorker.includes("'/css/globe-system.css?v=v39'"));
-assert(serviceWorker.includes("'/css/guided-first-orbit.css?v=v6'"));
+assert(serviceWorker.includes("'/css/guided-first-orbit.css?v=v7'"));
 assert(serviceWorker.includes("'/js/data.js?v=v9'"));
 assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v13'"));
-assert(serviceWorker.includes("'/js/globe.js?v=v33'"));
-assert(serviceWorker.includes("'/js/guided-first-orbit.js?v=v4'"));
+assert(serviceWorker.includes("'/js/globe.js?v=v34'"));
+assert(serviceWorker.includes("'/js/guided-first-orbit.js?v=v5'"));
 assert(serviceWorker.includes("'/js/app.js?v=v5'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired project data must not be pinned by the climate runtime cache');
 
-console.log('Country Climate Intelligence UI contract check passed (classic load order, four-moment orbit, three lenses, non-modal evidence panels, and rollback pin).');
+console.log('Country Climate Intelligence UI contract check passed (classic load order, three-move orbit, three lenses, non-modal evidence panels, and rollback pin).');

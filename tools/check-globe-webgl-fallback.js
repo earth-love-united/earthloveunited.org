@@ -63,7 +63,7 @@ function compile() {
         globe.includes("document.addEventListener('visibilitychange', this._onVisibilityChange)") &&
         globe.includes('this.world.pauseAnimation()') && globe.includes('this.world.resumeAnimation()') &&
         fallbackRuntime.includes('this.pause();') && fallbackRuntime.includes('this._syncAnimationLifecycle();'),
-      contracts_registered: globe.includes("'pause'") && globe.includes("'resume'") && globe.includes("'hasWebGLSupport'") && globe.includes("'showFallback'") && globe.includes("'hideFallback'") && globe.includes("'closeEvidenceBrowser'") && globe.includes("'globe:fallback-shown'") && globe.includes("'globe:fallback-hidden'") && guided.includes("EventBus.on('globe:fallback-hidden', _onFallbackHidden)") && app.includes("'retryGlobe'") && app.includes("'browseEvidence'") && app.includes("'globe:fallback-shown'"),
+      contracts_registered: globe.includes("'pause'") && globe.includes("'resume'") && globe.includes("'hasWebGLSupport'") && globe.includes("'showFallback'") && globe.includes("'hideFallback'") && globe.includes("'closeEvidenceBrowser'") && globe.includes("'globe:fallback-shown'") && globe.includes("'globe:fallback-hidden'") && globe.includes("'globe:country-navigated'") && guided.includes("EventBus.on('globe:fallback-hidden', _onFallbackHidden)") && guided.includes("EventBus.on('globe:country-navigated', _onCountryNavigated)") && app.includes("'retryGlobe'") && app.includes("'browseEvidence'") && app.includes("'globe:fallback-shown'"),
       lens_parity: globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows'") && globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView'") && globe.includes('this._renderFallbackEvidence();'),
     },
     accessibility: {
@@ -116,21 +116,24 @@ function compile() {
         smoke.includes('Guided orbit suppresses no-data routes and owns one control lifecycle') &&
         smoke.includes('Fallback tutorial shelf leaves lens, search, and country chooser operable') &&
         smoke.includes('Country rail exposes the exact lens metric and searchable gaps') &&
-        smoke.includes('Guided orbit traces evidence inside the non-modal country panel'),
+        smoke.includes('Guided orbit cues one country-deck move and auto-completes'),
       guided_no_data_terminal: guided.includes("fallbackReason === 'candidate_data_unavailable'") &&
         guided.includes('_suppressUnavailableEvidence(options = {})') &&
         guided.includes("payload?.reason || window.GlobeModule?._fallbackReasonCode") &&
         guided.includes('Climate Intelligence first orbit is unavailable because country evidence could not be loaded.'),
-      guided_panel_completion: guided.includes("button.id = 'guided-orbit-dialog-complete'") &&
-        guided.includes("root.dataset.actionLocation = 'country-dialog'") &&
-        guided.includes("button.textContent = step === COUNTRY_STEP ? 'Trace the evidence' : 'Explore freely'") &&
-        guided.includes('goToStep(FINAL_STEP, { focus: false })') &&
-        guided.includes('methods.open = true') &&
-        guided.includes("anchor.after(button)") &&
+      guided_three_move_completion: guided.includes('const STORAGE_VERSION = 3;') &&
+        guided.includes('const FINAL_STEP = 2;') &&
+        guided.includes('Swipe through the country deck.') &&
+        guided.includes("EventBus.on('globe:country-navigated', _onCountryNavigated)") &&
+        guided.includes("complete({ source: payload?.source || 'deck' })") &&
+        guided.includes("complete({ source: 'fallback-list' })") &&
         guided.includes("EventBus.on('globe:country-closed', _onCountryClosed)") &&
         guided.includes("goToStep(1, { focus: false })") &&
-        guided.includes('const FINAL_STEP = 3;') &&
-        guidedCss.includes('.guided-orbit-dialog-complete') && guidedCss.includes('body.guided-orbit-step-4'),
+        globe.includes("EventBus.emit('globe:country-navigated'") &&
+        globe.includes("source: navigationSource") &&
+        globe.includes('cueCountrySwipe()') && globe.includes('clearCountrySwipeCue()') &&
+        guidedCss.includes('body.guided-orbit-step-3:not(.globe-fallback-active) #elu-country-card-wrap #hex-country-tooltip.tt-swipe-cue') &&
+        !guided.includes('guided-orbit-dialog-complete') && !guidedCss.includes('body.guided-orbit-step-4'),
       guided_visible_focus_restore: guided.includes("target.closest('[hidden],[aria-hidden=\"true\"],[inert]')") &&
         guided.includes('target.getClientRects().length > 0') && guided.includes('Number(nodeStyle.opacity) === 0') &&
         guided.includes('const candidates = [selectedHeading, fallbackHeading, opener, replay]') &&

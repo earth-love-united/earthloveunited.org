@@ -24,7 +24,7 @@ hero / Living Globe action
   → lazy-load globe.gl
   → initialize GlobeModule
   → resume the renderer only while the live globe route is visible
-  → first visit opens the four-moment Climate Intelligence first orbit
+  → first visit opens the three-move Climate Intelligence first orbit
   → Carbon / Power / Physical lens controls
   → exact-metric country rail + lens-aware selected-country card
   → App.exitGlobe() pauses WebGL and returns to the foundation page
@@ -41,7 +41,7 @@ mission.
 |---|---|---|
 | Page | `index.html` | Critical tokens/layout, public copy, DOM, script order, theme bootstrap |
 | Globe presentation | `css/globe-system.css` | Globe HUD, atlas rail/card, status visuals, themes, responsive behavior |
-| Globe orientation | `css/guided-first-orbit.css` | Four-moment lens guide, compact interaction key, evidence shelf, replay control |
+| Globe orientation | `css/guided-first-orbit.css` | Three-move lens guide, compact selection key, deck-move shelf, replay control |
 | Clock presentation | `css/carbon-clock.css` | Carbon-clock typography and layout |
 | Safety utilities | `js/gaia-utils.js` | Safe DOM access, cross-module calls, safe fluent chains, error reporting |
 | Contract registry | `js/module-contracts.js` | Module interfaces, dependencies, events, runtime pre-flight validation |
@@ -53,7 +53,7 @@ mission.
 | Climate view model | `js/country-climate-intelligence.js` | Lens selection policy, cached compact renderer visuals, rail rows, country facts, legend, gaps, provenance, and disclosed query-only visual experiments |
 | Globe runtime | `js/globe.js` | globe.gl lifecycle, country geometry, atlas rail/card, lens rendering, selection, themes, and the 120 Hz scene budget |
 | Carbon clock | `js/carbon-clock.js` | Hero/topbar emissions counter |
-| Globe orientation | `js/guided-first-orbit.js` | Four-moment Climate Intelligence tutorial, real country/evidence handoff, completion preference, replay |
+| Globe orientation | `js/guided-first-orbit.js` | Three-move Climate Intelligence tutorial, real country/deck handoff, completion preference, replay |
 | Application | `js/app.js` | Bootstrap, contract pre-flight, hero/globe transitions, lazy globe load |
 | Offline cache | `sw.js` | Static precache and network-first data/code updates |
 
@@ -107,7 +107,7 @@ on `window`.
 | `Panel` | `js/globe.js` | legacy internal export | Archived-site fallback helpers; not part of current public flow |
 | `PanelSlider` | `js/globe.js` | legacy internal export | Archived-site fallback helpers |
 | `CARBON_CLOCK` | `js/carbon-clock.js` | yes | Live counter |
-| `GUIDED_ORBIT` | `js/guided-first-orbit.js` | yes | Four-moment Climate Intelligence orientation and replay |
+| `GUIDED_ORBIT` | `js/guided-first-orbit.js` | yes | Three-move Climate Intelligence orientation and replay |
 | `App` | `js/app.js` | yes | Bootstrap and navigation |
 
 `App.init()` calls `MODULE_CONTRACTS.validate()` after `Data.init()`. A
@@ -314,14 +314,21 @@ pointer or keyboard selection
   → keep the country name, evidence class, and Close control sticky inside the card scrollport
   → emit globe:country-selected
 
+country-card swipe / previous-next / arrow keys / horizontal trackpad
+  → GlobeModule.navigateCountry(dir, { source })
+  → keep the active lens order and replace the selected evidence card
+  → emit globe:country-selected for the new record
+  → emit globe:country-navigated with from/to identity, direction, and interaction source
+
 first globe visit / replay
   → GUIDED_ORBIT.start()
   → candidate_data_unavailable suppresses the tour instead of exposing an unfinishable empty route
   → explain the three separate lenses and no-single-score boundary
-  → release the globe + ordered rail for one exact-metric country choice; gaps remain searchable and unnumbered
-  → globe:country-selected collapses the tutorial into a source shelf and mounts Trace the evidence inside the country panel
-  → Trace the evidence opens and focuses Methods & sources, then mounts Explore freely in the same panel
-  → globe:country-closed returns either country-card moment to country selection
+  → encourage a lens change, then release the globe + lens-ordered rail for one country choice
+  → globe:country-selected collapses the tutorial into a deck shelf and cues one horizontal card move
+  → globe:country-navigated completes the orbit; swipe, buttons, arrow keys, and trackpad keep accessible parity
+  → globe:country-closed returns the deck moment to country selection
+  → fallback users complete the same third moment by choosing one more evidence record
   → completion or dismissal persists locally; toolbar orbit control replays
 
 Escape / close / App.exitGlobe()
@@ -348,6 +355,7 @@ Document visibility / evidence browser
 | `globe:fallback-shown` | `GlobeModule` | `App` loading and `aria-busy` state |
 | `globe:fallback-hidden` | `GlobeModule` | `GUIDED_ORBIT` route and selection-step recovery |
 | `globe:country-selected` | `GlobeModule` | External/optional listeners |
+| `globe:country-navigated` | `GlobeModule` | `GUIDED_ORBIT` swipe/deck completion |
 | `globe:country-closed` | `GlobeModule` | External/optional listeners |
 | `globe:lens-changed` | `GlobeModule` | External/optional listeners |
 | `guided-orbit:started` | `GUIDED_ORBIT` | External/optional listeners |
@@ -393,7 +401,7 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v61 precaches the public page, core CSS/JS, the four-moment
+`sw.js` cache epoch v62 precaches the public page, core CSS/JS, the three-move
 Climate Intelligence first orbit, the shared raised-tile lenses, evidence-only
 Physical-card percentile range, the simplified two-track Power fuel palette,
 verified local globe.gl, the CT-45 manifest and localized globe assets, the

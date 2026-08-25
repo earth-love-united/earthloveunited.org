@@ -453,7 +453,7 @@ const SmokeTest = (() => {
             const started = orbit.start({ route: 'globe', force: true, opener: hiddenEnter || replay, focus: false });
             primary.click();
             const state = orbit.getState();
-            advancedOnce = started === true && state.active === true && state.step === 2 && state.stepCount === 4;
+            advancedOnce = started === true && state.active === true && state.step === 2 && state.stepCount === 3;
             orbit.skip();
             restoredVisibleOpener = hiddenEnterUnavailable && document.activeElement === replay && replay.getClientRects().length > 0;
           } finally {
@@ -495,7 +495,7 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'Guided orbit traces evidence inside the non-modal country panel',
+        name: 'Guided orbit cues one country-deck move and auto-completes',
         critical: true,
         test: async () => {
           const orbit = window.GUIDED_ORBIT;
@@ -506,17 +506,18 @@ const SmokeTest = (() => {
             return { pass: true, detail: 'Live country-dialog route is not active; headless lifecycle covers it after renderer readiness' };
           }
           const stored = localStorage.getItem('elu-guided-first-orbit-v1');
-          let scopeCloseRecoversSelection = false;
-          let insidePanel = false;
-          let nextAfterClose = false;
-          let methodsOpened = false;
-          let finalCloseRecoversSelection = false;
+          let closeRecoversSelection = false;
+          let deckMomentReady = false;
+          let cueVisible = false;
+          let navigationSource = null;
+          let completionSource = null;
           let completed = false;
-          const waitForDialogAction = expectedText => new Promise(resolve => {
+          let offNavigation = null;
+          let offCompletion = null;
+          const waitFor = predicate => new Promise(resolve => {
             const deadline = Date.now() + 3500;
             const poll = () => {
-              const action = document.getElementById('guided-orbit-dialog-complete');
-              if (action?.textContent.trim() === expectedText || Date.now() >= deadline) resolve(action);
+              if (predicate() || Date.now() >= deadline) resolve(predicate());
               else window.setTimeout(poll, 40);
             };
             poll();
@@ -526,53 +527,44 @@ const SmokeTest = (() => {
             orbit.start({ route: 'globe', force: true, opener: document.getElementById('guided-orbit-replay'), focus: false });
             orbit.goToStep(1, { focus: false });
             row.click();
-            await waitForDialogAction('Trace the evidence');
+            await waitFor(() => orbit.getState().step === 3);
             const wrap = document.getElementById('elu-country-card-wrap');
             const close = wrap?.querySelector('[data-country-close]');
-            const trace = document.getElementById('guided-orbit-dialog-complete');
-            const tabbable = wrap ? Array.from(wrap.querySelectorAll('button,a[href],summary,[tabindex="0"]')).filter(node => {
-              if (node.disabled || node.hidden || node.getAttribute('aria-hidden') === 'true') return false;
-              const style = window.getComputedStyle(node);
-              return node.getClientRects().length > 0 && style.visibility !== 'hidden';
-            }) : [];
-            insidePanel = !!(wrap && trace && wrap.contains(trace) && wrap.getAttribute('aria-modal') === 'false' &&
-              document.getElementById('guided-orbit-primary').hidden && orbit.getState().dialogCompletionMounted);
-            nextAfterClose = !!(close && trace && tabbable.indexOf(trace) === tabbable.indexOf(close) + 1);
+            const card = document.getElementById('hex-country-tooltip');
+            await new Promise(resolve => window.setTimeout(resolve, 60));
+            deckMomentReady = !!(wrap && card && wrap.contains(card) && wrap.getAttribute('aria-modal') === 'false' &&
+              document.getElementById('guided-orbit-primary').hidden && orbit.getState().awaitingDeckMove &&
+              document.getElementById('guided-orbit-title')?.textContent.trim() === 'Swipe through the country deck.' &&
+              !document.getElementById('guided-orbit-dialog-complete'));
+            cueVisible = window.matchMedia('(prefers-reduced-motion: reduce)').matches || card?.classList.contains('tt-swipe-cue') === true;
             close?.click();
-            scopeCloseRecoversSelection = orbit.getState().active === true && orbit.getState().step === 2 &&
-              !document.getElementById('guided-orbit-dialog-complete');
+            closeRecoversSelection = orbit.getState().active === true && orbit.getState().step === 2;
 
             row.click();
-            await waitForDialogAction('Trace the evidence');
-            document.getElementById('guided-orbit-dialog-complete')?.click();
-            await waitForDialogAction('Explore freely');
-            await new Promise(resolve => setTimeout(resolve, 80));
-            const methods = document.querySelector('#hex-country-tooltip .tt-methods');
-            methodsOpened = orbit.getState().step === 4 && orbit.getState().methodsOpen === true && methods?.open === true &&
-              methods?.querySelector('summary') === document.activeElement;
-            document.querySelector('#elu-country-card-wrap [data-country-close]')?.click();
-            finalCloseRecoversSelection = orbit.getState().active === true && orbit.getState().step === 2 &&
-              !document.getElementById('guided-orbit-dialog-complete');
-
-            row.click();
-            await waitForDialogAction('Trace the evidence');
-            document.getElementById('guided-orbit-dialog-complete')?.click();
-            await waitForDialogAction('Explore freely');
-            document.getElementById('guided-orbit-dialog-complete')?.click();
-            completed = orbit.getState().active === false && !document.getElementById('guided-orbit-dialog-complete');
+            await waitFor(() => orbit.getState().step === 3);
+            if (hasModule('EventBus')) {
+              offNavigation = EventBus.on('globe:country-navigated', payload => { navigationSource = payload?.source || null; });
+              offCompletion = EventBus.on('guided-orbit:completed', payload => { completionSource = payload?.source || null; });
+            }
+            window.GlobeModule.navigateCountry(1, { source: 'keyboard' });
+            await waitFor(() => orbit.getState().active === false);
+            completed = orbit.getState().active === false && navigationSource === 'keyboard' && completionSource === 'keyboard' &&
+              !document.getElementById('hex-country-tooltip')?.classList.contains('tt-swipe-cue');
           } finally {
+            if (typeof offNavigation === 'function') offNavigation();
+            if (typeof offCompletion === 'function') offCompletion();
             safeCall('GlobeModule', 'clearCountrySelection');
             orbit.destroy();
             orbit.init();
             if (stored === null) localStorage.removeItem('elu-guided-first-orbit-v1');
             else localStorage.setItem('elu-guided-first-orbit-v1', stored);
           }
-          const pass = scopeCloseRecoversSelection && insidePanel && nextAfterClose && methodsOpened && finalCloseRecoversSelection && completed;
+          const pass = closeRecoversSelection && deckMomentReady && cueVisible && completed;
           return {
             pass,
             detail: pass
-              ? 'Trace evidence follows Close, opens and focuses Methods & sources, both country phases recover, and Explore freely completes cleanly'
-              : `scope recovery ${scopeCloseRecoversSelection}, inside panel ${insidePanel}, follows Close ${nextAfterClose}, methods ${methodsOpened}, final recovery ${finalCloseRecoversSelection}, completed ${completed}`,
+              ? 'Country selection opens the swipe cue; Close returns to selection; one keyboard-equivalent deck move emits its source and completes'
+              : `close recovery ${closeRecoversSelection}, deck ready ${deckMomentReady}, cue ${cueVisible}, navigation source ${navigationSource}, completion source ${completionSource}, completed ${completed}`,
           };
         },
       },

@@ -421,6 +421,8 @@ const GlobeModule = {
   _rankRailCollapsed: false,
   _defaultCountrySelected: false,
   _countrySwipeCueShown: false,
+  _countrySwipeCueToken: 0,
+  _countrySwipeCueFinish: null,
   _fallbackReasonCode: null,
   _fallbackOpener: null,
   _fallbackEntries: [],
@@ -886,7 +888,7 @@ const GlobeModule = {
         if ((event.key === 'ArrowRight' || event.key === 'ArrowLeft') && this._selectedCountryFeature) {
           event.preventDefault();
           event.stopImmediatePropagation();
-          this.navigateCountry(event.key === 'ArrowRight' ? 1 : -1);
+          this.navigateCountry(event.key === 'ArrowRight' ? 1 : -1, { source: 'keyboard' });
         }
       };
       document.addEventListener('keydown', this._onCountryKeydown);
@@ -1505,7 +1507,7 @@ const GlobeModule = {
         if (!nav) return;
         event.preventDefault();
         event.stopPropagation();
-        this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
+        this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1, { source: 'button' });
       });
       document.body.appendChild(wrap);
     }
@@ -1518,6 +1520,7 @@ const GlobeModule = {
   _unmountCountryCard() {
     const tt = $('hex-country-tooltip');
     const wrap = this._countryCardWrap || $('elu-country-card-wrap');
+    this._clearCountrySwipeCue(tt);
     if (tt && wrap && wrap.contains(tt) && document.body) document.body.appendChild(tt);
     if (wrap) wrap.remove();
     document.body?.classList.remove('country-card-open');
@@ -1564,27 +1567,54 @@ const GlobeModule = {
     this._selectCountryFeature(entry.feature, { focus: false });
   },
 
-  _queueCountrySwipeCue(tt) {
-    if (this._countrySwipeCueShown || !tt || window.innerWidth > 720) return;
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    this._countrySwipeCueShown = true;
+  _clearCountrySwipeCue(tt = $('hex-country-tooltip')) {
+    this._countrySwipeCueToken += 1;
+    if (tt && this._countrySwipeCueFinish) {
+      tt.removeEventListener('animationend', this._countrySwipeCueFinish);
+      tt.removeEventListener('animationcancel', this._countrySwipeCueFinish);
+    }
+    this._countrySwipeCueFinish = null;
+    tt?.classList.remove('tt-swipe-cue');
+    return true;
+  },
+
+  clearCountrySwipeCue() {
+    return this._clearCountrySwipeCue();
+  },
+
+  cueCountrySwipe() {
+    return this._queueCountrySwipeCue($('hex-country-tooltip'), { force: true });
+  },
+
+  _queueCountrySwipeCue(tt, options = {}) {
+    const force = options.force === true;
+    if (!tt || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return false;
+    if (!force && (this._countrySwipeCueShown || window.innerWidth > 720)) return false;
+    if (!force) this._countrySwipeCueShown = true;
+    this._clearCountrySwipeCue(tt);
+    tt.classList.remove('tt-motion-ready');
+    const cueToken = this._countrySwipeCueToken;
 
     // Wait until the selected card has been mounted and docked before showing
     // the one-time horizontal affordance. Two frames keep the cue separate
     // from the card's initial paint, so the movement reads as intentional.
     requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (cueToken !== this._countrySwipeCueToken) return;
       if (!tt.classList.contains('selected') || !tt.classList.contains('visible')) return;
       tt.classList.add('tt-swipe-cue');
       const finishCue = event => {
         if (event.animationName !== 'elu-country-card-swipe-cue') return;
         tt.removeEventListener('animationend', finishCue);
         tt.removeEventListener('animationcancel', finishCue);
+        if (this._countrySwipeCueFinish === finishCue) this._countrySwipeCueFinish = null;
         tt.classList.add('tt-motion-ready');
         tt.classList.remove('tt-swipe-cue');
       };
+      this._countrySwipeCueFinish = finishCue;
       tt.addEventListener('animationend', finishCue);
       tt.addEventListener('animationcancel', finishCue);
     }));
+    return true;
   },
 
   _renderCountryInfoCard(feature, selected) {
@@ -1624,7 +1654,7 @@ const GlobeModule = {
         if (nav) {
           event.preventDefault();
           event.stopPropagation();
-          this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
+          this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1, { source: 'button' });
           return;
         }
       });
@@ -1640,8 +1670,8 @@ const GlobeModule = {
         if (!tt.classList.contains('selected')) return;
         if (e.target.closest('.tt-close,.tt-nav,a')) return;
         if (tt.classList.contains('tt-swipe-cue')) {
+          this._clearCountrySwipeCue(tt);
           tt.classList.add('tt-motion-ready');
-          tt.classList.remove('tt-swipe-cue');
         }
         _dragging = true; _dragEngaged = false;
         _dragStartX = e.clientX; _dragStartY = e.clientY;
@@ -1672,9 +1702,9 @@ const GlobeModule = {
         try { tt.releasePointerCapture(_dragPointerId); } catch { /* ignore */ }
         const dx = e.clientX - _dragStartX;
         if (dx > 110) {
-          this.navigateCountry(1, { fromDrag: true });   // swipe right → next (Bumble)
+          this.navigateCountry(1, { fromDrag: true, source: 'swipe' });   // swipe right → next (Bumble)
         } else if (dx < -110) {
-          this.navigateCountry(-1, { fromDrag: true });  // swipe left → previous
+          this.navigateCountry(-1, { fromDrag: true, source: 'swipe' });  // swipe left → previous
         } else {
           tt.classList.add('tt-snap');
           tt.style.transform = 'none';
@@ -1703,7 +1733,7 @@ const GlobeModule = {
         if (now - _wheelNavAt < 500) return;
         _wheelNavAt = now;
         // Natural scrolling: fingers swiping right = negative deltaX = next
-        this.navigateCountry(e.deltaX < 0 ? 1 : -1);
+        this.navigateCountry(e.deltaX < 0 ? 1 : -1, { source: 'trackpad' });
       }, { passive: false });
     }
 
@@ -1772,6 +1802,9 @@ const GlobeModule = {
     if (!cur) return;
 
     const curIso = _resolveCountryIso(cur);
+    const navigationSource = ['swipe', 'button', 'keyboard', 'trackpad', 'programmatic'].includes(opts.source)
+      ? opts.source
+      : (opts.fromDrag ? 'swipe' : 'programmatic');
     const len = deck.length;
     let idx = deck.findIndex(entry => entry.iso === curIso);
     if (idx < 0) idx = 0;
@@ -1812,7 +1845,16 @@ const GlobeModule = {
       this._refreshCountryBorders();
       this._showCountryProjects(target.iso);
       this._updateRankRail();
-      if (hasModule('EventBus')) EventBus.emit('globe:country-selected', { iso: target.iso, country: target.country });
+      if (hasModule('EventBus')) {
+        EventBus.emit('globe:country-selected', { iso: target.iso, country: target.country });
+        EventBus.emit('globe:country-navigated', {
+          from_iso: curIso,
+          to_iso: target.iso,
+          country: target.country,
+          direction: dir > 0 ? 1 : -1,
+          source: navigationSource,
+        });
+      }
 
       // Fly the globe to the new country, keeping the current zoom
       if (this.world) {
@@ -1838,8 +1880,9 @@ const GlobeModule = {
     };
 
     if (tt) {
+      this._clearCountrySwipeCue(tt);
       tt.classList.add('tt-motion-ready');
-      tt.classList.remove('tt-snap', 'tt-dragging', 'tt-swipe-cue');
+      tt.classList.remove('tt-snap', 'tt-dragging');
       tt.classList.add(outClass);
       setTimeout(swap, exitDuration);
     } else {
@@ -2329,6 +2372,7 @@ const GlobeModule = {
   },
 
   clearCountrySelection() {
+    this.clearCountrySwipeCue();
     this._selectedCountryFeature = null;
     this._countryHoverFeature = null;
     this._defaultCountrySelected = false;
@@ -2987,8 +3031,8 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['prepare', 'init', 'pause', 'resume', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'getLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState', 'getPerformanceState'],
+    provides: ['prepare', 'init', 'pause', 'resume', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'getLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'cueCountrySwipe', 'clearCountrySwipeCue', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState', 'getPerformanceState'],
     requires: ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE'],
-    emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown', 'globe:fallback-hidden', 'globe:lens-changed'],
+    emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-navigated', 'globe:country-closed', 'globe:fallback-shown', 'globe:fallback-hidden', 'globe:lens-changed'],
   });
 }
