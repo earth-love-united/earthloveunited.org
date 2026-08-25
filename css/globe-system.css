@@ -1345,18 +1345,6 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   font-weight: 650;
 }
 
-.elu-power-lane-mark {
-  display: inline-block;
-  width: 24px;
-  height: 5px;
-  flex: 0 0 24px;
-}
-
-.elu-power-lane.is-clean .elu-power-lane-mark { background: var(--mint); }
-.elu-power-lane.is-fossil .elu-power-lane-mark {
-  background: repeating-linear-gradient(135deg, var(--amber) 0 3px, transparent 3px 6px);
-}
-
 .elu-power-lane-track {
   position: relative;
   display: flex;

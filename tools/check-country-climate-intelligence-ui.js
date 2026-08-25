@@ -16,7 +16,7 @@ const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
 const dataAt = index.indexOf('src="js/data.js?v=v9"');
 const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v13"');
-const globeAt = index.indexOf('src="js/globe.js?v=v31"');
+const globeAt = index.indexOf('src="js/globe.js?v=v32"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -91,6 +91,8 @@ assert(css.includes('.elu-power-segment.is-coal'));
 assert(css.includes('.elu-power-segment.is-gas'));
 assert(css.includes('.elu-power-segment.is-other-fossil'));
 assert(css.includes('.elu-power-mix-legend'));
+assert(!globe.includes('elu-power-lane-mark'), 'clean and fossil aggregate headings must not repeat decorative swatches before their text');
+assert(!css.includes('.elu-power-lane-mark'), 'retired aggregate heading swatches must not leave dead CSS');
 assert(css.includes('grid-template-columns: repeat(2, minmax(0, 1fr));'), 'fuel names and values must retain a readable two-column legend');
 assert(css.includes('white-space: normal;'), 'fuel names must not be hidden behind legend ellipses');
 assert(css.includes('.elu-power-reconciliation.has-rounding'));
@@ -315,11 +317,11 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v59-power-textures'"));
-assert(serviceWorker.includes("'/css/globe-system.css?v=v38'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v60-power-title-cleanup'"));
+assert(serviceWorker.includes("'/css/globe-system.css?v=v39'"));
 assert(serviceWorker.includes("'/js/data.js?v=v9'"));
 assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v13'"));
-assert(serviceWorker.includes("'/js/globe.js?v=v31'"));
+assert(serviceWorker.includes("'/js/globe.js?v=v32'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired project data must not be pinned by the climate runtime cache');
