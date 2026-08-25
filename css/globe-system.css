@@ -1257,18 +1257,18 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   color: var(--text2);
 }
 
-.elu-power-signature {
+.elu-power-field {
   margin: 0 0 8px;
   padding: 10px;
   overflow: hidden;
   border: 1px solid var(--hud-border);
   border-radius: 3px;
   background:
-    linear-gradient(135deg, rgba(48, 196, 151, .08), transparent 58%),
+    linear-gradient(105deg, rgba(48, 196, 151, .08), transparent 52%),
     var(--hud-trajectory-bg);
 }
 
-.elu-power-signature-head {
+.elu-power-field-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -1281,7 +1281,7 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   text-transform: uppercase;
 }
 
-.elu-power-signature-head span:last-child {
+.elu-power-field-head span:last-child {
   color: var(--hud-faint);
   font-family: var(--body);
   font-size: 9px;
@@ -1289,140 +1289,114 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   text-transform: none;
 }
 
-.elu-power-signature-body {
+.elu-power-field-scale {
   display: grid;
-  grid-template-columns: minmax(142px, .82fr) minmax(0, 1.18fr);
-  align-items: center;
-  gap: 8px 15px;
-}
-
-.elu-power-dial {
-  display: block;
-  width: 100%;
-  max-width: 174px;
-  margin: 0 auto;
-  overflow: visible;
-  shape-rendering: geometricPrecision;
-}
-
-.elu-power-ring-ticks,
-.elu-power-ring-track,
-.elu-power-ring-value {
-  fill: none;
-  vector-effect: non-scaling-stroke;
-}
-
-.elu-power-ring-ticks {
-  stroke: var(--hud-divider-soft);
-  stroke-width: 1;
-  stroke-dasharray: .9 4.1;
-}
-
-.elu-power-ring-track {
-  stroke: var(--hud-divider);
-  opacity: .72;
-}
-
-.elu-power-ring-value {
-  stroke-linecap: round;
-}
-
-.elu-power-ring-track.is-clean,
-.elu-power-ring-value.is-clean { stroke-width: 8; }
-.elu-power-ring-track.is-fossil,
-.elu-power-ring-value.is-fossil { stroke-width: 7; }
-.elu-power-ring-track.is-wind-solar,
-.elu-power-ring-value.is-wind-solar { stroke-width: 6; }
-.elu-power-ring-value.is-clean { stroke: var(--mint); }
-.elu-power-ring-value.is-fossil { stroke: var(--amber); }
-.elu-power-ring-value.is-wind-solar { stroke: var(--teal); }
-
-.elu-power-dial-kicker,
-.elu-power-dial-unit {
-  fill: var(--hud-faint);
-  font-family: var(--mono);
-  font-size: 6px;
-  letter-spacing: 1.2px;
-}
-
-.elu-power-dial-value {
-  fill: var(--text);
-  font-family: var(--mono);
-  font-size: 19px;
-  font-weight: 650;
-}
-
-.elu-power-key {
-  display: grid;
-  gap: 7px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.elu-power-key li {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.elu-power-key li > span:last-child {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 1px 8px;
-  min-width: 0;
-}
-
-.elu-power-key small {
-  grid-column: 1 / -1;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 1px 0 7px;
   color: var(--hud-faint);
   font-family: var(--mono);
   font-size: 6px;
-  letter-spacing: .65px;
-  text-transform: uppercase;
+  letter-spacing: .3px;
 }
 
-.elu-power-key strong {
-  min-width: 0;
+.elu-power-field-scale span { text-align: center; }
+.elu-power-field-scale span:first-child { text-align: left; }
+.elu-power-field-scale span:last-child { text-align: right; }
+
+.elu-power-lanes {
+  display: grid;
+  gap: 10px;
+}
+
+.elu-power-lane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
   color: var(--text2);
   font-size: 9px;
-  font-weight: 500;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
-.elu-power-key b {
+.elu-power-lane-head > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.elu-power-lane-head strong {
+  flex: 0 0 auto;
   color: var(--text);
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 650;
-  white-space: nowrap;
 }
 
-.elu-power-key-mark {
-  display: block;
-  width: 22px;
+.elu-power-lane-mark {
+  display: inline-block;
+  width: 24px;
+  height: 5px;
+  flex: 0 0 24px;
 }
 
-.elu-power-key .is-clean .elu-power-key-mark {
-  height: 3px;
-  background: var(--mint);
+.elu-power-lane.is-clean .elu-power-lane-mark { background: var(--mint); }
+.elu-power-lane.is-fossil .elu-power-lane-mark {
+  background: repeating-linear-gradient(135deg, var(--amber) 0 3px, transparent 3px 6px);
 }
-
-.elu-power-key .is-fossil .elu-power-key-mark {
-  height: 0;
-  border-top: 3px dashed var(--amber);
-}
-
-.elu-power-key .is-wind-solar .elu-power-key-mark {
-  height: 7px;
+.elu-power-lane.is-wind-solar .elu-power-lane-mark {
   background: repeating-linear-gradient(90deg, var(--teal) 0 3px, transparent 3px 6px);
 }
 
-.elu-power-signature figcaption {
-  margin-top: 4px;
+.elu-power-lane-track {
+  position: relative;
+  height: 14px;
+  overflow: hidden;
+  border: 1px solid var(--hud-divider);
+  border-radius: 2px;
+  background: var(--hud-cell);
+}
+
+.elu-power-lane-track::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, var(--hud-divider-soft) 1px, transparent 1px);
+  background-size: 25% 100%;
+  pointer-events: none;
+}
+
+.elu-power-lane-fill {
+  position: absolute;
+  inset: 2px auto 2px 0;
+  min-width: 0;
+  border-radius: 0 1px 1px 0;
+}
+
+.elu-power-lane-fill.is-clean { background: var(--mint); }
+.elu-power-lane-fill.is-fossil {
+  background: repeating-linear-gradient(135deg, var(--amber) 0 4px, rgba(0, 0, 0, .12) 4px 7px);
+}
+.elu-power-lane-fill.is-wind-solar {
+  background: repeating-linear-gradient(90deg, var(--teal) 0 4px, rgba(0, 0, 0, .1) 4px 8px);
+}
+
+.elu-power-lane-gap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--hud-faint);
+  font-family: var(--mono);
+  font-size: 6px;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+}
+
+.elu-power-field figcaption {
+  margin-top: 8px;
   padding-top: 7px;
   border-top: 1px solid var(--hud-divider-soft);
   color: var(--hud-muted);
@@ -1430,7 +1404,7 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   line-height: 1.45;
 }
 
-.elu-power-signature figcaption strong { color: var(--text2); }
+.elu-power-field figcaption strong { color: var(--text2); }
 .tt-power-support-grid { margin-top: 7px; }
 .tt-glance .tt-power-support-grid .tt-fact:first-child { grid-column: auto; }
 
@@ -2047,10 +2021,7 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .elu-trajectory-cu
 
   .tt-fact-grid { grid-template-columns: 1fr; }
   .tt-glance .tt-fact:first-child { grid-column: auto; }
-  .elu-power-signature-head { align-items: flex-start; flex-direction: column; gap: 2px; }
-  .elu-power-signature-body { grid-template-columns: 1fr; }
-  .elu-power-dial { max-width: 152px; }
-  .elu-power-key { width: 100%; }
+  .elu-power-field-head { align-items: flex-start; flex-direction: column; gap: 2px; }
 
   .elu-rank-row {
     grid-template-columns: 6px minmax(0, 1fr);

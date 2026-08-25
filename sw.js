@@ -1,17 +1,18 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v55) — add the exact-source Power generation fingerprint while
- * retaining the scroll-proof country identity and reviewed v53 factual runtime.
+ * Globe cache (v56) — replace the Power rings with an exact-source generation
+ * field while retaining the scroll-proof country identity and reviewed v53
+ * factual runtime.
  */
-const CACHE_NAME = 'elu-v55-power-signature';
+const CACHE_NAME = 'elu-v56-power-field';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v34',
+  '/css/globe-system.css?v=v35',
   '/css/guided-first-orbit.css?v=v2',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
@@ -29,8 +30,8 @@ const STATIC_ASSETS = [
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v8',
-  '/js/country-climate-intelligence.js?v=v11',
-  '/js/globe.js?v=v29',
+  '/js/country-climate-intelligence.js?v=v12',
+  '/js/globe.js?v=v30',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v3',
   '/js/app.js?v=v4',

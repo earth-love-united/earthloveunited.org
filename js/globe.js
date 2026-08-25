@@ -1913,34 +1913,29 @@ const GlobeModule = {
       + (fact.available ? '<p class="tt-fact-uncertainty">' + _escapeHtml(fact.uncertainty_text) + '</p>' : '') + context.join('') + '</article>';
   },
 
-  _renderPowerSignature(view, idPrefix = 'country-card') {
-    const signature = view.power_story?.signature;
-    if (!signature || !Array.isArray(signature.tracks) || signature.tracks.length !== 3) return '';
-    const radii = { outer: 61, middle: 46, inner: 31 };
-    const classes = { outer: 'is-clean', middle: 'is-fossil', inner: 'is-wind-solar' };
-    const ringNames = { outer: 'Outer ring', middle: 'Middle ring', inner: 'Inner ring' };
-    const renderRing = track => {
-      const radius = radii[track.ring];
-      const ringClass = classes[track.ring];
-      const trackCircle = '<circle class="elu-power-ring-track ' + ringClass + '" cx="80" cy="80" r="' + radius + '"></circle>';
-      if (!track.available) return trackCircle;
-      const value = Math.max(0, Math.min(100, Number(track.value)));
-      const remainder = Math.max(0, 100 - value);
-      return trackCircle + '<circle class="elu-power-ring-value ' + ringClass + '" cx="80" cy="80" r="' + radius + '" pathLength="100" stroke-dasharray="' + value.toFixed(2) + ' ' + remainder.toFixed(2) + '" transform="rotate(-90 80 80)"><title>' + _escapeHtml(track.label) + ': ' + _escapeHtml(track.display_value) + '%</title></circle>';
+  _renderPowerField(view, idPrefix = 'country-card') {
+    const field = view.power_story?.field;
+    if (!field || !Array.isArray(field.lanes) || field.lanes.length !== 3) return '';
+    const summary = field.lanes.map(lane => lane.available
+      ? lane.label + ' ' + lane.display_value + '%'
+      : lane.label + ' data gap').join('. ');
+    const renderLane = lane => {
+      const laneClass = 'is-' + lane.pattern;
+      const value = lane.available ? Math.max(0, Math.min(100, Number(lane.value))) : null;
+      const meterAttrs = lane.available
+        ? ' role="meter" aria-label="' + _escapeHtml(lane.label) + ' share" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + value.toFixed(2) + '" aria-valuetext="' + _escapeHtml(lane.display_value) + ' percent of electricity generation"'
+        : ' aria-label="' + _escapeHtml(lane.label) + ' data gap"';
+      const fill = lane.available
+        ? '<span class="elu-power-lane-fill ' + laneClass + '" style="width:' + value.toFixed(2) + '%"></span>'
+        : '<span class="elu-power-lane-gap">Data gap</span>';
+      return '<div class="elu-power-lane ' + laneClass + '"><div class="elu-power-lane-head"><span><i class="elu-power-lane-mark" aria-hidden="true"></i>' + _escapeHtml(lane.label) + '</span><strong>' + _escapeHtml(lane.available ? lane.display_value + '%' : 'Data gap') + '</strong></div><div class="elu-power-lane-track"' + meterAttrs + '>' + fill + '</div></div>';
     };
-    const clean = signature.tracks.find(track => track.id === 'electricity.clean_share');
-    const summary = signature.tracks.map(track => track.available
-      ? ringNames[track.ring] + ': ' + track.label + ' ' + track.display_value + '%'
-      : ringNames[track.ring] + ': ' + track.label + ' data gap').join('. ');
-    const key = signature.tracks.map(track => '<li class="' + classes[track.ring] + '"><span class="elu-power-key-mark" aria-hidden="true"></span><span><small>' + _escapeHtml(ringNames[track.ring]) + '</small><strong>' + _escapeHtml(track.label) + '</strong><b>' + _escapeHtml(track.available ? track.display_value + '%' : 'Data gap') + '</b></span></li>').join('');
-    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-power-signature').replace(/[^a-zA-Z0-9_-]/g, '-');
+    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-power-field').replace(/[^a-zA-Z0-9_-]/g, '-');
     const titleId = chartId + '-title';
     const descId = chartId + '-desc';
-    return '<figure class="elu-power-signature" aria-labelledby="' + titleId + ' ' + descId + '"><div class="elu-power-signature-head"><span id="' + titleId + '">' + _escapeHtml(signature.title) + ' · ' + _escapeHtml(signature.period) + '</span><span>' + _escapeHtml(signature.evidence_label) + '</span></div>'
-      + '<div class="elu-power-signature-body"><svg class="elu-power-dial" viewBox="0 0 160 160" role="img" aria-labelledby="' + titleId + ' ' + descId + '"><desc id="' + descId + '">' + _escapeHtml(summary) + '. All arcs are absolute shares of total electricity generation and begin at 12 o’clock. ' + _escapeHtml(signature.disclosure) + '</desc><circle class="elu-power-ring-ticks" cx="80" cy="80" r="70" pathLength="100"></circle>'
-      + signature.tracks.map(renderRing).join('')
-      + '<text class="elu-power-dial-kicker" x="80" y="66" text-anchor="middle">CLEAN</text><text class="elu-power-dial-value" x="80" y="87" text-anchor="middle">' + _escapeHtml(clean.display_value) + '</text><text class="elu-power-dial-unit" x="80" y="102" text-anchor="middle">% OF GENERATION</text></svg><ul class="elu-power-key">' + key + '</ul></div>'
-      + '<figcaption><strong>Reading the rings:</strong> ' + _escapeHtml(signature.disclosure) + '</figcaption></figure>';
+    return '<figure class="elu-power-field" aria-labelledby="' + titleId + ' ' + descId + '"><div class="elu-power-field-head"><span id="' + titleId + '">' + _escapeHtml(field.title) + ' · ' + _escapeHtml(field.period) + '</span><span>' + _escapeHtml(field.evidence_label) + '</span></div><span class="sr-only" id="' + descId + '">' + _escapeHtml(summary) + '. ' + _escapeHtml(field.disclosure) + '</span>'
+      + '<div class="elu-power-field-scale" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100%</span></div><div class="elu-power-lanes">' + field.lanes.map(renderLane).join('') + '</div>'
+      + '<figcaption><strong>One shared scale:</strong> ' + _escapeHtml(field.disclosure) + '</figcaption></figure>';
   },
 
   _renderClimateSeries(view, idPrefix = 'country-card', chart = view.detail_chart, chartIndex = 0) {
@@ -2073,9 +2068,9 @@ const GlobeModule = {
 
   _renderCountryMetrics(view, idPrefix = 'country-card') {
     if (view.lens.id === 'physical' && view.physical_story) return this._renderPhysicalClimateMetrics(view, idPrefix);
-    const powerSignature = view.lens.id === 'power' ? view.power_story?.signature : null;
-    const visualizedPowerFacts = new Set(powerSignature?.visualized_fact_ids || []);
-    const powerVisual = powerSignature ? this._renderPowerSignature(view, idPrefix) : '';
+    const powerField = view.lens.id === 'power' ? view.power_story?.field : null;
+    const visualizedPowerFacts = new Set(powerField?.visualized_fact_ids || []);
+    const powerVisual = powerField ? this._renderPowerField(view, idPrefix) : '';
     const glance = view.at_a_glance.filter(fact => !visualizedPowerFacts.has(fact.id)).map(fact => this._renderClimateFact(fact)).join('');
     const facts = view.active_panel.facts.filter(fact => !visualizedPowerFacts.has(fact.id)).map(fact => this._renderClimateFact(fact)).join('');
     const chartFacts = Array.isArray(view.detail_charts) ? view.detail_charts : (view.detail_chart ? [view.detail_chart] : []);

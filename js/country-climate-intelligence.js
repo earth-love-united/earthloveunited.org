@@ -8,7 +8,7 @@
 const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   'use strict';
 
-  const VERSION = '1.7.0';
+  const VERSION = '1.8.0';
   const RELIEF_BASE_ALTITUDE = 0.007;
   const RELIEF_RANGE = 0.005;
   const CARBON_RELIEF_DEMO_VALUE = 'low-is-high';
@@ -226,7 +226,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     });
   }
 
-  function buildPowerSignature(facts) {
+  function buildPowerField(facts) {
     const byId = new Map(facts.map(fact => [fact.id, fact]));
     const clean = byId.get('electricity.clean_share');
     const validShare = fact => fact?.available
@@ -243,18 +243,18 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       && fact.context?.source_evidence_class === clean.context?.source_evidence_class
       && fact.context?.taxonomy === clean.context?.taxonomy
       && fact.sources.some(source => cleanSourceIds.has(source.id));
-    const trackDefinitions = [
-      ['electricity.clean_share', 'Clean generation', 'outer'],
-      ['electricity.fossil_share', 'Fossil generation', 'middle'],
-      ['electricity.wind_solar_share', 'Wind + solar', 'inner'],
+    const laneDefinitions = [
+      ['electricity.clean_share', 'Clean generation', 'clean'],
+      ['electricity.fossil_share', 'Fossil generation', 'fossil'],
+      ['electricity.wind_solar_share', 'Wind + solar', 'wind-solar'],
     ];
-    const tracks = trackDefinitions.map(([metricId, label, ring]) => {
+    const lanes = laneDefinitions.map(([metricId, label, pattern]) => {
       const fact = byId.get(metricId);
       const available = metricId === 'electricity.clean_share' ? true : compatibleShare(fact);
       return Object.freeze({
         id: metricId,
         label,
-        ring,
+        pattern,
         available,
         value: available ? fact.value : null,
         display_value: available ? fact.display_value : 'Data gap',
@@ -267,15 +267,15 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       });
     });
     return Object.freeze({
-      id: 'electricity.generation_fingerprint',
-      title: 'Generation fingerprint',
+      id: 'electricity.generation_field',
+      title: 'Generation field',
       period: clean.period,
       evidence_label: clean.evidence_label,
       ranking_eligible: false,
-      tracks: Object.freeze(tracks),
-      visualized_fact_ids: Object.freeze(tracks.filter(track => track.available).map(track => track.id)),
-      method: 'Each ring copies an absolute share of total electricity generation from the same published annual electricity taxonomy.',
-      disclosure: 'Wind + solar is a subset of the clean aggregate. The three rings are not additive and do not describe the whole economy.',
+      lanes: Object.freeze(lanes),
+      visualized_fact_ids: Object.freeze(lanes.filter(lane => lane.available).map(lane => lane.id)),
+      method: 'Each lane copies an absolute share of total electricity generation from the same published annual electricity taxonomy.',
+      disclosure: 'All lanes use the same 0–100% scale. Wind + solar is a subset of the clean aggregate; the lanes are not additive and do not describe the whole economy.',
     });
   }
 
@@ -441,7 +441,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
         }
       : null;
     const powerStory = lens.id === 'power'
-      ? { signature: buildPowerSignature(activeFacts) }
+      ? { field: buildPowerField(activeFacts) }
       : null;
     const citationOnlySources = _release.source_catalog
       .filter(source => source.public_role === 'citation_only')
