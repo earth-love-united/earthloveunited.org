@@ -1,10 +1,10 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v50) — stage the ERA5 annual temperature and precipitation
- * series, their supplied OLS trend lines, and de-duplicated lens cards atomically.
+ * Globe cache (v51) — stage the compact climate renderer contract, 120 Hz
+ * interaction path, and the reviewed ERA5 series atomically.
  */
-const CACHE_NAME = 'elu-v50-era5-precipitation';
+const CACHE_NAME = 'elu-v51-globe-120fps';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -29,8 +29,8 @@ const STATIC_ASSETS = [
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v7',
-  '/js/country-climate-intelligence.js?v=v7',
-  '/js/globe.js?v=v25',
+  '/js/country-climate-intelligence.js?v=v8',
+  '/js/globe.js?v=v26',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v3',
   '/js/app.js?v=v4',

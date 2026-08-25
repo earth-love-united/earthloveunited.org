@@ -551,6 +551,28 @@ const SmokeTest = (() => {
         },
       },
       {
+        name: 'Globe renderer exposes a bounded 120 FPS scene budget',
+        critical: true,
+        test: () => {
+          const perf = window.GlobeModule?.getPerformanceState?.();
+          if (!perf) return { pass: false, detail: 'Renderer performance state is unavailable' };
+          const targetValid = perf.targetFps === 120 && Math.abs(perf.frameBudgetMs - 8.333) < 0.001;
+          if (!window.GlobeModule._initialized) {
+            const lazyValid = targetValid && perf.rendererPixelRatio === null && perf.drawCalls === null;
+            return { pass: lazyValid, detail: lazyValid ? '120 FPS / 8.333 ms target is declared before lazy renderer startup' : JSON.stringify(perf) };
+          }
+          const bounded = targetValid && perf.rendererPixelRatio > 0 && perf.rendererPixelRatio <= 2 &&
+            perf.drawCalls <= 1600 && perf.triangles <= 90000 && perf.geometries <= 650 && perf.textures <= 4 &&
+            perf.lensDeckCacheCount === 3;
+          return {
+            pass: bounded,
+            detail: bounded
+              ? `120 FPS / ${perf.frameBudgetMs} ms; DPR ${perf.rendererPixelRatio}; ${perf.drawCalls} calls; ${perf.triangles} triangles; three lens decks warm`
+              : JSON.stringify(perf),
+          };
+        },
+      },
+      {
         name: 'All 249 evidence records remain first-class and searchable',
         critical: true,
         test: () => {

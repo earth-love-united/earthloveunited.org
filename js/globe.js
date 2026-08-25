@@ -10,6 +10,8 @@
 let _globeClickHandler = null;
 const GLOBE_DRAG_CLICK_THRESHOLD_PX = 6;
 const GLOBE_DRAG_SUPPRESS_MS = 350;
+const GLOBE_TARGET_FPS = 120;
+const GLOBE_FRAME_BUDGET_MS = 1000 / GLOBE_TARGET_FPS;
 const COUNTRY_GEOJSON_URL = '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75';
 const COUNTRY_GEOJSON_TIMEOUT_MS = 8000;
 const COUNTRY_GEOJSON_FEATURE_COUNT = 177;
@@ -193,6 +195,29 @@ function _getCountryDisplayData(feature) {
     lng: _isFiniteNumber(Number(props.__lng)) ? Number(props.__lng) : null,
     hasData: view?.primary?.available === true,
     climate,
+  };
+}
+
+// Polygon accessors are evaluated hundreds of times whenever globe.gl updates
+// a layer. Keep that hot path on the compact visual contract instead of
+// rebuilding the analyst-grade country-card model for every cap and side.
+function _getCountryVisualData(feature) {
+  if (!feature) return null;
+  const iso = _resolveCountryIso(feature);
+  const lens = window.GlobeModule?.currentLens || 'carbon';
+  return safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryVisual', iso, lens);
+}
+
+function _getCountryNavigationData(feature) {
+  if (!feature) return null;
+  const props = feature.properties || {};
+  const iso = _resolveCountryIso(feature);
+  const climate = Data.getClimateIntelligenceCountry ? Data.getClimateIntelligenceCountry(iso) : null;
+  return {
+    iso,
+    country: climate?.name || props.ADMIN || props.NAME || props.name || iso,
+    lat: _isFiniteNumber(Number(props.__lat)) ? Number(props.__lat) : null,
+    lng: _isFiniteNumber(Number(props.__lng)) ? Number(props.__lng) : null,
   };
 }
 
@@ -387,8 +412,12 @@ const GlobeModule = {
   _countryDataState: 'idle',
   _countryDataError: null,
   _countryDeck: [],
+  _countryDeckByLens: {},
   _rankRail: null,
   _countryCardWrap: null,
+  _countryTooltipBound: false,
+  _countryTooltipResizeObserver: null,
+  _hoverTooltipSize: null,
   _rankRailCollapsed: false,
   _defaultCountrySelected: false,
   _countrySwipeCueShown: false,
@@ -416,6 +445,7 @@ const GlobeModule = {
       this._countryFeatures = null;
       this._featureByIso = {};
       this._countryDeck = [];
+      this._countryDeckByLens = {};
       this._countryDataState = 'idle';
       this._countryDataError = null;
     }
@@ -468,7 +498,10 @@ const GlobeModule = {
       feature.properties.ISO_A2 !== 'AQ' && !_isNonAssessingMapArea(feature) &&
       Boolean(Data.getClimateIntelligenceCountry?.(_resolveCountryIso(feature))));
     this._appendSmallNationFeatures();
-    this._buildCountryDeck();
+    this._countryDeckByLens = {};
+    const lensIds = (Data.getClimateLensCatalog?.() || []).map(lens => lens.id);
+    lensIds.forEach(lensId => this._buildCountryDeck(lensId, { force: true }));
+    this._countryDeck = this._countryDeckByLens[this.currentLens] || [];
     const featureIsos = this._countryFeatures.map(feature => _resolveCountryIso(feature));
     const deckIsos = this._countryDeck.map(entry => entry.iso);
     const uniqueFeatureIsos = new Set(featureIsos);
@@ -497,6 +530,7 @@ const GlobeModule = {
     this._countryFeatures = [];
     this._featureByIso = {};
     this._countryDeck = [];
+    this._countryDeckByLens = {};
     reportWarn('GlobeModule', `${reason}: ${this._countryDataError}`);
     return { ok: false, reason };
   },
@@ -532,7 +566,15 @@ const GlobeModule = {
     // warning instead of crashing the entire init.
     let renderer;
     try {
-      renderer = new window.Globe(el, { animateIn: true, waitForGlobeReady: true });
+      renderer = new window.Globe(el, {
+        animateIn: true,
+        waitForGlobeReady: true,
+        rendererConfig: {
+          antialias: true,
+          alpha: true,
+          powerPreference: 'high-performance',
+        },
+      });
     } catch (error) {
       reportError('GlobeModule.init()', error);
       this._teardownFailedRenderer();
@@ -1310,25 +1352,30 @@ const GlobeModule = {
 
   // Scientific visual decisions come from COUNTRY_CLIMATE_INTELLIGENCE.
   _countryHexColorFn(feature) {
-    const d = _getCountryDisplayData(feature);
-    return d?.view?.visual?.color || 'rgba(145,160,172,0.34)';
+    const visual = _getCountryVisualData(feature);
+    return visual?.color || 'rgba(145,160,172,0.34)';
   },
 
   _countryHexAltitudeFn(feature) {
-    const d = _getCountryDisplayData(feature);
-    return d?.view?.visual?.altitude || 0.007;
+    const visual = _getCountryVisualData(feature);
+    return visual?.altitude || 0.007;
   },
 
   // Exact lens order first; explicit gaps follow alphabetically.
-  _buildCountryDeck() {
+  _buildCountryDeck(lensId = this.currentLens, options = {}) {
+    const cached = this._countryDeckByLens?.[lensId];
+    if (!options.force && Array.isArray(cached)) {
+      if (lensId === this.currentLens) this._countryDeck = cached;
+      return cached;
+    }
     const featureByIso = this._featureByIso || {};
-    const rows = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows', this.currentLens);
+    const rows = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows', lensId);
     const ranks = new Map((rows?.ordered || []).map(entry => [entry.iso_alpha3, entry]));
     const entries = Object.keys(featureByIso)
       .filter(iso => iso && iso !== 'UNK' && iso !== '-99' && iso !== 'ATA')
       .map(iso => {
         const feature = featureByIso[iso];
-        const data = _getCountryDisplayData(feature);
+        const data = _getCountryNavigationData(feature);
         const country = data?.country || iso;
         return {
           iso,
@@ -1339,12 +1386,16 @@ const GlobeModule = {
         };
       })
       .filter(entry => entry.feature && entry.data);
-    this._countryDeck = entries.sort((a, b) => {
+    const deck = entries.sort((a, b) => {
       if (a.rank && b.rank) return a.rank.ordinal - b.rank.ordinal || a.iso.localeCompare(b.iso);
       if (a.rank) return -1;
       if (b.rank) return 1;
       return String(a.country).localeCompare(String(b.country));
     });
+    this._countryDeckByLens ||= {};
+    this._countryDeckByLens[lensId] = deck;
+    if (lensId === this.currentLens) this._countryDeck = deck;
+    return deck;
   },
 
   _renderRankRail() {
@@ -1548,6 +1599,17 @@ const GlobeModule = {
 
     if (!this._countryTooltipBound) {
       this._countryTooltipBound = true;
+      if (typeof ResizeObserver === 'function') {
+        this._countryTooltipResizeObserver = new ResizeObserver(entries => {
+          const entry = entries[entries.length - 1];
+          if (!entry || entry.target.classList.contains('selected')) return;
+          const box = Array.isArray(entry.borderBoxSize) ? entry.borderBoxSize[0] : entry.borderBoxSize;
+          const width = Number(box?.inlineSize) || Number(entry.contentRect?.width) + 26;
+          const height = Number(box?.blockSize) || Number(entry.contentRect?.height) + 22;
+          if (width > 0 && height > 0) this._hoverTooltipSize = { width, height };
+        });
+        this._countryTooltipResizeObserver.observe(tt);
+      }
       tt.addEventListener('click', (event) => {
         // ✕ on the pinned card
         if (event.target.closest('[data-country-close]')) {
@@ -1953,8 +2015,11 @@ const GlobeModule = {
     if (tt.classList.contains('selected')) { this._dockCountryCard(); return; }
     if (!event) return;
 
-    const width = tt.offsetWidth || 280;
-    const height = tt.offsetHeight || 140;
+    // Width is fixed by the critical CSS and hover copy stays inside this
+    // conservative height envelope. A ResizeObserver refines both values
+    // after layout without forcing style/layout inside the pointer handler.
+    const width = this._hoverTooltipSize?.width || Math.min(292, Math.max(0, window.innerWidth - 28));
+    const height = this._hoverTooltipSize?.height || 160;
     const margin = 12;
     const topSafe = window.innerWidth <= 900 ? 112 : 92;
     const bottomSafe = window.innerWidth <= 900 ? 132 : 112;
@@ -1982,24 +2047,24 @@ const GlobeModule = {
     const hovered = feature === this._countryHoverFeature;
     const selected = feature === this._selectedCountryFeature;
     const hoverBoost = hovered ? 0.12 : (selected ? 0.08 : 0);
-    const d = _getCountryDisplayData(feature);
+    const visual = _getCountryVisualData(feature);
 
     // Small-nation dot markers: a few pixels wide, so the usual low-alpha
     // country wash would vanish. Paint them near-solid for contrast.
     if (feature?.properties?.__smallNation) {
-      if (!d?.view?.primary?.available) return 'rgba(165,178,188,' + Math.min(0.82 + hoverBoost, 0.96).toFixed(2) + ')';
-      return d.view.visual.solid_color;
+      if (!visual?.available) return 'rgba(165,178,188,' + Math.min(0.82 + hoverBoost, 0.96).toFixed(2) + ')';
+      return visual.solid_color;
     }
 
-    if (!d?.view?.primary?.available) return 'rgba(145,160,172,' + (0.32 + hoverBoost).toFixed(2) + ')';
-    const base = d.view.visual.color;
+    if (!visual?.available) return 'rgba(145,160,172,' + (0.32 + hoverBoost).toFixed(2) + ')';
+    const base = visual.color;
     if (!hoverBoost) return base;
-    return d.view.visual.solid_color;
+    return visual.solid_color;
   },
 
   _countryPolygonSideColorFn(feature) {
-    const d = _getCountryDisplayData(feature);
-    return d?.view?.visual?.side_color || 'rgba(0,0,0,0)';
+    const visual = _getCountryVisualData(feature);
+    return visual?.side_color || 'rgba(0,0,0,0)';
   },
 
   _supportsCountryBorders() {
@@ -2013,13 +2078,18 @@ const GlobeModule = {
     ].every(name => typeof this.world[name] === 'function');
   },
 
-  _refreshCountryBorders() {
+  _refreshCountryBorders(options = {}) {
     if (!this.world || !this._countryBordersVisible || !this._supportsCountryBorders()) return;
-    this.world
-      .polygonStrokeColor((f) => this._countryBorderColorFn(f))
-      .polygonCapColor((f) => this._countryPolygonPaintColorFn(f))
-      .polygonSideColor((f) => this._countryPolygonSideColorFn(f))
-      .polygonAltitude((f) => this._countryHexAltitudeFn(f));
+    // Hover and selection only change the outline. Reapplying cap, side, and
+    // altitude accessors forces globe.gl to rebuild all 201 extruded meshes,
+    // producing 75–90 ms interaction stalls on a DPR-2 M3 display.
+    this.world.polygonStrokeColor((f) => this._countryBorderColorFn(f));
+    if (options.visuals === true) {
+      this.world
+        .polygonCapColor((f) => this._countryPolygonPaintColorFn(f))
+        .polygonSideColor((f) => this._countryPolygonSideColorFn(f))
+        .polygonAltitude((f) => this._countryHexAltitudeFn(f));
+    }
   },
 
   // ── Mode API — used by GLOBE_MODES orchestrator ──
@@ -2067,10 +2137,10 @@ const GlobeModule = {
       .polygonStrokeColor((f) => this._countryBorderColorFn(f));
 
     if (typeof this.world.polygonCapCurvatureResolution === 'function') {
-      // 1° tessellation on 204 country caps generated millions of triangles
-      // and froze low/mid GPUs. 5° preserves the raised-tile silhouette at
-      // the reviewed 0.007–0.029 altitude range and is ~25x lighter.
-      this.world.polygonCapCurvatureResolution(5);
+      // Natural Earth is already generalized at 1:110m. An 8° cap curve keeps
+      // the subtle raised-tile silhouette while reducing vertex work during
+      // lens relief changes; tighter subdivision adds no visible country data.
+      this.world.polygonCapCurvatureResolution(8);
     }
   },
 
@@ -2414,7 +2484,7 @@ const GlobeModule = {
     } else if (this._countryHoverFeature) {
       this._renderCountryInfoCard(this._countryHoverFeature, false);
     }
-    if (this._countryBordersVisible) this._refreshCountryBorders();
+    if (this._countryBordersVisible) this._refreshCountryBorders({ visuals: true });
     if (this.world && typeof this.world.hexPolygonColor === 'function') {
       this.world.hexPolygonColor(feature => this._countryHexColorFn(feature));
       if (typeof this.world.hexPolygonAltitude === 'function') this.world.hexPolygonAltitude(feature => this._countryHexAltitudeFn(feature));
@@ -2544,6 +2614,7 @@ const GlobeModule = {
     // Nullify country features (large GeoJSON)
     this._countryFeatures = null;
     this._countryDeck = [];
+    this._countryDeckByLens = {};
     this._defaultCountrySelected = false;
     this._prepared = false;
     this._preparationPromise = null;
@@ -2557,6 +2628,9 @@ const GlobeModule = {
     this._unmountCountryCard();
     const countryTooltip = $('hex-country-tooltip');
     if (countryTooltip) countryTooltip.remove();
+    this._countryTooltipResizeObserver?.disconnect();
+    this._countryTooltipResizeObserver = null;
+    this._hoverTooltipSize = null;
     this._countryTooltipBound = false;
 
     // Nullify DOM references
@@ -2619,6 +2693,22 @@ const GlobeModule = {
     return {
       surface: describe(this.world?.globeMaterial?.()?.map),
       sky,
+    };
+  },
+
+  getPerformanceState() {
+    const renderer = typeof this.world?.renderer === 'function' ? this.world.renderer() : null;
+    const renderInfo = renderer?.info?.render || {};
+    const memoryInfo = renderer?.info?.memory || {};
+    return {
+      targetFps: GLOBE_TARGET_FPS,
+      frameBudgetMs: Number(GLOBE_FRAME_BUDGET_MS.toFixed(3)),
+      rendererPixelRatio: typeof renderer?.getPixelRatio === 'function' ? renderer.getPixelRatio() : null,
+      drawCalls: Number.isFinite(renderInfo.calls) ? renderInfo.calls : null,
+      triangles: Number.isFinite(renderInfo.triangles) ? renderInfo.triangles : null,
+      geometries: Number.isFinite(memoryInfo.geometries) ? memoryInfo.geometries : null,
+      textures: Number.isFinite(memoryInfo.textures) ? memoryInfo.textures : null,
+      lensDeckCacheCount: Object.keys(this._countryDeckByLens || {}).length,
     };
   },
 };
@@ -2768,7 +2858,7 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['prepare', 'init', 'pause', 'resume', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'getLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState'],
+    provides: ['prepare', 'init', 'pause', 'resume', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'getLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState', 'getPerformanceState'],
     requires: ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE'],
     emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown', 'globe:lens-changed'],
   });

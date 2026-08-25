@@ -208,8 +208,8 @@ const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v7',
-  '/js/country-climate-intelligence.js?v=v7',
-  '/js/globe.js?v=v25',
+  '/js/country-climate-intelligence.js?v=v8',
+  '/js/globe.js?v=v26',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v3',
   '/js/app.js?v=v4',
@@ -542,7 +542,7 @@ function evaluateRuntimeAssets(input) {
     index.includes('Original starfield from Three-Globe 2.45.2'),
     'Public copy must credit NASA and identify the historical surface and restored sky as decorative visual context.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v50-era5-precipitation';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=50-era5-precipitation'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v51-globe-120fps';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=51-globe-120fps'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&

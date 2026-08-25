@@ -50,8 +50,8 @@ mission.
 | Persistence facade | `js/storage.js` | Safe storage API over `STORAGE_ADAPTER` |
 | Data validation | `js/data-schema.js` | Runtime JSON validation |
 | Data loader | `js/data.js` | Exact-SHA Country Climate Intelligence loading and 249-entity lookups |
-| Climate view model | `js/country-climate-intelligence.js` | Lens selection policy, rail rows, country facts, legend, gaps, provenance, and disclosed query-only visual experiments |
-| Globe runtime | `js/globe.js` | globe.gl lifecycle, country geometry, atlas rail/card, lens rendering, selection and themes |
+| Climate view model | `js/country-climate-intelligence.js` | Lens selection policy, cached compact renderer visuals, rail rows, country facts, legend, gaps, provenance, and disclosed query-only visual experiments |
+| Globe runtime | `js/globe.js` | globe.gl lifecycle, country geometry, atlas rail/card, lens rendering, selection, themes, and the 120 Hz scene budget |
 | Carbon clock | `js/carbon-clock.js` | Hero/topbar emissions counter |
 | Globe orientation | `js/guided-first-orbit.js` | First-visit tutorial, real country-choice handoff, completion preference, replay |
 | Application | `js/app.js` | Bootstrap, contract pre-flight, hero/globe transitions, lazy globe load |
@@ -168,7 +168,7 @@ flowchart LR
 
 `Data.init()` applies an eight-second deadline to the critical candidate read.
 The candidate is parsed only after WebCrypto verifies SHA-256
-`a8a0176e56d23bf409f374b701538ed5573046e787d04ed0bc31b91d24695d14`.
+`825675dc8f6ee2a0fc79c67aabbfa6a0f96bcab938101afb61d74d49d566b6c1`.
 Schema validation then proves 249 unique registry entities, exactly 18 metric
 records per entity, coverage derived from records, three complete lens
 partitions, explicit gaps, and the non-production release boundary. Candidate
@@ -190,6 +190,32 @@ not affect the Physical comparison order, which remains the exact SSP2-4.5
 modeled projection metric. `COUNTRY_CLIMATE_INTELLIGENCE` removes At-a-glance
 and chart metric IDs from the expanded lens grid while retaining all facts in the methods
 drawer, so the renderer never duplicates a headline fact card.
+
+### Globe performance boundary
+
+The live renderer targets a 120 Hz-capable display budget of 8.333 ms per
+frame. This is a scene and interaction budget, not a claim that a 60 Hz panel
+or a browser throttled by the operating system will report 120 frames per
+second. `GlobeModule.getPerformanceState()` exposes the declared target,
+renderer pixel ratio, draw calls, triangles, geometries, textures, and warmed
+lens-deck count so browser smoke tests can reject accidental scene inflation.
+
+`COUNTRY_CLIMATE_INTELLIGENCE` memoizes ranks, compact renderer visuals, rail
+rows, and legends per lens. Polygon accessors consume `getCountryVisual()` and
+never construct the analyst-grade country-card model. During preparation,
+`GlobeModule` warms the Carbon, Power, and Physical navigation decks; lens
+switches reuse those arrays instead of sorting 201 entities in a rendered
+frame. Hover and selection refresh only the country outline. Rebinding cap,
+side, and altitude accessors is reserved for a real lens change because it
+rebuilds every extruded country mesh.
+
+The renderer requests the high-performance GPU path, retains device pixel
+ratio up to the tested 2× boundary, and uses 8° cap curvature for the
+generalized Natural Earth 1:110m geometry. Hover-card positioning uses its
+known CSS envelope plus `ResizeObserver`; pointer movement must not read
+`offsetWidth` or `offsetHeight` after replacing tooltip content. Current smoke
+limits are 1,600 draw calls, 90,000 triangles, 650 geometries, four textures,
+and exactly three warmed lens decks.
 
 Before loading globe.gl, `GlobeModule.prepare()` must preload and validate the
 local 177-feature GeoJSON plus all four local globe visuals. The dark surface is

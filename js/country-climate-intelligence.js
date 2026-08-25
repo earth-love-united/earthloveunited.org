@@ -86,8 +86,12 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   let _lensById = new Map();
   let _sourceById = new Map();
   let _orderByLens = new Map();
+  let _rankByLens = new Map();
   let _domainByLens = new Map();
   let _countryById = new Map();
+  let _visualByLens = new Map();
+  let _railRowsByLens = new Map();
+  let _legendByLens = new Map();
   let _carbonReliefMode = 'higher_value_higher';
 
   function finite(value) {
@@ -230,10 +234,18 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     }
   }
 
+  function normalizeCountryId(id) {
+    const rawId = String(id || '').trim();
+    return rawId.includes(':')
+      ? rawId.slice(0, rawId.lastIndexOf(':') + 1).toLowerCase() + rawId.slice(rawId.lastIndexOf(':') + 1).toUpperCase()
+      : rawId.toUpperCase();
+  }
+
   function rankFor(lensId, countryId) {
     const order = _orderByLens.get(lensId);
     if (!order) return null;
-    const ranked = order.ordered.find(entry => entry.country_id === countryId);
+    const indexed = _rankByLens.get(lensId)?.get(countryId);
+    const ranked = indexed?.ranked ? indexed.entry : null;
     if (ranked) {
       return {
         eligible: true,
@@ -243,7 +255,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
         reason: null,
       };
     }
-    const unranked = order.unranked.find(entry => entry.country_id === countryId);
+    const unranked = indexed && !indexed.ranked ? indexed.entry : null;
     return {
       eligible: false,
       ordinal: null,
@@ -251,6 +263,48 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       term: _lensById.get(lensId).rail_term,
       reason: unranked?.reason || { code: 'not_in_comparison_set', detail: 'This entity is not in the exact comparison set.' },
     };
+  }
+
+  function getCountryVisual(id, lensId = 'carbon') {
+    if (!_initialized && !init()) return null;
+    const lens = _lensById.get(lensId) || _lensById.get('carbon');
+    const rawId = String(id || '').trim();
+    const country = _countryById.get(normalizeCountryId(rawId)) || _countryById.get(rawId);
+    if (!country || !lens) return null;
+
+    let lensCache = _visualByLens.get(lens.id);
+    if (!lensCache) {
+      lensCache = new Map();
+      _visualByLens.set(lens.id, lensCache);
+    }
+    const cached = lensCache.get(country.country_id);
+    if (cached) return cached;
+
+    const metric = country.metrics[lens.comparison_metric_id];
+    const value = finite(metric?.value) ? metric.value : null;
+    const position = value === null ? null : normalize(lens.id, value);
+    const rank = rankFor(lens.id, country.country_id);
+    const metricRelief = position !== null && lens.visual.extrusion !== 'none';
+    const reliefKind = lens.visual.extrusion === 'transparent_log' ? 'metric_log' : 'metric_linear';
+    const inverseCarbonDemo = lens.id === 'carbon' && _carbonReliefMode === 'lower_value_higher';
+    const reliefPosition = metricRelief && inverseCarbonDemo ? 1 - position : position;
+    const visual = Object.freeze({
+      available: value !== null,
+      eligible: value !== null && rank?.eligible === true,
+      normalized: position,
+      color: color(lens.id, position, 0.7),
+      solid_color: color(lens.id, position, 0.92),
+      altitude: metricRelief ? round(RELIEF_BASE_ALTITUDE + reliefPosition * RELIEF_RANGE, 6) : RELIEF_BASE_ALTITUDE,
+      extrusion: lens.visual.extrusion,
+      relief: metricRelief ? reliefKind : 'base_tile',
+      relief_encodes_metric: metricRelief,
+      relief_normalized: metricRelief ? round(reliefPosition, 6) : null,
+      relief_direction: inverseCarbonDemo ? 'lower_value_higher' : 'higher_value_higher',
+      relief_demo: inverseCarbonDemo,
+      side_color: lens.id === 'carbon' ? 'rgba(0,0,0,0)' : tileSideColor(lens.id, position),
+    });
+    lensCache.set(country.country_id, visual);
+    return visual;
   }
 
   function atAGlanceMetrics(lensId) {
@@ -263,14 +317,12 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     if (!_initialized && !init()) return null;
     const lens = _lensById.get(lensId) || _lensById.get('carbon');
     const rawId = String(id || '').trim();
-    const normalizedId = rawId.includes(':')
-      ? rawId.slice(0, rawId.lastIndexOf(':') + 1).toLowerCase() + rawId.slice(rawId.lastIndexOf(':') + 1).toUpperCase()
-      : rawId.toUpperCase();
+    const normalizedId = normalizeCountryId(rawId);
     const country = _countryById.get(normalizedId) || _countryById.get(rawId);
     if (!country || !lens) return null;
     const primary = factView(lens.comparison_metric_id, country);
     const rank = rankFor(lens.id, country.country_id);
-    const position = primary.available ? normalize(lens.id, primary.value) : null;
+    const visual = getCountryVisual(country.country_id, lens.id);
     const panel = PANEL_COPY[lens.id];
     const activeFacts = PANEL_METRICS[lens.id].map(metricId => factView(metricId, country));
     const glanceMetricIds = atAGlanceMetrics(lens.id);
@@ -290,10 +342,6 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
         ? 'Exploration order ' + rank.ordinal + ' of ' + rank.total + ' for the same modeled warming metric.'
         : 'Order ' + rank.ordinal + ' of ' + rank.total + ' for the same metric and period.'
       : 'Unranked: ' + rank.reason.detail;
-    const metricRelief = position !== null && lens.visual.extrusion !== 'none';
-    const reliefKind = lens.visual.extrusion === 'transparent_log' ? 'metric_log' : 'metric_linear';
-    const inverseCarbonDemo = lens.id === 'carbon' && _carbonReliefMode === 'lower_value_higher';
-    const reliefPosition = metricRelief && inverseCarbonDemo ? 1 - position : position;
     return {
       version: VERSION,
       lens,
@@ -325,20 +373,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
         description: panel.description,
         facts: panelFacts,
       },
-      visual: {
-        eligible: primary.available && rank.eligible,
-        normalized: position,
-        color: color(lens.id, position, 0.7),
-        solid_color: color(lens.id, position, 0.92),
-        altitude: metricRelief ? round(RELIEF_BASE_ALTITUDE + reliefPosition * RELIEF_RANGE, 6) : RELIEF_BASE_ALTITUDE,
-        extrusion: lens.visual.extrusion,
-        relief: metricRelief ? reliefKind : 'base_tile',
-        relief_encodes_metric: metricRelief,
-        relief_normalized: metricRelief ? round(reliefPosition, 6) : null,
-        relief_direction: inverseCarbonDemo ? 'lower_value_higher' : 'higher_value_higher',
-        relief_demo: inverseCarbonDemo,
-        side_color: lens.id === 'carbon' ? 'rgba(0,0,0,0)' : tileSideColor(lens.id, position),
-      },
+      visual,
       methods: {
         release_id: _release.release.id,
         release_status: _release.release.status,
@@ -360,6 +395,8 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   function getRailRows(lensId = 'carbon') {
     if (!_initialized && !init()) return null;
     const lens = _lensById.get(lensId) || _lensById.get('carbon');
+    const cached = _railRowsByLens.get(lens.id);
+    if (cached) return cached;
     const order = _orderByLens.get(lens.id);
     if (!order) return null;
     const inverseCarbonDemo = lens.id === 'carbon' && _carbonReliefMode === 'lower_value_higher';
@@ -375,7 +412,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       display_value: 'Data gap',
       evidence_label: 'Data gap',
     }));
-    return {
+    const rows = {
       lens,
       ordered,
       unranked,
@@ -385,11 +422,15 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       disclosure: order.rule,
       relief_note: inverseCarbonDemo ? 'Inverse relief demo' : null,
     };
+    _railRowsByLens.set(lens.id, rows);
+    return rows;
   }
 
   function getLegend(lensId = 'carbon') {
     if (!_initialized && !init()) return null;
     const lens = _lensById.get(lensId) || _lensById.get('carbon');
+    const cached = _legendByLens.get(lens.id);
+    if (cached) return cached;
     const rows = getRailRows(lens.id);
     const palette = PALETTES[lens.id];
     const inverseCarbonDemo = lens.id === 'carbon' && _carbonReliefMode === 'lower_value_higher';
@@ -398,7 +439,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       : lens.id === 'physical'
         ? ['Lower projected warming', 'Higher projected warming']
         : ['Lower territorial fossil CO₂', 'Higher territorial fossil CO₂'];
-    return {
+    const legend = {
       lens_id: lens.id,
       heading: lens.heading,
       interpretation: lens.interpretation,
@@ -419,6 +460,8 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       relief_demo: inverseCarbonDemo,
       evidence_label: evidenceLabel(lens.evidence_status, lens.comparison_metric_id),
     };
+    _legendByLens.set(lens.id, legend);
+    return legend;
   }
 
   function init() {
@@ -431,6 +474,10 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     _lensById = new Map(release.lens_catalog.map(lens => [lens.id, lens]));
     _sourceById = new Map(release.source_catalog.map(source => [source.id, source]));
     _orderByLens = new Map(Object.entries(release.lens_orders));
+    _rankByLens = new Map(Object.entries(release.lens_orders).map(([lensId, order]) => [lensId, new Map([
+      ...order.ordered.map(entry => [entry.country_id, { ranked: true, entry }]),
+      ...order.unranked.map(entry => [entry.country_id, { ranked: false, entry }]),
+    ])]));
     _carbonReliefMode = carbonReliefMode();
     _countryById = new Map();
     release.countries.forEach(country => {
@@ -446,6 +493,9 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       const offset = lens.id === 'carbon' ? Math.max((positive.length ? Math.min(...positive) : 0.01) / 10, 0.000001) : 0;
       return [lens.id, { min, max, offset }];
     }));
+    _visualByLens = new Map();
+    _railRowsByLens = new Map();
+    _legendByLens = new Map();
     _initialized = true;
     if (hasModule('EventBus')) EventBus.emit('climate-intelligence:ready', { releaseId: release.release.id, entityCount: release.countries.length });
     return true;
@@ -461,8 +511,12 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     _lensById = new Map();
     _sourceById = new Map();
     _orderByLens = new Map();
+    _rankByLens = new Map();
     _domainByLens = new Map();
     _countryById = new Map();
+    _visualByLens = new Map();
+    _railRowsByLens = new Map();
+    _legendByLens = new Map();
     _carbonReliefMode = 'higher_value_higher';
     return true;
   }
@@ -484,14 +538,14 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     };
   }
 
-  return { init, getCountryView, getRailRows, getLegend, getState, reset, destroy };
+  return { init, getCountryView, getCountryVisual, getRailRows, getLegend, getState, reset, destroy };
 })();
 
 window.COUNTRY_CLIMATE_INTELLIGENCE = COUNTRY_CLIMATE_INTELLIGENCE;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('COUNTRY_CLIMATE_INTELLIGENCE', {
-    provides: ['init', 'getCountryView', 'getRailRows', 'getLegend', 'getState', 'reset', 'destroy'],
+    provides: ['init', 'getCountryView', 'getCountryVisual', 'getRailRows', 'getLegend', 'getState', 'reset', 'destroy'],
     requires: ['Data', 'EventBus'],
     emits: ['climate-intelligence:ready'],
   });
