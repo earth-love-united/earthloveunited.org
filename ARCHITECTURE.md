@@ -188,9 +188,12 @@ The Power card renders one static generation field from the exact 2024 Ember
 share facts. Two aligned 0–100% tracks copy the clean and fossil aggregates;
 each track is subdivided by Ember's nine standardized generation-fuel rows:
 Bioenergy, Coal, Gas, Hydro, Nuclear, Other Fossil, Other Renewables, Solar,
-and Wind. Color and distinct static textures make the fuels legible without
-color alone. The view model requires a shared period, actual evidence class,
-source, fuel group, and taxonomy before drawing a segment. Blank cells remain
+and Wind. Nuclear, solar, coal, and the two `Other` buckets use plain color;
+hydro, wind, bioenergy, and gas retain restrained static textures. Fixed fuel
+ordering plus the two-column text/value legend provide the non-color reading
+route, while hatching is reserved for explicit gaps. The view model requires a
+shared period, actual evidence class, source, fuel group, and taxonomy before
+drawing a segment. Blank cells remain
 labelled data gaps, source zeroes remain zero, and 99.98–100.02 totals are
 disclosed as source rounding. No browser normalization is allowed. `Other
 Renewables` is explicitly Ember's combined geothermal, tidal, and wave bucket,
@@ -383,11 +386,11 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v57 precaches the public page, core CSS/JS, Guided First
+`sw.js` cache epoch v58 precaches the public page, core CSS/JS, Guided First
 Orbit UI, the shared raised-tile lenses, evidence-only Physical-card percentile
-range, the two-track segmented Power generation mix, verified local globe.gl, the CT-45
-manifest and localized globe assets, the scroll-proof selected-country identity
-header, and the exact-version Country Climate Intelligence candidate. The prior
+range, the simplified two-track Power fuel palette, verified local globe.gl,
+the CT-45 manifest and localized globe assets, the scroll-proof selected-country
+identity header, and the exact-version Country Climate Intelligence candidate. The prior
 country-factual candidate is retained for one release
 epoch as a rollback artifact; it is not loaded into the v1 dashboard. The
 service worker applies:

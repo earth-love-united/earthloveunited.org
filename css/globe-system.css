@@ -1258,15 +1258,15 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 }
 
 .elu-power-field {
-  --power-nuclear: #a991ff;
+  --power-nuclear: #5cff8d;
   --power-hydro: #2e91b7;
   --power-wind: #56d8cf;
-  --power-solar: #f2ba55;
+  --power-solar: #f2c75c;
   --power-bioenergy: #64a965;
-  --power-other-renewables: #b97acb;
-  --power-coal: #626a73;
+  --power-other-renewables: #ee9b42;
+  --power-coal: #262c31;
   --power-gas: #df8856;
-  --power-other-fossil: #a85248;
+  --power-other-fossil: #c7653f;
   margin: 0 0 8px;
   padding: 10px;
   overflow: hidden;
@@ -1385,21 +1385,23 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   box-shadow: inset -1px 0 rgba(6, 11, 18, .38);
 }
 
-/* Color carries the fuel family; texture keeps the mix legible without color.
-   These are static fills so the evidence card adds no animation-frame work. */
+/* Plain pastel fills carry the clearest fuel identities. Four restrained,
+   static textures plus fixed ordering and the text legend preserve a
+   non-color route without adding animation-frame work. */
 .elu-power-segment.is-nuclear,
 .elu-power-segment-key.is-nuclear {
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .65) 0 1px, transparent 1.5px) 0 0 / 8px 8px,
-    linear-gradient(90deg, #7463c6, var(--power-nuclear) 48%, #7463c6);
+  background: var(--power-nuclear);
 }
 
 .elu-power-segment.is-nuclear {
   z-index: 1;
   box-shadow:
-    inset 0 0 8px rgba(234, 229, 255, .72),
     inset -1px 0 rgba(6, 11, 18, .42),
-    0 0 7px rgba(169, 145, 255, .38);
+    0 0 6px rgba(92, 255, 141, .34);
+}
+
+.elu-power-segment-key.is-nuclear {
+  box-shadow: 0 0 4px rgba(92, 255, 141, .28);
 }
 
 .elu-power-segment.is-hydro,
@@ -1414,9 +1416,7 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 
 .elu-power-segment.is-solar,
 .elu-power-segment-key.is-solar {
-  background:
-    radial-gradient(circle, #fff0b0 0 1px, transparent 1.3px) 0 0 / 6px 6px,
-    var(--power-solar);
+  background: var(--power-solar);
 }
 
 .elu-power-segment.is-bioenergy,
@@ -1426,12 +1426,12 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 
 .elu-power-segment.is-other-renewables,
 .elu-power-segment-key.is-other-renewables {
-  background: repeating-radial-gradient(ellipse at 0 50%, var(--power-other-renewables) 0 3px, #765080 3px 5px);
+  background: var(--power-other-renewables);
 }
 
 .elu-power-segment.is-coal,
 .elu-power-segment-key.is-coal {
-  background: repeating-linear-gradient(135deg, #30363d 0 4px, var(--power-coal) 4px 7px);
+  background: var(--power-coal);
 }
 
 .elu-power-segment.is-gas,
@@ -1441,15 +1441,13 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 
 .elu-power-segment.is-other-fossil,
 .elu-power-segment-key.is-other-fossil {
-  background:
-    radial-gradient(circle, #d88b77 0 1px, transparent 1.4px) 0 0 / 6px 6px,
-    var(--power-other-fossil);
+  background: var(--power-other-fossil);
 }
 
 .elu-power-mix-legend {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 5px 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 18px;
   margin: 10px 0 0;
   padding: 9px 0 0;
   border-top: 1px solid var(--hud-divider-soft);
@@ -1458,25 +1456,25 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 
 .elu-power-mix-legend li {
   display: grid;
-  grid-template-columns: 17px minmax(0, 1fr) auto;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
   align-items: center;
   gap: 5px;
   min-width: 0;
   color: var(--hud-muted);
-  font-size: 7px;
+  font-size: 9px;
   line-height: 1.25;
 }
 
 .elu-power-mix-legend li span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .elu-power-mix-legend li strong {
   color: var(--text2);
   font-family: var(--mono);
-  font-size: 7px;
+  font-size: 9px;
   font-weight: 600;
 }
 
@@ -1484,18 +1482,19 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 
 .elu-power-mix-legend li.is-gap .elu-power-segment-key {
   background: repeating-linear-gradient(135deg, transparent 0 3px, var(--hud-divider) 3px 5px);
+  box-shadow: none;
 }
 
 .elu-power-mix-legend li.is-gap strong {
   color: var(--hud-faint);
-  font-size: 6px;
+  font-size: 8px;
   text-transform: uppercase;
 }
 
 .elu-power-segment-key {
   display: block;
-  width: 17px;
-  height: 7px;
+  width: 20px;
+  height: 8px;
   border: 1px solid var(--hud-divider);
   border-radius: 1px;
 }
@@ -1539,22 +1538,21 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 .elu-power-field figcaption strong { color: var(--text2); }
 
 html[data-theme="light"] body.globe-mode .elu-power-field {
-  --power-nuclear: #7564b4;
+  --power-nuclear: #28df70;
   --power-hydro: #2f718f;
   --power-wind: #2d8981;
-  --power-solar: #b77b19;
+  --power-solar: #d89a24;
   --power-bioenergy: #4d8050;
-  --power-other-renewables: #80558a;
-  --power-coal: #555d63;
+  --power-other-renewables: #d9862c;
+  --power-coal: #30363a;
   --power-gas: #ac603c;
-  --power-other-fossil: #87443e;
+  --power-other-fossil: #b75830;
 }
 
 html[data-theme="light"] body.globe-mode .elu-power-segment.is-nuclear {
   box-shadow:
-    inset 0 0 5px rgba(255, 255, 255, .55),
     inset -1px 0 rgba(32, 48, 42, .28),
-    0 0 3px rgba(117, 100, 180, .24);
+    0 0 4px rgba(40, 223, 112, .24);
 }
 .tt-power-support-grid { margin-top: 7px; }
 .tt-glance .tt-power-support-grid .tt-fact:first-child { grid-column: auto; }
