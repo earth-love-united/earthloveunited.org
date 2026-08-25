@@ -288,7 +288,8 @@ function reviewedCommitBytes(sourceRoot, commit, relative) {
     maxBuffer: 32 * 1024 * 1024,
   });
   if (result.status !== 0) {
-    throw new Error('reviewed Git object is unavailable: ' + relative);
+    throw new Error('reviewed Git object is unavailable; fetch the pinned review commit: ' +
+      commit + ':' + relative);
   }
   return result.stdout;
 }
@@ -363,6 +364,20 @@ function copyFixtureFile(sourceRoot, targetRoot, relative) {
   fs.copyFileSync(path.join(sourceRoot, relative), destination);
 }
 
+function writeFixtureFile(targetRoot, relative, bytes) {
+  const destination = path.join(targetRoot, relative);
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  fs.writeFileSync(destination, bytes);
+}
+
+function writeReviewedRuntimeFixture(targetRoot, relative) {
+  writeFixtureFile(
+    targetRoot,
+    relative,
+    reviewedCommitBytes(ROOT, EXPECTED_UI_REVIEW_COMMIT, relative)
+  );
+}
+
 function runFixtureGit(root, args) {
   const result = childProcess.spawnSync('git', args, { cwd: root, encoding: 'utf8' });
   if (result.status !== 0) throw new Error('fixture git failed: ' + (result.stderr || result.stdout || args.join(' ')));
@@ -419,10 +434,17 @@ function makeSelfTestFixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-final-integrity-'));
   const staged = path.join(root, '_deploy');
   fs.mkdirSync(staged);
-  const parityPaths = [...new Set(PINNED_FILES.map(entry => entry.path).concat(FINAL_CT45_REHASH_PATHS))];
-  parityPaths.forEach(function (relative) {
+  PINNED_FILES.map(entry => entry.path).forEach(function (relative) {
     copyFixtureFile(ROOT, root, relative);
     copyFixtureFile(ROOT, staged, relative);
+  });
+  // A policy self-test needs a stable known-good subject. Build that subject
+  // from the exact Git objects named by the independent UI review instead of
+  // silently treating the mutable working tree as reviewed. The real --staged
+  // path still verifies today's source and staged bytes against these pins.
+  FINAL_CT45_REHASH_PATHS.forEach(function (relative) {
+    writeReviewedRuntimeFixture(root, relative);
+    writeReviewedRuntimeFixture(staged, relative);
   });
   copyFixtureFile(ROOT, root, UI_REVIEW_PATH);
   return { root, staged };
@@ -441,6 +463,10 @@ function makePublicSurfaceSelfTestFixture() {
     if (fs.existsSync(sourcePath)) fs.copyFileSync(sourcePath, fixtureSource);
     else fs.writeFileSync(fixtureSource, 'self-test dependency placeholder: ' + relative + '\n');
     fs.copyFileSync(fixtureSource, fixtureStaged);
+  });
+  FINAL_CT45_REHASH_PATHS.forEach(function (relative) {
+    writeReviewedRuntimeFixture(root, relative);
+    writeReviewedRuntimeFixture(staged, relative);
   });
   copyFixtureFile(ROOT, root, UI_REVIEW_PATH);
   fs.writeFileSync(path.join(staged, publicSurface.CANDIDATE_MARKER_PATH), publicSurface.CANDIDATE_MARKER_TEXT);
@@ -466,7 +492,26 @@ function assertMutationRejected(id, mutate, afterPrecheck) {
   }
 }
 
+function inspectCheckedInRuntimeReviewState() {
+  try {
+    return {
+      status: 'reviewed',
+      checked_path_count: verifyCt45RuntimeBytes(ROOT, ROOT),
+      first_drift_path: null,
+    };
+  } catch (error) {
+    const match = /^source reviewed runtime projection drift: (.+)$/.exec(error.message);
+    if (!match || !FINAL_CT45_REHASH_PATHS.includes(match[1])) throw error;
+    return {
+      status: 'pending_independent_review',
+      checked_path_count: 0,
+      first_drift_path: match[1],
+    };
+  }
+}
+
 function runSelfTest() {
+  const checkedInReview = inspectCheckedInRuntimeReviewState();
   const approvalBindingCases = runApprovalCommitBindingSelfTest();
   const fixture = makeSelfTestFixture();
   try {
@@ -654,7 +699,10 @@ function runSelfTest() {
   }
   process.stdout.write('Final staged production integrity self-test: PASS (18 fail-closed ' +
     'filesystem/tamper/cleanup/public-surface/mode cases; ' + approvalBindingCases +
-    ' scoped approval commit-binding cases; post-child CT-45 mutation rejected and cleaned)\n');
+    ' scoped approval commit-binding cases; post-child CT-45 mutation rejected and cleaned; checked-in runtime ' +
+    (checkedInReview.status === 'reviewed'
+      ? 'reviewed across ' + checkedInReview.checked_path_count + ' paths'
+      : 'pending independent review at ' + checkedInReview.first_drift_path) + ')\n');
 }
 
 function runCli(argv) {
