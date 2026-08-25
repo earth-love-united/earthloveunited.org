@@ -13,7 +13,7 @@ const {
 } = require('./globe-runtime-assets');
 const { EXPECTED_SPEC: EXPECTED_VENDOR_SPEC } = require('./globe-vendor-integrity');
 
-const RUNTIME_CONTROL_COMMIT = '6331b0a304b589e5a671cfaa4cc23b116e10ed0c';
+const RUNTIME_CONTROL_COMMIT = '3f21654c16a8a669b79097712417dab0b4219444';
 const ROLLBACK_PLAN_SHA256 = 'c23bd5caf21bf05b6e637c6f599742e13a47b822b298054ca8d56e968d8aeaae';
 const CACHE_NAME = 'elu-v34-ct42-neutral-rollback';
 const SERVICE_WORKER_REGISTRATION = '/sw.js?v=34-ct42-neutral-rollback';
@@ -63,7 +63,6 @@ const APP_CALLED_GLOBE_APIS = Object.freeze([
   'hideFallback',
   'closeEvidenceBrowser',
   'clearCountrySelection',
-  'selectDefaultCountry',
 ]);
 
 const REQUIRED_GLOBE_LIFECYCLE_APIS = Object.freeze([
@@ -74,11 +73,13 @@ const REQUIRED_GLOBE_LIFECYCLE_APIS = Object.freeze([
 
 const RUNTIME_EXCLUSIONS = Object.freeze([
   'data/climate/runtime/country-factual-candidate.json',
+  'data/climate/runtime/country-climate-intelligence.json',
   'assets/globe/runtime/manifest.json',
   'assets/globe/runtime/earth-night.jpg',
   'assets/globe/runtime/night-sky.png',
   'assets/globe/runtime/earth-blue-marble.jpg',
   'assets/globe/runtime/earth-topology.png',
+  'js/country-climate-intelligence.js',
   'css/guided-first-orbit.css',
   'js/guided-first-orbit.js',
 ]);

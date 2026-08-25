@@ -91,19 +91,21 @@ function neutralIndex(bytes) {
   index = index.replace(/^<link href="https:\/\/fonts\.googleapis\.com\/css2[^\n]*\n/m, '');
   index = index.replace(/^<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">\n/m, '');
   index = index.replace(/^<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>\n/m, '');
-  index = replaceOnce(index, '<link rel="stylesheet" href="css/guided-first-orbit.css?v=v2">\n', '', 'remove guided orbit CSS');
+  index = replaceOnce(index, '<link rel="preload" href="js/country-climate-intelligence.js?v=v13" as="script">\n', '', 'remove Climate Intelligence preload');
+  index = replaceOnce(index, '<link rel="stylesheet" href="css/guided-first-orbit.css?v=v7">\n', '', 'remove guided orbit CSS');
   index = replaceOnce(index,
     '.hex-legend-swatch{width:10px;height:10px;border-radius:2px}.hex-legend-swatch.magnitude-low{background:#5b4a97}.hex-legend-swatch.magnitude-high{background:#f6913a}.hex-legend-swatch.magnitude-gap{background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1}',
     '.hex-legend-swatch{width:10px;height:10px;border-radius:2px;background:rgba(145,160,172,.46);border:1px solid rgba(205,225,235,.52)}.hex-legend-note{max-width:230px;margin-top:3px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);line-height:1.35}',
     'neutral inline legend styles');
-  index = replaceOnce(index, 'href="css/globe-system.css?v=v21"', 'href="css/globe-system.css?v=ct42-neutral-rollback-1"', 'rollback CSS key');
-  index = replaceOnce(index, 'href="js/data.js?v=v2" as="script"', 'href="js/data.js?v=ct42-neutral-rollback-1" as="script"', 'rollback data preload key');
-  index = replaceOnce(index, 'src="js/data.js?v=v2"', 'src="js/data.js?v=ct42-neutral-rollback-1"', 'rollback data key');
-  index = replaceOnce(index, 'src="js/globe.js?v=v15"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
-  index = replaceOnce(index, '<script src="js/guided-first-orbit.js?v=v2"></script>\n', '', 'remove guided orbit script');
-  index = replaceOnce(index, "'tools/smoke-test.js?v=v1'", "'tools/smoke-test.js?v=ct42-neutral-rollback-1'", 'rollback SmokeTest key');
+  index = replaceOnce(index, 'href="css/globe-system.css?v=v39"', 'href="css/globe-system.css?v=ct42-neutral-rollback-1"', 'rollback CSS key');
+  index = replaceOnce(index, 'href="js/data.js?v=v9" as="script"', 'href="js/data.js?v=ct42-neutral-rollback-1" as="script"', 'rollback data preload key');
+  index = replaceOnce(index, 'src="js/data.js?v=v9"', 'src="js/data.js?v=ct42-neutral-rollback-1"', 'rollback data key');
+  index = replaceOnce(index, '<script src="js/country-climate-intelligence.js?v=v13"></script>\n', '', 'remove Climate Intelligence runtime');
+  index = replaceOnce(index, 'src="js/globe.js?v=v34"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
+  index = replaceOnce(index, '<script src="js/guided-first-orbit.js?v=v5"></script>\n', '', 'remove guided orbit script');
+  index = replaceOnce(index, "'tools/smoke-test.js?v=v3'", "'tools/smoke-test.js?v=ct42-neutral-rollback-1'", 'rollback SmokeTest key');
   index = replaceOnce(index,
-    '    <button id="guided-orbit-replay" type="button" aria-label="Show how the Living Globe works" title="Guided First Orbit">\n      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-18 12 12)"></ellipse><circle cx="20.2" cy="9.3" r="1.1" fill="currentColor" stroke="none"></circle></svg>\n    </button>\n',
+    '    <button id="guided-orbit-replay" type="button" aria-label="Replay Climate Intelligence first orbit" title="Replay Climate Intelligence first orbit">\n      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-18 12 12)"></ellipse><circle cx="20.2" cy="9.3" r="1.1" fill="currentColor" stroke="none"></circle></svg>\n    </button>\n',
     '',
     'remove guided orbit replay control');
   index = replaceSection(index,
@@ -112,9 +114,14 @@ function neutralIndex(bytes) {
     '',
     'remove guided orbit dialog');
   index = replaceOnce(index,
-    '<button id="globe-evidence-browse" class="glass-btn" data-action="browseEvidence" disabled aria-disabled="true" aria-label="Browse all 249 evidence records"><span class="browse-label-full">Browse all 249 evidence records</span><span class="browse-label-short" aria-hidden="true">249 records</span></button>',
+    '<button id="globe-evidence-browse" class="glass-btn" data-action="browseEvidence" disabled aria-disabled="true" aria-label="Browse all 249 climate intelligence records"><span class="browse-label-full">Browse all 249 records</span><span class="browse-label-short" aria-hidden="true">249 records</span></button>',
     '<button id="globe-evidence-browse" class="glass-btn" data-action="browseEvidence" disabled aria-disabled="true" aria-label="Browse 201 neutral navigation entities"><span class="browse-label-full">Browse 201 neutral entities</span><span class="browse-label-short" aria-hidden="true">201 entities</span></button>',
     'neutral browse control');
+  index = replaceSection(index,
+    '<!-- ── COUNTRY CLIMATE LENSES + LEGEND (body-level overlays) ── -->',
+    '<div class="hex-legend" id="hex-legend"',
+    '<!-- Neutral rollback legend -->\n',
+    'remove Climate Intelligence lens controls');
   index = replaceSection(index,
     '<div class="hex-legend" id="hex-legend"',
     '\n\n<!-- ═══ GLOBE ═══ -->',
@@ -149,17 +156,17 @@ function neutralIndex(bytes) {
     '<!-- Accessible neutral navigation route. GlobeModule reveals this body-level region\n     when local geometry, the renderer, WebGL, or globe construction fail closed. -->',
     'neutral fallback comment');
   index = replaceOnce(index,
-    'This view shows emissions records and source gaps. Emissions magnitude is not a climate-performance score. Map boundaries are navigational and are not a sovereignty judgment.',
+    'This view preserves the same carbon, power, and physical-climate metrics, evidence classes, and explicit gaps. No composite score, target assessment, finance judgment, or offset adjustment is produced.',
     'This accessible view contains neutral country navigation only. Country climate evidence, commitments, targets, delivery, finance, ratings, performance, impact bands, emissions values, and climate scores are withheld. Map boundaries are navigational and are not a sovereignty or performance judgment.',
     'neutral fallback boundary');
-  index = replaceOnce(index, '<h3 id="globe-fallback-evidence-title">Country emissions evidence</h3>', '<h3 id="globe-fallback-evidence-title">Neutral country navigation</h3>', 'neutral fallback heading');
-  index = replaceOnce(index, '<p id="globe-fallback-summary">Loading emissions coverage…</p>', '<p id="globe-fallback-summary">Loading the neutral navigation set…</p>', 'neutral fallback summary');
-  index = replaceOnce(index, 'aria-label="Countries and registry entities in the emissions dataset"', 'aria-label="Neutral country navigation entities"', 'neutral fallback list label');
+  index = replaceOnce(index, '<h3 id="globe-fallback-evidence-title">Territorial fossil CO₂ · 2024</h3>', '<h3 id="globe-fallback-evidence-title">Neutral country navigation</h3>', 'neutral fallback heading');
+  index = replaceOnce(index, '<p id="globe-fallback-summary">Loading country climate intelligence…</p>', '<p id="globe-fallback-summary">Loading the neutral navigation set…</p>', 'neutral fallback summary');
+  index = replaceOnce(index, 'aria-label="Countries and registry entities in the climate intelligence release"', 'aria-label="Neutral country navigation entities"', 'neutral fallback list label');
   index = replaceOnce(index,
-    'Choose an item to inspect its emissions series or source-gap state. Climate performance is not scored in this view.',
+    'Choose an item to inspect its lens metrics, evidence class, methods, sources, or explicit gap state.',
     'Choose an entity to inspect its explicit evidence-withheld state. No climate value, commitment, target, delivery, performance, impact, finance, rating, or score conclusion is shown here.',
     'neutral fallback detail');
-  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=40-guided-orbit-review'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
+  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=62-three-move-orbit'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
   return Buffer.from(index);
 }
 
@@ -171,7 +178,7 @@ function neutralCss(bytes) {
   css = css.replace(/^#hex-country-tooltip \.tt-candidate[^\n]*\n/m, '');
   css = css.replace(/^#hex-country-tooltip \.tt-factual h3[\s\S]*?^#hex-country-tooltip \.tt-source a[^\n]*\n/m, '');
   css = css.replace(/^html\[data-theme="light"\] body\.globe-mode #hex-country-tooltip \.tt-status-magnitude,[\s\S]*?^}\n\n/m, '');
-  css = replaceOnce(css, "    content: '2023';", "    content: 'A–Z';", 'neutral mobile rail title');
+  css = replaceOnce(css, "    content: 'Lens';", "    content: 'A–Z';", 'neutral mobile rail title');
   css = replaceOnce(css,
     '#globe-evidence-browse {\n  min-height: 32px;',
     '#globe-evidence-browse {\n  min-height: 44px;',
@@ -375,7 +382,7 @@ const COUNTRY_STATUS_BADGE_CLASSES = Object.freeze({
     'neutral fallback reasons');
   globe = replaceSection(globe,
     'function _getCountryDisplayData(feature) {',
-    '\n\n// Pledge records contain',
+    '\n\n// Polygon accessors are evaluated hundreds of times',
     `function _getCountryDisplayData(feature) {
   if (!feature) return null;
   const props = feature.properties || {};
@@ -599,7 +606,7 @@ function _getCountryGaiaComment() {
 `,
     'solid theme method');
   globe = replaceSection(globe,
-    '  // CT-42 candidate: factual magnitude only.',
+    '  // Scientific visual decisions come from COUNTRY_CLIMATE_INTELLIGENCE.',
     '  _updateRankRail() {',
     `  // Uniform neutral country surface. No climate quantity controls color or height.
   _countryHexColorFn() {
@@ -705,8 +712,8 @@ function _getCountryGaiaComment() {
     if (selected) {
       const wrap = this._ensureCountryCardWrap(tt);
       if (wrap) {
-        wrap.setAttribute('role', 'dialog');
-        wrap.setAttribute('aria-modal', 'true');
+        wrap.setAttribute('role', 'region');
+        wrap.setAttribute('aria-modal', 'false');
         wrap.setAttribute('aria-labelledby', 'country-card-heading');
       }
     } else {
@@ -735,7 +742,7 @@ function _getCountryGaiaComment() {
 `,
     'neutral country card');
   globe = replaceSection(globe,
-    '  _renderCountryMetrics(d) {',
+    "  _renderCountryMetrics(view, idPrefix = 'country-card') {",
     '  // ── Project markers:',
     `  _renderCountryMetrics() {
     return '<div class="tt-comment" style="margin-top:8px"><strong>Evidence withheld.</strong> No country climate value, ranking, target, delivery assessment, performance judgment, finance claim, rating, impact band, or climate score is available in this rollback state.</div>'
@@ -755,6 +762,10 @@ function _getCountryGaiaComment() {
       ? (hovered ? 0.96 : (selected ? 0.90 : 0.82))
       : (hovered ? 0.46 : (selected ? 0.40 : 0.32));
     return 'rgba(145,160,172,' + alpha + ')';
+  },
+
+  _countryPolygonSideColorFn() {
+    return 'rgba(0,0,0,0)';
   },
 
 `,
@@ -820,8 +831,21 @@ function _getCountryGaiaComment() {
       backgroundImageConfigured: false,
     };
   },
+
+  getPerformanceState() {
+    return {
+      targetFps: 120,
+      frameBudgetMs: 1000 / 120,
+      animationPaused: this._animationPaused === true,
+      renderer: this.world?._renderer?.() || null,
+    };
+  },
 `,
     'neutral runtime texture state');
+  globe = replaceOnce(globe,
+    "requires: ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE']",
+    "requires: ['Data']",
+    'neutral GlobeModule contract');
   return Buffer.from(globe);
 }
 
@@ -844,14 +868,15 @@ const CACHE_NAME = '${CACHE_NAME}';`,
     "  '/assets/globe/runtime/earth-blue-marble.jpg?v=228deba2e4b6',\n",
     "  '/assets/globe/runtime/earth-topology.png?v=839b12da2e4d',\n",
     "  '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',\n",
-    "  '/css/guided-first-orbit.css?v=v2',\n",
-    "  '/js/guided-first-orbit.js?v=v2',\n",
+    "  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7',\n",
+    "  '/js/country-climate-intelligence.js?v=v13',\n",
+    "  '/css/guided-first-orbit.css?v=v7',\n",
+    "  '/js/guided-first-orbit.js?v=v5',\n",
   ];
   for (const line of removals) sw = replaceOnce(sw, line, '', `remove precache ${line.trim()}`);
-  sw = replaceOnce(sw, "'/css/globe-system.css?v=v21'", "'/css/globe-system.css?v=ct42-neutral-rollback-1'", 'rollback CSS precache');
-  sw = replaceOnce(sw, "'/js/data.js?v=v2'", "'/js/data.js?v=ct42-neutral-rollback-1'", 'rollback data precache');
-  sw = replaceOnce(sw, "'/js/globe.js?v=v15'", "'/js/globe.js?v=ct42-neutral-rollback-1'", 'rollback globe precache');
-  sw = replaceOnce(sw, "'/data/carbon-projects.json?v=ct42candidate1'", "'/data/carbon-projects.json?v=ct42-neutral-rollback-1'", 'rollback carbon data key');
+  sw = replaceOnce(sw, "'/css/globe-system.css?v=v39'", "'/css/globe-system.css?v=ct42-neutral-rollback-1'", 'rollback CSS precache');
+  sw = replaceOnce(sw, "'/js/data.js?v=v9'", "'/js/data.js?v=ct42-neutral-rollback-1'", 'rollback data precache');
+  sw = replaceOnce(sw, "'/js/globe.js?v=v34'", "'/js/globe.js?v=ct42-neutral-rollback-1'", 'rollback globe precache');
   return Buffer.from(sw);
 }
 
@@ -948,7 +973,7 @@ const SmokeTest = (() => {
     }),
     test('resources', 'Runtime made no candidate or globe-image request', true, () => {
       const names = performance.getEntriesByType('resource').map(entry => entry.name);
-      const forbidden = ['country-factual-candidate.json', 'earth-night.jpg', 'night-sky.png', 'earth-blue-marble.jpg', 'earth-topology.png'];
+      const forbidden = ['country-factual-candidate.json', 'country-climate-intelligence.json', 'earth-night.jpg', 'night-sky.png', 'earth-blue-marble.jpg', 'earth-topology.png'];
       const leaked = names.filter(name => forbidden.some(token => name.includes(token)));
       return { pass: leaked.length === 0, detail: leaked.length ? leaked.join(', ') : 'No candidate JSON or globe image request observed' };
     }),

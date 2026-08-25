@@ -47,6 +47,8 @@
     { "id": "post-root-manifest-byte-drift", "phase": "post", "target": "manifest.json", "operation": "append", "value": "\n" },
     { "id": "post-root-manifest-symlink-substitution", "phase": "post", "target": "manifest.json", "operation": "symlink-copy" },
     { "id": "post-candidate-json-created", "phase": "post", "target": "data/climate/runtime/country-factual-candidate.json", "operation": "create", "value": "{}\n" },
+    { "id": "post-intelligence-json-created", "phase": "post", "target": "data/climate/runtime/country-climate-intelligence.json", "operation": "create", "value": "{}\n" },
+    { "id": "post-intelligence-module-created", "phase": "post", "target": "js/country-climate-intelligence.js", "operation": "create", "value": "window.COUNTRY_CLIMATE_INTELLIGENCE = {};\n" },
     { "id": "post-globe-image-created", "phase": "post", "target": "assets/globe/runtime/earth-night.jpg", "operation": "create", "value": "not an image\n" },
     { "id": "post-production-runtime-manifest-created", "phase": "post", "target": "data/climate/runtime-manifest.json", "operation": "create", "value": "{}\n" },
     { "id": "post-reviewed-release-diff-created", "phase": "post", "target": "data/climate/releases/reviewed-release-diff.json", "operation": "create", "value": "{}\n" },
