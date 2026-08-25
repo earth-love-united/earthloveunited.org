@@ -51,11 +51,14 @@ assert.equal(manifest.review_status, 'not_reviewed'); assert.equal(manifest.deci
 for (const item of manifest.inputs.concat(manifest.outputs)) assert.equal(hashBytes(bytes(item.path)), item.sha256, `${item.path} hash drift`);
 for (const forbidden of manifest.prohibited_release_files) assert.equal(fs.existsSync(path.join(ROOT, forbidden)), false, `${forbidden} must not exist in candidate`);
 
-const index = bytes('index.html').toString(); const data = bytes('js/data.js').toString(); const globe = bytes('js/globe.js').toString(); const css = bytes('css/globe-system.css').toString();
-assert.ok(index.includes('country-factual-candidate') || data.includes('country-factual-candidate.json'));
+const index = bytes('index.html').toString(); const data = bytes('js/data.js').toString(); const globe = bytes('js/globe.js').toString(); const intelligence = bytes('js/country-climate-intelligence.js').toString(); const css = bytes('css/globe-system.css').toString();
+assert.ok(!index.includes('country-factual-candidate') && !data.includes('country-factual-candidate.json'),
+  'superseded PRIMAP candidate must remain citation-only and absent from the public runtime');
+assert.ok(index.includes('country-climate-intelligence.js') && data.includes('country-climate-intelligence.json'),
+  'Country Climate Intelligence candidate runtime is not wired atomically');
 assert.ok(manifest.compiler_files.includes('js/country-ranking-compiler.js') && manifest.compiler_files.includes('js/country-climate-view-model.js'));
 assert.ok(!data.includes('pledge-nodes.json') && !globe.includes('pledge-nodes.json'));
-['Reviewed emissions data', 'Climate performance', 'not reviewed', 'Annual emissions', 'Source gaps · unnumbered', 'not a performance score', 'excludes LULUCF', 'No emissions estimate · visible and unranked', 'Source &amp; methodology'].forEach(text => assert.ok(globe.includes(text) || index.includes(text), `missing public truth disclosure: ${text}`));
+['Territorial fossil CO₂ · 2024', 'Clean electricity share · 2024', 'Projected warming · 2040–2059', 'No composite score', 'explicit gaps', 'not a performance score'].forEach(text => assert.ok(globe.includes(text) || index.includes(text) || intelligence.includes(text), `missing public truth disclosure: ${text}`));
 ['Annual harmonized emissions estimates', '2023 harmonized estimate · excludes LULUCF', 'Harmonized estimate · MtCO₂e/yr', 'Harmonized estimate, not an official Party inventory', '2023 harmonized emissions estimate · PRIMAP-hist'].forEach(text => assert.ok(!globe.includes(text) && !index.includes(text), `duplicate methodology copy returned: ${text}`));
 ['CT-42 candidate preview', 'runtime and release not reviewed', 'facts reviewed through CT-10C / CT-10C-R', 'did not pass its runtime boundary checks'].forEach(text => assert.ok(!globe.includes(text) && !index.includes(text), `internal governance language leaked into public copy: ${text}`));
 assert.ok(globe.includes('elu-trajectory-point') && globe.includes('elu-chart-axis') && globe.includes('Show chart data'));

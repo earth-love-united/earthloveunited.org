@@ -26,8 +26,8 @@ const PATHS = Object.freeze({
   fixtures: 'data/climate/fixtures/source-routing-policy.json',
 });
 const EXPECTED_IMMUTABLE_SHA256 = Object.freeze({
-  sourceRegistry: 'ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d',
-  ct14: 'fb1bbc050b7ba791893b7751dd4f916ecd01885557b272cb025f8c0e4b64452d',
+  sourceRegistry: 'b37ad095e20a0e2bb4cf105a059d11e62ae08aca83d5f736139bcc59ff63c87d',
+  ct14: '99cc9a54a59a6ba8ec37fbfe17293e08d02a0e814e385b6535aebc0532a007eb',
   ct15: '2939e0ab6eda7a5c90202c975826e8dcf33affda71cd0450ff499078b86478b4',
 });
 const EXPECTED_TOP20 = Object.freeze(['CHN', 'USA', 'IND', 'RUS', 'IDN', 'BRA', 'JPN', 'IRN', 'SAU', 'CAN', 'MEX', 'KOR', 'DEU', 'AUS', 'TUR', 'ZAF', 'VNM', 'PAK', 'THA', 'NGA']);

@@ -227,10 +227,19 @@ const localizedCandidateCache = (serviceWorker.includes("const CACHE_NAME = 'elu
   serviceWorker.includes("const CACHE_NAME = 'elu-v40-guided-orbit-review'")) &&
   serviceWorker.includes("'/assets/globe/runtime/manifest.json'") &&
   serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'") && hasCandidateLegend;
-if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'") && !candidateCache && !localizedCandidateCache) {
-  failures.push('sw.js: cache version is neither legacy-exit v26, denied candidate v27, nor a supported localized evidence cache');
+const hasClimateIntelligenceLegend = index.includes('id="climate-lens-controls"') &&
+  index.includes('Territorial fossil CO₂ · 2024') &&
+  index.includes('Clean electricity share · 2024') &&
+  index.includes('Projected warming · 2040–2059') &&
+  index.includes('No composite score, target assessment, finance judgment, or offset adjustment is produced.') &&
+  !index.includes('aria-label="Emissions magnitude legend"');
+const climateIntelligenceCache = serviceWorker.includes("const CACHE_NAME = 'elu-v62-three-move-orbit'") &&
+  serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7'") &&
+  serviceWorker.includes("'/js/country-climate-intelligence.js?v=v13'") && hasClimateIntelligenceLegend;
+if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'") && !candidateCache && !localizedCandidateCache && !climateIntelligenceCache) {
+  failures.push('sw.js: cache version is neither legacy-exit v26, denied candidate v27, nor a supported evidence cache');
 }
-if (!hasNeutralLegend && !hasCandidateLegend) failures.push('index.html: fail-closed neutral or denied CT-42 candidate legend missing');
+if (!hasNeutralLegend && !hasCandidateLegend && !hasClimateIntelligenceLegend) failures.push('index.html: fail-closed neutral, denied CT-42, or Climate Intelligence candidate legend missing');
 if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=27-ct42-candidate'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=33-focus-trap'") &&
@@ -239,8 +248,9 @@ if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=37-return-contrast'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=38-compact-rank'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=39-guided-orbit'") &&
-    !index.includes("navigator.serviceWorker.register('/sw.js?v=40-guided-orbit-review'")) {
-  failures.push('index.html: service-worker registration is neither v26, candidate v27, nor a supported localized evidence release');
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=40-guided-orbit-review'") &&
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=62-three-move-orbit'")) {
+  failures.push('index.html: service-worker registration is neither v26, candidate v27, nor a supported evidence release');
 }
 
 const ledger = read('docs/LEGACY-COUNTRY-DATA-EXIT.md');

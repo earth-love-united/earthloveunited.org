@@ -23,7 +23,7 @@
     },
     "sourceRegistry": {
       "path": "data/climate/source-registry.json",
-      "sha256": "ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d"
+      "sha256": "b37ad095e20a0e2bb4cf105a059d11e62ae08aca83d5f736139bcc59ff63c87d"
     }
   },
   "source_owners": {
@@ -3607,5 +3607,5 @@
     "climate scores",
     "production runtime facts"
   ],
-  "calculation_hash": "d8c63ff8d3df7a7a91b076e96b5ea1b3ad247b6f7b0f4876f2c49f1bace1bcdb"
+  "calculation_hash": "571c06e86ea186bfee11fdbe4a57e4de14258f817cbe483ae72067173a245c41"
 }

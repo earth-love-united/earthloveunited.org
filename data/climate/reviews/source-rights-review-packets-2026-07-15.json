@@ -8,7 +8,7 @@
   "immutable_inputs": {
     "source_registry": {
       "path": "data/climate/source-registry.json",
-      "sha256": "ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d"
+      "sha256": "b37ad095e20a0e2bb4cf105a059d11e62ae08aca83d5f736139bcc59ff63c87d"
     },
     "ct15_readiness": {
       "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -16,11 +16,11 @@
     },
     "ct16_policy": {
       "path": "data/climate/releases/source-routing-policy-v2-2026-07-15.json",
-      "sha256": "5f7cdc800595a1c7fe5fbfddb1761142f6a6f097615aa6961119cf3ad80f6063"
+      "sha256": "ab4b1ee91ddc8e56459a91d775cc8f964873142211cd9bb4270132e97941ccac"
     },
     "ct16_queue": {
       "path": "data/climate/releases/top20-source-routing-queue-v2-2026-07-15.json",
-      "sha256": "bbfbd44df0f0768d8663ef0a810396fedbe66d9a92245222806e263dc15440bc"
+      "sha256": "d33098eb09400efcd509d05c28d99175f08727b30090183b3cd620afbc5da881"
     },
     "ct40_result": {
       "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
@@ -778,5 +778,5 @@
       }
     }
   ],
-  "calculation_hash": "5b6e69585d51ab94ead6f3a3ce8a6188af5b31c3564eb048ae02c26ff2cd7744"
+  "calculation_hash": "96d73b1c10fca466e9d6eb9b91ed43f55a37d110cb74090dae7f738dafd7f2cf"
 }
