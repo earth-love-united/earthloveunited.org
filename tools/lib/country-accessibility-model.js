@@ -91,14 +91,14 @@ function validateFocus(input) {
 
 function validateDialog(dialog, focusIds) {
   assert(dialog && dialog.role === 'dialog', 'country card must use dialog semantics');
-  assert(dialog.aria_modal === true, 'country card dialog must be modal');
+  assert(dialog.aria_modal === false, 'country card dialog must remain non-modal');
   text(dialog.id, 'dialog.id');
   text(dialog.label, 'dialog.label');
   text(dialog.heading_id, 'dialog.heading_id');
   assert(dialog.labelledby === dialog.heading_id, 'dialog must be labelled by its heading');
   assert(dialog.focus_on_open === dialog.heading_id || dialog.focus_on_open === dialog.id, 'dialog opening focus is invalid');
   assert(dialog.escape_closes === true, 'Escape must close the country card');
-  assert(dialog.focus_trap === true, 'dialog must trap focus while open');
+  assert(dialog.focus_trap === false, 'non-modal dialog must release focus to lens and rail controls');
   assert(focusIds.has(dialog.restore_focus_to), 'focus restoration target must exist in focus order');
   assert(focusIds.has(dialog.close_control_id), 'dialog close control must exist in focus order');
   return stable(dialog);

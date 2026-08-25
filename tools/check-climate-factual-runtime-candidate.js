@@ -59,10 +59,10 @@ assert.ok(!data.includes('pledge-nodes.json') && !globe.includes('pledge-nodes.j
 ['Annual harmonized emissions estimates', '2023 harmonized estimate · excludes LULUCF', 'Harmonized estimate · MtCO₂e/yr', 'Harmonized estimate, not an official Party inventory', '2023 harmonized emissions estimate · PRIMAP-hist'].forEach(text => assert.ok(!globe.includes(text) && !index.includes(text), `duplicate methodology copy returned: ${text}`));
 ['CT-42 candidate preview', 'runtime and release not reviewed', 'facts reviewed through CT-10C / CT-10C-R', 'did not pass its runtime boundary checks'].forEach(text => assert.ok(!globe.includes(text) && !index.includes(text), `internal governance language leaked into public copy: ${text}`));
 assert.ok(globe.includes('elu-trajectory-point') && globe.includes('elu-chart-axis') && globe.includes('Show chart data'));
-assert.ok(globe.includes("wrap.setAttribute('role', 'dialog')") && globe.includes("wrap.setAttribute('aria-modal', 'true')") && globe.includes('country-card-heading'));
-assert.ok(globe.includes("tt.removeAttribute('aria-modal')") && globe.includes("tt.setAttribute('aria-hidden', 'true')"), 'closed modal must leave the accessibility tree');
+assert.ok(globe.includes("wrap.setAttribute('role', 'dialog')") && globe.includes("wrap.setAttribute('aria-modal', 'false')") && globe.includes('country-card-heading'));
+assert.ok(globe.includes("tt.removeAttribute('aria-modal')") && globe.includes("tt.setAttribute('aria-hidden', 'true')"), 'closed evidence panel must leave the accessibility tree');
 assert.ok(globe.includes('restoreHeadingFocus') && globe.includes("heading.focus({ preventScroll: true })"), 'country navigation must restore focus after replacing dialog content');
-assert.ok(globe.includes('node.getClientRects().length > 0') && globe.includes("style.visibility !== 'hidden'"), 'dialog focus trap must exclude responsive controls hidden by CSS');
+assert.ok(!globe.includes('const first = tabbable[0];'), 'non-modal country panel must not trap focus away from lens controls');
 assert.ok(css.includes('.elu-rank-dot.is-magnitude') && css.includes('.elu-rank-dot.is-gap') && css.includes('.tt-candidate'));
 assert.ok(!/Measured \/ harmonized emissions|Measured annual observations/.test(JSON.stringify(output.runtime) + globe));
 assert.ok(!/Math\.log10\((?:0\.00334|15000)/.test(globe), 'hard-coded visual magnitude bounds leaked');

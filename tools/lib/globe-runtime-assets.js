@@ -200,7 +200,7 @@ function ct42RuntimeProjection(relativePath, bytes) {
 const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/css/carbon-clock.css?v=v2',
   '/css/globe-system.css?v=v39',
-  '/css/guided-first-orbit.css?v=v2',
+  '/css/guided-first-orbit.css?v=v6',
   '/js/gaia-utils.js',
   '/js/module-contracts.js',
   '/js/event-bus.js',
@@ -209,10 +209,10 @@ const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v9',
   '/js/country-climate-intelligence.js?v=v13',
-  '/js/globe.js?v=v32',
+  '/js/globe.js?v=v33',
   '/js/carbon-clock.js?v=v1',
-  '/js/guided-first-orbit.js?v=v3',
-  '/js/app.js?v=v4',
+  '/js/guided-first-orbit.js?v=v4',
+  '/js/app.js?v=v5',
 ]);
 const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/check-globe-runtime-assets.js',
@@ -521,10 +521,10 @@ function evaluateRuntimeAssets(input) {
     closeBrowserBody.includes('this._teardownFailedRenderer();') && closeBrowserBody.includes("this.showFallback('globe_construction_failed')") &&
     globe.includes("this.showFallback('webgl_unavailable')"),
     'Evidence-browser return and WebGL context loss must tear down stale renderer state and expose a stable failure.');
-  check('country-card-focus-trap', globe.includes('const first = tabbable[0];') &&
-    globe.includes('event.shiftKey && (document.activeElement === heading || document.activeElement === first)') &&
-    globe.includes('!event.shiftKey && document.activeElement === last'),
-    'The modal country card must wrap both backward and forward keyboard focus without exposing background controls.');
+  check('country-card-nonmodal-focus', globe.includes("wrap.setAttribute('role', 'dialog')") &&
+    globe.includes("wrap.setAttribute('aria-modal', 'false')") &&
+    !globe.includes('const first = tabbable[0];') && index.includes('id="climate-lens-controls"'),
+    'The non-modal country evidence panel must release keyboard focus to the surrounding lens and rail controls.');
   check('safe-error-reporting', !/console\.error\s*\(/.test(`${app}\n${data}\n${globe}`) && app.includes("reportError('GlobeModule.prepare()'") && globe.includes("reportWarn('GlobeModule'"),
     'Runtime failures must use the shared reportError/reportWarn utilities.');
 
@@ -542,7 +542,7 @@ function evaluateRuntimeAssets(input) {
     index.includes('Original starfield from Three-Globe 2.45.2'),
     'Public copy must credit NASA and identify the historical surface and restored sky as decorative visual context.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v60-power-title-cleanup';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=60-power-title-cleanup'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v61-climate-intelligence-orbit';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=61-climate-intelligence-orbit'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&
@@ -645,7 +645,7 @@ function evaluateRuntimeAssets(input) {
     "await page.locator('#country-card-heading').focus()",
     "new Event('webglcontextlost', { cancelable: true })",
     'reducedMotion.autoRotate === false',
-    'backward country-card focus trap must wrap to Next country without reaching the background rail',
+    'non-modal country panel must release backward focus to the surrounding lens and rail controls',
     'rendererCanvasCount === 0',
     'for (const width of [320, 375])',
     'rects.browse.height >= 44 && rects.theme.height >= 44',

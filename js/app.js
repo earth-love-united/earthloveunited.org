@@ -173,8 +173,6 @@ const App = {
         safeCall('GlobeModule', 'teardownFailedRenderer');
         safeCall('GlobeModule', 'showFallback', 'globe_construction_failed');
       }
-    } else if (hasModule('GlobeModule')) {
-      safeCall('GlobeModule', 'selectDefaultCountry');
     }
     if (!hasModule('GlobeModule') || !GlobeModule._initialized) {
       _setGlobeLoading(false);

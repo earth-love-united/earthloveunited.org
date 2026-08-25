@@ -1,11 +1,11 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v60) — keep the Power aggregate headings typographic while
- * retaining the exact segmented tracks, scroll-proof country identity, and
+ * Globe cache (v61) — introduce the four-moment Climate Intelligence orbit,
+ * keep the evidence panels non-modal and lens-accessible, and retain the
  * reviewed factual runtime boundary.
  */
-const CACHE_NAME = 'elu-v60-power-title-cleanup';
+const CACHE_NAME = 'elu-v61-climate-intelligence-orbit';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -13,7 +13,7 @@ const STATIC_ASSETS = [
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
   '/css/globe-system.css?v=v39',
-  '/css/guided-first-orbit.css?v=v2',
+  '/css/guided-first-orbit.css?v=v6',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
   '/assets/globe/runtime/manifest.json',
@@ -31,10 +31,10 @@ const STATIC_ASSETS = [
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v9',
   '/js/country-climate-intelligence.js?v=v13',
-  '/js/globe.js?v=v32',
+  '/js/globe.js?v=v33',
   '/js/carbon-clock.js?v=v1',
-  '/js/guided-first-orbit.js?v=v3',
-  '/js/app.js?v=v4',
+  '/js/guided-first-orbit.js?v=v4',
+  '/js/app.js?v=v5',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
   '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7',

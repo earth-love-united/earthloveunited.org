@@ -46,6 +46,7 @@ approved source registry + exact external snapshots
 | `js/data.js` | Exact SHA-256 verification and public runtime API |
 | `js/country-climate-intelligence.js` | Lens-aware view model and evidence presentation contract |
 | `js/globe.js` | Globe/fallback rendering, selection, rail/card interactions, and lens-change event |
+| `js/guided-first-orbit.js` | Four-moment Climate Intelligence orientation, real country selection, and Methods & sources handoff |
 
 ## Release gates
 
@@ -98,6 +99,8 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 - PRIMAP absent from headings, legends, tooltips, ordered rails, and primary charts;
 - v2.6.1 present only in detailed citation provenance; v2.7 absent entirely;
 - selection preserved across lenses;
+- four-moment first orbit explains the three separate lenses, exact comparison order, scope boundaries, and per-fact provenance without producing a score;
+- Trace the evidence opens and focuses Methods & sources; closing the non-modal country panel during either evidence moment returns to country selection;
 - metric/value/unit/period/evidence in tooltips;
 - Power uses two aligned 0–100% aggregate tracks subdivided by the nine permitlisted fuel slots; 194 mixes reconcile, Lesotho remains an explicit mix-level gap, blank fuel cells remain gaps, source zeroes remain zero, and no browser normalization is applied;
 - France retains the exact 94.9% clean aggregate and 67.7% nuclear segment; `Other Renewables` remains the combined geothermal/tidal/wave category;
@@ -105,7 +108,7 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 - the temperature range copies only the source-published p10, median, and p90, distinguishes them by shape as well as color, and explicitly rejects probabilistic, annual-trajectory, simulation, and ranking interpretations;
 - every tile relief value is a subtle monotonic encoding of the active lens's exact comparison metric; the query-only inverse Carbon demo declares its direction and never changes the raw emissions rail, while Physical height is never described as vulnerability, damage, or responsibility;
 - fallback parity for all 249 records;
-- body-level controls, 44px touch targets, reduced motion, focus restoration, and non-color status cues;
+- body-level controls, non-modal globe/fallback evidence panels, 44px touch targets, reduced motion, focus restoration, and non-color status cues;
 - stale cache, WebCrypto, WebGL, constructor, and partial-data failures fail closed.
 
 ## Golden entities
@@ -123,8 +126,9 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v57 service worker composes the reviewed Guided First Orbit assets with the
-subtle relief presentation, candidate dashboard, and both runtime generations:
+The v61 service worker composes the four-moment Climate Intelligence first
+orbit with the subtle relief presentation, candidate dashboard, and both
+runtime generations:
 
 ```text
 data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7

@@ -430,9 +430,10 @@ jobs:
           assert(await page.evaluate(() => document.activeElement?.classList.contains('tt-nav-prev')),
             'reverse tab from Close must reach Previous country');
           await page.keyboard.press('Shift+Tab');
-          assert(await page.evaluate(() => document.activeElement?.classList.contains('tt-nav-next') &&
-            document.getElementById('elu-country-card-wrap')?.contains(document.activeElement)),
-            'backward country-card focus trap must wrap to Next country without reaching the background rail');
+          assert(await page.evaluate(() => {
+            const wrap = document.getElementById('elu-country-card-wrap');
+            return document.activeElement !== document.body && !wrap?.contains(document.activeElement);
+          }), 'non-modal country panel must release backward focus to the surrounding lens and rail controls');
           await page.click('[data-country-close]');
           await page.waitForFunction(() => !window.GlobeModule?._selectedCountryFeature);
 

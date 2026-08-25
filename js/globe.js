@@ -426,10 +426,8 @@ const GlobeModule = {
   _fallbackEntries: [],
   _fallbackBound: false,
   _fallbackSelectedIso: null,
-  _fallbackInertSiblings: [],
   _onFallbackClick: null,
   _onFallbackInput: null,
-  _onFallbackKeydown: null,
   _onCountryCardResize: null,
   _lensControlsBound: false,
   _reducedMotionMedia: null,
@@ -816,8 +814,8 @@ const GlobeModule = {
         this._canvasEl.addEventListener('pointermove', this._onCanvasPointerMove);
         this._canvasEl.addEventListener('click', this._onCanvasClick);
 
-        // Do not auto-open a modal card. A country card is a user-triggered
-        // dialog so it always has a real opener for focus restoration.
+        // Do not auto-open a country panel. The non-modal country dialog is
+        // user-triggered so it always has a real opener for focus restoration.
 
         // Notify mode modules that country data are ready
         safeCall('GLOBE_MODES', 'onCountryDataReady');
@@ -1095,24 +1093,6 @@ const GlobeModule = {
     return false;
   },
 
-  _setFallbackIsolation(active) {
-    const panel = $('globe-fallback');
-    if (!panel || !document.body) return false;
-    if (active) {
-      if (this._fallbackInertSiblings.length) return true;
-      this._fallbackInertSiblings = Array.from(document.body.children)
-        .filter(element => element !== panel && !['SCRIPT', 'STYLE'].includes(element.tagName))
-        .map(element => ({ element, inert: element.inert === true }));
-      this._fallbackInertSiblings.forEach(entry => { entry.element.inert = true; });
-      return true;
-    }
-    this._fallbackInertSiblings.forEach(entry => {
-      if (entry.element?.isConnected) entry.element.inert = entry.inert;
-    });
-    this._fallbackInertSiblings = [];
-    return true;
-  },
-
   showFallback(reasonCode) {
     const panel = $('globe-fallback');
     if (!panel || !document.body) {
@@ -1135,7 +1115,6 @@ const GlobeModule = {
     panel.hidden = false;
     panel.setAttribute('aria-hidden', 'false');
     document.body.classList.add('globe-fallback-active');
-    this._setFallbackIsolation(true);
     this.pause();
     $text('globe-fallback-reason', GLOBE_FALLBACK_REASONS[stableReason]);
     const browseRequested = stableReason === 'evidence_browse_requested';
@@ -1147,6 +1126,10 @@ const GlobeModule = {
     }
     const actionGroup = primaryAction?.closest('.elu-fallback-actions');
     if (actionGroup) actionGroup.setAttribute('aria-label', browseRequested ? 'Evidence browser navigation' : '3D view recovery options');
+    // The fallback is a complete evidence browser, not a frozen error screen.
+    // Bind the shared lens rail even when WebGL failed before init reached its
+    // normal control-binding phase.
+    this._bindLensControls();
     this._bindFallbackControls();
     this._renderFallbackEvidence();
 
@@ -1184,32 +1167,7 @@ const GlobeModule = {
       this._renderFallbackCountry(country.getAttribute('data-fallback-country-iso'), true);
     };
     this._onFallbackInput = () => this._filterFallbackEntries(search.value);
-    this._onFallbackKeydown = event => {
-      if (event.key !== 'Tab') return;
-      const focusable = Array.from(panel.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),summary,[tabindex="0"]')).filter(node => {
-        if (node.hidden || node.getAttribute('aria-hidden') === 'true') return false;
-        const style = window.getComputedStyle(node);
-        return node.getClientRects().length > 0 && style.visibility !== 'hidden';
-      });
-      const heading = $('globe-fallback-title');
-      if (!heading || !focusable.length) {
-        event.preventDefault();
-        heading?.focus({ preventScroll: true });
-        return;
-      }
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      const focusAtStart = document.activeElement === heading || document.activeElement === first;
-      if (event.shiftKey && focusAtStart) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        heading.focus();
-      }
-    };
     panel.addEventListener('click', this._onFallbackClick);
-    panel.addEventListener('keydown', this._onFallbackKeydown);
     search.addEventListener('input', this._onFallbackInput);
   },
 
@@ -1287,7 +1245,7 @@ const GlobeModule = {
     const name = _escapeHtml(country.name);
     const code = _escapeHtml(country.iso_alpha3);
     const flag = _escapeHtml(country.flag_emoji || '');
-    detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3>'
+    detail.innerHTML = '<h3 id="globe-fallback-detail-title" tabindex="-1">' + flag + ' ' + name + '</h3>'
       + '<span class="elu-fallback-detail-badge">' + code + ' · ' + _escapeHtml(view.primary.evidence_label) + '</span>'
       + this._renderCountryMetrics(view, 'fallback')
       + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
@@ -1298,9 +1256,10 @@ const GlobeModule = {
   hideFallback(options = {}) {
     const panel = $('globe-fallback');
     const opener = this._fallbackOpener;
-    const wasEvidenceBrowse = this._fallbackReasonCode === 'evidence_browse_requested';
+    const hiddenReason = this._fallbackReasonCode;
+    const wasVisible = !!panel && !panel.hidden;
+    const wasEvidenceBrowse = hiddenReason === 'evidence_browse_requested';
     document.body?.classList.remove('globe-fallback-active');
-    this._setFallbackIsolation(false);
     if (panel) {
       panel.hidden = true;
       panel.setAttribute('aria-hidden', 'true');
@@ -1317,6 +1276,9 @@ const GlobeModule = {
     if (!options.preserveOpener) this._fallbackOpener = null;
     if (options.restoreFocus && opener && document.contains(opener) && typeof opener.focus === 'function') {
       requestAnimationFrame(() => opener.focus({ preventScroll: true }));
+    }
+    if (wasVisible && options.emitEvent !== false && hasModule('EventBus')) {
+      EventBus.emit('globe:fallback-hidden', { reason: hiddenReason, timestamp: Date.now() });
     }
     return true;
   },
@@ -1545,20 +1507,6 @@ const GlobeModule = {
         event.stopPropagation();
         this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
       });
-      wrap.addEventListener('keydown', event => {
-        if (event.key !== 'Tab') return;
-        const heading = wrap.querySelector('#country-card-heading');
-        const tabbable = Array.from(wrap.querySelectorAll('button,a[href],summary,[tabindex="0"]')).filter(node => {
-          if (node.disabled || node.hidden || node.getAttribute('aria-hidden') === 'true') return false;
-          const style = window.getComputedStyle(node);
-          return node.getClientRects().length > 0 && style.visibility !== 'hidden';
-        });
-        if (!heading || !tabbable.length) return;
-        const first = tabbable[0];
-        const last = tabbable[tabbable.length - 1];
-        if (event.shiftKey && (document.activeElement === heading || document.activeElement === first)) { event.preventDefault(); last.focus(); }
-        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); heading.focus(); }
-      });
       document.body.appendChild(wrap);
     }
     if (!wrap.contains(tt)) wrap.insertBefore(tt, wrap.querySelector('.tt-nav-next'));
@@ -1595,7 +1543,9 @@ const GlobeModule = {
     const focus = _getCountryFocus(feature, d);
     if (this.world && focus) {
       const pov = this.world.pointOfView();
-      this.world.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: pov?.altitude || 2.2 }, opts.focus ? 500 : 0);
+      const reducedMotion = this._reducedMotionMedia?.matches === true ||
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+      this.world.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: pov?.altitude || 2.2 }, opts.focus && !reducedMotion ? 500 : 0);
     }
     const tt = $('hex-country-tooltip');
     this._queueCountrySwipeCue(tt);
@@ -1776,7 +1726,7 @@ const GlobeModule = {
       const wrap = this._ensureCountryCardWrap(tt);
       if (wrap) {
         wrap.setAttribute('role', 'dialog');
-        wrap.setAttribute('aria-modal', 'true');
+        wrap.setAttribute('aria-modal', 'false');
         wrap.setAttribute('aria-labelledby', 'country-card-heading');
       }
     }
@@ -1851,9 +1801,9 @@ const GlobeModule = {
       this._countryHoverFeature = target.feature;
       this._renderCountryInfoCard(target.feature, true);
       // Re-rendering replaces every node inside the card. Keep keyboard and
-      // screen-reader users inside the modal by focusing the new heading when
-      // their prior focus was in the replaced content. The persistent outer
-      // previous/next buttons retain focus naturally.
+      // screen-reader users in the replaced evidence context by focusing the
+      // new heading when their prior focus was in that content. The persistent
+      // outer previous/next buttons retain focus naturally.
       if (restoreHeadingFocus && tt) {
         const heading = tt.querySelector('#country-card-heading');
         if (heading) heading.focus({ preventScroll: true });
@@ -1868,7 +1818,9 @@ const GlobeModule = {
       if (this.world) {
         const pov = this.world.pointOfView();
         const focus = _getCountryFocus(target.feature, target.data);
-        if (focus) this.world.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: pov.altitude }, 650);
+        const reducedMotion = this._reducedMotionMedia?.matches === true ||
+          window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+        if (focus) this.world.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: pov.altitude }, reducedMotion ? 0 : 650);
       }
 
       if (tt) {
@@ -2792,15 +2744,13 @@ const GlobeModule = {
 
     // Nullify click handler
     _globeClickHandler = null;
-    this.hideFallback({ restoreFocus: false, preserveOpener: false });
+    this.hideFallback({ restoreFocus: false, preserveOpener: false, emitEvent: false });
     const fallbackPanel = $('globe-fallback');
     const fallbackSearch = $('globe-fallback-search');
     fallbackPanel?.removeEventListener('click', this._onFallbackClick);
-    fallbackPanel?.removeEventListener('keydown', this._onFallbackKeydown);
     fallbackSearch?.removeEventListener('input', this._onFallbackInput);
     this._onFallbackClick = null;
     this._onFallbackInput = null;
-    this._onFallbackKeydown = null;
     this._fallbackBound = false;
     this._fallbackEntries = [];
     this._fallbackSelectedIso = null;
@@ -3039,6 +2989,6 @@ if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
     provides: ['prepare', 'init', 'pause', 'resume', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'getLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState', 'getPerformanceState'],
     requires: ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE'],
-    emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown', 'globe:lens-changed'],
+    emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown', 'globe:fallback-hidden', 'globe:lens-changed'],
   });
 }

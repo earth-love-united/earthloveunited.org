@@ -6,7 +6,7 @@
     "warning": "All labels, values, sources, and entities are synthetic accessibility contract fixtures."
   },
   "cases": [
-    { "id": "valid-full-stack", "mutations": [], "expected": "pass", "calculation_hash": "74df7b12e5467c30b07a39dbca45552209d96da497258e4dcc9ae39165410960" },
+    { "id": "valid-full-stack", "mutations": [], "expected": "pass", "calculation_hash": "d08252136d93c30cbc8171a2b351047dda2690a084260104c6bbf035668b2c82" },
     { "id": "color-only-status", "mutations": [{ "path": "statuses.1.non_color_cue", "value": "color_only" }], "expected_error": "color-only" },
     { "id": "unlabelled-chart-point-year", "mutations": [{ "path": "artifacts.ct32_card.chart.measured_series.0.points.0.year", "value": null }], "expected_error": "real year" },
     { "id": "chart-point-missing-unit", "mutations": [{ "path": "artifacts.ct32_card.chart.measured_series.0.points.0.unit", "value": null }], "expected_error": "point unit" },

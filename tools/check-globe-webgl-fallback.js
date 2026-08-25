@@ -63,16 +63,25 @@ function compile() {
         globe.includes("document.addEventListener('visibilitychange', this._onVisibilityChange)") &&
         globe.includes('this.world.pauseAnimation()') && globe.includes('this.world.resumeAnimation()') &&
         fallbackRuntime.includes('this.pause();') && fallbackRuntime.includes('this._syncAnimationLifecycle();'),
-      contracts_registered: globe.includes("'pause'") && globe.includes("'resume'") && globe.includes("'hasWebGLSupport'") && globe.includes("'showFallback'") && globe.includes("'hideFallback'") && globe.includes("'closeEvidenceBrowser'") && globe.includes("'globe:fallback-shown'") && app.includes("'retryGlobe'") && app.includes("'browseEvidence'") && app.includes("'globe:fallback-shown'"),
+      contracts_registered: globe.includes("'pause'") && globe.includes("'resume'") && globe.includes("'hasWebGLSupport'") && globe.includes("'showFallback'") && globe.includes("'hideFallback'") && globe.includes("'closeEvidenceBrowser'") && globe.includes("'globe:fallback-shown'") && globe.includes("'globe:fallback-hidden'") && guided.includes("EventBus.on('globe:fallback-hidden', _onFallbackHidden)") && app.includes("'retryGlobe'") && app.includes("'browseEvidence'") && app.includes("'globe:fallback-shown'"),
       lens_parity: globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows'") && globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView'") && globe.includes('this._renderFallbackEvidence();'),
     },
     accessibility: {
-      body_level_region: html.indexOf('<section id="globe-fallback"') > html.indexOf('<div id="globeViz" aria-hidden="true"></div>') && fallbackHtml.includes('aria-labelledby="globe-fallback-title"'),
+      body_level_region: html.indexOf('<section id="globe-fallback"') > html.indexOf('<div id="globeViz" aria-hidden="true"></div>') &&
+        fallbackOpenTag.includes('role="region"') && !fallbackOpenTag.includes('aria-modal=') && fallbackHtml.includes('aria-labelledby="globe-fallback-title"'),
       closed_inert: /\shidden(?:\s|>)/.test(fallbackOpenTag) &&
         /\saria-hidden="true"(?:\s|>)/.test(fallbackOpenTag) &&
         css.includes('#globe-fallback[hidden] { display: none !important; }'),
       labelled_status: fallbackHtml.includes('id="globe-fallback-title" tabindex="-1"') && fallbackHtml.includes('role="status" aria-live="polite"'),
       searchable_evidence: fallbackHtml.includes('id="globe-fallback-search"') && fallbackHtml.includes('id="globe-fallback-country-list"') && fallbackRuntime.includes('data-fallback-country-iso') && fallbackRuntime.includes("if (name === 'close')"),
+      lens_and_tutorial_operable: !globe.includes('_setFallbackIsolation(') && !globe.includes('_onFallbackKeydown') &&
+        html.includes('id="climate-lens-controls"') && html.includes('id="guided-orbit"') &&
+        fallbackRuntime.includes('this._bindLensControls();') &&
+        guidedCss.includes('body.globe-fallback-active .guided-orbit[data-mode="interaction"] .guided-orbit-card') &&
+        guidedCss.includes('@media (min-width: 801px) and (max-width: 1280px)') &&
+        guidedCss.includes('top: auto;') && guidedCss.includes('right: 12px;') &&
+        guidedCss.includes('bottom: max(12px, env(safe-area-inset-bottom));') &&
+        guidedCss.includes('(max-height: 767px)') && guidedCss.includes('top: 132px;'),
       focus_restoration: app.includes("safeCall('GlobeModule', 'rememberFallbackOpener', document.activeElement)") && app.includes("safeCall('GlobeModule', 'hideFallback', { restoreFocus: true, preserveOpener: false })") && globe.includes('requestAnimationFrame(() => opener.focus({ preventScroll: true }))'),
       touch_targets_44px: css.includes('.elu-fallback-actions .glass-btn') && css.includes('.elu-fallback-search input') && css.includes('min-height: 44px;') && css.includes('min-height: 52px;'),
       reduced_motion: css.includes('@media (prefers-reduced-motion: reduce)') && css.includes('#globe-fallback *') && css.includes('transition: none !important;'),
@@ -105,21 +114,29 @@ function compile() {
         smoke.includes('All 249 evidence records remain first-class and searchable') &&
         smoke.includes('Globe renderer follows the visible application lifecycle') &&
         smoke.includes('Guided orbit suppresses no-data routes and owns one control lifecycle') &&
+        smoke.includes('Fallback tutorial shelf leaves lens, search, and country chooser operable') &&
         smoke.includes('Country rail exposes the exact lens metric and searchable gaps') &&
-        smoke.includes('Guided orbit completion is keyboard-reachable inside the country dialog'),
+        smoke.includes('Guided orbit traces evidence inside the non-modal country panel'),
       guided_no_data_terminal: guided.includes("fallbackReason === 'candidate_data_unavailable'") &&
         guided.includes('_suppressUnavailableEvidence(options = {})') &&
         guided.includes("payload?.reason || window.GlobeModule?._fallbackReasonCode") &&
-        guided.includes('Guided First Orbit is unavailable because country evidence could not be loaded.'),
-      guided_modal_completion: guided.includes("button.id = 'guided-orbit-dialog-complete'") &&
-        guided.includes("root.dataset.completion = 'country-dialog'") &&
+        guided.includes('Climate Intelligence first orbit is unavailable because country evidence could not be loaded.'),
+      guided_panel_completion: guided.includes("button.id = 'guided-orbit-dialog-complete'") &&
+        guided.includes("root.dataset.actionLocation = 'country-dialog'") &&
+        guided.includes("button.textContent = step === COUNTRY_STEP ? 'Trace the evidence' : 'Explore freely'") &&
+        guided.includes('goToStep(FINAL_STEP, { focus: false })') &&
+        guided.includes('methods.open = true') &&
         guided.includes("anchor.after(button)") &&
         guided.includes("EventBus.on('globe:country-closed', _onCountryClosed)") &&
         guided.includes("goToStep(1, { focus: false })") &&
-        guidedCss.includes('.guided-orbit-dialog-complete'),
-      guided_visible_focus_restore: guided.includes("target.closest('[hidden],[aria-hidden=\"true\"]')") &&
-        guided.includes('target.getClientRects().length > 0') &&
-        guided.includes('[selectedHeading, fallbackHeading, opener, replay].find(_isVisibleFocusTarget)'),
+        guided.includes('const FINAL_STEP = 3;') &&
+        guidedCss.includes('.guided-orbit-dialog-complete') && guidedCss.includes('body.guided-orbit-step-4'),
+      guided_visible_focus_restore: guided.includes("target.closest('[hidden],[aria-hidden=\"true\"],[inert]')") &&
+        guided.includes('target.getClientRects().length > 0') && guided.includes('Number(nodeStyle.opacity) === 0') &&
+        guided.includes('const candidates = [selectedHeading, fallbackHeading, opener, replay]') &&
+        guided.includes('document.activeElement === candidate') &&
+        guided.includes('window.requestAnimationFrame(() =>') &&
+        detailRuntime.includes('id="globe-fallback-detail-title" tabindex="-1"'),
       guided_listener_teardown: ['_onPrimaryClick', '_onBackClick', '_onCloseClick'].every(handler =>
         guided.includes(`addEventListener('click', ${handler})`) && guided.includes(`removeEventListener('click', ${handler})`)),
       architecture_route: architecture.includes('load failure → show body-level #globe-fallback evidence view') &&

@@ -13,6 +13,7 @@
     {"id": "contracts-regressed", "path": "runtime.contracts_registered", "value": false},
     {"id": "lens-parity-removed", "path": "runtime.lens_parity", "value": false},
     {"id": "focus-restoration-removed", "path": "accessibility.focus_restoration", "value": false},
+    {"id": "fallback-tutorial-controls-obscured", "path": "accessibility.lens_and_tutorial_operable", "value": false},
     {"id": "fallback-nested-in-globe", "path": "accessibility.body_level_region", "value": false},
     {"id": "fallback-not-inert-when-closed", "path": "accessibility.closed_inert", "value": false},
     {"id": "touch-targets-regressed", "path": "accessibility.touch_targets_44px", "value": false},

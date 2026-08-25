@@ -142,9 +142,9 @@ function baseInput() {
         { id: 'source-fixture-one', role: 'link', label: 'Open source: Fictional inventory', focusable: true, tab_index: 0, target_size: { width: 180, height: 44 } }
       ],
       dialog: {
-        id: 'country-card', label: 'Fixture Republic climate profile', role: 'dialog', aria_modal: true,
+        id: 'country-card', label: 'Fixture Republic climate profile', role: 'dialog', aria_modal: false,
         heading_id: 'country-card-heading', labelledby: 'country-card-heading',
-        focus_on_open: 'country-card-heading', escape_closes: true, focus_trap: true,
+        focus_on_open: 'country-card-heading', escape_closes: true, focus_trap: false,
         restore_focus_to: 'ranking-row-ZZZ', close_control_id: 'country-card-close'
       }
     },

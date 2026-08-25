@@ -363,7 +363,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
 <link rel="stylesheet" href="css/globe-system.css?v=v39">
-<link rel="stylesheet" href="css/guided-first-orbit.css?v=v2">
+<link rel="stylesheet" href="css/guided-first-orbit.css?v=v6">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -465,7 +465,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
         <div class="stat-value negative">+20 Gt CO₂/yr</div>
       </div>
     </div>
-    <button id="guided-orbit-replay" type="button" aria-label="Show how the Living Globe works" title="Guided First Orbit">
+    <button id="guided-orbit-replay" type="button" aria-label="Replay Climate Intelligence first orbit" title="Replay Climate Intelligence first orbit">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-18 12 12)"></ellipse><circle cx="20.2" cy="9.3" r="1.1" fill="currentColor" stroke="none"></circle></svg>
     </button>
     <button id="globe-theme-toggle" aria-label="Toggle light / dark theme" title="Toggle theme">
@@ -500,29 +500,46 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <div class="guided-orbit-card">
     <header class="guided-orbit-topline">
       <button id="guided-orbit-back" class="guided-orbit-icon-button" type="button" aria-label="Previous tutorial step" hidden>←</button>
-      <p id="guided-orbit-kicker" class="guided-orbit-kicker">Guided first orbit · 1 of 3</p>
+      <p id="guided-orbit-kicker" class="guided-orbit-kicker">Climate Intelligence · first orbit · 1 of 4</p>
       <button id="guided-orbit-close" class="guided-orbit-icon-button" type="button" aria-label="Skip tutorial">×</button>
     </header>
 
-    <div class="guided-orbit-progress" role="progressbar" aria-label="Tutorial progress" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1">
+    <div class="guided-orbit-progress" role="progressbar" aria-label="Tutorial progress" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1">
       <span id="guided-orbit-progress"></span>
     </div>
 
     <div class="guided-orbit-content">
-      <h2 id="guided-orbit-title" class="guided-orbit-title" tabindex="-1">A climate evidence atlas.</h2>
-      <p id="guided-orbit-body" class="guided-orbit-body">Start with 2024 territorial fossil CO₂, then switch to power or projected warming without combining them into one score.</p>
+      <h2 id="guided-orbit-title" class="guided-orbit-title" tabindex="-1">Three lenses. No single score.</h2>
+      <p id="guided-orbit-body" class="guided-orbit-body">Carbon, Power, and Physical answer different questions. They are never combined into a score.</p>
+      <div id="guided-orbit-lens-guide" class="guided-orbit-lens-guide" aria-label="Climate Intelligence lens meanings">
+        <article data-guided-orbit-lens="carbon" aria-current="true">
+          <span>Carbon</span>
+          <strong>Territorial fossil CO₂ · 2024</strong>
+          <small>Annual magnitude; land use stays separate.</small>
+        </article>
+        <article data-guided-orbit-lens="power">
+          <span>Power</span>
+          <strong>Clean electricity share · 2024</strong>
+          <small>Generation, not the whole energy system.</small>
+        </article>
+        <article data-guided-orbit-lens="physical">
+          <span>Physical</span>
+          <strong>Projected warming · 2040–2059</strong>
+          <small>SSP2-4.5 median vs 1995–2014; not vulnerability.</small>
+        </article>
+      </div>
     </div>
 
-    <div id="guided-orbit-legend" class="guided-orbit-legend" aria-label="Emissions map key" hidden>
-      <span class="guided-orbit-signal"><i class="guided-orbit-swatch is-low" aria-hidden="true"></i>Lower</span>
-      <span class="guided-orbit-signal"><i class="guided-orbit-swatch is-high" aria-hidden="true"></i>Higher</span>
-      <span class="guided-orbit-signal"><i class="guided-orbit-swatch is-gap" aria-hidden="true"></i>Source gap</span>
+    <div id="guided-orbit-legend" class="guided-orbit-legend" aria-label="Selected climate lens map key" hidden>
+      <span class="guided-orbit-signal" data-guided-orbit-signal="low"><i class="guided-orbit-swatch is-low" aria-hidden="true"></i>Lower</span>
+      <span class="guided-orbit-signal" data-guided-orbit-signal="high"><i class="guided-orbit-swatch is-high" aria-hidden="true"></i>Higher</span>
+      <span class="guided-orbit-signal" data-guided-orbit-signal="gap"><i class="guided-orbit-swatch is-gap" aria-hidden="true"></i>Source gap</span>
     </div>
 
-    <p id="guided-orbit-hint" class="guided-orbit-hint">Three ideas · about twenty seconds</p>
+    <p id="guided-orbit-hint" class="guided-orbit-hint">Four ideas · under a minute</p>
 
     <footer class="guided-orbit-actions">
-      <button id="guided-orbit-primary" class="guided-orbit-button" type="button">Read the map</button>
+      <button id="guided-orbit-primary" class="guided-orbit-button" type="button">Read the atlas</button>
     </footer>
   </div>
 </aside>
@@ -815,10 +832,10 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v9"></script>
 <script src="js/country-climate-intelligence.js?v=v13"></script>
-<script src="js/globe.js?v=v32"></script>
+<script src="js/globe.js?v=v33"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
-<script src="js/guided-first-orbit.js?v=v3"></script>
-<script src="js/app.js?v=v4"></script>
+<script src="js/guided-first-orbit.js?v=v4"></script>
+<script src="js/app.js?v=v5"></script>
 
 <!-- Glass system behavior: scroll reveal + theme toggle (design handoff v1) -->
 <script>
@@ -889,7 +906,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   var h = location.hostname;
   if (h !== 'localhost' && h !== '127.0.0.1' && h !== '::1') return;
   var tools = [
-    'tools/smoke-test.js?v=v1',
+    'tools/smoke-test.js?v=v2',
     'tools/stack-lint.js?v=v1'
   ];
   tools.forEach(function(src) {
@@ -915,7 +932,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <!-- Accessible evidence route. GlobeModule reveals this body-level region
      when critical candidate data, geometry, visual assets, the renderer,
      WebGL, or globe construction fail closed. -->
-<section id="globe-fallback" hidden role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="globe-fallback-title">
+<section id="globe-fallback" hidden role="region" aria-hidden="true" aria-labelledby="globe-fallback-title">
   <div class="elu-fallback-shell">
     <header class="elu-fallback-header">
       <p class="elu-fallback-eyebrow">Living Globe · accessible evidence view</p>
@@ -963,7 +980,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=60-power-title-cleanup', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=61-climate-intelligence-orbit', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it
