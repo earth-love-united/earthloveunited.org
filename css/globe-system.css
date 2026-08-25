@@ -1354,6 +1354,133 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   background: var(--hud-trajectory-bg);
 }
 
+.tt-physical-story { margin-top: 12px; }
+
+.tt-climate-variable {
+  padding: 10px;
+  border: 1px solid var(--hud-border);
+  border-radius: 3px;
+  background: var(--hud-cell);
+}
+
+.tt-climate-variable + .tt-climate-variable { margin-top: 10px; }
+
+.tt-climate-variable > h3 {
+  margin: 0 0 9px;
+  color: var(--mint);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.15px;
+  text-transform: uppercase;
+}
+
+.tt-climate-evidence + .tt-climate-evidence,
+.tt-climate-evidence + .tt-projected-fact,
+.tt-projected-fact + .tt-climate-evidence { margin-top: 10px; }
+
+.tt-climate-evidence > h4 {
+  margin: 0 0 6px;
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: .85px;
+  text-transform: uppercase;
+}
+
+.tt-climate-evidence .elu-trajectory,
+.tt-projected-fact .tt-fact { margin-top: 0; }
+
+.elu-projection-ensemble {
+  padding: 9px 10px 8px;
+  border: 1px solid var(--hud-border);
+  border-radius: 3px;
+  background: var(--hud-trajectory-bg);
+}
+
+.elu-projection-ensemble svg {
+  display: block;
+  width: 100%;
+  height: 72px;
+  overflow: visible;
+  shape-rendering: geometricPrecision;
+}
+
+.elu-projection-fan {
+  fill: rgba(77, 139, 216, .16);
+  stroke: rgba(77, 139, 216, .45);
+  stroke-width: .7;
+}
+
+.elu-projection-median {
+  fill: none;
+  stroke: var(--teal);
+  stroke-width: 1.8;
+  stroke-dasharray: 5 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.elu-projection-draw {
+  fill: none;
+  stroke-width: 1.35;
+  opacity: .9;
+  vector-effect: non-scaling-stroke;
+}
+
+.elu-projection-draw.is-coolest { stroke: #4d8bd8; stroke-dasharray: 1 2; }
+.elu-projection-draw.is-cool { stroke: #55c7d9; stroke-dasharray: 5 2; }
+.elu-projection-draw.is-middle { stroke: var(--mint); }
+.elu-projection-draw.is-warm { stroke: #f2b36f; stroke-dasharray: 7 2; }
+.elu-projection-draw.is-warmest { stroke: #e85b45; stroke-dasharray: 2 2; }
+
+.elu-projection-endpoint { stroke: var(--hud-bg-strong); stroke-width: .9; }
+.elu-projection-endpoint.is-coolest { fill: #4d8bd8; }
+.elu-projection-endpoint.is-cool { fill: #55c7d9; }
+.elu-projection-endpoint.is-middle { fill: var(--mint); }
+.elu-projection-endpoint.is-warm { fill: #f2b36f; }
+.elu-projection-endpoint.is-warmest { fill: #e85b45; }
+
+.elu-projection-axis {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: -1px;
+  color: var(--hud-muted);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .45px;
+  line-height: 1.2;
+}
+
+.elu-projection-axis span:last-child { text-align: right; }
+
+.elu-projection-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 7px;
+  color: var(--hud-faint);
+  font-size: 8px;
+}
+
+.elu-projection-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.elu-projection-legend span::before { content: ''; width: 14px; border-top: 2px solid var(--mint); }
+.elu-projection-legend .is-draws::before { border-image: linear-gradient(90deg, #4d8bd8, #55c7d9, #7ce7cd, #f2b36f, #e85b45) 1; }
+.elu-projection-legend .is-fan::before { height: 5px; border: 1px solid rgba(77, 139, 216, .5); background: rgba(77, 139, 216, .16); }
+.elu-projection-legend .is-median::before { border-color: var(--teal); border-top-style: dashed; }
+
+.elu-projection-disclosure {
+  margin: 8px 0 0;
+  padding-top: 7px;
+  border-top: 1px solid var(--hud-divider-soft);
+  color: var(--hud-muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.elu-projection-disclosure strong { color: var(--text2); }
+
 .elu-trajectory-head {
   display: flex;
   align-items: baseline;

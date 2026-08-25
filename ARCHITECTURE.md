@@ -185,10 +185,16 @@ published warming range. Physical relief is projected warming only—not
 vulnerability, damage, or responsibility.
 
 The Physical card separately renders the compiled 1970–2025 ERA5 annual
-temperature and precipitation series and supplied OLS endpoints for 245 entities. These charts do
-not affect the Physical comparison order, which remains the exact SSP2-4.5
-modeled projection metric. `COUNTRY_CLIMATE_INTELLIGENCE` removes At-a-glance
-and chart metric IDs from the expanded lens grid while retaining all facts in the methods
+temperature and precipitation series and supplied OLS endpoints for 245 entities. It groups
+observed temperature analysis, a deterministic five-draw projection illustration, and the
+unchanged projected-temperature fact before the projected-precipitation fact and observed
+precipitation data. `COUNTRY_CLIMATE_INTELLIGENCE` samples the illustration from a
+piecewise-linear quantile model anchored to the published SSP2-4.5 p10, median, and p90,
+truncated to that range and seeded by country plus factual release checksum. The renderer
+labels the paths as visual interpolation—not CMIP6 model runs, annual forecasts, evidence,
+or ranking inputs. These views do not affect the Physical comparison order, which remains
+the exact SSP2-4.5 modeled projection metric. At-a-glance, observed-series, and projected
+fact IDs are removed from the expanded lens grid while all facts remain in the methods
 drawer, so the renderer never duplicates a headline fact card.
 
 ### Globe performance boundary
@@ -363,8 +369,8 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v50 precaches the public page, core CSS/JS, Guided First
-Orbit UI, the shared raised-tile lenses, verified local globe.gl, the CT-45 manifest
+`sw.js` cache epoch v52 precaches the public page, core CSS/JS, Guided First
+Orbit UI, the shared raised-tile lenses, deterministic Physical-card ensemble, verified local globe.gl, the CT-45 manifest
 and localized globe assets, and the exact-version Country Climate Intelligence
 candidate. The prior country-factual candidate is retained for one release
 epoch as a rollback artifact; it is not loaded into the v1 dashboard. The

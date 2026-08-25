@@ -1902,6 +1902,67 @@ const GlobeModule = {
       + '<details class="tt-chart-data"><summary>Show chart data</summary><table><caption>' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(chartLabel) + '</caption><thead><tr><th>Year</th><th>Value</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>';
   },
 
+  _renderTemperatureProjectionEnsemble(view, idPrefix = 'country-card', ensemble = null) {
+    if (!ensemble || !Array.isArray(ensemble.draws) || !ensemble.draws.length) return '';
+    const min = Math.min(0, ensemble.p10);
+    const max = Math.max(0, ensemble.p90);
+    const span = Math.max(max - min, 0.001);
+    const steps = [0, 0.16, 0.32, 0.5, 0.68, 0.84, 1];
+    const xFor = step => 8 + step * 304;
+    const yFor = value => 51 - ((value - min) / span) * 39;
+    const smooth = step => step * step * (3 - 2 * step);
+    const coordinates = value => steps.map(step => xFor(step).toFixed(1) + ',' + yFor(value * smooth(step)).toFixed(1)).join(' ');
+    const upper = steps.map(step => xFor(step).toFixed(1) + ',' + yFor(ensemble.p90 * smooth(step)).toFixed(1));
+    const lower = steps.slice().reverse().map(step => xFor(step).toFixed(1) + ',' + yFor(ensemble.p10 * smooth(step)).toFixed(1));
+    const fan = '<polygon class="elu-projection-fan" points="' + upper.concat(lower).join(' ') + '"></polygon>';
+    const median = '<polyline class="elu-projection-median" points="' + coordinates(ensemble.median) + '"></polyline>';
+    const paths = ensemble.draws.map(draw => '<polyline class="elu-projection-draw is-' + _escapeHtml(draw.tone) + '" points="' + coordinates(draw.value) + '"><title>Deterministic draw at q' + Math.round(draw.quantile * 100) + ': ' + draw.value.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(ensemble.unit) + '</title></polyline>').join('');
+    const endpoints = ensemble.draws.map(draw => '<circle class="elu-projection-endpoint is-' + _escapeHtml(draw.tone) + '" cx="312" cy="' + yFor(draw.value).toFixed(1) + '" r="2"><title>q' + Math.round(draw.quantile * 100) + ': ' + draw.value.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(ensemble.unit) + '</title></circle>').join('');
+    const rows = ensemble.draws.map((draw, index) => '<tr><th scope="row">Draw ' + (index + 1) + '</th><td>q' + Math.round(draw.quantile * 100) + '</td><td>' + draw.value.toLocaleString('en-US', { maximumFractionDigits: 2 }) + '</td><td>' + _escapeHtml(ensemble.unit) + '</td></tr>').join('');
+    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-projection-ensemble').replace(/[^a-zA-Z0-9_-]/g, '-');
+    const titleId = chartId + '-title';
+    const descId = chartId + '-desc';
+    return '<div class="elu-projection-ensemble"><div class="elu-trajectory-head"><span class="elu-trajectory-title">' + _escapeHtml(ensemble.title) + '</span><span class="elu-trajectory-note">' + _escapeHtml(ensemble.scenario) + '</span></div>'
+      + '<svg viewBox="0 0 320 72" role="img" aria-labelledby="' + titleId + ' ' + descId + '"><title id="' + titleId + '">' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(ensemble.scenario) + ' illustrative temperature-change ensemble</title><desc id="' + descId + '">Five deterministic colored samples are drawn inside the published p10 to p90 uncertainty range around the mid-century median. The path shapes are visual interpolation only and are not annual forecasts or climate-model runs.</desc>'
+      + '<line class="elu-trajectory-grid" x1="8" y1="' + yFor(0).toFixed(1) + '" x2="312" y2="' + yFor(0).toFixed(1) + '"></line>' + fan + median + paths + endpoints
+      + '<text class="elu-chart-axis" x="8" y="9">p90 ' + ensemble.p90.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(ensemble.unit) + '</text><text class="elu-chart-axis" x="8" y="66">p10 ' + ensemble.p10.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(ensemble.unit) + '</text></svg>'
+      + '<div class="elu-projection-axis"><span>' + _escapeHtml(ensemble.baseline) + ' baseline</span><span>' + _escapeHtml(ensemble.period) + ' mean</span></div>'
+      + '<div class="elu-projection-legend" aria-hidden="true"><span class="is-draws">' + ensemble.sample_count + ' deterministic draws</span><span class="is-fan">Published p10–p90</span><span class="is-median">Published median</span></div>'
+      + '<p class="elu-projection-disclosure"><strong>Illustrative layer:</strong> ' + _escapeHtml(ensemble.disclosure) + '</p></div>'
+      + '<details class="tt-chart-data"><summary>Show ensemble draws</summary><table><caption>' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(ensemble.scenario) + ' deterministic uncertainty samples</caption><thead><tr><th>Sample</th><th>Quantile</th><th>Change</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>';
+  },
+
+  _renderPhysicalClimateMetrics(view, idPrefix = 'country-card') {
+    const story = view.physical_story;
+    const sectionId = (idPrefix + '-' + view.country.iso_alpha3 + '-physical-story').replace(/[^a-zA-Z0-9_-]/g, '-');
+    const temperatureId = sectionId + '-temperature';
+    const precipitationId = sectionId + '-precipitation';
+    const temperatureObserved = story.temperature.observed;
+    const precipitationObserved = story.precipitation.observed;
+    const temperatureObservedHtml = Array.isArray(temperatureObserved?.series) && temperatureObserved.series.length > 1
+      ? this._renderClimateSeries(view, idPrefix, temperatureObserved, 0)
+      : (temperatureObserved ? this._renderClimateFact(temperatureObserved) : '');
+    const precipitationObservedHtml = Array.isArray(precipitationObserved?.series) && precipitationObserved.series.length > 1
+      ? this._renderClimateSeries(view, idPrefix, precipitationObserved, 1)
+      : (precipitationObserved ? this._renderClimateFact(precipitationObserved) : '');
+    const projectionHtml = this._renderTemperatureProjectionEnsemble(view, idPrefix, story.temperature.projection_ensemble);
+    const futureProjectionBlock = projectionHtml
+      ? '<div class="tt-climate-evidence"><h4>Future projection</h4>' + projectionHtml + '</div>'
+      : '';
+    const temperatureFact = story.temperature.projected_fact ? this._renderClimateFact(story.temperature.projected_fact) : '';
+    const precipitationFact = story.precipitation.projected_fact ? this._renderClimateFact(story.precipitation.projected_fact) : '';
+    return '<section class="tt-physical-story" aria-label="Physical climate evidence">'
+      + '<section class="tt-climate-variable is-temperature" aria-labelledby="' + temperatureId + '"><h3 id="' + temperatureId + '">Temperature</h3>'
+      + '<div class="tt-climate-evidence"><h4>Observed analysis</h4>' + temperatureObservedHtml + '</div>'
+      + futureProjectionBlock
+      + '<div class="tt-projected-fact">' + temperatureFact + '</div></section>'
+      + '<section class="tt-climate-variable is-precipitation" aria-labelledby="' + precipitationId + '"><h3 id="' + precipitationId + '">Precipitation</h3>'
+      + '<div class="tt-projected-fact">' + precipitationFact + '</div>'
+      + '<div class="tt-climate-evidence"><h4>Observed data</h4>' + precipitationObservedHtml + '</div></section></section>'
+      + this._renderClimateMethods(view)
+      + '<div class="tt-hint">← → or swipe changes country · esc closes · lens buttons preserve selection</div>';
+  },
+
   _renderClimateMethods(view) {
     const factMethods = view.methods.facts.map(fact => {
       const scope = fact.scope ? Object.entries(fact.scope).map(([key, value]) => '<li><strong>' + _escapeHtml(key.replace(/_/g, ' ')) + ':</strong> ' + _escapeHtml(Array.isArray(value) ? value.join(', ') : value) + '</li>').join('') : '';
@@ -1916,6 +1977,10 @@ const GlobeModule = {
         + (sources ? '<h5>Citations</h5><ul>' + sources + '</ul>' : '')
         + (fact.fact_ids.length ? '<p><strong>Fact IDs:</strong> <code>' + _escapeHtml(fact.fact_ids.join(', ')) + '</code></p>' : '') + '</details>';
     }).join('');
+    const ensemble = view.physical_story?.temperature?.projection_ensemble;
+    const ensembleMethod = ensemble
+      ? '<details class="tt-method-fact"><summary>Illustrative temperature-change ensemble · UI method</summary><p><strong>Sampling:</strong> ' + _escapeHtml(ensemble.sampling_method) + '</p><p><strong>Visual interpolation:</strong> ' + _escapeHtml(ensemble.interpolation_note) + '</p><p><strong>Boundary:</strong> ' + _escapeHtml(ensemble.disclosure) + '</p><p><strong>Reproducibility seed:</strong> <code>' + _escapeHtml(ensemble.seed) + '</code></p></details>'
+      : '';
     const historical = view.methods.citation_only_sources.map(source => '<li><a href="' + _escapeHtml(source.url) + '" target="_blank" rel="noopener">' + _escapeHtml(source.title) + '</a> · ' + _escapeHtml(source.note) + '</li>').join('');
     const official = view.methods.official_context.map(item => {
       const safeUrl = /^https:\/\//.test(item.direct_url || '') ? item.direct_url : '';
@@ -1925,13 +1990,14 @@ const GlobeModule = {
     }).join('');
     return '<details class="tt-methods"><summary>Methods &amp; sources</summary><div class="tt-methods-body"><p><strong>Release:</strong> ' + _escapeHtml(view.methods.release_id) + ' · ' + _escapeHtml(view.methods.review_label) + ' · generated ' + _escapeHtml(view.methods.generated_on) + '</p>'
       + (view.methods.checksum ? '<p><strong>Verified SHA-256:</strong> <code>' + _escapeHtml(view.methods.checksum) + '</code></p>' : '')
-      + '<p><strong>Comparison rule:</strong> ' + _escapeHtml(view.methods.comparison_rule) + '</p>' + factMethods
+      + '<p><strong>Comparison rule:</strong> ' + _escapeHtml(view.methods.comparison_rule) + '</p>' + ensembleMethod + factMethods
       + (official ? '<h4>Official document context</h4><ul>' + official + '</ul>' : '')
       + (historical ? '<h4>Historical citation-only provenance</h4><ul>' + historical + '</ul>' : '')
       + '</div></details>';
   },
 
   _renderCountryMetrics(view, idPrefix = 'country-card') {
+    if (view.lens.id === 'physical' && view.physical_story) return this._renderPhysicalClimateMetrics(view, idPrefix);
     const glance = view.at_a_glance.map(fact => this._renderClimateFact(fact)).join('');
     const facts = view.active_panel.facts.map(fact => this._renderClimateFact(fact)).join('');
     const chartFacts = Array.isArray(view.detail_charts) ? view.detail_charts : (view.detail_chart ? [view.detail_chart] : []);

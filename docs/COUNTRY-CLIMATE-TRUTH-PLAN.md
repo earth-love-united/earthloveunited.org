@@ -84,6 +84,7 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 - observed OLS slope per decade;
 - exact 56-value 1970–2025 ERA5 temperature and precipitation series, compiled fitted endpoints, 245 mappings per variable, one `KSV` exception per variable, and four explicit registry gaps;
 - CMIP6 p10 ≤ median ≤ p90;
+- deterministic Physical-card projection samples reproduce exactly for the same country and factual release, remain inside the published SSP2-4.5 p10–p90 range, and never enter metric records, rankings, or comparisons;
 - complete SSP2-4.5 range plus SSP1-2.6/SSP5-8.5 medians;
 - exact scope matching before any numerical source delta;
 - estimates or models rejected from a lens requiring actual evidence.
@@ -98,7 +99,8 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 - v2.6.1 present only in detailed citation provenance; v2.7 absent entirely;
 - selection preserved across lenses;
 - metric/value/unit/period/evidence in tooltips;
-- no overlap among At a glance, the observed charts, and the expanded lens grid; Physical uses separate ERA5 temperature and precipitation charts while its ordered rail remains the modeled projection metric;
+- no overlap among At a glance, observed charts, projection illustration, and projected fact cards; Physical groups observed temperature, the explicitly non-forecast illustrative ensemble, the unchanged projected-temperature fact, the projected-precipitation fact, and observed precipitation while its ordered rail remains the modeled projection metric;
+- the illustrative temperature ensemble is labelled as deterministic in-house Monte Carlo, discloses its truncated piecewise-linear p10/median/p90 sampling method and seed, and never calls its colored paths CMIP6 model runs or annual forecasts;
 - every tile relief value is a subtle monotonic encoding of the active lens's exact comparison metric; the query-only inverse Carbon demo declares its direction and never changes the raw emissions rail, while Physical height is never described as vulnerability, damage, or responsibility;
 - fallback parity for all 249 records;
 - body-level controls, 44px touch targets, reduced motion, focus restoration, and non-color status cues;

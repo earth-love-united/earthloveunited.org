@@ -1,17 +1,17 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v51) — stage the compact climate renderer contract, 120 Hz
- * interaction path, and the reviewed ERA5 series atomically.
+ * Globe cache (v52) — stage the deterministic physical-climate ensemble,
+ * regrouped evidence card, and 120 Hz renderer contract atomically.
  */
-const CACHE_NAME = 'elu-v51-globe-120fps';
+const CACHE_NAME = 'elu-v52-physical-ensemble';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v30',
+  '/css/globe-system.css?v=v31',
   '/css/guided-first-orbit.css?v=v2',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
@@ -29,8 +29,8 @@ const STATIC_ASSETS = [
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v7',
-  '/js/country-climate-intelligence.js?v=v8',
-  '/js/globe.js?v=v26',
+  '/js/country-climate-intelligence.js?v=v9',
+  '/js/globe.js?v=v27',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v3',
   '/js/app.js?v=v4',

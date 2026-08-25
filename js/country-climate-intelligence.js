@@ -8,10 +8,13 @@
 const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   'use strict';
 
-  const VERSION = '1.4.0';
+  const VERSION = '1.5.0';
   const RELIEF_BASE_ALTITUDE = 0.007;
   const RELIEF_RANGE = 0.005;
   const CARBON_RELIEF_DEMO_VALUE = 'low-is-high';
+  const PROJECTION_DRAW_COUNT = 5;
+  const PROJECTION_QUANTILE_MIN = 0.1;
+  const PROJECTION_QUANTILE_MAX = 0.9;
   const PANEL_METRICS = Object.freeze({
     carbon: Object.freeze([
       'emissions.fossil_co2.territorial',
@@ -192,6 +195,75 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     };
   }
 
+  function hash32(value) {
+    let hash = 2166136261;
+    const text = String(value || '');
+    for (let index = 0; index < text.length; index += 1) {
+      hash ^= text.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+  }
+
+  function seededUnit(seed) {
+    let value = seed >>> 0;
+    value += 0x6D2B79F5;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  }
+
+  function interpolatePublishedQuantiles(quantile, p10, median, p90) {
+    if (quantile <= 0.5) {
+      return p10 + ((quantile - PROJECTION_QUANTILE_MIN) / (0.5 - PROJECTION_QUANTILE_MIN)) * (median - p10);
+    }
+    return median + ((quantile - 0.5) / (PROJECTION_QUANTILE_MAX - 0.5)) * (p90 - median);
+  }
+
+  function buildTemperatureProjectionEnsemble(country, fact) {
+    const p10 = fact?.uncertainty?.p10;
+    const median = fact?.value;
+    const p90 = fact?.uncertainty?.p90;
+    if (!fact?.available || !finite(p10) || !finite(median) || !finite(p90) || p10 > median || median > p90) return null;
+
+    const releaseFingerprint = _release?.release?.verified_sha256 || _release?.release?.id || VERSION;
+    const seedMaterial = country.country_id + '|' + releaseFingerprint + '|ssp245-mid-century-ensemble-v1';
+    const seed = hash32(seedMaterial);
+    const stratumWidth = (PROJECTION_QUANTILE_MAX - PROJECTION_QUANTILE_MIN) / PROJECTION_DRAW_COUNT;
+    const draws = Array.from({ length: PROJECTION_DRAW_COUNT }, (_, index) => {
+      const unit = seededUnit((seed + Math.imul(index + 1, 0x9E3779B1)) >>> 0);
+      const quantile = PROJECTION_QUANTILE_MIN + index * stratumWidth + unit * stratumWidth;
+      return Object.freeze({
+        id: 'draw-' + (index + 1),
+        quantile: round(quantile, 4),
+        value: round(interpolatePublishedQuantiles(quantile, p10, median, p90), 4),
+        tone: ['coolest', 'cool', 'middle', 'warm', 'warmest'][index],
+      });
+    });
+
+    return Object.freeze({
+      id: 'climate.temperature.change.illustrative_ensemble',
+      source_metric_id: fact.id,
+      title: 'Illustrative temperature-change ensemble',
+      evidence_class: 'illustrative_ui',
+      ranking_eligible: false,
+      annual_timing: false,
+      scenario: 'SSP2-4.5',
+      period: fact.period ? String(fact.period).split(' vs ')[0] : '2040–2059',
+      baseline: fact.context?.baseline || '1995–2014',
+      unit: fact.unit,
+      p10,
+      median,
+      p90,
+      draws: Object.freeze(draws),
+      sample_count: draws.length,
+      seed: seed.toString(16).padStart(8, '0'),
+      sampling_method: 'Five deterministic stratified draws from a piecewise-linear quantile model anchored to the published SSP2-4.5 p10, median, and p90. Sampling is truncated to p10–p90.',
+      interpolation_note: 'Colored paths are visual bridges from the baseline reference to sampled mid-century mean changes; their shapes have no annual timing meaning.',
+      disclosure: 'In-house Monte Carlo only—not CMIP6 model runs, annual forecasts, new evidence, or ranking inputs.',
+    });
+  }
+
   function normalize(lensId, value) {
     if (!finite(value)) return null;
     const domain = _domainByLens.get(lensId);
@@ -309,7 +381,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
 
   function atAGlanceMetrics(lensId) {
     if (lensId === 'power') return ['electricity.clean_share', 'electricity.clean_share_change_5y', 'electricity.carbon_intensity'];
-    if (lensId === 'physical') return ['climate.temperature.change', 'climate.precipitation.change'];
+    if (lensId === 'physical') return [];
     return ['emissions.fossil_co2.territorial', 'emissions.fossil_co2.territorial_per_capita', 'emissions.fossil_co2.cumulative'];
   }
 
@@ -331,9 +403,28 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       ? ['climate.temperature.observed_trend', 'climate.precipitation.observed_trend']
       : [lens.comparison_metric_id];
     const chartMetricSet = new Set(chartMetricIds);
-    const panelFacts = activeFacts.filter(fact => !glanceMetricSet.has(fact.id) && !chartMetricSet.has(fact.id));
+    const panelFacts = lens.id === 'physical'
+      ? []
+      : activeFacts.filter(fact => !glanceMetricSet.has(fact.id) && !chartMetricSet.has(fact.id));
     const detailCharts = chartMetricIds.map(metricId => factView(metricId, country)).filter(fact => fact.series.length > 1);
     const detailChart = detailCharts[0] || null;
+    const temperatureObserved = activeFacts.find(fact => fact.id === 'climate.temperature.observed_trend') || null;
+    const precipitationObserved = activeFacts.find(fact => fact.id === 'climate.precipitation.observed_trend') || null;
+    const temperatureProjected = activeFacts.find(fact => fact.id === 'climate.temperature.change') || null;
+    const precipitationProjected = activeFacts.find(fact => fact.id === 'climate.precipitation.change') || null;
+    const physicalStory = lens.id === 'physical'
+      ? {
+          temperature: {
+            observed: temperatureObserved,
+            projection_ensemble: buildTemperatureProjectionEnsemble(country, temperatureProjected),
+            projected_fact: temperatureProjected,
+          },
+          precipitation: {
+            projected_fact: precipitationProjected,
+            observed: precipitationObserved,
+          },
+        }
+      : null;
     const citationOnlySources = _release.source_catalog
       .filter(source => source.public_role === 'citation_only')
       .map(source => ({ id: source.id, title: source.title, version: source.version, url: source.source_url, note: 'Citation retained for historical provenance; no values from this source appear in this release.' }));
@@ -367,6 +458,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       detail_chart: detailChart,
       detail_chart_heading: lens.id === 'physical' && detailCharts.length ? 'Observed reanalysis' : null,
       detail_charts: detailCharts,
+      physical_story: physicalStory,
       active_panel: {
         id: lens.id,
         heading: panel.heading,
