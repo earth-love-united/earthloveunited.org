@@ -23,7 +23,7 @@ const RUNTIME_PATH = path.join(ROOT, 'data/climate/runtime/country-climate-intel
 const MANIFEST_PATH = path.join(ROOT, 'data/climate/releases/country-climate-intelligence-v1/release-manifest.json');
 const EXPECTED_COVERAGE = {
   'climate.precipitation.change': 245,
-  'climate.precipitation.observed_trend': 0,
+  'climate.precipitation.observed_trend': 245,
   'climate.temperature.change': 245,
   'climate.temperature.observed_trend': 245,
   'electricity.carbon_intensity': 195,
@@ -52,6 +52,14 @@ function checkComponentReceipts(runtime, manifest) {
   for (const receipt of [manifest.source_receipts, manifest.transformation_log]) {
     assert(receipt?.path && receipt?.sha256, 'release manifest is missing a source/transformation receipt');
     assert.strictEqual(fileSha256(path.join(ROOT, receipt.path)), receipt.sha256, `${receipt.path} checksum mismatch`);
+  }
+  const sourceReceipts = readJson(path.join(ROOT, manifest.source_receipts.path));
+  const observed = sourceReceipts.sources.find(source => source.source_registry_id === 'world-bank-cckp-era5-2026-08-25');
+  assert(observed, 'ERA5 source receipt bundle is missing');
+  for (const key of ['raw_receipt', 'normalized_receipt', 'precipitation_raw_receipt', 'precipitation_normalized_receipt']) {
+    const receipt = observed[key];
+    assert(receipt?.path && receipt?.receipt_sha256, `ERA5 ${key} is missing`);
+    assert.strictEqual(fileSha256(path.join(ROOT, receipt.path)), receipt.receipt_sha256, `ERA5 ${key} checksum mismatch`);
   }
 }
 
@@ -108,6 +116,18 @@ function checkDerived(country) {
     assert.strictEqual(observedTemperature.context.series_unit, '°C');
     assert.strictEqual(observedTemperature.context.reanalysis, 'ERA5');
   }
+
+  const observedPrecipitation = metrics['climate.precipitation.observed_trend'];
+  if (observedPrecipitation.value !== null) {
+    assert.strictEqual(observedPrecipitation.series.length, 56, `${country.iso_alpha3} ERA5 precipitation series must cover 1970–2025`);
+    assert.strictEqual(observedPrecipitation.series[0].year, 1970);
+    assert.strictEqual(observedPrecipitation.series.at(-1).year, 2025);
+    assert.strictEqual(observedPrecipitation.period.label, '1970–2025');
+    assert.strictEqual(observedPrecipitation.unit, 'mm/year/decade');
+    assert.strictEqual(observedPrecipitation.context.series_unit, 'mm/year');
+    assert.strictEqual(observedPrecipitation.context.annual_statistic_label, 'Annual total');
+    assert.strictEqual(observedPrecipitation.context.reanalysis, 'ERA5');
+  }
 }
 
 function checkGoldenCountries(byIso3, runtime) {
@@ -121,11 +141,17 @@ function checkGoldenCountries(byIso3, runtime) {
   assert(byIso3.get('ATA'), 'Antarctica must remain navigable');
   assert.strictEqual(byIso3.get('ATA').metrics['climate.temperature.change'].value, null, 'Antarctica projection must remain an explicit gap');
   assert(byIso3.get('JPN').metrics['climate.temperature.observed_trend'].value !== null, 'Japan observed temperature trend missing');
+  assert(byIso3.get('JPN').metrics['climate.precipitation.observed_trend'].value !== null, 'Japan observed precipitation trend missing');
   const observedTemperatureGaps = Array.from(byIso3.values())
     .filter(country => country.metrics['climate.temperature.observed_trend'].value === null)
     .map(country => country.iso_alpha3)
     .sort();
   assert.deepStrictEqual(observedTemperatureGaps, ['ATA', 'ESH', 'FLK', 'SGS'], 'Observed temperature gaps differ from the reviewed CCKP identity ledger');
+  const observedPrecipitationGaps = Array.from(byIso3.values())
+    .filter(country => country.metrics['climate.precipitation.observed_trend'].value === null)
+    .map(country => country.iso_alpha3)
+    .sort();
+  assert.deepStrictEqual(observedPrecipitationGaps, ['ATA', 'ESH', 'FLK', 'SGS'], 'Observed precipitation gaps differ from the reviewed CCKP identity ledger');
 }
 
 function check() {

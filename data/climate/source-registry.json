@@ -1,6 +1,6 @@
 {
   "schema_version": "1.3.0",
-  "registry_version": "0.4.0",
+  "registry_version": "0.5.0",
   "methodology_version": "1.0.0",
   "released_on": "2026-08-25",
   "reviewed_through": "2026-08-25",
@@ -557,13 +557,13 @@
     {
       "id": "world-bank-cckp-era5-2026-08-25",
       "publisher": "World Bank Climate Change Knowledge Portal",
-      "title": "CCKP ERA5 annual country temperature aggregates",
+      "title": "CCKP ERA5 annual country temperature and precipitation aggregates",
       "version": "API v1 global-country annual snapshot retrieved 2026-08-25; 1950–2025",
       "evidence_plane": "context",
       "domains": ["observed_climate"],
       "primary": false,
       "source_url": "https://worldbank.github.io/climateknowledgeportal/docs/collections/era5-x0.25.html",
-      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/era5-x0.25_timeseries_tas_timeseries_annual_1950-2025_mean_historical_era5_x0.25_mean/global_countries?_format=json",
+      "retrieval_url": "https://climateknowledgeportal.worldbank.org/download-data",
       "cadence": {"frequency": "annual", "check_interval_days": 90},
       "licence": {
         "identifier": "CC-BY-4.0",
@@ -571,14 +571,14 @@
         "terms_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
         "evidence_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
         "summary": "CCKP states that its processed portal data are available under CC BY 4.0; the underlying ERA5 reanalysis citation is retained.",
-        "attribution": "World Bank Climate Change Knowledge Portal, ERA5 0.25-degree annual country temperature aggregates, 1950–2025 snapshot accessed 2026-08-25. Earth Love United selected 1970–2025 and derived an OLS slope per decade.",
+        "attribution": "World Bank Climate Change Knowledge Portal, ERA5 0.25-degree annual country temperature and precipitation aggregates, 1950–2025 snapshots accessed 2026-08-25. Earth Love United selected 1970–2025 and derived OLS slopes per decade.",
         "restrictions": ["Credit World Bank CCKP and ERA5", "Identify the 1970–2025 selection and OLS transformation", "Label ERA5 as reanalysis rather than direct station observations"]
       },
       "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
       "approval": {
         "state": "approved",
-        "decision": "Approved for the exact-checksummed annual CCKP country-area tas snapshot, retaining the 1970–2025 series and its derived OLS slope per decade as reanalysis evidence.",
-        "required_action": "Pin every raw response and normalized snapshot; preserve the KSV exception and four explicit registry gaps; independently review before production promotion."
+        "decision": "Approved for the exact-checksummed annual CCKP country-area tas and pr snapshots, retaining the 1970–2025 series and their derived OLS slopes per decade as reanalysis evidence.",
+        "required_action": "Pin every variable-specific raw response and normalized snapshot; preserve the KSV exception and four explicit registry gaps; independently review both trends before production promotion."
       },
       "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true},
       "ingestion_gate": {
@@ -590,7 +590,7 @@
         "field_permitlist": ["iso_alpha3", "variable", "year", "value", "unit"],
         "snapshot_state": "non_empty_exact_response"
       },
-      "limitations": ["ERA5 is reanalysis, not direct station observation", "The country API publishes values rounded to two decimals", "Country aggregates conceal subnational variation", "Antarctica, Western Sahara, Falkland Islands (Malvinas), and South Georgia and the South Sandwich Islands remain explicit gaps", "Precipitation was not acquired in this temperature-only refresh"]
+      "limitations": ["ERA5 is reanalysis, not direct station observation", "The country API publishes values rounded to two decimals", "Country aggregates conceal subnational variation", "Annual precipitation is an area-mean accumulated total and does not by itself measure drought, flooding, or water availability", "Antarctica, Western Sahara, Falkland Islands (Malvinas), and South Georgia and the South Sandwich Islands remain explicit gaps"]
     },
     {
       "id": "un-wpp-2024",

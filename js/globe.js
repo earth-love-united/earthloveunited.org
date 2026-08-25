@@ -1798,8 +1798,7 @@ const GlobeModule = {
       + (fact.available ? '<p class="tt-fact-uncertainty">' + _escapeHtml(fact.uncertainty_text) + '</p>' : '') + context.join('') + '</article>';
   },
 
-  _renderClimateSeries(view, idPrefix = 'country-card') {
-    const chart = view.detail_chart;
+  _renderClimateSeries(view, idPrefix = 'country-card', chart = view.detail_chart, chartIndex = 0) {
     const points = chart?.series;
     if (!Array.isArray(points) || points.length < 2) return '';
     const trendLine = Array.isArray(chart.trend_line) && chart.trend_line.length === 2 ? chart.trend_line : [];
@@ -1828,8 +1827,10 @@ const GlobeModule = {
       : '';
     const chartLabel = chart.series_label || chart.label;
     const chartNote = chart.evidence_label + (trend ? ' · OLS ' + chart.display_value + ' ' + chart.unit : '');
-    const legend = trend ? '<div class="elu-trajectory-legend elu-observed-legend" aria-hidden="true"><span class="elu-observed-series-key">Annual mean</span><span class="elu-observed-trend-key">OLS trend</span></div>' : '';
-    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-' + view.lens.id).replace(/[^a-zA-Z0-9_-]/g, '-');
+    const annualStatisticLabel = chart.context?.annual_statistic_label
+      || (chart.id === 'climate.temperature.observed_trend' ? 'Annual mean' : 'Annual series');
+    const legend = trend ? '<div class="elu-trajectory-legend elu-observed-legend" aria-hidden="true"><span class="elu-observed-series-key">' + _escapeHtml(annualStatisticLabel) + '</span><span class="elu-observed-trend-key">OLS trend</span></div>' : '';
+    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-' + view.lens.id + '-' + chart.id + '-' + chartIndex).replace(/[^a-zA-Z0-9_-]/g, '-');
     const titleId = chartId + '-series-title';
     const descId = chartId + '-series-desc';
     return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">' + _escapeHtml(chartLabel) + ' · ' + start + '–' + end + '</span><span class="elu-trajectory-note">' + _escapeHtml(chartNote) + '</span></div>'
@@ -1871,12 +1872,20 @@ const GlobeModule = {
   _renderCountryMetrics(view, idPrefix = 'country-card') {
     const glance = view.at_a_glance.map(fact => this._renderClimateFact(fact)).join('');
     const facts = view.active_panel.facts.map(fact => this._renderClimateFact(fact)).join('');
+    const chartFacts = Array.isArray(view.detail_charts) ? view.detail_charts : (view.detail_chart ? [view.detail_chart] : []);
+    const chartHtml = chartFacts.map((chart, index) => this._renderClimateSeries(view, idPrefix, chart, index)).join('');
     const sectionId = (idPrefix + '-' + view.country.iso_alpha3 + '-' + view.lens.id).replace(/[^a-zA-Z0-9_-]/g, '-');
     const glanceId = sectionId + '-glance-heading';
     const lensId = sectionId + '-lens-heading';
+    const chartId = sectionId + '-observed-heading';
+    const charts = chartHtml && view.detail_chart_heading
+      ? '<section class="tt-observed-series" aria-labelledby="' + chartId + '"><h3 id="' + chartId + '">' + _escapeHtml(view.detail_chart_heading) + '</h3>' + chartHtml + '</section>'
+      : chartHtml;
+    const panel = facts
+      ? '<section class="tt-lens-panel" aria-labelledby="' + lensId + '"><h3 id="' + lensId + '">' + _escapeHtml(view.active_panel.heading) + '</h3><p>' + _escapeHtml(view.active_panel.description) + '</p><div class="tt-fact-grid">' + facts + '</div></section>'
+      : '';
     return '<section class="tt-glance" aria-labelledby="' + glanceId + '"><h3 id="' + glanceId + '">At a glance</h3><div class="tt-fact-grid">' + glance + '</div></section>'
-      + this._renderClimateSeries(view, idPrefix)
-      + '<section class="tt-lens-panel" aria-labelledby="' + lensId + '"><h3 id="' + lensId + '">' + _escapeHtml(view.active_panel.heading) + '</h3><p>' + _escapeHtml(view.active_panel.description) + '</p><div class="tt-fact-grid">' + facts + '</div></section>'
+      + charts + panel
       + this._renderClimateMethods(view)
       + '<div class="tt-hint">← → or swipe changes country · esc closes · lens buttons preserve selection</div>';
   },

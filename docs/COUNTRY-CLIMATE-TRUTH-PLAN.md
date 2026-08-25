@@ -2,7 +2,7 @@
 
 **Mission:** `country-climate-intelligence-v1`
 
-**Release:** `country-climate-intelligence-2026-08-25-candidate.2`
+**Release:** `country-climate-intelligence-2026-08-25-candidate.3`
 
 **State:** implemented factual candidate; production promotion withheld
 
@@ -37,8 +37,9 @@ approved source registry + exact external snapshots
 | `tools/compile-climate-trace.js` | 2024 AR6 GWP100 independent GHG context, forestry/LULUCF excluded |
 | `tools/compile-ember-power.js` | Exact 2019/2024 published power aggregates and five-year change |
 | `tools/compile-cckp-physical.js` | CMIP6 projection ranges and ERA5 OLS trends/gaps |
-| `tools/normalize-cckp-era5-country-timeseries.js` | Exact CCKP country-response validation, 246-row identity ledger, and 1970–2025 annual temperature normalization |
+| `tools/normalize-cckp-era5-country-timeseries.js` | Exact CCKP country-response validation, 246-series identity ledger, and variable-aware 1970–2025 annual temperature/precipitation normalization |
 | `tools/refresh-cckp-observed-temperature.js` | Checksum-pinned observed-temperature replacement that leaves projections and precipitation unchanged |
+| `tools/refresh-cckp-observed-variable.js` | Checksum-pinned variable refresh used to add observed precipitation without modifying projections or temperature |
 | `data/climate/releases/country-climate-intelligence-v1/` | Normalized facts, component checksums, receipts, transformation log, release gates |
 | `tools/build-country-climate-intelligence.js` | Deterministic 249-entity assembly, per-capita derivation, coverage, and lens orders |
 | `data/climate/runtime/country-climate-intelligence.json` | Compact static factual candidate |
@@ -53,7 +54,7 @@ approved source registry + exact external snapshots
 | Source-registry licensing and attribution | configured | Climate TRACE exception-backed fields and the CCKP/CMIP6 derivative chain require release-specific revalidation |
 | Field permitlists and compiler denial | passed | no unreviewed source field can be selected |
 | Exact normalized component checksums | passed | deterministic rebuild must match committed runtime |
-| External raw-receipt revalidation | ERA5 temperature passed; other optional components open | independently revalidate and retain the WPP, TRACE, Ember, and CCKP CMIP6 acquisition receipts |
+| External raw-receipt revalidation | ERA5 temperature and precipitation receipts pinned; other optional components open | independently revalidate and retain the WPP, TRACE, Ember, and CCKP CMIP6 acquisition receipts |
 | Core-carbon scientific review | open | independent reviewer verifies GCB identity mapping, scopes, transfer sign, cumulative, land-use mean/σ, and per-capita denominator |
 | Optional-component scientific review | open | independent reviewer verifies TRACE GWP/filter, Ember taxonomy/evidence class, and CCKP scenario/percentile selections |
 | Runtime/static validation | passed for candidate | rerun after any factual or code change |
@@ -81,7 +82,7 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 - 2019–2024 percentage-point change;
 - three-model land-use mean, population σ, and negative removals;
 - observed OLS slope per decade;
-- exact 56-value 1970–2025 ERA5 series, compiled fitted endpoints, 245 mappings, one `KSV` exception, and four explicit registry gaps;
+- exact 56-value 1970–2025 ERA5 temperature and precipitation series, compiled fitted endpoints, 245 mappings per variable, one `KSV` exception per variable, and four explicit registry gaps;
 - CMIP6 p10 ≤ median ≤ p90;
 - complete SSP2-4.5 range plus SSP1-2.6/SSP5-8.5 medians;
 - exact scope matching before any numerical source delta;
@@ -97,7 +98,7 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 - v2.6.1 present only in detailed citation provenance; v2.7 absent entirely;
 - selection preserved across lenses;
 - metric/value/unit/period/evidence in tooltips;
-- no overlap between At a glance and the expanded lens grid; Physical uses the observed ERA5 series for its annual chart while its ordered rail remains the modeled projection metric;
+- no overlap among At a glance, the observed charts, and the expanded lens grid; Physical uses separate ERA5 temperature and precipitation charts while its ordered rail remains the modeled projection metric;
 - every tile relief value is a subtle monotonic encoding of the active lens's exact comparison metric; the query-only inverse Carbon demo declares its direction and never changes the raw emissions rail, while Physical height is never described as vulnerability, damage, or responsibility;
 - fallback parity for all 249 records;
 - body-level controls, 44px touch targets, reduced motion, focus restoration, and non-color status cues;
@@ -118,11 +119,11 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v49 service worker composes the reviewed Guided First Orbit assets with the
+The v50 service worker composes the reviewed Guided First Orbit assets with the
 subtle relief presentation, candidate dashboard, and both runtime generations:
 
 ```text
-data/climate/runtime/country-climate-intelligence.json?v=cci1candidate4
+data/climate/runtime/country-climate-intelligence.json?v=cci1candidate5
 data/climate/runtime/country-factual-candidate.json?v=ct42candidate1
 ```
 
@@ -137,7 +138,9 @@ Antarctica is conditionally fillable, while ESH, FLK, and SGS retain explicit ga
 reviewed disputed/NDLSA and multipart-territory boundary policy exists. Observed temperature now
 uses the exact-checksummed official CCKP country aggregate, with 245 mapped 1970–2025 series and
 the same four explicit registry gaps. Its remaining gate is independent scientific and visual
-review, not further browser-side acquisition. The next action is completion of those evidence,
+review, not further browser-side acquisition. Observed precipitation now follows the same exact
+1950–2025 source boundary, 1970–2025 selection, 245-entity identity ledger, and four explicit gaps.
+The next action is completion of those evidence,
 rights, scientific, and protected-file reviews, not unreviewed value insertion.
 NDC assessment, delivery scoring, finance, vulnerability, monthly/YTD views, and composite
 rankings remain out of scope for v1.

@@ -343,7 +343,7 @@ function validateSource(source, index, configuredDomains, errors) {
     if (!source.domains?.includes('observed_climate') || source.approval?.state !== 'approved' ||
         source.redistribution?.normalized_values !== true || source.ingestion_gate?.normalized_value_redistribution_approved !== true ||
         source.ingestion_gate?.snapshot_state !== 'non_empty_exact_response') {
-      errors.push(`${source.id} must retain the approved, non-empty observed-temperature snapshot gates.`);
+      errors.push(`${source.id} must retain the approved, non-empty observed-climate snapshot gates.`);
     }
     ['iso_alpha3', 'variable', 'year', 'value', 'unit'].forEach(field => {
       if (!source.ingestion_gate?.field_permitlist?.includes(field)) errors.push(`${source.id} must permitlist ${field}.`);

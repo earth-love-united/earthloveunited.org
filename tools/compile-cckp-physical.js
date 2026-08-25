@@ -146,10 +146,11 @@ function observedMetric(entity, variable, rows, lastYear, emptySnapshot) {
   };
   return {
     context: {
+      annual_statistic_label: variable === 'tas' ? 'Annual mean' : 'Annual total',
       attribution_claim: false,
       observations: series.length,
       reanalysis: 'ERA5',
-      series_label: variable === 'tas' ? 'Annual mean surface air temperature' : 'Annual precipitation',
+      series_label: variable === 'tas' ? 'Annual mean surface air temperature' : 'Annual total precipitation',
       series_unit: variable === 'tas' ? '°C' : 'mm/year',
       trend_line: [fit.start, fit.end],
     },

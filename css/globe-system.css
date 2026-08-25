@@ -1169,10 +1169,12 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 #hex-country-tooltip :focus-visible,#elu-country-rank-rail :focus-visible { outline:2px solid var(--mint); outline-offset:2px; }
 
 .tt-glance,
-.tt-lens-panel { margin-top: 12px; }
+.tt-lens-panel,
+.tt-observed-series { margin-top: 12px; }
 
 .tt-glance > h3,
-.tt-lens-panel > h3 {
+.tt-lens-panel > h3,
+.tt-observed-series > h3 {
   margin: 0 0 6px;
   color: var(--mint);
   font-family: var(--mono);

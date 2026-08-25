@@ -8,7 +8,7 @@
 const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   'use strict';
 
-  const VERSION = '1.3.0';
+  const VERSION = '1.4.0';
   const RELIEF_BASE_ALTITUDE = 0.007;
   const RELIEF_RANGE = 0.005;
   const CARBON_RELIEF_DEMO_VALUE = 'low-is-high';
@@ -102,11 +102,11 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   function formatNumber(value, unit) {
     if (!finite(value)) return 'Not available';
     let digits = 2;
-    if (unit === '%' || unit === 'percentage points' || unit === 'gCO2/kWh' || unit === 'mm/year' || unit === 'mm/decade') digits = 1;
+    if (unit === '%' || unit === 'percentage points' || unit === 'gCO2/kWh' || unit === 'mm/year' || unit === 'mm/year/decade') digits = 1;
     if (unit === 'persons') digits = 0;
     if (Math.abs(value) >= 1000) digits = 0;
     else if (Math.abs(value) >= 100) digits = Math.min(digits, 1);
-    const sign = value > 0 && ['percentage points', '°C/decade', 'mm/decade', '°C', 'mm/year'].includes(unit) ? '+' : '';
+    const sign = value > 0 && ['percentage points', '°C/decade', 'mm/year/decade', '°C', 'mm/year'].includes(unit) ? '+' : '';
     return sign + value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: digits });
   }
 
@@ -255,7 +255,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
 
   function atAGlanceMetrics(lensId) {
     if (lensId === 'power') return ['electricity.clean_share', 'electricity.clean_share_change_5y', 'electricity.carbon_intensity'];
-    if (lensId === 'physical') return ['climate.temperature.change', 'climate.precipitation.change', 'climate.temperature.observed_trend'];
+    if (lensId === 'physical') return ['climate.temperature.change', 'climate.precipitation.change'];
     return ['emissions.fossil_co2.territorial', 'emissions.fossil_co2.territorial_per_capita', 'emissions.fossil_co2.cumulative'];
   }
 
@@ -275,10 +275,13 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     const activeFacts = PANEL_METRICS[lens.id].map(metricId => factView(metricId, country));
     const glanceMetricIds = atAGlanceMetrics(lens.id);
     const glanceMetricSet = new Set(glanceMetricIds);
-    const panelFacts = activeFacts.filter(fact => !glanceMetricSet.has(fact.id));
-    const chartMetricId = lens.id === 'physical' ? 'climate.temperature.observed_trend' : lens.comparison_metric_id;
-    const chartFact = factView(chartMetricId, country);
-    const detailChart = chartFact.series.length > 1 ? chartFact : null;
+    const chartMetricIds = lens.id === 'physical'
+      ? ['climate.temperature.observed_trend', 'climate.precipitation.observed_trend']
+      : [lens.comparison_metric_id];
+    const chartMetricSet = new Set(chartMetricIds);
+    const panelFacts = activeFacts.filter(fact => !glanceMetricSet.has(fact.id) && !chartMetricSet.has(fact.id));
+    const detailCharts = chartMetricIds.map(metricId => factView(metricId, country)).filter(fact => fact.series.length > 1);
+    const detailChart = detailCharts[0] || null;
     const citationOnlySources = _release.source_catalog
       .filter(source => source.public_role === 'citation_only')
       .map(source => ({ id: source.id, title: source.title, version: source.version, url: source.source_url, note: 'Citation retained for historical provenance; no values from this source appear in this release.' }));
@@ -314,6 +317,8 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       },
       at_a_glance: glanceMetricIds.map(metricId => factView(metricId, country)),
       detail_chart: detailChart,
+      detail_chart_heading: lens.id === 'physical' && detailCharts.length ? 'Observed reanalysis' : null,
+      detail_charts: detailCharts,
       active_panel: {
         id: lens.id,
         heading: panel.heading,

@@ -98,6 +98,9 @@ try {
     { iso_alpha3: 'ABW', variable: 'tas', year: 1970, value: 20, unit: '°C' },
     { iso_alpha3: 'ABW', variable: 'tas', year: 1980, value: 21, unit: '°C' },
     { iso_alpha3: 'ABW', variable: 'tas', year: 1990, value: 22, unit: '°C' },
+    { iso_alpha3: 'ABW', variable: 'pr', year: 1970, value: 100, unit: 'mm/year' },
+    { iso_alpha3: 'ABW', variable: 'pr', year: 1980, value: 120, unit: 'mm/year' },
+    { iso_alpha3: 'ABW', variable: 'pr', year: 1990, value: 140, unit: 'mm/year' },
   ] })}\n`);
   const projectionReceipt = receiptFor('world-bank-cckp-cmip6-2026-08-24', projectionInput);
   const observedReceipt = receiptFor('world-bank-cckp-era5-2026-08-25', observedInput, { last_complete_year: 1990 });
@@ -117,11 +120,18 @@ try {
     { year: 1990, value: 22 },
   ]);
   assert.strictEqual(arubaClimate['climate.temperature.observed_trend'].context.series_unit, '°C');
+  assert.strictEqual(arubaClimate['climate.temperature.observed_trend'].context.annual_statistic_label, 'Annual mean');
   assert.deepStrictEqual(arubaClimate['climate.temperature.observed_trend'].context.trend_line, [
     { year: 1970, value: 20 },
     { year: 1990, value: 22 },
   ]);
+  assert.strictEqual(arubaClimate['climate.precipitation.observed_trend'].value, 20);
+  assert.strictEqual(arubaClimate['climate.precipitation.observed_trend'].unit, 'mm/year/decade');
+  assert.strictEqual(arubaClimate['climate.precipitation.observed_trend'].context.series_unit, 'mm/year');
+  assert.strictEqual(arubaClimate['climate.precipitation.observed_trend'].context.annual_statistic_label, 'Annual total');
+  assert.strictEqual(arubaClimate['climate.precipitation.observed_trend'].context.series_label, 'Annual total precipitation');
   assert.strictEqual(cckp.countries.find(country => country.iso_alpha3 === 'AFG').metrics['climate.temperature.observed_trend'].gap_reason.code, 'source_value_missing');
+  assert.strictEqual(cckp.countries.find(country => country.iso_alpha3 === 'AFG').metrics['climate.precipitation.observed_trend'].gap_reason.code, 'source_value_missing');
 
   const duplicateProjectionInput = write('cckp-projection-duplicate.json', `${JSON.stringify({ rows: projectionRows.concat({ ...projectionRows[0] }) })}\n`);
   const duplicateProjectionReceipt = receiptFor('world-bank-cckp-cmip6-2026-08-24', duplicateProjectionInput);

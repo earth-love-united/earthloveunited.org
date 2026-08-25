@@ -18,8 +18,10 @@ const {
 } = require('./lib/country-climate-intelligence');
 
 const SOURCE_ID = 'world-bank-cckp-era5-2026-08-25';
-const VARIABLE = 'tas';
-const UNIT = '°C';
+const VARIABLE_CONFIG = Object.freeze({
+  pr: Object.freeze({ unit: 'mm/year' }),
+  tas: Object.freeze({ unit: '°C' }),
+});
 const FIRST_SELECTED_YEAR = 1970;
 const LAST_COMPLETE_YEAR = 2025;
 const EXPECTED_RAW_ENTITY_COUNT = 246;
@@ -27,6 +29,9 @@ const EXPECTED_MAPPED_ENTITY_COUNT = 245;
 const EXPECTED_REGISTRY_GAPS = ['ATA', 'ESH', 'FLK', 'SGS'];
 
 function normalize(args) {
+  const variable = option(args, '--variable', 'tas');
+  const variableConfig = VARIABLE_CONFIG[variable];
+  if (!variableConfig) throw new Error('--variable must be tas or pr');
   const inputPath = path.resolve(option(args, '--input'));
   const rawReceiptPath = path.resolve(option(args, '--raw-receipt'));
   const outputPath = path.resolve(option(args, '--output'));
@@ -34,6 +39,7 @@ function normalize(args) {
   const rawReceipt = readJson(rawReceiptPath);
 
   if (rawReceipt.source_registry_id !== SOURCE_ID) throw new Error('ERA5 raw receipt does not match the reviewed source component');
+  if (rawReceipt.source_shape?.variable !== variable) throw new Error(`ERA5 raw receipt variable does not match ${variable}`);
   verifySnapshot(inputPath, rawReceipt);
   const sourceRegistry = readJson(path.join(ROOT, 'data/climate/source-registry.json'));
   assertSourceApproved(sourceRegistry, SOURCE_ID, ['iso_alpha3', 'variable', 'year', 'value', 'unit']);
@@ -54,7 +60,7 @@ function normalize(args) {
 
   for (const upstreamCode of upstreamCodes) {
     const series = raw.data[upstreamCode];
-    const upstreamId = `cckp-era5:${upstreamCode}:${VARIABLE}`;
+    const upstreamId = `cckp-era5:${upstreamCode}:${variable}`;
     if (upstreamCode === 'KSV') {
       dispositions.push({
         unmapped_exception: 'CCKP uses KSV for Kosovo, which is not an ISO 3166-1 entity in the fixed 249-entity registry.',
@@ -81,10 +87,10 @@ function normalize(args) {
     for (const point of observations.filter(point => point.year >= FIRST_SELECTED_YEAR)) {
       rows.push({
         iso_alpha3: entity.iso_alpha3,
-        unit: UNIT,
+        unit: variableConfig.unit,
         upstream_id: `${upstreamId}:${point.year}`,
         value: round(point.value),
-        variable: VARIABLE,
+        variable,
         year: point.year,
       });
     }
@@ -110,8 +116,8 @@ function normalize(args) {
       last_complete_year: LAST_COMPLETE_YEAR,
       model: 'ERA5 0.25-degree',
       source_aggregation: 'World Bank CCKP country area aggregate',
-      unit: UNIT,
-      variable: VARIABLE,
+      unit: variableConfig.unit,
+      variable,
     },
   };
   const normalizedSha256 = writeJson(outputPath, normalized);

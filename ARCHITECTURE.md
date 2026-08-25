@@ -185,10 +185,10 @@ published warming range. Physical relief is projected warming only—not
 vulnerability, damage, or responsibility.
 
 The Physical card separately renders the compiled 1970–2025 ERA5 annual
-temperature series and supplied OLS endpoints for 245 entities. This chart does
+temperature and precipitation series and supplied OLS endpoints for 245 entities. These charts do
 not affect the Physical comparison order, which remains the exact SSP2-4.5
 modeled projection metric. `COUNTRY_CLIMATE_INTELLIGENCE` removes At-a-glance
-metric IDs from the expanded lens grid while retaining all facts in the methods
+and chart metric IDs from the expanded lens grid while retaining all facts in the methods
 drawer, so the renderer never duplicates a headline fact card.
 
 Before loading globe.gl, `GlobeModule.prepare()` must preload and validate the
@@ -337,7 +337,7 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v49 precaches the public page, core CSS/JS, Guided First
+`sw.js` cache epoch v50 precaches the public page, core CSS/JS, Guided First
 Orbit UI, the shared raised-tile lenses, verified local globe.gl, the CT-45 manifest
 and localized globe assets, and the exact-version Country Climate Intelligence
 candidate. The prior country-factual candidate is retained for one release

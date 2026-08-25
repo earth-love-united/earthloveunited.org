@@ -1,0 +1,26 @@
+{
+  "artifact_type": "external_raw_snapshot_receipt",
+  "bytes": 326772,
+  "content_type": "application/json",
+  "expected_api_status": "success",
+  "expected_upstream_entity_count": 246,
+  "external_storage": true,
+  "file_name": "cckp-era5-pr-global-countries-1950-2025.json",
+  "licence": "CC-BY-4.0",
+  "raw_file_committed": false,
+  "response_date_utc": "2026-08-25T00:47:55Z",
+  "retrieval_url": "https://cckpapi.worldbank.org/api/v1/era5-x0.25_timeseries_pr_timeseries_annual_1950-2025_mean_historical_era5_x0.25_mean/global_countries?_format=json",
+  "retrieved_on": "2026-08-25",
+  "sha256": "8ad69148450466310bdb84284cec2c9c385bbbb6acd5a062597d985464657494",
+  "source_registry_id": "world-bank-cckp-era5-2026-08-25",
+  "source_shape": {
+    "aggregation": "annual",
+    "country_key": "ISO-like three-letter area code",
+    "model": "ERA5 0.25-degree",
+    "period": "1950–2025",
+    "spatial_aggregation": "World Bank CCKP country area aggregate",
+    "temporal_measure": "annual accumulated precipitation",
+    "unit": "mm/year",
+    "variable": "pr"
+  }
+}

@@ -13,7 +13,7 @@
   "component_artifacts": {
     "cckp": {
       "path": "data/climate/releases/country-climate-intelligence-v1/cckp-physical.json",
-      "sha256": "5abe5c72632d203609660eb7ca6b4c1fc8630657afb28f31c537cefb83dab729"
+      "sha256": "168fa7271a16569bde4da9dd1c55054e831090c88931d9595755af3db106c2dd"
     },
     "ember": {
       "path": "data/climate/releases/country-climate-intelligence-v1/ember-power.json",
@@ -217,7 +217,7 @@
     "comparison_baseline_year": 2024,
     "entity_count": 249,
     "generated_on": "2026-08-25",
-    "id": "country-climate-intelligence-2026-08-25-candidate.2",
+    "id": "country-climate-intelligence-2026-08-25-candidate.3",
     "production_runtime_release": false,
     "review_state": "normalized_factual_candidate_pending_source_revalidation",
     "status": "candidate"
@@ -225,11 +225,11 @@
   "reviewed_candidate_recovery_sha256": "436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09",
   "source_receipts": {
     "path": "data/climate/releases/country-climate-intelligence-v1/source-receipts.json",
-    "sha256": "fcc5f81dbf0d697d492fb2eb3c805e5e877f9a60802db055c60c640e93d9e72d"
+    "sha256": "589a1a5c78214c4229c6ecb28025f8332461cb0433c923dba606db2be822685f"
   },
   "transformation_log": {
     "path": "data/climate/releases/country-climate-intelligence-v1/TRANSFORMATION-LOG.md",
-    "sha256": "96950e67d46a347832cbc844987f702059d87fa7ff2fa7862e68b5e7804d127a"
+    "sha256": "17f8a366814aef1aeda8014074a99d84ddc2b3a2a50dff036749dabae7aa2e29"
   },
   "schema_ref": "data/climate/schemas/country-climate-intelligence.schema.json",
   "schema_version": "1.0.0",
@@ -312,13 +312,13 @@
       "version": "acquisition attempt 2026-08-24"
     },
     {
-      "attribution": "World Bank Climate Change Knowledge Portal, ERA5 0.25-degree annual country temperature aggregates, 1950–2025 snapshot accessed 2026-08-25. Earth Love United selected 1970–2025 and derived an OLS slope per decade.",
+      "attribution": "World Bank Climate Change Knowledge Portal, ERA5 0.25-degree annual country temperature and precipitation aggregates, 1950–2025 snapshots accessed 2026-08-25. Earth Love United selected 1970–2025 and derived OLS slopes per decade.",
       "id": "world-bank-cckp-era5-2026-08-25",
       "licence": "CC-BY-4.0",
       "public_role": "metric_provenance",
       "review_state": "pending",
       "source_url": "https://worldbank.github.io/climateknowledgeportal/docs/collections/era5-x0.25.html",
-      "title": "CCKP ERA5 annual country temperature aggregates",
+      "title": "CCKP ERA5 annual country temperature and precipitation aggregates",
       "values_in_release": true,
       "version": "API v1 global-country annual snapshot retrieved 2026-08-25; 1950–2025"
     },
