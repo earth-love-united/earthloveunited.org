@@ -291,6 +291,7 @@ pointer or keyboard selection
   → select country feature
   → renderCountryTooltip()
   → renderCountryMetrics()
+  → keep the country name, evidence class, and Close control sticky inside the card scrollport
   → emit globe:country-selected
 
 first globe visit / replay
@@ -368,9 +369,9 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v53 precaches the public page, core CSS/JS, Guided First
+`sw.js` cache epoch v54 precaches the public page, core CSS/JS, Guided First
 Orbit UI, the shared raised-tile lenses, evidence-only Physical-card percentile range, verified local globe.gl, the CT-45 manifest
-and localized globe assets, and the exact-version Country Climate Intelligence
+and localized globe assets, the scroll-proof selected-country identity header, and the exact-version Country Climate Intelligence
 candidate. The prior country-factual candidate is retained for one release
 epoch as a rollback artifact; it is not loaded into the v1 dashboard. The
 service worker applies:

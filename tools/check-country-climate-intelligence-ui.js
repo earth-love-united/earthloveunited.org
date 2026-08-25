@@ -178,14 +178,22 @@ assert(globe.includes('view.primary.evidence_label') && globe.includes('view.too
 assert(css.includes('.tt-methods > summary'));
 assert(css.includes('min-height: 44px') || css.includes('min-height:44px'));
 assert(css.includes('@media (prefers-reduced-motion: reduce)') || css.includes('@media(prefers-reduced-motion:reduce)'));
+const selectedHeaderCss = css.slice(
+  css.indexOf('#hex-country-tooltip.selected .tt-topline {'),
+  css.indexOf('}', css.indexOf('#hex-country-tooltip.selected .tt-topline {')) + 1
+);
+assert(selectedHeaderCss.includes('position: sticky'), 'selected-country identity header must remain visible while the card scrolls');
+assert(selectedHeaderCss.includes('top: -14px'), 'selected-country identity header must clear the card padding and pin to the scrollport top');
+assert(selectedHeaderCss.includes('background: var(--hud-bg-strong)'), 'sticky country identity must mask evidence scrolling beneath it in both themes');
+assert(css.includes('scroll-padding-block-start: 76px'), 'country-card focus scrolling must clear the sticky identity header');
 
 const publicClimateSurface = [index, globe, css].join('\n');
 assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public HTML, globe UI, or public globe CSS');
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v53-red-team-fixes'"));
-assert(serviceWorker.includes("'/css/globe-system.css?v=v32'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v54-sticky-country-header'"));
+assert(serviceWorker.includes("'/css/globe-system.css?v=v33'"));
 assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v10'"));
 assert(serviceWorker.includes("'/js/globe.js?v=v28'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate6'"));

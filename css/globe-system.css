@@ -1033,11 +1033,15 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 }
 
 #hex-country-tooltip.selected .tt-topline {
+  position: sticky;
+  top: -14px;
+  z-index: 3;
   align-items: center;
   min-height: 27px;
-  margin-bottom: 5px;
-  padding-bottom: 8px;
+  margin: -14px -15px 5px;
+  padding: 14px 15px 8px;
   border-bottom: 1px solid var(--hud-divider);
+  background: var(--hud-bg-strong);
 }
 
 #hex-country-tooltip.selected .tt-country {
@@ -1099,6 +1103,7 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   max-width: calc(100vw - 124px);
   max-height: 100% !important;
   overflow-y: auto;
+  scroll-padding-block-start: 76px;
   transform: none;
   pointer-events: auto;
 }
@@ -1763,6 +1768,12 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .elu-trajectory-cu
     transform: none;
   }
 
+  #hex-country-tooltip.selected .tt-topline {
+    top: -12px;
+    margin: -12px -12px 5px;
+    padding: 12px 12px 8px;
+  }
+
   /* Mobile deck motion: a one-time affordance on entry, then short travel and
      a soft settle when the user commits or cancels a horizontal swipe. */
   #elu-country-card-wrap #hex-country-tooltip.tt-swipe-cue {
@@ -1882,6 +1893,10 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .elu-trajectory-cu
     grid-template-columns: minmax(0, 1fr) 44px;
     align-items: start;
     gap: 6px 8px;
+  }
+
+  #elu-country-card-wrap #hex-country-tooltip {
+    scroll-padding-block-start: 116px;
   }
 
   #hex-country-tooltip.selected .tt-country {

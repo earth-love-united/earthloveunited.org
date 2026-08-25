@@ -1,17 +1,17 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v53) — stage the evidence-only physical-climate range,
- * red-team hardening, and 120 Hz renderer contract atomically.
+ * Globe cache (v54) — keep the selected-country identity visible while its
+ * evidence card scrolls, alongside the reviewed v53 factual runtime.
  */
-const CACHE_NAME = 'elu-v53-red-team-fixes';
+const CACHE_NAME = 'elu-v54-sticky-country-header';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v32',
+  '/css/globe-system.css?v=v33',
   '/css/guided-first-orbit.css?v=v2',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
