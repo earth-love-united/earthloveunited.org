@@ -1263,10 +1263,12 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   --power-wind: #56d8cf;
   --power-solar: #f2c75c;
   --power-bioenergy: #64a965;
-  --power-other-renewables: #ee9b42;
+  --power-other-renewables: #b97acb;
   --power-coal: #262c31;
+  --power-coal-ridge: #46505a;
   --power-gas: #df8856;
   --power-other-fossil: #c7653f;
+  --power-other-fossil-mark: rgba(24, 29, 32, .72);
   margin: 0 0 8px;
   padding: 10px;
   overflow: hidden;
@@ -1385,9 +1387,8 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   box-shadow: inset -1px 0 rgba(6, 11, 18, .38);
 }
 
-/* Plain pastel fills carry the clearest fuel identities. Four restrained,
-   static textures plus fixed ordering and the text legend preserve a
-   non-color route without adding animation-frame work. */
+/* Fuel-specific color and restrained static textures work with fixed ordering
+   and the text legend as a non-color reading route. No fill is animated. */
 .elu-power-segment.is-nuclear,
 .elu-power-segment-key.is-nuclear {
   background: var(--power-nuclear);
@@ -1416,7 +1417,9 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 
 .elu-power-segment.is-solar,
 .elu-power-segment-key.is-solar {
-  background: var(--power-solar);
+  background:
+    repeating-linear-gradient(135deg, transparent 0 5px, rgba(255, 255, 255, .48) 5px 6px, transparent 6px 11px),
+    var(--power-solar);
 }
 
 .elu-power-segment.is-bioenergy,
@@ -1431,7 +1434,7 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 
 .elu-power-segment.is-coal,
 .elu-power-segment-key.is-coal {
-  background: var(--power-coal);
+  background: repeating-linear-gradient(135deg, var(--power-coal) 0 4px, var(--power-coal-ridge) 4px 6px);
 }
 
 .elu-power-segment.is-gas,
@@ -1441,7 +1444,10 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 
 .elu-power-segment.is-other-fossil,
 .elu-power-segment-key.is-other-fossil {
-  background: var(--power-other-fossil);
+  background:
+    linear-gradient(45deg, transparent 42%, var(--power-other-fossil-mark) 44% 56%, transparent 58%) 0 0 / 10px 10px,
+    linear-gradient(-45deg, transparent 42%, var(--power-other-fossil-mark) 44% 56%, transparent 58%) 0 0 / 10px 10px,
+    var(--power-other-fossil);
 }
 
 .elu-power-mix-legend {
@@ -1543,10 +1549,12 @@ html[data-theme="light"] body.globe-mode .elu-power-field {
   --power-wind: #2d8981;
   --power-solar: #d89a24;
   --power-bioenergy: #4d8050;
-  --power-other-renewables: #d9862c;
+  --power-other-renewables: #80558a;
   --power-coal: #30363a;
+  --power-coal-ridge: #59636a;
   --power-gas: #ac603c;
   --power-other-fossil: #b75830;
+  --power-other-fossil-mark: rgba(37, 39, 40, .66);
 }
 
 html[data-theme="light"] body.globe-mode .elu-power-segment.is-nuclear {

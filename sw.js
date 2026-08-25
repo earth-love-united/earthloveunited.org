@@ -1,18 +1,18 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v58) — simplify the exact-source Power fuel palette while
- * retaining the segmented bars, scroll-proof country identity, and reviewed
- * factual runtime boundary.
+ * Globe cache (v59) — refine the exact-source Power fuel colors and static
+ * textures while retaining the segmented bars, scroll-proof country identity,
+ * and reviewed factual runtime boundary.
  */
-const CACHE_NAME = 'elu-v58-power-palette';
+const CACHE_NAME = 'elu-v59-power-textures';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v37',
+  '/css/globe-system.css?v=v38',
   '/css/guided-first-orbit.css?v=v2',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',

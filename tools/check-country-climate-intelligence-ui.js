@@ -96,13 +96,16 @@ assert(css.includes('white-space: normal;'), 'fuel names must not be hidden behi
 assert(css.includes('.elu-power-reconciliation.has-rounding'));
 assert(css.includes('--power-nuclear: #5cff8d;'), 'dark-theme nuclear must use the approved neon green');
 assert(css.includes('--power-nuclear: #28df70;'), 'fair-theme nuclear must retain a readable neon green');
+assert(css.includes('--power-other-renewables: #b97acb;'), 'dark-theme Other Renewables must use the restored purple-pink family');
+assert(css.includes('--power-other-renewables: #80558a;'), 'fair-theme Other Renewables must retain the restored purple-pink family');
 assert(css.includes('--power-coal: #262c31;'), 'dark-theme coal must remain visually darker than the other fossil fuels');
 assert(css.includes('0 0 6px rgba(92, 255, 141, .34)'), 'nuclear must retain only a restrained static glow');
 assert(css.includes('.elu-power-mix-legend li.is-gap .elu-power-segment-key {\n  background: repeating-linear-gradient(135deg, transparent 0 3px, var(--hud-divider) 3px 5px);\n  box-shadow: none;'), 'a fuel-specific glow must never survive the explicit data-gap override');
 assert(css.includes('.elu-power-segment-key.is-nuclear {\n  background: var(--power-nuclear);'), 'nuclear must use a plain fill without an inner decal');
-assert(css.includes('.elu-power-segment-key.is-solar {\n  background: var(--power-solar);'), 'solar must use a plain fill without an inner decal');
-assert(css.includes('.elu-power-segment-key.is-other-renewables {\n  background: var(--power-other-renewables);'), 'other renewables must use the orange family without a radial decal');
-assert(css.includes('.elu-power-segment-key.is-other-fossil {\n  background: var(--power-other-fossil);'), 'other fossil must use the orange family without a radial decal');
+assert(css.includes('repeating-linear-gradient(135deg, transparent 0 5px, rgba(255, 255, 255, .48) 5px 6px, transparent 6px 11px)'), 'solar must use restrained white linework');
+assert(css.includes('.elu-power-segment-key.is-other-renewables {\n  background: var(--power-other-renewables);'), 'other renewables must use a plain purple-pink fill');
+assert(css.includes('background: repeating-linear-gradient(135deg, var(--power-coal) 0 4px, var(--power-coal-ridge) 4px 6px);'), 'coal must retain a dark static texture');
+assert(css.includes('linear-gradient(45deg, transparent 42%, var(--power-other-fossil-mark) 44% 56%, transparent 58%) 0 0 / 10px 10px'), 'Other Fossil must carry a dark X motif');
 assert(!css.includes('repeating-radial-gradient(ellipse at 0 50%'), 'the excessive other-renewables decal must stay removed');
 assert(!css.includes('.elu-power-lane-fill.is-wind-solar'));
 const physicalLayout = globe.slice(globe.indexOf('return \'<section class="tt-physical-story"'), globe.indexOf('  _renderClimateMethods(view)'));
@@ -312,8 +315,8 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v58-power-palette'"));
-assert(serviceWorker.includes("'/css/globe-system.css?v=v37'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v59-power-textures'"));
+assert(serviceWorker.includes("'/css/globe-system.css?v=v38'"));
 assert(serviceWorker.includes("'/js/data.js?v=v9'"));
 assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v13'"));
 assert(serviceWorker.includes("'/js/globe.js?v=v31'"));

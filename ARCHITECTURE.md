@@ -188,10 +188,11 @@ The Power card renders one static generation field from the exact 2024 Ember
 share facts. Two aligned 0–100% tracks copy the clean and fossil aggregates;
 each track is subdivided by Ember's nine standardized generation-fuel rows:
 Bioenergy, Coal, Gas, Hydro, Nuclear, Other Fossil, Other Renewables, Solar,
-and Wind. Nuclear, solar, coal, and the two `Other` buckets use plain color;
-hydro, wind, bioenergy, and gas retain restrained static textures. Fixed fuel
-ordering plus the two-column text/value legend provide the non-color reading
-route, while hatching is reserved for explicit gaps. The view model requires a
+and Wind. Nuclear and the purple-pink `Other Renewables` bucket use plain color;
+hydro, wind, solar, bioenergy, coal, gas, and `Other Fossil` use restrained,
+fuel-specific static textures. Fixed fuel ordering plus the two-column
+text/value legend provide the non-color reading route, while hatching is
+reserved for explicit gaps. The view model requires a
 shared period, actual evidence class, source, fuel group, and taxonomy before
 drawing a segment. Blank cells remain
 labelled data gaps, source zeroes remain zero, and 99.98–100.02 totals are
