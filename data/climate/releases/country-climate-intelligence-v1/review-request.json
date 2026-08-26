@@ -1,6 +1,6 @@
 {
-  "calculation_hash": "888844ead5e45ef92760b2ddf6c80a6fcbf5f27a2d41fd8351c2b4356df8b61c",
-  "created_at": "2026-08-26T21:14:45Z",
+  "calculation_hash": "8bb2e928931a3945a3a98e26ef32e97bcad43186009ce0301efcc27be6a92857",
+  "created_at": "2026-08-26T21:19:29Z",
   "governance_boundaries": {
     "composite_score": false,
     "ct40_reuse_allowed": false,
@@ -249,7 +249,7 @@
       },
       {
         "path": ".github/workflows/ci.yml",
-        "sha256": "a529871ce96eb80e40ca339bd5ca9e6d44c56bedf5436e5209d3eea95e3a57dd"
+        "sha256": "cf6c50ea9fa1150f146fba863275c9c9ffecbe3043b1582e3bac01682faf8c42"
       },
       {
         "path": "ARCHITECTURE.md",
@@ -609,6 +609,6 @@
       }
     ],
     "commit_binding_state": "bound_candidate_commit",
-    "subject_commit_sha": "d9b83a53d62298f3b27a106d1a965e21fde0698d"
+    "subject_commit_sha": "ae25672d3673d042b11acffefe8de0f8909b6780"
   }
 }
