@@ -1,6 +1,6 @@
 {
-  "calculation_hash": "4ca31eb452982e160a000311858d29fce8b0973e80d93aa08089b270cdd0eb25",
-  "created_at": "2026-08-26T21:50:57Z",
+  "calculation_hash": "d0686f12419e218d2ba2d827736e16ee2d92110d1c27498a60d0f24240f52a80",
+  "created_at": "2026-08-26T22:25:00Z",
   "governance_boundaries": {
     "composite_score": false,
     "ct40_reuse_allowed": false,
@@ -328,6 +328,22 @@
         "sha256": "ab5c482feeeaea24c91ad316873c17e90a4c560a210e42a6199a104165f276e5"
       },
       {
+        "path": "data/climate/releases/source-routing-policy-v2-2026-07-15.json",
+        "sha256": "b17a0da307b3bb566c3a8c4126c384587a24a643502fa2f0403da3ff6d638447"
+      },
+      {
+        "path": "data/climate/releases/top20-primary-source-gap-queue-2026-07-15.json",
+        "sha256": "6f7c661b310ccdcfcd53021c07a7293443cc4fa04bddd26f0bffc9013d8c2c41"
+      },
+      {
+        "path": "data/climate/releases/top20-source-routing-queue-v2-2026-07-15.json",
+        "sha256": "4bf47a926999d0b38cc65b4c45f9318602af904564f81be6f2ae1037e0fc874e"
+      },
+      {
+        "path": "data/climate/reviews/source-rights-review-packets-2026-07-15.json",
+        "sha256": "8b718a7cdff38693b37966190160dc737aed4c969c9aa6ca58a63a34108ea21b"
+      },
+      {
         "path": "data/climate/runtime/country-climate-intelligence.json",
         "sha256": "d961610b1786b82755ecca266e20236f5ad13e0d5df25dd8345703fd50a41728"
       },
@@ -520,12 +536,28 @@
         "sha256": "8f13629468f749aa21cd6a2c9f265d40a1472a46e011072df7222e1d26d3586f"
       },
       {
+        "path": "tools/check-source-rights-review-packets.js",
+        "sha256": "d3a8e9af50f9f39576e1cfd55dd8c17da79d4a8b6590cec9aa76dc147da13bda"
+      },
+      {
+        "path": "tools/check-source-routing-policy.js",
+        "sha256": "2031e41f7b812ca437b6ffa66e19eb568ea48dac963cfa354ed9246aca822440"
+      },
+      {
         "path": "tools/check-staged-factual-public-integrity.js",
         "sha256": "efb279beee9ee817b8cde9b06daaf21f7eb52f10dbcecabed35256346f60a1d5"
       },
       {
         "path": "tools/check-staged-production-integrity.js",
         "sha256": "d7b32c64e837508c553469e8ae4c313d576c43e6b78920274525db1c54eaacce"
+      },
+      {
+        "path": "tools/check-top20-primary-source-gap-queue.js",
+        "sha256": "59e29a343cd783ee281c1e5a6936dc91fdd96b08bc1e0a969f92a9cd291083bb"
+      },
+      {
+        "path": "tools/climate-truth-ci.js",
+        "sha256": "6b76eb156fcb88c4e199aa6ac78a55bc735460fa8729c0279119df2c8dfc155d"
       },
       {
         "path": "tools/compile-cckp-physical.js",
@@ -592,6 +624,10 @@
         "sha256": "ace0310274afe8ea6a7f54c7dd10ae9fdfe548911b3e336a5e96f0a86e18f808"
       },
       {
+        "path": "tools/lib/source-rights-review-packets.js",
+        "sha256": "fc80093aa0f9fe0cef9d2c02432ad73cb59db11e4b5c1eec13b624e7bed887c6"
+      },
+      {
         "path": "tools/migrate-climate-trace-source-identity.js",
         "sha256": "0de315ad2dea1e6cb36c66832db1a0f56811d5973523120f8b0eb8a00062b96c"
       },
@@ -601,7 +637,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "8a7e26f4df5b8852df8698584cf4c66d75b7c091e61ade2a946afb2f0f5f6ae3"
+        "sha256": "a06efe5aa833fbb31cbe0cd639d5256c1f73a72ed8d27d068d5a88507fc97ccd"
       },
       {
         "path": "tools/smoke-test.js",
@@ -625,10 +661,10 @@
       },
       {
         "path": "tools/verify-legacy-country-exit.js",
-        "sha256": "ad3818499aa81c1118a8da3a54e644d9e9ce7c9e697fc70e00792c1ce849cee2"
+        "sha256": "5f24bf56f24b442f4fe4f38087c9a261c35ce7f3c14c67a5af8f8897b46d1b56"
       }
     ],
     "commit_binding_state": "bound_candidate_commit",
-    "subject_commit_sha": "32f7a60da0c937ec0ab986babf7badf50755e749"
+    "subject_commit_sha": "20948efb97dd5bc465ab1b7a4eeef90c2d08008b"
   }
 }
