@@ -1,0 +1,538 @@
+{
+  "calculation_hash": "fb3a9edd5c36b4694003c75f730b7fb6bb30832c6b399ef858bb9f7d5de4ca11",
+  "created_at": "2026-08-26T00:00:00Z",
+  "governance_boundaries": {
+    "composite_score": false,
+    "ct40_reuse_allowed": false,
+    "finance_judgment": false,
+    "mismatched_scope_deltas": false,
+    "offset_adjustment": false,
+    "target_assessment": false
+  },
+  "independent_reviews": [
+    {
+      "required_scope": [
+        "GCB country mapping and 2024 territorial fossil CO2 selection.",
+        "Cumulative, consumption, transfer-sign, land-use mean and population-standard-deviation derivations.",
+        "Scope separation from land use and independent GHG context."
+      ],
+      "reviewer_id": null,
+      "role": "carbon_accounting",
+      "status": "pending"
+    },
+    {
+      "required_scope": [
+        "WPP 2024 Medium projection identity, year classification, unit conversion, and 236-country mapping.",
+        "Per-capita denominator lineage and modeled evidence class."
+      ],
+      "reviewer_id": null,
+      "role": "demography",
+      "status": "pending"
+    },
+    {
+      "required_scope": [
+        "Climate TRACE API identity, gases, sectors, AR6 GWP100, forestry exclusion, estimate class, and uncertainty limits.",
+        "Non-comparability with GCB fossil CO2."
+      ],
+      "reviewer_id": null,
+      "role": "ghg_inventory",
+      "status": "pending"
+    },
+    {
+      "required_scope": [
+        "Ember actual-year taxonomy, clean and fossil anchors, nine-fuel mix, carbon intensity, emissions, and five-year change.",
+        "Blank-versus-zero handling and source-rounding reconciliation."
+      ],
+      "reviewer_id": null,
+      "role": "power_systems",
+      "status": "pending"
+    },
+    {
+      "required_scope": [
+        "CCKP CMIP6 scenarios, percentiles, baseline, model roster, country aggregation, and projection interpretation.",
+        "ERA5 reanalysis semantics, annual tas and pr units, OLS trends, identity exceptions, and explicit gaps."
+      ],
+      "reviewer_id": null,
+      "role": "physical_climate",
+      "status": "pending"
+    },
+    {
+      "required_scope": [
+        "All artifact hashes, deterministic rebuild, compiler denial tests, 249-entity partitions, and rollback rehearsal.",
+        "Current-head release diff and runtime-manifest pin closure."
+      ],
+      "reviewer_id": null,
+      "role": "reproducibility",
+      "status": "pending"
+    },
+    {
+      "required_scope": [
+        "Globe and fallback parity, keyboard and screen-reader operation, focus return, reduced motion, mobile layouts, and slow-runtime behavior.",
+        "Public copy, source visibility, cache staging, and non-color-dependent evidence."
+      ],
+      "reviewer_id": null,
+      "role": "ui_accessibility_runtime",
+      "status": "pending"
+    },
+    {
+      "required_scope": [
+        "Release-specific normalized-value, derivative-database, attribution, notice, and external-source exception decisions.",
+        "CCKP and CMIP6 derivative chain plus Climate TRACE field-level exception chain."
+      ],
+      "reviewer_id": null,
+      "role": "source_rights",
+      "status": "pending"
+    }
+  ],
+  "production_runtime_release": false,
+  "prohibited_substitutions": [
+    "Do not reuse CT-40 scoring, NDC, inventory, or top-20 review decisions for this no-score runtime.",
+    "Do not treat source-registry configuration as release-specific rights approval.",
+    "Do not treat compiler or UI tests as independent scientific review.",
+    "Do not label API response metadata as an immutable publisher release without a receipt binding.",
+    "Do not promote a candidate runtime whose own release metadata still denies production.",
+    "Do not infer approval from a missing, partial, stale, placeholder, or hash-mismatched review artifact."
+  ],
+  "release_authority": false,
+  "release_id": "country-climate-intelligence-2026-08-25-candidate.5",
+  "request_id": "country-climate-intelligence-2026-08-25-candidate.5-review-request.1",
+  "required_release_artifacts": {
+    "approval": "data/climate/releases/country-climate-intelligence-v1/release-approval.json",
+    "release_diff": "data/climate/releases/country-climate-intelligence-v1/reviewed-release-diff.json",
+    "rollback_proof": "data/climate/releases/country-climate-intelligence-v1/reviewed-rollback-proof.json",
+    "runtime_manifest": "data/climate/releases/country-climate-intelligence-v1/reviewed-runtime-manifest.json"
+  },
+  "schema_version": "1.0.0",
+  "source_reviews": [
+    {
+      "attribution_candidate": "Global Carbon Project (2025), Supplemental data of Global Carbon Budget 2025, version 1.0, DOI 10.18160/GCP-2025; Earth Love United changes and unit conversions identified.",
+      "blocker_codes": [
+        "independent_rights_attestation_missing",
+        "scientific_review_missing"
+      ],
+      "official_evidence_urls": [
+        "https://doi.org/10.18160/GCP-2025",
+        "https://meta.icos-cp.eu/collections/AxnIW-ydMBT4BdKjxV63DGQl"
+      ],
+      "raw_receipt_state": "exact_receipt_pinned_pending_independent_revalidation",
+      "required_evidence": [
+        "Independently reproduce both object byte counts and SHA-256 digests from the publisher collection.",
+        "Confirm the fossil, consumption, transfer-sign, cumulative, and land-use field selections against the release workbook.",
+        "Approve the exact attribution and normalized-value redistribution scope for this release."
+      ],
+      "rights_state": "documented_pending_independent_confirmation",
+      "source_identity_state": "exact_object_pinned",
+      "source_registry_id": "gcp-gcb-2025-v1.0",
+      "values_in_release": true
+    },
+    {
+      "attribution_candidate": "United Nations, Department of Economic and Social Affairs, Population Division (2024), World Population Prospects 2024, 2024 Medium projection; Earth Love United denominator selection identified.",
+      "blocker_codes": [
+        "raw_receipt_missing",
+        "demography_review_missing",
+        "independent_rights_attestation_missing"
+      ],
+      "official_evidence_urls": [
+        "https://population.un.org/wpp/",
+        "https://population.un.org/wpp/assets/Files/WPP2024_Methodology-Report_Final.pdf"
+      ],
+      "raw_receipt_state": "raw_receipt_revalidation_required",
+      "required_evidence": [
+        "Retain the exact WPP source filename, bytes, SHA-256 digest, retrieval URL, retrieval time, and response metadata.",
+        "Confirm that 1 January 2024 begins the projection period and approve population.wpp_medium_projection as the denominator identity.",
+        "Approve CC BY 3.0 IGO attribution, change notice, and normalized-value redistribution."
+      ],
+      "rights_state": "documented_pending_independent_confirmation",
+      "source_identity_state": "raw_object_unpinned",
+      "source_registry_id": "un-wpp-2024",
+      "values_in_release": true
+    },
+    {
+      "attribution_candidate": "Climate TRACE API v7 country-emissions response retrieved 2026-08-24; response reported inventory version 5.9.0; immutable release binding and field-level external-source rights remain subject to review.",
+      "blocker_codes": [
+        "raw_receipt_missing",
+        "immutable_release_binding_missing",
+        "external_dataset_rights_unresolved",
+        "ghg_inventory_review_missing"
+      ],
+      "official_evidence_urls": [
+        "https://climatetrace.org/data",
+        "https://climatetrace.org/terms"
+      ],
+      "raw_receipt_state": "raw_receipt_revalidation_required",
+      "required_evidence": [
+        "Retain the exact API request, parameters, response bytes, SHA-256 digest, response headers, retrieval time, and immutable inventory-release binding.",
+        "Resolve the terms-page exceptions for every selected country, gas, and sector field, including EDGAR and FAOSTAT-derived fields.",
+        "Confirm AR6 GWP100, 2024 estimate status, forestry and LULUCF exclusion, gas totals, sector totals, and non-comparability with fossil CO2."
+      ],
+      "rights_state": "external_dataset_exceptions_unresolved",
+      "source_identity_state": "immutable_release_binding_unresolved",
+      "source_registry_id": "climate-trace-api-v7-2026-08-24-country-annual",
+      "values_in_release": true
+    },
+    {
+      "attribution_candidate": "Ember, Yearly Electricity Data, full long-format release retrieved 2026-08-25; Earth Love United selections and transformations identified.",
+      "blocker_codes": [
+        "independent_raw_receipt_revalidation_missing",
+        "power_systems_review_missing",
+        "independent_rights_attestation_missing"
+      ],
+      "official_evidence_urls": [
+        "https://ember-energy.org/data/yearly-electricity-data/",
+        "https://api.ember-energy.org/v1/docs"
+      ],
+      "raw_receipt_state": "exact_receipt_pinned_pending_independent_revalidation",
+      "required_evidence": [
+        "Independently reproduce the 49,079,981-byte snapshot SHA-256 and confirm the publisher retrieval path.",
+        "Review aggregate and nine-fuel taxonomy, actual-year selection, blank preservation, 2019-2024 change, and plus or minus 0.02 percentage-point reconciliation.",
+        "Approve the exact attribution and normalized-value redistribution scope."
+      ],
+      "rights_state": "documented_pending_independent_confirmation",
+      "source_identity_state": "retrieval_snapshot_pinned",
+      "source_registry_id": "ember-yearly-electricity-data-2026-08-25",
+      "values_in_release": true
+    },
+    {
+      "attribution_candidate": "World Bank Climate Change Knowledge Portal CMIP6 0.25-degree country aggregates, API response retrieved 2026-08-24; CCKP processing, CMIP6 model roster, and Earth Love United selections identified.",
+      "blocker_codes": [
+        "raw_receipt_missing",
+        "model_roster_missing",
+        "derivative_rights_unresolved",
+        "physical_climate_review_missing"
+      ],
+      "official_evidence_urls": [
+        "https://climateknowledgeportal.worldbank.org/index.php/metadata",
+        "https://worldbank.github.io/climateknowledgeportal/docs/collections/cmip6-x0.25.html",
+        "https://wcrp-cmip.github.io/CMIP6_CVs/docs/CMIP6_source_id_licenses.html"
+      ],
+      "raw_receipt_state": "raw_receipt_revalidation_required",
+      "required_evidence": [
+        "Retain exact API or model-file receipts, checksums, parameters, response metadata, model roster, and country aggregation chain.",
+        "Resolve World Bank portal terms against every CMIP6 source-model licence and any share-alike obligations.",
+        "Review SSP2-4.5 p10, median, p90 and SSP1-2.6 and SSP5-8.5 median selections, reference period, country aggregation, and explicit gaps."
+      ],
+      "rights_state": "derivative_chain_unresolved",
+      "source_identity_state": "raw_object_unpinned",
+      "source_registry_id": "world-bank-cckp-cmip6-2026-08-24",
+      "values_in_release": true
+    },
+    {
+      "attribution_candidate": "World Bank Climate Change Knowledge Portal ERA5 0.25-degree annual country temperature and precipitation aggregates, 1950-2025 API snapshots retrieved 2026-08-25; 1970-2025 selection and Earth Love United OLS transformations identified.",
+      "blocker_codes": [
+        "independent_raw_receipt_revalidation_missing",
+        "derivative_rights_unresolved",
+        "physical_climate_review_missing"
+      ],
+      "official_evidence_urls": [
+        "https://worldbank.github.io/climateknowledgeportal/docs/collections/era5-x0.25.html",
+        "https://cds.climate.copernicus.eu/licences/licence-to-use-copernicus-products",
+        "https://doi.org/10.1002/qj.3803"
+      ],
+      "raw_receipt_state": "exact_receipt_pinned_pending_independent_revalidation",
+      "required_evidence": [
+        "Independently reproduce both variable-specific API response and normalized receipt hashes.",
+        "Resolve CCKP processing rights and ERA5 attribution through the derivative chain.",
+        "Review annual tas and pr semantics, 1970-2025 selection, units, OLS per-decade derivation, KSV exception, and four explicit registry gaps."
+      ],
+      "rights_state": "derivative_chain_unresolved",
+      "source_identity_state": "retrieval_snapshot_pinned",
+      "source_registry_id": "world-bank-cckp-era5-2026-08-25",
+      "values_in_release": true
+    }
+  ],
+  "status": "requires_independent_review",
+  "subject": {
+    "artifact_pins": [
+      {
+        "path": ".github/workflows/ci.yml",
+        "sha256": "8ac5f5203ceb173d120fad8cbb8e6700a37b6acc1f439b82f26165b7cab208c1"
+      },
+      {
+        "path": "ARCHITECTURE.md",
+        "sha256": "953530b7a3ec70d915e7dbcf5556f77f95af62c68c7f5a571f818939fe1a234d"
+      },
+      {
+        "path": "css/globe-system.css",
+        "sha256": "42c5d766eac74792885af36b03ebf4ac481a1ed3cc694cc644b1afce98f09981"
+      },
+      {
+        "path": "css/guided-first-orbit.css",
+        "sha256": "8e6a4becc8da0cab3b7bced1f2bda13d66de6385aab0aaf08eaffb7a503565fe"
+      },
+      {
+        "path": "data/climate/country-registry.json",
+        "sha256": "51fb321661684a88e80254cd5721ee70d0f52d95587222727fb9e9722e86b075"
+      },
+      {
+        "path": "data/climate/evidence/major-emitter-ndc-source-audit.json",
+        "sha256": "c4764628073653bda0f3f8a14f49400a624dfb3935c36432db8754e23d2c6683"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/TRANSFORMATION-LOG.md",
+        "sha256": "9cd831a7fb594f42feaacc4d93e32810d4b6bbc74ac5552ddd9f617b6a6f9ef8"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/cckp-era5-precipitation-normalized-receipt.json",
+        "sha256": "f54d1f825d278d0f0b3d5424bc223f33868939a9be0489d0fc66c7258fd57fe9"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/cckp-era5-precipitation-raw-receipt.json",
+        "sha256": "53701278a9b33c0e29f6b2688bbac241c4be9e578c109375fdf592b346396e13"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/cckp-era5-temperature-normalized-receipt.json",
+        "sha256": "b94a028b3ef777fbbf79422d3838ba400270536af49f840063f1a28f0c22343c"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/cckp-era5-temperature-raw-receipt.json",
+        "sha256": "019633bc2ebf821b6a3c93e2d5c9bbdf104cfac0610648e06e757a2594664762"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/cckp-physical.json",
+        "sha256": "168fa7271a16569bde4da9dd1c55054e831090c88931d9595755af3db106c2dd"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/climate-trace-ghg.json",
+        "sha256": "b95a853ad5fa6e1117c4d21cdf7aa46d3cd5beee24a613e4681b3ab3dd3d37f3"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/ember-2026-08-25-raw-receipt.json",
+        "sha256": "31fb254288f93d429e538d57fe4f049d9279fa6b44283ad37bf18abf44b65eb6"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/ember-power.json",
+        "sha256": "2f566e0035353dd7b8d67aed7b2211e6a164ca16ba98c431d6f3e14d45c8e24a"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/gcb-carbon.json",
+        "sha256": "0423f8150939455e07260dec49951575ee4123f174f00ceefbda441364b66825"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/release-manifest.json",
+        "sha256": "700c0952d486856dd1063476e5352c074745bde8ec92a9adb3e4e64d285eef70"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/source-receipts.json",
+        "sha256": "3015a86253972273456605bb446b82effb22e93b13124343f7180c33f57e86ec"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/wpp-population.json",
+        "sha256": "ab5c482feeeaea24c91ad316873c17e90a4c560a210e42a6199a104165f276e5"
+      },
+      {
+        "path": "data/climate/runtime/country-climate-intelligence.json",
+        "sha256": "d961610b1786b82755ecca266e20236f5ad13e0d5df25dd8345703fd50a41728"
+      },
+      {
+        "path": "data/climate/schemas/country-climate-intelligence-release-approval.schema.json",
+        "sha256": "80b0d8cf4e12810c14410e1b5985bc6cdc39dff66175e69c64632e5adb7fabb8"
+      },
+      {
+        "path": "data/climate/schemas/country-climate-intelligence-review-request.schema.json",
+        "sha256": "dc047ead0055dd0e1254a1c3fe4b2b581c0f40cab328edfc2c53dea57f1a6d91"
+      },
+      {
+        "path": "data/climate/schemas/country-climate-intelligence-reviewed-runtime-manifest.schema.json",
+        "sha256": "d1754d37f5c0643ab46f901b438e1c24201db80047242874744ac7d9af5d9133"
+      },
+      {
+        "path": "data/climate/schemas/country-climate-intelligence.schema.json",
+        "sha256": "f1c4ee00d9bdf3f5e2142609a7dcefa501d2b0bd15a27f51b8589c1caba62713"
+      },
+      {
+        "path": "data/climate/schemas/country-registry.schema.json",
+        "sha256": "78de933d2ad0402086012876d22f4750631adaf4b57048c409b442645d6d677a"
+      },
+      {
+        "path": "data/climate/schemas/reviewed-release-diff.schema.json",
+        "sha256": "d82135909e9d9fa3939bea4aa6893b0b040f550a9da0fff000d6b2e6cca3fc44"
+      },
+      {
+        "path": "data/climate/schemas/reviewed-runtime-rollback-proof.schema.json",
+        "sha256": "057e994d8dc81bafe2c19afe473e759647135df6a9ff980a089d21cd3970e9e8"
+      },
+      {
+        "path": "data/climate/source-registry.json",
+        "sha256": "5c7222beb6414bb05723a59bc25a978cdc34c7b2d8bccce9bb1ff82190056149"
+      },
+      {
+        "path": "docs/COUNTRY-CLIMATE-METHODOLOGY.md",
+        "sha256": "4efada7ccab5e193e6b9b06fe5b72c0ecfb592197215f83a428ce408d7c7ead4"
+      },
+      {
+        "path": "docs/COUNTRY-CLIMATE-RELEASE-REVIEW.md",
+        "sha256": "683864c5ffb3dba435248d860c6deffb3b1c4510e79f88937a5489949dd189d0"
+      },
+      {
+        "path": "docs/COUNTRY-CLIMATE-SOURCE-RIGOR-AUDIT.md",
+        "sha256": "aa0549cf692eb0509ff8be1fac26b4016117d7dcadcbad20a7f5b8d3ecb62116"
+      },
+      {
+        "path": "docs/COUNTRY-CLIMATE-TRUTH-PLAN.md",
+        "sha256": "0075097165a644ab9511318705c0652633c914fbbc172f115029cbf9448b5b5b"
+      },
+      {
+        "path": "index.html",
+        "sha256": "3ceebc83acefd5fd6e17a631a0ff9cd274cf120688c72cc707e47a7652178326"
+      },
+      {
+        "path": "js/country-climate-intelligence.js",
+        "sha256": "b1a617ae2a64f2b24ff9f1ba2c2d0dd8124dc9d56b7c161d66b64b4e59978662"
+      },
+      {
+        "path": "js/data.js",
+        "sha256": "63bb7d259d50ef88f001584858f2d1623cd14199c5a813facb513ce78d3722da"
+      },
+      {
+        "path": "js/globe.js",
+        "sha256": "fcc74459aed940df460a603d6489ddb5b9dcd25fbe4ed02346e1068add8b4faa"
+      },
+      {
+        "path": "js/guided-first-orbit.js",
+        "sha256": "8016ab02c5efb14a6bf785fb884db172cd126370cacd702e676e8df8b52c499a"
+      },
+      {
+        "path": "scripts/verify_load_order.py",
+        "sha256": "2b093dfe70a9a6e11da3aecd6e6f68753e1aab159280da940206c6d97a21c8ce"
+      },
+      {
+        "path": "sw.js",
+        "sha256": "42e710581182e33cc55881c03b535c23fb4b0c126f9897f439ebfe1969efa9e8"
+      },
+      {
+        "path": "tools/build-country-climate-intelligence.js",
+        "sha256": "6eea46867a78544a8d00ee8fef704943473f0cb89db1fa35f8d964cb84360840"
+      },
+      {
+        "path": "tools/check-climate-source-registry.js",
+        "sha256": "a90c72aaca9bd77ff35f798c5e87b0c00f0ec320e9ec997fd11f476a49ca1ed0"
+      },
+      {
+        "path": "tools/check-country-accessibility.js",
+        "sha256": "4308afc47e39a08e40a829b3c650ee0ccac50456c979c86e6212bbf6bd7c046f"
+      },
+      {
+        "path": "tools/check-country-climate-intelligence-ci.js",
+        "sha256": "d13b92314267c20a9cad9f3939dc575eaadbd57f86e80bafec1de2ce77e085be"
+      },
+      {
+        "path": "tools/check-country-climate-intelligence-release-gate.js",
+        "sha256": "570a27c38d273ed9c7298a93f23fe79e2dc6156370bfc06beaf812dd745209b9"
+      },
+      {
+        "path": "tools/check-country-climate-intelligence-ui.js",
+        "sha256": "b33fe67ea497746be6efd9d622f35d9e3d18b84856c9af90cdcd3100b82a73f6"
+      },
+      {
+        "path": "tools/check-country-climate-intelligence.js",
+        "sha256": "32437ce5c101ae505f18fd96166978da2981f2677728a59568b4106939812bac"
+      },
+      {
+        "path": "tools/check-country-climate-runtime-atomic.js",
+        "sha256": "7a92a7c5b57f9c2c7a613a81edd53b7e03cd35280dcc9ca13e7e53caecd63555"
+      },
+      {
+        "path": "tools/check-globe-runtime-assets.js",
+        "sha256": "77052774b58bfb6502386fe6adc4e3e0cf4ca13abb46e1196fc752ae7175d981"
+      },
+      {
+        "path": "tools/check-globe-webgl-fallback.js",
+        "sha256": "54a1e6215d19ccb84b4e314367704c5711cd3009534ce1ddc51d95dc3e9646e3"
+      },
+      {
+        "path": "tools/check-public-copy.js",
+        "sha256": "7c6af0f0a925a2cbd9feb020ecd4e95bc71bab28dcae38093b6a451d126de12f"
+      },
+      {
+        "path": "tools/check-public-deploy-surface.js",
+        "sha256": "fcf35f7d8e8279c260e45653e979553e71eeddb4a085f68ff68ef1666e3dbe69"
+      },
+      {
+        "path": "tools/compile-cckp-physical.js",
+        "sha256": "886f8db5609ce6083e15d89886716b74dec5ff4e085c3ff8c123402c87d25336"
+      },
+      {
+        "path": "tools/compile-climate-trace.js",
+        "sha256": "4b670aa609a070bb426e50903ab001f3bb4883a1ca39a9b47bca6164f1ba3627"
+      },
+      {
+        "path": "tools/compile-ember-power.js",
+        "sha256": "702d1f1daa1286b13ab71d86a0e6234bb83751bb7385646bd1188d04bead7b34"
+      },
+      {
+        "path": "tools/compile-gcb-emissions.js",
+        "sha256": "8a26c4810de442a196f78695761146640cc7d620df139675938880070d26537c"
+      },
+      {
+        "path": "tools/compile-wpp-population.js",
+        "sha256": "964412de3cbf844ffe9947399a5be31b93b0685179189f4c39508687e20ae589"
+      },
+      {
+        "path": "tools/extract-reviewed-country-climate-components.js",
+        "sha256": "412a624456d53a39665115a70c664d112c38f34d396a6f997f0d0f36302fbc6c"
+      },
+      {
+        "path": "tools/fixtures/globe-runtime-assets.json",
+        "sha256": "31c9f565f28b803eb4cbc64275bbf748f6bf63989930b737cb5ddf7fba1ef481"
+      },
+      {
+        "path": "tools/lib/country-climate-intelligence-release-gate.js",
+        "sha256": "41787cd07b4e1dfe4cd3cf61fc172a37bc5829c3c210fbce9df22d5ef7836d6a"
+      },
+      {
+        "path": "tools/lib/country-climate-intelligence.js",
+        "sha256": "6e43a1f2ea94f09c5d9d20ee11e5af6be5ae0c86a3cdd97b7e1327275e70b4f7"
+      },
+      {
+        "path": "tools/lib/globe-runtime-assets.js",
+        "sha256": "5b446c96838f64c7fc8f86ff0b766b35e99e64be5eda73a1effcb57c12a38b6b"
+      },
+      {
+        "path": "tools/lib/json-schema-lite.js",
+        "sha256": "e565dcf3b8363ccb8079dc4d61d123c863a6f1da45ee39d97dbf06e510a13919"
+      },
+      {
+        "path": "tools/lib/public-deploy-surface.js",
+        "sha256": "91468ade486720141bf8e327da6301be4d2e7330e7e5cba317b74c7883f3ea2b"
+      },
+      {
+        "path": "tools/lib/reviewed-runtime-rollback-proof.js",
+        "sha256": "ace0310274afe8ea6a7f54c7dd10ae9fdfe548911b3e336a5e96f0a86e18f808"
+      },
+      {
+        "path": "tools/migrate-climate-trace-source-identity.js",
+        "sha256": "0de315ad2dea1e6cb36c66832db1a0f56811d5973523120f8b0eb8a00062b96c"
+      },
+      {
+        "path": "tools/migrate-wpp-medium-projection-id.js",
+        "sha256": "ce5c897c556df96e6c4c74dac8141dff323728bba6d15f1b39be4f46895616ea"
+      },
+      {
+        "path": "tools/prepare-country-climate-intelligence-review-request.js",
+        "sha256": "ffdd7ec4099ced64479bf8d257f9cbc18abda174382385735ad52780781aec4d"
+      },
+      {
+        "path": "tools/smoke-test.js",
+        "sha256": "51ff2e1aa68e314110213f970e0e85103d1c69a6694fd2e652842102e9045763"
+      },
+      {
+        "path": "tools/stack-lint.js",
+        "sha256": "d7b0bbac4ee9fcffc34932b88c9e71398a0b604c287c6fbb04ba5652b33818aa"
+      },
+      {
+        "path": "tools/test-climate-source-registry.js",
+        "sha256": "157d1e6f91a71677e83af309b89b32cfaa2490f2e91524458b091a18fbf1d55b"
+      },
+      {
+        "path": "tools/test-country-climate-compilers.js",
+        "sha256": "42ba1a40eb2750d171daf28e1d0570a28da55e5c861e5a9bb2ee5b68eac5f1d1"
+      },
+      {
+        "path": "tools/verify-legacy-country-exit.js",
+        "sha256": "ad3818499aa81c1118a8da3a54e644d9e9ce7c9e697fc70e00792c1ce849cee2"
+      }
+    ],
+    "commit_binding_state": "bound_candidate_commit",
+    "subject_commit_sha": "1ec9ec1d3e4db2d3939437571a2d615a17de8b40"
+  }
+}
