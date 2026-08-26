@@ -18,7 +18,7 @@ const PATHS = Object.freeze({
 const EXPECTED_INPUT_SHA256 = Object.freeze({
   runtime: '7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664',
   audit: 'c4764628073653bda0f3f8a14f49400a624dfb3935c36432db8754e23d2c6683',
-  sourceRegistry: 'b37ad095e20a0e2bb4cf105a059d11e62ae08aca83d5f736139bcc59ff63c87d',
+  sourceRegistry: '5c7222beb6414bb05723a59bc25a978cdc34c7b2d8bccce9bb1ff82190056149',
 });
 const EXPECTED_TOP20 = Object.freeze(['CHN', 'USA', 'IND', 'RUS', 'IDN', 'BRA', 'JPN', 'IRN', 'SAU', 'CAN', 'MEX', 'KOR', 'DEU', 'AUS', 'TUR', 'ZAF', 'VNM', 'PAK', 'THA', 'NGA']);
 
