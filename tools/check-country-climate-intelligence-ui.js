@@ -60,6 +60,8 @@ assert(globe.includes('clearCountrySwipeCue()'));
 assert(guidedCss.includes('body.guided-orbit-step-3:not(.globe-fallback-active) #elu-country-card-wrap #hex-country-tooltip.tt-swipe-cue'));
 assert(guidedCss.includes('.guided-orbit-cue.is-lens'));
 assert(guidedCss.includes('.guided-orbit-cue.is-rail'));
+assert(guidedCss.includes('.guided-orbit-cue.is-lens {\n    top: 130px;'), 'compact lens cue must clear the lens control');
+assert(guidedCss.includes('.guided-orbit-cue.is-rail {\n    top: 170px;'), 'compact rail cue must occupy its own lane');
 assert(guidedCss.includes('.guided-orbit[data-mode="source"][data-route="globe"] .guided-orbit-card'));
 assert(index.includes('class="guided-orbit-period">2024</span>'));
 assert(guidedCss.includes('animation: none !important;'));
@@ -349,9 +351,9 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v63-visual-orbit-cues'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v64-orbit-cue-spacing'"));
 assert(serviceWorker.includes("'/css/globe-system.css?v=v39'"));
-assert(serviceWorker.includes("'/css/guided-first-orbit.css?v=v8'"));
+assert(serviceWorker.includes("'/css/guided-first-orbit.css?v=v9'"));
 assert(serviceWorker.includes("'/js/data.js?v=v9'"));
 assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v13'"));
 assert(serviceWorker.includes("'/js/globe.js?v=v34'"));

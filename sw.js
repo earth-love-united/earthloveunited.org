@@ -1,11 +1,11 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v63) — refine the three-move Climate Intelligence orbit with
- * visual target cues, compact copy, a clear swipe shelf, and first-visit
- * localhost parity while retaining the reviewed factual runtime boundary.
+ * Globe cache (v64) — give the three-move Climate Intelligence orbit's visual
+ * target cues distinct lanes while retaining the reviewed factual runtime
+ * boundary, compact copy, and clear swipe shelf.
  */
-const CACHE_NAME = 'elu-v63-visual-orbit-cues';
+const CACHE_NAME = 'elu-v64-orbit-cue-spacing';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -13,7 +13,7 @@ const STATIC_ASSETS = [
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
   '/css/globe-system.css?v=v39',
-  '/css/guided-first-orbit.css?v=v8',
+  '/css/guided-first-orbit.css?v=v9',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
   '/assets/globe/runtime/manifest.json',

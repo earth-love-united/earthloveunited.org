@@ -467,13 +467,13 @@ html[data-theme="light"] .guided-orbit-lens-guide article[data-guided-orbit-lens
 }
 
 .guided-orbit-cue.is-lens {
-  top: 130px;
+  top: 140px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .guided-orbit-cue.is-rail {
-  top: 146px;
+  top: 174px;
   left: 246px;
 }
 
@@ -600,11 +600,11 @@ body.guided-orbit-step-3:not(.globe-fallback-active) #elu-country-card-wrap #hex
   }
 
   .guided-orbit-cue.is-lens {
-    top: 114px;
+    top: 130px;
   }
 
   .guided-orbit-cue.is-rail {
-    top: 126px;
+    top: 170px;
     left: 88px;
   }
 }
