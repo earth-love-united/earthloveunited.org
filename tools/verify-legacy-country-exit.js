@@ -233,7 +233,7 @@ const hasClimateIntelligenceLegend = index.includes('id="climate-lens-controls"'
   index.includes('Projected warming <span class="guided-orbit-period">2040–2059</span>') &&
   index.includes('No composite score, target assessment, finance judgment, or offset adjustment is produced.') &&
   !index.includes('aria-label="Emissions magnitude legend"');
-const climateIntelligenceCache = serviceWorker.includes("const CACHE_NAME = 'elu-v65-card-lens-gutter'") &&
+const climateIntelligenceCache = serviceWorker.includes("const CACHE_NAME = 'elu-v66-card-lens-air'") &&
   serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7'") &&
   serviceWorker.includes("'/js/country-climate-intelligence.js?v=v13'") && hasClimateIntelligenceLegend;
 if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'") && !candidateCache && !localizedCandidateCache && !climateIntelligenceCache) {
@@ -249,7 +249,7 @@ if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=38-compact-rank'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=39-guided-orbit'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=40-guided-orbit-review'") &&
-    !index.includes("navigator.serviceWorker.register('/sw.js?v=65-card-lens-gutter'")) {
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=66-card-lens-air'")) {
   failures.push('index.html: service-worker registration is neither v26, candidate v27, nor a supported evidence release');
 }
 

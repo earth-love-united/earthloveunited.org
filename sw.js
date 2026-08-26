@@ -1,18 +1,18 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v65) — keep a compact-layout gutter between the lens rail and
- * selected-country card while retaining the reviewed factual runtime boundary,
- * distinct tutorial cue lanes, and clear swipe shelf.
+ * Globe cache (v66) — enforce visible compact-layout air between the rendered
+ * lens rail and selected-country card while retaining the reviewed factual
+ * runtime boundary, distinct tutorial cue lanes, and clear swipe shelf.
  */
-const CACHE_NAME = 'elu-v65-card-lens-gutter';
+const CACHE_NAME = 'elu-v66-card-lens-air';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v40',
+  '/css/globe-system.css?v=v41',
   '/css/guided-first-orbit.css?v=v9',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',

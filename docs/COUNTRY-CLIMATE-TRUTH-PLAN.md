@@ -127,8 +127,8 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v65 service worker composes the refined three-move Climate Intelligence
-first orbit with separately spaced visual cue lanes and a compact lens/card gutter, the subtle relief presentation, candidate dashboard, and both
+The v66 service worker composes the refined three-move Climate Intelligence
+first orbit with separately spaced visual cue lanes and enforced compact lens/card air, the subtle relief presentation, candidate dashboard, and both
 runtime generations:
 
 ```text

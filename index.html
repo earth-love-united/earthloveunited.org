@@ -362,7 +362,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v40">
+<link rel="stylesheet" href="css/globe-system.css?v=v41">
 <link rel="stylesheet" href="css/guided-first-orbit.css?v=v9">
 
 <!-- Non-critical CSS: deferred async load -->
@@ -985,7 +985,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=65-card-lens-gutter', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=66-card-lens-air', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

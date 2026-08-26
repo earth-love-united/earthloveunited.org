@@ -401,8 +401,8 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v65 precaches the public page, core CSS/JS, the refined
-three-move Climate Intelligence first orbit with separately spaced visual cue lanes and a compact lens/card gutter, the shared raised-tile lenses, evidence-only
+`sw.js` cache epoch v66 precaches the public page, core CSS/JS, the refined
+three-move Climate Intelligence first orbit with separately spaced visual cue lanes and enforced compact lens/card air, the shared raised-tile lenses, evidence-only
 Physical-card percentile range, the simplified two-track Power fuel palette,
 verified local globe.gl, the CT-45 manifest and localized globe assets, the
 scroll-proof non-modal selected-country identity header, and the exact-version
