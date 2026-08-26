@@ -1,6 +1,6 @@
 {
-  "calculation_hash": "94fbb4c807a37d70e7cc0ee1c6da6abd194a39c2446b10090c705172a9c5d309",
-  "created_at": "2026-08-26T21:25:17Z",
+  "calculation_hash": "4ca31eb452982e160a000311858d29fce8b0973e80d93aa08089b270cdd0eb25",
+  "created_at": "2026-08-26T21:50:57Z",
   "governance_boundaries": {
     "composite_score": false,
     "ct40_reuse_allowed": false,
@@ -245,15 +245,15 @@
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
-        "sha256": "ab5a6bd84d825189d910347f626ad8db43f8632ac31d4fe9c425b4588e44014f"
+        "sha256": "241eff25881c5308cbcdccd91ab28290e84e8f1722af130be35a43e429841e3a"
       },
       {
         "path": ".github/workflows/ci.yml",
-        "sha256": "cf6c50ea9fa1150f146fba863275c9c9ffecbe3043b1582e3bac01682faf8c42"
+        "sha256": "72f81ef9a9ec46f8e936aaf9fb8e34c3e00e9f1505f6cc17283765ced63aa62f"
       },
       {
         "path": "ARCHITECTURE.md",
-        "sha256": "08b406c20eb6213646072c8458c43709d296973b4c94f8162ec4d9ce32fcdb69"
+        "sha256": "4c359e5f72a2fddd1884c681f1b0512c61afc751e52b3ffddc4869af817401bb"
       },
       {
         "path": "css/globe-system.css",
@@ -369,7 +369,7 @@
       },
       {
         "path": "docs/COUNTRY-CLIMATE-RELEASE-REVIEW.md",
-        "sha256": "9e478f40998ddd4063afee5a77584a35f13a423a9bdf533e2d87849b82460520"
+        "sha256": "7eee00019191924c9fc4ad4164be4855814d811dd3717f009645220b06afdf51"
       },
       {
         "path": "docs/COUNTRY-CLIMATE-SOURCE-RIGOR-AUDIT.md",
@@ -378,6 +378,10 @@
       {
         "path": "docs/COUNTRY-CLIMATE-TRUTH-PLAN.md",
         "sha256": "0075097165a644ab9511318705c0652633c914fbbc172f115029cbf9448b5b5b"
+      },
+      {
+        "path": "docs/FACTUAL-PUBLIC-DEPLOYMENT.md",
+        "sha256": "de0939b508af7fd054c9326511c3a9ce7cdebfbd91cb90e3e2bb3b0ca292d57b"
       },
       {
         "path": "index.html",
@@ -448,8 +452,16 @@
         "sha256": "483149268342064a8a00cfbbc705455c691acf9aed85ec30642d7504188f1fc3"
       },
       {
+        "path": "tools/build-factual-public-deploy.sh",
+        "sha256": "f7954ad31433f3f844d0774b9f1cbc3aa95988f6cb21a9b47300151e3a2b8890"
+      },
+      {
+        "path": "tools/check-climate-factual-public-readiness.js",
+        "sha256": "2a2efe1981299d92f453f7e4ecbd727e41968fb106c93589bdac7d58cea1d4d5"
+      },
+      {
         "path": "tools/check-climate-runtime-diff-boundary.js",
-        "sha256": "24303eee7d9df50857dced6eaceb3a7065e64c07330f581a7a2005b8fdd488a0"
+        "sha256": "c74249a4b22c912d35c1e9891bb3b29f616a3756c4464eb01b9c08959f3e5f38"
       },
       {
         "path": "tools/check-climate-source-registry.js",
@@ -489,7 +501,7 @@
       },
       {
         "path": "tools/check-globe-runtime-assets.js",
-        "sha256": "f853f4014faf70f18c0d83a0361c9e3e9319e8cf46ef097e2d59de6bb6aae8a0"
+        "sha256": "77ab6f879f5e2d61444eef0dadf6aa032041199919f9e030b96bec2221a30088"
       },
       {
         "path": "tools/check-globe-webgl-fallback.js",
@@ -497,7 +509,7 @@
       },
       {
         "path": "tools/check-public-climate-release-profile.js",
-        "sha256": "e2cc1d3b9c233248ef47b28bf492c116d5465892b1a5377e5fc804ede777f5f3"
+        "sha256": "b0d50d1af1ae121516751e461d3a0a4d929a8baef70d45446a84ee28e033a940"
       },
       {
         "path": "tools/check-public-copy.js",
@@ -508,8 +520,12 @@
         "sha256": "8f13629468f749aa21cd6a2c9f265d40a1472a46e011072df7222e1d26d3586f"
       },
       {
+        "path": "tools/check-staged-factual-public-integrity.js",
+        "sha256": "efb279beee9ee817b8cde9b06daaf21f7eb52f10dbcecabed35256346f60a1d5"
+      },
+      {
         "path": "tools/check-staged-production-integrity.js",
-        "sha256": "01359f35e8148a2db3a7943cbc704fae22daed8e1d5536402f71c2183c3c5f48"
+        "sha256": "d7b32c64e837508c553469e8ae4c313d576c43e6b78920274525db1c54eaacce"
       },
       {
         "path": "tools/compile-cckp-physical.js",
@@ -537,11 +553,11 @@
       },
       {
         "path": "tools/fixtures/globe-runtime-assets.json",
-        "sha256": "b12c5933f743b052ecc084d4f736676af64b24dde5e1bdc3b36c9367660d3882"
+        "sha256": "87e1ddce137abcc23fd3e6907567c60822ae87170ca01fbbaab7658970e4768e"
       },
       {
         "path": "tools/lib/climate-runtime-diff-boundary.js",
-        "sha256": "50dcfd95cf5c9be144f3c79b83d14de18ceed8f6ae023fbc4b3de0c13f7e6ad2"
+        "sha256": "3df6a539986ca957693c56f4040c42de49010904810e681b5813f1a11d06afeb"
       },
       {
         "path": "tools/lib/country-climate-intelligence-release-gate.js",
@@ -553,7 +569,7 @@
       },
       {
         "path": "tools/lib/globe-runtime-assets.js",
-        "sha256": "888a1d866d93731677f72158c4a6310cebafabbd9a095ebb16feb3e1373d0595"
+        "sha256": "f035e366fed41ed467986ecfde19ed9ddc0837de99e1dde22f8d40e7a252246e"
       },
       {
         "path": "tools/lib/globe-vendor-integrity.js",
@@ -585,7 +601,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "97c53f59801086a5e73188170de11b9d64fe5447fbab0902cc31447a53bcf179"
+        "sha256": "8a7e26f4df5b8852df8698584cf4c66d75b7c091e61ade2a946afb2f0f5f6ae3"
       },
       {
         "path": "tools/smoke-test.js",
@@ -613,6 +629,6 @@
       }
     ],
     "commit_binding_state": "bound_candidate_commit",
-    "subject_commit_sha": "4e4305858cbca1c27d263a036dca86b78d25d4a1"
+    "subject_commit_sha": "32f7a60da0c937ec0ab986babf7badf50755e749"
   }
 }
