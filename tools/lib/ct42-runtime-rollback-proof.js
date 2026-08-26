@@ -13,7 +13,7 @@ const {
 } = require('./globe-runtime-assets');
 const { EXPECTED_SPEC: EXPECTED_VENDOR_SPEC } = require('./globe-vendor-integrity');
 
-const RUNTIME_CONTROL_COMMIT = 'c41b55714fa33bc3bffe5443d3b50bab38d6dfe6';
+const RUNTIME_CONTROL_COMMIT = '550a91cf5dd28c6a7252039f50f42da95fbce8d2';
 const ROLLBACK_PLAN_SHA256 = 'c23bd5caf21bf05b6e637c6f599742e13a47b822b298054ca8d56e968d8aeaae';
 const CACHE_NAME = 'elu-v34-ct42-neutral-rollback';
 const SERVICE_WORKER_REGISTRATION = '/sw.js?v=34-ct42-neutral-rollback';
