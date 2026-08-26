@@ -16,9 +16,9 @@ const css = fs.readFileSync(path.join(ROOT, 'css/globe-system.css'), 'utf8');
 const guidedCss = fs.readFileSync(path.join(ROOT, 'css/guided-first-orbit.css'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
-const dataAt = index.indexOf('src="js/data.js?v=v9"');
+const dataAt = index.indexOf('src="js/data.js?v=v10"');
 const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v13"');
-const globeAt = index.indexOf('src="js/globe.js?v=v36"');
+const globeAt = index.indexOf('src="js/globe.js?v=v37"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -83,6 +83,12 @@ assert(globe.includes('const GLOBE_TARGET_FPS = 120;'), '120 FPS renderer target
 assert(globe.includes('getPerformanceState()'), 'renderer performance telemetry is missing');
 assert(globe.includes('lensIds.forEach(lensId => this._buildCountryDeck(lensId, { force: true }))'), 'all three navigation decks must be warmed before the renderer starts');
 assert(globe.includes('const cached = this._countryDeckByLens?.[lensId]'), 'lens switches must reuse the warmed navigation deck');
+assert(globe.includes('this._countryNavigationSwapTimer = setTimeout(swap, exitDuration)'), 'country swap timer must be retained');
+assert(globe.includes('_cancelCountryNavigation()'), 'country navigation must expose one cancellation path');
+assert(globe.includes('if (navigationGeneration !== this._countryNavigationGeneration || !this._selectedCountryFeature) return;'), 'stale country swaps must be generation-guarded');
+assert(globe.includes('this._rebindCountryOpener();'), 'rail replacement must rebind the selected country opener');
+assert(globe.includes("candidate.getAttribute('data-country-rail-iso') === iso"), 'focus rebind must target the same country in the new lens rail');
+assert(globe.includes(': this._activeLensControl();'), 'country close must retain an active-lens focus fallback');
 assert(globe.includes('this.world.polygonStrokeColor((f) => this._countryBorderColorFn(f));'), 'hover path must update only the country outline');
 assert(globe.includes('if (options.visuals === true)'), 'full polygon visual refresh must be an explicit lens-only path');
 assert(globe.includes("this._countryTooltipResizeObserver = new ResizeObserver"), 'hover tooltip sizing must be learned without a synchronous layout read');
@@ -354,12 +360,12 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v68-retina-120fps'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v69-runtime-resilience'"));
 assert(serviceWorker.includes("'/css/globe-system.css?v=v42'"));
 assert(serviceWorker.includes("'/css/guided-first-orbit.css?v=v9'"));
-assert(serviceWorker.includes("'/js/data.js?v=v9'"));
+assert(serviceWorker.includes("'/js/data.js?v=v10'"));
 assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v13'"));
-assert(serviceWorker.includes("'/js/globe.js?v=v36'"));
+assert(serviceWorker.includes("'/js/globe.js?v=v37'"));
 assert(serviceWorker.includes("'/js/guided-first-orbit.js?v=v6'"));
 assert(serviceWorker.includes("'/js/app.js?v=v5'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7'"));

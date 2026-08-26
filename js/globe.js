@@ -427,6 +427,11 @@ const GlobeModule = {
   _countrySwipeCueShown: false,
   _countrySwipeCueToken: 0,
   _countrySwipeCueFinish: null,
+  _countryNavigationGeneration: 0,
+  _countryNavigationSwapTimer: null,
+  _countryNavigationFinishTimer: null,
+  _navBusy: false,
+  _countryOpener: null,
   _fallbackReasonCode: null,
   _fallbackOpener: null,
   _fallbackEntries: [],
@@ -1042,6 +1047,7 @@ const GlobeModule = {
   },
 
   _teardownFailedRenderer() {
+    this._cancelCountryNavigation();
     this._unbindReducedMotionPreference();
     this._unbindVisibilityLifecycle();
     if (this._canvasEl) {
@@ -1485,6 +1491,28 @@ const GlobeModule = {
     });
     document.body.appendChild(rail);
     this._rankRail = rail;
+    this._rebindCountryOpener();
+  },
+
+  _activeLensControl() {
+    return document.querySelector('.climate-lens-controls [data-climate-lens="' + this.currentLens + '"]');
+  },
+
+  _isRenderedFocusTarget(element) {
+    if (!element || !document.contains(element) || typeof element.focus !== 'function' || element.disabled) return false;
+    const style = window.getComputedStyle?.(element);
+    return style?.display !== 'none' && style?.visibility !== 'hidden' && Number(style?.opacity ?? 1) > 0 &&
+      element.getClientRects().length > 0;
+  },
+
+  _rebindCountryOpener() {
+    if (!this._selectedCountryFeature) return false;
+    const iso = _resolveCountryIso(this._selectedCountryFeature);
+    const row = Array.from(this._rankRail?.querySelectorAll('[data-country-rail-iso]') || [])
+      .find(candidate => candidate.getAttribute('data-country-rail-iso') === iso);
+    const target = row || this._activeLensControl();
+    this._countryOpener = this._isRenderedFocusTarget(target) ? target : null;
+    return Boolean(this._countryOpener);
   },
 
   _updateRankRail() {
@@ -1821,7 +1849,9 @@ const GlobeModule = {
     }
     if (!target) return;
 
+    this._cancelCountryNavigation();
     this._navBusy = true;
+    const navigationGeneration = this._countryNavigationGeneration;
     const tt = $('hex-country-tooltip');
     const mobileMotion = window.innerWidth <= 720;
     const exitDuration = mobileMotion ? 220 : (opts.fromDrag ? 300 : 260);
@@ -1834,6 +1864,8 @@ const GlobeModule = {
     const inClass = dir > 0 ? 'tt-enter-left' : 'tt-enter-right';
 
     const swap = () => {
+      this._countryNavigationSwapTimer = null;
+      if (navigationGeneration !== this._countryNavigationGeneration || !this._selectedCountryFeature) return;
       this._selectedCountryFeature = target.feature;
       this._countryHoverFeature = target.feature;
       this._renderCountryInfoCard(target.feature, true);
@@ -1877,7 +1909,12 @@ const GlobeModule = {
         tt.classList.add('tt-snap');
         tt.classList.remove(inClass);
         tt.style.transform = 'none';
-        setTimeout(() => { tt.classList.remove('tt-snap'); this._navBusy = false; }, enterDuration);
+        this._countryNavigationFinishTimer = setTimeout(() => {
+          this._countryNavigationFinishTimer = null;
+          if (navigationGeneration !== this._countryNavigationGeneration) return;
+          tt.classList.remove('tt-snap');
+          this._navBusy = false;
+        }, enterDuration);
       } else {
         this._navBusy = false;
       }
@@ -1888,10 +1925,25 @@ const GlobeModule = {
       tt.classList.add('tt-motion-ready');
       tt.classList.remove('tt-snap', 'tt-dragging');
       tt.classList.add(outClass);
-      setTimeout(swap, exitDuration);
+      this._countryNavigationSwapTimer = setTimeout(swap, exitDuration);
     } else {
       swap();
     }
+  },
+
+  _cancelCountryNavigation() {
+    this._countryNavigationGeneration += 1;
+    if (this._countryNavigationSwapTimer !== null) clearTimeout(this._countryNavigationSwapTimer);
+    if (this._countryNavigationFinishTimer !== null) clearTimeout(this._countryNavigationFinishTimer);
+    this._countryNavigationSwapTimer = null;
+    this._countryNavigationFinishTimer = null;
+    this._navBusy = false;
+    const tt = $('hex-country-tooltip');
+    if (tt) {
+      tt.classList.remove('tt-fly-right', 'tt-fly-left', 'tt-enter-left', 'tt-enter-right', 'tt-snap', 'tt-dragging');
+      tt.style.transform = '';
+    }
+    return true;
   },
 
   _renderClimateFact(fact) {
@@ -2377,6 +2429,7 @@ const GlobeModule = {
   },
 
   clearCountrySelection() {
+    this._cancelCountryNavigation();
     this.clearCountrySwipeCue();
     this._selectedCountryFeature = null;
     this._countryHoverFeature = null;
@@ -2398,7 +2451,10 @@ const GlobeModule = {
     this._clearCountryProjects();
     this._refreshCountryBorders();
     this._syncAutoRotation();
-    if (this._countryOpener && document.contains(this._countryOpener) && typeof this._countryOpener.focus === 'function') this._countryOpener.focus();
+    const focusTarget = this._isRenderedFocusTarget(this._countryOpener)
+      ? this._countryOpener
+      : this._activeLensControl();
+    if (this._isRenderedFocusTarget(focusTarget)) focusTarget.focus({ preventScroll: true });
     this._countryOpener = null;
     if (hasModule('EventBus')) EventBus.emit('globe:country-closed', { timestamp: Date.now() });
   },
@@ -2622,6 +2678,7 @@ const GlobeModule = {
       return false;
     }
     const changed = this.currentLens !== lens.id;
+    this._cancelCountryNavigation();
     this.currentLens = lens.id;
     this._buildCountryDeck();
     this._renderRankRail();
@@ -2711,11 +2768,13 @@ const GlobeModule = {
   // ── Standard Module Lifecycle (SML) ──
   reset() {
     console.debug('[SML] GlobeModule.reset');
+    this._cancelCountryNavigation();
     return true;
   },
 
   destroy() {
     console.debug('[SML] GlobeModule.destroy');
+    this._cancelCountryNavigation();
 
     // Remove event listeners (named references)
     window.removeEventListener('pledgeHover', this._onPledgeHover);

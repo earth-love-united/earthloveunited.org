@@ -1,11 +1,10 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v68) — retain full Retina render density while avoiding
- * redundant multisample antialiasing, preserving the reviewed factual runtime
- * boundary, compact lens/card air, tutorial cues, and clear swipe shelf.
+ * Globe cache (v69) — retain Retina 120 FPS while atomically staging the
+ * resilient essential-data deadline and cancellable country-card navigation.
  */
-const CACHE_NAME = 'elu-v68-retina-120fps';
+const CACHE_NAME = 'elu-v69-runtime-resilience';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -29,9 +28,9 @@ const STATIC_ASSETS = [
   '/js/storage-adapter.js',
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
-  '/js/data.js?v=v9',
+  '/js/data.js?v=v10',
   '/js/country-climate-intelligence.js?v=v13',
-  '/js/globe.js?v=v36',
+  '/js/globe.js?v=v37',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v6',
   '/js/app.js?v=v5',

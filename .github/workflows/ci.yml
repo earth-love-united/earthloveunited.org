@@ -57,6 +57,9 @@ jobs:
       - name: Exact public deploy surface policy self-test
         run: node tools/check-public-deploy-surface.js --self-test
 
+      - name: Country Climate Intelligence public-release exclusion policy
+        run: node tools/check-country-climate-public-release-boundary.js --self-test
+
       - name: Factual-public readiness policy self-test
         run: node tools/check-climate-factual-public-readiness.js --self-test
 
@@ -144,6 +147,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Verify CCI keeps factual-public staging fail-closed
+        run: node tools/check-country-climate-public-release-boundary.js
 
       - name: Build factual-public deploy directory
         run: ./tools/build-factual-public-deploy.sh --factual-public
@@ -305,6 +311,36 @@ jobs:
             await target.close();
           }
 
+          async function exerciseSlowClimateRuntimeFirstVisit() {
+            const target = await ctx.newPage();
+            trackErrors(target);
+            let requestCount = 0;
+            const startedAt = Date.now();
+            const handler = async route => {
+              requestCount += 1;
+              const response = await route.fetch();
+              await new Promise(resolve => setTimeout(resolve, 8500));
+              await route.fulfill({ response });
+            };
+            await target.route('**/data/climate/runtime/country-climate-intelligence.json*', handler);
+            await target.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
+            await waitForApp(target);
+            const snapshot = await target.evaluate(() => ({
+              ready: window.Data.isClimateIntelligenceReady(),
+              entities: window.Data.getClimateIntelligenceRelease()?.countries?.length || 0,
+              state: window.Data.climateIntelligenceState,
+              fallback: document.body.classList.contains('globe-fallback-active'),
+            }));
+            assert(Date.now() - startedAt >= 8400, 'slow-runtime regression must hold the first response beyond the retired eight-second deadline');
+            assert(requestCount === 1 && snapshot.ready && snapshot.entities === 249 && snapshot.state === 'ready' && !snapshot.fallback,
+              'an 8.5-second first CCI response must retain all 249 entities without entering fallback');
+            assert(await target.evaluate(() => window.App.enterGlobe()), 'slow first visit must still enter the live globe');
+            await waitForLiveGlobe(target);
+            await target.unroute('**/data/climate/runtime/country-climate-intelligence.json*', handler);
+            await target.close();
+          }
+
+          await exerciseSlowClimateRuntimeFirstVisit();
           await exercisePreRenderFailure('**/data/climate/runtime/country-climate-intelligence.json*', 'candidate_data_unavailable', { status: 503, body: 'candidate unavailable' }, /\[Data\._indexClimateIntelligence\(\)\] Country Climate Intelligence schema rejected/);
           await exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable', { status: 503, body: 'geometry unavailable' });
           await exercisePreRenderFailure('**/assets/globe/runtime/earth-night.jpg*', 'visual_assets_unavailable', { status: 200, contentType: 'image/jpeg', headers: { 'Cache-Control': 'no-store' }, body: 'invalid image bytes' });
@@ -436,6 +472,21 @@ jobs:
           }), 'non-modal country panel must release backward focus to the surrounding lens and rail controls');
           await page.click('[data-country-close]');
           await page.waitForFunction(() => !window.GlobeModule?._selectedCountryFeature);
+          assert(await page.evaluate(() => document.activeElement?.getAttribute('data-country-rail-iso') === 'CHN'),
+            'closing after lens changes must restore focus to China in the newly rendered rail');
+
+          await page.click('[data-country-rail-iso="CHN"]');
+          await page.waitForFunction(() => document.activeElement?.id === 'country-card-heading');
+          await page.click('.tt-nav-next');
+          await page.keyboard.press('Escape');
+          await page.waitForTimeout(750);
+          const cancelledCountryNavigation = await page.evaluate(() => ({
+            selected: window.GlobeModule.getState().selectedCountryIso,
+            visible: document.getElementById('hex-country-tooltip')?.classList.contains('visible') === true,
+            focusIso: document.activeElement?.getAttribute('data-country-rail-iso') || null,
+          }));
+          assert(cancelledCountryNavigation.selected === null && !cancelledCountryNavigation.visible && cancelledCountryNavigation.focusIso === 'CHN',
+            'Escape must cancel a pending country swap without reopening the card or splitting focus');
 
           await page.waitForFunction(() => {
             const textureState = window.GlobeModule?.getRuntimeTextureState?.();

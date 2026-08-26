@@ -5,7 +5,10 @@
 // ═══════════════════════════════════════════════
 
 const CLIMATE_INTELLIGENCE_SHA256 = '1b9c59d0ec912f8ec75f45ef6bab885a45661eea7b68add50ac2138e778ad198';
-const DATA_FETCH_TIMEOUT_MS = 8000;
+// This is the essential 249-country runtime, not a decorative asset. Keep a
+// bounded fail-closed deadline, but allow slow first visits to finish the
+// compressed transfer and checksum instead of turning latency into "no data".
+const DATA_FETCH_TIMEOUT_MS = 60000;
 
 function _fetchTextWithTimeout(url, options = {}) {
   const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;

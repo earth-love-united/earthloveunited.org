@@ -166,7 +166,7 @@ flowchart LR
     G --> B["same 249-entity model<br/>in WebGL and fallback"]
 ```
 
-`Data.init()` applies an eight-second deadline to the critical candidate read.
+`Data.init()` gives the essential Country Climate Intelligence runtime a bounded 60-second first-transfer deadline. The runtime still fails closed on timeout, HTTP failure, checksum drift, schema drift, or missing WebCrypto, but normal slow links are not converted into an empty evidence fallback. Headless CI holds the first response for 8.5 seconds with service workers disabled and requires all 249 entities to remain available.
 The candidate is parsed only after WebCrypto verifies SHA-256
 `1b9c59d0ec912f8ec75f45ef6bab885a45661eea7b68add50ac2138e778ad198`.
 Schema validation then proves 249 unique registry entities, exactly 27 metric
@@ -401,7 +401,7 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v68 precaches the public page, core CSS/JS, the refined
+`sw.js` cache epoch v69 precaches the public page, core CSS/JS, the refined
 three-move Climate Intelligence first orbit with separately spaced visual cue lanes and runtime-enforced compact lens/card air, the shared raised-tile lenses, evidence-only
 Physical-card percentile range, the simplified two-track Power fuel palette,
 verified local globe.gl, the CT-45 manifest and localized globe assets, the
@@ -410,8 +410,11 @@ Country Climate Intelligence candidate. The prior
 country-factual candidate is retained for one release
 epoch as a rollback artifact; it is not loaded into the v1 dashboard. The
 renderer retains full device-pixel density through DPR 2; multisample
-antialiasing remains enabled below DPR 1.5 and is disabled at Retina density,
-where native pixel coverage preserves edges without repeating the fragment
+antialiasing remains enabled below DPR 1.5 and is disabled at Retina density.
+The same atomic epoch carries the 60-second essential-runtime boundary and
+generation-cancelled country navigation, so stale cached code cannot reopen a
+card after Escape or pair the new loader with an old deadline. Native Retina
+pixel coverage preserves edges without repeating the fragment
 work that breaks the 8.333 ms / 120 FPS interaction budget. The
 service worker applies:
 
@@ -434,6 +437,7 @@ HTML or code with an old runtime artifact.
 | Runtime behavior | `SmokeTest.run()` | Modules, data, DOM, globe, and selected interactions work |
 | Stacking | `StackLint.audit()` | No known invisible blockers/z-index regressions |
 | Country intelligence aggregate | `node tools/check-country-climate-intelligence-ci.js` | Registry gates, exact component receipts, compiler derivations, 249×27 runtime, lens coverage, UI contract, and atomic pin agree |
+| CCI public-release exclusion | `node tools/check-country-climate-public-release-boundary.js` | Unapproved CCI values exist only in the marked local candidate artifact surface; factual-public staging omits them |
 | WebGL/fallback parity | `node tools/check-globe-webgl-fallback.js` | Three lenses share the 249-entity evidence model and explicit gaps |
 | Country truth | `tools/verify-globe-country-truth.js` | Intended country-status invariants; currently requires repair for v1 |
 | Public copy | `node tools/check-public-copy.js` | No unresolved draft markers; not scientific fact-checking |
@@ -446,6 +450,15 @@ Country Climate Intelligence aggregate, syntax, static load order, SmokeTest,
 StackLint, theme/responsive checks, and WebGL/fallback parity. Passing those
 checks validates a factual candidate; it does not satisfy the independent
 scientific-review or production-promotion gates.
+
+The exact public artifact allowlist treats
+`data/climate/runtime/country-climate-intelligence.json` as candidate-only.
+The factual-public gate still evaluates its historically reviewed CT-42 facts,
+but refuses to stage the current browser entrypoints while they reference the
+candidate-only CCI file. This preserves the last deployed release instead of
+publishing missing essential data. A new data/UI/source-rights/scientific-review
+chain must replace the current false promotion flags before CCI moves onto that
+surface.
 
 ## Known traps and debt
 

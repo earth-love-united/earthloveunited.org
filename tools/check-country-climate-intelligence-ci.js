@@ -33,7 +33,9 @@ try {
   run('tools/check-country-climate-intelligence.js');
   run('tools/check-country-climate-intelligence-ui.js');
   run('tools/check-country-climate-runtime-atomic.js');
-  console.log('Country Climate Intelligence CI passed (governance, compilers, derivations, deterministic build, runtime, UI, and atomic staging).');
+  run('tools/check-country-climate-public-release-boundary.js', ['--self-test']);
+  run('tools/check-country-climate-public-release-boundary.js');
+  console.log('Country Climate Intelligence CI passed (governance, compilers, derivations, deterministic build, runtime, UI, atomic staging, and candidate-only public boundary).');
 } finally {
   fs.rmSync(temporaryDirectory, { recursive: true, force: true });
 }

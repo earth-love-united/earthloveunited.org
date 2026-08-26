@@ -10,6 +10,7 @@ const {
   CANDIDATE_MARKER_PATH,
   CANDIDATE_MARKER_TEXT,
   CANDIDATE_ONLY_PATHS,
+  CLIMATE_INTELLIGENCE_RUNTIME_PATH,
   RUNTIME_IMMUTABLE_CACHE_CONTROL,
   RUNTIME_IMMUTABLE_HEADER_PATTERNS,
   expectedSourcePaths,
@@ -165,6 +166,16 @@ function runSelfTest() {
       mode: 'release',
       expectedVendorSha256: fixture.vendorSha256,
     }), /stable manifest\.json must revalidate/);
+  }); cases += 1;
+  withFixture('candidate', fixture => {
+    assert.ok(expectedSourcePaths(fixture.source, 'candidate').includes(CLIMATE_INTELLIGENCE_RUNTIME_PATH),
+      'candidate QA surface must retain the CCI runtime');
+    assert.equal(ALWAYS_PUBLIC_PATHS.includes(CLIMATE_INTELLIGENCE_RUNTIME_PATH), false,
+      'CCI runtime must never return to the unconditional public allowlist');
+  }); cases += 1;
+  withFixture('release', fixture => {
+    fs.appendFileSync(path.join(fixture.source, 'js/data.js'), `fetch('${CLIMATE_INTELLIGENCE_RUNTIME_PATH}')\n`);
+    assert.throws(() => expectedSourcePaths(fixture.source, 'release'), /factual-public staging is blocked/);
   }); cases += 1;
   process.stdout.write(`Public deploy surface self-test: PASS (${cases} fail-closed cases)\n`);
 }

@@ -101,7 +101,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="js/gaia-utils.js" as="script">
-<link rel="preload" href="js/data.js?v=v9" as="script">
+<link rel="preload" href="js/data.js?v=v10" as="script">
 <link rel="preload" href="js/country-climate-intelligence.js?v=v13" as="script">
 
 <!-- ═══ CRITICAL CSS (inlined) ═══ -->
@@ -835,9 +835,9 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage-adapter.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
-<script src="js/data.js?v=v9"></script>
+<script src="js/data.js?v=v10"></script>
 <script src="js/country-climate-intelligence.js?v=v13"></script>
-<script src="js/globe.js?v=v36"></script>
+<script src="js/globe.js?v=v37"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/guided-first-orbit.js?v=v6"></script>
 <script src="js/app.js?v=v5"></script>
@@ -985,7 +985,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=68-retina-120fps', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=69-runtime-resilience', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

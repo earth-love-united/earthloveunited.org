@@ -15,6 +15,12 @@ const CANDIDATE_MARKER_TEXT = [
 ].join('\n');
 const APPROVAL_PATH = 'data/climate/reviews/globe-runtime-assets-production-review.json';
 const SIGNATURE_BUNDLE_PATH = 'data/climate/reviews/globe-runtime-assets-production-review.signatures.json';
+const CLIMATE_INTELLIGENCE_RUNTIME_PATH = 'data/climate/runtime/country-climate-intelligence.json';
+const CLIMATE_INTELLIGENCE_ENTRYPOINTS = Object.freeze([
+  'index.html',
+  'js/data.js',
+  'sw.js',
+]);
 const RUNTIME_IMMUTABLE_CACHE_CONTROL = 'public, max-age=31536000, immutable';
 const RUNTIME_IMMUTABLE_HEADER_PATTERNS = Object.freeze([
   '/assets/globe/runtime/*.geojson',
@@ -72,7 +78,6 @@ const ALWAYS_PUBLIC_PATHS = Object.freeze([
   'data/small-nations.json',
   'docs/LEGACY-COUNTRY-DATA-EXIT.md',
   'data/climate/runtime/candidate-manifest.json',
-  'data/climate/runtime/country-climate-intelligence.json',
   'data/climate/runtime/country-factual-candidate.json',
   'data/climate/governance/globe-runtime-approval-trust.json',
   'data/climate/schemas/globe-runtime-assets-production-review.schema.json',
@@ -81,6 +86,7 @@ const ALWAYS_PUBLIC_PATHS = Object.freeze([
 ].sort());
 
 const CANDIDATE_ONLY_PATHS = Object.freeze([
+  CLIMATE_INTELLIGENCE_RUNTIME_PATH,
   'tools/smoke-test.js',
   'tools/stack-lint.js',
 ].sort());
@@ -180,6 +186,7 @@ function verifyRuntimeCachePolicy(root) {
 
 function expectedSourcePaths(sourceRoot, mode) {
   if (!['candidate', 'release'].includes(mode)) throw new Error('deploy mode must be candidate or release');
+  if (mode === 'release') verifyClimateIntelligenceReleaseBoundary(sourceRoot);
   const paths = [
     ...ALWAYS_PUBLIC_PATHS,
     ...(mode === 'candidate' ? CANDIDATE_ONLY_PATHS : []),
@@ -188,6 +195,15 @@ function expectedSourcePaths(sourceRoot, mode) {
   const normalized = paths.map(safeRelative).sort();
   if (new Set(normalized).size !== normalized.length) throw new Error('public deploy path list contains duplicates');
   return normalized;
+}
+
+function verifyClimateIntelligenceReleaseBoundary(sourceRoot) {
+  const references = CLIMATE_INTELLIGENCE_ENTRYPOINTS.filter(relative =>
+    inspectRegular(sourceRoot, relative).bytes.toString('utf8').includes(CLIMATE_INTELLIGENCE_RUNTIME_PATH));
+  if (references.length) {
+    throw new Error('Country Climate Intelligence remains candidate-only; factual-public staging is blocked while active entrypoints reference its unapproved runtime: ' + references.join(', '));
+  }
+  return true;
 }
 
 function expectedStagedPaths(sourceRoot, mode) {
@@ -258,6 +274,8 @@ module.exports = {
   CANDIDATE_MARKER_PATH,
   CANDIDATE_MARKER_TEXT,
   CANDIDATE_ONLY_PATHS,
+  CLIMATE_INTELLIGENCE_ENTRYPOINTS,
+  CLIMATE_INTELLIGENCE_RUNTIME_PATH,
   OPTIONAL_APPROVAL_PATHS,
   RUNTIME_IMMUTABLE_CACHE_CONTROL,
   RUNTIME_IMMUTABLE_HEADER_PATTERNS,
@@ -267,6 +285,7 @@ module.exports = {
   inspectRegular,
   listFiles,
   safeRelative,
+  verifyClimateIntelligenceReleaseBoundary,
   verifyRuntimeCachePolicy,
   verifyPublicDeploySurface,
 };

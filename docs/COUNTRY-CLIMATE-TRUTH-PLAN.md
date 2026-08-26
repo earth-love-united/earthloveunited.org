@@ -62,6 +62,7 @@ approved source registry + exact external snapshots
 | Visual/accessibility review | passed for current candidate; rerun required after changes | light/dark, desktop/tablet/mobile, keyboard, screen-reader summaries, WebGL and fallback parity |
 | Atomic service-worker staging | passed for current candidate | current runtime and previous rollback artifact must stage together |
 | Production promotion | blocked | every gate above plus protected reviewer approval |
+| Public artifact surface | candidate-only and staging refused | the active CCI entrypoints cannot produce a factual-public artifact until the new review chain is complete; historical CT-42 approval does not authorize CCI |
 
 The release manifest never self-promotes. `independent_scientific_review=false` and `production_runtime_release=false` remain authoritative until a separate reviewer changes them.
 
@@ -127,7 +128,7 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v68 service worker composes the refined three-move Climate Intelligence
+The v69 service worker composes the refined three-move Climate Intelligence
 first orbit with separately spaced visual cue lanes and runtime-enforced compact lens/card air, the subtle relief presentation, full Retina render density with density-aware antialiasing, the candidate dashboard, and both
 runtime generations:
 

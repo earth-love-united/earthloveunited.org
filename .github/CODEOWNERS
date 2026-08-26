@@ -133,6 +133,7 @@
 /tools/check-country-climate-intelligence.js @earth-love-united/maintainers
 /tools/check-country-climate-intelligence-ui.js @earth-love-united/maintainers
 /tools/check-country-climate-intelligence-ci.js @earth-love-united/maintainers
+/tools/check-country-climate-public-release-boundary.js @earth-love-united/maintainers
 /tools/check-country-climate-runtime-atomic.js @earth-love-united/maintainers
 /tools/test-country-climate-compilers.js @earth-love-united/maintainers
 /tools/test-country-climate-intelligence-derivations.js @earth-love-united/maintainers

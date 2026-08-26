@@ -68,6 +68,7 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'tools/check-country-climate-intelligence.js',
   'tools/check-country-climate-intelligence-ui.js',
   'tools/check-country-climate-intelligence-ci.js',
+  'tools/check-country-climate-public-release-boundary.js',
   'tools/check-country-climate-runtime-atomic.js',
   'tools/test-country-climate-compilers.js',
   'tools/test-country-climate-intelligence-derivations.js',

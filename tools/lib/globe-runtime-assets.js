@@ -207,9 +207,9 @@ const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/js/storage-adapter.js',
   '/js/storage.js',
   '/js/data-schema.js?v=v1',
-  '/js/data.js?v=v9',
+  '/js/data.js?v=v10',
   '/js/country-climate-intelligence.js?v=v13',
-  '/js/globe.js?v=v36',
+  '/js/globe.js?v=v37',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v6',
   '/js/app.js?v=v5',
@@ -479,7 +479,7 @@ function evaluateRuntimeAssets(input) {
   check('candidate-fail-closed', data.includes("climateIntelligenceState = 'unavailable'") &&
     data.includes(`CLIMATE_INTELLIGENCE_SHA256 = '${EXPECTED_CLIMATE_INTELLIGENCE_SHA256}'`) &&
     data.includes('if (actual !== CLIMATE_INTELLIGENCE_SHA256)') && data.includes("crypto.subtle.digest('SHA-256'") &&
-    data.includes('DATA_FETCH_TIMEOUT_MS = 8000') && data.includes("release?.release?.status === 'candidate'") &&
+    data.includes('DATA_FETCH_TIMEOUT_MS = 60000') && data.includes("release?.release?.status === 'candidate'") &&
     data.includes('release?.release?.production_runtime_release === false') &&
     dataSchema.includes("value.countries.length !== 249") && dataSchema.includes('recordIds.join(\'|\') !== metricIds.join(\'|\')') &&
     dataSchema.includes('partition.length !== 249') && dataSchema.includes("['carbon', 'power', 'physical']") &&
@@ -542,7 +542,7 @@ function evaluateRuntimeAssets(input) {
     index.includes('Original starfield from Three-Globe 2.45.2'),
     'Public copy must credit NASA and identify the historical surface and restored sky as decorative visual context.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v68-retina-120fps';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=68-retina-120fps'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v69-runtime-resilience';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=69-runtime-resilience'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&
@@ -613,6 +613,12 @@ function evaluateRuntimeAssets(input) {
     publicDeploySurface.includes('marker !== CANDIDATE_MARKER_TEXT') &&
     buildDeploy.includes('Do not upload, deploy, or expose this candidate as a public preview.'),
     'Candidate staging must carry an explicit non-publication marker and never print public deployment instructions.');
+  check('climate-intelligence-public-exclusion',
+    publicDeploySurface.includes("const CLIMATE_INTELLIGENCE_RUNTIME_PATH = 'data/climate/runtime/country-climate-intelligence.json';") &&
+    publicDeploySurface.includes('const CANDIDATE_ONLY_PATHS = Object.freeze([\n  CLIMATE_INTELLIGENCE_RUNTIME_PATH,') &&
+    hasExactCiStep(ci, 'Country Climate Intelligence public-release exclusion policy', 'node tools/check-country-climate-public-release-boundary.js --self-test') &&
+    hasExactCiStep(ci, 'Verify CCI keeps factual-public staging fail-closed', 'node tools/check-country-climate-public-release-boundary.js'),
+    'The CCI runtime must remain candidate-only and both static and factual-public CI must enforce its unapproved release boundary.');
   check('ci-policy-wired',
     hasActiveCiJob(ci, 'static') && hasActiveCiJob(ci, 'smoke') &&
     hasExactCiStep(ci, 'Verify NASA Black Marble source pin', './tools/authoring/fetch-nasa-black-marble.sh --check') &&
@@ -627,6 +633,8 @@ function evaluateRuntimeAssets(input) {
   check('ci-browser-runtime-lifecycle', occurrences(ci, '- name: Run SmokeTest + StackLint in headless Chromium') === 1 && [
     "serviceWorkers: 'block'",
     "exercisePreRenderFailure('**/data/climate/runtime/country-climate-intelligence.json*', 'candidate_data_unavailable'",
+    'exerciseSlowClimateRuntimeFirstVisit()',
+    'an 8.5-second first CCI response must retain all 249 entities without entering fallback',
     "exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable'",
     "exercisePreRenderFailure('**/assets/globe/runtime/earth-night.jpg*', 'visual_assets_unavailable'",
     "exercisePreRenderFailure('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable'",
@@ -646,6 +654,8 @@ function evaluateRuntimeAssets(input) {
     "new Event('webglcontextlost', { cancelable: true })",
     'reducedMotion.autoRotate === false',
     'non-modal country panel must release backward focus to the surrounding lens and rail controls',
+    'closing after lens changes must restore focus to China in the newly rendered rail',
+    'Escape must cancel a pending country swap without reopening the card or splitting focus',
     'rendererCanvasCount === 0',
     'for (const width of [320, 375])',
     'rects.browse.height >= 44 && rects.theme.height >= 44',
