@@ -12,6 +12,10 @@ const GLOBE_DRAG_CLICK_THRESHOLD_PX = 6;
 const GLOBE_DRAG_SUPPRESS_MS = 350;
 const GLOBE_TARGET_FPS = 120;
 const GLOBE_FRAME_BUDGET_MS = 1000 / GLOBE_TARGET_FPS;
+// Retina-density rendering already supplies subpixel edge coverage. Keeping
+// multisample antialiasing there shades the same dense frame several times and
+// breaks the 8.333 ms interaction budget; standard-density screens retain it.
+const GLOBE_ANTIALIAS_ENABLED = (Number(window.devicePixelRatio) || 1) < 1.5;
 const COUNTRY_GEOJSON_URL = '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75';
 const COUNTRY_GEOJSON_TIMEOUT_MS = 8000;
 const COUNTRY_GEOJSON_FEATURE_COUNT = 177;
@@ -575,7 +579,7 @@ const GlobeModule = {
         animateIn: true,
         waitForGlobeReady: true,
         rendererConfig: {
-          antialias: true,
+          antialias: GLOBE_ANTIALIAS_ENABLED,
           alpha: true,
           powerPreference: 'high-performance',
         },
@@ -2855,10 +2859,17 @@ const GlobeModule = {
     const renderer = typeof this.world?.renderer === 'function' ? this.world.renderer() : null;
     const renderInfo = renderer?.info?.render || {};
     const memoryInfo = renderer?.info?.memory || {};
+    let antialias = null;
+    try {
+      antialias = renderer ? renderer.getContext?.()?.getContextAttributes?.()?.antialias === true : null;
+    } catch (error) {
+      antialias = null;
+    }
     return {
       targetFps: GLOBE_TARGET_FPS,
       frameBudgetMs: Number(GLOBE_FRAME_BUDGET_MS.toFixed(3)),
       rendererPixelRatio: typeof renderer?.getPixelRatio === 'function' ? renderer.getPixelRatio() : null,
+      antialias,
       drawCalls: Number.isFinite(renderInfo.calls) ? renderInfo.calls : null,
       triangles: Number.isFinite(renderInfo.triangles) ? renderInfo.triangles : null,
       geometries: Number.isFinite(memoryInfo.geometries) ? memoryInfo.geometries : null,

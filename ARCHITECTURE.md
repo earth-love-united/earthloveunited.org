@@ -401,7 +401,7 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v67 precaches the public page, core CSS/JS, the refined
+`sw.js` cache epoch v68 precaches the public page, core CSS/JS, the refined
 three-move Climate Intelligence first orbit with separately spaced visual cue lanes and runtime-enforced compact lens/card air, the shared raised-tile lenses, evidence-only
 Physical-card percentile range, the simplified two-track Power fuel palette,
 verified local globe.gl, the CT-45 manifest and localized globe assets, the
@@ -409,6 +409,10 @@ scroll-proof non-modal selected-country identity header, and the exact-version
 Country Climate Intelligence candidate. The prior
 country-factual candidate is retained for one release
 epoch as a rollback artifact; it is not loaded into the v1 dashboard. The
+renderer retains full device-pixel density through DPR 2; multisample
+antialiasing remains enabled below DPR 1.5 and is disabled at Retina density,
+where native pixel coverage preserves edges without repeating the fragment
+work that breaks the 8.333 ms / 120 FPS interaction budget. The
 service worker applies:
 
 - network-first for `/data/`;

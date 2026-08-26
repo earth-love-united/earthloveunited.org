@@ -1,11 +1,11 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v67) — enforce compact lens/card air in both the runtime dock
- * and responsive CSS while retaining the reviewed factual runtime boundary,
- * distinct tutorial cue lanes, and clear swipe shelf.
+ * Globe cache (v68) — retain full Retina render density while avoiding
+ * redundant multisample antialiasing, preserving the reviewed factual runtime
+ * boundary, compact lens/card air, tutorial cues, and clear swipe shelf.
  */
-const CACHE_NAME = 'elu-v67-runtime-card-air';
+const CACHE_NAME = 'elu-v68-retina-120fps';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -31,7 +31,7 @@ const STATIC_ASSETS = [
   '/js/data-schema.js?v=v1',
   '/js/data.js?v=v9',
   '/js/country-climate-intelligence.js?v=v13',
-  '/js/globe.js?v=v35',
+  '/js/globe.js?v=v36',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v6',
   '/js/app.js?v=v5',

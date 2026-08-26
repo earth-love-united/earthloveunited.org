@@ -101,7 +101,7 @@ function neutralIndex(bytes) {
   index = replaceOnce(index, 'href="js/data.js?v=v9" as="script"', 'href="js/data.js?v=ct42-neutral-rollback-1" as="script"', 'rollback data preload key');
   index = replaceOnce(index, 'src="js/data.js?v=v9"', 'src="js/data.js?v=ct42-neutral-rollback-1"', 'rollback data key');
   index = replaceOnce(index, '<script src="js/country-climate-intelligence.js?v=v13"></script>\n', '', 'remove Climate Intelligence runtime');
-  index = replaceOnce(index, 'src="js/globe.js?v=v35"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
+  index = replaceOnce(index, 'src="js/globe.js?v=v36"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
   index = replaceOnce(index, '<script src="js/guided-first-orbit.js?v=v6"></script>\n', '', 'remove guided orbit script');
   index = replaceOnce(index, "'tools/smoke-test.js?v=v3'", "'tools/smoke-test.js?v=ct42-neutral-rollback-1'", 'rollback SmokeTest key');
   index = replaceOnce(index,
@@ -166,7 +166,7 @@ function neutralIndex(bytes) {
     'Choose an item to inspect its lens metrics, evidence class, methods, sources, or explicit gap state.',
     'Choose an entity to inspect its explicit evidence-withheld state. No climate value, commitment, target, delivery, performance, impact, finance, rating, or score conclusion is shown here.',
     'neutral fallback detail');
-  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=67-runtime-card-air'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
+  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=68-retina-120fps'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
   return Buffer.from(index);
 }
 
@@ -876,7 +876,7 @@ const CACHE_NAME = '${CACHE_NAME}';`,
   for (const line of removals) sw = replaceOnce(sw, line, '', `remove precache ${line.trim()}`);
   sw = replaceOnce(sw, "'/css/globe-system.css?v=v42'", "'/css/globe-system.css?v=ct42-neutral-rollback-1'", 'rollback CSS precache');
   sw = replaceOnce(sw, "'/js/data.js?v=v9'", "'/js/data.js?v=ct42-neutral-rollback-1'", 'rollback data precache');
-  sw = replaceOnce(sw, "'/js/globe.js?v=v35'", "'/js/globe.js?v=ct42-neutral-rollback-1'", 'rollback globe precache');
+  sw = replaceOnce(sw, "'/js/globe.js?v=v36'", "'/js/globe.js?v=ct42-neutral-rollback-1'", 'rollback globe precache');
   return Buffer.from(sw);
 }
 

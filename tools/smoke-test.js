@@ -646,16 +646,17 @@ const SmokeTest = (() => {
           if (!perf) return { pass: false, detail: 'Renderer performance state is unavailable' };
           const targetValid = perf.targetFps === 120 && Math.abs(perf.frameBudgetMs - 8.333) < 0.001;
           if (!window.GlobeModule._initialized) {
-            const lazyValid = targetValid && perf.rendererPixelRatio === null && perf.drawCalls === null;
+            const lazyValid = targetValid && perf.rendererPixelRatio === null && perf.antialias === null && perf.drawCalls === null;
             return { pass: lazyValid, detail: lazyValid ? '120 FPS / 8.333 ms target is declared before lazy renderer startup' : JSON.stringify(perf) };
           }
+          const highDensityAaValid = window.devicePixelRatio < 1.5 || perf.antialias === false;
           const bounded = targetValid && perf.rendererPixelRatio > 0 && perf.rendererPixelRatio <= 2 &&
             perf.drawCalls <= 1600 && perf.triangles <= 90000 && perf.geometries <= 650 && perf.textures <= 4 &&
-            perf.lensDeckCacheCount === 3;
+            perf.lensDeckCacheCount === 3 && highDensityAaValid;
           return {
             pass: bounded,
             detail: bounded
-              ? `120 FPS / ${perf.frameBudgetMs} ms; DPR ${perf.rendererPixelRatio}; ${perf.drawCalls} calls; ${perf.triangles} triangles; three lens decks warm`
+              ? `120 FPS / ${perf.frameBudgetMs} ms; DPR ${perf.rendererPixelRatio}; AA ${perf.antialias ? 'on' : 'off'}; ${perf.drawCalls} calls; ${perf.triangles} triangles; three lens decks warm`
               : JSON.stringify(perf),
           };
         },
