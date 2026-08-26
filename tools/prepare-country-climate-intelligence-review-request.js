@@ -94,6 +94,7 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/lib/country-climate-intelligence-release-gate.js',
   'tools/lib/climate-runtime-diff-boundary.js',
   'tools/lib/globe-runtime-assets.js',
+  'tools/lib/globe-vendor-integrity.js',
   'tools/lib/json-schema-lite.js',
   'tools/lib/public-climate-release-profile.js',
   'tools/lib/public-deploy-surface.js',

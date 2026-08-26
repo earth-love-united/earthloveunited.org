@@ -57,6 +57,17 @@ function hasExactCiStep(ci, name, command) {
   return runLines.length === 1 && !disabled;
 }
 
+function hasExactConditionalCiStep(ci, name, command, condition) {
+  const blocks = ciStepBlocks(ci, name);
+  if (blocks.length !== 1) return false;
+  const runPattern = new RegExp(`^[ \\t]*run: ${escapeRegExp(command)}[ \\t]*$`);
+  const ifPattern = new RegExp(`^[ \\t]*if: ${escapeRegExp(condition)}[ \\t]*$`);
+  const runLines = blocks[0].filter(line => runPattern.test(line));
+  const ifLines = blocks[0].filter(line => ifPattern.test(line));
+  const bypass = blocks[0].some(line => /^[ \\t]*continue-on-error:/.test(line));
+  return runLines.length === 1 && ifLines.length === 1 && !bypass;
+}
+
 function hasActiveCiJob(ci, name) {
   const lines = String(ci || '').split('\n');
   const jobPattern = new RegExp(`^([ \\t]+)${escapeRegExp(name)}:[ \\t]*$`);
@@ -236,4 +247,16 @@ function evaluateVendorIntegrity(input) {
   return result;
 }
 
-module.exports = { EXPECTED_SPEC, POLICY_VERSION, digest, evaluateVendorIntegrity, hasActiveCiJob, hasDirectDownloaderCommand, hasExactCiStep, hasVendorMutationCommand, occurrences, stripJsComments };
+module.exports = {
+  EXPECTED_SPEC,
+  POLICY_VERSION,
+  digest,
+  evaluateVendorIntegrity,
+  hasActiveCiJob,
+  hasDirectDownloaderCommand,
+  hasExactCiStep,
+  hasExactConditionalCiStep,
+  hasVendorMutationCommand,
+  occurrences,
+  stripJsComments,
+};
