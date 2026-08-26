@@ -1,6 +1,6 @@
 {
-  "calculation_hash": "8bb2e928931a3945a3a98e26ef32e97bcad43186009ce0301efcc27be6a92857",
-  "created_at": "2026-08-26T21:19:29Z",
+  "calculation_hash": "94fbb4c807a37d70e7cc0ee1c6da6abd194a39c2446b10090c705172a9c5d309",
+  "created_at": "2026-08-26T21:25:17Z",
   "governance_boundaries": {
     "composite_score": false,
     "ct40_reuse_allowed": false,
@@ -537,7 +537,7 @@
       },
       {
         "path": "tools/fixtures/globe-runtime-assets.json",
-        "sha256": "860f93681441004fa6fa6d9401ab2b194ea172f1d9375e5b673ba2405841cdbc"
+        "sha256": "b12c5933f743b052ecc084d4f736676af64b24dde5e1bdc3b36c9367660d3882"
       },
       {
         "path": "tools/lib/climate-runtime-diff-boundary.js",
@@ -553,7 +553,11 @@
       },
       {
         "path": "tools/lib/globe-runtime-assets.js",
-        "sha256": "06efcce93e7bf268600933f67fc56647188d183b8618b4a3ebda3bbdff1e2f12"
+        "sha256": "888a1d866d93731677f72158c4a6310cebafabbd9a095ebb16feb3e1373d0595"
+      },
+      {
+        "path": "tools/lib/globe-vendor-integrity.js",
+        "sha256": "ac6f2a1e7795cd998d97b8a8d5ae3abf64d25612e95df6accad1fe54f901629d"
       },
       {
         "path": "tools/lib/json-schema-lite.js",
@@ -581,7 +585,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "892c81c7f57ada30bf18d0078758b0a2df3c954c0564b76d96f622164211c5fd"
+        "sha256": "97c53f59801086a5e73188170de11b9d64fe5447fbab0902cc31447a53bcf179"
       },
       {
         "path": "tools/smoke-test.js",
@@ -609,6 +613,6 @@
       }
     ],
     "commit_binding_state": "bound_candidate_commit",
-    "subject_commit_sha": "ae25672d3673d042b11acffefe8de0f8909b6780"
+    "subject_commit_sha": "4e4305858cbca1c27d263a036dca86b78d25d4a1"
   }
 }
