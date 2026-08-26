@@ -363,7 +363,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
 <link rel="stylesheet" href="css/globe-system.css?v=v39">
-<link rel="stylesheet" href="css/guided-first-orbit.css?v=v7">
+<link rel="stylesheet" href="css/guided-first-orbit.css?v=v8">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -510,21 +510,21 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 
     <div class="guided-orbit-content">
       <h2 id="guided-orbit-title" class="guided-orbit-title" tabindex="-1">Three lenses. No single score.</h2>
-      <p id="guided-orbit-body" class="guided-orbit-body">Carbon, Power, and Physical answer different questions. They are never combined into a score.</p>
+      <p id="guided-orbit-body" class="guided-orbit-body">Carbon, Power, and Physical answer different questions.</p>
       <div id="guided-orbit-lens-guide" class="guided-orbit-lens-guide" aria-label="Climate Intelligence lens meanings">
         <article data-guided-orbit-lens="carbon" aria-current="true">
           <span>Carbon</span>
-          <strong>Territorial fossil CO₂ · 2024</strong>
+          <strong>Territorial fossil CO₂ <span class="guided-orbit-period">2024</span></strong>
           <small>Annual magnitude; land use stays separate.</small>
         </article>
         <article data-guided-orbit-lens="power">
           <span>Power</span>
-          <strong>Clean electricity share · 2024</strong>
+          <strong>Clean electricity share <span class="guided-orbit-period">2024</span></strong>
           <small>Generation, not the whole energy system.</small>
         </article>
         <article data-guided-orbit-lens="physical">
           <span>Physical</span>
-          <strong>Projected warming · 2040–2059</strong>
+          <strong>Projected warming <span class="guided-orbit-period">2040–2059</span></strong>
           <small>SSP2-4.5 median vs 1995–2014; not vulnerability.</small>
         </article>
       </div>
@@ -541,6 +541,10 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <footer class="guided-orbit-actions">
       <button id="guided-orbit-primary" class="guided-orbit-button" type="button">Read the atlas</button>
     </footer>
+  </div>
+  <div id="guided-orbit-cues" class="guided-orbit-cues" aria-hidden="true" hidden>
+    <span class="guided-orbit-cue is-lens"><i aria-hidden="true">↑</i> Switch lens</span>
+    <span class="guided-orbit-cue is-rail"><i aria-hidden="true">←</i> Lens order</span>
   </div>
 </aside>
 <div id="guided-orbit-announcer" class="guided-orbit-announcer" aria-live="polite" aria-atomic="true"></div>
@@ -835,7 +839,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/country-climate-intelligence.js?v=v13"></script>
 <script src="js/globe.js?v=v34"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
-<script src="js/guided-first-orbit.js?v=v5"></script>
+<script src="js/guided-first-orbit.js?v=v6"></script>
 <script src="js/app.js?v=v5"></script>
 
 <!-- Glass system behavior: scroll reveal + theme toggle (design handoff v1) -->
@@ -981,7 +985,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=62-three-move-orbit', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=63-visual-orbit-cues', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

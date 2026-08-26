@@ -8,7 +8,7 @@
 
 const GUIDED_ORBIT = (() => {
   const STORAGE_KEY = 'elu-guided-first-orbit-v1';
-  const STORAGE_VERSION = 3;
+  const STORAGE_VERSION = 4;
   const COUNTRY_STEP = 2;
   const FINAL_STEP = 2;
   const LENS_LABELS = {
@@ -22,7 +22,7 @@ const GUIDED_ORBIT = (() => {
       {
         mode: 'intro',
         title: 'Three lenses. No single score.',
-        body: 'Carbon, Power, and Physical answer different questions. They are never combined into a score.',
+        body: 'Carbon, Power, and Physical answer different questions.',
         hint: 'Three moves · under a minute',
         action: 'Read the atlas',
         lenses: true,
@@ -30,15 +30,18 @@ const GUIDED_ORBIT = (() => {
       {
         mode: 'interaction',
         title: 'Change the lens. Choose a country.',
-        body: 'Switch Carbon, Power, or Physical, then select a country on the globe or in the sidebar. The sidebar reorders countries for the active lens; only exact metric-and-period matches are numbered.',
-        hint: 'Try another lens, then choose from the globe or sidebar',
+        body: '',
+        hint: '',
+        announcement: 'Change the lens, then choose a country from the globe or the lens-ordered sidebar.',
+        cues: true,
         waiting: true,
         legend: true,
       },
       {
         mode: 'source',
         title: 'Swipe through the country deck.',
-        body: 'Swipe the country card left or right to inspect the next country in this lens order. The previous/next controls, arrow keys, and a horizontal trackpad gesture do the same thing.',
+        body: '',
+        announcement: 'Swipe the country card once in either direction to continue.',
         hint: 'Move once to complete your first orbit',
         waiting: true,
       },
@@ -47,7 +50,7 @@ const GUIDED_ORBIT = (() => {
       {
         mode: 'intro',
         title: 'Three lenses. No single score.',
-        body: 'The searchable evidence view carries Carbon, Power, and Physical without 3D. Each answers a different question; they are never combined into a score.',
+        body: 'The searchable evidence view carries Carbon, Power, and Physical without 3D.',
         hint: 'Three moves · under a minute',
         action: 'Read the evidence',
         lenses: true,
@@ -118,7 +121,8 @@ const GUIDED_ORBIT = (() => {
 
   function _isForced() {
     try {
-      return new URLSearchParams(window.location.search).get('guided-orbit') === '1';
+      const query = new URLSearchParams(window.location.search);
+      return query.get('guided-orbit') === '1' || query.has('review');
     } catch (error) {
       return false;
     }
@@ -126,8 +130,8 @@ const GUIDED_ORBIT = (() => {
 
   function _shouldAutoStart() {
     if (_isForced()) return true;
-    // The localhost smoke harness drives the globe directly. Keep its
-    // deterministic lifecycle intact; ?guided-orbit=1 remains the QA route.
+    // Automated localhost harnesses load SmokeTest before driving the globe.
+    // Review URLs force the tour above; ordinary CI keeps a neutral surface.
     if (hasModule('SmokeTest')) return false;
     return _readStoredStatus() === null;
   }
@@ -277,11 +281,12 @@ const GUIDED_ORBIT = (() => {
     const progress = $('guided-orbit-progress');
     const legend = $('guided-orbit-legend');
     const lensGuide = $('guided-orbit-lens-guide');
+    const cues = $('guided-orbit-cues');
     const back = $('guided-orbit-back');
     const primary = $('guided-orbit-primary');
     const definition = _definition();
     const stepCount = _stepCount();
-    if (!root || !title || !body || !hint || !kicker || !progress || !legend || !lensGuide || !back || !primary) {
+    if (!root || !title || !body || !hint || !kicker || !progress || !legend || !lensGuide || !cues || !back || !primary) {
       reportWarn('GUIDED_ORBIT', 'Tutorial markup is incomplete.');
       return false;
     }
@@ -292,13 +297,18 @@ const GUIDED_ORBIT = (() => {
     root.dataset.route = route;
     root.dataset.step = String(step + 1);
     delete root.dataset.actionLocation;
+    if (definition.body) root.setAttribute('aria-describedby', 'guided-orbit-body');
+    else if (definition.hint) root.setAttribute('aria-describedby', 'guided-orbit-hint');
+    else root.removeAttribute('aria-describedby');
     kicker.textContent = `Climate Intelligence · first orbit · ${step + 1} of ${stepCount}`;
     title.textContent = definition.title;
     body.textContent = definition.body;
+    body.hidden = !definition.body;
     hint.textContent = definition.hint || '';
     hint.hidden = !definition.hint;
     legend.hidden = definition.legend !== true;
     lensGuide.hidden = definition.lenses !== true;
+    cues.hidden = definition.cues !== true;
     progress.style.width = `${((step + 1) / stepCount) * 100}%`;
     progress.parentElement?.setAttribute('aria-valuenow', String(step + 1));
     progress.parentElement?.setAttribute('aria-valuemax', String(stepCount));
@@ -308,7 +318,7 @@ const GUIDED_ORBIT = (() => {
     _syncLensContext();
     _applyStepClasses();
 
-    _announce(`Step ${step + 1} of ${stepCount}. ${definition.title} ${definition.body} ${definition.hint || ''}`);
+    _announce(`Step ${step + 1} of ${stepCount}. ${definition.title} ${definition.announcement || definition.body} ${definition.hint || ''}`);
     if (definition.mode === 'interaction') {
       _focusInteractionTarget();
     } else if (options.focus !== false) {

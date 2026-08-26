@@ -1,11 +1,11 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v62) — introduce the three-move Climate Intelligence orbit,
- * including source-labelled country-deck navigation, while retaining the
- * non-modal evidence panels and reviewed factual runtime boundary.
+ * Globe cache (v63) — refine the three-move Climate Intelligence orbit with
+ * visual target cues, compact copy, a clear swipe shelf, and first-visit
+ * localhost parity while retaining the reviewed factual runtime boundary.
  */
-const CACHE_NAME = 'elu-v62-three-move-orbit';
+const CACHE_NAME = 'elu-v63-visual-orbit-cues';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -13,7 +13,7 @@ const STATIC_ASSETS = [
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
   '/css/globe-system.css?v=v39',
-  '/css/guided-first-orbit.css?v=v7',
+  '/css/guided-first-orbit.css?v=v8',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
   '/assets/globe/runtime/manifest.json',
@@ -33,7 +33,7 @@ const STATIC_ASSETS = [
   '/js/country-climate-intelligence.js?v=v13',
   '/js/globe.js?v=v34',
   '/js/carbon-clock.js?v=v1',
-  '/js/guided-first-orbit.js?v=v5',
+  '/js/guided-first-orbit.js?v=v6',
   '/js/app.js?v=v5',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)

@@ -324,8 +324,8 @@ first globe visit / replay
   → GUIDED_ORBIT.start()
   → candidate_data_unavailable suppresses the tour instead of exposing an unfinishable empty route
   → explain the three separate lenses and no-single-score boundary
-  → encourage a lens change, then release the globe + lens-ordered rail for one country choice
-  → globe:country-selected collapses the tutorial into a deck shelf and cues one horizontal card move
+  → point visually to the lens controls and lens-ordered rail, then release both for one country choice
+  → globe:country-selected moves the tutorial opposite the evidence card and cues one horizontal card move
   → globe:country-navigated completes the orbit; swipe, buttons, arrow keys, and trackpad keep accessible parity
   → globe:country-closed returns the deck moment to country selection
   → fallback users complete the same third moment by choosing one more evidence record
@@ -401,8 +401,8 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v62 precaches the public page, core CSS/JS, the three-move
-Climate Intelligence first orbit, the shared raised-tile lenses, evidence-only
+`sw.js` cache epoch v63 precaches the public page, core CSS/JS, the refined
+three-move Climate Intelligence first orbit, the shared raised-tile lenses, evidence-only
 Physical-card percentile range, the simplified two-track Power fuel palette,
 verified local globe.gl, the CT-45 manifest and localized globe assets, the
 scroll-proof non-modal selected-country identity header, and the exact-version

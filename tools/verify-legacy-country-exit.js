@@ -228,12 +228,12 @@ const localizedCandidateCache = (serviceWorker.includes("const CACHE_NAME = 'elu
   serviceWorker.includes("'/assets/globe/runtime/manifest.json'") &&
   serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'") && hasCandidateLegend;
 const hasClimateIntelligenceLegend = index.includes('id="climate-lens-controls"') &&
-  index.includes('Territorial fossil CO₂ · 2024') &&
-  index.includes('Clean electricity share · 2024') &&
-  index.includes('Projected warming · 2040–2059') &&
+  index.includes('Territorial fossil CO₂ <span class="guided-orbit-period">2024</span>') &&
+  index.includes('Clean electricity share <span class="guided-orbit-period">2024</span>') &&
+  index.includes('Projected warming <span class="guided-orbit-period">2040–2059</span>') &&
   index.includes('No composite score, target assessment, finance judgment, or offset adjustment is produced.') &&
   !index.includes('aria-label="Emissions magnitude legend"');
-const climateIntelligenceCache = serviceWorker.includes("const CACHE_NAME = 'elu-v62-three-move-orbit'") &&
+const climateIntelligenceCache = serviceWorker.includes("const CACHE_NAME = 'elu-v63-visual-orbit-cues'") &&
   serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7'") &&
   serviceWorker.includes("'/js/country-climate-intelligence.js?v=v13'") && hasClimateIntelligenceLegend;
 if (!serviceWorker.includes("const CACHE_NAME = 'elu-v26'") && !candidateCache && !localizedCandidateCache && !climateIntelligenceCache) {
@@ -249,7 +249,7 @@ if (!index.includes("navigator.serviceWorker.register('/sw.js?v=26'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=38-compact-rank'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=39-guided-orbit'") &&
     !index.includes("navigator.serviceWorker.register('/sw.js?v=40-guided-orbit-review'") &&
-    !index.includes("navigator.serviceWorker.register('/sw.js?v=62-three-move-orbit'")) {
+    !index.includes("navigator.serviceWorker.register('/sw.js?v=63-visual-orbit-cues'")) {
   failures.push('index.html: service-worker registration is neither v26, candidate v27, nor a supported evidence release');
 }
 

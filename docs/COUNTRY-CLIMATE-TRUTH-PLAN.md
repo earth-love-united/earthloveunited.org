@@ -127,8 +127,8 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v62 service worker composes the three-move Climate Intelligence first
-orbit with the subtle relief presentation, candidate dashboard, and both
+The v63 service worker composes the refined three-move Climate Intelligence
+first orbit with the subtle relief presentation, candidate dashboard, and both
 runtime generations:
 
 ```text

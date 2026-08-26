@@ -92,7 +92,7 @@ function neutralIndex(bytes) {
   index = index.replace(/^<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">\n/m, '');
   index = index.replace(/^<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>\n/m, '');
   index = replaceOnce(index, '<link rel="preload" href="js/country-climate-intelligence.js?v=v13" as="script">\n', '', 'remove Climate Intelligence preload');
-  index = replaceOnce(index, '<link rel="stylesheet" href="css/guided-first-orbit.css?v=v7">\n', '', 'remove guided orbit CSS');
+  index = replaceOnce(index, '<link rel="stylesheet" href="css/guided-first-orbit.css?v=v8">\n', '', 'remove guided orbit CSS');
   index = replaceOnce(index,
     '.hex-legend-swatch{width:10px;height:10px;border-radius:2px}.hex-legend-swatch.magnitude-low{background:#5b4a97}.hex-legend-swatch.magnitude-high{background:#f6913a}.hex-legend-swatch.magnitude-gap{background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1}',
     '.hex-legend-swatch{width:10px;height:10px;border-radius:2px;background:rgba(145,160,172,.46);border:1px solid rgba(205,225,235,.52)}.hex-legend-note{max-width:230px;margin-top:3px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);line-height:1.35}',
@@ -102,7 +102,7 @@ function neutralIndex(bytes) {
   index = replaceOnce(index, 'src="js/data.js?v=v9"', 'src="js/data.js?v=ct42-neutral-rollback-1"', 'rollback data key');
   index = replaceOnce(index, '<script src="js/country-climate-intelligence.js?v=v13"></script>\n', '', 'remove Climate Intelligence runtime');
   index = replaceOnce(index, 'src="js/globe.js?v=v34"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
-  index = replaceOnce(index, '<script src="js/guided-first-orbit.js?v=v5"></script>\n', '', 'remove guided orbit script');
+  index = replaceOnce(index, '<script src="js/guided-first-orbit.js?v=v6"></script>\n', '', 'remove guided orbit script');
   index = replaceOnce(index, "'tools/smoke-test.js?v=v3'", "'tools/smoke-test.js?v=ct42-neutral-rollback-1'", 'rollback SmokeTest key');
   index = replaceOnce(index,
     '    <button id="guided-orbit-replay" type="button" aria-label="Replay Climate Intelligence first orbit" title="Replay Climate Intelligence first orbit">\n      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-18 12 12)"></ellipse><circle cx="20.2" cy="9.3" r="1.1" fill="currentColor" stroke="none"></circle></svg>\n    </button>\n',
@@ -166,7 +166,7 @@ function neutralIndex(bytes) {
     'Choose an item to inspect its lens metrics, evidence class, methods, sources, or explicit gap state.',
     'Choose an entity to inspect its explicit evidence-withheld state. No climate value, commitment, target, delivery, performance, impact, finance, rating, or score conclusion is shown here.',
     'neutral fallback detail');
-  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=62-three-move-orbit'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
+  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=63-visual-orbit-cues'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
   return Buffer.from(index);
 }
 
@@ -870,8 +870,8 @@ const CACHE_NAME = '${CACHE_NAME}';`,
     "  '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',\n",
     "  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7',\n",
     "  '/js/country-climate-intelligence.js?v=v13',\n",
-    "  '/css/guided-first-orbit.css?v=v7',\n",
-    "  '/js/guided-first-orbit.js?v=v5',\n",
+    "  '/css/guided-first-orbit.css?v=v8',\n",
+    "  '/js/guided-first-orbit.js?v=v6',\n",
   ];
   for (const line of removals) sw = replaceOnce(sw, line, '', `remove precache ${line.trim()}`);
   sw = replaceOnce(sw, "'/css/globe-system.css?v=v39'", "'/css/globe-system.css?v=ct42-neutral-rollback-1'", 'rollback CSS precache');

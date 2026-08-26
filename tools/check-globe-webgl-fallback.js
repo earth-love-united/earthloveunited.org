@@ -121,9 +121,10 @@ function compile() {
         guided.includes('_suppressUnavailableEvidence(options = {})') &&
         guided.includes("payload?.reason || window.GlobeModule?._fallbackReasonCode") &&
         guided.includes('Climate Intelligence first orbit is unavailable because country evidence could not be loaded.'),
-      guided_three_move_completion: guided.includes('const STORAGE_VERSION = 3;') &&
+      guided_three_move_completion: guided.includes('const STORAGE_VERSION = 4;') &&
         guided.includes('const FINAL_STEP = 2;') &&
         guided.includes('Swipe through the country deck.') &&
+        guided.includes("query.get('guided-orbit') === '1' || query.has('review')") &&
         guided.includes("EventBus.on('globe:country-navigated', _onCountryNavigated)") &&
         guided.includes("complete({ source: payload?.source || 'deck' })") &&
         guided.includes("complete({ source: 'fallback-list' })") &&
