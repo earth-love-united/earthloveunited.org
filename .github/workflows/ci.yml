@@ -676,7 +676,7 @@ jobs:
                 const rect = button.getBoundingClientRect();
                 return { id: button.id, left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
               });
-              const lenses = [...document.querySelectorAll('[data-climate-lens]')].map(button => {
+              const lenses = [...document.querySelectorAll('#climate-lens-controls [data-climate-lens]')].map(button => {
                 const rect = button.getBoundingClientRect();
                 return { id: button.dataset.climateLens, left: rect.left, right: rect.right, width: rect.width, height: rect.height };
               });
