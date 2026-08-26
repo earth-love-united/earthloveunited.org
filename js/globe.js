@@ -2113,12 +2113,13 @@ const GlobeModule = {
     const tt = $('hex-country-tooltip');
     const wrap = this._countryCardWrap || $('elu-country-card-wrap');
     if (!tt || !wrap) return;
+    const compactCardTop = '142px';
 
     wrap.style.position = 'fixed';
     wrap.style.zIndex = '1000';
     wrap.style.right = '24px';
     wrap.style.left = 'auto';
-    wrap.style.top = window.innerWidth <= 720 ? '114px' : (window.innerWidth <= 1000 ? '126px' : '64px');
+    wrap.style.top = window.innerWidth <= 720 ? compactCardTop : (window.innerWidth <= 1000 ? '126px' : '64px');
     wrap.style.bottom = window.innerWidth <= 900
       ? 'calc(var(--globe-dock-inset) + var(--globe-dock-height) + 10px)'
       : 'calc(var(--globe-dock-inset) + var(--globe-dock-height) + var(--globe-dock-gap))';
@@ -2147,7 +2148,7 @@ const GlobeModule = {
       const phoneRail = window.innerWidth <= 480;
       wrap.style.left = phoneRail ? '64px' : '90px';
       wrap.style.right = phoneRail ? '8px' : '10px';
-      wrap.style.top = '114px';
+      wrap.style.top = compactCardTop;
       wrap.style.bottom = '78px';
       wrap.style.alignItems = 'flex-end';
     }

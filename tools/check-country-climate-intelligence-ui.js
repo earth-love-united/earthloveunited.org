@@ -18,7 +18,7 @@ const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
 const dataAt = index.indexOf('src="js/data.js?v=v9"');
 const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v13"');
-const globeAt = index.indexOf('src="js/globe.js?v=v34"');
+const globeAt = index.indexOf('src="js/globe.js?v=v35"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -345,19 +345,21 @@ assert(selectedHeaderCss.includes('position: sticky'), 'selected-country identit
 assert(selectedHeaderCss.includes('top: -14px'), 'selected-country identity header must clear the card padding and pin to the scrollport top');
 assert(selectedHeaderCss.includes('background: var(--hud-bg-strong)'), 'sticky country identity must mask evidence scrolling beneath it in both themes');
 assert(css.includes('scroll-padding-block-start: 76px'), 'country-card focus scrolling must clear the sticky identity header');
-assert(css.includes('top: 142px;'), 'compact selected-country card must retain visible air below the rendered lens control');
+assert(css.includes('top: 142px !important;'), 'compact selected-country card CSS must override stale inline docking coordinates');
+assert(globe.includes("const compactCardTop = '142px';"), 'runtime country-card dock must share the compact lens/card boundary');
+assert(!globe.includes("wrap.style.top = '114px';"), 'runtime country-card dock retains the old touching coordinate');
 
 const publicClimateSurface = [index, globe, css].join('\n');
 assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public HTML, globe UI, or public globe CSS');
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v66-card-lens-air'"));
-assert(serviceWorker.includes("'/css/globe-system.css?v=v41'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v67-runtime-card-air'"));
+assert(serviceWorker.includes("'/css/globe-system.css?v=v42'"));
 assert(serviceWorker.includes("'/css/guided-first-orbit.css?v=v9'"));
 assert(serviceWorker.includes("'/js/data.js?v=v9'"));
 assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v13'"));
-assert(serviceWorker.includes("'/js/globe.js?v=v34'"));
+assert(serviceWorker.includes("'/js/globe.js?v=v35'"));
 assert(serviceWorker.includes("'/js/guided-first-orbit.js?v=v6'"));
 assert(serviceWorker.includes("'/js/app.js?v=v5'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7'"));

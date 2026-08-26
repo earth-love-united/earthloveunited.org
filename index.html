@@ -362,7 +362,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v41">
+<link rel="stylesheet" href="css/globe-system.css?v=v42">
 <link rel="stylesheet" href="css/guided-first-orbit.css?v=v9">
 
 <!-- Non-critical CSS: deferred async load -->
@@ -837,7 +837,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/data-schema.js?v=v1"></script>
 <script src="js/data.js?v=v9"></script>
 <script src="js/country-climate-intelligence.js?v=v13"></script>
-<script src="js/globe.js?v=v34"></script>
+<script src="js/globe.js?v=v35"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/guided-first-orbit.js?v=v6"></script>
 <script src="js/app.js?v=v5"></script>
@@ -985,7 +985,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=66-card-lens-air', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=67-runtime-card-air', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it
