@@ -1,8 +1,8 @@
 {
   "schema_version": "1.4.0",
-  "registry_version": "0.6.0",
-  "methodology_version": "1.0.0",
-  "released_on": "2026-08-25",
+  "registry_version": "0.7.0",
+  "methodology_version": "1.1.0",
+  "released_on": "2026-08-26",
   "reviewed_through": "2026-08-25",
   "purpose": "Fail-closed source, licence, attribution, field-permit, retrieval, and storage decisions for Country Climate Intelligence evidence.",
   "policy": {
@@ -406,10 +406,10 @@
       }
     },
     {
-      "id": "climate-trace-v5.9.0-country-annual",
+      "id": "climate-trace-api-v7-2026-08-24-country-annual",
       "publisher": "Climate TRACE",
       "title": "Climate TRACE annual country emissions snapshot",
-      "version": "inventory v5.9.0; API v7 snapshot retrieved 2026-08-24",
+      "version": "API v7 response retrieved 2026-08-24; reported inventory version 5.9.0; immutable release binding unresolved",
       "evidence_plane": "independent",
       "domains": ["independent_ghg"],
       "primary": false,
@@ -417,19 +417,19 @@
       "retrieval_url": "https://api.climatetrace.org/v7/country/emissions",
       "cadence": {"frequency": "monthly", "check_interval_days": 30},
       "licence": {
-        "identifier": "CC-BY-4.0",
+        "identifier": "CC-BY-4.0-with-listed-exceptions",
         "status": "confirmed",
         "terms_url": "https://climatetrace.org/terms",
         "evidence_url": "https://climatetrace.org/data",
         "summary": "Climate TRACE publishes its emissions data and associated metadata under CC BY 4.0, subject to listed external-dataset exceptions.",
-        "attribution": "Climate TRACE (2026), Climate TRACE Emissions Inventory v5.9.0, https://climatetrace.org, accessed 2026-08-24. Earth Love United transformations are identified.",
+        "attribution": "Climate TRACE API v7 country-emissions response, retrieved 2026-08-24, https://climatetrace.org/data; response reported inventory version 5.9.0. Immutable v5.9.0 release identity remains unresolved. Earth Love United transformations are identified.",
         "restrictions": ["Credit Climate TRACE", "Check the external-dataset exception list", "Preserve estimate status, gas, sector, GWP, and forestry treatment"]
       },
       "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
       "approval": {
         "state": "approved",
-        "decision": "Approved only for the permitlisted v5.9.0 annual 2024 country fields, excluding forestry and land use, with IPCC AR6 GWP100 and source-labelled uncertainty limitations.",
-        "required_action": "Re-review external-data exceptions and exact snapshot receipts for every release; keep 2025 estimates out of rankings and historical charts."
+        "decision": "Compiler permitlist approved for a receipt that independently confirms the immutable inventory release behind the API v7 response; the recovered candidate does not yet carry that confirmation.",
+        "required_action": "Obtain the exact API response receipt, immutable inventory-release binding, and field-level external-dataset exception review before production; keep estimates out of rankings and historical charts."
       },
       "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true},
       "ingestion_gate": {
@@ -440,7 +440,7 @@
         "normalized_value_redistribution_approved": true,
         "field_permitlist": ["iso_alpha3", "country_name", "year", "sector", "gas", "emissions_tonnes", "co2e_100yr_tonnes", "gwp_basis", "estimate_status"]
       },
-      "limitations": ["The 2024 snapshot is an independent estimate, not an official national inventory", "Uncertainty values are available on request but are not present in the compiled API snapshot", "The scope does not match GCB fossil CO2 and no disagreement percentage is allowed"]
+      "limitations": ["The recovered candidate identifies an API v7 response that reported inventory version 5.9.0, but no immutable v5.9.0 archive binding is retained", "The 2024 snapshot is an independent estimate, not an official national inventory", "Climate TRACE terms list external-dataset exceptions that require field-level rights review", "Uncertainty values are available on request but are not present in the compiled API snapshot", "The scope does not match GCB fossil CO2 and no disagreement percentage is allowed"]
     },
     {
       "id": "ember-yearly-electricity-data-2026-08-25",

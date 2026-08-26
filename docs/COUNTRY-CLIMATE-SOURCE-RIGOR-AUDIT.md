@@ -2,7 +2,7 @@
 
 **Audit date:** 2026-08-24; observed-climate and Ember fuel-mix follow-up 2026-08-25
 
-**Candidate runtime SHA-256:** `1b9c59d0ec912f8ec75f45ef6bab885a45661eea7b68add50ac2138e778ad198`
+**Candidate runtime SHA-256:** `d961610b1786b82755ecca266e20236f5ad13e0d5df25dd8345703fd50a41728`
 
 **Verdict:** no priority-zero scientific defect found; candidate remains ineligible for production promotion pending the open evidence and rights gates below.
 
@@ -22,7 +22,8 @@ This record combines the independent read-only review of the source registry, no
 
 | Finding | Correction |
 |---|---|
-| WPP 2024 Medium was described as an estimate even though the 2024 Medium series is a projection. | The compiler now requires a `projection` receipt classification. Population and derived per-capita records are modeled, with public copy stating “WPP 2024 Medium population projection.” |
+| WPP 2024 Medium was described as an estimate even though the 2024 Medium series is a projection. | The compiler now requires a `projection` receipt classification. The stable denominator ID is `population.wpp_medium_projection`; population and derived per-capita records are modeled, with public copy stating “WPP 2024 Medium population projection.” |
+| Climate TRACE candidate provenance named inventory v5.9.0 even though the retained acquisition identity was an API v7 response. | The source ID now names the exact API route/date. The response-reported 5.9.0 version is separate metadata, immutable release identity remains explicitly unresolved, and the production compiler requires independent confirmation of that binding. |
 | The Ember compiler could accept `MtCO2e` and relabel it as `MtCO2`. | Power-emissions normalization now accepts only an explicit `MtCO2` unit; CO₂-equivalent rows fail closed. |
 | A clean/fossil/wind-and-solar display could look additive while hiding the generation taxonomy. | The compiler now permitlists nine exact fuel-share metrics, preserves blank cells as gaps, distinguishes source zeroes, and accepts a visual mix only when non-blank clean and fossil components reconcile to their aggregate anchors within ±0.02 percentage points. The browser uses two aligned tracks and never rescales the source rows. |
 | Duplicate CCKP scenario/percentile tuples could overwrite an earlier row. | Projection and observed-year duplicates now throw, with negative compiler fixtures. |
@@ -65,8 +66,11 @@ The recovery resolves the acquisition defect for 245 entities. It does not self-
 5. Independently review the CCKP ERA5 `tas`/`pr` attribution, permitlists, aggregate semantics, 1970–2025 selection, OLS implementation, and four explicit identity gaps.
 6. Complete independent scientific review of core-carbon mappings and derivations, plus the optional source taxonomies and selections.
 7. Obtain the required protected-file and final production approvals.
+8. Regenerate the machine-readable review request against the post-fix candidate commit, then produce the CCI-specific approval, reviewed release diff, reviewed runtime manifest, and executable rollback proof. Historical CT-40 bindings are structurally inapplicable and must not be reused.
 
 Until these are complete, `raw_receipt_revalidation`, `redistribution_rights_revalidation`, `independent_scientific_review`, and `production_runtime_release` remain false.
+
+The exact reviewer handoff and artifact chain are documented in [COUNTRY-CLIMATE-RELEASE-REVIEW.md](COUNTRY-CLIMATE-RELEASE-REVIEW.md). The committed `review-request.json` is intentionally unbound until the implementation commit exists; the release gate treats that state as a blocker, not an approval.
 
 ## Authoritative references used by the audit
 

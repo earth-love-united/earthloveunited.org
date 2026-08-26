@@ -599,14 +599,19 @@ body.globe-fallback-active #globe-back-btn {
   width: 100%;
   min-height: 44px;
   padding: 10px 12px;
-  border: 1px solid var(--hud-border);
+  border: 2px solid var(--hud-border);
   border-radius: 3px;
   background: var(--hud-cell);
   color: var(--text);
   font: 14px/1.35 var(--body);
 }
 
-.elu-fallback-search input:focus-visible,
+.elu-fallback-search input:focus-visible {
+  border-color: var(--mint);
+  outline: none;
+  box-shadow: none;
+}
+
 #globe-fallback button:focus-visible,
 #globe-fallback a:focus-visible,
 #globe-fallback [tabindex="-1"]:focus-visible {
@@ -923,11 +928,17 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   width: 100%;
   min-height: 34px;
   padding: 7px 8px;
-  border: 1px solid var(--hud-border);
+  border: 2px solid var(--hud-border);
   border-radius: 2px;
   background: var(--hud-cell);
   color: var(--text);
   font: 11px/1.3 var(--body);
+}
+
+#elu-country-rank-rail .elu-rank-search input:focus-visible {
+  border-color: var(--mint);
+  outline: none;
+  box-shadow: none;
 }
 
 .elu-rank-filter-results {

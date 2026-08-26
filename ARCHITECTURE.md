@@ -168,7 +168,7 @@ flowchart LR
 
 `Data.init()` gives the essential Country Climate Intelligence runtime a bounded 60-second first-transfer deadline. The runtime still fails closed on timeout, HTTP failure, checksum drift, schema drift, or missing WebCrypto, but normal slow links are not converted into an empty evidence fallback. Headless CI holds the first response for 8.5 seconds with service workers disabled and requires all 249 entities to remain available.
 The candidate is parsed only after WebCrypto verifies SHA-256
-`1b9c59d0ec912f8ec75f45ef6bab885a45661eea7b68add50ac2138e778ad198`.
+`d961610b1786b82755ecca266e20236f5ad13e0d5df25dd8345703fd50a41728`.
 Schema validation then proves 249 unique registry entities, exactly 27 metric
 records per entity, coverage derived from records, three complete lens
 partitions, explicit gaps, and the non-production release boundary. Candidate

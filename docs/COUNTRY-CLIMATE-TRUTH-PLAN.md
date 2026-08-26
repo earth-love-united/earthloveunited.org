@@ -2,7 +2,7 @@
 
 **Mission:** `country-climate-intelligence-v1`
 
-**Release:** `country-climate-intelligence-2026-08-25-candidate.4`
+**Release:** `country-climate-intelligence-2026-08-25-candidate.5`
 
 **State:** implemented factual candidate; production promotion withheld
 
@@ -33,7 +33,7 @@ approved source registry + exact external snapshots
 |---|---|
 | `data/climate/source-registry.json` | Fail-closed licence, attribution, permitlist, receipt, checksum, storage, and redistribution decisions |
 | `tools/compile-gcb-emissions.js` | Existing GCB compiler plus Country Climate Intelligence fossil/consumption/transfer/land-use mode |
-| `tools/compile-wpp-population.js` | Exact-year WPP population normalization |
+| `tools/compile-wpp-population.js` | Exact-year WPP Medium population-projection normalization |
 | `tools/compile-climate-trace.js` | 2024 AR6 GWP100 independent GHG context, forestry/LULUCF excluded |
 | `tools/compile-ember-power.js` | Exact 2019/2024 power aggregates, five-year change, nine 2024 fuel shares, blank-preserving reconciliation, and identity dispositions |
 | `tools/compile-cckp-physical.js` | CMIP6 projection ranges and ERA5 OLS trends/gaps |
@@ -41,6 +41,8 @@ approved source registry + exact external snapshots
 | `tools/refresh-cckp-observed-temperature.js` | Checksum-pinned observed-temperature replacement that leaves projections and precipitation unchanged |
 | `tools/refresh-cckp-observed-variable.js` | Checksum-pinned variable refresh used to add observed precipitation without modifying projections or temperature |
 | `data/climate/releases/country-climate-intelligence-v1/` | Normalized facts, component checksums, receipts, transformation log, release gates |
+| `tools/prepare-country-climate-intelligence-review-request.js` | Exact-hash, commit-bindable source/science/rights/UI review request |
+| `tools/check-country-climate-intelligence-release-gate.js` | CCI-specific fail-closed approval, reviewed-manifest, diff, and rollback gate; no CT-40 reuse |
 | `tools/build-country-climate-intelligence.js` | Deterministic 249-entity assembly, per-capita derivation, coverage, and lens orders |
 | `data/climate/runtime/country-climate-intelligence.json` | Compact static factual candidate |
 | `js/data.js` | Exact SHA-256 verification and public runtime API |
@@ -56,6 +58,8 @@ approved source registry + exact external snapshots
 | Field permitlists and compiler denial | passed | no unreviewed source field can be selected |
 | Exact normalized component checksums | passed | deterministic rebuild must match committed runtime |
 | External raw-receipt revalidation | Ember and ERA5 temperature/precipitation receipts pinned; other optional components open | independently revalidate and retain the WPP, TRACE, and CCKP CMIP6 acquisition receipts |
+| Commit-bound review request | unbound preparation packet generated | regenerate after the candidate implementation commit with `--subject-commit` |
+| CCI-specific release package | absent by design | exact independent approval, reviewed release diff, reviewed runtime manifest, and executable rollback proof |
 | Core-carbon scientific review | open | independent reviewer verifies GCB identity mapping, scopes, transfer sign, cumulative, land-use mean/σ, and per-capita denominator |
 | Optional-component scientific review | open | independent reviewer verifies TRACE GWP/filter, Ember taxonomy/evidence class, and CCKP scenario/percentile selections |
 | Runtime/static validation | passed for candidate | rerun after any factual or code change |

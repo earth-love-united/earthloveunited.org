@@ -36,7 +36,7 @@
         "emissions.fossil_co2.net_transfer",
         "emissions.land_use_co2.net",
         "emissions.ghg.independent",
-        "population.estimate",
+        "population.wpp_medium_projection",
         "electricity.clean_share",
         "electricity.clean_share_change_5y",
         "electricity.fossil_share",
@@ -128,9 +128,9 @@
       ],
       "properties": {
         "id": {"type": "string", "minLength": 1},
-        "status": {"const": "candidate"},
-        "review_state": {"const": "normalized_factual_candidate_pending_source_revalidation"},
-        "production_runtime_release": {"const": false},
+        "status": {"enum": ["candidate", "production"]},
+        "review_state": {"enum": ["normalized_factual_candidate_pending_source_revalidation", "independently_reviewed"]},
+        "production_runtime_release": {"type": "boolean"},
         "entity_count": {"const": 249},
         "comparison_baseline_year": {"const": 2024},
         "generated_on": {"type": "string", "format": "date"},
@@ -215,7 +215,7 @@
         "uncertainty": {"type": ["object", "null"]},
         "fact_ids": {"type": "array", "items": {"type": "string"}},
         "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
-        "review_state": {"enum": ["source_validated_candidate", "normalized_candidate_pending_source_revalidation", "gap_reviewed"]},
+        "review_state": {"enum": ["source_validated_candidate", "normalized_candidate_pending_source_revalidation", "gap_reviewed", "independently_reviewed"]},
         "transformation": {"type": ["string", "null"]},
         "gap_reason": {
           "anyOf": [

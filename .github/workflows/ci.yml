@@ -619,6 +619,56 @@ jobs:
               width + 'px climate lens controls must retain 44px targets');
           }
 
+          await page.setViewportSize({ width: 870, height: 798 });
+          const guidedLensAudit = await page.evaluate(async () => {
+            const orbit = window.GUIDED_ORBIT;
+            const replay = document.getElementById('guided-orbit-replay');
+            const stored = localStorage.getItem('elu-guided-first-orbit-v1');
+            const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+            const rect = element => {
+              const value = element?.getBoundingClientRect();
+              return value && value.width > 0 && value.height > 0 ? value : null;
+            };
+            const centerHits = element => {
+              const value = rect(element);
+              if (!value) return false;
+              const hit = document.elementFromPoint(value.left + value.width / 2, value.top + value.height / 2);
+              return hit === element || element.contains(hit);
+            };
+            let result;
+            try {
+              orbit.start({ route: 'globe', force: true, opener: replay, focus: false });
+              orbit.goToStep(1, { focus: false });
+              await new Promise(resolve => setTimeout(resolve, 400));
+              const card = document.querySelector('#guided-orbit[data-mode="interaction"] .guided-orbit-card');
+              const lens = document.getElementById('climate-lens-controls');
+              const lensButtons = [...document.querySelectorAll('#climate-lens-controls [data-climate-lens]')];
+              const chooser = document.querySelector('#elu-country-rank-rail [data-country-rail-iso]');
+              const cardRect = rect(card);
+              const lensRect = rect(lens);
+              const chooserRect = rect(chooser);
+              result = {
+                cardPresent: !!cardRect,
+                lensCount: lensButtons.length,
+                chooserPresent: !!chooserRect,
+                overlapsLens: !!(cardRect && lensRect && overlaps(cardRect, lensRect)),
+                overlapsChooser: !!(cardRect && chooserRect && overlaps(cardRect, chooserRect)),
+                allLensesHit: lensButtons.length === 3 && lensButtons.every(centerHits),
+                chooserHit: centerHits(chooser),
+              };
+            } finally {
+              orbit.destroy();
+              orbit.init();
+              if (stored === null) localStorage.removeItem('elu-guided-first-orbit-v1');
+              else localStorage.setItem('elu-guided-first-orbit-v1', stored);
+            }
+            return result;
+          });
+          assert(guidedLensAudit.cardPresent && guidedLensAudit.lensCount === 3 && guidedLensAudit.chooserPresent &&
+            !guidedLensAudit.overlapsLens && !guidedLensAudit.overlapsChooser && guidedLensAudit.allLensesHit &&
+            guidedLensAudit.chooserHit,
+          '870x798 tutorial step 2 must leave all lenses and the first ordered country reachable: ' + JSON.stringify(guidedLensAudit));
+
           await page.setViewportSize({ width: 768, height: 600 });
           await page.click('[data-country-rail-iso="CHN"]');
           await page.waitForFunction(() => document.activeElement?.id === 'country-card-heading');

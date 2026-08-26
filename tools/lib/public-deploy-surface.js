@@ -4,6 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const { EXPECTED_SPEC: EXPECTED_VENDOR } = require('./globe-vendor-integrity');
+const { inspectReleaseApproval } = require('./country-climate-intelligence-release-gate');
 
 const CANDIDATE_MARKER_PATH = 'CANDIDATE-NOT-FOR-PUBLICATION.txt';
 const CANDIDATE_MARKER_TEXT = [
@@ -186,10 +187,11 @@ function verifyRuntimeCachePolicy(root) {
 
 function expectedSourcePaths(sourceRoot, mode) {
   if (!['candidate', 'release'].includes(mode)) throw new Error('deploy mode must be candidate or release');
-  if (mode === 'release') verifyClimateIntelligenceReleaseBoundary(sourceRoot);
+  const climateRelease = mode === 'release' ? verifyClimateIntelligenceReleaseBoundary(sourceRoot) : null;
   const paths = [
     ...ALWAYS_PUBLIC_PATHS,
     ...(mode === 'candidate' ? CANDIDATE_ONLY_PATHS : []),
+    ...(climateRelease?.pass ? [CLIMATE_INTELLIGENCE_RUNTIME_PATH] : []),
     ...approvalPaths(sourceRoot),
   ];
   const normalized = paths.map(safeRelative).sort();
@@ -200,10 +202,13 @@ function expectedSourcePaths(sourceRoot, mode) {
 function verifyClimateIntelligenceReleaseBoundary(sourceRoot) {
   const references = CLIMATE_INTELLIGENCE_ENTRYPOINTS.filter(relative =>
     inspectRegular(sourceRoot, relative).bytes.toString('utf8').includes(CLIMATE_INTELLIGENCE_RUNTIME_PATH));
-  if (references.length) {
-    throw new Error('Country Climate Intelligence remains candidate-only; factual-public staging is blocked while active entrypoints reference its unapproved runtime: ' + references.join(', '));
+  if (!references.length) return { pass: false, status: 'not_referenced', references: [] };
+  const result = inspectReleaseApproval(sourceRoot);
+  if (!result.pass) {
+    const reasons = [...result.errors, ...result.blockers].map(item => item.code).join(', ') || 'approval_missing';
+    throw new Error('Country Climate Intelligence factual-public staging is blocked; active entrypoints reference a runtime without an exact approved CCI release package (' + reasons + '): ' + references.join(', '));
   }
-  return true;
+  return { ...result, references };
 }
 
 function expectedStagedPaths(sourceRoot, mode) {

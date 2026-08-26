@@ -19,7 +19,7 @@ const {
 } = require('./lib/country-climate-intelligence');
 
 const SOURCE_ID = 'un-wpp-2024';
-const METRIC_ID = 'population.estimate';
+const METRIC_ID = 'population.wpp_medium_projection';
 
 function compile(args) {
   const inputPath = path.resolve(option(args, '--input'));

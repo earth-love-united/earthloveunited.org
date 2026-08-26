@@ -512,7 +512,11 @@ body.guided-orbit-step-2:not(.globe-fallback-active) #elu-country-rank-rail {
   box-shadow: var(--hud-shadow), 0 0 0 1px rgba(123, 232, 208, .16), 0 0 28px rgba(78, 205, 196, .14);
 }
 
-body.guided-orbit-step-2.globe-fallback-active .elu-fallback-search input,
+body.guided-orbit-step-2.globe-fallback-active .elu-fallback-search input {
+  border-color: rgba(123, 232, 208, .58);
+  box-shadow: none;
+}
+
 body.guided-orbit-step-2.globe-fallback-active .elu-fallback-list-panel {
   border-color: rgba(123, 232, 208, .58);
   box-shadow: 0 0 0 1px rgba(123, 232, 208, .12), 0 0 28px rgba(78, 205, 196, .12);
@@ -548,6 +552,12 @@ body.guided-orbit-step-3:not(.globe-fallback-active) #elu-country-card-wrap #hex
    below the chooser so the lens, search, and first country row remain reachable;
    phones use their narrower bottom dock and wide desktops retain top-right. */
 @media (min-width: 801px) and (max-width: 1280px) {
+  body:not(.globe-fallback-active) .guided-orbit[data-mode="interaction"][data-route="globe"] .guided-orbit-card {
+    top: auto;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
   body.globe-fallback-active .guided-orbit[data-mode="interaction"] .guided-orbit-card {
     top: auto;
     right: 12px;

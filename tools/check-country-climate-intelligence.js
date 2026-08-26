@@ -62,7 +62,7 @@ const EXPECTED_COVERAGE = {
   'emissions.fossil_co2.territorial_per_capita': 213,
   'emissions.ghg.independent': 249,
   'emissions.land_use_co2.net': 197,
-  'population.estimate': 236,
+  'population.wpp_medium_projection': 236,
 };
 
 function checkComponentReceipts(runtime, manifest) {
@@ -97,7 +97,7 @@ function checkComponentReceipts(runtime, manifest) {
 function checkDerived(country) {
   const metrics = country.metrics;
   const territorial = metrics['emissions.fossil_co2.territorial'];
-  const population = metrics['population.estimate'];
+  const population = metrics['population.wpp_medium_projection'];
   const perCapita = metrics['emissions.fossil_co2.territorial_per_capita'];
   if (territorial.value !== null && population.value !== null) {
     assert.strictEqual(perCapita.value, round((territorial.value * 1000000) / population.value), `${country.iso_alpha3} per-capita derivation mismatch`);
@@ -259,7 +259,7 @@ function check() {
       }
     }
     checkDerived(country);
-    const population = country.metrics['population.estimate'];
+    const population = country.metrics['population.wpp_medium_projection'];
     if (population.value !== null) {
       assert.strictEqual(population.status, 'modeled', `${country.iso_alpha3} WPP 2024 denominator must be labeled as a projection`);
       assert.strictEqual(population.context.release_year_classification, 'year_matched_2024_medium_projection');

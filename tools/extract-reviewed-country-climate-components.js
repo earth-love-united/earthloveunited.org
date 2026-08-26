@@ -37,13 +37,13 @@ const COMPONENTS = {
   },
   wpp: {
     file: 'wpp-population.json',
-    metrics: ['population.estimate'],
+    metrics: ['population.wpp_medium_projection'],
     source_registry_ids: ['un-wpp-2024'],
   },
   trace: {
     file: 'climate-trace-ghg.json',
     metrics: ['emissions.ghg.independent'],
-    source_registry_ids: ['climate-trace-v5.9.0-country-annual'],
+    source_registry_ids: ['climate-trace-api-v7-2026-08-24-country-annual'],
   },
   ember: {
     file: 'ember-power.json',
@@ -88,7 +88,7 @@ const COMPONENT_REVIEW_STATES = Object.freeze({
   wpp: 'normalized_factual_candidate_pending_source_revalidation',
 });
 const RELEASE_PENDING_SOURCE_IDS = new Set([
-  'climate-trace-v5.9.0-country-annual',
+  'climate-trace-api-v7-2026-08-24-country-annual',
   'ember-yearly-electricity-data-2026-08-25',
   'un-wpp-2024',
   'world-bank-cckp-cmip6-2026-08-24',

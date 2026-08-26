@@ -4,7 +4,7 @@
 // Must load AFTER storage.js (depends on window.Storage).
 // ═══════════════════════════════════════════════
 
-const CLIMATE_INTELLIGENCE_SHA256 = '1b9c59d0ec912f8ec75f45ef6bab885a45661eea7b68add50ac2138e778ad198';
+const CLIMATE_INTELLIGENCE_SHA256 = 'd961610b1786b82755ecca266e20236f5ad13e0d5df25dd8345703fd50a41728';
 // This is the essential 249-country runtime, not a decorative asset. Keep a
 // bounded fail-closed deadline, but allow slow first visits to finish the
 // compressed transfer and checksum instead of turning latency into "no data".
@@ -43,7 +43,7 @@ const Data = {
   climateCountries: null,
   climateRanking: null,
   climateCandidateState: 'idle',
-  version: 'cci1candidate7',
+  version: 'cci1candidate8',
 
   async init() {
     // Country Climate Intelligence v1 is a hashed, static factual candidate.

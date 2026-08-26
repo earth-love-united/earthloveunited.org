@@ -1,6 +1,6 @@
 # Country Climate Intelligence v1 — transformation log
 
-Release: `country-climate-intelligence-2026-08-25-candidate.4`
+Release: `country-climate-intelligence-2026-08-25-candidate.5`
 
 Status: normalized factual candidate pending source revalidation. This is not a production promotion receipt. Independent scientific review, external raw-receipt revalidation, and release-specific redistribution-rights review remain open.
 
@@ -11,6 +11,9 @@ Status: normalized factual candidate pending source revalidation. This is not a 
 - The browser runtime uses recursively key-sorted, newline-terminated compact JSON. Human-review component artifacts remain indented; formatting never changes values or ordering.
 - Every compiler starts from the 249-entry country registry. A source row must map once or receive one enumerated aggregate, territory, or unmapped exception. Missing data is never converted to zero and a territory never inherits its parent country's value.
 - The prior reviewed normalized facts were recovered byte-for-byte from candidate SHA-256 `436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09` after an uncommitted temporary worktree was purged. Carbon, population, independent GHG, and CMIP6 projections are unchanged. Observed temperature/precipitation and the Ember power component are refreshed from exact-checksummed snapshots.
+- Candidate.5 changes the WPP denominator metric ID from `population.estimate` to `population.wpp_medium_projection`. `tools/migrate-wpp-medium-projection-id.js` requires the exact candidate.4 WPP component hash, verifies all 236 available records were already modeled 2024 Medium projections, recomputes only the scope fingerprint after changing the metric ID, and records `value_changes=false`. No population or per-capita input value changes in this contract migration.
+- Candidate.5 replaces the unproven Climate TRACE source ID `climate-trace-v5.9.0-country-annual` with `climate-trace-api-v7-2026-08-24-country-annual`. The migration preserves all 249 values and scopes, records the API-reported 5.9.0 version separately from the unresolved immutable release binding, and requires that binding in the production compiler receipt.
+- Source registry version `0.7.0` binds methodology `1.1.0` and records the breaking Climate TRACE source-identity correction. The release-review request pins the methodology, source-rigor audit, truth plan, and reviewer handoff alongside the runtime and compilers.
 
 ## Carbon
 

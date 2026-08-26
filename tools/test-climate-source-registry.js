@@ -64,7 +64,7 @@ expectFailure('Legacy scoring bypass', candidate => {
 }, /scoring_allowed must remain false/);
 
 expectFailure('Climate TRACE checksum gate bypass', candidate => {
-  sourceById(candidate, 'climate-trace-v5.9.0-country-annual')
+  sourceById(candidate, 'climate-trace-api-v7-2026-08-24-country-annual')
     .ingestion_gate.exact_checksum_required = false;
 }, /must pass every Country Climate Intelligence ingestion gate/);
 

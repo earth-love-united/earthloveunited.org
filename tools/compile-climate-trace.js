@@ -17,7 +17,7 @@ const {
   writeJson,
 } = require('./lib/country-climate-intelligence');
 
-const SOURCE_ID = 'climate-trace-v5.9.0-country-annual';
+const SOURCE_ID = 'climate-trace-api-v7-2026-08-24-country-annual';
 const METRIC_ID = 'emissions.ghg.independent';
 const EXCLUDED_SECTORS = new Set(['forestry-and-land-use', 'forestry', 'lulucf']);
 
@@ -25,8 +25,10 @@ function compile(args) {
   const inputPath = path.resolve(option(args, '--input'));
   const receipt = readJson(path.resolve(option(args, '--receipt')));
   const outputPath = path.resolve(option(args, '--output'));
-  if (receipt.source_registry_id !== SOURCE_ID || receipt.source_version !== '5.9.0') {
-    throw new Error('Climate TRACE receipt must pin source version 5.9.0');
+  if (receipt.source_registry_id !== SOURCE_ID || receipt.api_version !== 'v7' ||
+      receipt.reported_inventory_version !== '5.9.0' ||
+      receipt.immutable_inventory_release_confirmed !== true) {
+    throw new Error('Climate TRACE receipt must bind the API v7 response to a confirmed immutable inventory release');
   }
   verifySnapshot(inputPath, receipt);
   const sourceRegistry = readJson(path.join(ROOT, 'data/climate/source-registry.json'));
@@ -106,13 +108,19 @@ function compile(args) {
         context: {
           comparison_note: 'Shown beside GCB fossil CO2 only. It is not scope-matched and no disagreement percentage is calculated.',
           evidence_class: 'independent_estimate',
+          source_identity: {
+            api_version: 'v7',
+            immutable_inventory_release_confirmed: true,
+            reported_inventory_version: '5.9.0',
+            retrieval_date: receipt.retrieved_on,
+          },
           gas_breakdown: gasBreakdown,
           ranking_eligible: false,
           sector_breakdown_mtco2e: Object.fromEntries(Object.entries(total.sectors).sort().map(([sector, value]) => [sector, round(value / 1000000)])),
           source_percentage_ignored: true,
           source_rank_ignored: true,
         },
-        fact_ids: [`climate-trace-5.9.0:${entity.iso_alpha3}:co2e100:2024`],
+        fact_ids: [`climate-trace-api-v7:${entity.iso_alpha3}:co2e100:2024`],
         gap_reason: null,
         id: METRIC_ID,
         period: { end: 2024, label: '2024', start: 2024 },

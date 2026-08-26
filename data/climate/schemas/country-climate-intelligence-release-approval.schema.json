@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/country-climate-intelligence-release-approval-1.0.0.json",
+  "title": "Country Climate Intelligence independently reviewed release approval",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "approval_id", "release_id", "status",
+    "subject_commit_sha", "builder_id", "review_request",
+    "release_artifact_pins", "source_reviews", "independent_reviews",
+    "protected_file_review", "decision", "calculation_hash"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "approval_id": {"type": "string", "minLength": 10},
+    "release_id": {"type": "string", "minLength": 10},
+    "status": {"const": "reviewed"},
+    "subject_commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "builder_id": {"type": "string", "minLength": 5},
+    "review_request": {"$ref": "#/$defs/pin"},
+    "release_artifact_pins": {
+      "type": "array", "minItems": 5, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/pin"}
+    },
+    "source_reviews": {
+      "type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/sourceReview"}
+    },
+    "independent_reviews": {
+      "type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/disciplineReview"}
+    },
+    "protected_file_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reviewer_id", "approval_reference", "reviewed_commit_sha", "reviewed_at"],
+      "properties": {
+        "status": {"const": "approved"},
+        "reviewer_id": {"type": "string", "minLength": 5},
+        "approval_reference": {"type": "string", "minLength": 10},
+        "reviewed_commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+        "reviewed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release_authority", "production_runtime_release", "approved_by",
+        "approved_at", "deployment_authority"
+      ],
+      "properties": {
+        "release_authority": {"const": true},
+        "production_runtime_release": {"const": true},
+        "approved_by": {"type": "string", "minLength": 5},
+        "approved_at": {"type": "string", "format": "date-time"},
+        "deployment_authority": {"const": false}
+      }
+    },
+    "calculation_hash": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^[A-Za-z0-9._/-]+$"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_registry_id", "status", "raw_receipt_revalidated",
+        "immutable_source_identity_confirmed", "field_permitlist_reviewed",
+        "attribution_approved", "normalized_value_redistribution_approved",
+        "derivative_database_use_approved", "external_dataset_exceptions_resolved",
+        "reviewer_id", "reviewer_role", "reviewed_at", "decision_reference",
+        "evidence_pins"
+      ],
+      "properties": {
+        "source_registry_id": {"type": "string", "minLength": 5},
+        "status": {"const": "reviewed"},
+        "raw_receipt_revalidated": {"const": true},
+        "immutable_source_identity_confirmed": {"const": true},
+        "field_permitlist_reviewed": {"const": true},
+        "attribution_approved": {"const": true},
+        "normalized_value_redistribution_approved": {"const": true},
+        "derivative_database_use_approved": {"const": true},
+        "external_dataset_exceptions_resolved": {"const": true},
+        "reviewer_id": {"type": "string", "minLength": 5},
+        "reviewer_role": {"type": "string", "minLength": 5},
+        "reviewed_at": {"type": "string", "format": "date-time"},
+        "decision_reference": {"type": "string", "minLength": 10},
+        "evidence_pins": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"$ref": "#/$defs/pin"}
+        }
+      }
+    },
+    "disciplineReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role", "status", "reviewer_id", "reviewer_independence_confirmed",
+        "conflicts", "reviewed_at", "findings_resolved", "report"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "carbon_accounting", "demography", "ghg_inventory", "power_systems",
+            "physical_climate", "reproducibility", "ui_accessibility_runtime", "source_rights"
+          ]
+        },
+        "status": {"const": "reviewed"},
+        "reviewer_id": {"type": "string", "minLength": 5},
+        "reviewer_independence_confirmed": {"const": true},
+        "conflicts": {"type": "array", "maxItems": 0},
+        "reviewed_at": {"type": "string", "format": "date-time"},
+        "findings_resolved": {"const": true},
+        "report": {"$ref": "#/$defs/pin"}
+      }
+    }
+  }
+}

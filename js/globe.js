@@ -1505,13 +1505,36 @@ const GlobeModule = {
       element.getClientRects().length > 0;
   },
 
+  _isVisibleFocusTarget(element) {
+    if (!this._isRenderedFocusTarget(element)) return false;
+    const rect = element.getBoundingClientRect();
+    const viewportWidth = document.documentElement?.clientWidth || window.innerWidth;
+    const viewportHeight = document.documentElement?.clientHeight || window.innerHeight;
+    if (rect.width <= 0 || rect.height <= 0 || rect.right <= 0 || rect.bottom <= 0 ||
+        rect.left >= viewportWidth || rect.top >= viewportHeight) return false;
+
+    // A ranked row can remain rendered thousands of pixels below the visible
+    // rail after a lens reorder. Treat clipping ancestors as focus boundaries
+    // so Close never returns keyboard focus to an off-screen row.
+    for (let ancestor = element.parentElement; ancestor && ancestor !== document.body; ancestor = ancestor.parentElement) {
+      const ancestorStyle = window.getComputedStyle?.(ancestor);
+      const clipsX = /^(auto|scroll|hidden|clip)$/.test(ancestorStyle?.overflowX || '');
+      const clipsY = /^(auto|scroll|hidden|clip)$/.test(ancestorStyle?.overflowY || '');
+      if (!clipsX && !clipsY) continue;
+      const boundary = ancestor.getBoundingClientRect();
+      if (clipsX && (rect.right <= boundary.left || rect.left >= boundary.right)) return false;
+      if (clipsY && (rect.bottom <= boundary.top || rect.top >= boundary.bottom)) return false;
+    }
+    return true;
+  },
+
   _rebindCountryOpener() {
     if (!this._selectedCountryFeature) return false;
     const iso = _resolveCountryIso(this._selectedCountryFeature);
     const row = Array.from(this._rankRail?.querySelectorAll('[data-country-rail-iso]') || [])
       .find(candidate => candidate.getAttribute('data-country-rail-iso') === iso);
-    const target = row || this._activeLensControl();
-    this._countryOpener = this._isRenderedFocusTarget(target) ? target : null;
+    const target = this._isVisibleFocusTarget(row) ? row : this._activeLensControl();
+    this._countryOpener = this._isVisibleFocusTarget(target) ? target : null;
     return Boolean(this._countryOpener);
   },
 
@@ -2451,10 +2474,10 @@ const GlobeModule = {
     this._clearCountryProjects();
     this._refreshCountryBorders();
     this._syncAutoRotation();
-    const focusTarget = this._isRenderedFocusTarget(this._countryOpener)
+    const focusTarget = this._isVisibleFocusTarget(this._countryOpener)
       ? this._countryOpener
       : this._activeLensControl();
-    if (this._isRenderedFocusTarget(focusTarget)) focusTarget.focus({ preventScroll: true });
+    if (this._isVisibleFocusTarget(focusTarget)) focusTarget.focus({ preventScroll: true });
     this._countryOpener = null;
     if (hasModule('EventBus')) EventBus.emit('globe:country-closed', { timestamp: Date.now() });
   },

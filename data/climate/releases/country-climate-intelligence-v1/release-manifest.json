@@ -25,11 +25,11 @@
     },
     "trace": {
       "path": "data/climate/releases/country-climate-intelligence-v1/climate-trace-ghg.json",
-      "sha256": "285b44a54584c7e3eba4b5d13eb010b7a8bcb172174962b518c99e5c096d3e9c"
+      "sha256": "b95a853ad5fa6e1117c4d21cdf7aa46d3cd5beee24a613e4681b3ab3dd3d37f3"
     },
     "wpp": {
       "path": "data/climate/releases/country-climate-intelligence-v1/wpp-population.json",
-      "sha256": "6fd399e7df24ba779d44fc237477554f8e0ca5f63f55d0b8908f60c88f3a5f30"
+      "sha256": "ab5c482feeeaea24c91ad316873c17e90a4c560a210e42a6199a104165f276e5"
     }
   },
   "gates": {
@@ -254,7 +254,7 @@
       "label": "Land-use CO₂",
       "public_role": "separate_context"
     },
-    "population.estimate": {
+    "population.wpp_medium_projection": {
       "comparison_period": "2024",
       "family": "denominator",
       "label": "Population projection (Medium variant)",
@@ -271,7 +271,7 @@
     "comparison_baseline_year": 2024,
     "entity_count": 249,
     "generated_on": "2026-08-25",
-    "id": "country-climate-intelligence-2026-08-25-candidate.4",
+    "id": "country-climate-intelligence-2026-08-25-candidate.5",
     "production_runtime_release": false,
     "review_state": "normalized_factual_candidate_pending_source_revalidation",
     "status": "candidate"
@@ -279,11 +279,11 @@
   "reviewed_candidate_recovery_sha256": "436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09",
   "source_receipts": {
     "path": "data/climate/releases/country-climate-intelligence-v1/source-receipts.json",
-    "sha256": "b74177988d7be9a2face76fcdbdedc6117554990db208b7dc87e234ae8aad76b"
+    "sha256": "3015a86253972273456605bb446b82effb22e93b13124343f7180c33f57e86ec"
   },
   "transformation_log": {
     "path": "data/climate/releases/country-climate-intelligence-v1/TRANSFORMATION-LOG.md",
-    "sha256": "ff628f42b74feecbbbf451485e897adf8c2f8f2f4d81ab5da2da934f64baa262"
+    "sha256": "9cd831a7fb594f42feaacc4d93e32810d4b6bbc74ac5552ddd9f617b6a6f9ef8"
   },
   "schema_ref": "data/climate/schemas/country-climate-intelligence.schema.json",
   "schema_version": "1.0.0",
@@ -322,15 +322,15 @@
       "version": "2.6.1 final, 13 March 2025"
     },
     {
-      "attribution": "Climate TRACE (2026), Climate TRACE Emissions Inventory v5.9.0, https://climatetrace.org, accessed 2026-08-24. Earth Love United transformations are identified.",
-      "id": "climate-trace-v5.9.0-country-annual",
-      "licence": "CC-BY-4.0",
+      "attribution": "Climate TRACE API v7 country-emissions response, retrieved 2026-08-24, https://climatetrace.org/data; response reported inventory version 5.9.0. Immutable v5.9.0 release identity remains unresolved. Earth Love United transformations are identified.",
+      "id": "climate-trace-api-v7-2026-08-24-country-annual",
+      "licence": "CC-BY-4.0-with-listed-exceptions-pending-field-review",
       "public_role": "metric_provenance",
       "review_state": "pending",
       "source_url": "https://climatetrace.org/data",
       "title": "Climate TRACE annual country emissions snapshot",
       "values_in_release": true,
-      "version": "inventory v5.9.0; API v7 snapshot retrieved 2026-08-24"
+      "version": "API v7 response retrieved 2026-08-24; reported inventory version 5.9.0; immutable release binding unresolved"
     },
     {
       "attribution": "Ember, Yearly Electricity Data, full release retrieved 2026-08-25, https://ember-energy.org/data/yearly-electricity-data/. Earth Love United transformations are identified.",

@@ -71,7 +71,7 @@ Each upstream identity ledger maps 245 series to registry entities and records C
 |---|---|
 | Core carbon | Global Carbon Budget 2025 v1.0, including separate national fossil and land-use workbooks |
 | Population denominator | UN World Population Prospects 2024, exact 2024 Medium projection only |
-| Independent GHG context | Climate TRACE v5.9.0 annual 2024 country snapshot, forestry/LULUCF excluded, IPCC AR6 GWP100 |
+| Independent GHG context | Climate TRACE API v7 country response retrieved 2026-08-24, reporting inventory version 5.9.0; immutable inventory binding unresolved; 2024 estimate, forestry/LULUCF excluded, IPCC AR6 GWP100 |
 | Power | Ember Yearly Electricity Data, exact 2019/2024 annual aggregates and nine exact 2024 generation-fuel rows under Ember's published taxonomy |
 | Projected physical climate | World Bank CCKP CMIP6 country aggregates |
 | Observed physical climate | World Bank CCKP ERA5 annual country temperature and precipitation aggregates; exact variable-specific 1950–2025 snapshots, with both 1970–2025 series and OLS trends retained |

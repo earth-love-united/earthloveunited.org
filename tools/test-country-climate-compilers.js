@@ -39,9 +39,9 @@ try {
   compileWpp(['--input', wppInput, '--receipt', wppReceipt, '--output', wppOutput]);
   const wpp = readJson(wppOutput);
   assert.strictEqual(wpp.entity_count, 249);
-  assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'ABW').metrics['population.estimate'].value, 123456);
-  assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'ABW').metrics['population.estimate'].status, 'modeled');
-  assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'AFG').metrics['population.estimate'].value, null);
+  assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'ABW').metrics['population.wpp_medium_projection'].value, 123456);
+  assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'ABW').metrics['population.wpp_medium_projection'].status, 'modeled');
+  assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'AFG').metrics['population.wpp_medium_projection'].value, null);
 
   const traceInput = write('trace.json', `${JSON.stringify({
     release_version: '5.9.0',
@@ -51,7 +51,11 @@ try {
       gwp_basis: 'IPCC_AR6_GWP100', estimate_status: 'estimated',
     }],
   })}\n`);
-  const traceReceipt = receiptFor('climate-trace-v5.9.0-country-annual', traceInput, { source_version: '5.9.0' });
+  const traceReceipt = receiptFor('climate-trace-api-v7-2026-08-24-country-annual', traceInput, {
+    api_version: 'v7',
+    immutable_inventory_release_confirmed: true,
+    reported_inventory_version: '5.9.0',
+  });
   const traceOutput = path.join(temporaryDirectory, 'trace-output.json');
   compileTrace(['--input', traceInput, '--receipt', traceReceipt, '--output', traceOutput]);
   const trace = readJson(traceOutput);

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1.0",
-  "release_id": "country-climate-intelligence-2026-08-25-candidate.4",
+  "release_id": "country-climate-intelligence-2026-08-25-candidate.5",
   "raw_storage_policy": "external_only",
   "reviewed_normalized_recovery": {
     "artifact": "data/climate/runtime/country-climate-intelligence.json before component reassembly",
@@ -30,12 +30,34 @@
     {
       "source_registry_id": "un-wpp-2024",
       "status": "normalized_candidate_receipt_recovered_raw_receipt_revalidation_required",
-      "normalized_component": "wpp-population.json"
+      "normalized_component": "wpp-population.json",
+      "normalized_receipt": {
+        "artifact_bytes": 413007,
+        "artifact_sha256": "ab5c482feeeaea24c91ad316873c17e90a4c560a210e42a6199a104165f276e5"
+      },
+      "contract_migration": {
+        "from_metric_id": "population.estimate",
+        "input_sha256": "6fd399e7df24ba779d44fc237477554f8e0ca5f63f55d0b8908f60c88f3a5f30",
+        "script": "tools/migrate-wpp-medium-projection-id.js",
+        "to_metric_id": "population.wpp_medium_projection",
+        "value_changes": false
+      }
     },
     {
-      "source_registry_id": "climate-trace-v5.9.0-country-annual",
+      "source_registry_id": "climate-trace-api-v7-2026-08-24-country-annual",
       "status": "normalized_candidate_receipt_recovered_raw_receipt_revalidation_required",
-      "normalized_component": "climate-trace-ghg.json"
+      "normalized_component": "climate-trace-ghg.json",
+      "normalized_receipt": {
+        "artifact_bytes": 837969,
+        "artifact_sha256": "b95a853ad5fa6e1117c4d21cdf7aa46d3cd5beee24a613e4681b3ab3dd3d37f3"
+      },
+      "contract_migration": {
+        "from_source_id": "climate-trace-v5.9.0-country-annual",
+        "input_sha256": "285b44a54584c7e3eba4b5d13eb010b7a8bcb172174962b518c99e5c096d3e9c",
+        "script": "tools/migrate-climate-trace-source-identity.js",
+        "to_source_id": "climate-trace-api-v7-2026-08-24-country-annual",
+        "value_changes": false
+      }
     },
     {
       "source_registry_id": "ember-yearly-electricity-data-2026-08-25",

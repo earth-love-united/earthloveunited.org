@@ -101,8 +101,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="js/gaia-utils.js" as="script">
-<link rel="preload" href="js/data.js?v=v10" as="script">
-<link rel="preload" href="js/country-climate-intelligence.js?v=v13" as="script">
+<link rel="preload" href="js/data.js?v=v11" as="script">
+<link rel="preload" href="js/country-climate-intelligence.js?v=v14" as="script">
 
 <!-- ═══ CRITICAL CSS (inlined) ═══ -->
 <style>
@@ -362,8 +362,8 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v42">
-<link rel="stylesheet" href="css/guided-first-orbit.css?v=v9">
+<link rel="stylesheet" href="css/globe-system.css?v=v43">
+<link rel="stylesheet" href="css/guided-first-orbit.css?v=v11">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -835,9 +835,9 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/storage-adapter.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/data-schema.js?v=v1"></script>
-<script src="js/data.js?v=v10"></script>
-<script src="js/country-climate-intelligence.js?v=v13"></script>
-<script src="js/globe.js?v=v37"></script>
+<script src="js/data.js?v=v11"></script>
+<script src="js/country-climate-intelligence.js?v=v14"></script>
+<script src="js/globe.js?v=v38"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/guided-first-orbit.js?v=v6"></script>
 <script src="js/app.js?v=v5"></script>
@@ -911,7 +911,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   var h = location.hostname;
   if (h !== 'localhost' && h !== '127.0.0.1' && h !== '::1') return;
   var tools = [
-    'tools/smoke-test.js?v=v3',
+    'tools/smoke-test.js?v=v5',
     'tools/stack-lint.js?v=v1'
   ];
   tools.forEach(function(src) {
@@ -985,7 +985,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=69-runtime-resilience', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=72-tutorial-lens-clear', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

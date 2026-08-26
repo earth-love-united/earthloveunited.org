@@ -40,7 +40,7 @@ const REQUIRED_DOMAINS = new Set([
 const INTELLIGENCE_VALUE_SOURCES = new Set([
   'gcp-gcb-2025-v1.0',
   'un-wpp-2024',
-  'climate-trace-v5.9.0-country-annual',
+  'climate-trace-api-v7-2026-08-24-country-annual',
   'ember-yearly-electricity-data-2026-08-25',
   'world-bank-cckp-cmip6-2026-08-24',
   'world-bank-cckp-era5-2026-08-25',
@@ -305,9 +305,10 @@ function validateSource(source, index, configuredDomains, errors) {
     }
   }
 
-  if (source.id === 'climate-trace-v5.9.0-country-annual') {
-    if (source.version !== 'inventory v5.9.0; API v7 snapshot retrieved 2026-08-24' || source.licence?.identifier !== 'CC-BY-4.0') {
-      errors.push(`${source.id} must pin the reviewed v5.9.0 snapshot and CC BY 4.0 terms.`);
+  if (source.id === 'climate-trace-api-v7-2026-08-24-country-annual') {
+    if (source.version !== 'API v7 response retrieved 2026-08-24; reported inventory version 5.9.0; immutable release binding unresolved' ||
+        source.licence?.identifier !== 'CC-BY-4.0-with-listed-exceptions') {
+      errors.push(`${source.id} must identify the API response separately from the unresolved immutable inventory release.`);
     }
     ['sector', 'gas', 'co2e_100yr_tonnes', 'gwp_basis', 'estimate_status'].forEach(field => {
       if (!source.ingestion_gate?.field_permitlist?.includes(field)) errors.push(`${source.id} must permitlist ${field}.`);
@@ -430,7 +431,7 @@ function validateRegistry(registry) {
     errors.push('Registry must include the legacy Climate Watch/WRI field-lineage gate.');
   }
   [
-    'climate-trace-v5.9.0-country-annual',
+    'climate-trace-api-v7-2026-08-24-country-annual',
     'ember-yearly-electricity-data-2026-08-25',
     'world-bank-cckp-cmip6-2026-08-24',
     'world-bank-cckp-era5-2026-08-24',

@@ -495,6 +495,55 @@ const SmokeTest = (() => {
         },
       },
       {
+        name: 'Country close restores focus only to a visible reordered control',
+        critical: true,
+        test: () => {
+          const globe = window.GlobeModule;
+          if (!document.body.classList.contains('globe-mode') ||
+              document.body.classList.contains('globe-fallback-active') || globe?._initialized !== true) {
+            return { pass: true, detail: 'Visible focus restoration is exercised by the live globe route' };
+          }
+          const originalLens = globe.getLens();
+          const originalFocus = document.activeElement;
+          let offscreenIso = null;
+          let reboundToLens = false;
+          let restoredToLens = false;
+          let restoredVisible = false;
+          try {
+            globe.clearCountrySelection();
+            globe.setLens('power');
+            const activeLens = document.querySelector('.climate-lens-controls [data-climate-lens="power"]');
+            const offscreenRow = Array.from(document.querySelectorAll('#elu-country-rank-rail [data-country-rail-iso]'))
+              .find(row => {
+                const iso = row.getAttribute('data-country-rail-iso');
+                return globe._featureByIso?.[iso] && !globe._isVisibleFocusTarget(row);
+              });
+            offscreenIso = offscreenRow?.getAttribute('data-country-rail-iso') || null;
+            if (!offscreenRow || !activeLens) {
+              return { pass: false, detail: 'Could not find a mapped off-screen Power row and active lens control' };
+            }
+            globe._selectedCountryFeature = globe._featureByIso[offscreenIso];
+            globe._countryOpener = offscreenRow;
+            globe._rebindCountryOpener();
+            reboundToLens = globe._countryOpener === activeLens;
+            globe.clearCountrySelection();
+            restoredToLens = document.activeElement === activeLens;
+            restoredVisible = globe._isVisibleFocusTarget(document.activeElement);
+          } finally {
+            globe.clearCountrySelection();
+            globe.setLens(originalLens);
+            if (globe._isVisibleFocusTarget(originalFocus)) originalFocus.focus({ preventScroll: true });
+          }
+          const pass = Boolean(offscreenIso) && reboundToLens && restoredToLens && restoredVisible;
+          return {
+            pass,
+            detail: pass
+              ? `Off-screen ${offscreenIso} row falls back to the visible Power lens control`
+              : `row ${offscreenIso}, rebound ${reboundToLens}, restored ${restoredToLens}, visible ${restoredVisible}`,
+          };
+        },
+      },
+      {
         name: 'Guided orbit cues one country-deck move and auto-completes',
         critical: true,
         test: async () => {
@@ -531,12 +580,12 @@ const SmokeTest = (() => {
             const wrap = document.getElementById('elu-country-card-wrap');
             const close = wrap?.querySelector('[data-country-close]');
             const card = document.getElementById('hex-country-tooltip');
-            await new Promise(resolve => window.setTimeout(resolve, 60));
             deckMomentReady = !!(wrap && card && wrap.contains(card) && wrap.getAttribute('aria-modal') === 'false' &&
               document.getElementById('guided-orbit-primary').hidden && orbit.getState().awaitingDeckMove &&
               document.getElementById('guided-orbit-title')?.textContent.trim() === 'Swipe through the country deck.' &&
               !document.getElementById('guided-orbit-dialog-complete'));
-            cueVisible = window.matchMedia('(prefers-reduced-motion: reduce)').matches || card?.classList.contains('tt-swipe-cue') === true;
+            cueVisible = window.matchMedia('(prefers-reduced-motion: reduce)').matches || await waitFor(() =>
+              card?.classList.contains('tt-swipe-cue') === true || card?.classList.contains('tt-motion-ready') === true);
             close?.click();
             closeRecoversSelection = orbit.getState().active === true && orbit.getState().step === 2;
 

@@ -134,7 +134,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
 
   function evidenceLabel(status, metricId, evidenceKind = null) {
     if (evidenceKind === 'reanalysis') return 'ERA5 reanalysis';
-    if (status === 'modeled' && ['population.estimate', 'emissions.fossil_co2.territorial_per_capita'].includes(metricId)) {
+    if (status === 'modeled' && ['population.wpp_medium_projection', 'emissions.fossil_co2.territorial_per_capita'].includes(metricId)) {
       return 'Uses WPP Medium projection';
     }
     if (status === 'modeled' && ['climate.temperature.observed_trend', 'climate.precipitation.observed_trend'].includes(metricId)) {

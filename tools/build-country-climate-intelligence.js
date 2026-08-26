@@ -45,7 +45,7 @@ function verifiedJson(receipt) {
 
 function perCapitaMetric(country) {
   const territorial = country.metrics['emissions.fossil_co2.territorial'];
-  const population = country.metrics['population.estimate'];
+  const population = country.metrics['population.wpp_medium_projection'];
   if (territorial.value === null) {
     return gapMetric(
       PER_CAPITA_ID,
@@ -77,7 +77,7 @@ function perCapitaMetric(country) {
   };
   return {
     context: {
-      denominator_metric_id: 'population.estimate',
+      denominator_metric_id: 'population.wpp_medium_projection',
       denominator_evidence: 'WPP 2024 Medium projection',
       numerator_metric_id: 'emissions.fossil_co2.territorial',
       source_scope_delta_calculated: false,
