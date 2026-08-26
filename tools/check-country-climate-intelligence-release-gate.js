@@ -15,8 +15,16 @@ function runSelfTest() {
   assert.equal(baseline.status, 'blocked');
   assert.equal(baseline.release_authority, false);
   assert.equal(baseline.production_runtime_release, false);
-  assert(baseline.blockers.some(item => item.code === 'review_request_commit_unbound'));
   assert(baseline.blockers.some(item => item.code === 'reviewed_release_package_absent'));
+  assert(!baseline.blockers.some(item => item.code === 'review_request_commit_unbound'));
+
+  const unboundMutation = structuredClone(baseline.request);
+  unboundMutation.subject.commit_binding_state = 'unbound_worktree_candidate';
+  unboundMutation.subject.subject_commit_sha = null;
+  unboundMutation.calculation_hash = require('./prepare-country-climate-intelligence-review-request').calculationHash(unboundMutation);
+  const unboundResult = inspectReviewRequest(ROOT, unboundMutation);
+  assert.equal(unboundResult.status, 'blocked');
+  assert(unboundResult.blockers.some(item => item.code === 'review_request_commit_unbound'));
 
   const hashMutation = structuredClone(baseline.request);
   hashMutation.calculation_hash = '0'.repeat(64);
@@ -35,7 +43,7 @@ function runSelfTest() {
   const sourceResult = inspectReviewRequest(ROOT, sourceMutation);
   assert.equal(sourceResult.status, 'invalid');
   assert(sourceResult.errors.some(item => item.code === 'review_request_source_set_mismatch'));
-  process.stdout.write('Country Climate Intelligence release-gate self-test: PASS (unbound, absent, hash, pin, and source-set cases fail closed)\n');
+  process.stdout.write('Country Climate Intelligence release-gate self-test: PASS (bound baseline; unbound, absent, hash, pin, and source-set cases fail closed)\n');
 }
 
 function main() {
