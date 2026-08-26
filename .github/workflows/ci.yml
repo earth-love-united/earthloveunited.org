@@ -241,7 +241,7 @@ jobs:
         if: ${{ steps.smoke_profile.outputs.phase == 'release' }}
         run: ./tools/build-deploy.sh --release
 
-      - name: Verify candidate public deploy surface independently
+      - name: Verify exact public deploy surface independently
         if: ${{ steps.smoke_profile.outputs.phase == 'candidate' }}
         run: node tools/check-public-deploy-surface.js --staged _deploy --mode candidate
 
@@ -255,16 +255,9 @@ jobs:
       - name: Verify staged CT-45 bytes independently
         run: node tools/check-globe-runtime-assets.js --staged _deploy
 
-      - name: Verify final staged candidate integrity independently
-        if: ${{ steps.smoke_profile.outputs.phase == 'candidate' }}
+      - name: Verify final staged production integrity independently
         env:
-          ELU_VERIFIED_DEPLOY_MODE: candidate
-        run: node tools/check-staged-production-integrity.js --staged _deploy
-
-      - name: Verify final staged release integrity independently
-        if: ${{ steps.smoke_profile.outputs.phase == 'release' }}
-        env:
-          ELU_VERIFIED_DEPLOY_MODE: release
+          ELU_VERIFIED_DEPLOY_MODE: ${{ steps.smoke_profile.outputs.phase }}
         run: node tools/check-staged-production-integrity.js --staged _deploy
 
       - name: Install Playwright + Chromium
