@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "fb3a9edd5c36b4694003c75f730b7fb6bb30832c6b399ef858bb9f7d5de4ca11",
+  "calculation_hash": "84fa21f54762cbac7bfd955ebc6b4d4c0cbe999a517487666c54d12f638f34f3",
   "created_at": "2026-08-26T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -417,7 +417,7 @@
       },
       {
         "path": "tools/check-country-climate-intelligence-release-gate.js",
-        "sha256": "570a27c38d273ed9c7298a93f23fe79e2dc6156370bfc06beaf812dd745209b9"
+        "sha256": "a1ebfaaf0590326ca32d4845375ebe2b7d7e13fa72d3b878d96ab78b40947b4e"
       },
       {
         "path": "tools/check-country-climate-intelligence-ui.js",
@@ -533,6 +533,6 @@
       }
     ],
     "commit_binding_state": "bound_candidate_commit",
-    "subject_commit_sha": "1ec9ec1d3e4db2d3939437571a2d615a17de8b40"
+    "subject_commit_sha": "ce91b67264b349dbd1e98781042333f5beeb5c66"
   }
 }
