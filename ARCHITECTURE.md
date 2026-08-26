@@ -475,12 +475,19 @@ scientific-review or production-promotion gates.
 
 The exact public artifact allowlist treats
 `data/climate/runtime/country-climate-intelligence.json` as candidate-only.
-The historical factual-public gate still evaluates its reviewed CT-42 facts,
-but refuses to stage the current CCI browser profile while the CCI package is
-unapproved. This preserves the last deployed release instead of pairing CCI
-entrypoints with legacy approval. A new data/UI/source-rights/scientific-review
-chain must replace the current false promotion flags before CCI moves onto that
-surface; the release-profile selector cannot itself grant that authority.
+The factual-public CI job has two exclusive branches. `legacy_ct40` evaluates
+and stages its reviewed CT-42 facts through the historical gate. `cci` instead
+proves that legacy factual-public staging is refused while the CCI package is
+unapproved; once the exact CCI authority package passes, the same branch uses
+the standard release-mode stage and final verifier. Browser smoke stays
+downstream of that policy job, so a factual candidate can still receive runtime
+review without borrowing legacy publication authority. Profile and phase are
+derived from the active entrypoints plus an exact authority-package inventory:
+no authority files means candidate, every canonical file means release, and a
+partial or cross-profile package is invalid. A new
+data/UI/source-rights/scientific-review chain must replace the current false
+promotion flags before CCI enters release-mode public staging; the
+release-profile selector cannot itself grant that authority.
 
 ## Known traps and debt
 

@@ -57,6 +57,20 @@ jobs:
       - name: Public climate release-profile policy
         run: node tools/check-public-climate-release-profile.js --self-test
 
+      - name: Detect active public climate release profile
+        id: climate_profile
+        run: |
+          state="$(node tools/check-public-climate-release-profile.js --state)"
+          case "$state" in
+            cci:candidate) profile="cci"; phase="candidate" ;;
+            cci:release) profile="cci"; phase="release" ;;
+            legacy_ct40:candidate) profile="legacy_ct40"; phase="candidate" ;;
+            legacy_ct40:release) profile="legacy_ct40"; phase="release" ;;
+            *) echo "::error::Unknown or incomplete public climate release state: $state"; exit 1 ;;
+          esac
+          echo "profile=$profile" >> "$GITHUB_OUTPUT"
+          echo "phase=$phase" >> "$GITHUB_OUTPUT"
+
       - name: Exact public deploy surface policy self-test
         run: node tools/check-public-deploy-surface.js --self-test
 
@@ -100,19 +114,14 @@ jobs:
           CLIMATE_RUNTIME_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node tools/check-climate-runtime-diff-boundary.js --base "$CLIMATE_RUNTIME_BASE_SHA" --head "$CLIMATE_RUNTIME_HEAD_SHA"
 
-      - name: Climate denied-candidate production readiness
-        if: ${{ hashFiles('data/climate/runtime-manifest.json') == '' }}
-        run: node tools/check-climate-production-readiness.js --candidate
-
-      - name: Climate reviewed-release production readiness
-        if: ${{ hashFiles('data/climate/runtime-manifest.json') != '' }}
-        run: node tools/check-climate-production-readiness.js --release
+      - name: Climate active-profile readiness
+        run: node tools/check-public-climate-release-profile.js --verify-active
 
       - name: Climate truth CI (explicit partial stack)
         run: node tools/climate-truth-ci.js --allow-incomplete
 
       - name: Climate truth CI reviewed-release gate
-        if: ${{ hashFiles('data/climate/runtime-manifest.json') != '' }}
+        if: ${{ steps.climate_profile.outputs.profile == 'legacy_ct40' && steps.climate_profile.outputs.phase == 'release' }}
         run: node tools/climate-truth-ci.js --strict
 
       - name: node --check on every JS file
@@ -151,20 +160,49 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Detect active public climate release profile
+        id: factual_profile
+        run: |
+          state="$(node tools/check-public-climate-release-profile.js --state)"
+          case "$state" in
+            cci:candidate) profile="cci"; phase="candidate" ;;
+            cci:release) profile="cci"; phase="release" ;;
+            legacy_ct40:candidate) profile="legacy_ct40"; phase="candidate" ;;
+            legacy_ct40:release) profile="legacy_ct40"; phase="release" ;;
+            *) echo "::error::Unknown or incomplete public climate release state: $state"; exit 1 ;;
+          esac
+          echo "profile=$profile" >> "$GITHUB_OUTPUT"
+          echo "phase=$phase" >> "$GITHUB_OUTPUT"
+
       - name: Verify CCI keeps factual-public staging fail-closed
+        if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'candidate' }}
         run: node tools/check-country-climate-public-release-boundary.js
 
       - name: Build factual-public deploy directory
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' }}
         run: ./tools/build-factual-public-deploy.sh --factual-public
 
+      - name: Build reviewed CCI release deploy directory
+        if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release' }}
+        run: ./tools/build-deploy.sh --release
+
       - name: Verify factual-public exact surface independently
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' || (steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release') }}
         run: node tools/check-public-deploy-surface.js --staged ./_deploy --mode release
 
       - name: Verify factual-public notices independently
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' || (steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release') }}
         run: node tools/check-globe-third-party-notices.js --staged ./_deploy
 
       - name: Verify final factual-public integrity independently
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' }}
         run: node tools/check-staged-factual-public-integrity.js --staged ./_deploy
+
+      - name: Verify final CCI release integrity independently
+        if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release' }}
+        env:
+          ELU_VERIFIED_DEPLOY_MODE: release
+        run: node tools/check-staged-production-integrity.js --staged ./_deploy
 
   smoke:
     name: Headless SmokeTest + StackLint
@@ -178,6 +216,17 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Detect active public climate release profile
+        id: smoke_profile
+        run: |
+          state="$(node tools/check-public-climate-release-profile.js --state)"
+          case "$state" in
+            cci:candidate|legacy_ct40:candidate) phase="candidate" ;;
+            cci:release|legacy_ct40:release) phase="release" ;;
+            *) echo "::error::Unknown or incomplete public climate release state: $state"; exit 1 ;;
+          esac
+          echo "phase=$phase" >> "$GITHUB_OUTPUT"
+
       - name: Fetch verified globe.gl runtime dependency
         run: ./tools/fetch-globe-vendor.sh
 
@@ -185,10 +234,20 @@ jobs:
         run: node tools/check-globe-vendor-integrity.js --require-file
 
       - name: Build candidate deploy directory
+        if: ${{ steps.smoke_profile.outputs.phase == 'candidate' }}
         run: ./tools/build-deploy.sh --candidate
 
-      - name: Verify exact public deploy surface independently
+      - name: Build reviewed release deploy directory
+        if: ${{ steps.smoke_profile.outputs.phase == 'release' }}
+        run: ./tools/build-deploy.sh --release
+
+      - name: Verify candidate public deploy surface independently
+        if: ${{ steps.smoke_profile.outputs.phase == 'candidate' }}
         run: node tools/check-public-deploy-surface.js --staged _deploy --mode candidate
+
+      - name: Verify release public deploy surface independently
+        if: ${{ steps.smoke_profile.outputs.phase == 'release' }}
+        run: node tools/check-public-deploy-surface.js --staged _deploy --mode release
 
       - name: Verify staged third-party notices independently
         run: node tools/check-globe-third-party-notices.js --staged _deploy
@@ -196,9 +255,16 @@ jobs:
       - name: Verify staged CT-45 bytes independently
         run: node tools/check-globe-runtime-assets.js --staged _deploy
 
-      - name: Verify final staged production integrity independently
+      - name: Verify final staged candidate integrity independently
+        if: ${{ steps.smoke_profile.outputs.phase == 'candidate' }}
         env:
           ELU_VERIFIED_DEPLOY_MODE: candidate
+        run: node tools/check-staged-production-integrity.js --staged _deploy
+
+      - name: Verify final staged release integrity independently
+        if: ${{ steps.smoke_profile.outputs.phase == 'release' }}
+        env:
+          ELU_VERIFIED_DEPLOY_MODE: release
         run: node tools/check-staged-production-integrity.js --staged _deploy
 
       - name: Install Playwright + Chromium

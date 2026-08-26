@@ -67,7 +67,7 @@ bound review-request.json
   → tools/check-country-climate-intelligence-release-gate.js --require-release
   → three-role signed globe-runtime asset approval
   → tools/check-public-climate-release-profile.js --release
-  → factual-public staging
+  → release-mode public staging
 ~~~
 
 The reviewed runtime manifest must pin the request subject, approval, runtime, source registry, source receipts, components, compilers, public entrypoints, CSS, service worker, and accessibility/runtime checks. The release diff then pins the request, approval, and runtime manifest. The rollback proof pins that complete release package and must successfully restore a prior reviewed baseline in an isolated rehearsal.
@@ -98,3 +98,19 @@ The selector does not approve data, rights, science, protected files, or
 assets. It only prevents a CCI release from falling through to CT-40 authority
 and prevents legacy bytes from borrowing a CCI package. Source and final
 staged entrypoints must resolve to the same exact profile and generation.
+Its CI state is also fail-closed: zero active-profile authority artifacts route
+to candidate validation, the complete canonical package routes to release
+validation, and every partial or cross-profile package is rejected before a
+profile validator runs.
+The runtime-diff boundary consumes that exact state: CCI candidate changes are
+checked against CCI's own false source-rights/scientific-review gates, while a
+complete CCI package routes to the CCI reviewed-release gate. CT-42 candidate
+or strict-release evidence is evaluated only for `legacy_ct40`.
+
+The CI job named `Factual-public deploy gates` remains profile-exclusive. For
+`legacy_ct40` it runs the historical build and independent staged checks. For
+candidate `cci` it must prove exclusion from that legacy path and must not
+materialize a legacy factual-public deploy directory. An approved `cci`
+package instead runs the normal release-mode builder and final staged verifier.
+The downstream browser-smoke job uses the same detected phase. Its candidate
+lane is validation evidence only and cannot promote the CCI runtime.

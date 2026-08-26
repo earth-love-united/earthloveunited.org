@@ -6,7 +6,9 @@ const {
   UI_REVIEW_PATH,
 } = require('./globe-runtime-assets');
 
-const POLICY_VERSION = '1.0.0';
+const POLICY_VERSION = '2.0.0';
+const PROFILE_CCI = 'cci';
+const PROFILE_LEGACY_CT40 = 'legacy_ct40';
 
 const PROHIBITED_RELEASE_PATHS = Object.freeze([
   'data/climate/runtime-manifest.json',
@@ -141,6 +143,33 @@ function reviewedManifestReasons(runtimeManifest) {
   return [];
 }
 
+function cciCandidateReasons(runtime, releaseManifest) {
+  const reasons = [];
+  if (!runtime || typeof runtime !== 'object' || Array.isArray(runtime)) {
+    return ['cci_runtime_missing'];
+  }
+  const release = runtime.release || {};
+  if (release.status !== 'candidate') reasons.push('cci_runtime_status_not_candidate');
+  if (release.production_runtime_release !== false) reasons.push('cci_runtime_production_release_not_false');
+  if (!/pending_source_revalidation/.test(release.review_state || '')) {
+    reasons.push('cci_runtime_review_state_not_fail_closed');
+  }
+  const gates = releaseManifest && typeof releaseManifest === 'object' && !Array.isArray(releaseManifest)
+    ? releaseManifest.gates || {}
+    : {};
+  if (gates.raw_receipt_revalidation !== false) reasons.push('cci_raw_receipt_gate_not_false');
+  if (gates.redistribution_rights_revalidation !== false) reasons.push('cci_redistribution_rights_gate_not_false');
+  if (gates.independent_scientific_review !== false) reasons.push('cci_scientific_review_gate_not_false');
+  return reasons.sort();
+}
+
+function activeStateReasons(profile, phase) {
+  const reasons = [];
+  if (![PROFILE_CCI, PROFILE_LEGACY_CT40].includes(profile)) reasons.push('active_profile_unknown');
+  if (!['candidate', 'release'].includes(phase)) reasons.push('active_phase_unknown');
+  return reasons;
+}
+
 function evaluateRuntimeDiffBoundary(input) {
   const changedPaths = uniquePaths(input && input.changed_paths);
   const declaredPaths = uniquePaths(input && input.declared_runtime_paths);
@@ -150,14 +179,26 @@ function evaluateRuntimeDiffBoundary(input) {
     Boolean(input && input.artifacts_present && input.artifacts_present[filePath]),
   ]));
 
+  const activeProfile = input && input.active_profile;
+  const activePhase = input && input.active_phase;
   let mode = 'no-runtime-change';
   let strictRequired = false;
-  let reasons = [];
+  let releaseRequired = false;
+  let reasons = activeStateReasons(activeProfile, activePhase);
 
-  if (runtimePaths.length) {
-    if (artifactsPresent['data/climate/runtime-manifest.json']) {
+  if (reasons.length) {
+    mode = 'invalid-active-state';
+  } else if (runtimePaths.length) {
+    if (activeProfile === PROFILE_CCI && activePhase === 'release') {
+      mode = 'cci-reviewed-release-required';
+      releaseRequired = true;
+    } else if (activeProfile === PROFILE_CCI) {
+      mode = 'cci-candidate';
+      reasons = cciCandidateReasons(input.cci_runtime, input.cci_release_manifest);
+    } else if (activePhase === 'release') {
       mode = 'reviewed-runtime-strict-required';
       strictRequired = true;
+      releaseRequired = true;
       reasons = reviewedManifestReasons(input && input.runtime_manifest);
     } else {
       mode = 'denied-candidate';
@@ -170,6 +211,9 @@ function evaluateRuntimeDiffBoundary(input) {
     status: reasons.length ? 'fail' : 'pass',
     mode,
     strict_required: strictRequired,
+    release_required: releaseRequired,
+    active_profile: activeProfile,
+    active_phase: activePhase,
     changed_paths: changedPaths,
     runtime_affecting_paths: runtimePaths,
     reasons,
@@ -182,9 +226,13 @@ function evaluateRuntimeDiffBoundary(input) {
 module.exports = {
   POLICY_VERSION,
   PROHIBITED_RELEASE_PATHS,
+  PROFILE_CCI,
+  PROFILE_LEGACY_CT40,
   FIXED_RUNTIME_PATHS,
   RUNTIME_PATH_PREFIXES,
+  activeStateReasons,
   candidateBoundaryReasons,
+  cciCandidateReasons,
   evaluateRuntimeDiffBoundary,
   isRuntimeAffectingPath,
   normalizePath,

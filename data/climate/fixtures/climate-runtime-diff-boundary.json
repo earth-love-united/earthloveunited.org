@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "fixture_version": "1.0.0",
+    "fixture_version": "2.0.0",
     "description": "Fail-closed climate runtime diff boundary. These are fictional control-plane fixtures and confer no release authority."
   },
   "base_denied_candidate": {
@@ -15,6 +15,20 @@
       "data/climate/releases/reviewed-release-diff.json",
       "data/climate/releases/ct40-allow-manifest.json"
     ]
+  },
+  "base_cci_runtime": {
+    "release": {
+      "status": "candidate",
+      "production_runtime_release": false,
+      "review_state": "normalized_factual_candidate_pending_source_revalidation"
+    }
+  },
+  "base_cci_release_manifest": {
+    "gates": {
+      "raw_receipt_revalidation": false,
+      "redistribution_rights_revalidation": false,
+      "independent_scientific_review": false
+    }
   },
   "cases": [
     {
@@ -246,6 +260,49 @@
       "changed_paths": ["data\\climate\\runtime\\country-factual-candidate.json"],
       "candidate": "$base_denied_candidate",
       "expected": { "status": "pass", "mode": "denied-candidate", "strict_required": false }
+    },
+    {
+      "id": "cci-candidate-uses-cci-boundary",
+      "active_profile": "cci",
+      "active_phase": "candidate",
+      "changed_paths": ["data/climate/runtime/country-climate-intelligence.json"],
+      "cci_runtime": "$base_cci_runtime",
+      "cci_release_manifest": "$base_cci_release_manifest",
+      "expected": { "status": "pass", "mode": "cci-candidate", "strict_required": false, "release_required": false }
+    },
+    {
+      "id": "cci-candidate-cannot-enable-production",
+      "active_profile": "cci",
+      "active_phase": "candidate",
+      "changed_paths": ["data/climate/runtime/country-climate-intelligence.json"],
+      "cci_runtime": "$base_cci_runtime",
+      "cci_runtime_mutations": [{ "path": "release.production_runtime_release", "value": true }],
+      "cci_release_manifest": "$base_cci_release_manifest",
+      "expected": { "status": "fail", "mode": "cci-candidate", "codes": ["cci_runtime_production_release_not_false"] }
+    },
+    {
+      "id": "cci-candidate-cannot-claim-scientific-review",
+      "active_profile": "cci",
+      "active_phase": "candidate",
+      "changed_paths": ["data/climate/releases/country-climate-intelligence-v1/release-manifest.json"],
+      "cci_runtime": "$base_cci_runtime",
+      "cci_release_manifest": "$base_cci_release_manifest",
+      "cci_release_manifest_mutations": [{ "path": "gates.independent_scientific_review", "value": true }],
+      "expected": { "status": "fail", "mode": "cci-candidate", "codes": ["cci_scientific_review_gate_not_false"] }
+    },
+    {
+      "id": "cci-complete-package-routes-to-release-gate",
+      "active_profile": "cci",
+      "active_phase": "release",
+      "changed_paths": ["data/climate/releases/country-climate-intelligence-v1/reviewed-runtime-manifest.json"],
+      "expected": { "status": "pass", "mode": "cci-reviewed-release-required", "strict_required": false, "release_required": true }
+    },
+    {
+      "id": "unknown-active-profile-fails-closed",
+      "active_profile": "mixed",
+      "active_phase": "candidate",
+      "changed_paths": ["index.html"],
+      "expected": { "status": "fail", "mode": "invalid-active-state", "codes": ["active_profile_unknown"] }
     }
   ]
 }
