@@ -24,6 +24,10 @@ const {
   calculationHash: proofCalculationHash,
   validateProofDocument,
 } = require('./lib/ct42-runtime-rollback-proof');
+const {
+  PROFILE_CCI,
+  detectPublicClimateReleaseProfile,
+} = require('./lib/public-climate-release-profile');
 
 const ROOT = path.resolve(__dirname, '..');
 const FIXTURE_PATH = 'data/climate/fixtures/ct42-runtime-rollback-review.json';
@@ -60,6 +64,34 @@ function commit(root, message) {
   git(root, ['add', '.']);
   git(root, ['-c', 'user.name=fixture-runner', '-c', 'user.email=fixture-runner@invalid.example', 'commit', '-qm', message]);
   return git(root, ['rev-parse', 'HEAD']);
+}
+
+function withDetachedRuntimeRoot(root, commitSha, callback) {
+  const holder = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-ct42-runtime-root-'));
+  const detachedRoot = path.join(holder, 'repository');
+  try {
+    const clone = childProcess.spawnSync('git', [
+      'clone', '--quiet', '--no-checkout', '--shared', root, detachedRoot,
+    ], { encoding: 'utf8' });
+    assert.equal(clone.status, 0, `unable to create detached runtime-control clone: ${(clone.stderr || clone.stdout || '').trim()}`);
+    const checkout = childProcess.spawnSync('git', [
+      'checkout', '--quiet', '--detach', commitSha,
+    ], { cwd: detachedRoot, encoding: 'utf8' });
+    assert.equal(checkout.status, 0, `unable to checkout runtime-control commit: ${(checkout.stderr || checkout.stdout || '').trim()}`);
+    return callback(detachedRoot);
+  } finally {
+    fs.rmSync(holder, { recursive: true, force: true });
+  }
+}
+
+function exactPathCommit(root, relative) {
+  const commitSha = git(root, ['log', '-1', '--format=%H', '--', relative]);
+  assert.match(commitSha, /^[a-f0-9]{40}$/, `${relative} must have an exact historical commit`);
+  const result = childProcess.spawnSync('git', ['show', `${commitSha}:${relative}`], { cwd: root });
+  assert.equal(result.status, 0, `unable to read ${relative} from ${commitSha}`);
+  assert.equal(sha256(result.stdout), sha256(fs.readFileSync(path.join(root, relative))),
+    `${relative} differs from its exact historical commit`);
+  return commitSha;
 }
 
 function pin(root, relative) {
@@ -199,17 +231,29 @@ function verifyFixture() {
     fs.rmSync(context.root, { recursive: true, force: true });
   }
   const realProof = readJson(ROOT, PROOF_PATH);
-  const proofOptions = {
-    expectedPatchSha256: realProof.rollback.patch.sha256,
-    allowMissingVendor: !regularNonSymlink(ROOT, 'js/vendor/globe.gl.js'),
+  const activeProfile = detectPublicClimateReleaseProfile(ROOT).profile;
+  const authoritativeProofCommit = activeProfile === PROFILE_CCI
+    ? exactPathCommit(ROOT, PROOF_PATH)
+    : null;
+  const proofRoot = activeProfile === PROFILE_CCI
+    ? null
+    : ROOT;
+  const validateAuthoritativeProof = runtimeRoot => {
+    const proofOptions = {
+      expectedPatchSha256: realProof.rollback.patch.sha256,
+      allowMissingVendor: !regularNonSymlink(runtimeRoot, 'js/vendor/globe.gl.js'),
+    };
+    validateProofDocument(runtimeRoot, realProof, proofOptions);
+    const widenedProof = structuredClone(realProof);
+    widenedProof.rollback.runtime_resources.surface = 'https://invalid.example/remote-texture.jpg';
+    widenedProof.calculation_hash = proofCalculationHash(widenedProof);
+    assert.throws(() => validateProofDocument(runtimeRoot, widenedProof, proofOptions),
+      'authoritative validator accepted a remote texture semantic widening');
   };
-  assert.doesNotThrow(() => validateProofDocument(ROOT, realProof, proofOptions),
+  assert.doesNotThrow(() => proofRoot
+    ? validateAuthoritativeProof(proofRoot)
+    : withDetachedRuntimeRoot(ROOT, authoritativeProofCommit, validateAuthoritativeProof),
     'authoritative validator rejected the committed rollback proof');
-  const widenedProof = structuredClone(realProof);
-  widenedProof.rollback.runtime_resources.surface = 'https://invalid.example/remote-texture.jpg';
-  widenedProof.calculation_hash = proofCalculationHash(widenedProof);
-  assert.throws(() => validateProofDocument(ROOT, widenedProof, proofOptions),
-    'authoritative validator accepted a remote texture semantic widening');
   return rejected;
 }
 

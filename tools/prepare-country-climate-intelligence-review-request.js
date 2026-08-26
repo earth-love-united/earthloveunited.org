@@ -70,6 +70,7 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/check-country-climate-intelligence-release-gate.js',
   'tools/check-country-climate-intelligence.js',
   'tools/check-country-climate-runtime-atomic.js',
+  'tools/check-ct42-runtime-rollback-review.js',
   'tools/check-globe-runtime-assets.js',
   'tools/check-globe-webgl-fallback.js',
   'scripts/verify_load_order.py',
