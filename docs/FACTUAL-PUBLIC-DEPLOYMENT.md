@@ -5,6 +5,13 @@ globe. It publishes factual evidence and explicit source gaps only. It does not
 publish commitments, targets, delivery judgments, climate-performance states,
 scores, or an assessed climate release.
 
+Its public tier is named `limited_factual_display`. The selector's internal
+state must be exactly `legacy_ct40:candidate`, meaning the complete assessed
+legacy release package is absent. This does not make a generic candidate build
+public: the separate CT-42 factual-display review grants only the bounded facts
+listed below. CCI, mixed/partial authority packages, and
+`legacy_ct40:release` are refused by this builder.
+
 ## Scope that must remain true
 
 - 2,060 reviewed PRIMAP-hist facts are eligible for factual display and
@@ -54,10 +61,15 @@ Primary terms:
 - Shallow production checkouts: expanded from `origin` before review-chain
   validation; publication fails closed if complete Git ancestry is unavailable
 
-The script stages only the existing marker-free browser allowlist and finishes
-by executing `tools/check-staged-factual-public-integrity.js`. That final gate
-rehashes the reviewed CT-42 runtime scope directly against source and staged
-bytes. Any failed gate removes `_deploy`.
+The script first requires
+`node tools/check-public-climate-release-profile.js --factual-display`, stages
+only the existing marker-free browser allowlist, and finishes by executing
+`tools/check-staged-factual-public-integrity.js`. The final gate independently
+repeats the factual-display profile guard and rehashes the reviewed CT-42 runtime
+scope directly against source and staged bytes. Any failed gate removes
+`_deploy`. A complete `legacy_ct40:release` package must use
+`tools/build-deploy.sh --release`, including the signed asset and final aggregate
+release checks.
 
 ## Rollback
 

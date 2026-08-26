@@ -106,6 +106,21 @@ function enforceActiveProfilePolicy(options) {
   return enforceProfilePolicy({ ...options, root, detected, mode: packageState.mode });
 }
 
+function enforceLegacyFactualDisplayProfile(options) {
+  const root = path.resolve(options.root);
+  const detected = options.detected || detectPublicClimateReleaseProfile(root);
+  const packageState = authorityPackageState(root, detected.profile, options.entryPresent || entryPresent);
+  if (detected.profile !== PROFILE_LEGACY_CT40 || packageState.mode !== 'candidate') {
+    throw new Error('limited factual-display staging requires exact legacy_ct40:candidate state');
+  }
+  return {
+    status: 'pass',
+    mode: 'limited_factual_display',
+    profile: detected.profile,
+    fingerprint: detected.fingerprint,
+  };
+}
+
 function runSelfTest() {
   const detectionCases = runDetectionSelfTest();
   assert.deepEqual(policyPlan(PROFILE_CCI, 'release'), [
@@ -155,14 +170,29 @@ function runSelfTest() {
   assert.throws(() => assertNoCrossProfileAuthority(ROOT, PROFILE_LEGACY_CT40,
     (_root, relative) => relative === CCI_AUTHORITY_PATHS[0]), /cross-profile/);
   assert.doesNotThrow(() => assertNoCrossProfileAuthority(ROOT, PROFILE_CCI, () => false));
+  assert.equal(enforceLegacyFactualDisplayProfile({
+    root: ROOT,
+    detected: { profile: PROFILE_LEGACY_CT40, fingerprint: {} },
+    entryPresent() { return false; },
+  }).mode, 'limited_factual_display');
+  assert.throws(() => enforceLegacyFactualDisplayProfile({
+    root: ROOT,
+    detected: { profile: PROFILE_CCI, fingerprint: {} },
+    entryPresent() { return false; },
+  }), /exact legacy_ct40:candidate/);
+  assert.throws(() => enforceLegacyFactualDisplayProfile({
+    root: ROOT,
+    detected: { profile: PROFILE_LEGACY_CT40, fingerprint: {} },
+    entryPresent(_root, relative) { return LEGACY_AUTHORITY_PATHS.includes(relative); },
+  }), /exact legacy_ct40:candidate/);
   assert.throws(() => policyPlan('mixed', 'release'), /unknown/);
   process.stdout.write('Public climate release-profile self-test: PASS (' + detectionCases +
-    ' detection cases; exclusive routing; release-only signed-asset boundary)\n');
+    ' detection cases; exclusive routing; limited factual-display isolation; release-only signed-asset boundary)\n');
 }
 
 function parseArgs(argv) {
-  if (argv.length !== 1 || !['--profile', '--state', '--verify-active', '--candidate', '--release', '--self-test'].includes(argv[0])) {
-    throw new Error('usage: node tools/check-public-climate-release-profile.js --profile | --state | --verify-active | --candidate | --release | --self-test');
+  if (argv.length !== 1 || !['--profile', '--state', '--verify-active', '--factual-display', '--candidate', '--release', '--self-test'].includes(argv[0])) {
+    throw new Error('usage: node tools/check-public-climate-release-profile.js --profile | --state | --verify-active | --factual-display | --candidate | --release | --self-test');
   }
   return argv[0];
 }
@@ -185,6 +215,11 @@ function main() {
     process.stdout.write('Public climate release profile: PASS (' + report.profile + '; ' + report.mode + ')\n');
     return;
   }
+  if (command === '--factual-display') {
+    const report = enforceLegacyFactualDisplayProfile({ root: ROOT, detected });
+    process.stdout.write('Public climate release profile: PASS (' + report.profile + '; ' + report.mode + ')\n');
+    return;
+  }
   const report = enforceProfilePolicy({ root: ROOT, mode: command.slice(2), detected });
   process.stdout.write('Public climate release profile: PASS (' + report.profile + '; ' + report.mode + ')\n');
 }
@@ -203,6 +238,7 @@ module.exports = {
   assertNoCrossProfileAuthority,
   authorityPackageState,
   enforceActiveProfilePolicy,
+  enforceLegacyFactualDisplayProfile,
   enforceProfilePolicy,
   parseArgs,
   policyPlan,

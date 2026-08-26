@@ -108,9 +108,23 @@ complete CCI package routes to the CCI reviewed-release gate. CT-42 candidate
 or strict-release evidence is evaluated only for `legacy_ct40`.
 
 The CI job named `Factual-public deploy gates` remains profile-exclusive. For
-`legacy_ct40` it runs the historical build and independent staged checks. For
-candidate `cci` it must prove exclusion from that legacy path and must not
-materialize a legacy factual-public deploy directory. An approved `cci`
-package instead runs the normal release-mode builder and final staged verifier.
+`legacy_ct40:candidate` it may run only the explicitly limited factual-display
+builder and independent staged checks. Here `candidate` describes the absence
+of a complete assessed-release authority package; the separately reviewed
+`factual_display` tier is not a candidate preview and cannot publish targets,
+scores, derived judgments, or CCI values. The builder and final factual verifier
+both require the exact legacy state through `--factual-display`.
+`legacy_ct40:release` bypasses that narrow tier and must run the normal
+release-mode builder, final staged verifier, and signed asset gate. Candidate
+`cci` must prove exclusion from the legacy path and must not materialize a
+legacy factual-display deploy directory. An approved `cci` package likewise
+runs the normal release-mode builder and final staged verifier.
 The downstream browser-smoke job uses the same detected phase. Its candidate
 lane is validation evidence only and cannot promote the CCI runtime.
+
+The final aggregate verifier records exact SHA-256 fingerprints for every
+active release-authority artifact before child checks, reruns the complete
+profile policy after the precheck window, and rejects any active or cross-profile
+authority-package drift before returning success. This is independent of the
+source/staged runtime-byte parity check and is required for both CCI and legacy
+full releases.

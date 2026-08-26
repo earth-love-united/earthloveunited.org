@@ -3,7 +3,7 @@
 const crypto = require('node:crypto');
 const { hasActiveCiJob, hasExactCiStep, hasExactConditionalCiStep } = require('./globe-vendor-integrity');
 
-const POLICY_VERSION = '1.5.0';
+const POLICY_VERSION = '1.6.0';
 const MANIFEST_PATH = 'assets/globe/runtime/manifest.json';
 const UI_REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
 const EXPECTED_UI_REVIEW_COMMIT = '6331b0a304b589e5a671cfaa4cc23b116e10ed0c';
@@ -220,7 +220,9 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/fixtures/globe-runtime-assets.json',
   '/tools/authoring/fetch-nasa-black-marble.sh',
   '/tools/check-staged-production-integrity.js',
+  '/tools/check-staged-factual-public-integrity.js',
   '/tools/build-deploy.sh',
+  '/tools/build-factual-public-deploy.sh',
   '/tools/stage-public-deploy.js',
   '/tools/check-public-deploy-surface.js',
   '/tools/lib/public-deploy-surface.js',
@@ -232,6 +234,7 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/docs/LEGACY-COUNTRY-DATA-EXIT.md',
   '/tools/check-climate-production-readiness.js',
   '/tools/check-climate-production-readiness-policy.js',
+  '/tools/check-climate-factual-public-readiness.js',
   '/tools/lib/climate-production-readiness.js',
   '/tools/check-climate-runtime-diff-boundary.js',
   '/tools/lib/climate-runtime-diff-boundary.js',
@@ -588,6 +591,17 @@ function evaluateRuntimeAssets(input) {
     finalIntegrity.includes('verifyCciRuntimeBytes(sourceRoot, stagedRoot)') &&
     finalIntegrity.includes('verifyCt45RuntimeBytes(sourceRoot, stagedRoot)'),
     'The aggregate verifier must finish with one profile-selected runtime rehash and retain separate CCI and legacy review authorities.');
+  check('final-release-authority-recheck',
+    finalIntegrity.includes('function releaseAuthoritySnapshot(root, profile)') &&
+    finalIntegrity.includes('function assertReleaseAuthoritySnapshotUnchanged(expected, actual)') &&
+    finalIntegrity.includes("const initialAuthoritySnapshot = options.mode === 'release'") &&
+    finalIntegrity.includes('runFinalReleaseProfileCheck(options, sourceRoot);') &&
+    occurrences(finalIntegrity,
+      'assertReleaseAuthoritySnapshotUnchanged(\n      initialAuthoritySnapshot,\n      releaseAuthoritySnapshot(sourceRoot, profileParity.source.profile)\n    );') === 3 &&
+    finalIntegrity.includes("runChecker(sourceRoot, ['tools/check-public-climate-release-profile.js', '--release']);") &&
+    finalIntegrity.indexOf('runFinalReleaseProfileCheck(options, sourceRoot);') <
+      finalIntegrity.indexOf(finalActiveRehashCall),
+    'Release mode must pin, revalidate, and rehash the complete active authority package after the precheck window.');
   check('final-ui-review-binding',
     finalIntegrity.includes('record.sha256 !== EXPECTED_UI_REVIEW_SHA256') &&
     finalIntegrity.includes('review.reviewed_commit !== EXPECTED_UI_REVIEW_COMMIT') &&
@@ -652,6 +666,24 @@ function evaluateRuntimeAssets(input) {
       'node tools/check-staged-production-integrity.js --staged ./_deploy',
       "${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release' }}"),
     'The CCI runtime must remain candidate-only and both static and factual-public CI must enforce its unapproved release boundary.');
+  const legacyCandidateCondition =
+    "${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'candidate' }}";
+  const legacyReleaseCondition =
+    "${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'release' }}";
+  check('exclusive-legacy-factual-display-routing',
+    occurrences(files.build_factual_public,
+      'node tools/check-public-climate-release-profile.js --factual-display') === 1 &&
+    occurrences(files.final_factual_integrity,
+      "['tools/check-public-climate-release-profile.js', '--factual-display']") === 3 &&
+    hasExactConditionalCiStep(ci, 'Build limited legacy factual-display deploy directory',
+      './tools/build-factual-public-deploy.sh --factual-public', legacyCandidateCondition) &&
+    hasExactConditionalCiStep(ci, 'Verify final limited legacy factual-display integrity independently',
+      'node tools/check-staged-factual-public-integrity.js --staged ./_deploy', legacyCandidateCondition) &&
+    hasExactConditionalCiStep(ci, 'Build reviewed legacy release deploy directory',
+      './tools/build-deploy.sh --release', legacyReleaseCondition) &&
+    hasExactConditionalCiStep(ci, 'Verify final legacy release integrity independently',
+      'node tools/check-staged-production-integrity.js --staged ./_deploy', legacyReleaseCondition),
+    'The limited legacy factual-display tier must reject full release state; reviewed legacy releases must use the signed production path.');
   check('ci-policy-wired',
     hasActiveCiJob(ci, 'static') && hasActiveCiJob(ci, 'smoke') &&
     hasExactCiStep(ci, 'Verify NASA Black Marble source pin', './tools/authoring/fetch-nasa-black-marble.sh --check') &&
@@ -739,7 +771,7 @@ function evaluateRuntimeAssets(input) {
     'Every active index.html globe-truth script must share one canonical candidate pin and runtime-diff scope.');
   check('runtime-diff-boundary', input?.review_scope?.runtime_prefixes?.includes('assets/globe/runtime/') &&
     input?.review_scope?.runtime_prefixes?.includes('data/climate/releases/country-climate-intelligence-v1/') &&
-    [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS, 'tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'tools/check-public-climate-release-profile.js', 'tools/lib/public-climate-release-profile.js', 'data/small-nations.json']
+    [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS, 'tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'tools/check-staged-factual-public-integrity.js', 'tools/check-climate-factual-public-readiness.js', 'tools/build-factual-public-deploy.sh', 'tools/check-public-climate-release-profile.js', 'tools/lib/public-climate-release-profile.js', 'data/small-nations.json']
       .every(item => input?.review_scope?.runtime_fixed?.includes(item)),
     'Runtime-diff policy must classify localized assets and CT-45 controls as runtime-affecting.');
   check('control-files-owned', REQUIRED_CONTROL_OWNERS.every(required =>

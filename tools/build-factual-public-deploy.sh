@@ -25,6 +25,12 @@ case "${1:-}" in
     ;;
 esac
 
+# This is a separately reviewed, limited factual-display tier. It is available
+# only while the legacy runtime is active and no full legacy release authority
+# package is present. CCI, full-release, mixed, partial, and unknown states must
+# use their own fail-closed route instead of borrowing this narrower builder.
+node tools/check-public-climate-release-profile.js --factual-display
+
 # Cloudflare branch previews are externally reachable. This narrower path is
 # production-main only; pull requests remain local/CI artifacts until merged.
 if [ -n "${CF_PAGES_BRANCH:-}" ] && [ "$CF_PAGES_BRANCH" != "main" ]; then

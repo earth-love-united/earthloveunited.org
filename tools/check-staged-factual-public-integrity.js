@@ -91,6 +91,8 @@ function verifyReviewedPublicRuntime(sourceRoot, stagedRoot) {
 
 function verifyFactualStaged(options) {
   const runner = options.runner || runNode;
+  requirePass(runner(['tools/check-public-climate-release-profile.js', '--factual-display']),
+    'limited factual-display release profile');
   requirePass(runner(['tools/check-climate-factual-public-readiness.js']), 'factual-public readiness');
   requirePass(runner(['tools/check-globe-third-party-notices.js', '--staged', options.stagedRoot]),
     'staged third-party notices');
@@ -126,6 +128,7 @@ function runSelfTest() {
   });
   assert.equal(report.status, 'pass');
   assert.deepEqual(calls, [
+    ['tools/check-public-climate-release-profile.js', '--factual-display'],
     ['tools/check-climate-factual-public-readiness.js'],
     ['tools/check-globe-third-party-notices.js', '--staged', '/fixture/staged'],
   ]);
@@ -135,8 +138,25 @@ function runSelfTest() {
     runner() { return { status: 1, stdout: '', stderr: 'blocked' }; },
     surfaceVerifier() { throw new Error('must not reach surface verification'); },
     runtimeVerifier() { throw new Error('must not reach runtime verification'); },
+  }), /limited factual-display release profile failed/);
+  const readinessFailureCalls = [];
+  assert.throws(() => verifyFactualStaged({
+    sourceRoot: '/fixture/source',
+    stagedRoot: '/fixture/staged',
+    runner(args) {
+      readinessFailureCalls.push(args);
+      return args[0] === 'tools/check-climate-factual-public-readiness.js'
+        ? { status: 1, stdout: '', stderr: 'blocked' }
+        : { status: 0, stdout: '', stderr: '' };
+    },
+    surfaceVerifier() { throw new Error('must not reach surface verification'); },
+    runtimeVerifier() { throw new Error('must not reach runtime verification'); },
   }), /factual-public readiness failed/);
-  process.stdout.write('Final staged factual-public integrity policy: PASS (marker-free mode and child gates fail closed)\n');
+  assert.deepEqual(readinessFailureCalls, [
+    ['tools/check-public-climate-release-profile.js', '--factual-display'],
+    ['tools/check-climate-factual-public-readiness.js'],
+  ]);
+  process.stdout.write('Final staged factual-public integrity policy: PASS (legacy factual-display isolation, marker-free mode, and child gates fail closed)\n');
 }
 
 function main() {

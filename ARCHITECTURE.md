@@ -465,7 +465,7 @@ HTML or code with an old runtime artifact.
 | Third-party notices | `node tools/check-globe-third-party-notices.js` | Exact notice/inventory/integration bytes and active deploy/CI controls; no rights approval |
 | Approval authority | `node tools/check-globe-runtime-approval.js` | Empty trust is fail closed; future detached three-role Ed25519 signatures and bindings verify |
 | Release-profile selector | `node tools/check-public-climate-release-profile.js --self-test` | Exclusive CCI/legacy authority routing, generation coupling, and mixed/source-staged profile rejection |
-| Final staged aggregate | `node tools/check-staged-production-integrity.js --staged _deploy` | Last-write active-profile rehash, notices, trust, footer, exact source/staged profile parity, and mandatory signed asset approval in release mode |
+| Final staged aggregate | `node tools/check-staged-production-integrity.js --staged _deploy` | Last-write active-profile rehash, post-preflight authority-package revalidation, notices, trust, footer, exact source/staged profile parity, and mandatory signed asset approval in release mode |
 
 CI runs the existing governance and production-denial gates plus the v1
 Country Climate Intelligence aggregate, syntax, static load order, SmokeTest,
@@ -475,11 +475,16 @@ scientific-review or production-promotion gates.
 
 The exact public artifact allowlist treats
 `data/climate/runtime/country-climate-intelligence.json` as candidate-only.
-The factual-public CI job has two exclusive branches. `legacy_ct40` evaluates
-and stages its reviewed CT-42 facts through the historical gate. `cci` instead
-proves that legacy factual-public staging is refused while the CCI package is
-unapproved; once the exact CCI authority package passes, the same branch uses
-the standard release-mode stage and final verifier. Browser smoke stays
+The factual-public CI job has four exact profile/phase routes. The internal
+`legacy_ct40:candidate` label means that no complete assessed-release authority
+package is present; it may enter only the separately reviewed, limited
+`factual_display` tier through `--factual-display`. That tier publishes the
+historical CT-42 facts and explicit gaps, never a candidate preview or an
+assessed release. `legacy_ct40:release` must instead use the standard
+release-mode builder, final aggregate verifier, and signed asset approval.
+Candidate `cci` proves that legacy factual-display staging is refused; once the
+exact CCI authority package passes, `cci:release` also uses the standard
+release-mode stage and final verifier. Browser smoke stays
 downstream of that policy job, so a factual candidate can still receive runtime
 review without borrowing legacy publication authority. Profile and phase are
 derived from the active entrypoints plus an exact authority-package inventory:

@@ -58,8 +58,16 @@ function verifyWorkflowWiring() {
     'CCI factual-public refusal branch is absent');
   assert.ok(workflow.includes("steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release'"),
     'CCI reviewed-release staging branch is absent');
-  assert.ok(workflow.includes("steps.factual_profile.outputs.profile == 'legacy_ct40'"),
-    'legacy factual-public verification branch is absent');
+  assert.ok(workflow.includes("steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'candidate'"),
+    'limited legacy factual-display branch is not isolated from full release');
+  assert.ok(workflow.includes("steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'release'"),
+    'reviewed legacy release staging branch is absent');
+  assert.ok(workflow.includes('Build limited legacy factual-display deploy directory') &&
+    workflow.includes('Verify final limited legacy factual-display integrity independently'),
+    'limited legacy factual-display builder and final verifier are absent');
+  assert.ok(workflow.includes('Build reviewed legacy release deploy directory') &&
+    workflow.includes('Verify final legacy release integrity independently'),
+    'reviewed legacy release must use the standard release builder and final verifier');
   assert.ok(workflow.includes('needs: [static, factual_public]'),
     'browser smoke must remain downstream of both static and factual-public policy jobs');
   assert.ok(workflow.includes("steps.smoke_profile.outputs.phase == 'candidate'"),

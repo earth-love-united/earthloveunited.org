@@ -178,9 +178,13 @@ jobs:
         if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'candidate' }}
         run: node tools/check-country-climate-public-release-boundary.js
 
-      - name: Build factual-public deploy directory
-        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' }}
+      - name: Build limited legacy factual-display deploy directory
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'candidate' }}
         run: ./tools/build-factual-public-deploy.sh --factual-public
+
+      - name: Build reviewed legacy release deploy directory
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'release' }}
+        run: ./tools/build-deploy.sh --release
 
       - name: Build reviewed CCI release deploy directory
         if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release' }}
@@ -194,9 +198,15 @@ jobs:
         if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' || (steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release') }}
         run: node tools/check-globe-third-party-notices.js --staged ./_deploy
 
-      - name: Verify final factual-public integrity independently
-        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' }}
+      - name: Verify final limited legacy factual-display integrity independently
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'candidate' }}
         run: node tools/check-staged-factual-public-integrity.js --staged ./_deploy
+
+      - name: Verify final legacy release integrity independently
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'release' }}
+        env:
+          ELU_VERIFIED_DEPLOY_MODE: release
+        run: node tools/check-staged-production-integrity.js --staged ./_deploy
 
       - name: Verify final CCI release integrity independently
         if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release' }}
