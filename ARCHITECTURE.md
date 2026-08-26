@@ -272,6 +272,27 @@ The implemented data contract is documented in:
 The browser remains static. Fetching, normalization, review, and compilation
 are publication tasks, not a frontend build.
 
+### Exclusive public release profiles
+
+`tools/lib/public-climate-release-profile.js` derives exactly one active
+climate authority from the real `index.html`, `js/data.js`, and `sw.js` bytes.
+The only valid outcomes are `cci` and `legacy_ct40`. Script generations,
+runtime query versions, the service-worker registration, and its cache epoch
+must agree; mixed, partial, unknown, stale, non-regular, or symlinked
+entrypoints fail before staging. The retained CT-42 runtime is only a CCI
+rollback asset and cannot select the legacy authority while `js/data.js`
+actively fetches Country Climate Intelligence.
+
+Release mode routes `cci` only through the CCI-specific reviewed package and
+routes `legacy_ct40` only through the historical CT-40 production gate. It
+never runs both and accepts either. Final integrity independently redetects the
+staged profile, requires an exact source/staged fingerprint match, rehashes the
+active runtime against that profile's own review authority, and requires the
+separate three-role signed globe-asset approval. Candidate mode may omit those
+external approvals, but carries the non-publication marker and never acquires
+release authority. Every externally reachable Cloudflare build still forces
+release mode.
+
 ## Current country-selection flow
 
 ```text
@@ -443,7 +464,8 @@ HTML or code with an old runtime artifact.
 | Public copy | `node tools/check-public-copy.js` | No unresolved draft markers; not scientific fact-checking |
 | Third-party notices | `node tools/check-globe-third-party-notices.js` | Exact notice/inventory/integration bytes and active deploy/CI controls; no rights approval |
 | Approval authority | `node tools/check-globe-runtime-approval.js` | Empty trust is fail closed; future detached three-role Ed25519 signatures and bindings verify |
-| Final staged aggregate | `node tools/check-staged-production-integrity.js --staged _deploy` | Last-write rehash of CT-45, notices, trust, footer, and any signed approval pair |
+| Release-profile selector | `node tools/check-public-climate-release-profile.js --self-test` | Exclusive CCI/legacy authority routing, generation coupling, and mixed/source-staged profile rejection |
+| Final staged aggregate | `node tools/check-staged-production-integrity.js --staged _deploy` | Last-write active-profile rehash, notices, trust, footer, exact source/staged profile parity, and mandatory signed asset approval in release mode |
 
 CI runs the existing governance and production-denial gates plus the v1
 Country Climate Intelligence aggregate, syntax, static load order, SmokeTest,
@@ -453,12 +475,12 @@ scientific-review or production-promotion gates.
 
 The exact public artifact allowlist treats
 `data/climate/runtime/country-climate-intelligence.json` as candidate-only.
-The factual-public gate still evaluates its historically reviewed CT-42 facts,
-but refuses to stage the current browser entrypoints while they reference the
-candidate-only CCI file. This preserves the last deployed release instead of
-publishing missing essential data. A new data/UI/source-rights/scientific-review
+The historical factual-public gate still evaluates its reviewed CT-42 facts,
+but refuses to stage the current CCI browser profile while the CCI package is
+unapproved. This preserves the last deployed release instead of pairing CCI
+entrypoints with legacy approval. A new data/UI/source-rights/scientific-review
 chain must replace the current false promotion flags before CCI moves onto that
-surface.
+surface; the release-profile selector cannot itself grant that authority.
 
 ## Known traps and debt
 

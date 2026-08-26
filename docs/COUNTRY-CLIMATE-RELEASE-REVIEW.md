@@ -29,6 +29,7 @@ A production decision requires all of the following to identify the same release
 6. an executable `reviewed-rollback-proof.json`;
 7. protected-file/CODEOWNERS approval for the reviewed commit;
 8. a runtime and release manifest that both self-identify as independently reviewed production artifacts.
+9. a separately signed globe-runtime asset approval from the asset-rights reviewer, licensing counsel, and release authorizer.
 
 Missing, partial, stale, self-reviewed, placeholder, non-regular, symlinked, hash-mismatched, or CT-40-derived evidence fails closed.
 
@@ -64,6 +65,8 @@ bound review-request.json
   → reviewed-release-diff.json
   → executable reviewed-rollback-proof.json
   → tools/check-country-climate-intelligence-release-gate.js --require-release
+  → three-role signed globe-runtime asset approval
+  → tools/check-public-climate-release-profile.js --release
   → factual-public staging
 ~~~
 
@@ -76,6 +79,7 @@ Candidate integrity:
 ~~~sh
 node tools/check-country-climate-intelligence-ci.js
 node tools/check-country-climate-intelligence-release-gate.js
+node tools/check-public-climate-release-profile.js --candidate
 ~~~
 
 Expected before external review: the first command passes and the second reports a fail-closed candidate.
@@ -84,8 +88,13 @@ Production decision:
 
 ~~~sh
 node tools/check-country-climate-intelligence-release-gate.js --require-release
-node tools/check-climate-factual-public-readiness.js
-node tools/climate-truth-ci.js --strict
+node tools/check-public-climate-release-profile.js --release
+./tools/build-deploy.sh --release
 ~~~
 
 The strict gate must remain red until the exact external decisions and independent reports exist. Passing candidate checks never implies production authority or deployment authority.
+
+The selector does not approve data, rights, science, protected files, or
+assets. It only prevents a CCI release from falling through to CT-40 authority
+and prevents legacy bytes from borrowing a CCI package. Source and final
+staged entrypoints must resolve to the same exact profile and generation.

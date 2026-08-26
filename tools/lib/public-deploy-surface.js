@@ -5,6 +5,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { EXPECTED_SPEC: EXPECTED_VENDOR } = require('./globe-vendor-integrity');
 const { inspectReleaseApproval } = require('./country-climate-intelligence-release-gate');
+const {
+  PROFILE_CCI,
+  detectPublicClimateReleaseProfile,
+} = require('./public-climate-release-profile');
 
 const CANDIDATE_MARKER_PATH = 'CANDIDATE-NOT-FOR-PUBLICATION.txt';
 const CANDIDATE_MARKER_TEXT = [
@@ -200,15 +204,17 @@ function expectedSourcePaths(sourceRoot, mode) {
 }
 
 function verifyClimateIntelligenceReleaseBoundary(sourceRoot) {
-  const references = CLIMATE_INTELLIGENCE_ENTRYPOINTS.filter(relative =>
-    inspectRegular(sourceRoot, relative).bytes.toString('utf8').includes(CLIMATE_INTELLIGENCE_RUNTIME_PATH));
-  if (!references.length) return { pass: false, status: 'not_referenced', references: [] };
+  const detected = detectPublicClimateReleaseProfile(sourceRoot);
+  if (detected.profile !== PROFILE_CCI) {
+    return { pass: false, status: 'not_referenced', references: [], profile: detected.profile };
+  }
+  const references = [...CLIMATE_INTELLIGENCE_ENTRYPOINTS];
   const result = inspectReleaseApproval(sourceRoot);
   if (!result.pass) {
     const reasons = [...result.errors, ...result.blockers].map(item => item.code).join(', ') || 'approval_missing';
     throw new Error('Country Climate Intelligence factual-public staging is blocked; active entrypoints reference a runtime without an exact approved CCI release package (' + reasons + '): ' + references.join(', '));
   }
-  return { ...result, references };
+  return { ...result, references, profile: detected.profile, fingerprint: detected.fingerprint };
 }
 
 function expectedStagedPaths(sourceRoot, mode) {

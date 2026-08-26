@@ -224,6 +224,8 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/stage-public-deploy.js',
   '/tools/check-public-deploy-surface.js',
   '/tools/lib/public-deploy-surface.js',
+  '/tools/check-public-climate-release-profile.js',
+  '/tools/lib/public-climate-release-profile.js',
   '/_headers',
   '/_redirects',
   '/wrangler.jsonc',
@@ -250,8 +252,10 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/data/climate/runtime/country-climate-intelligence.json',
   '/tools/build-country-climate-intelligence.js',
   '/tools/check-country-climate-intelligence-ci.js',
+  '/tools/check-country-climate-intelligence-release-gate.js',
   '/tools/check-country-climate-runtime-atomic.js',
   '/tools/lib/country-climate-intelligence.js',
+  '/tools/lib/country-climate-intelligence-release-gate.js',
   '/assets/globe/runtime/',
   '/data/small-nations.json',
 ]);
@@ -575,11 +579,15 @@ function evaluateRuntimeAssets(input) {
     !/(?:^|\n)\s*(?:exit|return)\s+0(?:\s|$)/.test(buildDeploy) &&
     !/trap\s+[^\n]*\b(?:DEBUG|RETURN)\b/.test(buildDeploy),
     'Deployment staging must exec the aggregate verifier as the exact tail and contain no direct shell background operator.');
-  const finalCt45RehashCall = 'verifyCt45RuntimeBytes(sourceRoot, stagedRoot);';
-  check('final-ct45-runtime-rehash', occurrences(finalIntegrity, finalCt45RehashCall) === 1 &&
-    finalIntegrity.indexOf(finalCt45RehashCall) > finalIntegrity.indexOf('verifyApprovalArtifacts(sourceRoot, stagedRoot);') &&
-    finalIntegrity.includes('FINAL_CT45_REHASH_PATHS = REQUIRED_UI_REVIEW_PIN_PATHS'),
-    'The aggregate verifier must finish with one post-hook CT-45 rehash over the canonical reviewed runtime scope.');
+  const finalActiveRehashCall = 'verifyActiveRuntimeBytes(sourceRoot, stagedRoot, profileParity.source.profile);';
+  const requiredApprovalCall = "verifyApprovalArtifacts(sourceRoot, stagedRoot, options.mode === 'release');";
+  check('final-active-runtime-rehash', occurrences(finalIntegrity, finalActiveRehashCall) === 1 &&
+    finalIntegrity.indexOf(finalActiveRehashCall) > finalIntegrity.indexOf(requiredApprovalCall) &&
+    finalIntegrity.includes('FINAL_CT45_REHASH_PATHS = REQUIRED_UI_REVIEW_PIN_PATHS') &&
+    finalIntegrity.includes('FINAL_CCI_REHASH_PATHS') &&
+    finalIntegrity.includes('verifyCciRuntimeBytes(sourceRoot, stagedRoot)') &&
+    finalIntegrity.includes('verifyCt45RuntimeBytes(sourceRoot, stagedRoot)'),
+    'The aggregate verifier must finish with one profile-selected runtime rehash and retain separate CCI and legacy review authorities.');
   check('final-ui-review-binding',
     finalIntegrity.includes('record.sha256 !== EXPECTED_UI_REVIEW_SHA256') &&
     finalIntegrity.includes('review.reviewed_commit !== EXPECTED_UI_REVIEW_COMMIT') &&
@@ -589,14 +597,32 @@ function evaluateRuntimeAssets(input) {
     finalIntegrity.includes('APPROVAL_REVIEWED_PATHS') && finalIntegrity.includes('UI_REVIEW_PATH,'),
     'The final verifier must bind the UI-review record and every pin to reviewed Git objects, allowing only the narrow shared-brand projection.');
   const releaseGuard = buildDeploy.indexOf('if [ "$DEPLOY_MODE" = "release" ]; then');
-  const readinessCommand = buildDeploy.indexOf('node tools/check-climate-production-readiness.js --release');
+  const readinessCommand = buildDeploy.indexOf('node tools/check-public-climate-release-profile.js --release');
   const stagingStart = buildDeploy.indexOf('mkdir -p "$DEPLOY_DIR"');
   check('deploy-release-boundary', releaseGuard !== -1 && readinessCommand > releaseGuard && stagingStart > readinessCommand &&
-    occurrences(buildDeploy, 'node tools/check-climate-production-readiness.js --release') === 1 &&
+    occurrences(buildDeploy, 'node tools/check-public-climate-release-profile.js --release') === 1 &&
+    occurrences(buildDeploy, 'node tools/check-public-climate-release-profile.js --candidate') === 1 &&
     buildDeploy.includes('case "$DEPLOY_MODE" in') && buildDeploy.includes('candidate|release) ;;') &&
     buildDeploy.includes('if [ -n "${CF_PAGES_BRANCH:-}" ]; then') &&
     buildDeploy.includes('Conflicting build modes: CLI=$ARG_DEPLOY_MODE ELU_DEPLOY_MODE=$ENV_DEPLOY_MODE'),
     'Release mode must be explicit, strictly validated, forced for every externally reachable Cloudflare build, and pass readiness before staging starts.');
+  check('exclusive-release-profile',
+    files.release_profile?.includes("PROFILE_CCI = 'cci'") &&
+    files.release_profile?.includes("PROFILE_LEGACY_CT40 = 'legacy_ct40'") &&
+    files.release_profile?.includes("ENTRYPOINTS = Object.freeze(['index.html', 'js/data.js', 'sw.js'])") &&
+    files.release_profile?.includes('climate release profile is mixed, unknown, or absent') &&
+    files.release_profile?.includes('assertPublicClimateReleaseProfileParity') &&
+    files.profile_selector?.includes("['tools/check-country-climate-intelligence-release-gate.js', '--require-release']") &&
+    files.profile_selector?.includes("['tools/check-climate-production-readiness.js', '--release']") &&
+    finalIntegrity.includes('assertPublicClimateReleaseProfileParity(sourceRoot, stagedRoot)') &&
+    publicDeploySurface.includes('detectPublicClimateReleaseProfile(sourceRoot)'),
+    'One strict HTML/data/service-worker profile must exclusively select CCI or legacy release authority and match staged bytes.');
+  check('release-asset-signatures-required',
+    finalIntegrity.includes(requiredApprovalCall) &&
+    finalIntegrity.includes("if (required) throw new Error('signed globe runtime asset approval is required for release mode')") &&
+    files.profile_selector?.includes('verifyApprovalArtifacts(valueRoot, valueRoot, true)') &&
+    files.profile_selector?.includes("if (options.mode === 'release')"),
+    'Release selection and final staging must both require the separately signed globe-runtime asset approval.');
   check('deploy-failure-cleanup', input?.deploy_behavior?.denied_release_removed_output === true &&
     input?.deploy_behavior?.later_failure_removed_output === true &&
     input?.deploy_behavior?.final_integrity_failure_removed_output === true &&
@@ -623,6 +649,7 @@ function evaluateRuntimeAssets(input) {
     hasActiveCiJob(ci, 'static') && hasActiveCiJob(ci, 'smoke') &&
     hasExactCiStep(ci, 'Verify NASA Black Marble source pin', './tools/authoring/fetch-nasa-black-marble.sh --check') &&
     hasExactCiStep(ci, 'CT-45 localized runtime asset policy', 'node tools/check-globe-runtime-assets.js') &&
+    hasExactCiStep(ci, 'Public climate release-profile policy', 'node tools/check-public-climate-release-profile.js --self-test') &&
     hasExactCiStep(ci, 'Exact public deploy surface policy self-test', 'node tools/check-public-deploy-surface.js --self-test') &&
     hasExactCiStep(ci, 'Verify exact public deploy surface independently', 'node tools/check-public-deploy-surface.js --staged _deploy --mode candidate') &&
     hasExactCiStep(ci, 'Climate production readiness policy fixtures', 'node tools/check-climate-production-readiness-policy.js') &&
@@ -694,7 +721,7 @@ function evaluateRuntimeAssets(input) {
     'Every active index.html globe-truth script must share one canonical candidate pin and runtime-diff scope.');
   check('runtime-diff-boundary', input?.review_scope?.runtime_prefixes?.includes('assets/globe/runtime/') &&
     input?.review_scope?.runtime_prefixes?.includes('data/climate/releases/country-climate-intelligence-v1/') &&
-    [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS, 'tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'data/small-nations.json']
+    [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS, 'tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'tools/check-public-climate-release-profile.js', 'tools/lib/public-climate-release-profile.js', 'data/small-nations.json']
       .every(item => input?.review_scope?.runtime_fixed?.includes(item)),
     'Runtime-diff policy must classify localized assets and CT-45 controls as runtime-affecting.');
   check('control-files-owned', REQUIRED_CONTROL_OWNERS.every(required =>

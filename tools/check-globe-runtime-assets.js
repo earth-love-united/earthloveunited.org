@@ -39,6 +39,8 @@ const PATHS = Object.freeze({
   build_deploy: 'tools/build-deploy.sh',
   stage_public_deploy: 'tools/stage-public-deploy.js',
   public_deploy_surface: 'tools/lib/public-deploy-surface.js',
+  profile_selector: 'tools/check-public-climate-release-profile.js',
+  release_profile: 'tools/lib/public-climate-release-profile.js',
   ci: '.github/workflows/ci.yml',
   climate_truth_ci: 'tools/climate-truth-ci.js',
   final_integrity: 'tools/check-staged-production-integrity.js',

@@ -10,7 +10,13 @@ const path = require('node:path');
 const notices = require('./lib/globe-third-party-notices');
 const approvalPolicy = require('./lib/globe-runtime-approval');
 const publicSurface = require('./lib/public-deploy-surface');
+const climateProfile = require('./lib/public-climate-release-profile');
 const {
+  PATHS: CCI_RELEASE_PATHS,
+  inspectReviewRequest: inspectCciReviewRequest,
+} = require('./lib/country-climate-intelligence-release-gate');
+const {
+  ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
   CURRENT_RUNTIME_PIN_PATHS,
   EXPECTED_UI_REVIEW_COMMIT,
   EXPECTED_UI_REVIEW_SHA256,
@@ -22,6 +28,14 @@ const {
 const ROOT = path.resolve(__dirname, '..');
 const PUBLIC_NOTICE_LINK = '<a href="/THIRD_PARTY_NOTICES.txt">Third-party notices</a>';
 const FINAL_CT45_REHASH_PATHS = REQUIRED_UI_REVIEW_PIN_PATHS;
+const FINAL_CCI_REHASH_PATHS = Object.freeze([
+  'index.html',
+  'css/globe-system.css',
+  'css/guided-first-orbit.css',
+  ...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
+  CCI_RELEASE_PATHS.runtime,
+  'sw.js',
+].sort());
 const PINNED_FILES = Object.freeze([
   Object.freeze({ path: notices.NOTICE_PATH, sha256: notices.EXPECTED_NOTICE_SHA256 }),
   Object.freeze({ path: notices.MANIFEST_PATH, sha256: notices.EXPECTED_MANIFEST_SHA256 }),
@@ -64,6 +78,8 @@ const APPROVAL_REVIEWED_PATHS = Object.freeze([...new Set([
   'tools/check-globe-runtime-approval.js',
   'tools/lib/globe-runtime-approval.js',
   'tools/check-staged-production-integrity.js',
+  'tools/check-public-climate-release-profile.js',
+  'tools/lib/public-climate-release-profile.js',
   'tools/climate-truth-ci.js',
   'tools/lib/climate-runtime-diff-boundary.js',
   'tools/lib/climate-production-readiness.js',
@@ -206,13 +222,16 @@ function verifyFooter(sourceRoot, stagedRoot) {
   }
 }
 
-function verifyApprovalArtifacts(sourceRoot, stagedRoot) {
+function verifyApprovalArtifacts(sourceRoot, stagedRoot, required = false) {
   const sourceApproval = inspectEntry(sourceRoot, approvalPolicy.APPROVAL_PATH);
   const stagedApproval = inspectEntry(stagedRoot, approvalPolicy.APPROVAL_PATH);
   const sourceBundle = inspectEntry(sourceRoot, approvalPolicy.SIGNATURE_BUNDLE_PATH);
   const stagedBundle = inspectEntry(stagedRoot, approvalPolicy.SIGNATURE_BUNDLE_PATH);
   const anyPresent = sourceApproval.exists || stagedApproval.exists || sourceBundle.exists || stagedBundle.exists;
-  if (!anyPresent) return;
+  if (!anyPresent) {
+    if (required) throw new Error('signed globe runtime asset approval is required for release mode');
+    return { status: 'absent' };
+  }
   if (![sourceApproval, stagedApproval, sourceBundle, stagedBundle].every(record => record.regular_file)) {
     throw new Error('approval and detached signature artifacts must both be regular source/staged files');
   }
@@ -246,6 +265,7 @@ function verifyApprovalArtifacts(sourceRoot, stagedRoot) {
   if (report.status !== 'pass') {
     throw new Error('detached production approval verification failed: ' + report.failure_ids.join(', '));
   }
+  return { status: 'pass', approval_sha256: report.approval_sha256 };
 }
 
 function reviewedRuntimePins(sourceRoot) {
@@ -311,37 +331,84 @@ function verifyCt45RuntimeBytes(sourceRoot, stagedRoot) {
   return FINAL_CT45_REHASH_PATHS.length;
 }
 
+function reviewedCciRuntimePins(sourceRoot) {
+  const result = inspectCciReviewRequest(sourceRoot);
+  if (!result.pass) {
+    const details = [...result.errors, ...result.blockers]
+      .map(item => item.code + ': ' + item.detail).join(' | ');
+    throw new Error('CCI review request is not an exact bound candidate: ' + details);
+  }
+  const pins = new Map((result.request.subject?.artifact_pins || []).map(entry => [entry.path, entry.sha256]));
+  FINAL_CCI_REHASH_PATHS.forEach(relative => {
+    if (!/^[0-9a-f]{64}$/.test(pins.get(relative) || '')) {
+      throw new Error('CCI review request does not pin the final runtime path: ' + relative);
+    }
+  });
+  return pins;
+}
+
+function verifyCciRuntimeBytes(sourceRoot, stagedRoot) {
+  const pins = reviewedCciRuntimePins(sourceRoot);
+  FINAL_CCI_REHASH_PATHS.forEach(relative => {
+    const expected = pins.get(relative);
+    const source = requireRegular(sourceRoot, relative);
+    const staged = requireRegular(stagedRoot, relative);
+    if (source.sha256 !== expected) throw new Error('source CCI reviewed runtime drift: ' + relative);
+    if (staged.sha256 !== expected) throw new Error('final staged CCI reviewed runtime drift: ' + relative);
+    if (source.sha256 !== staged.sha256) throw new Error('final CCI source/staged mismatch: ' + relative);
+  });
+  return FINAL_CCI_REHASH_PATHS.length;
+}
+
+function verifyActiveRuntimeBytes(sourceRoot, stagedRoot, profile) {
+  if (profile === climateProfile.PROFILE_CCI) {
+    return { profile, count: verifyCciRuntimeBytes(sourceRoot, stagedRoot), boundary: 'cci_review_request' };
+  }
+  if (profile === climateProfile.PROFILE_LEGACY_CT40) {
+    return { profile, count: verifyCt45RuntimeBytes(sourceRoot, stagedRoot), boundary: 'ct42_ui_review' };
+  }
+  throw new Error('unknown final climate runtime profile: ' + profile);
+}
+
 function verifyFinalStagedIntegrity(options) {
   const sourceRoot = path.resolve(options.sourceRoot);
   const stagedRoot = path.resolve(options.stagedRoot);
   if (!['candidate', 'release'].includes(options.mode)) {
     throw new Error('final staged integrity requires an explicit candidate or release mode');
   }
+  const initialProfile = climateProfile.detectPublicClimateReleaseProfile(sourceRoot);
   if (typeof options.childCheckRunner === 'function') {
     options.childCheckRunner();
   } else if (!options.skipChildChecks) {
     if (options.mode === 'release') {
-      runChecker(sourceRoot, ['tools/check-climate-production-readiness.js', '--release']);
+      runChecker(sourceRoot, ['tools/check-public-climate-release-profile.js', '--release']);
     }
     runChecker(sourceRoot, ['tools/check-globe-third-party-notices.js', '--staged', stagedRoot]);
     runChecker(sourceRoot, ['tools/check-globe-runtime-assets.js', '--staged', stagedRoot]);
   }
   if (typeof options.afterPrecheck === 'function') options.afterPrecheck();
+  const profileParity = climateProfile.assertPublicClimateReleaseProfileParity(sourceRoot, stagedRoot);
+  if (JSON.stringify(initialProfile.fingerprint) !== JSON.stringify(profileParity.source.fingerprint)) {
+    throw new Error('source climate release profile changed after preflight');
+  }
   verifyPinnedFiles(sourceRoot, stagedRoot);
   verifyFooter(sourceRoot, stagedRoot);
-  verifyApprovalArtifacts(sourceRoot, stagedRoot);
+  verifyApprovalArtifacts(sourceRoot, stagedRoot, options.mode === 'release');
   const publicReport = options.skipPublicSurface ? null : publicSurface.verifyPublicDeploySurface({
     sourceRoot,
     stagedRoot,
     mode: options.mode,
     ...(options.expectedVendorSha256 ? { expectedVendorSha256: options.expectedVendorSha256 } : {}),
   });
-  const ct45RehashCount = verifyCt45RuntimeBytes(sourceRoot, stagedRoot);
+  const runtimeRehash = verifyActiveRuntimeBytes(sourceRoot, stagedRoot, profileParity.source.profile);
   return {
     status: 'pass',
+    climate_profile: runtimeRehash.profile,
+    runtime_review_boundary: runtimeRehash.boundary,
     pinned_file_count: PINNED_FILES.length,
     public_file_count: publicReport ? publicReport.file_count : null,
-    ct45_rehash_count: ct45RehashCount,
+    runtime_rehash_count: runtimeRehash.count,
+    ct45_rehash_count: runtimeRehash.profile === climateProfile.PROFILE_LEGACY_CT40 ? runtimeRehash.count : 0,
   };
 }
 
@@ -620,6 +687,39 @@ function runSelfTest() {
     fs.rmSync(cleanupFixture.root, { recursive: true, force: true });
   }
 
+  const releaseWithoutAssetApproval = makeSelfTestFixture();
+  try {
+    assert.throws(() => verifyFinalStagedIntegrityWithCleanup({
+      sourceRoot: releaseWithoutAssetApproval.root,
+      stagedRoot: releaseWithoutAssetApproval.staged,
+      mode: 'release',
+      skipPublicSurface: true,
+      childCheckRunner() {},
+    }), /signed globe runtime asset approval is required/,
+    'release mode must reject an otherwise routed profile without signed asset approval');
+    assert.equal(fs.existsSync(releaseWithoutAssetApproval.staged), false,
+      'missing release asset approval must remove staged output');
+  } finally {
+    fs.rmSync(releaseWithoutAssetApproval.root, { recursive: true, force: true });
+  }
+
+  const crossProfileFixture = makeSelfTestFixture();
+  try {
+    climateProfile.ENTRYPOINTS.forEach(relative => copyFixtureFile(ROOT, crossProfileFixture.staged, relative));
+    assert.throws(() => verifyFinalStagedIntegrityWithCleanup({
+      sourceRoot: crossProfileFixture.root,
+      stagedRoot: crossProfileFixture.staged,
+      mode: 'candidate',
+      skipChildChecks: true,
+      skipPublicSurface: true,
+    }), /profiles differ/,
+    'source legacy/staged CCI profile substitution must fail');
+    assert.equal(fs.existsSync(crossProfileFixture.staged), false,
+      'cross-profile staged substitution must remove staged output');
+  } finally {
+    fs.rmSync(crossProfileFixture.root, { recursive: true, force: true });
+  }
+
   const postChildCt45Fixture = makeSelfTestFixture();
   let childChecksCompleted = false;
   try {
@@ -697,7 +797,7 @@ function runSelfTest() {
   } finally {
     fs.rmSync(publicFixture.root, { recursive: true, force: true });
   }
-  process.stdout.write('Final staged production integrity self-test: PASS (18 fail-closed ' +
+  process.stdout.write('Final staged production integrity self-test: PASS (20 fail-closed ' +
     'filesystem/tamper/cleanup/public-surface/mode cases; ' + approvalBindingCases +
     ' scoped approval commit-binding cases; post-child CT-45 mutation rejected and cleaned; checked-in runtime ' +
     (checkedInReview.status === 'reviewed'
@@ -721,8 +821,9 @@ function runCli(argv) {
   const report = verifyFinalStagedIntegrityWithCleanup({ sourceRoot: ROOT, stagedRoot, mode });
   process.stdout.write('Final staged production integrity: PASS (' + report.pinned_file_count +
     ' pinned notice/trust files, ' + report.public_file_count +
-    ' exact public files, ' + report.ct45_rehash_count +
-    ' final CT-45 reviewed runtime rehashes, footer parity, approval boundary)\n');
+    ' exact public files, ' + report.runtime_rehash_count +
+    ' final ' + report.climate_profile + ' runtime rehashes via ' + report.runtime_review_boundary +
+    ', footer parity, approval boundary)\n');
 }
 
 if (require.main === module) {
@@ -736,9 +837,13 @@ if (require.main === module) {
 module.exports = {
   PINNED_FILES,
   APPROVAL_REVIEWED_PATHS,
+  FINAL_CCI_REHASH_PATHS,
   FINAL_CT45_REHASH_PATHS,
   inspectEntry,
   resolveStagedRoot,
+  verifyActiveRuntimeBytes,
+  verifyApprovalArtifacts,
+  verifyCciRuntimeBytes,
   verifyCt45RuntimeBytes,
   verifyFinalStagedIntegrity,
 };

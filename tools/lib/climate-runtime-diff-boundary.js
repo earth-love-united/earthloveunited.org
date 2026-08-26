@@ -42,6 +42,8 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'tools/stage-public-deploy.js',
   'tools/check-public-deploy-surface.js',
   'tools/lib/public-deploy-surface.js',
+  'tools/check-public-climate-release-profile.js',
+  'tools/lib/public-climate-release-profile.js',
   'tools/fetch-globe-vendor.sh',
   'tools/check-globe-vendor-integrity.js',
   'tools/lib/globe-vendor-integrity.js',

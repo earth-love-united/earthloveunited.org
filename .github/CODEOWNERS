@@ -75,6 +75,8 @@
 /tools/stage-public-deploy.js         @earth-love-united/maintainers
 /tools/check-public-deploy-surface.js @earth-love-united/maintainers
 /tools/lib/public-deploy-surface.js   @earth-love-united/maintainers
+/tools/check-public-climate-release-profile.js @earth-love-united/maintainers
+/tools/lib/public-climate-release-profile.js @earth-love-united/maintainers
 /tools/check-climate-production-readiness.js @earth-love-united/maintainers
 /tools/check-climate-production-readiness-policy.js @earth-love-united/maintainers
 /tools/lib/climate-production-readiness.js @earth-love-united/maintainers
@@ -133,11 +135,13 @@
 /tools/check-country-climate-intelligence.js @earth-love-united/maintainers
 /tools/check-country-climate-intelligence-ui.js @earth-love-united/maintainers
 /tools/check-country-climate-intelligence-ci.js @earth-love-united/maintainers
+/tools/check-country-climate-intelligence-release-gate.js @earth-love-united/maintainers
 /tools/check-country-climate-public-release-boundary.js @earth-love-united/maintainers
 /tools/check-country-climate-runtime-atomic.js @earth-love-united/maintainers
 /tools/test-country-climate-compilers.js @earth-love-united/maintainers
 /tools/test-country-climate-intelligence-derivations.js @earth-love-united/maintainers
 /tools/lib/country-climate-intelligence.js @earth-love-united/maintainers
+/tools/lib/country-climate-intelligence-release-gate.js @earth-love-united/maintainers
 /tools/lib/gcb-country-intelligence.js @earth-love-united/maintainers
 
 # ─── CI / GitHub config ─────────────────────────────────────────

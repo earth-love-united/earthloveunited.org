@@ -82,9 +82,11 @@ echo "📜 Verifying source third-party notices..."
 node tools/check-globe-third-party-notices.js
 
 if [ "$DEPLOY_MODE" = "release" ]; then
-  echo "🔐 Enforcing production release readiness..."
-  node tools/check-climate-production-readiness.js --release
+  echo "🔐 Enforcing the active production release profile..."
+  node tools/check-public-climate-release-profile.js --release
 else
+  echo "🧪 Verifying the active local-candidate release profile..."
+  node tools/check-public-climate-release-profile.js --candidate
   echo "⚠️  LOCAL QA CANDIDATE ONLY — DO NOT PUBLISH. Production use and release authority remain false."
 fi
 

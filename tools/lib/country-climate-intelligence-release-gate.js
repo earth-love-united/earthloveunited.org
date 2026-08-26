@@ -1,5 +1,6 @@
 'use strict';
 
+const childProcess = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 const { stable, validateJsonSchema } = require('./json-schema-lite');
@@ -105,6 +106,33 @@ function exactPins(root, actual, expectedPaths, errors, code) {
   return pass;
 }
 
+function validateSubjectCommitPins(root, request, errors, blockers) {
+  const commit = request.subject?.subject_commit_sha;
+  if (!/^[a-f0-9]{40}$/.test(commit || '')) return;
+  const ancestor = childProcess.spawnSync('git', ['merge-base', '--is-ancestor', commit, 'HEAD'], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  if (ancestor.status !== 0) {
+    blockers.push({
+      code: 'review_request_commit_not_ancestor',
+      detail: 'The bound candidate commit must be available and an ancestor of the reviewed checkout.',
+    });
+    return;
+  }
+  (request.subject?.artifact_pins || []).forEach(entry => {
+    if (!entry || typeof entry.path !== 'string' || !/^[0-9a-f]{64}$/.test(entry.sha256 || '')) return;
+    const object = childProcess.spawnSync('git', ['show', commit + ':' + entry.path], {
+      cwd: root,
+      encoding: null,
+      maxBuffer: 64 * 1024 * 1024,
+    });
+    if (object.status !== 0 || sha256(object.stdout) !== entry.sha256) {
+      add(errors, 'review_request_commit_pin_mismatch', entry.path + ' does not match the bound Git object.');
+    }
+  });
+}
+
 function validateEvidencePins(root, pins, errors, code) {
   if (!Array.isArray(pins) || !pins.length) {
     add(errors, code, 'At least one exact evidence pin is required.');
@@ -172,6 +200,8 @@ function inspectReviewRequest(root, requestOverride = null) {
       code: 'review_request_commit_unbound',
       detail: 'Regenerate the request with --subject-commit after the candidate implementation commit.',
     });
+  } else {
+    validateSubjectCommitPins(root, request, errors, blockers);
   }
   return {
     pass: errors.length === 0 && blockers.length === 0,

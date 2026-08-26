@@ -17,6 +17,12 @@ const {
   inspectRegular,
   verifyPublicDeploySurface,
 } = require('./lib/public-deploy-surface');
+const {
+  CCI_RUNTIME_PATH,
+  LEGACY_RUNTIME_PATH,
+  PROFILE_CCI,
+  PROFILE_LEGACY_CT40,
+} = require('./lib/public-climate-release-profile');
 
 const ROOT = path.resolve(__dirname, '..');
 
@@ -68,6 +74,35 @@ function makeSyntheticSource(root) {
   fs.writeFileSync(path.join(root, '_headers'), RUNTIME_IMMUTABLE_HEADER_PATTERNS
     .map(pattern => `${pattern}\n  Cache-Control: ${RUNTIME_IMMUTABLE_CACHE_CONTROL}\n`)
     .join('\n'));
+  writeSyntheticClimateProfile(root, PROFILE_LEGACY_CT40);
+}
+
+function writeSyntheticClimateProfile(root, profile) {
+  const cci = profile === PROFILE_CCI;
+  const runtime = cci ? CCI_RUNTIME_PATH : LEGACY_RUNTIME_PATH;
+  const dataVersion = cci ? 'cci-fixture' : 'ct40-fixture';
+  const epoch = cci ? '72-fixture' : '40-fixture';
+  fs.writeFileSync(path.join(root, 'index.html'), [
+    '<link rel="preload" href="js/data.js?v=v1" as="script">',
+    cci ? '<link rel="preload" href="js/country-climate-intelligence.js?v=v1" as="script">' : '',
+    '<script src="js/data.js?v=v1"></script>',
+    cci ? '<script src="js/country-climate-intelligence.js?v=v1"></script>' : '',
+    `navigator.serviceWorker.register('/sw.js?v=${epoch}', { updateViaCache: 'none' });`,
+  ].join('\n'));
+  fs.writeFileSync(path.join(root, 'js/data.js'), [
+    cci
+      ? `const CLIMATE_INTELLIGENCE_SHA256 = '${'a'.repeat(64)}';`
+      : `const CLIMATE_CANDIDATE_SHA256 = '${'b'.repeat(64)}';`,
+    `const Data = { version: '${dataVersion}', init() { return _fetchTextWithTimeout('${runtime}' + v); } };`,
+  ].join('\n'));
+  fs.writeFileSync(path.join(root, 'sw.js'), [
+    `const CACHE_NAME = 'elu-v${epoch}';`,
+    'const STATIC_ASSETS = [',
+    "  '/js/data.js?v=v1',",
+    cci ? "  '/js/country-climate-intelligence.js?v=v1'," : '',
+    `  '/${runtime}?v=${dataVersion}',`,
+    '];',
+  ].join('\n'));
 }
 
 function withFixture(mode, callback) {
@@ -174,7 +209,7 @@ function runSelfTest() {
       'CCI runtime must never return to the unconditional public allowlist');
   }); cases += 1;
   withFixture('release', fixture => {
-    fs.appendFileSync(path.join(fixture.source, 'js/data.js'), `fetch('${CLIMATE_INTELLIGENCE_RUNTIME_PATH}')\n`);
+    writeSyntheticClimateProfile(fixture.source, PROFILE_CCI);
     assert.throws(() => expectedSourcePaths(fixture.source, 'release'), /factual-public staging is blocked/);
   }); cases += 1;
   process.stdout.write(`Public deploy surface self-test: PASS (${cases} fail-closed cases)\n`);

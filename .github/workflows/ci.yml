@@ -54,6 +54,9 @@ jobs:
       - name: Final staged production integrity policy self-test
         run: node tools/check-staged-production-integrity.js --self-test
 
+      - name: Public climate release-profile policy
+        run: node tools/check-public-climate-release-profile.js --self-test
+
       - name: Exact public deploy surface policy self-test
         run: node tools/check-public-deploy-surface.js --self-test
 
