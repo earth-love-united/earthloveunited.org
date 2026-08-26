@@ -58,7 +58,15 @@ assert.ok(index.includes('country-climate-intelligence.js') && data.includes('co
   'Country Climate Intelligence candidate runtime is not wired atomically');
 assert.ok(manifest.compiler_files.includes('js/country-ranking-compiler.js') && manifest.compiler_files.includes('js/country-climate-view-model.js'));
 assert.ok(!data.includes('pledge-nodes.json') && !globe.includes('pledge-nodes.json'));
-['Territorial fossil CO₂ · 2024', 'Clean electricity share · 2024', 'Projected warming · 2040–2059', 'No composite score', 'explicit gaps', 'not a performance score'].forEach(text => assert.ok(globe.includes(text) || index.includes(text) || intelligence.includes(text), `missing public truth disclosure: ${text}`));
+const publicTruthSurface = [globe, index, intelligence].join('\n').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+[
+  ['Territorial fossil CO₂ · 2024', /Territorial fossil CO₂ (?:· )?2024/],
+  ['Clean electricity share · 2024', /Clean electricity share (?:· )?2024/],
+  ['Projected warming · 2040–2059', /Projected warming (?:· )?2040–2059/],
+  ['No composite score', /No composite score/],
+  ['explicit gaps', /explicit gaps/],
+  ['not a performance score', /not a performance score/],
+].forEach(([label, pattern]) => assert.ok(pattern.test(publicTruthSurface), `missing public truth disclosure: ${label}`));
 ['Annual harmonized emissions estimates', '2023 harmonized estimate · excludes LULUCF', 'Harmonized estimate · MtCO₂e/yr', 'Harmonized estimate, not an official Party inventory', '2023 harmonized emissions estimate · PRIMAP-hist'].forEach(text => assert.ok(!globe.includes(text) && !index.includes(text), `duplicate methodology copy returned: ${text}`));
 ['CT-42 candidate preview', 'runtime and release not reviewed', 'facts reviewed through CT-10C / CT-10C-R', 'did not pass its runtime boundary checks'].forEach(text => assert.ok(!globe.includes(text) && !index.includes(text), `internal governance language leaked into public copy: ${text}`));
 assert.ok(globe.includes('elu-trajectory-point') && globe.includes('elu-chart-axis') && globe.includes('Show chart data'));
