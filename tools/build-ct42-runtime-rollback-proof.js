@@ -97,7 +97,7 @@ function neutralIndex(bytes) {
     '.hex-legend-swatch{width:10px;height:10px;border-radius:2px}.hex-legend-swatch.magnitude-low{background:#5b4a97}.hex-legend-swatch.magnitude-high{background:#f6913a}.hex-legend-swatch.magnitude-gap{background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1}',
     '.hex-legend-swatch{width:10px;height:10px;border-radius:2px;background:rgba(145,160,172,.46);border:1px solid rgba(205,225,235,.52)}.hex-legend-note{max-width:230px;margin-top:3px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);line-height:1.35}',
     'neutral inline legend styles');
-  index = replaceOnce(index, 'href="css/globe-system.css?v=v39"', 'href="css/globe-system.css?v=ct42-neutral-rollback-1"', 'rollback CSS key');
+  index = replaceOnce(index, 'href="css/globe-system.css?v=v40"', 'href="css/globe-system.css?v=ct42-neutral-rollback-1"', 'rollback CSS key');
   index = replaceOnce(index, 'href="js/data.js?v=v9" as="script"', 'href="js/data.js?v=ct42-neutral-rollback-1" as="script"', 'rollback data preload key');
   index = replaceOnce(index, 'src="js/data.js?v=v9"', 'src="js/data.js?v=ct42-neutral-rollback-1"', 'rollback data key');
   index = replaceOnce(index, '<script src="js/country-climate-intelligence.js?v=v13"></script>\n', '', 'remove Climate Intelligence runtime');
@@ -166,7 +166,7 @@ function neutralIndex(bytes) {
     'Choose an item to inspect its lens metrics, evidence class, methods, sources, or explicit gap state.',
     'Choose an entity to inspect its explicit evidence-withheld state. No climate value, commitment, target, delivery, performance, impact, finance, rating, or score conclusion is shown here.',
     'neutral fallback detail');
-  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=64-orbit-cue-spacing'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
+  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=65-card-lens-gutter'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
   return Buffer.from(index);
 }
 
@@ -874,7 +874,7 @@ const CACHE_NAME = '${CACHE_NAME}';`,
     "  '/js/guided-first-orbit.js?v=v6',\n",
   ];
   for (const line of removals) sw = replaceOnce(sw, line, '', `remove precache ${line.trim()}`);
-  sw = replaceOnce(sw, "'/css/globe-system.css?v=v39'", "'/css/globe-system.css?v=ct42-neutral-rollback-1'", 'rollback CSS precache');
+  sw = replaceOnce(sw, "'/css/globe-system.css?v=v40'", "'/css/globe-system.css?v=ct42-neutral-rollback-1'", 'rollback CSS precache');
   sw = replaceOnce(sw, "'/js/data.js?v=v9'", "'/js/data.js?v=ct42-neutral-rollback-1'", 'rollback data precache');
   sw = replaceOnce(sw, "'/js/globe.js?v=v34'", "'/js/globe.js?v=ct42-neutral-rollback-1'", 'rollback globe precache');
   return Buffer.from(sw);

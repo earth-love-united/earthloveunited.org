@@ -2116,12 +2116,13 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .elu-trajectory-cu
   #hex-country-tooltip.selected .tt-nav { display: none; }
   #hex-country-tooltip.selected .tt-hint { padding-bottom: 1px; }
 
-  /* Preserve the card's usable scroll area inside the 60/78px HUD bands. */
+  /* Preserve the card's usable scroll area inside the HUD bands while keeping
+     a visible gutter below the 60px lens control. */
   #hex-country-tooltip.selected > * { max-width: 100%; }
   #elu-country-card-wrap {
     left: 90px;
     right: 10px;
-    top: 114px;
+    top: 126px;
     bottom: 78px;
     align-items: flex-end;
   }

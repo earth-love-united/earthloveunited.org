@@ -13,10 +13,10 @@ const manifest = readJson(path.join(ROOT, 'data/climate/releases/country-climate
 const runtimePath = path.join(ROOT, 'data/climate/runtime/country-climate-intelligence.json');
 const rollbackPath = path.join(ROOT, manifest.prior_runtime_retained_for_rollback);
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v64-orbit-cue-spacing'"), 'service-worker cache epoch is not v64');
-assert(index.includes("navigator.serviceWorker.register('/sw.js?v=64-orbit-cue-spacing'"), 'HTML does not request the v64 service worker');
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v65-card-lens-gutter'"), 'service-worker cache epoch is not v65');
+assert(index.includes("navigator.serviceWorker.register('/sw.js?v=65-card-lens-gutter'"), 'HTML does not request the v65 service worker');
 for (const asset of [
-  '/css/globe-system.css?v=v39',
+  '/css/globe-system.css?v=v40',
   '/css/guided-first-orbit.css?v=v9',
   '/js/data.js?v=v9',
   '/js/country-climate-intelligence.js?v=v13',
@@ -37,4 +37,4 @@ assert(serviceWorker.includes('keys.filter((k) => k !== CACHE_NAME).map((k) => c
 assert(serviceWorker.includes('self.skipWaiting()') && serviceWorker.includes('self.clients.claim()'), 'atomic service-worker activation hooks are missing');
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired carbon-project data remains in the atomic cache set');
 
-console.log(`Country Climate Intelligence atomic staging check passed (elu-v64; runtime ${fileSha256(runtimePath)}; rollback retained).`);
+console.log(`Country Climate Intelligence atomic staging check passed (elu-v65; runtime ${fileSha256(runtimePath)}; rollback retained).`);

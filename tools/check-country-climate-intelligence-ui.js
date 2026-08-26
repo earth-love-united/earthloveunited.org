@@ -345,14 +345,15 @@ assert(selectedHeaderCss.includes('position: sticky'), 'selected-country identit
 assert(selectedHeaderCss.includes('top: -14px'), 'selected-country identity header must clear the card padding and pin to the scrollport top');
 assert(selectedHeaderCss.includes('background: var(--hud-bg-strong)'), 'sticky country identity must mask evidence scrolling beneath it in both themes');
 assert(css.includes('scroll-padding-block-start: 76px'), 'country-card focus scrolling must clear the sticky identity header');
+assert(css.includes('top: 126px;'), 'compact selected-country card must retain a visible gutter below the lens control');
 
 const publicClimateSurface = [index, globe, css].join('\n');
 assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public HTML, globe UI, or public globe CSS');
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v64-orbit-cue-spacing'"));
-assert(serviceWorker.includes("'/css/globe-system.css?v=v39'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v65-card-lens-gutter'"));
+assert(serviceWorker.includes("'/css/globe-system.css?v=v40'"));
 assert(serviceWorker.includes("'/css/guided-first-orbit.css?v=v9'"));
 assert(serviceWorker.includes("'/js/data.js?v=v9'"));
 assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v13'"));
