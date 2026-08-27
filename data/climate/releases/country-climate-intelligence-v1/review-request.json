@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "27912c23760d3c1f4524ced924a1faa8f4bd6921cd3a9e4268e038aea0ce353c",
+  "calculation_hash": "8dc0a4a4d1075246974944b36fb2197cd9da3116a5e08636dbf2320567b5d107",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -487,7 +487,7 @@
       },
       {
         "path": "tools/check-climate-runtime-diff-boundary.js",
-        "sha256": "c74249a4b22c912d35c1e9891bb3b29f616a3756c4464eb01b9c08959f3e5f38"
+        "sha256": "2faa304c657fc75a7d7471e320fc8d138d4639cc9199cc7d0e1ac6b6b350da8c"
       },
       {
         "path": "tools/check-climate-source-registry.js",
@@ -710,7 +710,7 @@
         "sha256": "63dd90a443a2f0eaacdf93157587f0b6e89a71e128d384986547039c705783f8"
       }
     ],
-    "commit_binding_state": "bound_candidate_commit",
-    "subject_commit_sha": "56e7cbf7d6f22d460cf98445f463839ab215222a"
+    "commit_binding_state": "unbound_worktree_candidate",
+    "subject_commit_sha": null
   }
 }

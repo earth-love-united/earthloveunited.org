@@ -50,10 +50,11 @@ function verifyWorkflowWiring() {
   ['cci:candidate', 'cci:release', 'legacy_ct40:candidate', 'legacy_ct40:release'].forEach(state => {
     assert.ok(workflow.includes(state), 'workflow does not recognize exact state: ' + state);
   });
-  assert.ok(workflow.includes('steps.climate_profile.outputs.phase'),
-    'strict legacy policy is not bound to the detected authority-package phase');
-  assert.ok(workflow.includes("steps.climate_profile.outputs.profile == 'legacy_ct40'"),
-    'legacy strict climate truth policy is not profile-scoped');
+  assert.match(workflow,
+    /- name: Climate truth CI reviewed-release gate\s*\n\s+if: \$\{\{ steps\.climate_profile\.outputs\.phase == 'release' \}\}\s*\n\s+run: node tools\/climate-truth-ci\.js --strict/,
+    'strict climate truth policy is not bound to the exact reviewed-release phase');
+  assert.ok(workflow.includes('node tools/check-climate-truth-ci.js'),
+    'phase-aware climate truth component-plan self-test is absent');
   assert.ok(workflow.includes("steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'candidate'"),
     'CCI factual-public refusal branch is absent');
   assert.ok(workflow.includes("steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release'"),
