@@ -7,7 +7,7 @@ const CREATED_AT = '2026-07-15T18:00:00Z';
 const RETRIEVED_ON = '2026-07-15';
 const PRIMAP_SHA256 = '7607f2b7c5b00d3ddbb19e5c7b100ff7bd8c2d8c2bfc8959c40f41d2cfecf4d9';
 const PRIMAP_FILENAME = 'Guetschow_et_al_2025-PRIMAP-hist_v2.6.1_final_13-Mar-2025.csv';
-const EXPECTED_SOURCE_REGISTRY_JSON_HASH = '0388bb245c0e09eb465813402878d9e396e1842d2abb25fe63179c3ce74f448b';
+const EXPECTED_SOURCE_REGISTRY_JSON_HASH = 'dc49e018810b3d4452072d47fa6e902dfba12f1835548a327ede55fe106a9c78';
 const SOURCE_IDS = Object.freeze([
   'primap-hist-2.6.1-final',
   'unfccc-ndc-registry-continuous-2026-07-15',
@@ -16,10 +16,10 @@ const SOURCE_IDS = Object.freeze([
   'unfccc-ter-continuous-2026-07-15',
 ]);
 const EXPECTED_INPUT_SHA256 = Object.freeze({
-  source_registry: 'ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d',
+  source_registry: '5c7222beb6414bb05723a59bc25a978cdc34c7b2d8bccce9bb1ff82190056149',
   ct15_readiness: '2939e0ab6eda7a5c90202c975826e8dcf33affda71cd0450ff499078b86478b4',
-  ct16_policy: '5f7cdc800595a1c7fe5fbfddb1761142f6a6f097615aa6961119cf3ad80f6063',
-  ct16_queue: 'bbfbd44df0f0768d8663ef0a810396fedbe66d9a92245222806e263dc15440bc',
+  ct16_policy: 'b17a0da307b3bb566c3a8c4126c384587a24a643502fa2f0403da3ff6d638447',
+  ct16_queue: '4bf47a926999d0b38cc65b4c45f9318602af904564f81be6f2ae1037e0fc874e',
   ct40_result: '684f38b3741a57e86e60e92873ecaa36336eb496f0443647ec067c2ee885444a',
 });
 const DECISION_FIELDS = Object.freeze([

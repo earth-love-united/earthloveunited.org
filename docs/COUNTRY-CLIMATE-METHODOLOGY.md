@@ -1,305 +1,156 @@
-# Country Climate Profile Methodology Charter
+# Country Climate Intelligence v1 methodology
 
-**Status:** Approved architecture baseline; implementation pending evidence gates
+**Status:** exact-source-revalidated factual candidate pending independent scientific and release-owner review
 
-**Methodology version:** 0.1.0
+**Methodology version:** 1.2.0
 
-**Effective date:** 2026-07-15
+**Candidate date:** 2026-08-27
 
 ## Purpose
 
-Earth Love United will replace its current pledge-gap status with a transparent
-Country Climate Profile. The profile is intended to help a public audience ask
-five different questions without mistaking one answer for another:
+Country Climate Intelligence is a metric-first, multi-source country dashboard. It keeps three distinct questions separate:
 
-1. How consequential is the country's emissions footprint?
-2. What has the country committed to, and can that commitment be compared?
-3. Is the commitment ambitious enough under the selected benchmarks?
-4. Are measured emissions and implemented policies moving at the required pace?
-5. How complete and trustworthy is the evidence behind the assessment?
+1. How much territorial fossil CO₂ does this country emit?
+2. What does its electricity mix show about the power transition?
+3. What observed and modeled physical-climate changes are available for its territory?
 
-The first public version will not publish an opaque 0–100 composite score.
-Country performance will be expressed as attributed categorical dimensions.
-
-## Normative principles
-
-The methodology is grounded in:
-
-- progression, highest possible ambition, differentiated responsibilities,
-  capabilities, and national circumstances under
-  [Paris Agreement Article 4](https://unfccc.int/sites/default/files/parisagreement_publication.pdf);
-- transparent reporting of reference points, time frames, scope, gases,
-  sectors, assumptions, conditionality, and accounting choices under the
-  [UNFCCC enhanced transparency framework](https://unfccc.int/Transparency);
-- separation of targets, policies/action, domestic pathways, fair-share
-  pathways, and finance in the
-  [Climate Action Tracker methodology](https://climateactiontracker.org/methodology/cat-rating-methodology/);
-- explicit separation of pledge outcomes from current-policy outcomes in the
-  [UNEP Emissions Gap Report 2025](https://www.unep.org/resources/emissions-gap-report-2025);
-- range- and uncertainty-aware interpretation consistent with the
-  [IPCC AR6 WGIII Summary for Policymakers](https://www.ipcc.ch/report/ar6/wg3/chapter/summary-for-policymakers/).
-
-## Scope
-
-### Included
-
-- territorial annual emissions and emissions trends;
-- fossil CO2 and economy-wide greenhouse gases as separate series;
-- official NDC commitments and structured progress indicators;
-- target integrity and comparability;
-- independent ambition benchmarks where licensed and available;
-- recent observed pace and current-policy projections;
-- historical and per-capita responsibility as context;
-- climate support provided, mobilized, needed, and received as distinct facts;
-- evidence provenance, recency, uncertainty, conflicts, and review status.
-
-### Excluded from the mitigation profile
-
-- adaptation performance and climate vulnerability;
-- voluntary carbon-project counts or credit volumes;
-- carbon-credit purchases as a substitute for territorial mitigation;
-- unverified national claims or inferred commitments;
-- a single public composite score before a separate aggregation decision.
-
-Adaptation and vulnerability require a later, separate profile so reporting
-capacity and climate exposure do not become mitigation penalties.
+The dashboard does not publish a composite climate score, target or delivery assessment, finance judgment, vulnerability score, offset adjustment, or country-performance grade. A high clean-electricity share does not cancel territorial emissions. Projected warming is not responsibility, vulnerability, or damage.
 
 ## Country universe
 
-The canonical registry begins with all 249 ISO 3166-1-compatible rows from the
-pinned, redistributable Debian `iso-codes` source package. It is an identity
-seed, not proof of sovereignty, UN membership, UNFCCC Party status, development
-group, territory treatment, reporting obligation, or map eligibility. Those
-claims remain separately sourced flags and default to `not_reviewed`.
+The runtime contains exactly 249 ISO 3166-1-compatible registry entities from the separately licensed Debian `iso-codes` identity artifact. Every entity remains navigable even when a source has no comparable value.
 
-The map may display states and territories, but comparisons must declare the
-eligible universe and never imply that every area has identical reporting
-obligations. UN M49 codes and groupings may be added only from a source whose
-normalized redistribution terms have been approved; they are not silently
-copied from the UN website.
+An upstream record must map to one registry entity or receive one documented `aggregate_exception`, `territory_exception`, or `unmapped_exception`. Territory values are never inherited from a parent country. Missing data is never converted to zero.
 
-## Evidence planes
+## Lenses
 
-### Party-reported plane
+### Carbon
 
-The official plane preserves what a country submitted or enacted: NDCs,
-Biennial Transparency Reports, National Inventory Reports, common reporting
-and tracking tables, technical expert review, long-term strategies, legislation,
-and official projections.
+The default comparison is 2024 territorial fossil CO₂ from [Global Carbon Budget 2025 v1.0](https://meta.icos-cp.eu/collections/AxnIW-ydMBT4BdKjxV63DGQl). The ordered rail is descending by the raw `emissions.fossil_co2.territorial` value. Color is sequential and transparent polygon relief is log-scaled for magnitude. Relief is deliberately subtle: every metric tile stays between `0.007` and `0.012` globe radii above the surface.
 
-### Harmonized plane
+The query-only presentation experiment `?carbon-relief=low-is-high` reverses Carbon relief so lower territorial fossil CO₂ sits slightly higher and the largest value remains nearest the base tile. It does not change color, the raw descending rail, eligibility, country facts, or source data. Its legend explicitly identifies the inversion as a demo and not a performance score. Missing values remain at the base rather than being treated as low emissions.
 
-The comparison plane preserves globally consistent scientific estimates such
-as approved releases from Global Carbon Budget, PRIMAP-hist, or EDGAR. It is
-used for cross-country comparison, not to overwrite the official record.
+The card keeps these facts separate:
 
-Both planes may be shown together. A material difference becomes a quality
-flag requiring investigation; it is never silently averaged or reconciled.
+- territorial fossil CO₂ in 2024;
+- 1990–2024 territorial series;
+- cumulative territorial fossil CO₂ from 1850 through 2024;
+- latest available consumption-based fossil CO₂;
+- latest net transfer of embodied fossil CO₂;
+- 2015–2024 land-use CO₂ mean and model spread;
+- territorial fossil CO₂ per person using the year-matched WPP 2024 Medium population projection.
 
-## Public profile axes
+Land-use change never enters the territorial fossil comparison value. Positive net transfer follows the GCB territorial-minus-consumption convention and means net exported embodied emissions.
 
-### 1. Impact
+### Power
 
-Impact describes consequence, not virtue. Candidate facts include:
+The comparison is Ember's 2024 published clean-generation aggregate. The rail explores descending `electricity.clean_share`. Color and subtle country-tile relief redundantly encode the same bounded 0–100% clean-share metric on a linear scale; no other power metric affects height.
 
-- latest annual territorial emissions and global share;
-- fossil CO2 and economy-wide GHG, with LULUCF separate;
-- emissions per person using a year-matched population denominator;
-- cumulative emissions where the source and start year are explicit;
-- consumption emissions only when a reliable attributed source is available.
+The card leads with two aligned 0–100% electricity-generation bars: one for Ember's published clean aggregate and one for its published fossil aggregate. The bars preserve the source's nine standardized fuel rows—Bioenergy, Coal, Gas, Hydro, Nuclear, Other Fossil, Other Renewables, Solar, and Wind—as visually distinct segments. Nuclear and the purple-pink `Other Renewables` bucket use plain fills; hydro, wind, solar, bioenergy, coal, gas, and `Other Fossil` use restrained, fuel-specific static textures. Fixed fuel order and the two-column text/value legend provide the non-color reading route, while hatching is reserved for explicit gaps. The card also retains the published wind-and-solar aggregate as supporting evidence, plus 2019–2024 clean-share change, carbon intensity, and power-sector emissions. Only source-classified annual actuals may enter the comparison order. Source-labelled estimates remain context or gaps.
 
-Output bands are `very_high`, `high`, `medium`, `low`, and `not_assessed`.
-Thresholds will be versioned and published before release.
+Fuel segments are copied exactly and never rescaled to make a visually perfect 100%. The compiler separately reconciles non-blank clean and fossil components to their aggregate anchors within ±0.02 percentage points. Exact source zeroes remain zero; blank cells remain labelled data gaps. Published totals from 99.98% through 100.02% are identified as source rounding. `Other Renewables` is Ember's combined geothermal, tidal, and wave category, so the dashboard does not claim a separate geothermal share. The fuel mix is context inside the Power card and does not change the clean-share comparison order.
 
-### 2. Target integrity
+### Physical climate
 
-This axis asks whether the commitment can be understood and normalized.
+The comparison explores the World Bank Climate Change Knowledge Portal CMIP6 country-area median temperature anomaly for 2040–2059 relative to 1995–2014 under SSP2-4.5. Color and subtle country-tile relief redundantly encode that same modeled warming median on a linear scale. Height is not vulnerability, damage, or responsibility.
 
-Outputs:
+The public fact carries the multi-model p10–p90 range. SSP1-2.6 and SSP5-8.5 medians appear in the analyst detail. The related precipitation anomaly remains context.
 
-```text
-comparable
-partially_comparable
-non_comparable
-qualitative_or_sectoral
-no_active_target_found
-not_assessed
-```
+The country card renders an evidence-only SSP2-4.5 temperature-change range using the published p10, median, and p90 exactly as supplied. Square, diamond, and circle markers distinguish the three statistics without relying on color. No distribution is fitted, no samples are generated, and no line is drawn through intervening years. The range is a multi-model percentile summary—not a probabilistic forecast, annual trajectory, new simulation, derived metric record, or ranking input.
 
-Target integrity is not target ambition. A clearly specified weak target may
-be comparable, while a potentially strong but underspecified target may not be.
+The four headline comparison gaps are `ATA`, `ESH`, `FLK`, and `SGS`. Global CCKP rasters cover the required variables and periods, so these are unresolved acquisition/identity cases rather than proven missing climate fields. Antarctica is conditionally fillable after a reviewed geographic polygon and complete model-first aggregation. Western Sahara, Falkland Islands (Malvinas), and South Georgia and the South Sandwich Islands stay explicit gaps until a release-level disputed/NDLSA and multipart-territory boundary policy is approved. Grid-cell percentile rasters cannot be spatially averaged and relabelled as country-level ensemble percentiles; country means must be calculated per model before the cross-model p10/median/p90.
 
-### 3. Ambition
+Observed temperature and precipitation use the World Bank CCKP's official `api/v1` global-country ERA5 annual aggregates. Each exact-checksummed variable response contains 246 country/area series for 1950–2025. The compiler selects 1970–2025, retains both 56-value annual series for public charts, and derives ordinary-least-squares slopes in °C per decade and mm/year per decade. Both pairs of fitted endpoints are compiled with their metrics; browser code only renders them.
 
-Ambition compares an eligible target with separately identified benchmarks:
+Each upstream identity ledger maps 245 series to registry entities and records CCKP's `KSV` Kosovo series as the sole non-ISO exception. `ATA`, `ESH`, `FLK`, and `SGS` remain explicit gaps for both observed variables. No boundary overlay or parent-country imputation is performed because CCKP supplies the country aggregates. ERA5 is labeled as reanalysis rather than direct station observation and values retain the API's two-decimal precision. Annual precipitation is an area-mean accumulated total in mm/year; its trend is not itself a drought, flood, runoff, or water-availability indicator.
 
-- progression from the country's previous NDC;
-- a modelled domestic 1.5°C-compatible pathway;
-- a fair-share range reflecting responsibility and capability;
-- independent assessments such as CAT where covered and licensed.
+## Source contract
 
-The domestic-pathway and fair-share results remain separate. The project will
-not invent independent benchmark coverage for countries not assessed by a
-source.
+| Role | Reviewed v1 component |
+|---|---|
+| Core carbon | Global Carbon Budget 2025 v1.0, including separate national fossil and land-use workbooks |
+| Population denominator | UN World Population Prospects 2024, exact 2024 Medium projection only |
+| Power | Ember Yearly Electricity Data, exact 2019/2024 annual aggregates and nine exact 2024 generation-fuel rows under Ember's published taxonomy |
+| Projected physical climate | World Bank CCKP CMIP6 country aggregates |
+| Observed physical climate | World Bank CCKP ERA5 annual country temperature and precipitation aggregates; exact variable-specific 1950–2025 snapshots, with both 1970–2025 series and OLS trends retained |
+| Official context | Existing UNFCCC document title, submission date, and direct-link metadata only |
 
-Candidate outputs are `aligned`, `almost_sufficient`, `insufficient`,
-`highly_insufficient`, `critically_insufficient`, and `not_assessed`.
+Every value-contributing component requires a reviewed licence, attribution, field and metric permitlists, exact retrieval receipt/checksum, explicit raw-custody class, normalized-value redistribution decision, and versioned source ID. Candidate.7 independently re-fetches and pins the exact GCB, WPP, Ember, CCKP CMIP6, and CCKP ERA5 inputs. Ten CCKP projection responses reproduce all 2,450 mapped projection values; Ember and both ERA5 responses reproduce their pinned bytes; the current WPP gzip and both GCB workbooks compile from exact official bytes with complete identity ledgers. GCB uses immutable publisher objects. WPP, Ember, and CCKP are explicitly upstream-only/unarchived, so later recovery of those exact raw bytes is not guaranteed if publishers replace them; normalized components and the runtime remain pinned. The source registry documents GCB/Ember/CCKP CC BY 4.0 and WPP CC BY 3.0 IGO permissions and change notices. Independent scientific review and release-owner confirmation of those rights decisions remain required before production promotion. Browser code calls no source API and uses no API key. Climate TRACE is outside the v1 evidence boundary and contributes no source record, component, metric, or review obligation.
 
-### 4. Delivery
+PRIMAP-hist v2.7 is not acquired or ingested. The reviewed v2.6.1 artifact contributes no value and appears only in detailed citation provenance.
 
-Delivery has two distinct tests:
+## Metric record
 
-1. **Recent pace versus required pace** using a measured, scope-matched annual
-   series.
-2. **Current-policy projection versus target** where an attributed independent
-   or official projection is available.
-
-Outputs are `ahead`, `on_pace`, `uncertain`, `off_course`, and `not_assessed`.
-These are not predictions that a country will or will not meet its target.
-
-### 5. Fair contribution
-
-Fair contribution presents responsibility, capability, domestic action, and
-international support without letting one erase another. Provider and recipient
-roles, commitments and disbursements, loans and grants, and provided/mobilized/
-needed/received finance remain distinct.
-
-This axis will remain contextual until its evidence semantics and licensing
-pass a separate review.
-
-### 6. Evidence quality
-
-Evidence quality is independent of performance:
-
-- **A:** current primary or approved harmonized source, complete scope,
-  reproducible lineage, reviewed, and no unresolved material conflict;
-- **B:** sufficient for the stated assessment with bounded limitations;
-- **C:** estimated, stale, partial, or dependent on material assumptions;
-- **D:** insufficient for a public performance assessment.
-
-The letter is always accompanied by reason codes. A low evidence grade never
-improves another axis.
-
-## Target comparability
-
-An absolute target or emissions gap may be calculated only when these inputs
-are known and scope-compatible:
-
-1. target year or period;
-2. reference year and value, or a reproducible baseline;
-3. gas basket and global-warming-potential convention;
-4. sector and geographic coverage;
-5. LULUCF and removals treatment;
-6. conditional and unconditional portions;
-7. Article 6 transfer treatment;
-8. primary source and methodological assumptions.
-
-### Target-type rules
-
-- **Base-year:** use the stated reduction only with a scope-matched inventory
-  for the stated base year.
-- **BAU:** require the published BAU scenario, vintage, and target-year value.
-  Current emissions are not a BAU proxy.
-- **Intensity:** require the stated denominator and a compatible observed and
-  target-year denominator series. Fossil-emissions momentum is not a proxy.
-- **Fixed level:** preserve the official absolute value or range and its scope.
-- **Trajectory or peaking:** preserve the official indicator/pathway; do not
-  invent a linear decline.
-- **Sectoral or qualitative:** do not produce an economy-wide gap.
-- **Net zero:** record year, gases, sectors, residual emissions, removals,
-  offsets, and interim targets. “Net zero” alone is not a pathway.
-
-Failure returns `non_comparable` plus a machine-readable reason. It never
-returns “No target,” zero, or a favorable performance band.
-
-## Delivery calculations
-
-For a comparable target and latest observation:
+Each record carries:
 
 ```text
-required_rate =
-  (target_emissions / latest_emissions) ^
-  (1 / (target_year - latest_year)) - 1
+metric ID
+value and unit
+period
+actual | estimated | modeled status
+scope object and SHA-256 scope fingerprint
+uncertainty object
+fact IDs and source IDs
+review state
+transformation
+explicit gap reason when value is null
 ```
 
-Observed pace must use a scope-matched measured annual series with at least six
-observations. The implementation should use a robust log-linear trend and
-retain an uncertainty interval.
+Stable comparison IDs include `emissions.fossil_co2.territorial`, `electricity.clean_share`, and `climate.temperature.change`.
 
-- `on_pace`: the observed interval is at least as fast as the required pace;
-- `off_course`: the complete observed interval is slower;
-- `uncertain`: the intervals overlap;
-- `not_assessed`: observations or compatible target evidence are insufficient.
+## Permitted derivations
 
-The public chart distinguishes measured points, reported uncertainty, target
-endpoints, and any illustrative required pathway. Modeled values cannot be
-drawn or described as measurements.
-
-## Missing, uncertain, and conflicting evidence
-
-Allowed states include:
+Only these v1 derivations are allowed:
 
 ```text
-available            estimated             modeled
-not_reported         not_assessed          non_comparable
-not_applicable       not_yet_due           reporting_optional
-stale                conflicting           withheld
-source_unavailable   not_reviewed
+territorial per capita = MtCO₂ × 1,000,000 ÷ WPP 2024 Medium population projection
+five-year power change = clean share 2024 − clean share 2019
+land-use central value = mean(BLUE model mean, OSCAR model mean, LUCE model mean)
+land-use uncertainty = population standard deviation of the three model means
+observed trend = OLS slope over annual country aggregates × 10 years
 ```
 
-Hard rules:
+All numeric outputs are rounded to six decimal places after the stated calculation. Negative land-use values remain removals.
 
-- `null` is never coerced to `0` or `false`;
-- missing CAT coverage is not a CAT rating;
-- missing delivery evidence is not “off track”;
-- missing evidence cannot produce green or lower visual prominence;
-- no calculation crosses incompatible scopes or accounting frames;
-- source precision and uncertainty limit displayed precision;
-- LULUCF remains separate unless an uncertainty-aware compatible total exists;
-- SIDS/LDC reporting flexibility is not scored as failure.
+## Scope and comparison rule
 
-## Provenance and versioning
+A numerical source delta is allowed only when metric, accounting frame, gases, sectors, geography, LULUCF treatment, GWP, unit, and period all match exactly. The scope fingerprint is evidence for the complete scope object, not permission to compare two different metric IDs.
 
-Every published fact or result carries:
+No cross-source carbon disagreement percentage is calculated in v1.
 
-```text
-fact_id and country_id
-metric, value, unit, period, scope
-source publisher, title, version, URL/DOI, locator
-publication/submission and retrieval dates
-checksum, licence, attribution
-evidence class and uncertainty
-input fact IDs, transformation, formula version
-methodology_version and data_release_id
-calculated_at and calculation_hash
-quality_status and review_status
-```
+## Ordering and gaps
 
-Methodology versions follow semantic versioning. Data releases are immutable
-dated snapshots. Every changed country result receives a generated explanation
-identifying a source revision, target update, inventory revision, review
-correction, or methodology change.
+Each lens declares one metric, period, evidence class, and descending order. Only records matching all four enter the numbered rail. All other registry entities remain below it, searchable and unnumbered, with an explicit reason.
 
-## Publication eligibility
+Candidate coverage is:
 
-A country may receive a delivery assessment only when:
+| Lens | Comparable records | Explicit gaps |
+|---|---:|---:|
+| Carbon | 213 | 36 |
+| Power | 195 | 54 |
+| Physical | 245 | 4 |
 
-- a compatible target and measured series pass the schema and comparability
-  gates;
-- the calculation is deterministic and covered by target-type fixtures;
-- all displayed facts have approved source and licence records;
-- unresolved source conflicts are either resolved or disclosed within the
-  permitted quality threshold;
-- an independent reviewer approves manually interpreted target evidence.
+These counts are recomputed from country records during validation; the runtime cannot substitute the retired PRIMAP coverage constants.
 
-All mapped countries remain visible even when these conditions are not met.
+## Evidence presentation
 
-## Governance
+Tooltips always state metric, value, unit, period, and evidence class. Country cards show plain-language facts first. “Methods & sources” expands definitions, uncertainty, scope fingerprint, transformation, release/checksum, source links, citation-only provenance, official metadata, and gap reasons.
 
-Changing axis meaning, thresholds, aggregation, or comparability rules requires
-a major methodology version and architectural review. Adding a source or metric
-without changing meaning is a minor version. Correcting a calculation or
-metadata defect is a patch.
+At-a-glance facts and charted facts are removed from the expanded lens grid so a metric appears only once. Physical records are grouped by variable: observed temperature analysis, the published future-projection range, and the unchanged projected-temperature fact are followed by the projected-precipitation fact and observed precipitation data. Separate temperature and precipitation charts show the annual 1970–2025 ERA5 series as solid lines and the compiled OLS fits as dashed lines. Their tables expose every annual value to keyboard and assistive-technology users; the projection-range table exposes the source-published p10, median, and p90 with their distinct marker shapes.
 
-No extractor approves its own target interpretation. Automated source checks
-stage candidates only; reviewed releases are compiled and published separately.
+Headings are metric-first. Provider logos and repeated provider names are not used as the visual hierarchy. Evidence remains accessible by compact attribution links and the methods drawer.
+
+The body-level fallback exposes the same 249 records, current lens, comparison partition, card facts, and explicit gaps when WebGL is unavailable or when the user opens the evidence browser. Color is never the sole status cue.
+
+## Candidate boundary and promotion
+
+The checked-in artifact is a candidate with `production_runtime_release=false`. The previous factual runtime remains staged for rollback. Promotion requires all of the following:
+
+1. source licences, permitlists, exact raw receipts, custody classes, and checksums independently revalidated;
+2. core-carbon and optional-component scientific review;
+3. schema, compiler, derivation, coverage, and exact-runtime checks;
+4. visual, keyboard, screen-reader, narrow-screen, WebGL, and fallback review;
+5. atomic service-worker staging and rollback verification;
+6. protected-file reviewer approval.
+
+The recovery receipt for this candidate is documented in `data/climate/releases/country-climate-intelligence-v1/source-receipts.json`. It does not replace the remaining independent production review.

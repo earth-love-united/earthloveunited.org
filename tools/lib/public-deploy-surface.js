@@ -4,6 +4,11 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const { EXPECTED_SPEC: EXPECTED_VENDOR } = require('./globe-vendor-integrity');
+const { inspectReleaseApproval } = require('./country-climate-intelligence-release-gate');
+const {
+  PROFILE_CCI,
+  detectPublicClimateReleaseProfile,
+} = require('./public-climate-release-profile');
 
 const CANDIDATE_MARKER_PATH = 'CANDIDATE-NOT-FOR-PUBLICATION.txt';
 const CANDIDATE_MARKER_TEXT = [
@@ -15,6 +20,12 @@ const CANDIDATE_MARKER_TEXT = [
 ].join('\n');
 const APPROVAL_PATH = 'data/climate/reviews/globe-runtime-assets-production-review.json';
 const SIGNATURE_BUNDLE_PATH = 'data/climate/reviews/globe-runtime-assets-production-review.signatures.json';
+const CLIMATE_INTELLIGENCE_RUNTIME_PATH = 'data/climate/runtime/country-climate-intelligence.json';
+const CLIMATE_INTELLIGENCE_ENTRYPOINTS = Object.freeze([
+  'index.html',
+  'js/data.js',
+  'sw.js',
+]);
 const RUNTIME_IMMUTABLE_CACHE_CONTROL = 'public, max-age=31536000, immutable';
 const RUNTIME_IMMUTABLE_HEADER_PATTERNS = Object.freeze([
   '/assets/globe/runtime/*.geojson',
@@ -46,6 +57,7 @@ const ALWAYS_PUBLIC_PATHS = Object.freeze([
   'js/storage.js',
   'js/data-schema.js',
   'js/data.js',
+  'js/country-climate-intelligence.js',
   'js/globe.js',
   'js/carbon-clock.js',
   'js/guided-first-orbit.js',
@@ -68,7 +80,6 @@ const ALWAYS_PUBLIC_PATHS = Object.freeze([
   'assets/partners/connecticut-green-bank.png',
   'assets/partners/save-planet-earth.svg',
   'assets/partners/st-vincents-wordmark.png',
-  'data/carbon-projects.json',
   'data/small-nations.json',
   'docs/LEGACY-COUNTRY-DATA-EXIT.md',
   'data/climate/runtime/candidate-manifest.json',
@@ -80,6 +91,7 @@ const ALWAYS_PUBLIC_PATHS = Object.freeze([
 ].sort());
 
 const CANDIDATE_ONLY_PATHS = Object.freeze([
+  CLIMATE_INTELLIGENCE_RUNTIME_PATH,
   'tools/smoke-test.js',
   'tools/stack-lint.js',
 ].sort());
@@ -179,14 +191,30 @@ function verifyRuntimeCachePolicy(root) {
 
 function expectedSourcePaths(sourceRoot, mode) {
   if (!['candidate', 'release'].includes(mode)) throw new Error('deploy mode must be candidate or release');
+  const climateRelease = mode === 'release' ? verifyClimateIntelligenceReleaseBoundary(sourceRoot) : null;
   const paths = [
     ...ALWAYS_PUBLIC_PATHS,
     ...(mode === 'candidate' ? CANDIDATE_ONLY_PATHS : []),
+    ...(climateRelease?.pass ? [CLIMATE_INTELLIGENCE_RUNTIME_PATH] : []),
     ...approvalPaths(sourceRoot),
   ];
   const normalized = paths.map(safeRelative).sort();
   if (new Set(normalized).size !== normalized.length) throw new Error('public deploy path list contains duplicates');
   return normalized;
+}
+
+function verifyClimateIntelligenceReleaseBoundary(sourceRoot) {
+  const detected = detectPublicClimateReleaseProfile(sourceRoot);
+  if (detected.profile !== PROFILE_CCI) {
+    return { pass: false, status: 'not_referenced', references: [], profile: detected.profile };
+  }
+  const references = [...CLIMATE_INTELLIGENCE_ENTRYPOINTS];
+  const result = inspectReleaseApproval(sourceRoot);
+  if (!result.pass) {
+    const reasons = [...result.errors, ...result.blockers].map(item => item.code).join(', ') || 'approval_missing';
+    throw new Error('Country Climate Intelligence factual-public staging is blocked; active entrypoints reference a runtime without an exact approved CCI release package (' + reasons + '): ' + references.join(', '));
+  }
+  return { ...result, references, profile: detected.profile, fingerprint: detected.fingerprint };
 }
 
 function expectedStagedPaths(sourceRoot, mode) {
@@ -257,6 +285,8 @@ module.exports = {
   CANDIDATE_MARKER_PATH,
   CANDIDATE_MARKER_TEXT,
   CANDIDATE_ONLY_PATHS,
+  CLIMATE_INTELLIGENCE_ENTRYPOINTS,
+  CLIMATE_INTELLIGENCE_RUNTIME_PATH,
   OPTIONAL_APPROVAL_PATHS,
   RUNTIME_IMMUTABLE_CACHE_CONTROL,
   RUNTIME_IMMUTABLE_HEADER_PATTERNS,
@@ -266,6 +296,7 @@ module.exports = {
   inspectRegular,
   listFiles,
   safeRelative,
+  verifyClimateIntelligenceReleaseBoundary,
   verifyRuntimeCachePolicy,
   verifyPublicDeploySurface,
 };

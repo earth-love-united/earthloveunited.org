@@ -35,9 +35,9 @@ exactly three roles—`asset_rights_reviewer`, `licensing_counsel`, and
 keys never belong in the repository.
 
 After those real humans complete the review, each role signs the exact
-domain-separated `ELU-GLOBE-RUNTIME-APPROVAL-SIGNATURE-V1` message. That message
+domain-separated `ELU-GLOBE-RUNTIME-APPROVAL-SIGNATURE-V2` message. That message
 binds the repository, approval path and SHA-256, trust-registry path and
-SHA-256, reviewed commit SHA, and signer role, including its final newline. The
+SHA-256, reviewed artifact-pin digest, and signer role, including its final newline. The
 three signatures go in
 `data/climate/reviews/globe-runtime-assets-production-review.signatures.json`;
 the approval binds the same three derived Ed25519 key IDs. The verifier rejects
@@ -48,13 +48,13 @@ Each signer signs these exact UTF-8 bytes, substituting the pinned values and
 retaining the final newline after `role=...`:
 
 ```text
-ELU-GLOBE-RUNTIME-APPROVAL-SIGNATURE-V1
+ELU-GLOBE-RUNTIME-APPROVAL-SIGNATURE-V2
 repository=earth-love-united/earthloveunited.org
 approval_path=data/climate/reviews/globe-runtime-assets-production-review.json
 approval_sha256=<64 lowercase hex>
 trust_registry_path=data/climate/governance/globe-runtime-approval-trust.json
 trust_registry_sha256=<64 lowercase hex>
-reviewed_commit_sha=<40 lowercase hex>
+reviewed_artifact_pin_digest=<64 lowercase hex>
 role=<asset_rights_reviewer|licensing_counsel|release_authorizer>
 ```
 
@@ -62,7 +62,7 @@ Safe future sequence:
 
 1. provision only real public keys and identities through maintainer review;
 2. update every protected registry/schema/integration pin and complete the
-   exact commit-bound approval without committing private material;
+   exact artifact-pin-bound approval without committing private material;
 3. have each role sign the documented message offline and commit only the
    detached bundle;
 4. run the approval checker, readiness policy, source notice/CT-45 checks, and
@@ -125,14 +125,16 @@ This mode fails closed unless every item below is true:
 - CT-45 passes and a separate independent exact-digest runtime-asset review
   approves the visual-asset rights, confirms the complete deployed third-party notice
   inventory, and explicitly grants production use and release authority;
-- the exact v2 approval is a regular file tied to the reviewed commit and pins
-  the CT-45 manifest, readable notice, machine inventory, and integration
-  record. It must contain all five non-blanket approved asset rows, four
+- the exact v3 approval is a regular file that binds the canonical 95 reviewed
+  artifact pins and their squash-safe digest, including the CT-45 manifest,
+  readable notice, machine inventory, integration record, schemas, and
+  enforcement controls. It must contain all five non-blanket approved asset rows, four
   resolved counsel rows, valid decision references/timestamps, and distinct
   non-placeholder builder, asset-rights reviewer, counsel reviewer, and release
   authorizer identities;
-- the protected registry is provisioned and the exact detached bundle verifies
-  one distinct Ed25519 signature for each required role at `reviewed_at`.
+- the protected registry is provisioned and the exact V2 detached bundle
+  verifies one distinct Ed25519 signature for each required role, with every
+  signing key valid at `reviewed_at`.
 
 The only successful production status is `release_ready`.
 

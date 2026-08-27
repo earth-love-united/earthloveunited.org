@@ -25,7 +25,7 @@ const SmokeTest = (() => {
         name: 'Core modules on window',
         critical: true,
         test: () => {
-          const required = ['Data', 'GlobeModule', 'CARBON_CLOCK', 'GUIDED_ORBIT', 'App'];
+          const required = ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE', 'GlobeModule', 'CARBON_CLOCK', 'GUIDED_ORBIT', 'App'];
           const missing = required.filter(m => typeof window[m] === 'undefined');
           return {
             pass: missing.length === 0,
@@ -73,25 +73,34 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'CT-42 factual candidate is loaded inside its denied boundary',
+        name: 'Country Climate Intelligence release passes its runtime boundary',
         critical: true,
         test: () => {
-          const candidate = window.Data?.climateCandidate;
-          const ranking = window.Data?.getClimateRanking?.();
-          const factualCount = candidate?.countries?.filter(country => country.emissions?.status === 'reviewed_factual').length || 0;
-          const gapCount = candidate?.countries?.filter(country => country.emissions?.status !== 'reviewed_factual').length || 0;
-          const ok = candidate?.review_status === 'not_reviewed'
-            && candidate?.production_runtime_release === false
-            && candidate?.countries?.length === 249
-            && factualCount === 206
-            && gapCount === 43
-            && ranking?.disclosure?.eligible_count === 206
-            && ranking?.disclosure?.unranked_count === 43;
+          const runtime = window.Data?.getClimateIntelligenceRelease?.();
+          const lenses = runtime?.lens_catalog || [];
+          const partitionsValid = lenses.every(lens => {
+            const order = runtime.lens_orders?.[lens.id];
+            return order?.eligible_count + order?.unranked_count === 249 &&
+              order?.ordered?.length === order?.eligible_count && order?.unranked?.length === order?.unranked_count;
+          });
+          const candidateState = runtime?.release?.status === 'candidate'
+            && runtime?.release?.review_state === 'normalized_factual_candidate_pending_independent_scientific_review'
+            && runtime?.release?.production_runtime_release === false;
+          const productionState = runtime?.release?.status === 'production'
+            && runtime?.release?.review_state === 'independently_reviewed'
+            && runtime?.release?.production_runtime_release === true;
+          const ok = window.Data?.isClimateIntelligenceReady?.() === true
+            && (candidateState || productionState)
+            && runtime?.countries?.length === 249
+            && new Set(runtime.countries.map(country => country.country_id)).size === 249
+            && Object.keys(runtime?.metric_definitions || {}).length === 26
+            && lenses.map(lens => lens.id).join(',') === 'carbon,power,physical'
+            && partitionsValid;
           return {
             pass: ok,
             detail: ok
-              ? 'candidate not_reviewed/production false; registry 249 = 206 factual + 43 gaps; ranking 206 + 43; CT-04 separately guards legacy absence'
-              : `boundary/count mismatch (registry ${candidate?.countries?.length || 0}, factual ${factualCount}, gaps ${gapCount}, ranking ${ranking?.disclosure?.eligible_count || 0} + ${ranking?.disclosure?.unranked_count || 0})`,
+              ? `exact-SHA ${runtime.release.status}; 249 unique entities; 26 metrics; three complete lens partitions`
+              : `runtime boundary mismatch (registry ${runtime?.countries?.length || 0}, metrics ${Object.keys(runtime?.metric_definitions || {}).length}, lenses ${lenses.length})`,
           };
         },
       },
@@ -188,7 +197,7 @@ const SmokeTest = (() => {
         name: 'Critical DOM elements exist',
         critical: true,
         test: () => {
-          const required = ['globeViz', 'hero', 'topbar', 'hex-legend', 'globe-back-btn', 'globe-fallback', 'globe-evidence-browse', 'hero-carbon-clock', 'guided-orbit', 'guided-orbit-replay'];
+          const required = ['globeViz', 'hero', 'topbar', 'climate-lens-controls', 'climate-lens-status', 'hex-legend', 'globe-back-btn', 'globe-fallback', 'globe-evidence-browse', 'hero-carbon-clock', 'guided-orbit', 'guided-orbit-replay'];
           const missing = required.filter(id => !document.getElementById(id));
           return {
             pass: missing.length === 0,
@@ -261,7 +270,7 @@ const SmokeTest = (() => {
           const count = Math.max(polyData?.length || 0, hexData?.length || 0);
           return {
             pass: count === 201,
-            detail: count === 201 ? 'Exact 201-entity candidate overlay is active' : `${count} country features (expected 201)`,
+            detail: count === 201 ? 'Exact 201-entity climate-intelligence overlay is active' : `${count} country features (expected 201)`,
           };
         },
       },
@@ -280,26 +289,102 @@ const SmokeTest = (() => {
           if (panel.parentElement !== document.body) return { pass: false, detail: '#globe-fallback is not a direct child of body' };
           if (!document.body.classList.contains('globe-fallback-active')) {
             const closed = panel.hidden && panel.getAttribute('aria-hidden') === 'true';
-            return { pass: closed, detail: closed ? 'Fallback is inert and hidden until a renderer failure' : 'Closed fallback remains exposed' };
+            return { pass: closed, detail: closed ? 'Fallback is hidden until a renderer failure or evidence-browse request' : 'Closed fallback remains exposed' };
           }
           const factual = panel.querySelectorAll('[data-fallback-evidence-state="factual"]').length;
           const gaps = panel.querySelectorAll('[data-fallback-evidence-state="gap"]').length;
+          const lensRows = window.COUNTRY_CLIMATE_INTELLIGENCE?.getRailRows?.(window.GlobeModule?.getLens?.() || 'carbon');
           const controls = [...panel.querySelectorAll('button,input,a[href]')];
-          const undersized = controls.filter(control => control.getBoundingClientRect().height < 44);
+          const undersized = controls.filter(control => control.getClientRects().length > 0 && control.getBoundingClientRect().height < 44);
           const reason = panel.dataset.reason;
           const allowed = ['candidate_data_unavailable', 'country_geometry_unavailable', 'visual_assets_unavailable', 'library_load_failed', 'library_unavailable', 'webgl_unavailable', 'globe_construction_failed', 'globe_container_missing'];
           const browsing = reason === 'evidence_browse_requested';
           const canvasCount = document.querySelectorAll('#globeViz canvas').length;
+          const lensControls = document.getElementById('climate-lens-controls');
+          const tutorial = document.getElementById('guided-orbit');
+          const accessibleSurfaces = panel.getAttribute('role') === 'region' && panel.inert !== true &&
+            lensControls?.inert !== true && tutorial?.inert !== true;
           const rendererStateOk = browsing
             ? window.GlobeModule?._initialized === true && canvasCount === 1
             : window.GlobeModule?._initialized !== true && canvasCount === 0;
-          const ok = factual === 206 && gaps === 43 && undersized.length === 0 &&
-            (browsing || allowed.includes(reason)) && rendererStateOk;
+          const ok = factual === lensRows?.eligible_count && gaps === lensRows?.unranked_count && factual + gaps === 249 && undersized.length === 0 &&
+            (browsing || allowed.includes(reason)) && rendererStateOk && accessibleSurfaces;
           return {
             pass: ok,
             detail: ok
-              ? `${factual} factual candidate series + ${gaps} explicit gaps; reason ${reason}; all ${controls.length} controls >=44px; renderer state is safe`
-              : `factual ${factual}, gaps ${gaps}, undersized ${undersized.length}, reason ${reason}, initialized ${window.GlobeModule?._initialized}, canvases ${canvasCount}`,
+              ? `${factual} exact lens records + ${gaps} explicit gaps; reason ${reason}; all ${controls.length} controls >=44px; lens and tutorial controls remain operable`
+              : `factual ${factual}, gaps ${gaps}, undersized ${undersized.length}, reason ${reason}, initialized ${window.GlobeModule?._initialized}, canvases ${canvasCount}, accessible surfaces ${accessibleSurfaces}`,
+          };
+        },
+      },
+      {
+        name: 'Fallback tutorial shelf leaves lens, search, and country chooser operable',
+        critical: true,
+        test: () => {
+          const width = window.innerWidth;
+          const fallback = document.body.classList.contains('globe-fallback-active');
+          if (!fallback || width < 801 || width > 1280) {
+            return { pass: true, detail: 'Compact fallback geometry is exercised at 801–1280px' };
+          }
+          const orbit = window.GUIDED_ORBIT;
+          const replay = document.getElementById('guided-orbit-replay');
+          const reason = window.GlobeModule?._fallbackReasonCode;
+          if (!orbit || !replay || reason === 'candidate_data_unavailable') {
+            return { pass: reason === 'candidate_data_unavailable', detail: reason === 'candidate_data_unavailable'
+              ? 'Tutorial is intentionally suppressed when country evidence is unavailable'
+              : 'Guided fallback controls are unavailable' };
+          }
+          const stored = localStorage.getItem('elu-guided-first-orbit-v1');
+          let geometry = null;
+          const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+          const elementRect = element => {
+            const rect = element?.getBoundingClientRect();
+            return rect && rect.width > 0 && rect.height > 0 ? rect : null;
+          };
+          const visibleRect = element => {
+            const rect = elementRect(element);
+            return rect && rect.right > 0 && rect.bottom > 0 &&
+              rect.left < window.innerWidth && rect.top < window.innerHeight ? rect : null;
+          };
+          const centerHits = element => {
+            const rect = visibleRect(element);
+            if (!rect) return false;
+            const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            return hit === element || element.contains(hit);
+          };
+          try {
+            orbit.start({ route: 'fallback', reason, force: true, opener: replay, focus: false });
+            orbit.goToStep(1, { focus: false });
+            const card = document.querySelector('#guided-orbit[data-mode="interaction"] .guided-orbit-card');
+            const lens = document.querySelector('#climate-lens-controls [aria-pressed="true"]');
+            const search = document.getElementById('globe-fallback-search');
+            const chooser = document.querySelector('#globe-fallback-country-list [data-fallback-country-iso]');
+            const cardRect = visibleRect(card);
+            const lensRect = visibleRect(lens);
+            const searchRect = visibleRect(search);
+            const chooserRect = elementRect(chooser);
+            geometry = {
+              controlsVisible: !!(cardRect && lensRect && searchRect),
+              chooserPresent: !!chooserRect,
+              overlapsLens: !!(cardRect && lensRect && overlaps(cardRect, lensRect)),
+              overlapsSearch: !!(cardRect && searchRect && overlaps(cardRect, searchRect)),
+              overlapsChooser: !!(cardRect && chooserRect && overlaps(cardRect, chooserRect)),
+              lensHit: centerHits(lens),
+              searchHit: centerHits(search),
+            };
+          } finally {
+            orbit.destroy();
+            orbit.init();
+            if (stored === null) localStorage.removeItem('elu-guided-first-orbit-v1');
+            else localStorage.setItem('elu-guided-first-orbit-v1', stored);
+          }
+          const pass = !!geometry && geometry.controlsVisible && geometry.chooserPresent && !geometry.overlapsLens && !geometry.overlapsSearch &&
+            !geometry.overlapsChooser && geometry.lensHit && geometry.searchHit;
+          return {
+            pass,
+            detail: pass
+              ? `Compact ${width}px fallback keeps the lens, search, and first country row clear and hit-testable`
+              : `Compact ${width}px geometry ${JSON.stringify(geometry)}`,
           };
         },
       },
@@ -307,7 +392,7 @@ const SmokeTest = (() => {
         name: 'Country card is not open by default',
         critical: true,
         test: () => {
-          const dialogs = document.querySelectorAll('#elu-country-card-wrap[role="dialog"][aria-modal="true"]');
+          const dialogs = document.querySelectorAll('#elu-country-card-wrap[role="dialog"]');
           return {
             pass: dialogs.length === 0,
             detail: dialogs.length === 0 ? 'No default country dialog' : `${dialogs.length} country dialog(s) open before user selection`,
@@ -346,6 +431,7 @@ const SmokeTest = (() => {
           const orbit = window.GUIDED_ORBIT;
           const replay = document.getElementById('guided-orbit-replay');
           const primary = document.getElementById('guided-orbit-primary');
+          const hiddenEnter = document.querySelector('#hero .enter-btn[data-action="enterGlobe"]');
           if (!orbit || !replay || !primary) return { pass: false, detail: 'Guided orbit controls are unavailable' };
           if (!document.body.classList.contains('globe-mode')) {
             return { pass: true, detail: 'Guided lifecycle is exercised by the headless globe route' };
@@ -354,6 +440,14 @@ const SmokeTest = (() => {
           let blocked = false;
           let advancedOnce = false;
           let restoredVisibleOpener = false;
+          const hiddenEnterUnavailable = !!hiddenEnter && (() => {
+            if (hiddenEnter.getClientRects().length === 0) return true;
+            for (let node = hiddenEnter; node instanceof HTMLElement; node = node.parentElement) {
+              const style = window.getComputedStyle(node);
+              if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) return true;
+            }
+            return false;
+          })();
           try {
             orbit.destroy();
             orbit.init();
@@ -361,12 +455,12 @@ const SmokeTest = (() => {
             orbit.init();
             blocked = orbit.start({ route: 'fallback', reason: 'candidate_data_unavailable', force: true, opener: replay, focus: false }) === false &&
               orbit.getState().active === false && document.getElementById('guided-orbit').hidden;
-            const started = orbit.start({ route: 'globe', force: true, opener: replay, focus: false });
+            const started = orbit.start({ route: 'globe', force: true, opener: hiddenEnter || replay, focus: false });
             primary.click();
             const state = orbit.getState();
-            advancedOnce = started === true && state.active === true && state.step === 2;
+            advancedOnce = started === true && state.active === true && state.step === 2 && state.stepCount === 3;
             orbit.skip();
-            restoredVisibleOpener = document.activeElement === replay && replay.getClientRects().length > 0;
+            restoredVisibleOpener = hiddenEnterUnavailable && document.activeElement === replay && replay.getClientRects().length > 0;
           } finally {
             orbit.destroy();
             orbit.init();
@@ -377,54 +471,107 @@ const SmokeTest = (() => {
           return {
             pass,
             detail: pass
-              ? 'No-data tour suppressed; destroy/re-init leaves one click handler; skip restores the visible replay control'
-              : `blocked ${blocked}, one-step advance ${advancedOnce}, visible focus restore ${restoredVisibleOpener}`,
+              ? 'No-data tour suppressed; destroy/re-init leaves one click handler; skip rejects the hidden Enter opener and restores visible replay'
+              : `blocked ${blocked}, one-step advance ${advancedOnce}, visible focus restore ${restoredVisibleOpener}, hidden Enter unavailable ${hiddenEnterUnavailable}, active focus ${document.activeElement?.id || document.activeElement?.tagName}`,
           };
         },
       },
       {
-        name: 'Country ranking persistently identifies magnitude as not performance',
+        name: 'Country rail exposes the exact lens metric and searchable gaps',
         critical: true,
         test: () => {
           if (!document.body.classList.contains('globe-mode')) {
-            return { pass: true, detail: 'Persistent ranking disclosure is exercised by the headless globe route' };
+            return { pass: true, detail: 'Exact lens disclosure is exercised by the headless globe route' };
           }
           const rail = document.getElementById('elu-country-rank-rail');
-          const full = rail?.querySelector('.elu-rank-subtitle');
-          const compact = rail?.querySelector('.elu-rank-boundary-compact');
-          const visible = node => !!node && node.getClientRects().length > 0 && getComputedStyle(node).display !== 'none';
-          const accessible = rail?.getAttribute('aria-label')?.includes('Magnitude ordering is not a climate-performance score.') === true;
-          const fullVisible = visible(full) && full.textContent.includes('not a performance score');
-          const compactVisible = visible(compact) && compact.textContent.trim() === 'Not a performance score';
-          const pass = !!rail && accessible && (fullVisible || compactVisible);
+          const title = rail?.querySelector('.elu-rank-title');
+          const search = rail?.querySelector('[data-country-rail-filter]');
+          const gapHeading = rail?.querySelector('.elu-rank-gap-heading');
+          const lens = window.COUNTRY_CLIMATE_INTELLIGENCE?.getLegend(window.GlobeModule?.getLens?.());
+          const accessible = rail?.getAttribute('aria-label')?.includes('ordered entities and data gaps') === true;
+          const pass = !!rail && accessible && title?.textContent.trim() === lens?.heading && !!search &&
+            gapHeading?.textContent.includes('Data gaps');
           return {
             pass,
             detail: pass
-              ? 'The visible rank rail and its accessible name preserve the performance-score qualification'
-              : `rail ${!!rail}, accessible ${accessible}, full visible ${fullVisible}, compact visible ${compactVisible}`,
+              ? 'The rail names the selected metric and keeps all gaps searchable and unnumbered'
+              : `rail ${!!rail}, accessible ${accessible}, exact title ${title?.textContent.trim() === lens?.heading}, search ${!!search}, gaps ${!!gapHeading}`,
           };
         },
       },
       {
-        name: 'Guided orbit completion is keyboard-reachable inside the country dialog',
+        name: 'Country close restores focus only to a visible reordered control',
+        critical: true,
+        test: () => {
+          const globe = window.GlobeModule;
+          if (!document.body.classList.contains('globe-mode') ||
+              document.body.classList.contains('globe-fallback-active') || globe?._initialized !== true) {
+            return { pass: true, detail: 'Visible focus restoration is exercised by the live globe route' };
+          }
+          const originalLens = globe.getLens();
+          const originalFocus = document.activeElement;
+          let offscreenIso = null;
+          let reboundToLens = false;
+          let restoredToLens = false;
+          let restoredVisible = false;
+          try {
+            globe.clearCountrySelection();
+            globe.setLens('power');
+            const activeLens = document.querySelector('.climate-lens-controls [data-climate-lens="power"]');
+            const offscreenRow = Array.from(document.querySelectorAll('#elu-country-rank-rail [data-country-rail-iso]'))
+              .find(row => {
+                const iso = row.getAttribute('data-country-rail-iso');
+                return globe._featureByIso?.[iso] && !globe._isVisibleFocusTarget(row);
+              });
+            offscreenIso = offscreenRow?.getAttribute('data-country-rail-iso') || null;
+            if (!offscreenRow || !activeLens) {
+              return { pass: false, detail: 'Could not find a mapped off-screen Power row and active lens control' };
+            }
+            globe._selectedCountryFeature = globe._featureByIso[offscreenIso];
+            globe._countryOpener = offscreenRow;
+            globe._rebindCountryOpener();
+            reboundToLens = globe._countryOpener === activeLens;
+            globe.clearCountrySelection();
+            restoredToLens = document.activeElement === activeLens;
+            restoredVisible = globe._isVisibleFocusTarget(document.activeElement);
+          } finally {
+            globe.clearCountrySelection();
+            globe.setLens(originalLens);
+            if (globe._isVisibleFocusTarget(originalFocus)) originalFocus.focus({ preventScroll: true });
+          }
+          const pass = Boolean(offscreenIso) && reboundToLens && restoredToLens && restoredVisible;
+          return {
+            pass,
+            detail: pass
+              ? `Off-screen ${offscreenIso} row falls back to the visible Power lens control`
+              : `row ${offscreenIso}, rebound ${reboundToLens}, restored ${restoredToLens}, visible ${restoredVisible}`,
+          };
+        },
+      },
+      {
+        name: 'Guided orbit cues one country-deck move and auto-completes',
         critical: true,
         test: async () => {
           const orbit = window.GUIDED_ORBIT;
-          const row = document.querySelector('#elu-country-rank-rail [data-country-rail-iso]');
+          const row = Array.from(document.querySelectorAll('#elu-country-rank-rail [data-country-rail-iso]'))
+            .find(candidate => window.GlobeModule?._featureByIso?.[candidate.getAttribute('data-country-rail-iso')]);
           if (!document.body.classList.contains('globe-mode') || document.body.classList.contains('globe-fallback-active') ||
               window.GlobeModule?._initialized !== true || !orbit || !row) {
             return { pass: true, detail: 'Live country-dialog route is not active; headless lifecycle covers it after renderer readiness' };
           }
           const stored = localStorage.getItem('elu-guided-first-orbit-v1');
-          let earlyCloseRecoversSelection = false;
-          let insideDialog = false;
-          let nextAfterClose = false;
           let closeRecoversSelection = false;
+          let deckMomentReady = false;
+          let cueVisible = false;
+          let navigationSource = null;
+          let completionSource = null;
           let completed = false;
-          const waitForDialogCompletion = () => new Promise(resolve => {
+          let offNavigation = null;
+          let offCompletion = null;
+          const waitFor = predicate => new Promise(resolve => {
             const deadline = Date.now() + 3500;
             const poll = () => {
-              if (document.getElementById('guided-orbit-dialog-complete') || Date.now() >= deadline) resolve();
+              if (predicate() || Date.now() >= deadline) resolve(predicate());
               else window.setTimeout(poll, 40);
             };
             poll();
@@ -434,43 +581,44 @@ const SmokeTest = (() => {
             orbit.start({ route: 'globe', force: true, opener: document.getElementById('guided-orbit-replay'), focus: false });
             orbit.goToStep(1, { focus: false });
             row.click();
-            document.querySelector('#elu-country-card-wrap [data-country-close]')?.click();
-            await new Promise(resolve => setTimeout(resolve, 180));
-            earlyCloseRecoversSelection = orbit.getState().active === true && orbit.getState().step === 2 &&
-              !document.getElementById('guided-orbit-dialog-complete');
-            row.click();
-            await waitForDialogCompletion();
+            await waitFor(() => orbit.getState().step === 3);
             const wrap = document.getElementById('elu-country-card-wrap');
             const close = wrap?.querySelector('[data-country-close]');
-            const finish = document.getElementById('guided-orbit-dialog-complete');
-            const tabbable = wrap ? Array.from(wrap.querySelectorAll('button,a[href],summary,[tabindex="0"]')).filter(node => {
-              if (node.disabled || node.hidden || node.getAttribute('aria-hidden') === 'true') return false;
-              const style = window.getComputedStyle(node);
-              return node.getClientRects().length > 0 && style.visibility !== 'hidden';
-            }) : [];
-            insideDialog = !!(wrap && finish && wrap.contains(finish) &&
-              document.getElementById('guided-orbit-primary').hidden && orbit.getState().dialogCompletionMounted);
-            nextAfterClose = !!(close && finish && tabbable.indexOf(finish) === tabbable.indexOf(close) + 1);
+            const card = document.getElementById('hex-country-tooltip');
+            deckMomentReady = !!(wrap && card && wrap.contains(card) && wrap.getAttribute('aria-modal') === 'false' &&
+              document.getElementById('guided-orbit-primary').hidden && orbit.getState().awaitingDeckMove &&
+              document.getElementById('guided-orbit-title')?.textContent.trim() === 'Swipe through the country deck.' &&
+              !document.getElementById('guided-orbit-dialog-complete'));
+            cueVisible = window.matchMedia('(prefers-reduced-motion: reduce)').matches || await waitFor(() =>
+              card?.classList.contains('tt-swipe-cue') === true || card?.classList.contains('tt-motion-ready') === true);
             close?.click();
-            closeRecoversSelection = orbit.getState().active === true && orbit.getState().step === 2 &&
-              !document.getElementById('guided-orbit-dialog-complete');
+            closeRecoversSelection = orbit.getState().active === true && orbit.getState().step === 2;
+
             row.click();
-            await waitForDialogCompletion();
-            document.getElementById('guided-orbit-dialog-complete')?.click();
-            completed = orbit.getState().active === false && !document.getElementById('guided-orbit-dialog-complete');
+            await waitFor(() => orbit.getState().step === 3);
+            if (hasModule('EventBus')) {
+              offNavigation = EventBus.on('globe:country-navigated', payload => { navigationSource = payload?.source || null; });
+              offCompletion = EventBus.on('guided-orbit:completed', payload => { completionSource = payload?.source || null; });
+            }
+            window.GlobeModule.navigateCountry(1, { source: 'keyboard' });
+            await waitFor(() => orbit.getState().active === false);
+            completed = orbit.getState().active === false && navigationSource === 'keyboard' && completionSource === 'keyboard' &&
+              !document.getElementById('hex-country-tooltip')?.classList.contains('tt-swipe-cue');
           } finally {
+            if (typeof offNavigation === 'function') offNavigation();
+            if (typeof offCompletion === 'function') offCompletion();
             safeCall('GlobeModule', 'clearCountrySelection');
             orbit.destroy();
             orbit.init();
             if (stored === null) localStorage.removeItem('elu-guided-first-orbit-v1');
             else localStorage.setItem('elu-guided-first-orbit-v1', stored);
           }
-          const pass = earlyCloseRecoversSelection && insideDialog && nextAfterClose && closeRecoversSelection && completed;
+          const pass = closeRecoversSelection && deckMomentReady && cueVisible && completed;
           return {
             pass,
             detail: pass
-              ? 'Explore freely follows Close inside the modal tab order and completes without leaving a hidden control'
-              : `early close recovery ${earlyCloseRecoversSelection}, inside dialog ${insideDialog}, follows Close ${nextAfterClose}, close recovery ${closeRecoversSelection}, completed ${completed}`,
+              ? 'Country selection opens the swipe cue; Close returns to selection; one keyboard-equivalent deck move emits its source and completes'
+              : `close recovery ${closeRecoversSelection}, deck ready ${deckMomentReady}, cue ${cueVisible}, navigation source ${navigationSource}, completion source ${completionSource}, completed ${completed}`,
           };
         },
       },
@@ -496,14 +644,14 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'Active critical candidate loaded successfully',
+        name: 'Active climate intelligence release loaded successfully',
         critical: true,
         test: () => {
           if (typeof Data === 'undefined') return { pass: false, detail: 'Data module not loaded' };
-          const ready = Data.isClimateCandidateReady?.() === true;
+          const ready = Data.isClimateIntelligenceReady?.() === true;
           return {
-            pass: ready && Data.climateCandidateState === 'ready',
-            detail: ready ? 'Exact-SHA candidate is ready; carbon projects remain noncritical' : `candidate state ${Data.climateCandidateState}`,
+            pass: ready && Data.climateIntelligenceState === 'ready',
+            detail: ready ? 'Exact-SHA climate intelligence release is ready' : `release state ${Data.climateIntelligenceState}`,
           };
         },
       },
@@ -519,7 +667,52 @@ const SmokeTest = (() => {
           }
           const ok = state.runtimeAssetsPrepared === true && state.countryDataState === 'ready' &&
             state.countryFeatureCount === 201 && state.countryDeckCount === 201 && state.rendererCanvasCount === 1;
-          return { pass: ok, detail: ok ? 'Candidate, 201-entity geometry deck, and four images prepared before the single renderer' : JSON.stringify(state) };
+          return { pass: ok, detail: ok ? 'Climate release, 201-entity geometry deck, and four images prepared before the single renderer' : JSON.stringify(state) };
+        },
+      },
+      {
+        name: 'Globe renderer follows the visible application lifecycle',
+        critical: true,
+        test: () => {
+          const state = window.GlobeModule?.getState?.();
+          if (!state) return { pass: false, detail: 'GlobeModule state is unavailable' };
+          if (!window.GlobeModule._initialized) {
+            const safeLazyState = state.rendererCanvasCount === 0 && state.animationPaused === false;
+            return { pass: safeLazyState, detail: safeLazyState ? 'No renderer exists before lazy initialization' : JSON.stringify(state) };
+          }
+          const shouldPause = document.visibilityState === 'hidden' ||
+            !document.body.classList.contains('globe-mode') ||
+            document.body.classList.contains('globe-fallback-active');
+          const lifecycleSafe = state.animationPaused === shouldPause;
+          return {
+            pass: lifecycleSafe,
+            detail: lifecycleSafe
+              ? `Renderer is ${state.animationPaused ? 'paused' : 'active'} for the current visible route`
+              : `Renderer lifecycle mismatch: expected paused ${shouldPause}, state ${state.animationPaused}`,
+          };
+        },
+      },
+      {
+        name: 'Globe renderer exposes a bounded 120 FPS scene budget',
+        critical: true,
+        test: () => {
+          const perf = window.GlobeModule?.getPerformanceState?.();
+          if (!perf) return { pass: false, detail: 'Renderer performance state is unavailable' };
+          const targetValid = perf.targetFps === 120 && Math.abs(perf.frameBudgetMs - 8.333) < 0.001;
+          if (!window.GlobeModule._initialized) {
+            const lazyValid = targetValid && perf.rendererPixelRatio === null && perf.antialias === null && perf.drawCalls === null;
+            return { pass: lazyValid, detail: lazyValid ? '120 FPS / 8.333 ms target is declared before lazy renderer startup' : JSON.stringify(perf) };
+          }
+          const highDensityAaValid = window.devicePixelRatio < 1.5 || perf.antialias === false;
+          const bounded = targetValid && perf.rendererPixelRatio > 0 && perf.rendererPixelRatio <= 2 &&
+            perf.drawCalls <= 1600 && perf.triangles <= 90000 && perf.geometries <= 650 && perf.textures <= 4 &&
+            perf.lensDeckCacheCount === 3 && highDensityAaValid;
+          return {
+            pass: bounded,
+            detail: bounded
+              ? `120 FPS / ${perf.frameBudgetMs} ms; DPR ${perf.rendererPixelRatio}; AA ${perf.antialias ? 'on' : 'off'}; ${perf.drawCalls} calls; ${perf.triangles} triangles; three lens decks warm`
+              : JSON.stringify(perf),
+          };
         },
       },
       {
@@ -530,8 +723,8 @@ const SmokeTest = (() => {
           const button = document.getElementById('globe-evidence-browse');
           const fullLabel = button?.querySelector('.browse-label-full')?.textContent?.trim();
           const shortLabel = button?.querySelector('.browse-label-short')?.textContent?.trim();
-          if (!panel || !button || button.getAttribute('aria-label') !== 'Browse all 249 evidence records' ||
-              fullLabel !== 'Browse all 249 evidence records' || shortLabel !== '249 records') {
+          if (!panel || !button || button.getAttribute('aria-label') !== 'Browse all 249 climate intelligence records' ||
+              fullLabel !== 'Browse all 249 records' || shortLabel !== '249 records') {
             return { pass: false, detail: 'Evidence browser entry control is missing or mislabeled' };
           }
           if (window.GlobeModule?._fallbackReasonCode !== 'evidence_browse_requested') {
@@ -540,10 +733,11 @@ const SmokeTest = (() => {
           }
           const factual = panel.querySelectorAll('[data-fallback-evidence-state="factual"]').length;
           const gaps = panel.querySelectorAll('[data-fallback-evidence-state="gap"]').length;
+          const lensRows = window.COUNTRY_CLIMATE_INTELLIGENCE?.getRailRows?.(window.GlobeModule?.getLens?.() || 'carbon');
           const title = document.getElementById('globe-fallback-title')?.textContent || '';
-          const ok = factual === 206 && gaps === 43 && title.includes('Browse all 249') &&
+          const ok = factual === lensRows?.eligible_count && gaps === lensRows?.unranked_count && factual + gaps === 249 && title.includes('Browse all 249') &&
             document.getElementById('globe-fallback-search') && panel.querySelector('[data-globe-fallback-action="close"]');
-          return { pass: ok, detail: ok ? '249 = 206 factual + 43 gaps; search/detail/guarded return controls present' : `factual ${factual}, gaps ${gaps}, title ${title}` };
+          return { pass: ok, detail: ok ? '249 lens records partition into exact matches and explicit gaps; search/detail/guarded return controls present' : `available ${factual}, gaps ${gaps}, title ${title}` };
         },
       },
       {
@@ -554,8 +748,8 @@ const SmokeTest = (() => {
           const prohibited = new Set(['N. Cyprus', 'Northern Cyprus', 'Somaliland', 'Kosovo']);
           const leaked = GlobeModule.getCountryFeatures().filter(feature =>
             [feature?.properties?.ADMIN, feature?.properties?.NAME].some(name => prohibited.has(name)));
-          const unknownDeck = (GlobeModule._countryDeck || []).filter(entry => !Data.getClimateCountry(entry.iso));
-          return { pass: leaked.length === 0 && unknownDeck.length === 0, detail: leaked.length || unknownDeck.length ? `leaked areas ${leaked.length}, non-registry cards ${unknownDeck.length}` : 'Sensitive subfeatures excluded; every interactive ISO resolves to the candidate registry' };
+          const unknownDeck = (GlobeModule._countryDeck || []).filter(entry => !Data.getClimateIntelligenceCountry(entry.iso));
+          return { pass: leaked.length === 0 && unknownDeck.length === 0, detail: leaked.length || unknownDeck.length ? `leaked areas ${leaked.length}, non-registry cards ${unknownDeck.length}` : 'Sensitive subfeatures excluded; every interactive ISO resolves to the climate registry' };
         },
       },
     ],

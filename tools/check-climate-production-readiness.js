@@ -6,18 +6,16 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const { evaluateReadiness, parseReadinessArgs, releaseWorktreeCleanPasses } = require('./lib/climate-production-readiness');
-const { PATHS: REVIEWED_RELEASE_PATHS, SCHEMAS: REVIEWED_RELEASE_SCHEMAS, inspectReviewedClimateRelease } = require('./lib/climate-reviewed-release');
-const { EXPECTED_ASSETS, REQUIRED_UI_REVIEW_PIN_PATHS } = require('./lib/globe-runtime-assets');
+const { PATHS: REVIEWED_RELEASE_PATHS, inspectReviewedClimateRelease } = require('./lib/climate-reviewed-release');
+const { EXPECTED_ASSETS } = require('./lib/globe-runtime-assets');
 const {
-  APPROVAL_SCHEMA_PATH,
   INTEGRATION_PATH: NOTICE_INTEGRATION_PATH,
-  MANIFEST_PATH: NOTICE_MANIFEST_PATH,
-  NOTICE_PATH,
 } = require('./lib/globe-third-party-notices');
 const {
   APPROVAL_PATH: RUNTIME_ASSET_APPROVAL_PATH,
   SIGNATURE_BUNDLE_PATH,
   TRUST_REGISTRY_PATH,
+  reviewedArtifactBindingPasses,
 } = require('./lib/globe-runtime-approval');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -57,9 +55,10 @@ function entryPresent(relative) {
 }
 
 function readRegularJson(relative) {
-  if (!regularNonSymlink(relative)) return { value: null, text: null };
-  const text = fs.readFileSync(path.join(ROOT, relative), 'utf8');
-  return { value: JSON.parse(text), text };
+  if (!regularNonSymlink(relative)) return { value: null, text: null, bytes: null };
+  const bytes = fs.readFileSync(path.join(ROOT, relative));
+  const text = bytes.toString('utf8');
+  return { value: JSON.parse(text), text, bytes };
 }
 
 function run(command, args) {
@@ -115,62 +114,6 @@ function regularNonSymlink(relative) {
   } catch {
     return false;
   }
-}
-
-function currentCommitSha() {
-  const result = childProcess.spawnSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' });
-  const value = result.status === 0 ? result.stdout.trim() : '';
-  return /^[0-9a-f]{40}$/.test(value) ? value : null;
-}
-
-function reviewedCommitBindingPasses(approval) {
-  const reviewed = approval?.reviewed_commit_sha;
-  if (!/^[0-9a-f]{40}$/.test(reviewed || '')) return false;
-  const ancestor = childProcess.spawnSync('git', ['merge-base', '--is-ancestor', reviewed, 'HEAD'], { cwd: ROOT, encoding: 'utf8' });
-  if (ancestor.status !== 0) return false;
-  const reviewedPaths = [...new Set([
-    ...REQUIRED_UI_REVIEW_PIN_PATHS,
-    NOTICE_PATH,
-    NOTICE_MANIFEST_PATH,
-    NOTICE_INTEGRATION_PATH,
-    APPROVAL_SCHEMA_PATH,
-    TRUST_REGISTRY_PATH,
-    'index.html',
-    'CREDITS.md',
-    '.github/workflows/ci.yml',
-    'tools/check-globe-runtime-assets.js',
-    'tools/lib/globe-runtime-assets.js',
-    'tools/fixtures/globe-runtime-assets.json',
-    'tools/check-globe-third-party-notices.js',
-    'tools/lib/globe-third-party-notices.js',
-    'tools/fixtures/globe-third-party-notices.json',
-    'tools/check-globe-runtime-approval.js',
-    'tools/lib/globe-runtime-approval.js',
-    'tools/check-staged-production-integrity.js',
-    'tools/build-deploy.sh',
-    'tools/stage-public-deploy.js',
-    'tools/check-public-deploy-surface.js',
-    'tools/lib/public-deploy-surface.js',
-    '_headers',
-    'docs/LEGACY-COUNTRY-DATA-EXIT.md',
-    'tools/climate-truth-ci.js',
-    'tools/check-climate-release-gate.js',
-    'tools/lib/climate-release-gate.js',
-    'tools/check-climate-truth-ci.js',
-    'tools/lib/climate-truth-ci-policy.js',
-    'tools/check-reviewed-climate-release.js',
-    'tools/lib/climate-reviewed-release.js',
-    'tools/lib/reviewed-runtime-rollback-proof.js',
-    'tools/lib/json-schema-lite.js',
-    ...Object.values(REVIEWED_RELEASE_SCHEMAS),
-    ...Object.values(REVIEWED_RELEASE_PATHS),
-    'tools/lib/climate-runtime-diff-boundary.js',
-    'tools/lib/climate-production-readiness.js',
-    'tools/check-climate-production-readiness.js',
-    'tools/check-climate-production-readiness-policy.js',
-  ])];
-  const diff = childProcess.spawnSync('git', ['diff', '--quiet', reviewed, 'HEAD', '--', ...reviewedPaths], { cwd: ROOT, encoding: 'utf8' });
-  return diff.status === 0;
 }
 
 const dataReview = required(P.dataReview);
@@ -249,20 +192,22 @@ const report = evaluateReadiness({
     asset_rights_dispositions: noticeIntegration.asset_rights_dispositions,
     manifest_sha256: sha256(P.runtimeAssets),
     asset_pins: EXPECTED_ASSETS.map(asset => ({ path: asset.path, sha256: sha256(asset.path) })),
-    current_commit_sha: currentCommitSha(),
-    reviewed_commit_binding_passed: reviewedCommitBindingPasses(runtimeAssetApproval),
+    reviewed_artifact_binding_passed: reviewedArtifactBindingPasses(ROOT, runtimeAssetApproval),
     reviewed_release_passed: reviewedRelease.pass === true && reviewedRelease.status === 'validated',
     approval_review_present: runtimeAssetApprovalPresent,
     approval_file_regular: runtimeAssetApprovalRegular,
     approval: runtimeAssetApproval,
     approval_text: runtimeAssetApprovalRecord.text,
+    approval_bytes: runtimeAssetApprovalRecord.bytes,
     trust_registry_file_regular: runtimeAssetTrustRegistryRegular,
     trust_registry: runtimeAssetTrustRegistryRecord.value,
     trust_registry_text: runtimeAssetTrustRegistryRecord.text,
+    trust_registry_bytes: runtimeAssetTrustRegistryRecord.bytes,
     signature_bundle_present: runtimeAssetSignatureBundlePresent,
     signature_bundle_file_regular: runtimeAssetSignatureBundleRegular,
     signature_bundle: runtimeAssetSignatureBundleRecord.value,
     signature_bundle_text: runtimeAssetSignatureBundleRecord.text,
+    signature_bundle_bytes: runtimeAssetSignatureBundleRecord.bytes,
   },
 });
 

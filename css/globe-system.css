@@ -6,6 +6,18 @@
  * owned by js/globe.js; this file owns the instrument surface only.
  */
 
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 body.globe-mode {
   --hud-bg: rgba(7, 13, 22, .92);
   --hud-bg-strong: rgba(6, 11, 18, .97);
@@ -55,9 +67,9 @@ body.globe-mode[data-theme="light"] {
   --text3: #9a9584;
   --border: rgba(31, 94, 70, .20);
   --border-hi: rgba(31, 94, 70, .42);
-  --hud-bg: rgba(250, 247, 240, .94);
-  --hud-bg-strong: rgba(255, 253, 248, .98);
-  --hud-cell: rgba(237, 231, 217, .62);
+  --hud-bg: rgba(246, 250, 247, .91);
+  --hud-bg-strong: rgba(252, 254, 252, .96);
+  --hud-cell: rgba(220, 231, 224, .56);
   --hud-cell-hover: rgba(31, 94, 70, .10);
   --hud-border: rgba(31, 94, 70, .26);
   --hud-border-strong: rgba(31, 94, 70, .46);
@@ -65,9 +77,9 @@ body.globe-mode[data-theme="light"] {
   --hud-divider-soft: rgba(31, 94, 70, .08);
   --hud-muted: rgba(32, 48, 42, .78);
   --hud-faint: rgba(32, 48, 42, .78);
-  --hud-shadow: 0 16px 38px rgba(62, 49, 25, .14);
-  --hud-shadow-strong: 0 18px 48px rgba(62, 49, 25, .16), 0 0 0 1px rgba(31, 94, 70, .04);
-  --hud-nav-bg: rgba(255, 253, 248, .96);
+  --hud-shadow: 0 16px 38px rgba(27, 62, 50, .13);
+  --hud-shadow-strong: 0 18px 48px rgba(27, 62, 50, .16), 0 0 0 1px rgba(31, 94, 70, .05);
+  --hud-nav-bg: rgba(252, 254, 252, .95);
   --hud-trajectory-bg: rgba(31, 94, 70, .04);
   --hud-grid: rgba(31, 94, 70, .15);
   --hud-today: rgba(32, 48, 42, .34);
@@ -82,18 +94,119 @@ html[data-theme="light"] body.globe-mode #globeViz {
 
 html[data-theme="light"] body.globe-mode #topbar {
   opacity: 1;
+  box-sizing: border-box;
+  height: 64px;
+  padding-top: 9px;
+  padding-bottom: 9px;
   transition: none;
-  background: linear-gradient(180deg, rgba(255, 253, 248, .98), rgba(243, 239, 230, .94));
-  border-bottom: 1px solid rgba(31, 94, 70, .16);
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .58), 0 10px 26px rgba(62, 49, 25, .08);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  background: linear-gradient(180deg, rgba(252, 254, 251, .95), rgba(242, 248, 244, .89));
+  border-bottom: 1px solid rgba(31, 94, 70, .22);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .7), 0 10px 28px rgba(27, 62, 50, .09);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
 }
 
 html[data-theme="light"] body.globe-mode .hex-legend {
-  border-color: rgba(31, 94, 70, .22);
-  background: rgba(250, 247, 240, .92);
+  border-color: rgba(31, 94, 70, .3);
+  background: rgba(246, 250, 247, .88);
   color: var(--text2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+/* Keep the fair header to one deliberate instrument band. Its formerly
+   flexible statistic labels could wrap to three lines, making the opaque
+   surface cover both the lens switcher and the rail heading. */
+html[data-theme="light"] body.globe-mode #topbar .logo {
+  flex: 1 1 auto;
+}
+
+html[data-theme="light"] body.globe-mode #topbar .brand-wordmark {
+  flex: 0 0 auto;
+}
+
+html[data-theme="light"] body.globe-mode #topbar .brand-subtitle {
+  flex: 1 1 auto;
+}
+
+html[data-theme="light"] body.globe-mode #topbar .topbar-actions,
+html[data-theme="light"] body.globe-mode #topbar .stats,
+html[data-theme="light"] body.globe-mode #topbar .stat-block,
+html[data-theme="light"] body.globe-mode #topbar .cc-topbar {
+  flex: 0 0 auto;
+}
+
+html[data-theme="light"] body.globe-mode #topbar .stat-label,
+html[data-theme="light"] body.globe-mode #topbar .stat-value {
+  white-space: nowrap;
+}
+
+html[data-theme="light"] body.globe-mode #elu-country-rank-rail,
+html[data-theme="light"] body.globe-mode .climate-lens-controls {
+  border-color: rgba(31, 94, 70, .3);
+}
+
+html[data-theme="light"] body.globe-mode #elu-country-rank-rail {
+  background: rgba(246, 250, 247, .9);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+html[data-theme="light"] body.globe-mode .climate-lens-controls {
+  background: rgba(252, 254, 252, .94);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+html[data-theme="light"] body.globe-mode .elu-rank-search input {
+  background: rgba(255, 255, 255, .64);
+}
+
+html[data-theme="light"] body.globe-mode[data-climate-lens="power"] .elu-rank-gap,
+html[data-theme="light"] body.globe-mode[data-climate-lens="physical"] .elu-rank-gap {
+  white-space: nowrap;
+}
+
+html[data-theme="light"] body.globe-mode[data-climate-lens="power"] .elu-rank-gap small,
+html[data-theme="light"] body.globe-mode[data-climate-lens="physical"] .elu-rank-gap small {
+  display: inline;
+  margin: 0 0 0 2px;
+}
+
+@media (min-width: 901px) and (max-width: 1100px) {
+  html[data-theme="light"] body.globe-mode #topbar {
+    gap: 12px;
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  html[data-theme="light"] body.globe-mode #topbar .brand-subtitle,
+  html[data-theme="light"] body.globe-mode #topbar .brand-sep {
+    display: none;
+  }
+
+  html[data-theme="light"] body.globe-mode #topbar .topbar-actions {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 800px) {
+  html[data-theme="light"] body.globe-mode #topbar {
+    height: 60px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  html[data-theme="light"] body.globe-mode .climate-lens-controls,
+  html[data-theme="light"] body.globe-mode #elu-country-rank-rail {
+    top: 64px;
+  }
+}
+
+@media (max-width: 720px) {
+  html[data-theme="light"] body.globe-mode #elu-country-card-wrap {
+    top: 118px;
+  }
 }
 
 body.globe-mode #topbar .topbar-actions {
@@ -163,9 +276,77 @@ body.globe-fallback-active #globe-evidence-browse {
   to { opacity: 1; transform: none; filter: none; }
 }
 
+@keyframes elu-lens-in {
+  from { opacity: 0; transform: translate(-50%, 14px); filter: blur(5px); }
+  to { opacity: 1; transform: translate(-50%, 0); filter: none; }
+}
+
 body.globe-mode #topbar { animation: elu-hud-in .7s cubic-bezier(.22,.61,.36,1) .15s both; }
 body.globe-mode #elu-country-rank-rail { animation: elu-hud-in .7s cubic-bezier(.22,.61,.36,1) .3s both; }
 body.globe-mode .hex-legend { animation: elu-hud-in .7s cubic-bezier(.22,.61,.36,1) .35s both; }
+body.globe-mode .climate-lens-controls { animation: elu-lens-in .7s cubic-bezier(.22,.61,.36,1) .22s both; }
+
+.climate-lens-controls { display: none; }
+
+body.globe-mode .climate-lens-controls {
+  position: fixed;
+  top: 68px;
+  left: 50%;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 52px;
+  padding: 4px;
+  border: 1px solid var(--hud-border);
+  border-radius: 999px;
+  background: var(--hud-bg-strong);
+  box-shadow: var(--hud-shadow);
+  backdrop-filter: blur(12px);
+  transform: translateX(-50%);
+}
+
+@media (min-width: 1001px) {
+  body.globe-mode.country-card-open:not(.globe-fallback-active) .climate-lens-controls {
+    left: calc(50% - 190px);
+  }
+}
+
+.climate-lens-label {
+  padding: 0 6px 0 9px;
+  color: var(--hud-faint);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.climate-lens-controls button {
+  min-width: 72px;
+  min-height: 44px;
+  padding: 7px 11px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--hud-muted);
+  font: 500 10px/1 var(--body);
+  cursor: pointer;
+}
+
+.climate-lens-controls button:hover,
+.climate-lens-controls button:focus-visible,
+.climate-lens-controls button.is-active {
+  border-color: var(--hud-border-strong);
+  background: var(--hud-cell-hover);
+  color: var(--mint);
+  outline: none;
+}
+
+.climate-lens-controls button.is-active::before {
+  content: '●';
+  margin-right: 6px;
+  font-size: 7px;
+}
 
 #globe-theme-toggle {
   display: flex;
@@ -299,7 +480,7 @@ body.globe-fallback-active #globe-back-btn {
 
 #globe-fallback {
   position: fixed;
-  inset: 54px 0 0;
+  inset: 112px 0 0;
   z-index: 60;
   overflow: auto;
   overscroll-behavior: contain;
@@ -418,14 +599,19 @@ body.globe-fallback-active #globe-back-btn {
   width: 100%;
   min-height: 44px;
   padding: 10px 12px;
-  border: 1px solid var(--hud-border);
+  border: 2px solid var(--hud-border);
   border-radius: 3px;
   background: var(--hud-cell);
   color: var(--text);
   font: 14px/1.35 var(--body);
 }
 
-.elu-fallback-search input:focus-visible,
+.elu-fallback-search input:focus-visible {
+  border-color: var(--mint);
+  outline: none;
+  box-shadow: none;
+}
+
 #globe-fallback button:focus-visible,
 #globe-fallback a:focus-visible,
 #globe-fallback [tabindex="-1"]:focus-visible {
@@ -641,7 +827,7 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   }
 }
 
-/* Ranked rail: worst gap first, outside #globeViz by design. */
+/* Exact-metric order with explicit gaps, outside #globeViz by design. */
 #elu-country-rank-rail {
   position: fixed;
   top: 72px;
@@ -678,6 +864,21 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   text-transform: uppercase;
 }
 
+.elu-rank-relief-note {
+  display: inline-flex;
+  margin-top: 5px;
+  padding: 3px 5px;
+  border: 1px solid rgba(96, 225, 203, .34);
+  border-radius: 2px;
+  background: rgba(96, 225, 203, .08);
+  color: var(--mint);
+  font-family: var(--mono);
+  font-size: 7px;
+  line-height: 1.2;
+  letter-spacing: .65px;
+  text-transform: uppercase;
+}
+
 .elu-rank-subtitle {
   margin-top: 3px;
   color: var(--hud-faint);
@@ -709,6 +910,43 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   max-height: none;
   overflow-y: auto;
   scrollbar-width: thin;
+}
+
+.elu-rank-search {
+  display: grid;
+  gap: 4px;
+  padding: 8px 9px;
+  border-bottom: 1px solid var(--hud-divider-soft);
+  color: var(--hud-muted);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .55px;
+  text-transform: uppercase;
+}
+
+.elu-rank-search input {
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 8px;
+  border: 2px solid var(--hud-border);
+  border-radius: 2px;
+  background: var(--hud-cell);
+  color: var(--text);
+  font: 11px/1.3 var(--body);
+}
+
+#elu-country-rank-rail .elu-rank-search input:focus-visible {
+  border-color: var(--mint);
+  outline: none;
+  box-shadow: none;
+}
+
+.elu-rank-filter-results {
+  min-height: 14px;
+  margin: 0;
+  padding: 0 10px 6px;
+  color: var(--hud-faint);
+  font-size: 8px;
 }
 
 #elu-country-rank-rail.is-collapsed { bottom: auto; }
@@ -758,9 +996,22 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   font-size: 10px;
 }
 
+.elu-rank-name small {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--hud-faint);
+  font-size: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .elu-rank-code { display: none; }
 
-.elu-rank-gap { color: var(--hud-muted); }
+.elu-rank-gap { color: var(--hud-muted); text-align: right; }
+.elu-rank-gap small { display: block; margin-top: 2px; font-size: 6px; }
+.elu-rank-row.is-unmapped { border-left: 2px dotted var(--hud-border-strong); }
+.elu-rank-row[hidden] { display: none; }
 .elu-rank-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--hud-faint); }
 .elu-rank-dot.is-red { background: #ff786d; box-shadow: 0 0 7px rgba(255, 120, 109, .35); }
 .elu-rank-dot.is-green { background: #63dc8b; box-shadow: 0 0 7px rgba(99, 220, 139, .3); }
@@ -793,11 +1044,15 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 }
 
 #hex-country-tooltip.selected .tt-topline {
+  position: sticky;
+  top: -14px;
+  z-index: 3;
   align-items: center;
   min-height: 27px;
-  margin-bottom: 5px;
-  padding-bottom: 8px;
+  margin: -14px -15px 5px;
+  padding: 14px 15px 8px;
   border-bottom: 1px solid var(--hud-divider);
+  background: var(--hud-bg-strong);
 }
 
 #hex-country-tooltip.selected .tt-country {
@@ -842,7 +1097,7 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   position: fixed;
   top: 64px;
   right: 24px;
-  bottom: 96px;
+  bottom: calc(var(--globe-dock-inset) + var(--globe-dock-height) + var(--globe-dock-gap));
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -859,6 +1114,7 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   max-width: calc(100vw - 124px);
   max-height: 100% !important;
   overflow-y: auto;
+  scroll-padding-block-start: 76px;
   transform: none;
   pointer-events: auto;
 }
@@ -916,6 +1172,8 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 #hex-country-tooltip .tt-factual-value span { color:var(--hud-faint); }
 #hex-country-tooltip .elu-trajectory-current.is-magnitude { stroke:#f2a553; stroke-width:2; fill:none; }
 #hex-country-tooltip .elu-trajectory-point { fill:#fff1dc; stroke:#704f9d; stroke-width:1.2; }
+#hex-country-tooltip .elu-trajectory-current.is-observed { stroke:var(--mint); stroke-width:1.5; fill:none; }
+#hex-country-tooltip .elu-trajectory-point.is-observed { fill:var(--mint); stroke:var(--hud-bg-strong); stroke-width:1; }
 #hex-country-tooltip .elu-chart-axis { fill:var(--text2); font-family:var(--mono); font-size:7px; }
 #hex-country-tooltip .tt-chart-data { margin-top:8px; color:var(--text2); font-size:10px; }
 #hex-country-tooltip .tt-chart-data summary { min-height:44px; display:flex; align-items:center; color:var(--teal); cursor:pointer; }
@@ -925,6 +1183,450 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 #hex-country-tooltip .tt-source,#hex-country-tooltip .tt-limit { margin-top:8px; color:var(--text2); font-size:10px; line-height:1.45; }
 #hex-country-tooltip .tt-source a { display:inline-flex; align-items:center; min-height:44px; color:var(--teal); }
 #hex-country-tooltip :focus-visible,#elu-country-rank-rail :focus-visible { outline:2px solid var(--mint); outline-offset:2px; }
+
+.tt-glance,
+.tt-lens-panel,
+.tt-observed-series { margin-top: 12px; }
+
+.tt-glance > h3,
+.tt-lens-panel > h3,
+.tt-observed-series > h3 {
+  margin: 0 0 6px;
+  color: var(--mint);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.tt-lens-panel > p {
+  margin: 0 0 8px;
+  color: var(--hud-muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.tt-fact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.tt-glance .tt-fact:first-child { grid-column: 1 / -1; }
+
+.tt-fact {
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid var(--hud-divider);
+  border-radius: 3px;
+  background: var(--hud-cell);
+}
+
+.tt-fact.is-gap { border-style: dashed; }
+
+.tt-fact h4 {
+  margin: 0 0 5px;
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.tt-fact-value {
+  color: var(--hud-muted);
+  font-family: var(--mono);
+  font-size: 9px;
+}
+
+.tt-fact-value strong {
+  color: #f2b36f;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.tt-fact p {
+  margin: 5px 0 0;
+  color: var(--hud-muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.tt-fact .tt-fact-meta {
+  color: var(--mint);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .25px;
+}
+
+.tt-fact .tt-fact-uncertainty,
+.tt-fact .tt-fact-note { color: var(--hud-faint); }
+
+.tt-fact .tt-fact-warning {
+  padding-left: 7px;
+  border-left: 2px solid var(--amber);
+  color: var(--text2);
+}
+
+.elu-power-field {
+  --power-nuclear: #5cff8d;
+  --power-hydro: #2e91b7;
+  --power-wind: #56d8cf;
+  --power-solar: #f2c75c;
+  --power-bioenergy: #64a965;
+  --power-other-renewables: #b97acb;
+  --power-coal: #262c31;
+  --power-coal-ridge: #46505a;
+  --power-gas: #df8856;
+  --power-other-fossil: #c7653f;
+  --power-other-fossil-mark: rgba(24, 29, 32, .72);
+  margin: 0 0 8px;
+  padding: 10px;
+  overflow: hidden;
+  border: 1px solid var(--hud-border);
+  border-radius: 3px;
+  background:
+    linear-gradient(105deg, rgba(48, 196, 151, .08), transparent 52%),
+    var(--hud-trajectory-bg);
+}
+
+.elu-power-field-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 5px;
+  color: var(--mint);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 1.05px;
+  text-transform: uppercase;
+}
+
+.elu-power-field-head span:last-child {
+  color: var(--hud-faint);
+  font-family: var(--body);
+  font-size: 9px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.elu-power-field-scale {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 1px 0 7px;
+  color: var(--hud-faint);
+  font-family: var(--mono);
+  font-size: 6px;
+  letter-spacing: .3px;
+}
+
+.elu-power-field-scale span { text-align: center; }
+.elu-power-field-scale span:first-child { text-align: left; }
+.elu-power-field-scale span:last-child { text-align: right; }
+
+.elu-power-lanes {
+  display: grid;
+  gap: 10px;
+}
+
+.elu-power-lane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+  color: var(--text2);
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.elu-power-lane-head > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.elu-power-lane-head strong {
+  flex: 0 0 auto;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.elu-power-lane-track {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  height: 14px;
+  overflow: hidden;
+  border: 1px solid var(--hud-divider);
+  border-radius: 2px;
+  background: var(--hud-cell);
+}
+
+.elu-power-lane-track::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, var(--hud-divider-soft) 1px, transparent 1px);
+  background-size: 25% 100%;
+  pointer-events: none;
+}
+
+.elu-power-segment {
+  position: relative;
+  z-index: 0;
+  display: block;
+  min-width: 0;
+  height: 100%;
+  flex: 0 0 auto;
+  box-shadow: inset -1px 0 rgba(6, 11, 18, .38);
+}
+
+/* Fuel-specific color and restrained static textures work with fixed ordering
+   and the text legend as a non-color reading route. No fill is animated. */
+.elu-power-segment.is-nuclear,
+.elu-power-segment-key.is-nuclear {
+  background: var(--power-nuclear);
+}
+
+.elu-power-segment.is-nuclear {
+  z-index: 1;
+  box-shadow:
+    inset -1px 0 rgba(6, 11, 18, .42),
+    0 0 6px rgba(92, 255, 141, .34);
+}
+
+.elu-power-segment-key.is-nuclear {
+  box-shadow: 0 0 4px rgba(92, 255, 141, .28);
+}
+
+.elu-power-segment.is-hydro,
+.elu-power-segment-key.is-hydro {
+  background: repeating-linear-gradient(135deg, var(--power-hydro) 0 5px, #236b8e 5px 8px);
+}
+
+.elu-power-segment.is-wind,
+.elu-power-segment-key.is-wind {
+  background: repeating-linear-gradient(90deg, var(--power-wind) 0 3px, #248a87 3px 5px);
+}
+
+.elu-power-segment.is-solar,
+.elu-power-segment-key.is-solar {
+  background:
+    repeating-linear-gradient(135deg, transparent 0 5px, rgba(255, 255, 255, .48) 5px 6px, transparent 6px 11px),
+    var(--power-solar);
+}
+
+.elu-power-segment.is-bioenergy,
+.elu-power-segment-key.is-bioenergy {
+  background: repeating-linear-gradient(45deg, var(--power-bioenergy) 0 4px, #347447 4px 6px);
+}
+
+.elu-power-segment.is-other-renewables,
+.elu-power-segment-key.is-other-renewables {
+  background: var(--power-other-renewables);
+}
+
+.elu-power-segment.is-coal,
+.elu-power-segment-key.is-coal {
+  background: repeating-linear-gradient(135deg, var(--power-coal) 0 4px, var(--power-coal-ridge) 4px 6px);
+}
+
+.elu-power-segment.is-gas,
+.elu-power-segment-key.is-gas {
+  background: repeating-linear-gradient(90deg, var(--power-gas) 0 5px, #9c573d 5px 7px);
+}
+
+.elu-power-segment.is-other-fossil,
+.elu-power-segment-key.is-other-fossil {
+  background:
+    linear-gradient(45deg, transparent 42%, var(--power-other-fossil-mark) 44% 56%, transparent 58%) 0 0 / 10px 10px,
+    linear-gradient(-45deg, transparent 42%, var(--power-other-fossil-mark) 44% 56%, transparent 58%) 0 0 / 10px 10px,
+    var(--power-other-fossil);
+}
+
+.elu-power-mix-legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 18px;
+  margin: 10px 0 0;
+  padding: 9px 0 0;
+  border-top: 1px solid var(--hud-divider-soft);
+  list-style: none;
+}
+
+.elu-power-mix-legend li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  color: var(--hud-muted);
+  font-size: 9px;
+  line-height: 1.25;
+}
+
+.elu-power-mix-legend li span {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.elu-power-mix-legend li strong {
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.elu-power-mix-legend li.is-zero { opacity: .68; }
+
+.elu-power-mix-legend li.is-gap .elu-power-segment-key {
+  background: repeating-linear-gradient(135deg, transparent 0 3px, var(--hud-divider) 3px 5px);
+  box-shadow: none;
+}
+
+.elu-power-mix-legend li.is-gap strong {
+  color: var(--hud-faint);
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.elu-power-segment-key {
+  display: block;
+  width: 20px;
+  height: 8px;
+  border: 1px solid var(--hud-divider);
+  border-radius: 1px;
+}
+
+.elu-power-reconciliation,
+.elu-power-taxonomy-note,
+.elu-power-mix-gap {
+  margin: 7px 0 0;
+  color: var(--hud-muted);
+  font-size: 7px;
+  line-height: 1.45;
+}
+
+.elu-power-reconciliation strong { color: var(--text2); }
+
+.elu-power-reconciliation.has-rounding {
+  padding-left: 7px;
+  border-left: 2px solid var(--amber);
+}
+
+.elu-power-taxonomy-note { color: var(--hud-faint); }
+
+.elu-power-mix-gap {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 9px;
+  border: 1px dashed var(--hud-divider);
+  background: var(--hud-cell);
+}
+
+.elu-power-field figcaption {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid var(--hud-divider-soft);
+  color: var(--hud-muted);
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.elu-power-field figcaption strong { color: var(--text2); }
+
+html[data-theme="light"] body.globe-mode .elu-power-field {
+  --power-nuclear: #28df70;
+  --power-hydro: #2f718f;
+  --power-wind: #2d8981;
+  --power-solar: #d89a24;
+  --power-bioenergy: #4d8050;
+  --power-other-renewables: #80558a;
+  --power-coal: #30363a;
+  --power-coal-ridge: #59636a;
+  --power-gas: #ac603c;
+  --power-other-fossil: #b75830;
+  --power-other-fossil-mark: rgba(37, 39, 40, .66);
+}
+
+html[data-theme="light"] body.globe-mode .elu-power-segment.is-nuclear {
+  box-shadow:
+    inset -1px 0 rgba(32, 48, 42, .28),
+    0 0 4px rgba(40, 223, 112, .24);
+}
+.tt-power-support-grid { margin-top: 7px; }
+.tt-glance .tt-power-support-grid .tt-fact:first-child { grid-column: auto; }
+
+.tt-breakdown,
+.tt-methods,
+.tt-method-fact {
+  margin-top: 8px;
+  border-top: 1px solid var(--hud-divider-soft);
+}
+
+.tt-breakdown summary,
+.tt-methods > summary,
+.tt-method-fact > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--teal);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .5px;
+  cursor: pointer;
+}
+
+.tt-breakdown h5,
+.tt-methods h4,
+.tt-methods h5 {
+  margin: 9px 0 5px;
+  color: var(--mint);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .5px;
+}
+
+.tt-breakdown ul,
+.tt-methods ul { margin: 0; padding-left: 18px; }
+
+.tt-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tt-methods {
+  margin-top: 12px;
+  border: 1px solid var(--hud-border);
+  border-radius: 3px;
+  background: var(--hud-trajectory-bg);
+}
+
+.tt-methods > summary { padding: 0 10px; }
+
+.tt-methods-body {
+  padding: 0 10px 10px;
+  overflow-wrap: anywhere;
+}
+
+.tt-methods-body p,
+.tt-methods-body li {
+  margin-top: 6px;
+  color: var(--hud-muted);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.tt-methods a { display: inline-flex; min-height: 44px; align-items: center; color: var(--teal); }
+.tt-methods code { color: var(--text2); font: 7px/1.5 var(--mono); overflow-wrap: anywhere; }
 
 #hex-country-tooltip.selected .tt-gap {
   border-radius: 3px;
@@ -936,8 +1638,7 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   margin-top: 9px;
 }
 
-#hex-country-tooltip.selected .tt-grid4 > div,
-#hex-country-tooltip.selected .tt-momentum > div {
+#hex-country-tooltip.selected .tt-grid4 > div {
   border-radius: 3px;
   background: var(--hud-cell);
 }
@@ -964,6 +1665,112 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
   border-radius: 3px;
   background: var(--hud-trajectory-bg);
 }
+
+.tt-physical-story { margin-top: 12px; }
+
+.tt-climate-variable {
+  padding: 10px;
+  border: 1px solid var(--hud-border);
+  border-radius: 3px;
+  background: var(--hud-cell);
+}
+
+.tt-climate-variable + .tt-climate-variable { margin-top: 10px; }
+
+.tt-climate-variable > h3 {
+  margin: 0 0 9px;
+  color: var(--mint);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.15px;
+  text-transform: uppercase;
+}
+
+.tt-climate-evidence + .tt-climate-evidence,
+.tt-climate-evidence + .tt-projected-fact,
+.tt-projected-fact + .tt-climate-evidence { margin-top: 10px; }
+
+.tt-climate-evidence > h4 {
+  margin: 0 0 6px;
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: .85px;
+  text-transform: uppercase;
+}
+
+.tt-climate-evidence .elu-trajectory,
+.tt-projected-fact .tt-fact { margin-top: 0; }
+
+.elu-projection-range {
+  padding: 9px 10px 8px;
+  border: 1px solid var(--hud-border);
+  border-radius: 3px;
+  background: var(--hud-trajectory-bg);
+}
+
+.elu-projection-range svg {
+  display: block;
+  width: 100%;
+  height: 72px;
+  overflow: visible;
+  shape-rendering: geometricPrecision;
+}
+
+.elu-projection-range-band {
+  fill: rgba(77, 139, 216, .18);
+  stroke: rgba(77, 139, 216, .46);
+  stroke-width: .8;
+}
+
+.elu-projection-range-line {
+  stroke: var(--hud-muted);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.elu-projection-marker {
+  stroke: var(--hud-bg-strong);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+
+.elu-projection-marker.is-p10 { fill: #4d8bd8; }
+.elu-projection-marker.is-median { fill: var(--mint); }
+.elu-projection-marker.is-p90 { fill: #e85b45; }
+
+.elu-projection-values {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 7px 12px;
+  margin-top: -3px;
+  color: var(--hud-muted);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .3px;
+  line-height: 1.35;
+}
+
+.elu-projection-values span { display: inline-flex; align-items: center; gap: 4px; }
+.elu-projection-values strong { color: var(--text2); font-weight: 700; }
+.elu-projection-values i { display: inline-block; width: 7px; height: 7px; flex: 0 0 7px; }
+.elu-projection-values i.is-p10 { background: #4d8bd8; }
+.elu-projection-values i.is-median { background: var(--mint); transform: rotate(45deg); }
+.elu-projection-values i.is-p90 { border-radius: 50%; background: #e85b45; }
+
+.elu-projection-disclosure {
+  margin: 8px 0 0;
+  padding-top: 7px;
+  border-top: 1px solid var(--hud-divider-soft);
+  color: var(--hud-muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.elu-projection-disclosure strong { color: var(--text2); }
 
 .elu-trajectory-head {
   display: flex;
@@ -995,6 +1802,7 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 }
 
 .elu-trajectory-grid { stroke: var(--hud-grid); stroke-width: .7; }
+.elu-trajectory-trend { stroke: var(--teal); stroke-width: 1.6; stroke-dasharray: 5 3; vector-effect: non-scaling-stroke; }
 .elu-trajectory-target { fill: none; stroke: var(--teal); stroke-width: 1.6; stroke-dasharray: 3 3; opacity: .65; }
 .elu-trajectory-current { fill: none; stroke: var(--st); stroke-width: 1.6; }
 .elu-trajectory-current.is-red { stroke: var(--warn); }
@@ -1012,6 +1820,9 @@ html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong {
 .elu-trajectory-legend span:first-child::before { border-color: var(--warn); }
 .elu-trajectory-legend span:first-child.is-green::before { border-color: var(--leaf); }
 .elu-trajectory-legend span:last-child::before { border-top-style: dashed; border-color: var(--teal); }
+.elu-observed-legend { margin-top: 6px; }
+.elu-trajectory-legend.elu-observed-legend span.elu-observed-series-key::before { border-color: var(--mint); }
+.elu-trajectory-legend.elu-observed-legend span.elu-observed-trend-key::before { border-top-style: dashed; border-color: var(--teal); }
 .elu-trajectory-today-key::before { border-top-style: dotted !important; border-color: var(--hud-today) !important; }
 .elu-trajectory-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
 .elu-trajectory-chip { padding: 4px 7px; border: 1px solid var(--cell-bd); border-radius: 20px; color: var(--hud-muted); font-family: var(--mono); font-size: 8px; line-height: 1; }
@@ -1044,6 +1855,25 @@ body.globe-mode .hex-legend-row {
   line-height: 1.25;
 }
 
+body.globe-mode .hex-legend-title { grid-column: 1 / -1; }
+
+body.globe-mode .hex-legend-note {
+  grid-column: 1 / -1;
+  max-width: none;
+  margin: 0;
+  padding-top: 6px;
+  border-top-color: var(--hud-divider);
+  color: var(--text2);
+  line-height: 1.3;
+}
+
+/* The expanded evidence card and the bottom legend occupy the same desktop
+   quadrant. Keep the selected record unobscured; the lens controls, card
+   summary, and rail retain the active metric while the card is open. */
+body.globe-mode.country-card-open:not(.globe-fallback-active) .hex-legend {
+  display: none !important;
+}
+
 body.globe-mode #globe-back-btn {
   left: var(--globe-dock-inset);
   z-index: 200;
@@ -1062,28 +1892,19 @@ body.globe-mode #globe-back-btn {
   animation: elu-hud-in .7s cubic-bezier(.22,.61,.36,1) .55s both;
 }
 
-html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-close,
-html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-watch {
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-close {
   border-color: var(--hud-border);
   background: var(--hud-cell);
 }
 
-html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-grid4 > div,
-html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-momentum > div,
-html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-chip,
-html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-proj {
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-grid4 > div {
   border-color: var(--hud-divider);
-}
-
-html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-divergence,
-html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ndc,
-html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-proj {
-  background: var(--hud-cell);
 }
 
 html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-status-magnitude,
 html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-candidate,
-html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-factual-value strong {
+html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-factual-value strong,
+html[data-theme="light"] body.globe-mode .tt-fact-value strong {
   color: #6b3d00;
 }
 html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-candidate {
@@ -1091,10 +1912,6 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-candidate {
   background: #f4e7d4;
 }
 html[data-theme="light"] body.globe-mode #hex-country-tooltip .elu-trajectory-current.is-magnitude { stroke: #7a4300; }
-
-html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
-  border-top-color: var(--hud-divider);
-}
 
 @media (max-width: 900px) {
   body.globe-mode {
@@ -1106,6 +1923,9 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   #elu-country-rank-rail { left: 12px; }
   #elu-country-card-wrap {
     bottom: calc(var(--globe-dock-inset) + var(--globe-dock-height) + 10px);
+  }
+  body.globe-mode.country-card-open:not(.globe-fallback-active) .hex-legend {
+    display: none !important;
   }
   #hex-country-tooltip.selected {
     width: min(461px, calc(100vw - 54px)) !important;
@@ -1131,6 +1951,13 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
 
   .elu-rank-head > div { min-width: 0; }
   .elu-rank-title { font-size: 7px; letter-spacing: .8px; }
+  .elu-rank-relief-note {
+    display: block;
+    margin-top: 4px;
+    padding: 2px 3px;
+    font-size: 6px;
+    letter-spacing: .35px;
+  }
   .elu-rank-subtitle,
   .elu-rank-toggle { display: none; }
 
@@ -1178,6 +2005,9 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
     max-height: none;
   }
 
+  .elu-rank-search,
+  .elu-rank-filter-results { display: none; }
+
   #elu-country-rank-rail.is-collapsed .elu-rank-list { display: block; }
 
   .elu-rank-row {
@@ -1216,6 +2046,19 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
     display: none !important;
   }
 
+  body.globe-mode .climate-lens-controls {
+    top: 60px;
+    min-height: 48px;
+  }
+
+  .climate-lens-label { display: none; }
+
+  .climate-lens-controls button {
+    min-width: 68px;
+    min-height: 44px;
+    padding: 8px 9px;
+  }
+
   body.globe-mode #globe-back-btn {
     transform: none;
     padding: 9px 13px;
@@ -1230,6 +2073,12 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
     height: auto;
     padding: 12px 12px 10px;
     transform: none;
+  }
+
+  #hex-country-tooltip.selected .tt-topline {
+    top: -12px;
+    margin: -12px -12px 5px;
+    padding: 12px 12px 8px;
   }
 
   /* Mobile deck motion: a one-time affordance on entry, then short travel and
@@ -1278,14 +2127,13 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   #hex-country-tooltip.selected .tt-nav { display: none; }
   #hex-country-tooltip.selected .tt-hint { padding-bottom: 1px; }
 
-  /* Preserve the card's usable scroll area inside the 60/78px HUD bands. */
+  /* Preserve the card's usable scroll area inside the HUD bands while keeping
+     a visible gutter below the 60px lens control. */
   #hex-country-tooltip.selected > * { max-width: 100%; }
-  #hex-country-tooltip.selected .tt-ndc { max-height: 68px; overflow: auto; }
-
   #elu-country-card-wrap {
     left: 90px;
     right: 10px;
-    top: 60px;
+    top: 142px !important;
     bottom: 78px;
     align-items: flex-end;
   }
@@ -1304,10 +2152,34 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
 
   .elu-rank-title { font-size: 0; }
   .elu-rank-title::after {
-    content: '2023';
+    content: 'Lens';
     font-size: 7px;
     letter-spacing: .8px;
   }
+
+  body[data-climate-lens="carbon"] .elu-rank-title::after { content: 'CO₂'; }
+  body[data-climate-lens="power"] .elu-rank-title::after { content: 'Clean'; }
+  body[data-climate-lens="physical"] .elu-rank-title::after { content: 'Warm'; }
+
+  .elu-rank-relief-note { font-size: 0; }
+  .elu-rank-relief-note::after {
+    content: 'Demo';
+    font-size: 6px;
+    letter-spacing: .35px;
+  }
+
+  .climate-lens-controls button {
+    min-width: 60px;
+    padding: 8px 7px;
+    font-size: 9px;
+  }
+
+  .climate-lens-controls button.is-active::before { margin-right: 4px; }
+
+  .tt-fact-grid { grid-template-columns: 1fr; }
+  .tt-glance .tt-fact:first-child { grid-column: auto; }
+  .elu-power-field-head { align-items: flex-start; flex-direction: column; gap: 2px; }
+  .elu-power-mix-legend { grid-template-columns: 1fr; }
 
   .elu-rank-row {
     grid-template-columns: 6px minmax(0, 1fr);
@@ -1331,6 +2203,10 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
     grid-template-columns: minmax(0, 1fr) 44px;
     align-items: start;
     gap: 6px 8px;
+  }
+
+  #elu-country-card-wrap #hex-country-tooltip {
+    scroll-padding-block-start: 116px;
   }
 
   #hex-country-tooltip.selected .tt-country {
@@ -1363,6 +2239,7 @@ html[data-theme="light"] body.globe-mode #hex-country-tooltip .tt-ctg-supply {
   .elu-loading-mark { animation: none; }
   body.globe-mode #topbar,
   body.globe-mode #elu-country-rank-rail,
+  body.globe-mode .climate-lens-controls,
   body.globe-mode .hex-legend,
   body.globe-mode #globe-back-btn,
   #hex-country-tooltip.selected { animation: none; }

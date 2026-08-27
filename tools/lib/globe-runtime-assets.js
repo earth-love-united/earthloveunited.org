@@ -1,9 +1,9 @@
 'use strict';
 
 const crypto = require('node:crypto');
-const { hasActiveCiJob, hasExactCiStep } = require('./globe-vendor-integrity');
+const { hasActiveCiJob, hasExactCiStep, hasExactConditionalCiStep } = require('./globe-vendor-integrity');
 
-const POLICY_VERSION = '1.4.0';
+const POLICY_VERSION = '1.6.0';
 const MANIFEST_PATH = 'assets/globe/runtime/manifest.json';
 const UI_REVIEW_PATH = 'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json';
 const EXPECTED_UI_REVIEW_COMMIT = '6331b0a304b589e5a671cfaa4cc23b116e10ed0c';
@@ -11,6 +11,7 @@ const EXPECTED_UI_REVIEW_SHA256 = '0af2fc7f2b90a6df1ff7fdc50fff602827469171e1574
 const EXPECTED_MANIFEST_SHA256 = '5c11517a0f75e1af70169c565b46002c4361cdac18d6a6191f06e9f31ac7f67a';
 const EXPECTED_MANIFEST_SEMANTIC_SHA256 = '1bf154b73ddcb4d2ef51397d1e489b22f0bcadb8b13cbcec2bc7d2bbff949a9f';
 const EXPECTED_NASA_FETCHER_SHA256 = 'ade65419169d17404506d2dee5cfdbacb8f2c0c6a76d3d59b34482892edd4466';
+const EXPECTED_CLIMATE_INTELLIGENCE_SHA256 = '4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe';
 const EXPECTED_NATURAL_EARTH_SOURCES = Object.freeze({
   about_url: 'https://www.naturalearthdata.com/about/',
   terms_url: 'https://www.naturalearthdata.com/about/terms-of-use/',
@@ -107,17 +108,49 @@ const ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS = Object.freeze([
   'js/storage.js',
   'js/data-schema.js',
   'js/data.js',
+  'js/country-climate-intelligence.js',
   'js/globe.js',
   'js/carbon-clock.js',
   'js/guided-first-orbit.js',
   'js/app.js',
 ]);
+const HISTORICAL_REVIEW_RUNTIME_SCRIPT_PATHS = Object.freeze([
+  'js/gaia-utils.js',
+  'js/module-contracts.js',
+  'js/event-bus.js',
+  'js/storage-adapter.js',
+  'js/storage.js',
+  'js/data-schema.js',
+  'js/data.js',
+  'js/globe.js',
+  'js/carbon-clock.js',
+  'js/guided-first-orbit.js',
+  'js/app.js',
+]);
+// This exact list is the historical CT-42 + Guided First Orbit human-review
+// scope. It intentionally excludes the v1 climate-intelligence module and
+// runtime. CURRENT_RUNTIME_PIN_PATHS is the structural/staging scope for the
+// factual candidate; promotion still requires a new reviewer artifact.
 const REQUIRED_UI_REVIEW_PIN_PATHS = Object.freeze([
+  'index.html',
+  'css/globe-system.css',
+  'css/guided-first-orbit.css',
+  ...HISTORICAL_REVIEW_RUNTIME_SCRIPT_PATHS,
+  'tools/smoke-test.js',
+  'data/climate/runtime/country-factual-candidate.json',
+  'data/climate/runtime/candidate-manifest.json',
+  'data/small-nations.json',
+  'sw.js',
+  MANIFEST_PATH,
+  ...EXPECTED_ASSETS.map(asset => asset.path),
+]);
+const CURRENT_RUNTIME_PIN_PATHS = Object.freeze([
   'index.html',
   'css/globe-system.css',
   'css/guided-first-orbit.css',
   ...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
   'tools/smoke-test.js',
+  'data/climate/runtime/country-climate-intelligence.json',
   'data/climate/runtime/country-factual-candidate.json',
   'data/climate/runtime/candidate-manifest.json',
   'data/small-nations.json',
@@ -166,19 +199,20 @@ function ct42RuntimeProjection(relativePath, bytes) {
 }
 const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v21',
-  '/css/guided-first-orbit.css?v=v2',
+  '/css/globe-system.css?v=v43',
+  '/css/guided-first-orbit.css?v=v11',
   '/js/gaia-utils.js',
   '/js/module-contracts.js',
   '/js/event-bus.js',
   '/js/storage-adapter.js',
   '/js/storage.js',
-  '/js/data-schema.js?v=v1',
-  '/js/data.js?v=v2',
-  '/js/globe.js?v=v15',
+  '/js/data-schema.js?v=v2',
+  '/js/data.js?v=v16',
+  '/js/country-climate-intelligence.js?v=v17',
+  '/js/globe.js?v=v40',
   '/js/carbon-clock.js?v=v1',
-  '/js/guided-first-orbit.js?v=v2',
-  '/js/app.js?v=v3',
+  '/js/guided-first-orbit.js?v=v6',
+  '/js/app.js?v=v5',
 ]);
 const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/check-globe-runtime-assets.js',
@@ -186,16 +220,21 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/fixtures/globe-runtime-assets.json',
   '/tools/authoring/fetch-nasa-black-marble.sh',
   '/tools/check-staged-production-integrity.js',
+  '/tools/check-staged-factual-public-integrity.js',
   '/tools/build-deploy.sh',
+  '/tools/build-factual-public-deploy.sh',
   '/tools/stage-public-deploy.js',
   '/tools/check-public-deploy-surface.js',
   '/tools/lib/public-deploy-surface.js',
+  '/tools/check-public-climate-release-profile.js',
+  '/tools/lib/public-climate-release-profile.js',
   '/_headers',
   '/_redirects',
   '/wrangler.jsonc',
   '/docs/LEGACY-COUNTRY-DATA-EXIT.md',
   '/tools/check-climate-production-readiness.js',
   '/tools/check-climate-production-readiness-policy.js',
+  '/tools/check-climate-factual-public-readiness.js',
   '/tools/lib/climate-production-readiness.js',
   '/tools/check-climate-runtime-diff-boundary.js',
   '/tools/lib/climate-runtime-diff-boundary.js',
@@ -209,6 +248,17 @@ const REQUIRED_CONTROL_OWNERS = Object.freeze([
   '/tools/smoke-test.js',
   '/tools/check-globe-webgl-fallback.js',
   '/data/climate/fixtures/globe-webgl-fallback.json',
+  '/js/country-climate-intelligence.js',
+  '/data/climate/source-registry.json',
+  '/data/climate/schemas/country-climate-intelligence.schema.json',
+  '/data/climate/releases/country-climate-intelligence-v1/',
+  '/data/climate/runtime/country-climate-intelligence.json',
+  '/tools/build-country-climate-intelligence.js',
+  '/tools/check-country-climate-intelligence-ci.js',
+  '/tools/check-country-climate-intelligence-release-gate.js',
+  '/tools/check-country-climate-runtime-atomic.js',
+  '/tools/lib/country-climate-intelligence.js',
+  '/tools/lib/country-climate-intelligence-release-gate.js',
   '/assets/globe/runtime/',
   '/data/small-nations.json',
 ]);
@@ -314,6 +364,8 @@ function evaluateRuntimeAssets(input) {
   const globe = stripComments(files.globe);
   const app = stripComments(files.app);
   const data = stripComments(files.data);
+  const dataSchema = stripComments(files.data_schema);
+  const climateIntelligence = stripComments(files.climate_intelligence);
   const sw = stripComments(files.sw);
   const buildDeploy = stripComments(files.build_deploy);
   const stagePublicDeploy = stripComments(files.stage_public_deploy);
@@ -400,23 +452,23 @@ function evaluateRuntimeAssets(input) {
     globe.includes('Approximate navigation point; not a boundary or precise centroid.') &&
     index.includes('Twenty-eight small states absent from that dataset use manually curated approximate navigation points'),
     'Exactly 28 unique, finite, range-valid point affordances must retain source/review/approval and visible representation limits.');
-  check('canonical-evidence-headings', globe.includes('const country = climate?.name || mapArea;') &&
+  check('canonical-evidence-headings', globe.includes('const country = view?.country?.name || climate?.name || mapArea;') &&
     globe.includes('Map geometry label: ') && globe.includes('. Evidence entity: '),
     'Assessed card headings must use canonical candidate entity names and disclose any differing map-geometry label.');
   check('disputed-subfeatures-nonassessing', globe.includes('NON_ASSESSING_MAP_AREAS') &&
     globe.includes("'Northern Cyprus'") && globe.includes("'Somaliland'") && globe.includes("'Kosovo'") &&
     globe.includes("feature.properties.ISO_A2 !== 'AQ' && !_isNonAssessingMapArea(feature)") &&
     !globe.includes("'Northern Cyprus': 'CYP'") && !globe.includes("Somaliland: 'SOM'") &&
-    index.includes('excluded from the assessed overlay and never inherit a parent entity’s evidence'),
+    index.includes('excluded from the data overlay and never inherit a parent entity’s evidence'),
     'Disputed Natural Earth subfeatures must be noninteractive and must never inherit Cyprus or Somalia evidence.');
-  check('complete-evidence-browser', index.includes('Browse all 249 evidence records') &&
-    index.includes('aria-label="Browse all 249 evidence records"') && index.includes('browse-label-short') &&
+  check('complete-evidence-browser', index.includes('Browse all 249 records') &&
+    index.includes('aria-label="Browse all 249 climate intelligence records"') && index.includes('browse-label-short') &&
     globe.includes("evidence_browse_requested: 'All 249 registry entities") &&
     globe.includes("stableReason === 'evidence_browse_requested'") &&
     app.includes("browseEvidence: () => this.browseEvidence()") &&
     app.includes("GlobeModule._initialized !== true") && app.includes("querySelectorAll('canvas').length !== 1") &&
     globe.includes("this._fallbackEntries.length + ' registry entities") &&
-    globe.includes("factualCount") && globe.includes("gapCount") &&
+    globe.includes('rows.eligible_count') && globe.includes('rows.unranked_count') &&
     globe.includes("if (name === 'close')") && globe.includes('const hasLiveRenderer = this._initialized === true') &&
     files.globe_css?.includes('body.globe-fallback-active #globe-evidence-browse'),
     'A first-class, searchable 249-entity evidence browser must remain reachable from a live globe and unable to hide a genuine failure.');
@@ -431,14 +483,27 @@ function evaluateRuntimeAssets(input) {
   check('visual-preload-validation', globe.includes('Promise.all(Object.values(GLOBE_VISUAL_ASSETS)') && globe.includes('image.naturalWidth !== asset.width') && globe.includes('image.naturalHeight !== asset.height') && globe.includes('GLOBE_VISUAL_ASSET_TIMEOUT_MS = 8000') &&
     globe.includes('image.onload = null') && globe.includes('image.onerror = null') && globe.includes('Image timeout: '),
     'Every globe image must preload with timeout and exact natural dimensions.');
-  check('candidate-fail-closed', data.includes("climateCandidateState = 'unavailable'") && data.includes('countries.length === 249') && data.includes('factualCount === 206') && data.includes('gapCount === 43') && data.includes('new Set(isoCodes).size === countries.length') && data.includes("CLIMATE_CANDIDATE_SHA256 = '7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664'") && data.includes('if (actual !== CLIMATE_CANDIDATE_SHA256)') && data.includes("crypto.subtle.digest('SHA-256'") && data.includes('DATA_FETCH_TIMEOUT_MS = 8000') && app.includes("reason: 'globe_construction_failed'") && globe.includes("'candidate_data_unavailable'"),
-    'Missing or malformed candidate data must become a deterministic unavailable state before rendering.');
+  check('candidate-fail-closed', data.includes("climateIntelligenceState = 'unavailable'") &&
+    data.includes(`CLIMATE_INTELLIGENCE_SHA256 = '${EXPECTED_CLIMATE_INTELLIGENCE_SHA256}'`) &&
+    data.includes('if (actual !== CLIMATE_INTELLIGENCE_SHA256)') && data.includes("crypto.subtle.digest('SHA-256'") &&
+    data.includes('DATA_FETCH_TIMEOUT_MS = 60000') && data.includes("release?.release?.status === 'candidate'") &&
+    data.includes('release?.release?.production_runtime_release === false') &&
+    data.includes("release?.release?.status === 'production'") &&
+    data.includes("release?.release?.review_state === 'independently_reviewed'") &&
+    data.includes('release?.release?.production_runtime_release === true') &&
+    data.includes('const boundaryValid = candidateBoundaryValid || productionBoundaryValid') &&
+    dataSchema.includes("value.countries.length !== 249") && dataSchema.includes('recordIds.join(\'|\') !== metricIds.join(\'|\')') &&
+    dataSchema.includes('partition.length !== 249') && dataSchema.includes("['carbon', 'power', 'physical']") &&
+    climateIntelligence.includes("window.COUNTRY_CLIMATE_INTELLIGENCE = COUNTRY_CLIMATE_INTELLIGENCE") &&
+    app.includes("reason: 'globe_construction_failed'") && globe.includes("'candidate_data_unavailable'"),
+    'Missing, malformed, checksum-drifted, or incoherent-state Country Climate Intelligence data must become unavailable before rendering.');
   check('exact-interactive-boundary', globe.includes('EXPECTED_INTERACTIVE_ENTITY_COUNT = 201') &&
-    globe.includes('EXPECTED_INTERACTIVE_FACTUAL_COUNT = 194') && globe.includes('EXPECTED_INTERACTIVE_GAP_COUNT = 7') &&
     globe.includes('this._countryFeatures.length !== EXPECTED_INTERACTIVE_ENTITY_COUNT') &&
     globe.includes('uniqueFeatureIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT') &&
-    globe.includes('uniqueDeckIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT') && globe.includes('!setsMatch'),
-    'The rendered feature set and evidence deck must be the same 201 unique registry ISOs with exactly 194 factual and 7 gap records.');
+    globe.includes('uniqueDeckIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT') && globe.includes('!setsMatch') &&
+    globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView'") &&
+    globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows'"),
+    'The rendered feature set and active-lens deck must be the same 201 unique registry ISOs; lens eligibility stays in the view model.');
   check('stable-preparation-failures', ['candidate_data_unavailable', 'country_geometry_unavailable', 'visual_assets_unavailable'].every(reason => occurrences(globe, reason) >= 2) && app.includes("safeCall('GlobeModule', 'showFallback', reason)"),
     'Candidate, geometry, and image failures must route to stable accessible fallback reasons.');
   const prepareCall = app.indexOf('preparation = await GlobeModule.prepare(');
@@ -467,10 +532,10 @@ function evaluateRuntimeAssets(input) {
     closeBrowserBody.includes('this._teardownFailedRenderer();') && closeBrowserBody.includes("this.showFallback('globe_construction_failed')") &&
     globe.includes("this.showFallback('webgl_unavailable')"),
     'Evidence-browser return and WebGL context loss must tear down stale renderer state and expose a stable failure.');
-  check('country-card-focus-trap', globe.includes('const first = tabbable[0];') &&
-    globe.includes('event.shiftKey && (document.activeElement === heading || document.activeElement === first)') &&
-    globe.includes('!event.shiftKey && document.activeElement === last'),
-    'The modal country card must wrap both backward and forward keyboard focus without exposing background controls.');
+  check('country-card-nonmodal-focus', globe.includes("wrap.setAttribute('role', 'dialog')") &&
+    globe.includes("wrap.setAttribute('aria-modal', 'false')") &&
+    !globe.includes('const first = tabbable[0];') && index.includes('id="climate-lens-controls"'),
+    'The non-modal country evidence panel must release keyboard focus to the surrounding lens and rail controls.');
   check('safe-error-reporting', !/console\.error\s*\(/.test(`${app}\n${data}\n${globe}`) && app.includes("reportError('GlobeModule.prepare()'") && globe.includes("reportWarn('GlobeModule'"),
     'Runtime failures must use the shared reportError/reportWarn utilities.');
 
@@ -478,7 +543,9 @@ function evaluateRuntimeAssets(input) {
     index.includes("object-src 'none';") && index.includes("base-uri 'self';") &&
     !/raw\.githubusercontent\.com|api\.carbonmark\.com|cdn\.jsdelivr\.net/.test(index),
     'CSP and resource hints must not retain obsolete runtime origins or the unused Carbonmark permission.');
-  check('visible-boundary-disclaimer', index.includes('None of these representations expresses a position on sovereignty or legal boundaries') && index.includes('Map boundaries are navigational and are not a sovereignty judgment') && index.includes('Map boundaries use generalized Natural Earth 1:110m geometry for navigation only.'),
+  check('visible-boundary-disclaimer', index.includes('None of these representations expresses a position on sovereignty or legal boundaries') &&
+    index.includes('Map boundaries use generalized Natural Earth 1:110m geometry for navigation only.') &&
+    index.includes('approximate navigation points, not boundaries or precise centroids'),
     'Foundation, globe, and fallback surfaces must expose the navigational boundary limitation.');
   check('public-visual-provenance-limits', index.includes('NASA Earth Observatory Black Marble 2012') &&
     index.includes('image by Robert Simmon') &&
@@ -486,7 +553,7 @@ function evaluateRuntimeAssets(input) {
     index.includes('Original starfield from Three-Globe 2.45.2'),
     'Public copy must credit NASA and identify the historical surface and restored sky as decorative visual context.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v40-guided-orbit-review';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=40-guided-orbit-review'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v77-cci-raw-byte-boundary';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=77-cci-raw-byte-boundary'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&
@@ -500,11 +567,12 @@ function evaluateRuntimeAssets(input) {
     EXPECTED_INDEX_SW_KEYS.every(key => input?.service_worker?.static_assets?.filter(item => item === key).length === 1),
     'Every versioned CSS/JS request used by the globe entry path must have the exact same service-worker precache key.');
   check('service-worker-data-fallback', sw.includes("url.pathname.startsWith('/data/')") &&
-    data.includes("version: 'ct42candidate1'") &&
-    sw.includes("'/data/carbon-projects.json?v=ct42candidate1'") &&
+    data.includes("version: 'cci1runtime13'") &&
+    sw.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1runtime13'") &&
     sw.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'") &&
+    !sw.includes('/data/carbon-projects.json') &&
     occurrences(sw, 'caches.match(request)') >= 2 && !sw.includes('ignoreSearch'),
-    'Runtime data remain network-first with exact versioned precache keys and exact-request fallback.');
+    'Current and rollback climate artifacts remain network-first with exact versioned precache keys and exact-request fallback.');
 
   const stagedVerifier = 'node tools/check-staged-production-integrity.js --staged "$DEPLOY_DIR"';
   const stagedBuildCommand = `exec ${stagedVerifier}`;
@@ -518,11 +586,26 @@ function evaluateRuntimeAssets(input) {
     !/(?:^|\n)\s*(?:exit|return)\s+0(?:\s|$)/.test(buildDeploy) &&
     !/trap\s+[^\n]*\b(?:DEBUG|RETURN)\b/.test(buildDeploy),
     'Deployment staging must exec the aggregate verifier as the exact tail and contain no direct shell background operator.');
-  const finalCt45RehashCall = 'verifyCt45RuntimeBytes(sourceRoot, stagedRoot);';
-  check('final-ct45-runtime-rehash', occurrences(finalIntegrity, finalCt45RehashCall) === 1 &&
-    finalIntegrity.indexOf(finalCt45RehashCall) > finalIntegrity.indexOf('verifyApprovalArtifacts(sourceRoot, stagedRoot);') &&
-    finalIntegrity.includes('FINAL_CT45_REHASH_PATHS = REQUIRED_UI_REVIEW_PIN_PATHS'),
-    'The aggregate verifier must finish with one post-hook CT-45 rehash over the canonical reviewed runtime scope.');
+  const finalActiveRehashCall = 'verifyActiveRuntimeBytes(sourceRoot, stagedRoot, profileParity.source.profile);';
+  const requiredApprovalCall = "verifyApprovalArtifacts(sourceRoot, stagedRoot, options.mode === 'release');";
+  check('final-active-runtime-rehash', occurrences(finalIntegrity, finalActiveRehashCall) === 1 &&
+    finalIntegrity.indexOf(finalActiveRehashCall) > finalIntegrity.indexOf(requiredApprovalCall) &&
+    finalIntegrity.includes('FINAL_CT45_REHASH_PATHS = REQUIRED_UI_REVIEW_PIN_PATHS') &&
+    finalIntegrity.includes('FINAL_CCI_REHASH_PATHS') &&
+    finalIntegrity.includes('verifyCciRuntimeBytes(sourceRoot, stagedRoot)') &&
+    finalIntegrity.includes('verifyCt45RuntimeBytes(sourceRoot, stagedRoot)'),
+    'The aggregate verifier must finish with one profile-selected runtime rehash and retain separate CCI and legacy review authorities.');
+  check('final-release-authority-recheck',
+    finalIntegrity.includes('function releaseAuthoritySnapshot(root, profile)') &&
+    finalIntegrity.includes('function assertReleaseAuthoritySnapshotUnchanged(expected, actual)') &&
+    finalIntegrity.includes("const initialAuthoritySnapshot = options.mode === 'release'") &&
+    finalIntegrity.includes('runFinalReleaseProfileCheck(options, sourceRoot);') &&
+    occurrences(finalIntegrity,
+      'assertReleaseAuthoritySnapshotUnchanged(\n      initialAuthoritySnapshot,\n      releaseAuthoritySnapshot(sourceRoot, profileParity.source.profile)\n    );') === 3 &&
+    finalIntegrity.includes("runChecker(sourceRoot, ['tools/check-public-climate-release-profile.js', '--release']);") &&
+    finalIntegrity.indexOf('runFinalReleaseProfileCheck(options, sourceRoot);') <
+      finalIntegrity.indexOf(finalActiveRehashCall),
+    'Release mode must pin, revalidate, and rehash the complete active authority package after the precheck window.');
   check('final-ui-review-binding',
     finalIntegrity.includes('record.sha256 !== EXPECTED_UI_REVIEW_SHA256') &&
     finalIntegrity.includes('review.reviewed_commit !== EXPECTED_UI_REVIEW_COMMIT') &&
@@ -532,14 +615,32 @@ function evaluateRuntimeAssets(input) {
     finalIntegrity.includes('APPROVAL_REVIEWED_PATHS') && finalIntegrity.includes('UI_REVIEW_PATH,'),
     'The final verifier must bind the UI-review record and every pin to reviewed Git objects, allowing only the narrow shared-brand projection.');
   const releaseGuard = buildDeploy.indexOf('if [ "$DEPLOY_MODE" = "release" ]; then');
-  const readinessCommand = buildDeploy.indexOf('node tools/check-climate-production-readiness.js --release');
+  const readinessCommand = buildDeploy.indexOf('node tools/check-public-climate-release-profile.js --release');
   const stagingStart = buildDeploy.indexOf('mkdir -p "$DEPLOY_DIR"');
   check('deploy-release-boundary', releaseGuard !== -1 && readinessCommand > releaseGuard && stagingStart > readinessCommand &&
-    occurrences(buildDeploy, 'node tools/check-climate-production-readiness.js --release') === 1 &&
+    occurrences(buildDeploy, 'node tools/check-public-climate-release-profile.js --release') === 1 &&
+    occurrences(buildDeploy, 'node tools/check-public-climate-release-profile.js --candidate') === 1 &&
     buildDeploy.includes('case "$DEPLOY_MODE" in') && buildDeploy.includes('candidate|release) ;;') &&
     buildDeploy.includes('if [ -n "${CF_PAGES_BRANCH:-}" ]; then') &&
     buildDeploy.includes('Conflicting build modes: CLI=$ARG_DEPLOY_MODE ELU_DEPLOY_MODE=$ENV_DEPLOY_MODE'),
     'Release mode must be explicit, strictly validated, forced for every externally reachable Cloudflare build, and pass readiness before staging starts.');
+  check('exclusive-release-profile',
+    files.release_profile?.includes("PROFILE_CCI = 'cci'") &&
+    files.release_profile?.includes("PROFILE_LEGACY_CT40 = 'legacy_ct40'") &&
+    files.release_profile?.includes("ENTRYPOINTS = Object.freeze(['index.html', 'js/data.js', 'sw.js'])") &&
+    files.release_profile?.includes('climate release profile is mixed, unknown, or absent') &&
+    files.release_profile?.includes('assertPublicClimateReleaseProfileParity') &&
+    files.profile_selector?.includes("['tools/check-country-climate-intelligence-release-gate.js', '--require-release']") &&
+    files.profile_selector?.includes("['tools/check-climate-production-readiness.js', '--release']") &&
+    finalIntegrity.includes('assertPublicClimateReleaseProfileParity(sourceRoot, stagedRoot)') &&
+    publicDeploySurface.includes('detectPublicClimateReleaseProfile(sourceRoot)'),
+    'One strict HTML/data/service-worker profile must exclusively select CCI or legacy release authority and match staged bytes.');
+  check('release-asset-signatures-required',
+    finalIntegrity.includes(requiredApprovalCall) &&
+    finalIntegrity.includes("if (required) throw new Error('signed globe runtime asset approval is required for release mode')") &&
+    files.profile_selector?.includes('verifyApprovalArtifacts(valueRoot, valueRoot, true)') &&
+    files.profile_selector?.includes("if (options.mode === 'release')"),
+    'Release selection and final staging must both require the separately signed globe-runtime asset approval.');
   check('deploy-failure-cleanup', input?.deploy_behavior?.denied_release_removed_output === true &&
     input?.deploy_behavior?.later_failure_removed_output === true &&
     input?.deploy_behavior?.final_integrity_failure_removed_output === true &&
@@ -556,20 +657,65 @@ function evaluateRuntimeAssets(input) {
     publicDeploySurface.includes('marker !== CANDIDATE_MARKER_TEXT') &&
     buildDeploy.includes('Do not upload, deploy, or expose this candidate as a public preview.'),
     'Candidate staging must carry an explicit non-publication marker and never print public deployment instructions.');
+  check('climate-intelligence-public-exclusion',
+    publicDeploySurface.includes("const CLIMATE_INTELLIGENCE_RUNTIME_PATH = 'data/climate/runtime/country-climate-intelligence.json';") &&
+    publicDeploySurface.includes('const CANDIDATE_ONLY_PATHS = Object.freeze([\n  CLIMATE_INTELLIGENCE_RUNTIME_PATH,') &&
+    hasExactCiStep(ci, 'Country Climate Intelligence public-release exclusion policy', 'node tools/check-country-climate-public-release-boundary.js --self-test') &&
+    hasExactConditionalCiStep(ci, 'Verify CCI keeps factual-public staging fail-closed',
+      'node tools/check-country-climate-public-release-boundary.js',
+      "${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'candidate' }}") &&
+    hasExactConditionalCiStep(ci, 'Build reviewed CCI release deploy directory', './tools/build-deploy.sh --release',
+      "${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release' }}") &&
+    hasExactConditionalCiStep(ci, 'Verify final CCI release integrity independently',
+      'node tools/check-staged-production-integrity.js --staged ./_deploy',
+      "${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release' }}"),
+    'The CCI runtime must remain candidate-only and both static and factual-public CI must enforce its unapproved release boundary.');
+  const legacyCandidateCondition =
+    "${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'candidate' }}";
+  const legacyReleaseCondition =
+    "${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'release' }}";
+  check('exclusive-legacy-factual-display-routing',
+    occurrences(files.build_factual_public,
+      'node tools/check-public-climate-release-profile.js --factual-display') === 1 &&
+    occurrences(files.final_factual_integrity,
+      "['tools/check-public-climate-release-profile.js', '--factual-display']") === 3 &&
+    hasExactConditionalCiStep(ci, 'Build limited legacy factual-display deploy directory',
+      './tools/build-factual-public-deploy.sh --factual-public', legacyCandidateCondition) &&
+    hasExactConditionalCiStep(ci, 'Verify final limited legacy factual-display integrity independently',
+      'node tools/check-staged-factual-public-integrity.js --staged ./_deploy', legacyCandidateCondition) &&
+    hasExactConditionalCiStep(ci, 'Build reviewed legacy release deploy directory',
+      './tools/build-deploy.sh --release', legacyReleaseCondition) &&
+    hasExactConditionalCiStep(ci, 'Verify final legacy release integrity independently',
+      'node tools/check-staged-production-integrity.js --staged ./_deploy', legacyReleaseCondition),
+    'The limited legacy factual-display tier must reject full release state; reviewed legacy releases must use the signed production path.');
   check('ci-policy-wired',
     hasActiveCiJob(ci, 'static') && hasActiveCiJob(ci, 'smoke') &&
     hasExactCiStep(ci, 'Verify NASA Black Marble source pin', './tools/authoring/fetch-nasa-black-marble.sh --check') &&
     hasExactCiStep(ci, 'CT-45 localized runtime asset policy', 'node tools/check-globe-runtime-assets.js') &&
+    hasExactCiStep(ci, 'Public climate release-profile policy', 'node tools/check-public-climate-release-profile.js --self-test') &&
     hasExactCiStep(ci, 'Exact public deploy surface policy self-test', 'node tools/check-public-deploy-surface.js --self-test') &&
-    hasExactCiStep(ci, 'Verify exact public deploy surface independently', 'node tools/check-public-deploy-surface.js --staged _deploy --mode candidate') &&
+    hasExactConditionalCiStep(ci, 'Verify exact public deploy surface independently',
+      'node tools/check-public-deploy-surface.js --staged _deploy --mode candidate',
+      "${{ steps.smoke_profile.outputs.phase == 'candidate' }}") &&
+    hasExactConditionalCiStep(ci, 'Verify release public deploy surface independently',
+      'node tools/check-public-deploy-surface.js --staged _deploy --mode release',
+      "${{ steps.smoke_profile.outputs.phase == 'release' }}") &&
     hasExactCiStep(ci, 'Climate production readiness policy fixtures', 'node tools/check-climate-production-readiness-policy.js') &&
-    hasExactCiStep(ci, 'Build candidate deploy directory', './tools/build-deploy.sh --candidate') &&
+    hasExactConditionalCiStep(ci, 'Build candidate deploy directory', './tools/build-deploy.sh --candidate',
+      "${{ steps.smoke_profile.outputs.phase == 'candidate' }}") &&
+    hasExactConditionalCiStep(ci, 'Build reviewed release deploy directory', './tools/build-deploy.sh --release',
+      "${{ steps.smoke_profile.outputs.phase == 'release' }}") &&
+    hasExactCiStep(ci, 'Verify final staged production integrity independently',
+      'node tools/check-staged-production-integrity.js --staged _deploy') &&
+    ci.includes('ELU_VERIFIED_DEPLOY_MODE: ${{ steps.smoke_profile.outputs.phase }}') &&
     hasExactCiStep(ci, 'Verify staged CT-45 bytes independently', 'node tools/check-globe-runtime-assets.js --staged _deploy'),
     'CI must enforce CT-45 source policy and independently verify staged deployment bytes.');
   const browserLifecycleStep = workflowStep(ci, 'Run SmokeTest + StackLint in headless Chromium');
   check('ci-browser-runtime-lifecycle', occurrences(ci, '- name: Run SmokeTest + StackLint in headless Chromium') === 1 && [
     "serviceWorkers: 'block'",
-    "exercisePreRenderFailure('**/data/climate/runtime/country-factual-candidate.json*', 'candidate_data_unavailable'",
+    "exercisePreRenderFailure('**/data/climate/runtime/country-climate-intelligence.json*', 'candidate_data_unavailable'",
+    'exerciseSlowClimateRuntimeFirstVisit()',
+    'an 8.5-second first CCI response must retain all 249 entities without entering fallback',
     "exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable'",
     "exercisePreRenderFailure('**/assets/globe/runtime/earth-night.jpg*', 'visual_assets_unavailable'",
     "exercisePreRenderFailure('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable'",
@@ -580,13 +726,21 @@ function evaluateRuntimeAssets(input) {
     'securitypolicyviolation',
     'stale async activation must not construct a renderer',
     'countryFeatureCount === 201',
-    'browserCounts.factual === 206 && browserCounts.gaps === 43',
+    'const expected = expectedFallbackCounts[lensId];',
+    'browserCounts.total === 249 && browserCounts.canvases === 1',
+    "for (const lensId of ['power', 'physical', 'carbon'])",
+    "lensSnapshot.state.selectedCountryIso === 'CHN'",
+    "lensSnapshot.view.visual.extrusion === expectedExtrusion",
+    "await page.locator('#country-card-heading').focus()",
     "new Event('webglcontextlost', { cancelable: true })",
     'reducedMotion.autoRotate === false',
-    'backward country-card focus trap must wrap to Next country without reaching the background rail',
+    'non-modal country panel must release backward focus to the surrounding lens and rail controls',
+    'closing after lens changes must restore focus to China in the newly rendered rail',
+    'Escape must cancel a pending country swap without reopening the card or splitting focus',
     'rendererCanvasCount === 0',
     'for (const width of [320, 375])',
     'rects.browse.height >= 44 && rects.theme.height >= 44',
+    'rects.lenses.every(rect => rect.width >= 44 && rect.height >= 44)',
     'if (!condition) throw new Error(message);',
     "document.querySelector('#globeViz canvas').dispatchEvent(new Event('webglcontextlost', { cancelable: true }))",
   ].every(token => browserLifecycleStep.includes(token)) &&
@@ -608,8 +762,8 @@ function evaluateRuntimeAssets(input) {
   check('truth-ci-required', climateTruthCi.split('\n').filter(line => line.trim().replace(/,$/, '') === truthComponent).length === 1,
     'Climate truth CI must require exactly one active CT-45 component.');
 
-  check('ui-review-pin-scope', JSON.stringify(input?.review_scope?.ui_pins) === JSON.stringify(REQUIRED_UI_REVIEW_PIN_PATHS),
-  'Independent UI review must pin every active globe-truth script plus CSS, data, SW, manifest, and all five committed assets.');
+  check('ui-review-pin-scope', JSON.stringify(input?.review_scope?.ui_pins) === JSON.stringify(CURRENT_RUNTIME_PIN_PATHS),
+  'The candidate staging scope must pin every active globe-truth script plus CSS, current and rollback data, SW, manifest, and all five committed assets.');
   const activeIndexScripts = (input?.index_runtime_requests || [])
     .filter(item => item.startsWith('/js/'))
     .map(item => item.slice(1).split('?')[0]);
@@ -618,9 +772,10 @@ function evaluateRuntimeAssets(input) {
     JSON.stringify(activeIndexScripts) === JSON.stringify(ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS) &&
     ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS.every(item =>
       input?.review_scope?.ui_pins?.includes(item) && input?.review_scope?.runtime_fixed?.includes(item)),
-    'Every active index.html globe-truth script must share one canonical UI-pin and runtime-diff scope.');
+    'Every active index.html globe-truth script must share one canonical candidate pin and runtime-diff scope.');
   check('runtime-diff-boundary', input?.review_scope?.runtime_prefixes?.includes('assets/globe/runtime/') &&
-    [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS, 'tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'data/small-nations.json']
+    input?.review_scope?.runtime_prefixes?.includes('data/climate/releases/country-climate-intelligence-v1/') &&
+    [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS, 'tools/check-globe-runtime-assets.js', 'tools/lib/globe-runtime-assets.js', 'tools/fixtures/globe-runtime-assets.json', 'tools/authoring/fetch-nasa-black-marble.sh', 'tools/check-staged-production-integrity.js', 'tools/check-staged-factual-public-integrity.js', 'tools/check-climate-factual-public-readiness.js', 'tools/build-factual-public-deploy.sh', 'tools/check-public-climate-release-profile.js', 'tools/lib/public-climate-release-profile.js', 'data/small-nations.json']
       .every(item => input?.review_scope?.runtime_fixed?.includes(item)),
     'Runtime-diff policy must classify localized assets and CT-45 controls as runtime-affecting.');
   check('control-files-owned', REQUIRED_CONTROL_OWNERS.every(required =>
@@ -656,8 +811,10 @@ function evaluateRuntimeAssets(input) {
 
 module.exports = {
   ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
+  CURRENT_RUNTIME_PIN_PATHS,
   CT42_SHARED_HOST_PATHS,
   EXPECTED_ASSETS,
+  EXPECTED_CLIMATE_INTELLIGENCE_SHA256,
   EXPECTED_INDEX_SW_KEYS,
   EXPECTED_MANIFEST_SEMANTIC_SHA256,
   EXPECTED_MANIFEST_SHA256,

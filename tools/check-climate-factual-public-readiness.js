@@ -175,12 +175,14 @@ function main() {
 
   requirePass(['tools/check-climate-factual-runtime-candidate.js'], 'CT-42 factual runtime');
   requirePass(['tools/check-ct42-runtime-rollback-proof.js'], 'CT-42 rollback proof');
+  requirePass(['tools/check-country-climate-public-release-boundary.js'], 'Country Climate Intelligence public-release boundary');
 
   process.stdout.write([
     'Climate factual-public readiness: PASS',
     '  2,060 reviewed facts are eligible for factual display and magnitude comparison.',
     '  Commitments, derived metrics, performance assessment, scores, and assessed release remain absent or denied.',
     '  Visual-asset provenance and notices are pinned; protected maintainer merge is still required and the broader signed assessed-release gate remains unchanged.',
+    '  Country Climate Intelligence remains candidate-only and is excluded from the factual-public artifact surface until source, rights, and scientific review are complete.',
     '  Open concern: independent rollback-browser review remains untested for this narrow launch; the deterministic rollback proof itself passes.',
   ].join('\n') + '\n');
 }

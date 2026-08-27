@@ -9,7 +9,8 @@
     "schema_version",
     "review_id",
     "decision",
-    "reviewed_commit_sha",
+    "reviewed_artifact_pin_digest",
+    "reviewed_artifact_pins",
     "reviewed_at",
     "builder_identity",
     "reviewer_identity",
@@ -28,17 +29,41 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "2.0.0"
+      "const": "3.0.0"
     },
     "review_id": {
-      "const": "elu-globe-runtime-assets-production-review-v2"
+      "const": "elu-globe-runtime-assets-production-review-v3"
     },
     "decision": {
       "const": "approve"
     },
-    "reviewed_commit_sha": {
+    "reviewed_artifact_pin_digest": {
       "type": "string",
-      "pattern": "^[0-9a-f]{40}$"
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "reviewed_artifact_pins": {
+      "type": "array",
+      "minItems": 95,
+      "maxItems": 95,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
     },
     "reviewed_at": {
       "type": "string",

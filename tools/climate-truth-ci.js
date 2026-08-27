@@ -6,10 +6,21 @@ const path = require('path');
 const crypto = require('crypto');
 const childProcess = require('child_process');
 const { evaluateTruthPolicy, resolveRunStatus } = require('./lib/climate-truth-ci-policy');
+const {
+  PROFILE_CCI,
+  PROFILE_LEGACY_CT40,
+  detectPublicClimateReleaseProfile,
+} = require('./lib/public-climate-release-profile');
+const {
+  CCI_COMPONENTS,
+  cciReleasePhase,
+  componentPlan,
+} = require('./lib/climate-truth-component-plan');
 
 const ROOT = path.resolve(__dirname, '..');
 const STRICT = process.argv.includes('--strict') || process.argv.includes('--require-complete');
 const ALLOW_INCOMPLETE = process.argv.includes('--allow-incomplete');
+const ACTIVE_PROFILE = detectPublicClimateReleaseProfile(ROOT).profile;
 const COMPONENTS = Object.freeze([
   { id: 'CT-01', script: 'tools/check-climate-source-registry.js', required: true },
   { id: 'CT-02', script: 'tools/check-country-evidence.js', required: true },
@@ -24,9 +35,9 @@ const COMPONENTS = Object.freeze([
   { id: 'CT-11', script: 'tools/check-major-emitter-ndc-evidence.js', required: true },
   { id: 'CT-12', script: 'tools/check-policy-finance-evidence.js', required: true },
   { id: 'CT-13', script: 'tools/check-country-coverage-gap-queue.js', required: true },
-  { id: 'CT-14', script: 'tools/check-top20-primary-source-gap-queue.js', required: false },
-  { id: 'CT-16', script: 'tools/check-source-routing-policy.js', required: true },
-  { id: 'CT-17', script: 'tools/check-source-rights-review-packets.js', required: true },
+  { id: 'CT-14', script: 'tools/check-top20-primary-source-gap-queue.js', profiles: [PROFILE_LEGACY_CT40], required: false },
+  { id: 'CT-16', script: 'tools/check-source-routing-policy.js', profiles: [PROFILE_LEGACY_CT40], required: true },
+  { id: 'CT-17', script: 'tools/check-source-rights-review-packets.js', profiles: [PROFILE_LEGACY_CT40], required: true },
   { id: 'CT-20', script: 'tools/check-target-comparability.js', required: true },
   { id: 'CT-21', script: 'tools/check-country-delivery-engine.js', required: true },
   { id: 'CT-22', script: 'tools/check-country-profile-compiler.js', required: true },
@@ -34,16 +45,17 @@ const COMPONENTS = Object.freeze([
   { id: 'CT-31', script: 'tools/check-country-ranking.js', required: true },
   { id: 'CT-32', script: 'tools/check-country-card-evidence-model.js', required: true },
   { id: 'CT-33', script: 'tools/check-country-accessibility.js', required: true },
-  { id: 'CT-42-DATA-R', script: 'tools/check-climate-factual-runtime-data-review.js', required: true },
-  { id: 'CT-42-UI-R', script: 'tools/check-climate-factual-runtime-ui-review.js', required: true },
+  { id: 'CT-42-DATA-R', script: 'tools/check-climate-factual-runtime-data-review.js', profiles: [PROFILE_LEGACY_CT40], required: true },
+  { id: 'CT-42-UI-R', script: 'tools/check-climate-factual-runtime-ui-review.js', profiles: [PROFILE_LEGACY_CT40], required: true },
   { id: 'CT-43-FALLBACK', script: 'tools/check-globe-webgl-fallback.js', required: true },
   { id: 'CT-44-VENDOR', script: 'tools/check-globe-vendor-integrity.js', required: true },
   { id: 'CT-45-ASSETS', script: 'tools/check-globe-runtime-assets.js', required: true },
   { id: 'CT-45-NOTICES', script: 'tools/check-globe-third-party-notices.js', required: true },
-  { id: 'CT-42-CT-40', script: 'tools/check-ct42-ct40-release-review-candidate.js', required: true },
-  { id: 'CT-42-ROLLBACK', script: 'tools/check-ct42-runtime-rollback-proof.js', required: true },
-  { id: 'CT-40', script: 'tools/check-climate-release-gate.js', required: true },
-  { id: 'CT-40-RELEASE', script: 'tools/check-reviewed-climate-release.js', required: true },
+  { id: 'CT-42-CT-40', script: 'tools/check-ct42-ct40-release-review-candidate.js', profiles: [PROFILE_LEGACY_CT40], required: true },
+  { id: 'CT-42-ROLLBACK', script: 'tools/check-ct42-runtime-rollback-proof.js', profiles: [PROFILE_LEGACY_CT40], required: true },
+  { id: 'CT-40', script: 'tools/check-climate-release-gate.js', profiles: [PROFILE_LEGACY_CT40], required: true },
+  { id: 'CT-40-RELEASE', script: 'tools/check-reviewed-climate-release.js', profiles: [PROFILE_LEGACY_CT40], required: true },
+  ...CCI_COMPONENTS,
   { id: 'public-copy', script: 'tools/check-public-copy.js', required: true },
   { id: 'CT-11-generated', script: 'tools/build-major-emitter-ndc-release.js', args: ['--check'], required: false }
 ]);
@@ -182,11 +194,12 @@ function isRelativePath(value) {
 }
 
 const before = gitClimateStatus();
-const components = COMPONENTS.map(runComponent);
+const ACTIVE_PHASE = ACTIVE_PROFILE === PROFILE_CCI ? cciReleasePhase(ROOT) : null;
+const components = componentPlan(COMPONENTS, ACTIVE_PROFILE, ACTIVE_PHASE).map(runComponent);
 const after = gitClimateStatus();
 const generatedDrift = JSON.stringify(before) !== JSON.stringify(after);
 const missing = components.filter((item) => item.status === 'missing' && item.required).map((item) => item.id);
-const input = runtimeInput(missing);
+const input = ACTIVE_PROFILE === PROFILE_LEGACY_CT40 ? runtimeInput(missing) : null;
 let policy = null;
 if (input) {
   input.generated_drift = generatedDrift;
@@ -199,6 +212,8 @@ const hardFailure = failedComponents.length > 0 || generatedDrift || Boolean(pol
 const resolved = resolveRunStatus({ hardFailure, missingCount: uniqueMissing.length, strict: STRICT, allowIncomplete: ALLOW_INCOMPLETE, reviewedCandidate: Boolean(input) });
 const report = {
   schema_version: '1.0.0',
+  active_profile: ACTIVE_PROFILE,
+  active_phase: ACTIVE_PHASE,
   mode: STRICT ? 'strict' : ALLOW_INCOMPLETE ? 'allow-incomplete' : 'stack-aware',
   status: resolved.status,
   components,

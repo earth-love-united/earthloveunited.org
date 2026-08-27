@@ -8,11 +8,11 @@
   "immutable_inputs": {
     "source_registry": {
       "path": "data/climate/source-registry.json",
-      "sha256": "ae32cc5799a96115d1b8568250638759020ff36cb1b6d1fa6aa032f56d07634d"
+      "sha256": "5c7222beb6414bb05723a59bc25a978cdc34c7b2d8bccce9bb1ff82190056149"
     },
     "ct14_immutable_snapshot": {
       "path": "data/climate/releases/top20-primary-source-gap-queue-2026-07-15.json",
-      "sha256": "fb1bbc050b7ba791893b7751dd4f916ecd01885557b272cb025f8c0e4b64452d"
+      "sha256": "6f7c661b310ccdcfcd53021c07a7293443cc4fa04bddd26f0bffc9013d8c2c41"
     },
     "ct15_immutable_snapshot": {
       "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -291,5 +291,5 @@
     "production runtime facts",
     "release authority"
   ],
-  "calculation_hash": "706c1007bb9026e999e2722d8caf3d7ae77d5da2b6c24cdfe0fc628435ac31ae"
+  "calculation_hash": "798b26b99f1a9e875bb21d2df6be4ed760d976c4f083f2d91417855b8922773b"
 }

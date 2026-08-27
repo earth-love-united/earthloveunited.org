@@ -137,6 +137,55 @@ Companion carbon-projects dataset with foundation-specific framing.
 
 ## Upstream data sources (incorporated into our datasets)
 
+### Climate Intelligence country dashboard
+
+The dashboard redistributes a compact, normalized subset of the following open
+datasets. Earth Love United does not imply that any source publisher endorses
+the site. Exact source-response hashes, selected fields, transformations, and
+country-identity dispositions are pinned under
+`data/climate/releases/country-climate-intelligence-v1/`.
+
+- **Carbon — Global Carbon Budget 2025:** Global Carbon Project (2025),
+  *Supplemental data of Global Carbon Budget 2025*, version 1.0,
+  [DOI 10.18160/GCP-2025](https://doi.org/10.18160/GCP-2025). The two country
+  workbooks used by the site are published through ICOS under
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Earth Love United
+  selects the 2024 territorial, consumption, transfer, cumulative, and
+  land-use series; converts carbon mass to CO₂ where needed; keeps fossil and
+  land-use scopes separate; and derives territorial per-capita values using the
+  WPP denominator below.
+- **Population — World Population Prospects 2024:** United Nations, Department
+  of Economic and Social Affairs, Population Division (2024),
+  [World Population Prospects 2024](https://population.un.org/wpp/), licensed
+  [CC BY 3.0 IGO](https://creativecommons.org/licenses/by/3.0/igo/). Earth Love
+  United selects `TPopulation1July` for the 2024 Medium projection and converts
+  thousands of people to people. It is a modeled projection denominator, not a
+  population census.
+- **Power — Ember Yearly Electricity Data:** Ember,
+  [Yearly Electricity Data](https://ember-energy.org/data/yearly-electricity-data/),
+  full long-format release retrieved 2026-08-25 and revalidated 2026-08-27,
+  licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Earth
+  Love United selects published 2019 and 2024 actual rows, preserves blanks as
+  gaps, and does not rescale Ember's published fuel shares.
+- **Projected climate — World Bank CCKP / CMIP6:** World Bank
+  [Climate Change Knowledge Portal](https://climateknowledgeportal.worldbank.org/index.php/metadata),
+  CMIP6 0.25-degree country aggregates, licensed CC BY 4.0 with the World Bank
+  IGO terms identified by the portal. Earth Love United selects annual
+  temperature and precipitation anomalies for 2040–2059 relative to 1995–2014:
+  SSP2-4.5 p10/median/p90 and SSP1-2.6/SSP5-8.5 medians. We acknowledge the
+  [World Climate Research Programme CMIP6](https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip6)
+  modeling groups and the Earth System Grid Federation for making model output
+  available. The portal's multi-model ranges are not probabilistic forecasts.
+- **Historical physical climate — World Bank CCKP / ERA5:** World Bank CCKP
+  [ERA5 0.25-degree annual country aggregates](https://worldbank.github.io/climateknowledgeportal/docs/collections/era5-x0.25.html),
+  licensed by CCKP under CC BY 4.0. ERA5 was produced by the European Centre
+  for Medium-Range Weather Forecasts for the Copernicus Climate Change Service;
+  the [Copernicus licence](https://cds.climate.copernicus.eu/licences/licence-to-use-copernicus-products)
+  and [ERA5 reference](https://doi.org/10.1002/qj.3803) are retained. Earth Love
+  United selects 1970–2025 annual temperature and precipitation country series
+  and derives ordinary-least-squares trends per decade. ERA5 is reanalysis, not
+  direct station observation.
+
 ### IPCC AR6 (Sixth Assessment Report)
 The gold standard of climate science consensus.
 

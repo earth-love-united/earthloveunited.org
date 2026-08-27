@@ -8,7 +8,7 @@
     "notice_sha256": "741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2",
     "integration_sha256": "a911d998d0336b8ff5649d0a5ff07103a8fa54351cc64607771a98cd8cdeb795",
     "integration_calculation_hash": "eb378696e0433079aaa4dad0b8ecad0dab46b2526c1fcc7ad9976a545c75de1a",
-    "approval_schema_sha256": "d93c141952e8da7f59f1ac65095775fed5fe86d44e019943a8c33ff52143bb27",
+    "approval_schema_sha256": "0b9a3b30cb2366c137521dd2c2e9323966f12c24d98ca72dd08a66d574499be0",
     "approval_trust_sha256": "9bb47c15abef171c340b9389edf680f5a2d01cac5a505ca3d208281fef63cf73",
     "component_count": 44,
     "source_mapped_package_count": 37,
@@ -621,8 +621,8 @@
       "id": "ci-final-aggregate-step-disabled",
       "kind": "replace_file",
       "file": "ci",
-      "from": "- name: Verify final staged production integrity independently\n        env:\n          ELU_VERIFIED_DEPLOY_MODE: candidate\n        run: node tools/check-staged-production-integrity.js --staged _deploy",
-      "to": "- name: Verify final staged production integrity independently\n        env:\n          ELU_VERIFIED_DEPLOY_MODE: candidate\n        run: node tools/check-staged-production-integrity.js --staged _deploy\n        if: false",
+      "from": "- name: Verify final staged production integrity independently\n        env:\n          ELU_VERIFIED_DEPLOY_MODE: ${{ steps.smoke_profile.outputs.phase }}\n        run: node tools/check-staged-production-integrity.js --staged _deploy",
+      "to": "- name: Verify final staged production integrity independently\n        env:\n          ELU_VERIFIED_DEPLOY_MODE: ${{ steps.smoke_profile.outputs.phase }}\n        run: node tools/check-staged-production-integrity.js --staged _deploy\n        if: false",
       "expected_failure": "ci_notice_wiring"
     },
     {

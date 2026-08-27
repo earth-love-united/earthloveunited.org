@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/schemas/climate/country-climate-intelligence-release-signatures-1.0.0.json",
+  "title": "Country Climate Intelligence detached release signatures",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "signature_bundle_id", "repository", "release_id",
+    "subject_artifact_pin_digest", "trust_registry", "package_pins", "signatures"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "signature_bundle_id": {"const": "elu-country-climate-intelligence-v1-release-signatures-v2"},
+    "repository": {"const": "earth-love-united/earthloveunited.org"},
+    "release_id": {"type": "string", "minLength": 10},
+    "subject_artifact_pin_digest": {"$ref": "#/$defs/sha256"},
+    "trust_registry": {"$ref": "#/$defs/pin"},
+    "package_pins": {
+      "type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/pin"}
+    },
+    "signatures": {
+      "type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/signature"}
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^[A-Za-z0-9._/-]+$"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "key_id", "signed_at", "signature_base64"],
+      "properties": {
+        "role": {
+          "enum": [
+            "carbon_accounting", "demography", "power_systems", "physical_climate",
+            "reproducibility", "ui_accessibility_runtime", "source_rights", "release_authorizer"
+          ]
+        },
+        "key_id": {"type": "string", "pattern": "^ed25519:[a-f0-9]{64}$"},
+        "signed_at": {"type": "string", "format": "date-time"},
+        "signature_base64": {"type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$"}
+      }
+    }
+  }
+}

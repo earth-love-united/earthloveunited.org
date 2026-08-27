@@ -42,6 +42,13 @@ const App = {
       // Continue init -- modules that depend on Data will handle undefined gracefully
     }
 
+    if (hasModule('COUNTRY_CLIMATE_INTELLIGENCE')) {
+      const ready = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'init');
+      if (!ready && safeGet('Data', 'isClimateIntelligenceReady', false)) {
+        reportError('App.COUNTRY_CLIMATE_INTELLIGENCE.init()', new Error('Climate intelligence presentation layer did not initialize'));
+      }
+    }
+
     // ── Pre-flight: validate module contracts ──
     if (hasModule('MODULE_CONTRACTS')) {
       const result = MODULE_CONTRACTS.validate();
@@ -60,7 +67,7 @@ const App = {
     // Emit app:ready event via EventBus
     if (hasModule('EventBus')) {
       window.EventBus.emit('app:ready', {
-        modules: ['Data', 'GlobeModule', 'CARBON_CLOCK'],
+        modules: ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE', 'GlobeModule', 'CARBON_CLOCK'],
         timestamp: Date.now(),
       });
     }
@@ -166,8 +173,6 @@ const App = {
         safeCall('GlobeModule', 'teardownFailedRenderer');
         safeCall('GlobeModule', 'showFallback', 'globe_construction_failed');
       }
-    } else if (hasModule('GlobeModule')) {
-      safeCall('GlobeModule', 'selectDefaultCountry');
     }
     if (!hasModule('GlobeModule') || !GlobeModule._initialized) {
       _setGlobeLoading(false);
@@ -179,6 +184,7 @@ const App = {
       document.addEventListener('keydown', _onGlobeKeyDown);
       return false;
     }
+    safeCall('GlobeModule', 'resume');
     // GlobeModule emits readiness during init. If someone enters while the
     // application is still awaiting its bootstrap data, that event can precede
     // the subscription. The rendered canvas is now present, so always close
@@ -220,6 +226,7 @@ const App = {
     this._globeActivationAttempt += 1;
     _setEvidenceBrowseEnabled(false);
     _setGlobeLoading(false);
+    safeCall('GlobeModule', 'pause');
     document.body.classList.remove('globe-mode');
     document.body.removeAttribute('aria-busy');
     $('topbar')?.classList.remove('visible');

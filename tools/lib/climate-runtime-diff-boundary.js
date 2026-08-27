@@ -6,7 +6,9 @@ const {
   UI_REVIEW_PATH,
 } = require('./globe-runtime-assets');
 
-const POLICY_VERSION = '1.0.0';
+const POLICY_VERSION = '2.0.0';
+const PROFILE_CCI = 'cci';
+const PROFILE_LEGACY_CT40 = 'legacy_ct40';
 
 const PROHIBITED_RELEASE_PATHS = Object.freeze([
   'data/climate/runtime-manifest.json',
@@ -23,6 +25,8 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'js/country-climate-view-model.js',
   'js/country-ranking-compiler.js',
   'js/vendor/globe.gl.js',
+  'data/climate/source-registry.json',
+  'data/climate/schemas/country-climate-intelligence.schema.json',
   'data/small-nations.json',
   'THIRD_PARTY_NOTICES.txt',
   '_headers',
@@ -37,9 +41,12 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'data/climate/reviews/globe-runtime-assets-production-review.signatures.json',
   UI_REVIEW_PATH,
   'tools/build-deploy.sh',
+  'tools/build-factual-public-deploy.sh',
   'tools/stage-public-deploy.js',
   'tools/check-public-deploy-surface.js',
   'tools/lib/public-deploy-surface.js',
+  'tools/check-public-climate-release-profile.js',
+  'tools/lib/public-climate-release-profile.js',
   'tools/fetch-globe-vendor.sh',
   'tools/check-globe-vendor-integrity.js',
   'tools/lib/globe-vendor-integrity.js',
@@ -53,6 +60,26 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'tools/check-globe-runtime-approval.js',
   'tools/lib/globe-runtime-approval.js',
   'tools/check-staged-production-integrity.js',
+  'tools/check-staged-factual-public-integrity.js',
+  'tools/check-climate-factual-public-readiness.js',
+  'tools/acquire-gcb-2025.js',
+  'tools/build-country-climate-intelligence.js',
+  'tools/extract-reviewed-country-climate-components.js',
+  'tools/compile-gcb-emissions.js',
+  'tools/compile-wpp-population.js',
+  'tools/compile-ember-power.js',
+  'tools/compile-cckp-physical.js',
+  'tools/check-climate-source-registry.js',
+  'tools/test-climate-source-registry.js',
+  'tools/check-country-climate-intelligence.js',
+  'tools/check-country-climate-intelligence-ui.js',
+  'tools/check-country-climate-intelligence-ci.js',
+  'tools/check-country-climate-public-release-boundary.js',
+  'tools/check-country-climate-runtime-atomic.js',
+  'tools/test-country-climate-compilers.js',
+  'tools/test-country-climate-intelligence-derivations.js',
+  'tools/lib/country-climate-intelligence.js',
+  'tools/lib/gcb-country-intelligence.js',
   'tools/climate-truth-ci.js',
   'tools/lib/country-accessibility-model.js',
   'tools/lib/country-card-evidence-model.js',
@@ -61,6 +88,7 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
 
 const RUNTIME_PATH_PREFIXES = Object.freeze([
   'data/climate/runtime/',
+  'data/climate/releases/country-climate-intelligence-v1/',
   'assets/globe/runtime/',
 ]);
 
@@ -117,6 +145,33 @@ function reviewedManifestReasons(runtimeManifest) {
   return [];
 }
 
+function cciCandidateReasons(runtime, releaseManifest) {
+  const reasons = [];
+  if (!runtime || typeof runtime !== 'object' || Array.isArray(runtime)) {
+    return ['cci_runtime_missing'];
+  }
+  const release = runtime.release || {};
+  if (release.status !== 'candidate') reasons.push('cci_runtime_status_not_candidate');
+  if (release.production_runtime_release !== false) reasons.push('cci_runtime_production_release_not_false');
+  if (!/pending_independent_scientific_review/.test(release.review_state || '')) {
+    reasons.push('cci_runtime_review_state_not_fail_closed');
+  }
+  const gates = releaseManifest && typeof releaseManifest === 'object' && !Array.isArray(releaseManifest)
+    ? releaseManifest.gates || {}
+    : {};
+  if (gates.raw_receipt_revalidation !== true) reasons.push('cci_raw_receipt_gate_not_true');
+  if (gates.redistribution_rights_revalidation !== false) reasons.push('cci_redistribution_rights_gate_not_false');
+  if (gates.independent_scientific_review !== false) reasons.push('cci_scientific_review_gate_not_false');
+  return reasons.sort();
+}
+
+function activeStateReasons(profile, phase) {
+  const reasons = [];
+  if (![PROFILE_CCI, PROFILE_LEGACY_CT40].includes(profile)) reasons.push('active_profile_unknown');
+  if (!['candidate', 'release'].includes(phase)) reasons.push('active_phase_unknown');
+  return reasons;
+}
+
 function evaluateRuntimeDiffBoundary(input) {
   const changedPaths = uniquePaths(input && input.changed_paths);
   const declaredPaths = uniquePaths(input && input.declared_runtime_paths);
@@ -126,14 +181,26 @@ function evaluateRuntimeDiffBoundary(input) {
     Boolean(input && input.artifacts_present && input.artifacts_present[filePath]),
   ]));
 
+  const activeProfile = input && input.active_profile;
+  const activePhase = input && input.active_phase;
   let mode = 'no-runtime-change';
   let strictRequired = false;
-  let reasons = [];
+  let releaseRequired = false;
+  let reasons = activeStateReasons(activeProfile, activePhase);
 
-  if (runtimePaths.length) {
-    if (artifactsPresent['data/climate/runtime-manifest.json']) {
+  if (reasons.length) {
+    mode = 'invalid-active-state';
+  } else if (runtimePaths.length) {
+    if (activeProfile === PROFILE_CCI && activePhase === 'release') {
+      mode = 'cci-reviewed-release-required';
+      releaseRequired = true;
+    } else if (activeProfile === PROFILE_CCI) {
+      mode = 'cci-candidate';
+      reasons = cciCandidateReasons(input.cci_runtime, input.cci_release_manifest);
+    } else if (activePhase === 'release') {
       mode = 'reviewed-runtime-strict-required';
       strictRequired = true;
+      releaseRequired = true;
       reasons = reviewedManifestReasons(input && input.runtime_manifest);
     } else {
       mode = 'denied-candidate';
@@ -146,6 +213,9 @@ function evaluateRuntimeDiffBoundary(input) {
     status: reasons.length ? 'fail' : 'pass',
     mode,
     strict_required: strictRequired,
+    release_required: releaseRequired,
+    active_profile: activeProfile,
+    active_phase: activePhase,
     changed_paths: changedPaths,
     runtime_affecting_paths: runtimePaths,
     reasons,
@@ -158,9 +228,13 @@ function evaluateRuntimeDiffBoundary(input) {
 module.exports = {
   POLICY_VERSION,
   PROHIBITED_RELEASE_PATHS,
+  PROFILE_CCI,
+  PROFILE_LEGACY_CT40,
   FIXED_RUNTIME_PATHS,
   RUNTIME_PATH_PREFIXES,
+  activeStateReasons,
   candidateBoundaryReasons,
+  cciCandidateReasons,
   evaluateRuntimeDiffBoundary,
   isRuntimeAffectingPath,
   normalizePath,

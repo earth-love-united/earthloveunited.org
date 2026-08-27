@@ -1,4 +1,4 @@
-// GLOBE v2.0 — Elevation + diverging colors + hover fix
+// GLOBE v3.0 — Country Climate Intelligence renderer
 // ═══════════════════════════════════════════════
 // GLOBE — Globe.gl init, panel open/close
 // ═══════════════════════════════════════════════
@@ -10,12 +10,16 @@
 let _globeClickHandler = null;
 const GLOBE_DRAG_CLICK_THRESHOLD_PX = 6;
 const GLOBE_DRAG_SUPPRESS_MS = 350;
+const GLOBE_TARGET_FPS = 120;
+const GLOBE_FRAME_BUDGET_MS = 1000 / GLOBE_TARGET_FPS;
+// Retina-density rendering already supplies subpixel edge coverage. Keeping
+// multisample antialiasing there shades the same dense frame several times and
+// breaks the 8.333 ms interaction budget; standard-density screens retain it.
+const GLOBE_ANTIALIAS_ENABLED = (Number(window.devicePixelRatio) || 1) < 1.5;
 const COUNTRY_GEOJSON_URL = '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75';
 const COUNTRY_GEOJSON_TIMEOUT_MS = 8000;
 const COUNTRY_GEOJSON_FEATURE_COUNT = 177;
 const EXPECTED_INTERACTIVE_ENTITY_COUNT = 201;
-const EXPECTED_INTERACTIVE_FACTUAL_COUNT = 194;
-const EXPECTED_INTERACTIVE_GAP_COUNT = 7;
 const GLOBE_VISUAL_ASSET_TIMEOUT_MS = 8000;
 const GLOBE_VISUAL_ASSETS = Object.freeze({
   darkSurface: Object.freeze({ url: '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3', width: 3600, height: 1800 }),
@@ -137,8 +141,8 @@ const COUNTRY_STATUS = {
 };
 
 const COUNTRY_STATUS_LABELS = {
-  [COUNTRY_STATUS.FACTUAL]: 'Reviewed emissions data',
-  [COUNTRY_STATUS.MISSING]: 'Emissions source gap',
+  [COUNTRY_STATUS.FACTUAL]: 'Metric available',
+  [COUNTRY_STATUS.MISSING]: 'Data gap',
 };
 
 const COUNTRY_STATUS_BADGE_CLASSES = {
@@ -147,15 +151,15 @@ const COUNTRY_STATUS_BADGE_CLASSES = {
 };
 
 const GLOBE_FALLBACK_REASONS = Object.freeze({
-  evidence_browse_requested: 'All 249 registry entities are available here, including those without reliable 1:110m geometry. This is an evidence browser, not a 3D failure state.',
-  candidate_data_unavailable: 'Country emissions data are unavailable or invalid. No climate values or assessments are being inferred.',
-  country_geometry_unavailable: 'The navigational country geometry is unavailable or invalid. The country evidence remains available below.',
-  visual_assets_unavailable: 'One or more verified globe images could not be loaded. The country evidence remains available below.',
-  library_load_failed: 'The 3D globe library could not be loaded. The country evidence remains available below.',
-  library_unavailable: 'The 3D globe library is unavailable. The country evidence remains available below.',
-  webgl_unavailable: 'This browser or device could not start WebGL. The country evidence remains available below.',
-  globe_construction_failed: 'The 3D globe could not start safely. The country evidence remains available below.',
-  globe_container_missing: 'The 3D globe container is unavailable. The country evidence remains available below.',
+  evidence_browse_requested: 'All 249 registry entities are available here, including those without reliable 1:110m geometry. The same metrics and lens summaries appear in this accessible view.',
+  candidate_data_unavailable: 'Country climate intelligence is unavailable or invalid. No values are being inferred.',
+  country_geometry_unavailable: 'The navigational country geometry is unavailable or invalid. The complete country evidence remains available below.',
+  visual_assets_unavailable: 'One or more verified globe images could not be loaded. The complete country evidence remains available below.',
+  library_load_failed: 'The 3D globe library could not be loaded. The complete country evidence remains available below.',
+  library_unavailable: 'The 3D globe library is unavailable. The complete country evidence remains available below.',
+  webgl_unavailable: 'This browser or device could not start WebGL. The complete country evidence remains available below.',
+  globe_construction_failed: 'The 3D globe could not start safely. The complete country evidence remains available below.',
+  globe_container_missing: 'The 3D globe container is unavailable. The complete country evidence remains available below.',
 });
 
 function _resolveCountryIso(feature) {
@@ -181,23 +185,48 @@ function _getCountryDisplayData(feature) {
   const props = feature.properties || {};
   const iso = _resolveCountryIso(feature);
   const mapArea = props.ADMIN || props.NAME || props.name || iso;
-  const climate = Data.getClimateCountry ? Data.getClimateCountry(iso) : null;
-  const country = climate?.name || mapArea;
+  const lens = window.GlobeModule?.currentLens || 'carbon';
+  const view = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView', iso, lens);
+  const climate = Data.getClimateIntelligenceCountry ? Data.getClimateIntelligenceCountry(iso) : null;
+  const country = view?.country?.name || climate?.name || mapArea;
   return {
     iso,
     country,
     mapArea,
     mapAreaDiffers: Boolean(climate?.name && climate.name !== mapArea),
-    emissions: climate?.emissions || null,
+    view,
     lat: _isFiniteNumber(Number(props.__lat)) ? Number(props.__lat) : null,
     lng: _isFiniteNumber(Number(props.__lng)) ? Number(props.__lng) : null,
-    hasData: climate?.emissions?.status === 'reviewed_factual',
+    hasData: view?.primary?.available === true,
     climate,
   };
 }
 
-// Pledge records contain a deliberate country focus point. Countries without
-// a record still need to be navigable from the full atlas, so use the small
+// Polygon accessors are evaluated hundreds of times whenever globe.gl updates
+// a layer. Keep that hot path on the compact visual contract instead of
+// rebuilding the analyst-grade country-card model for every cap and side.
+function _getCountryVisualData(feature) {
+  if (!feature) return null;
+  const iso = _resolveCountryIso(feature);
+  const lens = window.GlobeModule?.currentLens || 'carbon';
+  return safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryVisual', iso, lens);
+}
+
+function _getCountryNavigationData(feature) {
+  if (!feature) return null;
+  const props = feature.properties || {};
+  const iso = _resolveCountryIso(feature);
+  const climate = Data.getClimateIntelligenceCountry ? Data.getClimateIntelligenceCountry(iso) : null;
+  return {
+    iso,
+    country: climate?.name || props.ADMIN || props.NAME || props.name || iso,
+    lat: _isFiniteNumber(Number(props.__lat)) ? Number(props.__lat) : null,
+    lng: _isFiniteNumber(Number(props.__lng)) ? Number(props.__lng) : null,
+  };
+}
+
+// Mapped country records may contain a deliberate focus point. Entities without
+// one still need to be navigable from the full atlas, so use the small
 // nation's injected point, a Natural Earth label point, or a lightweight
 // geometry centroid in that order.
 function _getCountryFocus(feature, data) {
@@ -280,46 +309,6 @@ const GLOBE_THEME_CONFIG = Object.freeze({
 
 function _getGlobeThemeConfig(theme) {
   return theme === 'light' ? GLOBE_THEME_CONFIG.light : GLOBE_THEME_CONFIG.dark;
-}
-
-function _renderCountryTrajectory() {
-  return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">Climate performance</span><span class="elu-trajectory-note">Not scored</span></div><div class="elu-trajectory-empty">Commitments and targets are not reviewed. Delivery and performance are not assessed.</div></div>';
-}
-
-function _getCountryGaiaComment(d, projectCount) {
-  return d?.hasData
-    ? 'Reviewed annual emissions facts are available; no performance judgment is made.'
-    : 'This country remains equally navigable while its emissions source gap is resolved.';
-}
-
-function _getDisplayLimitations(emissions) {
-  const label = String(emissions?.label || '').toLowerCase();
-  return (emissions?.limitations || []).map(item => {
-    const text = String(item || '');
-    if (label.includes('harmonized') && /^Harmonized estimates are not official Party inventories\.?$/i.test(text)) {
-      return 'Not an official Party inventory.';
-    }
-    if (label.includes('excluding lulucf') && /^LULUCF is excluded\.?$/i.test(text)) return null;
-    return text;
-  }).filter(Boolean);
-}
-
-function _magnitudePosition(value) {
-  if (!_isFiniteNumber(value) || value < 0) return null;
-  const domain = Data.getClimateMagnitudeDomain ? Data.getClimateMagnitudeDomain() : null;
-  if (!domain || !_isFiniteNumber(domain.min_mtco2e_per_year) || !_isFiniteNumber(domain.max_mtco2e_per_year) || !_isFiniteNumber(domain.offset_mtco2e_per_year)) return null;
-  const min = Math.log10(domain.min_mtco2e_per_year + domain.offset_mtco2e_per_year);
-  const max = Math.log10(domain.max_mtco2e_per_year + domain.offset_mtco2e_per_year);
-  return Math.max(0, Math.min(1, (Math.log10(value + domain.offset_mtco2e_per_year) - min) / (max - min)));
-}
-
-function _magnitudeColor(value, alpha) {
-  const t = _magnitudePosition(value);
-  if (t === null) return 'rgba(145,160,172,' + alpha + ')';
-  const start = [91, 74, 151];
-  const end = [246, 145, 58];
-  const rgb = start.map((channel, index) => Math.round(channel + (end[index] - channel) * t));
-  return 'rgba(' + rgb.join(',') + ',' + alpha + ')';
 }
 
 function _isCountryModeActive() {
@@ -412,7 +401,7 @@ const GlobeModule = {
   _initialized: false,
   world: null,
   userTotal: 0,
-  currentLens: 'gap', // 'gap' | 'forest' | 'cat'
+  currentLens: 'carbon', // 'carbon' | 'power' | 'physical'
   isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     navigator.userAgent
   ) || (window.innerWidth < 768),
@@ -427,18 +416,35 @@ const GlobeModule = {
   _countryDataState: 'idle',
   _countryDataError: null,
   _countryDeck: [],
+  _countryDeckByLens: {},
   _rankRail: null,
   _countryCardWrap: null,
+  _countryTooltipBound: false,
+  _countryTooltipResizeObserver: null,
+  _hoverTooltipSize: null,
   _rankRailCollapsed: false,
   _defaultCountrySelected: false,
   _countrySwipeCueShown: false,
+  _countrySwipeCueToken: 0,
+  _countrySwipeCueFinish: null,
+  _countryNavigationGeneration: 0,
+  _countryNavigationSwapTimer: null,
+  _countryNavigationFinishTimer: null,
+  _navBusy: false,
+  _countryOpener: null,
   _fallbackReasonCode: null,
   _fallbackOpener: null,
   _fallbackEntries: [],
   _fallbackBound: false,
   _fallbackSelectedIso: null,
+  _onFallbackClick: null,
+  _onFallbackInput: null,
+  _onCountryCardResize: null,
+  _lensControlsBound: false,
   _reducedMotionMedia: null,
   _onReducedMotionChange: null,
+  _animationPaused: false,
+  _onVisibilityChange: null,
   _prepared: false,
   _preparationPromise: null,
   _preparationFailure: null,
@@ -453,6 +459,7 @@ const GlobeModule = {
       this._countryFeatures = null;
       this._featureByIso = {};
       this._countryDeck = [];
+      this._countryDeckByLens = {};
       this._countryDataState = 'idle';
       this._countryDataError = null;
     }
@@ -471,15 +478,16 @@ const GlobeModule = {
   },
 
   async _prepareRuntimeAssets(options) {
-    if (!Data.isClimateCandidateReady?.() && options.reloadCandidate) {
+    if (!Data.isClimateIntelligenceReady?.() && options.reloadCandidate) {
       try {
-        await Data.reloadClimateCandidate?.();
+        await Data.reloadClimateIntelligence?.();
+        safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'init');
       } catch (error) {
-        reportWarn('GlobeModule', 'Candidate reload failed: ' + (error?.message || 'unknown error'));
+        reportWarn('GlobeModule', 'Climate intelligence reload failed: ' + (error?.message || 'unknown error'));
       }
     }
-    if (!Data.isClimateCandidateReady?.()) {
-      return this._failPreparation('candidate_data_unavailable', new Error('CT-42 candidate is unavailable or invalid'));
+    if (!Data.isClimateIntelligenceReady?.() || !safeGet('COUNTRY_CLIMATE_INTELLIGENCE', 'getState', {}).initialized) {
+      return this._failPreparation('candidate_data_unavailable', new Error('Country Climate Intelligence candidate is unavailable or invalid'));
     }
 
     let countries;
@@ -502,11 +510,12 @@ const GlobeModule = {
 
     this._countryFeatures = countries.features.filter(feature =>
       feature.properties.ISO_A2 !== 'AQ' && !_isNonAssessingMapArea(feature) &&
-      Boolean(Data.getClimateCountry?.(_resolveCountryIso(feature))));
+      Boolean(Data.getClimateIntelligenceCountry?.(_resolveCountryIso(feature))));
     this._appendSmallNationFeatures();
-    this._buildCountryDeck();
-    const factualMapped = this._countryDeck.filter(entry => entry.data?.emissions?.status === 'reviewed_factual').length;
-    const gapMapped = this._countryDeck.filter(entry => entry.data?.emissions?.status === 'source_gap').length;
+    this._countryDeckByLens = {};
+    const lensIds = (Data.getClimateLensCatalog?.() || []).map(lens => lens.id);
+    lensIds.forEach(lensId => this._buildCountryDeck(lensId, { force: true }));
+    this._countryDeck = this._countryDeckByLens[this.currentLens] || [];
     const featureIsos = this._countryFeatures.map(feature => _resolveCountryIso(feature));
     const deckIsos = this._countryDeck.map(entry => entry.iso);
     const uniqueFeatureIsos = new Set(featureIsos);
@@ -517,8 +526,7 @@ const GlobeModule = {
         uniqueFeatureIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT ||
         this._countryDeck.length !== EXPECTED_INTERACTIVE_ENTITY_COUNT ||
         uniqueDeckIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT || !setsMatch ||
-        factualMapped !== EXPECTED_INTERACTIVE_FACTUAL_COUNT || gapMapped !== EXPECTED_INTERACTIVE_GAP_COUNT ||
-        this._countryDeck.some(entry => !Data.getClimateCountry?.(entry.iso))) {
+        this._countryDeck.some(entry => !Data.getClimateIntelligenceCountry?.(entry.iso))) {
       return this._failPreparation('country_geometry_unavailable', new Error('Prepared country navigation deck failed its exact 201-entity registry boundary'));
     }
     this._countryDataState = 'ready';
@@ -536,6 +544,7 @@ const GlobeModule = {
     this._countryFeatures = [];
     this._featureByIso = {};
     this._countryDeck = [];
+    this._countryDeckByLens = {};
     reportWarn('GlobeModule', `${reason}: ${this._countryDataError}`);
     return { ok: false, reason };
   },
@@ -571,7 +580,15 @@ const GlobeModule = {
     // warning instead of crashing the entire init.
     let renderer;
     try {
-      renderer = new window.Globe(el, { animateIn: true, waitForGlobeReady: true });
+      renderer = new window.Globe(el, {
+        animateIn: true,
+        waitForGlobeReady: true,
+        rendererConfig: {
+          antialias: GLOBE_ANTIALIAS_ENABLED,
+          alpha: true,
+          powerPreference: 'high-performance',
+        },
+      });
     } catch (error) {
       reportError('GlobeModule.init()', error);
       this._teardownFailedRenderer();
@@ -636,6 +653,7 @@ const GlobeModule = {
           SITE_PANEL.open(site);
         }
       });
+    this._animationPaused = false;
 
     // onGlobeClick MUST be set AFTER safeChain, directly on the world object
     // (safeChain Proxy can silently swallow unknown methods)
@@ -652,13 +670,16 @@ const GlobeModule = {
     // (the Proxy target IS the Globe, so direct property access still works)
     console.log('[Globe] init — ' + (this.world.pointsData()?.length || 0) + ' points loaded');
 
-    // Country climate point layers remain disabled until reviewed evidence is
-    // explicitly released. Country polygons stay navigable without values.
+    // Country intelligence is rendered on the polygon layer. Project and site
+    // points remain separate from every country climate record.
 
     // Country geometry and every globe image were prepared and validated before
     // the renderer was constructed. Activation is synchronous so render-ready
     // cannot race ahead of the country deck.
     try {
+        this._bindLensControls();
+        this._syncLensControls();
+        this._renderLegend();
         this._renderRankRail();
         // Only build the H3 hex layer when the solid polygon-border layer is
         // NOT available (old globe.gl builds). Building world-wide hexes just
@@ -804,8 +825,8 @@ const GlobeModule = {
         this._canvasEl.addEventListener('pointermove', this._onCanvasPointerMove);
         this._canvasEl.addEventListener('click', this._onCanvasClick);
 
-        // Do not auto-open a modal card. A country card is a user-triggered
-        // dialog so it always has a real opener for focus restoration.
+        // Do not auto-open a country panel. The non-modal country dialog is
+        // user-triggered so it always has a real opener for focus restoration.
 
         // Notify mode modules that country data are ready
         safeCall('GLOBE_MODES', 'onCountryDataReady');
@@ -876,7 +897,7 @@ const GlobeModule = {
         if ((event.key === 'ArrowRight' || event.key === 'ArrowLeft') && this._selectedCountryFeature) {
           event.preventDefault();
           event.stopImmediatePropagation();
-          this.navigateCountry(event.key === 'ArrowRight' ? 1 : -1);
+          this.navigateCountry(event.key === 'ArrowRight' ? 1 : -1, { source: 'keyboard' });
         }
       };
       document.addEventListener('keydown', this._onCountryKeydown);
@@ -887,6 +908,8 @@ const GlobeModule = {
     this.world.controls().enableDamping = true;
     this.world.controls().dampingFactor = 0.1;
     this._bindReducedMotionPreference();
+    this._bindVisibilityLifecycle();
+    this._syncAnimationLifecycle();
     this._syncAutoRotation();
 
     const m = this.world.globeMaterial();
@@ -940,6 +963,58 @@ const GlobeModule = {
     }
   },
 
+  pause() {
+    if (!this.world || typeof this.world.pauseAnimation !== 'function') return false;
+    if (this._animationPaused) return true;
+    try {
+      this.world.pauseAnimation();
+      this._animationPaused = true;
+      return true;
+    } catch (error) {
+      reportWarn('GlobeModule', 'Renderer animation could not be paused.');
+      return false;
+    }
+  },
+
+  resume() {
+    const canRender = this.world && typeof this.world.resumeAnimation === 'function' &&
+      document.visibilityState !== 'hidden' &&
+      document.body?.classList.contains('globe-mode') &&
+      !document.body.classList.contains('globe-fallback-active');
+    if (!canRender) return false;
+    if (!this._animationPaused) return true;
+    try {
+      this.world.resumeAnimation();
+      this._animationPaused = false;
+      this._syncAutoRotation();
+      return true;
+    } catch (error) {
+      reportWarn('GlobeModule', 'Renderer animation could not be resumed.');
+      return false;
+    }
+  },
+
+  _syncAnimationLifecycle() {
+    const shouldRender = this.world &&
+      document.visibilityState !== 'hidden' &&
+      document.body?.classList.contains('globe-mode') &&
+      !document.body.classList.contains('globe-fallback-active');
+    return shouldRender ? this.resume() : this.pause();
+  },
+
+  _bindVisibilityLifecycle() {
+    this._unbindVisibilityLifecycle();
+    this._onVisibilityChange = () => this._syncAnimationLifecycle();
+    document.addEventListener('visibilitychange', this._onVisibilityChange);
+  },
+
+  _unbindVisibilityLifecycle() {
+    if (this._onVisibilityChange) {
+      document.removeEventListener('visibilitychange', this._onVisibilityChange);
+      this._onVisibilityChange = null;
+    }
+  },
+
   _syncAutoRotation() {
     const controls = typeof this.world?.controls === 'function' ? this.world.controls() : null;
     if (!controls) return false;
@@ -972,7 +1047,9 @@ const GlobeModule = {
   },
 
   _teardownFailedRenderer() {
+    this._cancelCountryNavigation();
     this._unbindReducedMotionPreference();
+    this._unbindVisibilityLifecycle();
     if (this._canvasEl) {
       if (this._onCanvasPointerMove) this._canvasEl.removeEventListener('pointermove', this._onCanvasPointerMove);
       if (this._onCanvasClick) this._canvasEl.removeEventListener('click', this._onCanvasClick);
@@ -997,6 +1074,7 @@ const GlobeModule = {
     }
     this.world = null;
     this._initialized = false;
+    this._animationPaused = false;
     this._canvasEl = null;
     this._onCanvasWebGLContextLost = null;
     this._canvasDragGuardBound = false;
@@ -1049,6 +1127,7 @@ const GlobeModule = {
     panel.hidden = false;
     panel.setAttribute('aria-hidden', 'false');
     document.body.classList.add('globe-fallback-active');
+    this.pause();
     $text('globe-fallback-reason', GLOBE_FALLBACK_REASONS[stableReason]);
     const browseRequested = stableReason === 'evidence_browse_requested';
     $text('globe-fallback-title', browseRequested ? 'Browse all 249 country evidence records' : 'The 3D view is unavailable.');
@@ -1059,6 +1138,10 @@ const GlobeModule = {
     }
     const actionGroup = primaryAction?.closest('.elu-fallback-actions');
     if (actionGroup) actionGroup.setAttribute('aria-label', browseRequested ? 'Evidence browser navigation' : '3D view recovery options');
+    // The fallback is a complete evidence browser, not a frozen error screen.
+    // Bind the shared lens rail even when WebGL failed before init reached its
+    // normal control-binding phase.
+    this._bindLensControls();
     this._bindFallbackControls();
     this._renderFallbackEvidence();
 
@@ -1076,7 +1159,7 @@ const GlobeModule = {
     if (!panel || !search) return;
     this._fallbackBound = true;
 
-    panel.addEventListener('click', event => {
+    this._onFallbackClick = event => {
       const action = event.target.closest('[data-globe-fallback-action]');
       if (action) {
         const name = action.getAttribute('data-globe-fallback-action');
@@ -1094,60 +1177,51 @@ const GlobeModule = {
       const country = event.target.closest('[data-fallback-country-iso]');
       if (!country) return;
       this._renderFallbackCountry(country.getAttribute('data-fallback-country-iso'), true);
-    });
-
-    search.addEventListener('input', () => this._filterFallbackEntries(search.value));
+    };
+    this._onFallbackInput = () => this._filterFallbackEntries(search.value);
+    panel.addEventListener('click', this._onFallbackClick);
+    search.addEventListener('input', this._onFallbackInput);
   },
 
   _renderFallbackEvidence() {
     const list = $('globe-fallback-country-list');
     const summary = $('globe-fallback-summary');
     const detail = $('globe-fallback-country-detail');
-    const candidate = Data.climateCandidate;
-    const ranking = Data.getClimateRanking ? Data.getClimateRanking() : null;
     if (!list || !summary || !detail) return false;
-
-    const candidateReady = candidate && candidate.review_status === 'not_reviewed' &&
-      candidate.production_runtime_release === false && Array.isArray(candidate.countries) && ranking;
-    if (!candidateReady) {
+    const rows = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows', this.currentLens);
+    if (!rows) {
       this._fallbackEntries = [];
       list.replaceChildren();
-      summary.textContent = 'Country evidence is unavailable. No climate values or assessments are being inferred.';
+      summary.textContent = 'Country climate intelligence is unavailable. No values are being inferred.';
       $text('globe-fallback-results', '0 entities available');
-      detail.innerHTML = '<h3>Evidence unavailable</h3><p>Country emissions data could not be verified for display. Return to the Foundation and try again later.</p>';
+      detail.innerHTML = '<h3>Evidence unavailable</h3><p>The verified country snapshot could not be displayed. Return to the Foundation and try again later.</p>';
       return false;
     }
 
-    const rankById = new Map((ranking.ranked || []).map(entry => [entry.country_id, entry]));
-    this._fallbackEntries = candidate.countries.map(country => ({
-      country,
-      rank: rankById.get(country.country_id) || null,
-      factual: country.emissions?.status === 'reviewed_factual',
-    })).sort((a, b) => {
-      if (a.rank && b.rank) return a.rank.ordinal - b.rank.ordinal || a.country.iso_alpha3.localeCompare(b.country.iso_alpha3);
-      if (a.rank) return -1;
-      if (b.rank) return 1;
-      return String(a.country.name).localeCompare(String(b.country.name));
-    });
-
-    const factualCount = this._fallbackEntries.filter(entry => entry.factual).length;
-    const gapCount = this._fallbackEntries.length - factualCount;
-    summary.textContent = this._fallbackEntries.length + ' registry entities · ' + factualCount +
-      ' reviewed emissions series · ' + gapCount +
-      ' explicit source gaps. The 2023 order compares emissions magnitude.';
+    this._fallbackEntries = rows.all.map(row => ({
+      row,
+      country: Data.getClimateIntelligenceCountry(row.country_id),
+      view: safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView', row.country_id, this.currentLens),
+    })).filter(entry => entry.country && entry.view);
+    const lens = rows.lens;
+    $text('globe-fallback-evidence-title', lens.heading);
+    summary.textContent = this._fallbackEntries.length + ' registry entities · ' + rows.eligible_count +
+      ' in the exact ' + lens.period + ' comparison set · ' + rows.unranked_count +
+      ' explicit gaps. ' + lens.interpretation;
 
     list.innerHTML = this._fallbackEntries.map(entry => {
       const country = entry.country;
       const iso = _escapeHtml(country.iso_alpha3);
       const name = _escapeHtml(country.name);
       const flag = _escapeHtml(country.flag_emoji || '');
-      if (entry.factual) {
-        const latest = country.emissions.latest;
-        const value = Number(latest.value).toLocaleString('en-US', { maximumFractionDigits: 4 });
-        const rank = entry.rank ? entry.rank.ordinal : '—';
-        return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="factual" aria-label="' + name + ', reviewed emissions series, 2023 ' + value + ' ' + _escapeHtml(country.emissions.unit) + ', magnitude rank ' + rank + ', not a performance score"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · magnitude rank ' + rank + '</small></span><span class="elu-fallback-country-state">' + value + '<small>' + _escapeHtml(country.emissions.unit) + '</small></span></button></li>';
+      const primary = entry.view.primary;
+      if (entry.row.ranked) {
+        const value = _escapeHtml(primary.display_value);
+        const rank = entry.row.ordinal;
+        return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="factual" aria-label="' + name + ', ' + _escapeHtml(primary.label) + ', ' + value + ' ' + _escapeHtml(primary.unit) + ', ' + _escapeHtml(primary.period) + ', ' + _escapeHtml(primary.evidence_label) + ', order ' + rank + '"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · order ' + rank + '</small></span><span class="elu-fallback-country-state">' + value + '<small>' + _escapeHtml(primary.unit) + '</small></span></button></li>';
       }
-      return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="gap" aria-label="' + name + ', explicit source gap, unranked"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · unranked</small></span><span class="elu-fallback-country-state is-gap">Source gap</span></button></li>';
+      const reason = _escapeHtml(entry.row.reason?.detail || 'Exact comparison metric unavailable.');
+      return '<li data-fallback-search="' + _escapeHtml((country.name + ' ' + country.iso_alpha3 + ' ' + reason).toLowerCase()) + '"><button type="button" class="elu-fallback-country-row" data-fallback-country-iso="' + iso + '" data-fallback-evidence-state="gap" aria-label="' + name + ', explicit data gap, unranked, ' + reason + '"><span class="elu-fallback-country-name">' + flag + ' ' + name + '<small>' + iso + ' · unranked</small></span><span class="elu-fallback-country-state is-gap">Data gap<small>' + reason + '</small></span></button></li>';
     }).join('');
     this._filterFallbackEntries($('globe-fallback-search')?.value || '');
     return true;
@@ -1177,25 +1251,16 @@ const GlobeModule = {
       else row.removeAttribute('aria-current');
     });
 
-    const country = entry.country;
+    const view = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView', iso, this.currentLens);
+    if (!view) return false;
+    const country = view.country;
     const name = _escapeHtml(country.name);
     const code = _escapeHtml(country.iso_alpha3);
     const flag = _escapeHtml(country.flag_emoji || '');
-    const boundary = '<h4>Climate performance</h4><p>Commitments and targets are not reviewed. Delivery and performance are not assessed.</p>';
-    if (!entry.factual) {
-      detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3><span class="elu-fallback-detail-badge">' + code + ' · emissions source gap</span><p class="elu-fallback-detail-value"><strong>No emissions value shown</strong></p><p>No PRIMAP series is available for this registry entity. It remains visible and unranked; missing data does not indicate better climate performance.</p>' + boundary + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
-    } else {
-      const emissions = country.emissions;
-      const latestValue = Number(emissions.latest.value).toLocaleString('en-US', { maximumFractionDigits: 4 });
-      const rankText = entry.rank ? 'Magnitude rank ' + entry.rank.ordinal + ' of 206 for the same 2023 metric.' : 'Not present in the 2023 magnitude order.';
-      const rows = emissions.series.map(point => '<tr><th scope="row">' + point.year + '</th><td>' + Number(point.value).toLocaleString('en-US', { maximumFractionDigits: 4 }) + '</td><td>' + _escapeHtml(emissions.unit) + '</td></tr>').join('');
-      const limitations = _getDisplayLimitations(emissions).map(item => '<li>' + _escapeHtml(item) + '</li>').join('');
-      const safeSource = /^https:\/\//.test(emissions.source_url || '') ? emissions.source_url : '';
-      const source = safeSource
-        ? '<a href="' + _escapeHtml(safeSource) + '" target="_blank" rel="noopener">' + _escapeHtml(emissions.source_id) + '</a>'
-        : _escapeHtml(emissions.source_id || 'Source unavailable');
-      detail.innerHTML = '<h3 id="globe-fallback-detail-title">' + flag + ' ' + name + '</h3><span class="elu-fallback-detail-badge">' + code + ' · reviewed emissions data</span><p class="elu-fallback-detail-value"><strong>' + latestValue + '</strong> ' + _escapeHtml(emissions.unit) + ' · ' + emissions.latest.year + '</p><p>' + _escapeHtml(emissions.label) + '. ' + _escapeHtml(rankText) + '</p><div class="elu-fallback-table-wrap"><table><caption>' + name + ' annual emissions, 2014–2023</caption><thead><tr><th scope="col">Year</th><th scope="col">Value</th><th scope="col">Unit</th></tr></thead><tbody>' + rows + '</tbody></table></div><h4>Source &amp; methodology</h4><p class="elu-fallback-source">Source: ' + source + '</p><ul>' + limitations + '</ul>' + boundary + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
-    }
+    detail.innerHTML = '<h3 id="globe-fallback-detail-title" tabindex="-1">' + flag + ' ' + name + '</h3>'
+      + '<span class="elu-fallback-detail-badge">' + code + ' · ' + _escapeHtml(view.primary.evidence_label) + '</span>'
+      + this._renderCountryMetrics(view, 'fallback')
+      + '<button type="button" class="elu-fallback-back-to-list" data-globe-fallback-action="list">Back to ' + name + ' in the list</button>';
     if (focusDetail) detail.focus({ preventScroll: true });
     return true;
   },
@@ -1203,7 +1268,9 @@ const GlobeModule = {
   hideFallback(options = {}) {
     const panel = $('globe-fallback');
     const opener = this._fallbackOpener;
-    const wasEvidenceBrowse = this._fallbackReasonCode === 'evidence_browse_requested';
+    const hiddenReason = this._fallbackReasonCode;
+    const wasVisible = !!panel && !panel.hidden;
+    const wasEvidenceBrowse = hiddenReason === 'evidence_browse_requested';
     document.body?.classList.remove('globe-fallback-active');
     if (panel) {
       panel.hidden = true;
@@ -1222,12 +1289,19 @@ const GlobeModule = {
     if (options.restoreFocus && opener && document.contains(opener) && typeof opener.focus === 'function') {
       requestAnimationFrame(() => opener.focus({ preventScroll: true }));
     }
+    if (wasVisible && options.emitEvent !== false && hasModule('EventBus')) {
+      EventBus.emit('globe:fallback-hidden', { reason: hiddenReason, timestamp: Date.now() });
+    }
     return true;
   },
 
   closeEvidenceBrowser() {
     const hasLiveRenderer = this._initialized === true && $('globeViz')?.querySelectorAll('canvas').length === 1;
-    if (hasLiveRenderer) return this.hideFallback({ restoreFocus: true, preserveOpener: false });
+    if (hasLiveRenderer) {
+      const hidden = this.hideFallback({ restoreFocus: true, preserveOpener: false });
+      this._syncAnimationLifecycle();
+      return hidden;
+    }
     this._teardownFailedRenderer();
     return this.showFallback('globe_construction_failed');
   },
@@ -1301,29 +1375,32 @@ const GlobeModule = {
       });
   },
 
-  // CT-42 candidate: factual magnitude only. This is deliberately not a
-  // performance, target, delivery, impact-band, or score color channel.
+  // Scientific visual decisions come from COUNTRY_CLIMATE_INTELLIGENCE.
   _countryHexColorFn(feature) {
-    const d = _getCountryDisplayData(feature);
-    return d?.hasData ? _magnitudeColor(d.emissions.latest.value, 0.72) : 'rgba(145,160,172,0.34)';
+    const visual = _getCountryVisualData(feature);
+    return visual?.color || 'rgba(145,160,172,0.34)';
   },
 
   _countryHexAltitudeFn(feature) {
-    const d = _getCountryDisplayData(feature);
-    const position = d?.hasData ? _magnitudePosition(d.emissions.latest.value) : null;
-    return position === null ? 0.004 : 0.004 + position * 0.022;
+    const visual = _getCountryVisualData(feature);
+    return visual?.altitude || 0.007;
   },
 
-  // Same-metric 2023 magnitude order from CT-31; gaps follow alphabetically.
-  _buildCountryDeck() {
+  // Exact lens order first; explicit gaps follow alphabetically.
+  _buildCountryDeck(lensId = this.currentLens, options = {}) {
+    const cached = this._countryDeckByLens?.[lensId];
+    if (!options.force && Array.isArray(cached)) {
+      if (lensId === this.currentLens) this._countryDeck = cached;
+      return cached;
+    }
     const featureByIso = this._featureByIso || {};
-    const ranking = Data.getClimateRanking ? Data.getClimateRanking() : null;
-    const ranks = new Map((ranking?.ranked || []).map(entry => [entry.country_id.split(':')[1], entry]));
+    const rows = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows', lensId);
+    const ranks = new Map((rows?.ordered || []).map(entry => [entry.iso_alpha3, entry]));
     const entries = Object.keys(featureByIso)
       .filter(iso => iso && iso !== 'UNK' && iso !== '-99' && iso !== 'ATA')
       .map(iso => {
         const feature = featureByIso[iso];
-        const data = _getCountryDisplayData(feature);
+        const data = _getCountryNavigationData(feature);
         const country = data?.country || iso;
         return {
           iso,
@@ -1334,47 +1411,51 @@ const GlobeModule = {
         };
       })
       .filter(entry => entry.feature && entry.data);
-    this._countryDeck = entries.sort((a, b) => {
+    const deck = entries.sort((a, b) => {
       if (a.rank && b.rank) return a.rank.ordinal - b.rank.ordinal || a.iso.localeCompare(b.iso);
       if (a.rank) return -1;
       if (b.rank) return 1;
       return String(a.country).localeCompare(String(b.country));
     });
+    this._countryDeckByLens ||= {};
+    this._countryDeckByLens[lensId] = deck;
+    if (lensId === this.currentLens) this._countryDeck = deck;
+    return deck;
   },
 
   _renderRankRail() {
     const previous = $('elu-country-rank-rail');
     if (previous) previous.remove();
-    const ranking = Data.getClimateRanking ? Data.getClimateRanking() : null;
-    if (!ranking || !document.body) { this._rankRail = null; return; }
+    const rows = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows', this.currentLens);
+    if (!rows || !document.body) { this._rankRail = null; return; }
     const rail = document.createElement('aside');
     rail.id = 'elu-country-rank-rail';
-    rail.setAttribute('aria-label', '2023 emissions magnitude ranking and source gaps. Magnitude ordering is not a climate-performance score.');
-    const mappedRanked = ranking.ranked.filter(entry => this._featureByIso?.[entry.country_id.split(':')[1]]);
-    const unmappedRanked = ranking.ranked.filter(entry => !this._featureByIso?.[entry.country_id.split(':')[1]]);
-    const mappedGaps = ranking.unranked.entries.filter(entry => this._featureByIso?.[entry.country_id.split(':')[1]]);
-    const unmappedGaps = ranking.unranked.entries.filter(entry => !this._featureByIso?.[entry.country_id.split(':')[1]]);
-    const ranked = mappedRanked.map(entry => {
-      const iso = entry.country_id.split(':')[1];
-      return '<button type="button" class="elu-rank-row" data-country-rail-iso="' + _escapeHtml(iso) + '" aria-label="Rank ' + entry.ordinal + ', ' + _escapeHtml(entry.label) + ', ' + entry.value.toLocaleString() + ' ' + _escapeHtml(entry.unit) + '">'
+    rail.setAttribute('aria-label', rows.lens.heading + ' ordered entities and data gaps');
+    const mappedRankedCount = rows.ordered.filter(entry => this._featureByIso?.[entry.iso_alpha3]).length;
+    const ranked = rows.ordered.map(entry => {
+      const iso = entry.iso_alpha3;
+      const mapped = Boolean(this._featureByIso?.[iso]);
+      const mapNote = mapped ? '' : ', opens in evidence browser because globe geometry is unavailable';
+      return '<button type="button" class="elu-rank-row' + (mapped ? '' : ' is-unmapped') + '" data-country-rail-iso="' + _escapeHtml(iso) + '" data-country-rail-search="' + _escapeHtml((entry.name + ' ' + iso).toLowerCase()) + '" aria-label="Order ' + entry.ordinal + ', ' + _escapeHtml(entry.name) + ', ' + _escapeHtml(entry.display_value) + ' ' + _escapeHtml(entry.unit) + ', ' + _escapeHtml(entry.period) + ', ' + _escapeHtml(entry.evidence_label) + mapNote + '">'
         + '<span class="elu-rank-number">' + entry.ordinal + '</span><span class="elu-rank-dot is-magnitude" aria-hidden="true"></span>'
-        + '<span class="elu-rank-name">' + _escapeHtml(entry.label) + '</span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span>'
-        + '<span class="elu-rank-gap">' + entry.value.toLocaleString() + '</span></button>';
+        + '<span class="elu-rank-name">' + _escapeHtml(entry.name) + '</span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span>'
+        + '<span class="elu-rank-gap">' + _escapeHtml(entry.display_value) + '<small>' + _escapeHtml(entry.unit) + '</small></span></button>';
     }).join('');
-    const gaps = mappedGaps.map(entry => {
-      const iso = entry.country_id.split(':')[1];
-      return '<button type="button" class="elu-rank-row is-gap" data-country-rail-iso="' + _escapeHtml(iso) + '" aria-label="Data gap, ' + _escapeHtml(entry.label) + ', not ranked">'
+    const gaps = rows.unranked.map(entry => {
+      const iso = entry.iso_alpha3;
+      const mapped = Boolean(this._featureByIso?.[iso]);
+      const reason = entry.reason?.detail || 'Exact comparison metric unavailable.';
+      return '<button type="button" class="elu-rank-row is-gap' + (mapped ? '' : ' is-unmapped') + '" data-country-rail-iso="' + _escapeHtml(iso) + '" data-country-rail-search="' + _escapeHtml((entry.name + ' ' + iso + ' ' + reason).toLowerCase()) + '" aria-label="Data gap, ' + _escapeHtml(entry.name) + ', unranked, ' + _escapeHtml(reason) + '">'
         + '<span class="elu-rank-number" aria-hidden="true">—</span><span class="elu-rank-dot is-gap" aria-hidden="true"></span>'
-        + '<span class="elu-rank-name">' + _escapeHtml(entry.label) + '</span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span><span class="elu-rank-gap">Data gap</span></button>';
+        + '<span class="elu-rank-name">' + _escapeHtml(entry.name) + '<small>' + _escapeHtml(reason) + '</small></span><span class="elu-rank-code">' + _escapeHtml(iso) + '</span><span class="elu-rank-gap">Data gap</span></button>';
     }).join('');
-    const unmapped = unmappedRanked.concat(unmappedGaps).map(entry => '<div class="elu-rank-unmapped"><span aria-hidden="true">◇</span> ' + _escapeHtml(entry.label) + ' (' + _escapeHtml(entry.country_id.split(':')[1]) + ') · not mapped on this globe</div>').join('');
-    const reviewedTotal = Number.isInteger(ranking.disclosure?.eligible_count) ? ranking.disclosure.eligible_count : 206;
-    const mappedDisclosure = mappedRanked.length + ' of ' + reviewedTotal + ' reviewed registry entities mapped · competition ties preserved';
-    rail.innerHTML = '<div class="elu-rank-head"><div><div class="elu-rank-title">2023 emissions magnitude</div><div class="elu-rank-subtitle">MtCO₂e/yr · not a performance score</div><div class="elu-rank-boundary-compact" aria-hidden="true">Not a performance score</div></div><button type="button" class="elu-rank-toggle" aria-label="Collapse emissions ranking" aria-expanded="true">−</button></div>'
-      + '<div class="elu-rank-list"><div class="elu-rank-disclosure" aria-label="' + mappedDisclosure + '"><span class="elu-rank-disclosure-full">' + mappedDisclosure + '</span><span class="elu-rank-disclosure-compact" aria-hidden="true"><strong>' + mappedRanked.length + '/' + reviewedTotal + '</strong><span>mapped</span><span>ties kept</span></span></div>'
-      + '<div role="list" aria-label="Mapped registry entities ranked by the same 2023 metric">' + ranked + '</div>'
-      + '<h2 class="elu-rank-gap-heading">Source gaps · unnumbered</h2><div role="list" aria-label="Mapped registry entities not ranked because source data are unavailable">' + gaps + '</div>'
-      + (unmapped ? '<h2 class="elu-rank-gap-heading">Not mapped · noninteractive</h2><div aria-label="Registry entities without interactive globe geometry">' + unmapped + '</div>' : '') + '</div>';
+    const mappedDisclosure = mappedRankedCount + ' of ' + rows.eligible_count + ' ordered entities mapped · all 249 searchable';
+    const reliefNote = rows.relief_note ? '<div class="elu-rank-relief-note">' + _escapeHtml(rows.relief_note) + '</div>' : '';
+    rail.innerHTML = '<div class="elu-rank-head"><div><div class="elu-rank-title">' + _escapeHtml(rows.lens.heading) + '</div>' + reliefNote + '<div class="elu-rank-subtitle">' + _escapeHtml(rows.lens.interpretation) + '</div></div><button type="button" class="elu-rank-toggle" aria-label="Collapse country order" aria-expanded="true">−</button></div>'
+      + '<div class="elu-rank-list"><label class="elu-rank-search"><span>Find country or ISO code</span><input type="search" data-country-rail-filter autocomplete="off" spellcheck="false"></label><div class="elu-rank-disclosure" aria-label="' + _escapeHtml(mappedDisclosure) + '"><span class="elu-rank-disclosure-full">' + _escapeHtml(mappedDisclosure) + '</span><span class="elu-rank-disclosure-compact" aria-hidden="true"><strong>' + mappedRankedCount + '/' + rows.eligible_count + '</strong><span>mapped</span><span>' + rows.unranked_count + ' gaps</span></span></div>'
+      + '<p class="elu-rank-filter-results" data-country-rail-results aria-live="polite">249 entities shown</p>'
+      + '<div role="list" aria-label="Entities ordered by the exact ' + _escapeHtml(rows.lens.heading) + ' metric">' + ranked + '</div>'
+      + '<h2 class="elu-rank-gap-heading">Data gaps · searchable and unnumbered</h2><div role="list" aria-label="Entities unranked because the exact comparison metric is unavailable">' + gaps + '</div></div>';
     rail.addEventListener('click', event => {
       const toggle = event.target.closest('.elu-rank-toggle');
       if (toggle) {
@@ -1386,11 +1467,75 @@ const GlobeModule = {
       }
       const row = event.target.closest('[data-country-rail-iso]');
       if (!row) return;
-      const feature = this._featureByIso?.[row.getAttribute('data-country-rail-iso')];
-      if (feature) this._selectCountryFeature(feature, { focus: true });
+      const iso = row.getAttribute('data-country-rail-iso');
+      const feature = this._featureByIso?.[iso];
+      if (feature) {
+        this._selectCountryFeature(feature, { focus: true });
+      } else {
+        this.rememberFallbackOpener(row);
+        this.showFallback('evidence_browse_requested');
+        requestAnimationFrame(() => this._renderFallbackCountry(iso, true));
+      }
+    });
+    rail.addEventListener('input', event => {
+      if (!event.target.matches('[data-country-rail-filter]')) return;
+      const query = event.target.value.trim().toLowerCase();
+      let shown = 0;
+      rail.querySelectorAll('[data-country-rail-search]').forEach(row => {
+        const visible = !query || row.dataset.countryRailSearch.includes(query);
+        row.hidden = !visible;
+        if (visible) shown++;
+      });
+      const results = rail.querySelector('[data-country-rail-results]');
+      if (results) results.textContent = shown + ' of 249 entities shown';
     });
     document.body.appendChild(rail);
     this._rankRail = rail;
+    this._rebindCountryOpener();
+  },
+
+  _activeLensControl() {
+    return document.querySelector('.climate-lens-controls [data-climate-lens="' + this.currentLens + '"]');
+  },
+
+  _isRenderedFocusTarget(element) {
+    if (!element || !document.contains(element) || typeof element.focus !== 'function' || element.disabled) return false;
+    const style = window.getComputedStyle?.(element);
+    return style?.display !== 'none' && style?.visibility !== 'hidden' && Number(style?.opacity ?? 1) > 0 &&
+      element.getClientRects().length > 0;
+  },
+
+  _isVisibleFocusTarget(element) {
+    if (!this._isRenderedFocusTarget(element)) return false;
+    const rect = element.getBoundingClientRect();
+    const viewportWidth = document.documentElement?.clientWidth || window.innerWidth;
+    const viewportHeight = document.documentElement?.clientHeight || window.innerHeight;
+    if (rect.width <= 0 || rect.height <= 0 || rect.right <= 0 || rect.bottom <= 0 ||
+        rect.left >= viewportWidth || rect.top >= viewportHeight) return false;
+
+    // A ranked row can remain rendered thousands of pixels below the visible
+    // rail after a lens reorder. Treat clipping ancestors as focus boundaries
+    // so Close never returns keyboard focus to an off-screen row.
+    for (let ancestor = element.parentElement; ancestor && ancestor !== document.body; ancestor = ancestor.parentElement) {
+      const ancestorStyle = window.getComputedStyle?.(ancestor);
+      const clipsX = /^(auto|scroll|hidden|clip)$/.test(ancestorStyle?.overflowX || '');
+      const clipsY = /^(auto|scroll|hidden|clip)$/.test(ancestorStyle?.overflowY || '');
+      if (!clipsX && !clipsY) continue;
+      const boundary = ancestor.getBoundingClientRect();
+      if (clipsX && (rect.right <= boundary.left || rect.left >= boundary.right)) return false;
+      if (clipsY && (rect.bottom <= boundary.top || rect.top >= boundary.bottom)) return false;
+    }
+    return true;
+  },
+
+  _rebindCountryOpener() {
+    if (!this._selectedCountryFeature) return false;
+    const iso = _resolveCountryIso(this._selectedCountryFeature);
+    const row = Array.from(this._rankRail?.querySelectorAll('[data-country-rail-iso]') || [])
+      .find(candidate => candidate.getAttribute('data-country-rail-iso') === iso);
+    const target = this._isVisibleFocusTarget(row) ? row : this._activeLensControl();
+    this._countryOpener = this._isVisibleFocusTarget(target) ? target : null;
+    return Boolean(this._countryOpener);
   },
 
   _updateRankRail() {
@@ -1417,25 +1562,12 @@ const GlobeModule = {
         if (!nav) return;
         event.preventDefault();
         event.stopPropagation();
-        this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
-      });
-      wrap.addEventListener('keydown', event => {
-        if (event.key !== 'Tab') return;
-        const heading = wrap.querySelector('#country-card-heading');
-        const tabbable = Array.from(wrap.querySelectorAll('button,a[href],summary,[tabindex="0"]')).filter(node => {
-          if (node.disabled || node.hidden || node.getAttribute('aria-hidden') === 'true') return false;
-          const style = window.getComputedStyle(node);
-          return node.getClientRects().length > 0 && style.visibility !== 'hidden';
-        });
-        if (!heading || !tabbable.length) return;
-        const first = tabbable[0];
-        const last = tabbable[tabbable.length - 1];
-        if (event.shiftKey && (document.activeElement === heading || document.activeElement === first)) { event.preventDefault(); last.focus(); }
-        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); heading.focus(); }
+        this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1, { source: 'button' });
       });
       document.body.appendChild(wrap);
     }
     if (!wrap.contains(tt)) wrap.insertBefore(tt, wrap.querySelector('.tt-nav-next'));
+    document.body.classList.add('country-card-open');
     this._countryCardWrap = wrap;
     return wrap;
   },
@@ -1443,8 +1575,10 @@ const GlobeModule = {
   _unmountCountryCard() {
     const tt = $('hex-country-tooltip');
     const wrap = this._countryCardWrap || $('elu-country-card-wrap');
+    this._clearCountrySwipeCue(tt);
     if (tt && wrap && wrap.contains(tt) && document.body) document.body.appendChild(tt);
     if (wrap) wrap.remove();
+    document.body?.classList.remove('country-card-open');
     this._countryCardWrap = null;
   },
 
@@ -1467,7 +1601,9 @@ const GlobeModule = {
     const focus = _getCountryFocus(feature, d);
     if (this.world && focus) {
       const pov = this.world.pointOfView();
-      this.world.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: pov?.altitude || 2.2 }, opts.focus ? 500 : 0);
+      const reducedMotion = this._reducedMotionMedia?.matches === true ||
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+      this.world.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: pov?.altitude || 2.2 }, opts.focus && !reducedMotion ? 500 : 0);
     }
     const tt = $('hex-country-tooltip');
     this._queueCountrySwipeCue(tt);
@@ -1486,27 +1622,54 @@ const GlobeModule = {
     this._selectCountryFeature(entry.feature, { focus: false });
   },
 
-  _queueCountrySwipeCue(tt) {
-    if (this._countrySwipeCueShown || !tt || window.innerWidth > 720) return;
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    this._countrySwipeCueShown = true;
+  _clearCountrySwipeCue(tt = $('hex-country-tooltip')) {
+    this._countrySwipeCueToken += 1;
+    if (tt && this._countrySwipeCueFinish) {
+      tt.removeEventListener('animationend', this._countrySwipeCueFinish);
+      tt.removeEventListener('animationcancel', this._countrySwipeCueFinish);
+    }
+    this._countrySwipeCueFinish = null;
+    tt?.classList.remove('tt-swipe-cue');
+    return true;
+  },
+
+  clearCountrySwipeCue() {
+    return this._clearCountrySwipeCue();
+  },
+
+  cueCountrySwipe() {
+    return this._queueCountrySwipeCue($('hex-country-tooltip'), { force: true });
+  },
+
+  _queueCountrySwipeCue(tt, options = {}) {
+    const force = options.force === true;
+    if (!tt || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return false;
+    if (!force && (this._countrySwipeCueShown || window.innerWidth > 720)) return false;
+    if (!force) this._countrySwipeCueShown = true;
+    this._clearCountrySwipeCue(tt);
+    tt.classList.remove('tt-motion-ready');
+    const cueToken = this._countrySwipeCueToken;
 
     // Wait until the selected card has been mounted and docked before showing
     // the one-time horizontal affordance. Two frames keep the cue separate
     // from the card's initial paint, so the movement reads as intentional.
     requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (cueToken !== this._countrySwipeCueToken) return;
       if (!tt.classList.contains('selected') || !tt.classList.contains('visible')) return;
       tt.classList.add('tt-swipe-cue');
       const finishCue = event => {
         if (event.animationName !== 'elu-country-card-swipe-cue') return;
         tt.removeEventListener('animationend', finishCue);
         tt.removeEventListener('animationcancel', finishCue);
+        if (this._countrySwipeCueFinish === finishCue) this._countrySwipeCueFinish = null;
         tt.classList.add('tt-motion-ready');
         tt.classList.remove('tt-swipe-cue');
       };
+      this._countrySwipeCueFinish = finishCue;
       tt.addEventListener('animationend', finishCue);
       tt.addEventListener('animationcancel', finishCue);
     }));
+    return true;
   },
 
   _renderCountryInfoCard(feature, selected) {
@@ -1522,6 +1685,17 @@ const GlobeModule = {
 
     if (!this._countryTooltipBound) {
       this._countryTooltipBound = true;
+      if (typeof ResizeObserver === 'function') {
+        this._countryTooltipResizeObserver = new ResizeObserver(entries => {
+          const entry = entries[entries.length - 1];
+          if (!entry || entry.target.classList.contains('selected')) return;
+          const box = Array.isArray(entry.borderBoxSize) ? entry.borderBoxSize[0] : entry.borderBoxSize;
+          const width = Number(box?.inlineSize) || Number(entry.contentRect?.width) + 26;
+          const height = Number(box?.blockSize) || Number(entry.contentRect?.height) + 22;
+          if (width > 0 && height > 0) this._hoverTooltipSize = { width, height };
+        });
+        this._countryTooltipResizeObserver.observe(tt);
+      }
       tt.addEventListener('click', (event) => {
         // ✕ on the pinned card
         if (event.target.closest('[data-country-close]')) {
@@ -1535,7 +1709,7 @@ const GlobeModule = {
         if (nav) {
           event.preventDefault();
           event.stopPropagation();
-          this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1);
+          this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1, { source: 'button' });
           return;
         }
       });
@@ -1551,8 +1725,8 @@ const GlobeModule = {
         if (!tt.classList.contains('selected')) return;
         if (e.target.closest('.tt-close,.tt-nav,a')) return;
         if (tt.classList.contains('tt-swipe-cue')) {
+          this._clearCountrySwipeCue(tt);
           tt.classList.add('tt-motion-ready');
-          tt.classList.remove('tt-swipe-cue');
         }
         _dragging = true; _dragEngaged = false;
         _dragStartX = e.clientX; _dragStartY = e.clientY;
@@ -1583,9 +1757,9 @@ const GlobeModule = {
         try { tt.releasePointerCapture(_dragPointerId); } catch { /* ignore */ }
         const dx = e.clientX - _dragStartX;
         if (dx > 110) {
-          this.navigateCountry(1, { fromDrag: true });   // swipe right → next (Bumble)
+          this.navigateCountry(1, { fromDrag: true, source: 'swipe' });   // swipe right → next (Bumble)
         } else if (dx < -110) {
-          this.navigateCountry(-1, { fromDrag: true });  // swipe left → previous
+          this.navigateCountry(-1, { fromDrag: true, source: 'swipe' });  // swipe left → previous
         } else {
           tt.classList.add('tt-snap');
           tt.style.transform = 'none';
@@ -1595,12 +1769,14 @@ const GlobeModule = {
       tt.addEventListener('pointerup', _dragRelease);
       tt.addEventListener('pointercancel', _dragRelease);
 
-      // Keep the docked card on-screen when the window resizes
-      window.addEventListener('resize', () => {
+      // Keep the docked card on-screen when the window resizes. Store the
+      // callback so Standard Module Lifecycle teardown can remove it.
+      this._onCountryCardResize = () => {
         if (tt.classList.contains('selected') && tt.classList.contains('visible')) {
           this._dockCountryCard();
         }
-      });
+      };
+      window.addEventListener('resize', this._onCountryCardResize, { passive: true });
 
       // Horizontal trackpad / shift-wheel browses the deck; vertical keeps scrolling the card
       let _wheelNavAt = 0;
@@ -1612,17 +1788,18 @@ const GlobeModule = {
         if (now - _wheelNavAt < 500) return;
         _wheelNavAt = now;
         // Natural scrolling: fingers swiping right = negative deltaX = next
-        this.navigateCountry(e.deltaX < 0 ? 1 : -1);
+        this.navigateCountry(e.deltaX < 0 ? 1 : -1, { source: 'trackpad' });
       }, { passive: false });
     }
 
-    const statusText = _getCountryStatusText(d);
+    const view = d.view;
+    if (!view) return;
+    const statusText = view.primary.available ? view.primary.evidence_label : 'Data gap';
     const statusClass = _getCountryStatusClass(d);
     const statusAttr = _getCountryStatusAttr(d);
-    const evidenceSummary = d.hasData
-      ? d.emissions.label + ' · 2014–2023 · ' + d.emissions.unit
-      : 'No PRIMAP emissions series available';
-    const comment = _getCountryGaiaComment(d);
+    const evidenceSummary = view.primary.available
+      ? view.primary.label + ' · ' + view.primary.display_value + ' ' + view.primary.unit + ' · ' + view.primary.period + ' · ' + view.primary.evidence_label
+      : view.primary.label + ' · data gap · required period ' + view.lens.period + ' · ' + view.tooltip.evidence_class;
     const approximatePointNote = feature?.properties?.__smallNation
       ? '<div class="tt-detail">Approximate navigation point; not a boundary or precise centroid.</div>'
       : '';
@@ -1634,7 +1811,7 @@ const GlobeModule = {
       const wrap = this._ensureCountryCardWrap(tt);
       if (wrap) {
         wrap.setAttribute('role', 'dialog');
-        wrap.setAttribute('aria-modal', 'true');
+        wrap.setAttribute('aria-modal', 'false');
         wrap.setAttribute('aria-labelledby', 'country-card-heading');
       }
     }
@@ -1645,7 +1822,7 @@ const GlobeModule = {
     if (selected) tt.removeAttribute('role');
     else tt.setAttribute('role', 'tooltip');
     if (selected) tt.removeAttribute('aria-label');
-    else tt.setAttribute('aria-label', d.country + (d.hasData ? ' emissions facts' : ' emissions data gap') +
+    else tt.setAttribute('aria-label', view.accessible_summary +
       (feature?.properties?.__smallNation ? ', approximate navigation point, not a boundary or precise centroid' : ''));
     if (!selected) tt.removeAttribute('tabindex');
 
@@ -1657,13 +1834,12 @@ const GlobeModule = {
       + '<div class="tt-detail">' + _escapeHtml(evidenceSummary) + '</div>'
       + approximatePointNote
       + mapAreaNote
-      + (selected && !d.hasData ? '<div class="tt-candidate">No emissions estimate · visible and unranked</div>' : '');
+      + (selected ? '<div class="tt-candidate">' + _escapeHtml(view.rank_text) + '</div>' : '');
 
     if (!selected) {
-      html += '<div class="tt-comment">' + _escapeHtml(comment) + '</div>';
+      html += '<div class="tt-comment">' + _escapeHtml(view.primary.available ? view.lens.interpretation : view.primary.gap.detail) + '</div>';
     } else {
-      // Pinned card: explicit fail-closed disclosure only.
-      html += this._renderCountryMetrics(d);
+      html += this._renderCountryMetrics(view);
     }
 
     tt.innerHTML = html;
@@ -1681,6 +1857,9 @@ const GlobeModule = {
     if (!cur) return;
 
     const curIso = _resolveCountryIso(cur);
+    const navigationSource = ['swipe', 'button', 'keyboard', 'trackpad', 'programmatic'].includes(opts.source)
+      ? opts.source
+      : (opts.fromDrag ? 'swipe' : 'programmatic');
     const len = deck.length;
     let idx = deck.findIndex(entry => entry.iso === curIso);
     if (idx < 0) idx = 0;
@@ -1693,7 +1872,9 @@ const GlobeModule = {
     }
     if (!target) return;
 
+    this._cancelCountryNavigation();
     this._navBusy = true;
+    const navigationGeneration = this._countryNavigationGeneration;
     const tt = $('hex-country-tooltip');
     const mobileMotion = window.innerWidth <= 720;
     const exitDuration = mobileMotion ? 220 : (opts.fromDrag ? 300 : 260);
@@ -1706,13 +1887,15 @@ const GlobeModule = {
     const inClass = dir > 0 ? 'tt-enter-left' : 'tt-enter-right';
 
     const swap = () => {
+      this._countryNavigationSwapTimer = null;
+      if (navigationGeneration !== this._countryNavigationGeneration || !this._selectedCountryFeature) return;
       this._selectedCountryFeature = target.feature;
       this._countryHoverFeature = target.feature;
       this._renderCountryInfoCard(target.feature, true);
       // Re-rendering replaces every node inside the card. Keep keyboard and
-      // screen-reader users inside the modal by focusing the new heading when
-      // their prior focus was in the replaced content. The persistent outer
-      // previous/next buttons retain focus naturally.
+      // screen-reader users in the replaced evidence context by focusing the
+      // new heading when their prior focus was in that content. The persistent
+      // outer previous/next buttons retain focus naturally.
       if (restoreHeadingFocus && tt) {
         const heading = tt.querySelector('#country-card-heading');
         if (heading) heading.focus({ preventScroll: true });
@@ -1721,13 +1904,24 @@ const GlobeModule = {
       this._refreshCountryBorders();
       this._showCountryProjects(target.iso);
       this._updateRankRail();
-      if (hasModule('EventBus')) EventBus.emit('globe:country-selected', { iso: target.iso, country: target.country });
+      if (hasModule('EventBus')) {
+        EventBus.emit('globe:country-selected', { iso: target.iso, country: target.country });
+        EventBus.emit('globe:country-navigated', {
+          from_iso: curIso,
+          to_iso: target.iso,
+          country: target.country,
+          direction: dir > 0 ? 1 : -1,
+          source: navigationSource,
+        });
+      }
 
       // Fly the globe to the new country, keeping the current zoom
       if (this.world) {
         const pov = this.world.pointOfView();
         const focus = _getCountryFocus(target.feature, target.data);
-        if (focus) this.world.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: pov.altitude }, 650);
+        const reducedMotion = this._reducedMotionMedia?.matches === true ||
+          window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+        if (focus) this.world.pointOfView({ lat: focus.lat, lng: focus.lng, altitude: pov.altitude }, reducedMotion ? 0 : 650);
       }
 
       if (tt) {
@@ -1738,53 +1932,241 @@ const GlobeModule = {
         tt.classList.add('tt-snap');
         tt.classList.remove(inClass);
         tt.style.transform = 'none';
-        setTimeout(() => { tt.classList.remove('tt-snap'); this._navBusy = false; }, enterDuration);
+        this._countryNavigationFinishTimer = setTimeout(() => {
+          this._countryNavigationFinishTimer = null;
+          if (navigationGeneration !== this._countryNavigationGeneration) return;
+          tt.classList.remove('tt-snap');
+          this._navBusy = false;
+        }, enterDuration);
       } else {
         this._navBusy = false;
       }
     };
 
     if (tt) {
+      this._clearCountrySwipeCue(tt);
       tt.classList.add('tt-motion-ready');
-      tt.classList.remove('tt-snap', 'tt-dragging', 'tt-swipe-cue');
+      tt.classList.remove('tt-snap', 'tt-dragging');
       tt.classList.add(outClass);
-      setTimeout(swap, exitDuration);
+      this._countryNavigationSwapTimer = setTimeout(swap, exitDuration);
     } else {
       swap();
     }
   },
 
-  _renderCountryMetrics(d) {
-    if (!d.hasData) {
-      return '<div class="tt-comment" style="margin-top:8px"><strong>Emissions source gap.</strong> No PRIMAP series is available for this registry entity. It is visible and unranked.</div>'
-        + _renderCountryTrajectory()
-        + '<div class="tt-hint">Unnumbered data gap · ← → or swipe · esc closes</div>';
+  _cancelCountryNavigation() {
+    this._countryNavigationGeneration += 1;
+    if (this._countryNavigationSwapTimer !== null) clearTimeout(this._countryNavigationSwapTimer);
+    if (this._countryNavigationFinishTimer !== null) clearTimeout(this._countryNavigationFinishTimer);
+    this._countryNavigationSwapTimer = null;
+    this._countryNavigationFinishTimer = null;
+    this._navBusy = false;
+    const tt = $('hex-country-tooltip');
+    if (tt) {
+      tt.classList.remove('tt-fly-right', 'tt-fly-left', 'tt-enter-left', 'tt-enter-right', 'tt-snap', 'tt-dragging');
+      tt.style.transform = '';
     }
-    const points = d.emissions.series;
-    const values = points.map(point => point.value);
+    return true;
+  },
+
+  _renderClimateFact(fact) {
+    const value = fact.available
+      ? '<strong>' + _escapeHtml(fact.display_value) + '</strong>' + (fact.unit ? ' <span>' + _escapeHtml(fact.unit) + '</span>' : '')
+      : '<strong>Not available</strong>';
+    const context = [];
+    if (fact.id === 'emissions.land_use_co2.net' && fact.available && fact.value < 0) context.push('<p class="tt-fact-note">Negative value: modeled net removal.</p>');
+    return '<article class="tt-fact' + (fact.available ? '' : ' is-gap') + '"><h4>' + _escapeHtml(fact.label) + '</h4><div class="tt-fact-value">' + value + '</div>'
+      + '<p class="tt-fact-meta">' + _escapeHtml(fact.period || 'Period unavailable') + ' · ' + _escapeHtml(fact.evidence_label) + '</p>'
+      + '<p>' + _escapeHtml(fact.available ? fact.explanation : fact.gap.detail) + '</p>'
+      + (fact.available ? '<p class="tt-fact-uncertainty"><strong>Uncertainty:</strong> ' + _escapeHtml(fact.uncertainty_text) + '</p>' : '') + context.join('') + '</article>';
+  },
+
+  _renderPowerField(view, idPrefix = 'country-card') {
+    const field = view.power_story?.field;
+    if (!field) return '';
+    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-power-mix').replace(/[^a-zA-Z0-9_-]/g, '-');
+    const titleId = chartId + '-title';
+    const descId = chartId + '-desc';
+    if (!field.available) {
+      return '<figure class="elu-power-field is-gap" aria-labelledby="' + titleId + ' ' + descId + '"><div class="elu-power-field-head"><span id="' + titleId + '">' + _escapeHtml(field.title) + ' · ' + _escapeHtml(field.period) + '</span><span>Fuel detail gap</span></div><p class="elu-power-mix-gap" id="' + descId + '">' + _escapeHtml(field.gap) + '</p><figcaption><strong>Gap preserved:</strong> ' + _escapeHtml(field.disclosure) + '</figcaption></figure>';
+    }
+    if (!Array.isArray(field.lanes) || field.lanes.length !== 2) return '';
+    const allSegments = field.lanes.flatMap(lane => lane.segments);
+    const summary = field.lanes.map(lane => lane.label + ' ' + lane.display_value + ' percent. '
+      + lane.segments.map(segment => segment.available
+        ? segment.label + ' ' + segment.display_value + ' percent'
+        : segment.label + ' data gap').join(', ')).join('. ');
+    const renderSegment = segment => {
+      if (!segment.available || segment.value <= 0) return '';
+      const value = Math.max(0, Math.min(100, Number(segment.value)));
+      const segmentClass = 'is-' + segment.pattern;
+      return '<span class="elu-power-segment ' + segmentClass + '" style="width:' + value.toFixed(2) + '%" title="' + _escapeHtml(segment.label) + ': ' + _escapeHtml(segment.display_value) + '%"><span class="sr-only">' + _escapeHtml(segment.label) + ' ' + _escapeHtml(segment.display_value) + ' percent</span></span>';
+    };
+    const renderLane = lane => {
+      const value = Math.max(0, Math.min(100, Number(lane.value)));
+      return '<div class="elu-power-lane is-' + _escapeHtml(lane.id) + '"><div class="elu-power-lane-head"><span>' + _escapeHtml(lane.label) + '</span><strong>' + _escapeHtml(lane.display_value) + '%</strong></div><div class="elu-power-lane-track" role="meter" aria-label="' + _escapeHtml(lane.label) + ' share with published fuel components" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + value.toFixed(2) + '" aria-valuetext="' + _escapeHtml(lane.display_value) + ' percent of electricity generation">' + lane.segments.map(renderSegment).join('') + '</div></div>';
+    };
+    const legend = allSegments.map(segment => '<li class="' + (segment.available ? (segment.value === 0 ? 'is-zero' : 'is-available') : 'is-gap') + '"><i class="elu-power-segment-key is-' + _escapeHtml(segment.pattern) + '" aria-hidden="true"></i><span>' + _escapeHtml(segment.label) + '</span><strong>' + _escapeHtml(segment.available ? segment.display_value + '%' : 'Data gap') + '</strong></li>').join('');
+    const roundingClass = Math.abs(field.rounding_variance_pp) > 0.000001 ? ' has-rounding' : '';
+    return '<figure class="elu-power-field" aria-labelledby="' + titleId + ' ' + descId + '"><div class="elu-power-field-head"><span id="' + titleId + '">' + _escapeHtml(field.title) + ' · ' + _escapeHtml(field.period) + '</span><span>' + _escapeHtml(field.evidence_label) + '</span></div><span class="sr-only" id="' + descId + '">' + _escapeHtml(summary) + '. ' + _escapeHtml(field.disclosure) + '</span>'
+      + '<div class="elu-power-field-scale" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100%</span></div><div class="elu-power-lanes">' + field.lanes.map(renderLane).join('') + '</div>'
+      + '<ul class="elu-power-mix-legend" aria-label="Published generation-fuel shares and explicit gaps">' + legend + '</ul>'
+      + '<p class="elu-power-reconciliation' + roundingClass + '"><strong>Published total:</strong> ' + _escapeHtml(field.published_component_sum.toFixed(2)) + '%</p>'
+      + (field.taxonomy_note ? '<p class="elu-power-taxonomy-note">' + _escapeHtml(field.taxonomy_note) + '</p>' : '')
+      + '<figcaption><strong>One shared scale:</strong> ' + _escapeHtml(field.disclosure) + '</figcaption></figure>';
+  },
+
+  _renderClimateSeries(view, idPrefix = 'country-card', chart = view.detail_chart, chartIndex = 0) {
+    const points = chart?.series;
+    if (!Array.isArray(points) || points.length < 2) return '';
+    const trendLine = Array.isArray(chart.trend_line) && chart.trend_line.length === 2 ? chart.trend_line : [];
+    const values = points.map(point => point.value).concat(trendLine.map(point => point.value));
     const min = Math.min(...values), max = Math.max(...values);
     const span = Math.max(max - min, Math.abs(max) * 0.02, 0.001);
-    const coordPoints = points.map((point, index) => {
-      const x = 8 + index * (304 / Math.max(points.length - 1, 1));
-      const y = 51 - ((point.value - min) / span) * 39;
+    const start = points[0].year;
+    const end = points[points.length - 1].year;
+    const xFor = year => 8 + ((year - start) / Math.max(end - start, 1)) * 304;
+    const yFor = value => 51 - ((value - min) / span) * 39;
+    const coordPoints = points.map(point => {
+      const x = xFor(point.year);
+      const y = yFor(point.value);
       return { x: x.toFixed(1), y: y.toFixed(1), point };
     });
     const coords = coordPoints.map(item => item.x + ',' + item.y).join(' ');
-    const markers = coordPoints.map(item => '<circle class="elu-trajectory-point" cx="' + item.x + '" cy="' + item.y + '" r="2.5"><title>' + item.point.year + ': ' + item.point.value.toLocaleString() + ' ' + _escapeHtml(d.emissions.unit) + '</title></circle>').join('');
-    const rows = points.map(point => '<tr><th scope="row">' + point.year + '</th><td>' + point.value.toLocaleString() + '</td><td>' + _escapeHtml(d.emissions.unit) + '</td></tr>').join('');
-    const latest = d.emissions.latest;
-    const sourceLabel = 'PRIMAP-hist v2.6.1 final';
-    return '<section class="tt-factual" aria-labelledby="country-emissions-heading"><h3 id="country-emissions-heading">Annual emissions</h3>'
-      + '<div class="tt-factual-value"><strong>' + latest.value.toLocaleString() + '</strong> ' + _escapeHtml(d.emissions.unit) + ' <span>in ' + latest.year + '</span></div>'
-      + '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">2014–2023 series</span><span class="elu-trajectory-note">10 yearly values</span></div>'
-      + '<svg viewBox="0 0 320 72" role="img" aria-labelledby="emissions-chart-title emissions-chart-desc"><title id="emissions-chart-title">' + _escapeHtml(d.country) + ' annual emissions, 2014 to 2023</title><desc id="emissions-chart-desc">Ten yearly values in ' + _escapeHtml(d.emissions.unit) + '. Points and line show emissions magnitude, not a performance pathway.</desc>'
-      + '<line class="elu-trajectory-grid" x1="8" y1="51" x2="312" y2="51"></line><text class="elu-chart-axis" x="8" y="9">' + max.toLocaleString() + ' ' + _escapeHtml(d.emissions.unit) + '</text><text class="elu-chart-axis" x="8" y="66">' + min.toLocaleString() + ' ' + _escapeHtml(d.emissions.unit) + '</text><polyline class="elu-trajectory-current is-magnitude" points="' + coords + '"></polyline>' + markers + '</svg>'
-      + '<div class="elu-trajectory-years"><span>2014</span><span>2023</span></div></div>'
-      + '<details class="tt-chart-data"><summary>Show chart data</summary><table><caption>' + _escapeHtml(d.country) + ' annual emissions, 2014–2023</caption><thead><tr><th>Year</th><th>Value</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>'
-      + '<p class="tt-source"><strong>Source &amp; methodology:</strong> <a href="' + _escapeHtml(d.emissions.source_url) + '" target="_blank" rel="noopener">' + sourceLabel + '</a></p>'
-      + '<p class="tt-limit"><strong>Limits:</strong> Not an official Party inventory; uncertainty bounds are not included.</p></section>'
-      + _renderCountryTrajectory()
-      + '<div class="tt-hint">2023 magnitude rank only · ← → or swipe · esc closes</div>';
+    const seriesUnit = chart.series_unit || chart.unit;
+    const observed = chart.id === 'climate.temperature.observed_trend' || chart.id === 'climate.precipitation.observed_trend';
+    const seriesClass = observed ? 'is-observed' : 'is-magnitude';
+    const markerStep = points.length > 40 ? 5 : 1;
+    const markers = coordPoints.filter((item, index) => index === 0 || index === coordPoints.length - 1 || (item.point.year - start) % markerStep === 0)
+      .map(item => '<circle class="elu-trajectory-point ' + seriesClass + '" cx="' + item.x + '" cy="' + item.y + '" r="2.2"><title>' + item.point.year + ': ' + item.point.value.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(seriesUnit) + '</title></circle>').join('');
+    const rows = points.map(point => '<tr><th scope="row">' + point.year + '</th><td>' + point.value.toLocaleString('en-US', { maximumFractionDigits: 2 }) + '</td><td>' + _escapeHtml(seriesUnit) + '</td></tr>').join('');
+    const trend = trendLine.length === 2
+      ? '<line class="elu-trajectory-trend" x1="' + xFor(trendLine[0].year).toFixed(1) + '" y1="' + yFor(trendLine[0].value).toFixed(1) + '" x2="' + xFor(trendLine[1].year).toFixed(1) + '" y2="' + yFor(trendLine[1].value).toFixed(1) + '"></line>'
+      : '';
+    const chartLabel = chart.series_label || chart.label;
+    const chartNote = chart.evidence_label + (trend ? ' · OLS ' + chart.display_value + ' ' + chart.unit : '');
+    const annualStatisticLabel = chart.context?.annual_statistic_label
+      || (chart.id === 'climate.temperature.observed_trend' ? 'Annual mean' : 'Annual series');
+    const legend = trend ? '<div class="elu-trajectory-legend elu-observed-legend" aria-hidden="true"><span class="elu-observed-series-key">' + _escapeHtml(annualStatisticLabel) + '</span><span class="elu-observed-trend-key">OLS trend</span></div>' : '';
+    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-' + view.lens.id + '-' + chart.id + '-' + chartIndex).replace(/[^a-zA-Z0-9_-]/g, '-');
+    const titleId = chartId + '-series-title';
+    const descId = chartId + '-series-desc';
+    return '<div class="elu-trajectory"><div class="elu-trajectory-head"><span class="elu-trajectory-title">' + _escapeHtml(chartLabel) + ' · ' + start + '–' + end + '</span><span class="elu-trajectory-note">' + _escapeHtml(chartNote) + '</span></div>'
+      + '<svg viewBox="0 0 320 72" role="img" aria-labelledby="' + titleId + ' ' + descId + '"><title id="' + titleId + '">' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(chartLabel) + ', ' + start + ' to ' + end + '</title><desc id="' + descId + '">Annual values in ' + _escapeHtml(seriesUnit) + '. The solid line shows the annual source series' + (trend ? ' and the dashed line shows the supplied ordinary least-squares trend' : '') + '. No score or target pathway is shown.</desc>'
+      + '<line class="elu-trajectory-grid" x1="8" y1="51" x2="312" y2="51"></line><text class="elu-chart-axis" x="8" y="9">' + max.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(seriesUnit) + '</text><text class="elu-chart-axis" x="8" y="66">' + min.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(seriesUnit) + '</text><polyline class="elu-trajectory-current ' + seriesClass + '" points="' + coords + '"></polyline>' + trend + markers + '</svg>'
+      + '<div class="elu-trajectory-years"><span>' + start + '</span><span>' + end + '</span></div>' + legend + '</div>'
+      + '<details class="tt-chart-data"><summary>Show chart data</summary><table><caption>' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(chartLabel) + '</caption><thead><tr><th>Year</th><th>Value</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody></table></details>';
+  },
+
+  _renderTemperatureProjectionRange(view, idPrefix = 'country-card', projection = null) {
+    if (!projection || !Array.isArray(projection.markers) || projection.markers.length !== 3) return '';
+    const span = projection.p90 - projection.p10;
+    const xFor = value => span > 0 ? 24 + ((value - projection.p10) / span) * 272 : 160;
+    const medianX = xFor(projection.median);
+    const format = value => value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    const rows = projection.markers.map(marker => '<tr><th scope="row">' + _escapeHtml(marker.label) + '</th><td>' + format(marker.value) + '</td><td>' + _escapeHtml(projection.unit) + '</td><td>' + _escapeHtml(marker.shape) + '</td></tr>').join('');
+    const chartId = (idPrefix + '-' + view.country.iso_alpha3 + '-projection-range').replace(/[^a-zA-Z0-9_-]/g, '-');
+    const titleId = chartId + '-title';
+    const descId = chartId + '-desc';
+    return '<div class="elu-projection-range"><div class="elu-trajectory-head"><span class="elu-trajectory-title">' + _escapeHtml(projection.title) + '</span><span class="elu-trajectory-note">' + _escapeHtml(projection.scenario) + ' · ' + _escapeHtml(projection.period) + ' mean</span></div>'
+      + '<svg viewBox="0 0 320 72" role="img" aria-labelledby="' + titleId + ' ' + descId + '"><title id="' + titleId + '">' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(projection.scenario) + ' published temperature-change range</title><desc id="' + descId + '">Published multi-model p10, median, and p90 changes for the 2040 to 2059 mean relative to 1995 to 2014. Square marks p10, diamond marks the median, and circle marks p90. No intervening years or probabilities are shown.</desc>'
+      + '<rect class="elu-projection-range-band" x="24" y="31" width="272" height="10" rx="5"></rect>'
+      + '<line class="elu-projection-range-line" x1="24" y1="36" x2="296" y2="36"></line>'
+      + '<rect class="elu-projection-marker is-p10" x="19" y="31" width="10" height="10"><title>p10: ' + format(projection.p10) + ' ' + _escapeHtml(projection.unit) + '</title></rect>'
+      + '<polygon class="elu-projection-marker is-median" points="' + medianX.toFixed(1) + ',28 ' + (medianX + 8).toFixed(1) + ',36 ' + medianX.toFixed(1) + ',44 ' + (medianX - 8).toFixed(1) + ',36"><title>Median: ' + format(projection.median) + ' ' + _escapeHtml(projection.unit) + '</title></polygon>'
+      + '<circle class="elu-projection-marker is-p90" cx="296" cy="36" r="6"><title>p90: ' + format(projection.p90) + ' ' + _escapeHtml(projection.unit) + '</title></circle></svg>'
+      + '<div class="elu-projection-values"><span><i class="is-p10" aria-hidden="true"></i><strong>p10</strong> ' + format(projection.p10) + ' ' + _escapeHtml(projection.unit) + '</span><span><i class="is-median" aria-hidden="true"></i><strong>Median</strong> ' + format(projection.median) + ' ' + _escapeHtml(projection.unit) + '</span><span><i class="is-p90" aria-hidden="true"></i><strong>p90</strong> ' + format(projection.p90) + ' ' + _escapeHtml(projection.unit) + '</span></div>'
+      + '<p class="elu-projection-disclosure"><strong>Evidence boundary:</strong> ' + _escapeHtml(projection.disclosure) + '</p></div>'
+      + '<details class="tt-chart-data"><summary>Show published projection values</summary><table><caption>' + _escapeHtml(view.country.name) + ' ' + _escapeHtml(projection.scenario) + ' published multi-model percentile summary</caption><thead><tr><th>Statistic</th><th>Change</th><th>Unit</th><th>Visual marker</th></tr></thead><tbody>' + rows + '</tbody></table></details>';
+  },
+
+  _renderPhysicalClimateMetrics(view, idPrefix = 'country-card') {
+    const story = view.physical_story;
+    const sectionId = (idPrefix + '-' + view.country.iso_alpha3 + '-physical-story').replace(/[^a-zA-Z0-9_-]/g, '-');
+    const temperatureId = sectionId + '-temperature';
+    const precipitationId = sectionId + '-precipitation';
+    const temperatureObserved = story.temperature.observed;
+    const precipitationObserved = story.precipitation.observed;
+    const temperatureObservedHtml = Array.isArray(temperatureObserved?.series) && temperatureObserved.series.length > 1
+      ? this._renderClimateSeries(view, idPrefix, temperatureObserved, 0)
+      : (temperatureObserved ? this._renderClimateFact(temperatureObserved) : '');
+    const precipitationObservedHtml = Array.isArray(precipitationObserved?.series) && precipitationObserved.series.length > 1
+      ? this._renderClimateSeries(view, idPrefix, precipitationObserved, 1)
+      : (precipitationObserved ? this._renderClimateFact(precipitationObserved) : '');
+    const projectionHtml = this._renderTemperatureProjectionRange(view, idPrefix, story.temperature.projection_range);
+    const futureProjectionBlock = projectionHtml
+      ? '<div class="tt-climate-evidence"><h4>Future projection</h4>' + projectionHtml + '</div>'
+      : '';
+    const temperatureFact = story.temperature.projected_fact ? this._renderClimateFact(story.temperature.projected_fact) : '';
+    const precipitationFact = story.precipitation.projected_fact ? this._renderClimateFact(story.precipitation.projected_fact) : '';
+    return '<section class="tt-physical-story" aria-label="Physical climate evidence">'
+      + '<section class="tt-climate-variable is-temperature" aria-labelledby="' + temperatureId + '"><h3 id="' + temperatureId + '">Temperature</h3>'
+      + '<div class="tt-climate-evidence"><h4>Observed analysis</h4>' + temperatureObservedHtml + '</div>'
+      + futureProjectionBlock
+      + '<div class="tt-projected-fact">' + temperatureFact + '</div></section>'
+      + '<section class="tt-climate-variable is-precipitation" aria-labelledby="' + precipitationId + '"><h3 id="' + precipitationId + '">Precipitation</h3>'
+      + '<div class="tt-projected-fact">' + precipitationFact + '</div>'
+      + '<div class="tt-climate-evidence"><h4>Observed data</h4>' + precipitationObservedHtml + '</div></section></section>'
+      + this._renderClimateMethods(view)
+      + '<div class="tt-hint">← → or swipe changes country · esc closes · lens buttons preserve selection</div>';
+  },
+
+  _renderClimateMethods(view) {
+    const factMethods = view.methods.facts.map(fact => {
+      const scope = fact.scope ? Object.entries(fact.scope).map(([key, value]) => '<li><strong>' + _escapeHtml(key.replace(/_/g, ' ')) + ':</strong> ' + _escapeHtml(Array.isArray(value) ? value.join(', ') : value) + '</li>').join('') : '';
+      const sources = fact.sources.map(source => {
+        const safeUrl = /^https:\/\//.test(source.url || '') ? source.url : '';
+        return '<li>' + (safeUrl ? '<a href="' + _escapeHtml(safeUrl) + '" target="_blank" rel="noopener">' + _escapeHtml(source.title) + '</a>' : _escapeHtml(source.title)) + ' · ' + _escapeHtml(source.version) + '</li>';
+      }).join('');
+      const scenarios = fact.scenario_medians ? '<p><strong>Scenario medians:</strong> ' + Object.entries(fact.scenario_medians).map(([scenario, value]) => _escapeHtml(scenario) + ' ' + _escapeHtml(String(value)) + ' ' + _escapeHtml(fact.unit)).join(' · ') + '</p>' : '';
+      return '<details class="tt-method-fact"><summary>' + _escapeHtml(fact.label) + (fact.available ? '' : ' · gap') + '</summary>'
+        + (fact.available ? '<p><strong>Transformation:</strong> ' + _escapeHtml(fact.transformation || 'Source value selected without an additional derivation.') + '</p><p><strong>Uncertainty:</strong> ' + _escapeHtml(fact.uncertainty_text) + '</p>' : '<p><strong>Gap reason:</strong> ' + _escapeHtml(fact.gap.detail) + '</p>')
+        + scenarios + (scope ? '<h5>Scope fingerprint</h5><code>' + _escapeHtml(fact.scope_fingerprint) + '</code><ul>' + scope + '</ul>' : '')
+        + (sources ? '<h5>Citations</h5><ul>' + sources + '</ul>' : '')
+        + (fact.fact_ids.length ? '<p><strong>Fact IDs:</strong> <code>' + _escapeHtml(fact.fact_ids.join(', ')) + '</code></p>' : '') + '</details>';
+    }).join('');
+    const projectionRange = view.physical_story?.temperature?.projection_range;
+    const projectionMethod = projectionRange
+      ? '<details class="tt-method-fact"><summary>Published temperature-change range · source summary</summary><p><strong>Basis:</strong> ' + _escapeHtml(projectionRange.method) + '</p><p><strong>Source uncertainty:</strong> ' + _escapeHtml(projectionRange.source_uncertainty_kind.replace(/_/g, ' ')) + '.</p><p><strong>Boundary:</strong> ' + _escapeHtml(projectionRange.disclosure) + '</p></details>'
+      : '';
+    const historical = view.methods.citation_only_sources.map(source => '<li><a href="' + _escapeHtml(source.url) + '" target="_blank" rel="noopener">' + _escapeHtml(source.title) + '</a> · ' + _escapeHtml(source.note) + '</li>').join('');
+    const official = view.methods.official_context.map(item => {
+      const safeUrl = /^https:\/\//.test(item.direct_url || '') ? item.direct_url : '';
+      const title = _escapeHtml(item.document_title);
+      const linkedTitle = safeUrl ? '<a href="' + _escapeHtml(safeUrl) + '" target="_blank" rel="noopener">' + title + '</a>' : title;
+      return '<li>' + linkedTitle + ' · submitted ' + _escapeHtml(item.submission_date || 'date not reported') + '</li>';
+    }).join('');
+    return '<details class="tt-methods"><summary>Methods &amp; sources</summary><div class="tt-methods-body"><p><strong>Release:</strong> ' + _escapeHtml(view.methods.release_id) + ' · ' + _escapeHtml(view.methods.review_label) + ' · generated ' + _escapeHtml(view.methods.generated_on) + '</p>'
+      + (view.methods.checksum ? '<p><strong>Verified SHA-256:</strong> <code>' + _escapeHtml(view.methods.checksum) + '</code></p>' : '')
+      + '<p><strong>Comparison rule:</strong> ' + _escapeHtml(view.methods.comparison_rule) + '</p>' + projectionMethod + factMethods
+      + (official ? '<h4>Official document context</h4><ul>' + official + '</ul>' : '')
+      + (historical ? '<h4>Historical citation-only provenance</h4><ul>' + historical + '</ul>' : '')
+      + '</div></details>';
+  },
+
+  _renderCountryMetrics(view, idPrefix = 'country-card') {
+    if (view.lens.id === 'physical' && view.physical_story) return this._renderPhysicalClimateMetrics(view, idPrefix);
+    const powerField = view.lens.id === 'power' ? view.power_story?.field : null;
+    const visualizedPowerFacts = new Set(powerField?.visualized_fact_ids || []);
+    const powerVisual = powerField ? this._renderPowerField(view, idPrefix) : '';
+    const glance = view.at_a_glance.filter(fact => !visualizedPowerFacts.has(fact.id)).map(fact => this._renderClimateFact(fact)).join('');
+    const facts = view.active_panel.facts.filter(fact => !visualizedPowerFacts.has(fact.id)).map(fact => this._renderClimateFact(fact)).join('');
+    const chartFacts = Array.isArray(view.detail_charts) ? view.detail_charts : (view.detail_chart ? [view.detail_chart] : []);
+    const chartHtml = chartFacts.map((chart, index) => this._renderClimateSeries(view, idPrefix, chart, index)).join('');
+    const sectionId = (idPrefix + '-' + view.country.iso_alpha3 + '-' + view.lens.id).replace(/[^a-zA-Z0-9_-]/g, '-');
+    const glanceId = sectionId + '-glance-heading';
+    const lensId = sectionId + '-lens-heading';
+    const chartId = sectionId + '-observed-heading';
+    const charts = chartHtml && view.detail_chart_heading
+      ? '<section class="tt-observed-series" aria-labelledby="' + chartId + '"><h3 id="' + chartId + '">' + _escapeHtml(view.detail_chart_heading) + '</h3>' + chartHtml + '</section>'
+      : chartHtml;
+    const panel = facts
+      ? '<section class="tt-lens-panel" aria-labelledby="' + lensId + '"><h3 id="' + lensId + '">' + _escapeHtml(view.active_panel.heading) + '</h3><p>' + _escapeHtml(view.active_panel.description) + '</p><div class="tt-fact-grid">' + facts + '</div></section>'
+      : '';
+    return '<section class="tt-glance" aria-labelledby="' + glanceId + '"><h3 id="' + glanceId + '">At a glance</h3>' + powerVisual + (glance ? '<div class="tt-fact-grid' + (powerVisual ? ' tt-power-support-grid' : '') + '">' + glance + '</div>' : '') + '</section>'
+      + charts + panel
+      + this._renderClimateMethods(view)
+      + '<div class="tt-hint">← → or swipe changes country · esc closes · lens buttons preserve selection</div>';
   },
 
   // ── Project markers: the pinned country's top projects on the globe ──
@@ -1804,15 +2186,16 @@ const GlobeModule = {
     const tt = $('hex-country-tooltip');
     const wrap = this._countryCardWrap || $('elu-country-card-wrap');
     if (!tt || !wrap) return;
+    const compactCardTop = '142px';
 
     wrap.style.position = 'fixed';
-    wrap.style.zIndex = '50';
+    wrap.style.zIndex = '1000';
     wrap.style.right = '24px';
     wrap.style.left = 'auto';
-    wrap.style.top = '64px';
+    wrap.style.top = window.innerWidth <= 720 ? compactCardTop : (window.innerWidth <= 1000 ? '126px' : '64px');
     wrap.style.bottom = window.innerWidth <= 900
       ? 'calc(var(--globe-dock-inset) + var(--globe-dock-height) + 10px)'
-      : '96px';
+      : 'calc(var(--globe-dock-inset) + var(--globe-dock-height) + var(--globe-dock-gap))';
     wrap.style.width = 'auto';
     wrap.style.alignItems = 'center';
     wrap.style.justifyContent = 'center';
@@ -1838,7 +2221,7 @@ const GlobeModule = {
       const phoneRail = window.innerWidth <= 480;
       wrap.style.left = phoneRail ? '64px' : '90px';
       wrap.style.right = phoneRail ? '8px' : '10px';
-      wrap.style.top = '60px';
+      wrap.style.top = compactCardTop;
       wrap.style.bottom = '78px';
       wrap.style.alignItems = 'flex-end';
     }
@@ -1850,8 +2233,11 @@ const GlobeModule = {
     if (tt.classList.contains('selected')) { this._dockCountryCard(); return; }
     if (!event) return;
 
-    const width = tt.offsetWidth || 280;
-    const height = tt.offsetHeight || 140;
+    // Width is fixed by the critical CSS and hover copy stays inside this
+    // conservative height envelope. A ResizeObserver refines both values
+    // after layout without forcing style/layout inside the pointer handler.
+    const width = this._hoverTooltipSize?.width || Math.min(292, Math.max(0, window.innerWidth - 28));
+    const height = this._hoverTooltipSize?.height || 160;
     const margin = 12;
     const topSafe = window.innerWidth <= 900 ? 112 : 92;
     const bottomSafe = window.innerWidth <= 900 ? 132 : 112;
@@ -1879,19 +2265,24 @@ const GlobeModule = {
     const hovered = feature === this._countryHoverFeature;
     const selected = feature === this._selectedCountryFeature;
     const hoverBoost = hovered ? 0.12 : (selected ? 0.08 : 0);
-    const d = _getCountryDisplayData(feature);
+    const visual = _getCountryVisualData(feature);
 
     // Small-nation dot markers: a few pixels wide, so the usual low-alpha
     // country wash would vanish. Paint them near-solid for contrast.
     if (feature?.properties?.__smallNation) {
-      return d?.hasData
-        ? _magnitudeColor(d.emissions.latest.value, Math.min(0.84 + hoverBoost, 0.98).toFixed(2))
-        : 'rgba(165,178,188,' + Math.min(0.82 + hoverBoost, 0.96).toFixed(2) + ')';
+      if (!visual?.available) return 'rgba(165,178,188,' + Math.min(0.82 + hoverBoost, 0.96).toFixed(2) + ')';
+      return visual.solid_color;
     }
 
-    return d?.hasData
-      ? _magnitudeColor(d.emissions.latest.value, (0.54 + hoverBoost).toFixed(2))
-      : 'rgba(145,160,172,' + (0.32 + hoverBoost).toFixed(2) + ')';
+    if (!visual?.available) return 'rgba(145,160,172,' + (0.32 + hoverBoost).toFixed(2) + ')';
+    const base = visual.color;
+    if (!hoverBoost) return base;
+    return visual.solid_color;
+  },
+
+  _countryPolygonSideColorFn(feature) {
+    const visual = _getCountryVisualData(feature);
+    return visual?.side_color || 'rgba(0,0,0,0)';
   },
 
   _supportsCountryBorders() {
@@ -1905,11 +2296,18 @@ const GlobeModule = {
     ].every(name => typeof this.world[name] === 'function');
   },
 
-  _refreshCountryBorders() {
+  _refreshCountryBorders(options = {}) {
     if (!this.world || !this._countryBordersVisible || !this._supportsCountryBorders()) return;
-    this.world
-      .polygonStrokeColor((f) => this._countryBorderColorFn(f))
-      .polygonCapColor((f) => this._countryPolygonPaintColorFn(f));
+    // Hover and selection only change the outline. Reapplying cap, side, and
+    // altitude accessors forces globe.gl to rebuild all 201 extruded meshes,
+    // producing 75–90 ms interaction stalls on a DPR-2 M3 display.
+    this.world.polygonStrokeColor((f) => this._countryBorderColorFn(f));
+    if (options.visuals === true) {
+      this.world
+        .polygonCapColor((f) => this._countryPolygonPaintColorFn(f))
+        .polygonSideColor((f) => this._countryPolygonSideColorFn(f))
+        .polygonAltitude((f) => this._countryHexAltitudeFn(f));
+    }
   },
 
   // ── Mode API — used by GLOBE_MODES orchestrator ──
@@ -1951,16 +2349,16 @@ const GlobeModule = {
 
     this.world
       .polygonsData(this._countryFeatures)
-      .polygonAltitude(() => 0.007)
+      .polygonAltitude((f) => this._countryHexAltitudeFn(f))
       .polygonCapColor((f) => this._countryPolygonPaintColorFn(f))
-      .polygonSideColor(() => 'rgba(0,0,0,0)')
+      .polygonSideColor((f) => this._countryPolygonSideColorFn(f))
       .polygonStrokeColor((f) => this._countryBorderColorFn(f));
 
     if (typeof this.world.polygonCapCurvatureResolution === 'function') {
-      // 1° tessellation on 204 country caps generated millions of triangles
-      // and froze low/mid GPUs. 5° is visually identical at cap altitude
-      // 0.007 and ~25x lighter.
-      this.world.polygonCapCurvatureResolution(5);
+      // Natural Earth is already generalized at 1:110m. An 8° cap curve keeps
+      // the subtle raised-tile silhouette while reducing vertex work during
+      // lens relief changes; tighter subdivision adds no visible country data.
+      this.world.polygonCapCurvatureResolution(8);
     }
   },
 
@@ -2048,6 +2446,8 @@ const GlobeModule = {
   },
 
   clearCountrySelection() {
+    this._cancelCountryNavigation();
+    this.clearCountrySwipeCue();
     this._selectedCountryFeature = null;
     this._countryHoverFeature = null;
     this._defaultCountrySelected = false;
@@ -2068,7 +2468,10 @@ const GlobeModule = {
     this._clearCountryProjects();
     this._refreshCountryBorders();
     this._syncAutoRotation();
-    if (this._countryOpener && document.contains(this._countryOpener) && typeof this._countryOpener.focus === 'function') this._countryOpener.focus();
+    const focusTarget = this._isVisibleFocusTarget(this._countryOpener)
+      ? this._countryOpener
+      : this._activeLensControl();
+    if (this._isVisibleFocusTarget(focusTarget)) focusTarget.focus({ preventScroll: true });
     this._countryOpener = null;
     if (hasModule('EventBus')) EventBus.emit('globe:country-closed', { timestamp: Date.now() });
   },
@@ -2242,9 +2645,92 @@ const GlobeModule = {
   },
 
   // ── Lens switching ──
-  setLens(lens) {
-    this.currentLens = lens;
-    this.updateNodeVisuals();
+  _bindLensControls() {
+    if (this._lensControlsBound) return;
+    const controls = $('climate-lens-controls');
+    if (!controls) return;
+    this._lensControlsBound = true;
+    controls.addEventListener('click', event => {
+      const button = event.target.closest('[data-climate-lens]');
+      if (!button) return;
+      this.setLens(button.getAttribute('data-climate-lens'));
+    });
+  },
+
+  _syncLensControls() {
+    document.body.dataset.climateLens = this.currentLens;
+    const lens = (Data.getClimateLensCatalog?.() || []).find(item => item.id === this.currentLens);
+    const legend = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getLegend', this.currentLens);
+    document.querySelectorAll('.climate-lens-controls [data-climate-lens]').forEach(button => {
+      const active = button.getAttribute('data-climate-lens') === this.currentLens;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    if (lens) {
+      const reliefStatus = legend?.relief_demo
+        ? ' Inverse relief demo: lower territorial fossil CO₂ sits slightly higher; the raw descending rail is unchanged.'
+        : '';
+      $text('climate-lens-status', lens.heading + ' lens selected. Country selection is preserved.' + reliefStatus);
+    }
+  },
+
+  _renderLegend() {
+    const legend = $('hex-legend');
+    const model = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getLegend', this.currentLens);
+    if (!legend || !model) return false;
+    legend.setAttribute('aria-label', model.heading + ' legend');
+    legend.innerHTML = '<div class="hex-legend-title">' + _escapeHtml(model.heading) + '</div>'
+      + '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:' + _escapeHtml(model.low_color) + '" aria-hidden="true"></span>' + _escapeHtml(model.low_label) + '</div>'
+      + '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:' + _escapeHtml(model.high_color) + '" aria-hidden="true"></span>' + _escapeHtml(model.high_label) + '</div>'
+      + '<div class="hex-legend-row"><span class="hex-legend-swatch magnitude-gap" aria-hidden="true"></span>' + _escapeHtml(model.gap_label) + '</div>'
+      + '<div class="hex-legend-note">' + _escapeHtml(model.evidence_label) + ' · ' + _escapeHtml(model.extrusion_note) + ' ' + _escapeHtml(model.interpretation) + '</div>';
+    return true;
+  },
+
+  setLens(lensId) {
+    const catalog = Data.getClimateLensCatalog?.() || [];
+    const lens = catalog.find(item => item.id === lensId);
+    if (!lens) {
+      reportWarn('GlobeModule', 'Unknown climate lens: ' + lensId);
+      return false;
+    }
+    const changed = this.currentLens !== lens.id;
+    this._cancelCountryNavigation();
+    this.currentLens = lens.id;
+    this._buildCountryDeck();
+    this._renderRankRail();
+    this._syncLensControls();
+    this._renderLegend();
+    this._updateRankRail();
+    if (this._selectedCountryFeature) {
+      this._renderCountryInfoCard(this._selectedCountryFeature, true);
+      this._dockCountryCard();
+    } else if (this._countryHoverFeature) {
+      this._renderCountryInfoCard(this._countryHoverFeature, false);
+    }
+    if (this._countryBordersVisible) this._refreshCountryBorders({ visuals: true });
+    if (this.world && typeof this.world.hexPolygonColor === 'function') {
+      this.world.hexPolygonColor(feature => this._countryHexColorFn(feature));
+      if (typeof this.world.hexPolygonAltitude === 'function') this.world.hexPolygonAltitude(feature => this._countryHexAltitudeFn(feature));
+    }
+    if (document.body.classList.contains('globe-fallback-active')) {
+      const selectedIso = this._fallbackSelectedIso;
+      this._renderFallbackEvidence();
+      if (selectedIso) this._renderFallbackCountry(selectedIso, false);
+    }
+    if (changed && hasModule('EventBus')) {
+      EventBus.emit('globe:lens-changed', {
+        id: lens.id,
+        heading: lens.heading,
+        selectedCountryIso: this._selectedCountryFeature ? _resolveCountryIso(this._selectedCountryFeature) : null,
+        timestamp: Date.now(),
+      });
+    }
+    return true;
+  },
+
+  getLens() {
+    return this.currentLens;
   },
 
   // ── Update node visual states based on engagement ──
@@ -2299,18 +2785,23 @@ const GlobeModule = {
   // ── Standard Module Lifecycle (SML) ──
   reset() {
     console.debug('[SML] GlobeModule.reset');
+    this._cancelCountryNavigation();
     return true;
   },
 
   destroy() {
     console.debug('[SML] GlobeModule.destroy');
+    this._cancelCountryNavigation();
 
     // Remove event listeners (named references)
     window.removeEventListener('pledgeHover', this._onPledgeHover);
+    window.removeEventListener('resize', this._onCountryCardResize);
     document.removeEventListener('mousemove', this._onMouseMove);
     document.removeEventListener('keydown', this._onCountryKeydown);
+    this._onCountryCardResize = null;
     this._countryKeydownBound = false;
     this._unbindReducedMotionPreference();
+    this._unbindVisibilityLifecycle();
 
     // Remove canvas listeners
     if (this._canvasEl) {
@@ -2346,10 +2837,12 @@ const GlobeModule = {
       }
       this.world = null;
     }
+    this._animationPaused = false;
 
     // Nullify country features (large GeoJSON)
     this._countryFeatures = null;
     this._countryDeck = [];
+    this._countryDeckByLens = {};
     this._defaultCountrySelected = false;
     this._prepared = false;
     this._preparationPromise = null;
@@ -2363,6 +2856,9 @@ const GlobeModule = {
     this._unmountCountryCard();
     const countryTooltip = $('hex-country-tooltip');
     if (countryTooltip) countryTooltip.remove();
+    this._countryTooltipResizeObserver?.disconnect();
+    this._countryTooltipResizeObserver = null;
+    this._hoverTooltipSize = null;
     this._countryTooltipBound = false;
 
     // Nullify DOM references
@@ -2373,7 +2869,14 @@ const GlobeModule = {
 
     // Nullify click handler
     _globeClickHandler = null;
-    this.hideFallback({ restoreFocus: false, preserveOpener: false });
+    this.hideFallback({ restoreFocus: false, preserveOpener: false, emitEvent: false });
+    const fallbackPanel = $('globe-fallback');
+    const fallbackSearch = $('globe-fallback-search');
+    fallbackPanel?.removeEventListener('click', this._onFallbackClick);
+    fallbackSearch?.removeEventListener('input', this._onFallbackInput);
+    this._onFallbackClick = null;
+    this._onFallbackInput = null;
+    this._fallbackBound = false;
     this._fallbackEntries = [];
     this._fallbackSelectedIso = null;
 
@@ -2386,6 +2889,7 @@ const GlobeModule = {
       countryDataError: this._countryDataError,
       countryFeatureCount: this._countryFeatures?.length || 0,
       countryDeckCount: this._countryDeck.length,
+      climateLens: this.currentLens,
       selectedCountryIso: this._selectedCountryFeature ? _resolveCountryIso(this._selectedCountryFeature) : null,
       fallbackActive: document.body?.classList.contains('globe-fallback-active') || false,
       fallbackReasonCode: this._fallbackReasonCode,
@@ -2393,6 +2897,7 @@ const GlobeModule = {
       runtimeAssetsPrepared: this._prepared,
       preparationFailure: this._preparationFailure,
       rendererCanvasCount: $('globeViz')?.querySelectorAll('canvas').length || 0,
+      animationPaused: this._animationPaused,
     };
   },
 
@@ -2425,6 +2930,29 @@ const GlobeModule = {
       sky,
     };
   },
+
+  getPerformanceState() {
+    const renderer = typeof this.world?.renderer === 'function' ? this.world.renderer() : null;
+    const renderInfo = renderer?.info?.render || {};
+    const memoryInfo = renderer?.info?.memory || {};
+    let antialias = null;
+    try {
+      antialias = renderer ? renderer.getContext?.()?.getContextAttributes?.()?.antialias === true : null;
+    } catch (error) {
+      antialias = null;
+    }
+    return {
+      targetFps: GLOBE_TARGET_FPS,
+      frameBudgetMs: Number(GLOBE_FRAME_BUDGET_MS.toFixed(3)),
+      rendererPixelRatio: typeof renderer?.getPixelRatio === 'function' ? renderer.getPixelRatio() : null,
+      antialias,
+      drawCalls: Number.isFinite(renderInfo.calls) ? renderInfo.calls : null,
+      triangles: Number.isFinite(renderInfo.triangles) ? renderInfo.triangles : null,
+      geometries: Number.isFinite(memoryInfo.geometries) ? memoryInfo.geometries : null,
+      textures: Number.isFinite(memoryInfo.textures) ? memoryInfo.textures : null,
+      lensDeckCacheCount: Object.keys(this._countryDeckByLens || {}).length,
+    };
+  },
 };
 
 // ═══════════════════════════════════════════════
@@ -2437,6 +2965,8 @@ const Panel = {
   selectedArea: 100,
 
   open(site) {
+    const panelContent = $('panel-content');
+    if (!panelContent || !site) return false;
     this.currentSite = site;
     this.selectedAction = null;
     PanelSlider.reset();
@@ -2445,63 +2975,80 @@ const Panel = {
     GlobeModule.world.controls().autoRotate = false;
 
     const biome = Data.getBiome(site.currentBiome) || { density: 0, name: 'Unknown' };
-    const stock = biome.density * (site.area || 0) * 3.67;
-    const latest = (site.ndvi && site.ndvi.length) ? site.ndvi[site.ndvi.length - 1] : { year: '—', value: 0, label: 'No data' };
-    const cFirst = (site.climate && site.climate.length) ? site.climate[0] : { temp: 0, precip: 1, year: '—' };
-    const cLast = (site.climate && site.climate.length) ? site.climate[site.climate.length - 1] : cFirst;
+    const siteArea = Number.isFinite(Number(site.area)) ? Math.max(10, Number(site.area)) : 100;
+    const ndvi = Array.isArray(site.ndvi) ? site.ndvi : [];
+    const sandbox = Array.isArray(site.sandbox) ? site.sandbox : [];
+    const climate = Array.isArray(site.climate) ? site.climate : [];
+    const normalizeClimatePoint = point => ({
+      temp: Number.isFinite(Number(point?.temp)) ? Number(point.temp) : 0,
+      precip: Number.isFinite(Number(point?.precip)) ? Number(point.precip) : 0,
+      year: point?.year ?? '—',
+    });
+    const initialArea = Math.min(100, siteArea);
+    this.selectedArea = initialArea;
+    const stock = biome.density * siteArea * 3.67;
+    const latest = ndvi.length ? ndvi[ndvi.length - 1] : { year: '—', value: 0, label: 'No data' };
+    const cFirst = climate.length ? normalizeClimatePoint(climate[0]) : { temp: 0, precip: 1, year: '—' };
+    const cLast = climate.length ? normalizeClimatePoint(climate[climate.length - 1]) : cFirst;
     const tD = (cLast.temp - cFirst.temp).toFixed(1);
     const pD = cFirst.precip ? ((cLast.precip - cFirst.precip) / cFirst.precip * 100).toFixed(0) : '0';
 
-    $('panel-content').innerHTML = `
-      <div class="site-title">${site.name}</div>
-      <div class="site-subtitle">${site.subtitle}</div>
-      <div class="site-narrative">${site.narrative}</div>
+    panelContent.innerHTML = `
+      <div class="site-title">${_escapeHtml(site.name)}</div>
+      <div class="site-subtitle">${_escapeHtml(site.subtitle)}</div>
+      <div class="site-narrative">${_escapeHtml(site.narrative)}</div>
       <div class="slider-section">
         <h3>Vegetation Health Over Time</h3>
-        <div class="year-display" id="year-disp">${latest.year}</div>
-        <input type="range" class="time-slider" min="0" max="${site.ndvi.length - 1}" value="${site.ndvi.length - 1}" oninput="PanelSlider.update(this.value)">
-        <div class="slider-labels">${site.ndvi.map(n => `<span>${n.year}</span>`).join('')}</div>
-        <div class="ndvi-bar" id="ndvi-bar" style="width:${latest.value * 100}%;background:${PanelSlider.ndviCol(latest.value)}"></div>
-        <div class="ndvi-label" id="ndvi-lbl">${latest.label} · NDVI ${latest.value.toFixed(2)}</div>
+        <div class="year-display" id="year-disp">${_escapeHtml(latest.year)}</div>
+        <input type="range" class="time-slider" min="0" max="${Math.max(0, ndvi.length - 1)}" value="${Math.max(0, ndvi.length - 1)}" data-panel-control="ndvi">
+        <div class="slider-labels">${ndvi.map(n => `<span>${_escapeHtml(n.year)}</span>`).join('')}</div>
+        <div class="ndvi-bar" id="ndvi-bar" style="width:${Math.max(0, Math.min(100, Number(latest.value) * 100))}%;background:${PanelSlider.ndviCol(Number(latest.value))}"></div>
+        <div class="ndvi-label" id="ndvi-lbl">${_escapeHtml(latest.label)} · NDVI ${_escapeHtml(Number(latest.value).toFixed(2))}</div>
       </div>
       <div class="carbon-card">
-        <div class="big-number">${Data.fmt(stock)}<span class="big-unit">t CO₂</span></div>
-        <div class="big-label">Current carbon stock · ${biome.name} · ${Data.fmt(site.area)} ha</div>
+        <div class="big-number">${_escapeHtml(Data.fmt(stock))}<span class="big-unit">t CO₂</span></div>
+        <div class="big-label">Current carbon stock · ${_escapeHtml(biome.name)} · ${_escapeHtml(Data.fmt(siteArea))} ha</div>
       </div>
       <div class="climate-row">
         <div class="climate-mini">
           <div class="cm-label">Temperature</div>
-          <div class="cm-value">${cLast.temp.toFixed(1)}°C</div>
-          <div class="cm-delta warming">+${tD}°C since ${cFirst.year}</div>
+          <div class="cm-value">${_escapeHtml(cLast.temp.toFixed(1))}°C</div>
+          <div class="cm-delta warming">+${_escapeHtml(tD)}°C since ${_escapeHtml(cFirst.year)}</div>
         </div>
         <div class="climate-mini">
           <div class="cm-label">Precipitation</div>
-          <div class="cm-value">${cLast.precip} mm</div>
-          <div class="cm-delta drying">${pD}% since ${cFirst.year}</div>
+          <div class="cm-value">${_escapeHtml(cLast.precip)} mm</div>
+          <div class="cm-delta drying">${_escapeHtml(pD)}% since ${_escapeHtml(cFirst.year)}</div>
         </div>
       </div>
       <div class="sandbox-section">
         <h3>🧪 Carbon Sandbox</h3>
         <p style="font-size:13px;color:var(--text3);margin-bottom:12px">Pick a restoration strategy and adjust the area.</p>
-        <div class="sandbox-options">${site.sandbox.map((s, i) => `<button class="sandbox-btn" onclick="Panel.pickAction(${i})" id="sb-${i}"><span class="sb-icon">${s.icon}</span>${s.label}</button>`).join('')}</div>
+        <div class="sandbox-options">${sandbox.map((s, i) => `<button type="button" class="sandbox-btn" data-panel-action-index="${i}" id="sb-${i}"><span class="sb-icon">${_escapeHtml(s.icon)}</span>${_escapeHtml(s.label)}</button>`).join('')}</div>
         <div class="area-control">
           <label>Area to restore (hectares)</label>
-          <input type="range" class="area-slider" min="10" max="${site.area}" value="100" oninput="PanelSlider.setArea(this.value)">
-          <div class="area-value" id="area-val">100 hectares</div>
+          <input type="range" class="area-slider" min="10" max="${siteArea}" value="${initialArea}" data-panel-control="area">
+          <div class="area-value" id="area-val">${_escapeHtml(initialArea)} hectares</div>
         </div>
         <div id="sandbox-result"></div>
       </div>
-      <div class="elu-connection"><strong>ELU Connection:</strong> ${site.connection}</div>
+      <div class="elu-connection"><strong>ELU Connection:</strong> ${_escapeHtml(site.connection)}</div>
       <div style="margin-top:24px;text-align:center">
-        <button onclick="Panel.close()" style="padding:12px 32px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.04);color:var(--text2);font-family:var(--body);font-size:13px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px">
+        <button type="button" data-panel-action="close" style="padding:12px 32px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.04);color:var(--text2);font-family:var(--body);font-size:13px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px">
           <span style="font-size:16px">✕</span> Close
         </button>
       </div>
     `;
 
+    panelContent.querySelector('[data-panel-control="ndvi"]')?.addEventListener('input', event => PanelSlider.update(event.currentTarget.value));
+    panelContent.querySelector('[data-panel-control="area"]')?.addEventListener('input', event => PanelSlider.setArea(event.currentTarget.value));
+    panelContent.querySelectorAll('[data-panel-action-index]').forEach(button => button.addEventListener('click', () => this.pickAction(Number(button.dataset.panelActionIndex))));
+    panelContent.querySelector('[data-panel-action="close"]')?.addEventListener('click', () => this.close());
+
     $('site-panel').classList.add('open');
     $('panel-backdrop').classList.add('show');
     $('globeViz').style.transform = 'translateX(-100vw)';
+    return true;
   },
 
   close() {
@@ -2531,10 +3078,10 @@ const Panel = {
     $text('user-total', Data.fmt(GlobeModule.userTotal) + ' t CO₂');
     $('sandbox-result').innerHTML = `
       <div class="result-card">
-        <div class="big-number" style="color:${pos ? 'var(--leaf)' : 'var(--warn)'}">${pos ? '+' : ''}${Data.fmt(Math.abs(r.cumulative_co2))} t CO₂</div>
-        <div class="big-label">${pos ? 'sequestered' : 'released'} over ${r.years} years · ${this.selectedArea} ha</div>
-        <div class="context-line">${ctx.summary}</div>
-        <div class="fraction-line">${(ctx.fraction * 100).toExponential(2)}% of global annual net emissions</div>
+        <div class="big-number" style="color:${pos ? 'var(--leaf)' : 'var(--warn)'}">${pos ? '+' : ''}${_escapeHtml(Data.fmt(Math.abs(r.cumulative_co2)))} t CO₂</div>
+        <div class="big-label">${pos ? 'sequestered' : 'released'} over ${_escapeHtml(r.years)} years · ${_escapeHtml(this.selectedArea)} ha</div>
+        <div class="context-line">${_escapeHtml(ctx.summary)}</div>
+        <div class="fraction-line">${_escapeHtml((ctx.fraction * 100).toExponential(2))}% of global annual net emissions</div>
       </div>`;
   }
 };
@@ -2572,8 +3119,8 @@ window.PanelSlider = PanelSlider;
 
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['prepare', 'init', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState'],
-    requires: ['Data'],
-    emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-closed', 'globe:fallback-shown'],
+    provides: ['prepare', 'init', 'pause', 'resume', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'getLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'cueCountrySwipe', 'clearCountrySwipeCue', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState', 'getPerformanceState'],
+    requires: ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE'],
+    emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-navigated', 'globe:country-closed', 'globe:fallback-shown', 'globe:fallback-hidden', 'globe:lens-changed'],
   });
 }

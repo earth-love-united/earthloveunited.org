@@ -13,10 +13,10 @@
   },
   "candidate": {
     "builder_commit": "793eade295ae3fa787749e4d6ee112cf374a7634",
-    "runtime_control_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
-    "review_chain_head": "a5c97e5de5f5508f04a3b1598a71658d4252863a",
-    "review_chain_late_bound": false,
-    "review_chain_ct40_sha256": "684f38b3741a57e86e60e92873ecaa36336eb496f0443647ec067c2ee885444a",
+    "runtime_control_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
+    "review_chain_head": null,
+    "review_chain_late_bound": true,
+    "review_chain_ct40_sha256": null,
     "candidate_id": "ct-42-factual-runtime-candidate-2026-07-15",
     "decision": "deny",
     "decision_scope": "assessed_climate_release",
@@ -56,7 +56,7 @@
     "production_runtime_release": false,
     "candidate_manifest": {
       "path": "data/climate/runtime/candidate-manifest.json",
-      "sha256": "96e74966e40a65c838d7030de07c8cead4c05fe28d49876814c8e0cd4b8c7a1c"
+      "sha256": "4273fe6e2df7a18e068ba7f10715e16e79a33ef990dff91dd1148fbf02e9321a"
     },
     "runtime_data": {
       "path": "data/climate/runtime/country-factual-candidate.json",
@@ -73,7 +73,7 @@
   },
   "rollback": {
     "strategy": "current_hardened_runtime_to_neutral_surface",
-    "source_runtime_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+    "source_runtime_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
     "baseline_commit": null,
     "cache_name": "elu-v34-ct42-neutral-rollback",
     "service_worker_registration": "/sw.js?v=34-ct42-neutral-rollback",
@@ -96,17 +96,18 @@
     },
     "app_globe_compatibility": {
       "app_path": "js/app.js",
-      "app_sha256": "6c0c387c74d31441bdc85be515b15a01cd1c421b6c2b601fc7971f97ce057b9c",
+      "app_sha256": "25feee040ff4e668516b386d040b49ea29baa6fda768771cf786204fdc95c3c0",
       "app_called_apis": [
         "prepare",
         "init",
+        "pause",
+        "resume",
         "teardownFailedRenderer",
         "rememberFallbackOpener",
         "showFallback",
         "hideFallback",
         "closeEvidenceBrowser",
-        "clearCountrySelection",
-        "selectDefaultCountry"
+        "clearCountrySelection"
       ],
       "lifecycle_apis": [
         "reset",
@@ -118,8 +119,8 @@
     "patch": {
       "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
       "encoding": "base64",
-      "sha256": "11c627ff5769efc9992bd651e4ece02b25c1635b030b390411bb264eaa5c2391",
-      "decoded_sha256": "e98d61a895dfcea04f7c85836c560206a715c1805a06b2023acce4f7830051a9",
+      "sha256": "afde366e045918bf65385144ea0368c0ea4a59d71db162954c6d668b9c68bfef",
+      "decoded_sha256": "fa9955bfaeed10598cc04d7e93bac3e7fd53016ff3d44b0258234f30ab66b37a",
       "changed_files": [
         "index.html",
         "css/globe-system.css",
@@ -134,113 +135,113 @@
         "path": "index.html",
         "role": "neutral_public_copy_and_v34_registration",
         "changed": true,
-        "candidate_sha256": "67ffe0be1ab70d351c0fc24eeead8983b06af9cc059d7cf03e8e0a40b63f8bdf",
-        "rollback_sha256": "44188fcf997961df0475973f1e8580f2f1672fc6dbb7826b2b902484dad4699a"
+        "candidate_sha256": "21c181f487f24a1655b6285db65e342520277090de2e233d378705c0382aeacd",
+        "rollback_sha256": "552a894e077d6623cb70f44e7ec7acd670f51a2d51b2c29373ec5af27197777b"
       },
       {
         "path": "css/globe-system.css",
         "role": "neutral_accessible_presentation",
         "changed": true,
-        "candidate_sha256": "4a1fff85c3e35d34ed42285b0ee977fadcea7bae4afe44f8bff89885186bbe17",
-        "rollback_sha256": "4b3f4713d0e59cdbbf31275298b564687bff212a4a177d439791a09dd76a51a6"
+        "candidate_sha256": "ee08039646862e43b2ab8fadcd097e4aee5f3f3f0358484dc5c27a4674cf4c76",
+        "rollback_sha256": "3eccb59b7087697cb81b0c265250ef551a7956fad4b10264b5974f62a848ea4d"
       },
       {
         "path": "js/data.js",
         "role": "withheld_country_climate_adapter",
         "changed": true,
-        "candidate_sha256": "4e691d4ebdad821e85ba70c1db10f961b7211ac487e59df10dc835647fe7d82b",
+        "candidate_sha256": "a84fbe6818ec695f0099edc9c4de5587cb6dcfd3135a1e3b31d94df4f82522fe",
         "rollback_sha256": "59f723917c9d73011668af7bc6bc3ca1a1f053c438734507b54b9df4c46b6a6f"
       },
       {
         "path": "js/globe.js",
         "role": "hardened_neutral_globe_runtime",
         "changed": true,
-        "candidate_sha256": "93c201dbb91a93189c06ca0dd1a381426703aad2366c486005a5808dbf3a0d20",
-        "rollback_sha256": "47c997a29206ac8d5f5d4396050b99ba90a4bd007bc6657677ae30cce0ad2bf8"
+        "candidate_sha256": "044c9e6e01ef8b8b51a6fa4a17b3d630f5a17a209b300d6fdfc0c7825d740411",
+        "rollback_sha256": "4c0002d3e456d7507932a74e52327ed96e9fa2778c3b8667dca433f13314f1cc"
       },
       {
         "path": "js/app.js",
         "role": "unchanged_app_globe_compatibility_pin",
         "changed": false,
-        "candidate_sha256": "6c0c387c74d31441bdc85be515b15a01cd1c421b6c2b601fc7971f97ce057b9c",
-        "rollback_sha256": "6c0c387c74d31441bdc85be515b15a01cd1c421b6c2b601fc7971f97ce057b9c"
+        "candidate_sha256": "25feee040ff4e668516b386d040b49ea29baa6fda768771cf786204fdc95c3c0",
+        "rollback_sha256": "25feee040ff4e668516b386d040b49ea29baa6fda768771cf786204fdc95c3c0"
       },
       {
         "path": "sw.js",
         "role": "v34_cache_and_precache_exclusions",
         "changed": true,
-        "candidate_sha256": "6130eddc52cd4b0c17e9991b00d0018cfcace1919ac0557b432f3a4a648b1908",
-        "rollback_sha256": "4d468cab788f6733308150b83a5a73b8e5d5eeb9dccf1ce6e43f15d716112a72"
+        "candidate_sha256": "648ed8b840f884b9f8d521c0f08cbaa11a6769979ff23fae4bb96b6d10ebc9c3",
+        "rollback_sha256": "eb6779aa1984a9a9422d3137526b95ddbba8ccf4d3f3b92ab0bc2e5161cd84a3"
       },
       {
         "path": "tools/smoke-test.js",
         "role": "rollback_browser_runtime_assertions",
         "changed": true,
-        "candidate_sha256": "644a1e9d4cf5e391ba3d860c0688a50c4889ee93f5b5e156dcbf07a73cde5870",
-        "rollback_sha256": "d5aaf1b1f93d64c83ab217b11398677c34251ecea82aa9c14d038e578ce46a7e"
+        "candidate_sha256": "2472a41ae4510866b41baa0d0d9602e4b11324b49a2a8119e45c54b966ebd63f",
+        "rollback_sha256": "1416ae00ebcff0d744e3ae7fbc9782bafa6df8dd88d9c3f77fd9d33b400a2d08"
       }
     ],
     "runtime_dependency_closure": [
       {
         "path": "manifest.json",
         "role": "pwa_manifest_metadata",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "cc7cf3ee37944ea792e72ed10a47b6ba57994afcb1270aa9855e488f835d0d75",
         "materialized_sha256": "cc7cf3ee37944ea792e72ed10a47b6ba57994afcb1270aa9855e488f835d0d75"
       },
       {
         "path": "css/carbon-clock.css",
         "role": "supporting_runtime_style",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "819fed963e05885005955fedcfbb7ad851ddcec0fce5e2f879272696988bd184",
         "materialized_sha256": "819fed963e05885005955fedcfbb7ad851ddcec0fce5e2f879272696988bd184"
       },
       {
         "path": "js/gaia-utils.js",
         "role": "foundation_runtime",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "06b34641d8fffc9c9fb17cad8539035d55758b07992ec8573a41152a14e37e94",
         "materialized_sha256": "06b34641d8fffc9c9fb17cad8539035d55758b07992ec8573a41152a14e37e94"
       },
       {
         "path": "js/module-contracts.js",
         "role": "module_contract_runtime",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "e0609b87b686afb7fa7154b2b378b8960136c645a9f07314262a624b621e5c84",
         "materialized_sha256": "e0609b87b686afb7fa7154b2b378b8960136c645a9f07314262a624b621e5c84"
       },
       {
         "path": "js/event-bus.js",
         "role": "event_runtime",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "076e3549298b113308115331d72ed563477630e6850d73704871641b1d1ecd63",
         "materialized_sha256": "076e3549298b113308115331d72ed563477630e6850d73704871641b1d1ecd63"
       },
       {
         "path": "js/storage-adapter.js",
         "role": "storage_runtime",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "4b7210624cf0829fe5687e2aac9ce6919fe19ee42c991544c018bdd31fd6b8b3",
         "materialized_sha256": "4b7210624cf0829fe5687e2aac9ce6919fe19ee42c991544c018bdd31fd6b8b3"
       },
       {
         "path": "js/storage.js",
         "role": "storage_facade_runtime",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "6cb9b3742575eaaa3644ca4cffe42cc4cca6121dce2c49f1add566b7cd7b3734",
         "materialized_sha256": "6cb9b3742575eaaa3644ca4cffe42cc4cca6121dce2c49f1add566b7cd7b3734"
       },
       {
         "path": "js/data-schema.js",
         "role": "data_schema_runtime",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
-        "source_sha256": "606554d5f0c12f788d98c0fb7e5b0d3e936d9acde8d8460d677e1aaba2a7c815",
-        "materialized_sha256": "606554d5f0c12f788d98c0fb7e5b0d3e936d9acde8d8460d677e1aaba2a7c815"
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
+        "source_sha256": "15454da35479253ccf83533ed6cfc16dc0ff3b5f6a9739424fe51d0ca55541e3",
+        "materialized_sha256": "15454da35479253ccf83533ed6cfc16dc0ff3b5f6a9739424fe51d0ca55541e3"
       },
       {
         "path": "js/carbon-clock.js",
         "role": "carbon_clock_runtime",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "d577ff8e991b387f27d5f0e531a9aaf3eda47f6ee72ff675998eaad46159519a",
         "materialized_sha256": "d577ff8e991b387f27d5f0e531a9aaf3eda47f6ee72ff675998eaad46159519a"
       },
@@ -254,39 +255,41 @@
       {
         "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
         "role": "pinned_country_geometry",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0",
         "materialized_sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0"
       },
       {
         "path": "data/carbon-projects.json",
         "role": "noncritical_runtime_data",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "1d689792d942ca8dc52386746d4ed6021ef45e4af1c5b1b0cb3ee3509bfd33eb",
         "materialized_sha256": "1d689792d942ca8dc52386746d4ed6021ef45e4af1c5b1b0cb3ee3509bfd33eb"
       },
       {
         "path": "tools/stack-lint.js",
         "role": "browser_rehearsal_stack_audit",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "d7b0bbac4ee9fcffc34932b88c9e71398a0b604c287c6fbb04ba5652b33818aa",
         "materialized_sha256": "d7b0bbac4ee9fcffc34932b88c9e71398a0b604c287c6fbb04ba5652b33818aa"
       },
       {
         "path": "scripts/verify_load_order.py",
         "role": "static_rehearsal_load_order",
-        "source_commit": "6331b0a304b589e5a671cfaa4cc23b116e10ed0c",
+        "source_commit": "67b196b5d60f2b59a9b29355776829648aad2747",
         "source_sha256": "2b093dfe70a9a6e11da3aecd6e6f68753e1aab159280da940206c6d97a21c8ce",
         "materialized_sha256": "2b093dfe70a9a6e11da3aecd6e6f68753e1aab159280da940206c6d97a21c8ce"
       }
     ],
     "runtime_exclusions": [
       "data/climate/runtime/country-factual-candidate.json",
+      "data/climate/runtime/country-climate-intelligence.json",
       "assets/globe/runtime/manifest.json",
       "assets/globe/runtime/earth-night.jpg",
       "assets/globe/runtime/night-sky.png",
       "assets/globe/runtime/earth-blue-marble.jpg",
       "assets/globe/runtime/earth-topology.png",
+      "js/country-climate-intelligence.js",
       "css/guided-first-orbit.css",
       "js/guided-first-orbit.js"
     ],
@@ -315,9 +318,9 @@
     "materialize_temporary_site": "node tools/rehearse-ct42-runtime-rollback.js --site /absolute/new/temp/directory",
     "checker": "node tools/check-ct42-runtime-rollback-proof.js",
     "builder_requires_git_objects": [
-      "6331b0a304b589e5a671cfaa4cc23b116e10ed0c"
+      "67b196b5d60f2b59a9b29355776829648aad2747"
     ],
-    "late_bound_regeneration": null,
+    "late_bound_regeneration": "rerun builder with --review-chain-head <final exact review-chain commit>, then refresh checker pins after final CT-40 DENY regeneration",
     "browser_rehearsal": [
       "serve the materialized temporary site from localhost with service workers blocked or a fresh origin",
       "await App and Data.climateCandidateState === withheld",
@@ -340,5 +343,5 @@
     "writes_workspace": false,
     "deploys": false
   },
-  "calculation_hash": "61fb95514c4d85b453288e492a05f7ac6b612eaad07f35522e9126057f25fe49"
+  "calculation_hash": "be53c6b5022ba4033ec9d6bb84ced595c21727c5f03b1bf438cdc2a42391d76d"
 }

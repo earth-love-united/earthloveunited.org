@@ -21,18 +21,22 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   static:
     name: SDK static checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '20'
 
@@ -51,11 +55,34 @@ jobs:
       - name: Globe runtime approval cryptographic policy
         run: node tools/check-globe-runtime-approval.js
 
+      - name: Country Climate Intelligence release signature policy
+        run: node tools/check-country-climate-intelligence-release-signatures.js
+
       - name: Final staged production integrity policy self-test
         run: node tools/check-staged-production-integrity.js --self-test
 
+      - name: Public climate release-profile policy
+        run: node tools/check-public-climate-release-profile.js --self-test
+
+      - name: Detect active public climate release profile
+        id: climate_profile
+        run: |
+          state="$(node tools/check-public-climate-release-profile.js --state)"
+          case "$state" in
+            cci:candidate) profile="cci"; phase="candidate" ;;
+            cci:release) profile="cci"; phase="release" ;;
+            legacy_ct40:candidate) profile="legacy_ct40"; phase="candidate" ;;
+            legacy_ct40:release) profile="legacy_ct40"; phase="release" ;;
+            *) echo "::error::Unknown or incomplete public climate release state: $state"; exit 1 ;;
+          esac
+          echo "profile=$profile" >> "$GITHUB_OUTPUT"
+          echo "phase=$phase" >> "$GITHUB_OUTPUT"
+
       - name: Exact public deploy surface policy self-test
         run: node tools/check-public-deploy-surface.js --self-test
+
+      - name: Country Climate Intelligence public-release exclusion policy
+        run: node tools/check-country-climate-public-release-boundary.js --self-test
 
       - name: Factual-public readiness policy self-test
         run: node tools/check-climate-factual-public-readiness.js --self-test
@@ -68,6 +95,17 @@ jobs:
 
       - name: Verify script load-order DAG
         run: python3 scripts/verify_load_order.py
+
+      - name: Country Climate Intelligence v1 candidate contract
+        if: ${{ steps.climate_profile.outputs.profile == 'cci' && steps.climate_profile.outputs.phase == 'candidate' }}
+        run: node tools/check-country-climate-intelligence-ci.js
+
+      - name: Country Climate Intelligence v1 reviewed-release gate
+        if: ${{ steps.climate_profile.outputs.profile == 'cci' && steps.climate_profile.outputs.phase == 'release' }}
+        run: node tools/check-country-climate-intelligence-release-gate.js --require-release
+
+      - name: Country Climate Intelligence WebGL fallback parity
+        run: node tools/check-globe-webgl-fallback.js
 
       - name: Climate truth CI policy fixtures
         run: node tools/check-climate-truth-ci.js
@@ -88,19 +126,14 @@ jobs:
           CLIMATE_RUNTIME_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node tools/check-climate-runtime-diff-boundary.js --base "$CLIMATE_RUNTIME_BASE_SHA" --head "$CLIMATE_RUNTIME_HEAD_SHA"
 
-      - name: Climate denied-candidate production readiness
-        if: ${{ hashFiles('data/climate/runtime-manifest.json') == '' }}
-        run: node tools/check-climate-production-readiness.js --candidate
-
-      - name: Climate reviewed-release production readiness
-        if: ${{ hashFiles('data/climate/runtime-manifest.json') != '' }}
-        run: node tools/check-climate-production-readiness.js --release
+      - name: Climate active-profile readiness
+        run: node tools/check-public-climate-release-profile.js --verify-active
 
       - name: Climate truth CI (explicit partial stack)
         run: node tools/climate-truth-ci.js --allow-incomplete
 
       - name: Climate truth CI reviewed-release gate
-        if: ${{ hashFiles('data/climate/runtime-manifest.json') != '' }}
+        if: ${{ steps.climate_profile.outputs.phase == 'release' }}
         run: node tools/climate-truth-ci.js --strict
 
       - name: node --check on every JS file
@@ -129,39 +162,94 @@ jobs:
     runs-on: ubuntu-latest
     needs: static
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '20'
 
-      - name: Build factual-public deploy directory
+      - name: Detect active public climate release profile
+        id: factual_profile
+        run: |
+          state="$(node tools/check-public-climate-release-profile.js --state)"
+          case "$state" in
+            cci:candidate) profile="cci"; phase="candidate" ;;
+            cci:release) profile="cci"; phase="release" ;;
+            legacy_ct40:candidate) profile="legacy_ct40"; phase="candidate" ;;
+            legacy_ct40:release) profile="legacy_ct40"; phase="release" ;;
+            *) echo "::error::Unknown or incomplete public climate release state: $state"; exit 1 ;;
+          esac
+          echo "profile=$profile" >> "$GITHUB_OUTPUT"
+          echo "phase=$phase" >> "$GITHUB_OUTPUT"
+
+      - name: Verify CCI keeps factual-public staging fail-closed
+        if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'candidate' }}
+        run: node tools/check-country-climate-public-release-boundary.js
+
+      - name: Build limited legacy factual-display deploy directory
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'candidate' }}
         run: ./tools/build-factual-public-deploy.sh --factual-public
 
+      - name: Build reviewed legacy release deploy directory
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'release' }}
+        run: ./tools/build-deploy.sh --release
+
+      - name: Build reviewed CCI release deploy directory
+        if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release' }}
+        run: ./tools/build-deploy.sh --release
+
       - name: Verify factual-public exact surface independently
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' || (steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release') }}
         run: node tools/check-public-deploy-surface.js --staged ./_deploy --mode release
 
       - name: Verify factual-public notices independently
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' || (steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release') }}
         run: node tools/check-globe-third-party-notices.js --staged ./_deploy
 
-      - name: Verify final factual-public integrity independently
+      - name: Verify final limited legacy factual-display integrity independently
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'candidate' }}
         run: node tools/check-staged-factual-public-integrity.js --staged ./_deploy
+
+      - name: Verify final legacy release integrity independently
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'release' }}
+        env:
+          ELU_VERIFIED_DEPLOY_MODE: release
+        run: node tools/check-staged-production-integrity.js --staged ./_deploy
+
+      - name: Verify final CCI release integrity independently
+        if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release' }}
+        env:
+          ELU_VERIFIED_DEPLOY_MODE: release
+        run: node tools/check-staged-production-integrity.js --staged ./_deploy
 
   smoke:
     name: Headless SmokeTest + StackLint
     runs-on: ubuntu-latest
     needs: [static, factual_public]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '20'
+
+      - name: Detect active public climate release profile
+        id: smoke_profile
+        run: |
+          state="$(node tools/check-public-climate-release-profile.js --state)"
+          case "$state" in
+            cci:candidate|legacy_ct40:candidate) phase="candidate" ;;
+            cci:release|legacy_ct40:release) phase="release" ;;
+            *) echo "::error::Unknown or incomplete public climate release state: $state"; exit 1 ;;
+          esac
+          echo "phase=$phase" >> "$GITHUB_OUTPUT"
 
       - name: Fetch verified globe.gl runtime dependency
         run: ./tools/fetch-globe-vendor.sh
@@ -170,10 +258,20 @@ jobs:
         run: node tools/check-globe-vendor-integrity.js --require-file
 
       - name: Build candidate deploy directory
+        if: ${{ steps.smoke_profile.outputs.phase == 'candidate' }}
         run: ./tools/build-deploy.sh --candidate
 
+      - name: Build reviewed release deploy directory
+        if: ${{ steps.smoke_profile.outputs.phase == 'release' }}
+        run: ./tools/build-deploy.sh --release
+
       - name: Verify exact public deploy surface independently
+        if: ${{ steps.smoke_profile.outputs.phase == 'candidate' }}
         run: node tools/check-public-deploy-surface.js --staged _deploy --mode candidate
+
+      - name: Verify release public deploy surface independently
+        if: ${{ steps.smoke_profile.outputs.phase == 'release' }}
+        run: node tools/check-public-deploy-surface.js --staged _deploy --mode release
 
       - name: Verify staged third-party notices independently
         run: node tools/check-globe-third-party-notices.js --staged _deploy
@@ -183,13 +281,13 @@ jobs:
 
       - name: Verify final staged production integrity independently
         env:
-          ELU_VERIFIED_DEPLOY_MODE: candidate
+          ELU_VERIFIED_DEPLOY_MODE: ${{ steps.smoke_profile.outputs.phase }}
         run: node tools/check-staged-production-integrity.js --staged _deploy
 
       - name: Install Playwright + Chromium
         run: |
           npm init -y >/dev/null
-          npm install --no-save playwright@1
+          npm install --no-save --no-package-lock playwright@1.59.1
           npx playwright install chromium --with-deps
 
       - name: Serve static site in background
@@ -239,7 +337,8 @@ jobs:
             if (!condition) throw new Error(message);
           };
           const waitForApp = target => target.waitForFunction(
-            () => window.App && window.GlobeModule && window.Data && ['ready', 'unavailable'].includes(window.Data.climateCandidateState),
+            () => window.App && window.GlobeModule && window.Data && window.COUNTRY_CLIMATE_INTELLIGENCE &&
+              ['ready', 'unavailable'].includes(window.Data.climateIntelligenceState),
             null,
             { timeout: 15000 }
           );
@@ -298,7 +397,37 @@ jobs:
             await target.close();
           }
 
-          await exercisePreRenderFailure('**/data/climate/runtime/country-factual-candidate.json*', 'candidate_data_unavailable', { status: 503, body: 'candidate unavailable' }, /\[Data\._indexClimateCandidate\(\)\] CT-42 candidate boundary or shape invalid/);
+          async function exerciseSlowClimateRuntimeFirstVisit() {
+            const target = await ctx.newPage();
+            trackErrors(target);
+            let requestCount = 0;
+            const startedAt = Date.now();
+            const handler = async route => {
+              requestCount += 1;
+              const response = await route.fetch();
+              await new Promise(resolve => setTimeout(resolve, 8500));
+              await route.fulfill({ response });
+            };
+            await target.route('**/data/climate/runtime/country-climate-intelligence.json*', handler);
+            await target.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
+            await waitForApp(target);
+            const snapshot = await target.evaluate(() => ({
+              ready: window.Data.isClimateIntelligenceReady(),
+              entities: window.Data.getClimateIntelligenceRelease()?.countries?.length || 0,
+              state: window.Data.climateIntelligenceState,
+              fallback: document.body.classList.contains('globe-fallback-active'),
+            }));
+            assert(Date.now() - startedAt >= 8400, 'slow-runtime regression must hold the first response beyond the retired eight-second deadline');
+            assert(requestCount === 1 && snapshot.ready && snapshot.entities === 249 && snapshot.state === 'ready' && !snapshot.fallback,
+              'an 8.5-second first CCI response must retain all 249 entities without entering fallback');
+            assert(await target.evaluate(() => window.App.enterGlobe()), 'slow first visit must still enter the live globe');
+            await waitForLiveGlobe(target);
+            await target.unroute('**/data/climate/runtime/country-climate-intelligence.json*', handler);
+            await target.close();
+          }
+
+          await exerciseSlowClimateRuntimeFirstVisit();
+          await exercisePreRenderFailure('**/data/climate/runtime/country-climate-intelligence.json*', 'candidate_data_unavailable', { status: 503, body: 'candidate unavailable' }, /\[Data\._indexClimateIntelligence\(\)\] Country Climate Intelligence schema rejected/);
           await exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable', { status: 503, body: 'geometry unavailable' });
           await exercisePreRenderFailure('**/assets/globe/runtime/earth-night.jpg*', 'visual_assets_unavailable', { status: 200, contentType: 'image/jpeg', headers: { 'Cache-Control': 'no-store' }, body: 'invalid image bytes' });
           await exercisePreRenderFailure('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable', { status: 200, contentType: 'image/png', headers: { 'Cache-Control': 'no-store' }, body: 'invalid png bytes' });
@@ -356,6 +485,66 @@ jobs:
 
           await page.click('[data-country-rail-iso="CHN"]');
           await page.waitForFunction(() => document.activeElement?.id === 'country-card-heading');
+          for (const lensId of ['power', 'physical', 'carbon']) {
+            await page.click('[data-climate-lens="' + lensId + '"]');
+            await page.waitForFunction(id => window.GlobeModule?.getLens?.() === id, lensId);
+            const lensSnapshot = await page.evaluate(id => {
+              const state = window.GlobeModule.getState();
+              const view = window.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('CHN', id);
+              const cardSummary = document.querySelector('#hex-country-tooltip .tt-detail')?.textContent || '';
+              return {
+                state,
+                view,
+                cardSummary,
+                selectedAltitude: window.GlobeModule._countryHexAltitudeFn(window.GlobeModule._selectedCountryFeature),
+              };
+            }, lensId);
+            assert(lensSnapshot.state.selectedCountryIso === 'CHN', lensId + ' lens change must preserve China selection');
+            assert(lensSnapshot.cardSummary.includes(lensSnapshot.view.primary.label) &&
+              lensSnapshot.cardSummary.includes(lensSnapshot.view.primary.unit) &&
+              lensSnapshot.cardSummary.includes(lensSnapshot.view.primary.period) &&
+              lensSnapshot.cardSummary.includes(lensSnapshot.view.primary.evidence_label),
+            lensId + ' card must expose metric, unit, period, and evidence class');
+            if (lensId === 'carbon') {
+              assert(lensSnapshot.view.visual.extrusion === 'transparent_log' &&
+                lensSnapshot.view.visual.relief === 'metric_log' &&
+                lensSnapshot.view.visual.relief_encodes_metric === true && lensSnapshot.selectedAltitude > 0.007,
+                'Carbon must use transparent log-scaled magnitude extrusion');
+            } else {
+              const expectedExtrusion = lensId === 'power' ? 'transparent_linear_bounded' : 'transparent_linear';
+              assert(lensSnapshot.view.visual.extrusion === expectedExtrusion &&
+                lensSnapshot.view.visual.relief === 'metric_linear' &&
+                lensSnapshot.view.visual.relief_encodes_metric === true && lensSnapshot.selectedAltitude > 0.007,
+                lensId + ' must use transparent linear tile height for its exact comparison metric');
+            }
+          }
+          const inverseCarbonDemo = await page.evaluate(() => {
+            const priorUrl = location.href;
+            history.replaceState({}, '', '/?ci-relief-test=1&carbon-relief=low-is-high');
+            window.COUNTRY_CLIMATE_INTELLIGENCE.reset();
+            const state = window.COUNTRY_CLIMATE_INTELLIGENCE.getState();
+            const high = window.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('CHN', 'carbon');
+            const low = window.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('VUT', 'carbon');
+            const gap = window.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('ATA', 'carbon');
+            const rail = window.COUNTRY_CLIMATE_INTELLIGENCE.getRailRows('carbon');
+            const legend = window.COUNTRY_CLIMATE_INTELLIGENCE.getLegend('carbon');
+            history.replaceState({}, '', priorUrl);
+            window.COUNTRY_CLIMATE_INTELLIGENCE.reset();
+            return { state, high, low, gap, railFirst: rail.ordered[0], reliefNote: rail.relief_note, legend };
+          });
+          assert(inverseCarbonDemo.state.carbonReliefMode === 'lower_value_higher' &&
+            inverseCarbonDemo.low.visual.altitude > inverseCarbonDemo.high.visual.altitude &&
+            inverseCarbonDemo.low.visual.altitude <= 0.012 &&
+            inverseCarbonDemo.gap.visual.altitude === 0.007 &&
+            inverseCarbonDemo.gap.visual.relief_encodes_metric === false,
+          'inverse Carbon demo must raise lower values subtly without promoting gaps');
+          assert(inverseCarbonDemo.railFirst.iso_alpha3 === 'CHN' &&
+            inverseCarbonDemo.railFirst.ordinal === 1 && inverseCarbonDemo.reliefNote === 'Inverse relief demo' &&
+            inverseCarbonDemo.legend.relief_demo === true &&
+            inverseCarbonDemo.legend.extrusion_note.includes('not a performance score'),
+          'inverse Carbon demo must preserve the raw descending rail and disclose its presentation direction');
+          await page.locator('#country-card-heading').focus();
+          await page.waitForFunction(() => document.activeElement?.id === 'country-card-heading');
           await page.keyboard.press('Tab');
           assert(await page.evaluate(() => document.activeElement?.matches('[data-country-close]')),
             'country-card heading must advance to Close');
@@ -363,11 +552,27 @@ jobs:
           assert(await page.evaluate(() => document.activeElement?.classList.contains('tt-nav-prev')),
             'reverse tab from Close must reach Previous country');
           await page.keyboard.press('Shift+Tab');
-          assert(await page.evaluate(() => document.activeElement?.classList.contains('tt-nav-next') &&
-            document.getElementById('elu-country-card-wrap')?.contains(document.activeElement)),
-            'backward country-card focus trap must wrap to Next country without reaching the background rail');
+          assert(await page.evaluate(() => {
+            const wrap = document.getElementById('elu-country-card-wrap');
+            return document.activeElement !== document.body && !wrap?.contains(document.activeElement);
+          }), 'non-modal country panel must release backward focus to the surrounding lens and rail controls');
           await page.click('[data-country-close]');
           await page.waitForFunction(() => !window.GlobeModule?._selectedCountryFeature);
+          assert(await page.evaluate(() => document.activeElement?.getAttribute('data-country-rail-iso') === 'CHN'),
+            'closing after lens changes must restore focus to China in the newly rendered rail');
+
+          await page.click('[data-country-rail-iso="CHN"]');
+          await page.waitForFunction(() => document.activeElement?.id === 'country-card-heading');
+          await page.click('.tt-nav-next');
+          await page.keyboard.press('Escape');
+          await page.waitForTimeout(750);
+          const cancelledCountryNavigation = await page.evaluate(() => ({
+            selected: window.GlobeModule.getState().selectedCountryIso,
+            visible: document.getElementById('hex-country-tooltip')?.classList.contains('visible') === true,
+            focusIso: document.activeElement?.getAttribute('data-country-rail-iso') || null,
+          }));
+          assert(cancelledCountryNavigation.selected === null && !cancelledCountryNavigation.visible && cancelledCountryNavigation.focusIso === 'CHN',
+            'Escape must cancel a pending country swap without reopening the card or splitting focus');
 
           await page.waitForFunction(() => {
             const textureState = window.GlobeModule?.getRuntimeTextureState?.();
@@ -431,13 +636,26 @@ jobs:
 
           await page.click('#globe-evidence-browse');
           await page.waitForFunction(() => window.GlobeModule?._fallbackReasonCode === 'evidence_browse_requested');
-          const browserCounts = await page.evaluate(() => ({
-            factual: document.querySelectorAll('[data-fallback-evidence-state="factual"]').length,
-            gaps: document.querySelectorAll('[data-fallback-evidence-state="gap"]').length,
-            canvases: document.querySelectorAll('#globeViz canvas').length,
-          }));
-          assert(browserCounts.factual === 206 && browserCounts.gaps === 43 && browserCounts.canvases === 1,
-            'evidence browser must retain one live canvas and expose 206 factual + 43 gap records');
+          const expectedFallbackCounts = {
+            carbon: { factual: 213, gaps: 36 },
+            power: { factual: 195, gaps: 54 },
+            physical: { factual: 245, gaps: 4 },
+          };
+          for (const lensId of ['carbon', 'power', 'physical']) {
+            await page.evaluate(id => window.GlobeModule.setLens(id), lensId);
+            await page.waitForFunction(id => window.GlobeModule?.getLens?.() === id, lensId);
+            const browserCounts = await page.evaluate(() => ({
+              factual: document.querySelectorAll('[data-fallback-evidence-state="factual"]').length,
+              gaps: document.querySelectorAll('[data-fallback-evidence-state="gap"]').length,
+              total: document.querySelectorAll('[data-fallback-country-iso]').length,
+              canvases: document.querySelectorAll('#globeViz canvas').length,
+            }));
+            const expected = expectedFallbackCounts[lensId];
+            assert(browserCounts.factual === expected.factual && browserCounts.gaps === expected.gaps &&
+              browserCounts.total === 249 && browserCounts.canvases === 1,
+            lensId + ' evidence browser must retain one live canvas and expose its exact 249-entity factual/gap partition');
+          }
+          await page.evaluate(() => window.GlobeModule.setLens('carbon'));
           await page.fill('#globe-fallback-search', 'Andorra');
           const visibleRows = page.locator('[data-fallback-country-iso]:visible');
           assert(await visibleRows.count() === 1, 'evidence search must narrow to one Andorra record');
@@ -472,12 +690,70 @@ jobs:
                 const rect = button.getBoundingClientRect();
                 return { id: button.id, left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
               });
-              return { viewport: innerWidth, browse: { left: browse.left, right: browse.right, height: browse.height }, theme: { left: theme.left, right: theme.right, height: theme.height }, controls };
+              const lenses = [...document.querySelectorAll('#climate-lens-controls [data-climate-lens]')].map(button => {
+                const rect = button.getBoundingClientRect();
+                return { id: button.dataset.climateLens, left: rect.left, right: rect.right, width: rect.width, height: rect.height };
+              });
+              return { viewport: innerWidth, browse: { left: browse.left, right: browse.right, height: browse.height }, theme: { left: theme.left, right: theme.right, height: theme.height }, controls, lenses };
             });
             assert(rects.controls.every(rect => rect.left >= 0 && rect.right <= rects.viewport), width + 'px topbar controls must remain inside the viewport');
             assert(rects.browse.height >= 44 && rects.theme.height >= 44, width + 'px controls must retain 44px targets');
             assert(rects.browse.right <= rects.theme.left, width + 'px browse/theme controls must not overlap');
+            assert(rects.lenses.length === 3 && rects.lenses.every(rect => rect.left >= 0 && rect.right <= rects.viewport),
+              width + 'px climate lens controls must remain inside the viewport');
+            assert(rects.lenses.every(rect => rect.width >= 44 && rect.height >= 44),
+              width + 'px climate lens controls must retain 44px targets');
           }
+
+          await page.setViewportSize({ width: 870, height: 798 });
+          const guidedLensAudit = await page.evaluate(async () => {
+            const orbit = window.GUIDED_ORBIT;
+            const replay = document.getElementById('guided-orbit-replay');
+            const stored = localStorage.getItem('elu-guided-first-orbit-v1');
+            const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+            const rect = element => {
+              const value = element?.getBoundingClientRect();
+              return value && value.width > 0 && value.height > 0 ? value : null;
+            };
+            const centerHits = element => {
+              const value = rect(element);
+              if (!value) return false;
+              const hit = document.elementFromPoint(value.left + value.width / 2, value.top + value.height / 2);
+              return hit === element || element.contains(hit);
+            };
+            let result;
+            try {
+              orbit.start({ route: 'globe', force: true, opener: replay, focus: false });
+              orbit.goToStep(1, { focus: false });
+              await new Promise(resolve => setTimeout(resolve, 400));
+              const card = document.querySelector('#guided-orbit[data-mode="interaction"] .guided-orbit-card');
+              const lens = document.getElementById('climate-lens-controls');
+              const lensButtons = [...document.querySelectorAll('#climate-lens-controls [data-climate-lens]')];
+              const chooser = document.querySelector('#elu-country-rank-rail [data-country-rail-iso]');
+              const cardRect = rect(card);
+              const lensRect = rect(lens);
+              const chooserRect = rect(chooser);
+              result = {
+                cardPresent: !!cardRect,
+                lensCount: lensButtons.length,
+                chooserPresent: !!chooserRect,
+                overlapsLens: !!(cardRect && lensRect && overlaps(cardRect, lensRect)),
+                overlapsChooser: !!(cardRect && chooserRect && overlaps(cardRect, chooserRect)),
+                allLensesHit: lensButtons.length === 3 && lensButtons.every(centerHits),
+                chooserHit: centerHits(chooser),
+              };
+            } finally {
+              orbit.destroy();
+              orbit.init();
+              if (stored === null) localStorage.removeItem('elu-guided-first-orbit-v1');
+              else localStorage.setItem('elu-guided-first-orbit-v1', stored);
+            }
+            return result;
+          });
+          assert(guidedLensAudit.cardPresent && guidedLensAudit.lensCount === 3 && guidedLensAudit.chooserPresent &&
+            !guidedLensAudit.overlapsLens && !guidedLensAudit.overlapsChooser && guidedLensAudit.allLensesHit &&
+            guidedLensAudit.chooserHit,
+          '870x798 tutorial step 2 must leave all lenses and the first ordered country reachable: ' + JSON.stringify(guidedLensAudit));
 
           await page.setViewportSize({ width: 768, height: 600 });
           await page.click('[data-country-rail-iso="CHN"]');

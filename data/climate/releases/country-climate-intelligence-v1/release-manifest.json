@@ -1,0 +1,359 @@
+{
+  "artifact_type": "country_climate_intelligence_release_manifest",
+  "boundaries": {
+    "composite_score": false,
+    "finance_judgment": false,
+    "mismatched_scope_deltas": false,
+    "offsets_adjust_country_record": false,
+    "performance_language": false,
+    "scope_match_function_available": true,
+    "source_comparison_rule": "A numerical source delta is allowed only when metric, accounting frame, gases, sectors, geography, LULUCF treatment, GWP, unit, and period match exactly.",
+    "target_assessment": false
+  },
+  "component_artifacts": {
+    "cckp": {
+      "path": "data/climate/releases/country-climate-intelligence-v1/cckp-physical.json",
+      "sha256": "aad0c81bafe85ae1659da031330ffc6db2dcc1c5af2dc7ef6eeb4151c280400a"
+    },
+    "ember": {
+      "path": "data/climate/releases/country-climate-intelligence-v1/ember-power.json",
+      "sha256": "3966f719430c8be3fb73b8dad8bf3c330c4380039e6394f8cece1ac8df64a5ec"
+    },
+    "gcb": {
+      "path": "data/climate/releases/country-climate-intelligence-v1/gcb-carbon.json",
+      "sha256": "540e33d294d3eedc55cd02f6a589dd4c2bce21f651eed5a58e5cdeecd82ee048"
+    },
+    "wpp": {
+      "path": "data/climate/releases/country-climate-intelligence-v1/wpp-population.json",
+      "sha256": "7ff9a8278e565fc7eb3a0119d3366c6bc413e07e3394f5063b591a78726aeab5"
+    }
+  },
+  "gates": {
+    "atomic_service_worker_staging": true,
+    "independent_scientific_review": false,
+    "raw_receipt_revalidation": true,
+    "redistribution_rights_revalidation": false,
+    "runtime_validation": true,
+    "source_registry_approval": true,
+    "visual_review": false
+  },
+  "lens_catalog": [
+    {
+      "comparison_metric_id": "emissions.fossil_co2.territorial",
+      "evidence_status": "estimated",
+      "heading": "Territorial fossil CO₂ · 2024",
+      "id": "carbon",
+      "interpretation": "Territorial fossil CO₂ magnitude only; targets, finance, land use, and offsets do not alter this record.",
+      "label": "Carbon",
+      "order": "descending",
+      "period": "2024",
+      "rail_term": "emissions order",
+      "visual": {
+        "bounded_domain": null,
+        "color_scale": "sequential",
+        "extrusion": "transparent_log"
+      }
+    },
+    {
+      "comparison_metric_id": "electricity.clean_share",
+      "evidence_status": "actual",
+      "heading": "Clean electricity share · 2024",
+      "id": "power",
+      "interpretation": "Share of generation in the published clean aggregate; an electricity metric, not a whole-economy measure.",
+      "label": "Power",
+      "order": "descending",
+      "period": "2024",
+      "rail_term": "clean-share order",
+      "visual": {
+        "bounded_domain": [
+          0,
+          100
+        ],
+        "color_scale": "bounded_sequential",
+        "extrusion": "transparent_linear_bounded"
+      }
+    },
+    {
+      "comparison_metric_id": "climate.temperature.change",
+      "evidence_status": "modeled",
+      "heading": "Projected warming · 2040–2059",
+      "id": "physical",
+      "interpretation": "SSP2-4.5 median projected warming—not vulnerability, damage, or responsibility.",
+      "label": "Physical",
+      "order": "descending",
+      "period": "2040–2059 vs 1995–2014",
+      "rail_term": "warming exploration order",
+      "visual": {
+        "bounded_domain": null,
+        "color_scale": "sequential",
+        "extrusion": "transparent_linear"
+      }
+    }
+  ],
+  "metric_definitions": {
+    "climate.precipitation.change": {
+      "comparison_period": "2040–2059 vs 1995–2014",
+      "family": "physical",
+      "label": "Projected precipitation change",
+      "public_role": "context"
+    },
+    "climate.precipitation.observed_trend": {
+      "comparison_period": "1970–last complete year",
+      "family": "physical",
+      "label": "Observed precipitation trend",
+      "public_role": "context"
+    },
+    "climate.temperature.change": {
+      "comparison_period": "2040–2059 vs 1995–2014",
+      "direction": "descending",
+      "family": "physical",
+      "label": "Projected temperature change",
+      "public_role": "exploration"
+    },
+    "climate.temperature.observed_trend": {
+      "comparison_period": "1970–last complete year",
+      "family": "physical",
+      "label": "Observed temperature trend",
+      "public_role": "context"
+    },
+    "electricity.carbon_intensity": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Power carbon intensity",
+      "public_role": "context"
+    },
+    "electricity.clean_share": {
+      "comparison_period": "2024",
+      "direction": "descending",
+      "family": "power",
+      "label": "Clean electricity share",
+      "public_role": "comparison"
+    },
+    "electricity.clean_share_change_5y": {
+      "comparison_period": "2019–2024",
+      "family": "power",
+      "label": "Clean share change",
+      "public_role": "context"
+    },
+    "electricity.emissions": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Power-sector emissions",
+      "public_role": "context"
+    },
+    "electricity.fossil_share": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Fossil electricity share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.bioenergy": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Bioenergy generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.coal": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Coal generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.gas": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Gas generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.hydro": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Hydro generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.nuclear": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Nuclear generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.other_fossil": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Other fossil generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.other_renewables": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Other renewables generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.solar": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Solar generation share",
+      "public_role": "context"
+    },
+    "electricity.generation_share.wind": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Wind generation share",
+      "public_role": "context"
+    },
+    "electricity.wind_solar_share": {
+      "comparison_period": "2024",
+      "family": "power",
+      "label": "Wind and solar share",
+      "public_role": "context"
+    },
+    "emissions.fossil_co2.consumption": {
+      "comparison_period": "latest available",
+      "family": "carbon",
+      "label": "Consumption-based fossil CO₂",
+      "public_role": "context"
+    },
+    "emissions.fossil_co2.cumulative": {
+      "comparison_period": "1850–2024",
+      "family": "carbon",
+      "label": "Cumulative territorial fossil CO₂",
+      "public_role": "context"
+    },
+    "emissions.fossil_co2.net_transfer": {
+      "comparison_period": "latest available",
+      "family": "carbon",
+      "label": "Net fossil CO₂ transfer",
+      "public_role": "context"
+    },
+    "emissions.fossil_co2.territorial": {
+      "comparison_period": "2024",
+      "direction": "descending",
+      "family": "carbon",
+      "label": "Territorial fossil CO₂",
+      "public_role": "comparison"
+    },
+    "emissions.fossil_co2.territorial_per_capita": {
+      "comparison_period": "2024",
+      "family": "carbon",
+      "label": "Territorial fossil CO₂ per person",
+      "public_role": "context"
+    },
+    "emissions.land_use_co2.net": {
+      "comparison_period": "2015–2024 mean",
+      "family": "carbon",
+      "label": "Land-use CO₂",
+      "public_role": "separate_context"
+    },
+    "population.wpp_medium_projection": {
+      "comparison_period": "2024",
+      "family": "denominator",
+      "label": "Population projection (Medium variant)",
+      "public_role": "methods"
+    }
+  },
+  "official_context": {
+    "path": "data/climate/evidence/major-emitter-ndc-source-audit.json",
+    "redistribution": "metadata_only",
+    "sha256": "c4764628073653bda0f3f8a14f49400a624dfb3935c36432db8754e23d2c6683"
+  },
+  "prior_runtime_retained_for_rollback": "data/climate/runtime/country-factual-candidate.json",
+  "release": {
+    "comparison_baseline_year": 2024,
+    "entity_count": 249,
+    "generated_on": "2026-08-27",
+    "id": "country-climate-intelligence-2026-08-27-candidate.7",
+    "production_runtime_release": false,
+    "review_state": "normalized_factual_candidate_pending_independent_scientific_review",
+    "status": "candidate"
+  },
+  "source_receipts": {
+    "path": "data/climate/releases/country-climate-intelligence-v1/source-receipts.json",
+    "sha256": "011c94573788fff681b0f6069a9718ae39ce6c01564d7273969fe3d499edef5e"
+  },
+  "transformation_log": {
+    "path": "data/climate/releases/country-climate-intelligence-v1/TRANSFORMATION-LOG.md",
+    "sha256": "3fc0675335cb8a98e65ac13a12fb76c5cbaa219e1e74d29829714664d867576a"
+  },
+  "schema_ref": "data/climate/schemas/country-climate-intelligence.schema.json",
+  "schema_version": "1.0.0",
+  "source_catalog": [
+    {
+      "attribution": "{party}, {document_title}, submitted {submission_date}, UNFCCC NDC Registry, {direct_url}, retrieved {retrieval_date}.",
+      "id": "unfccc-ndc-registry-continuous-2026-07-15",
+      "licence": "UNFCCC-terms-and-party-document-rights",
+      "public_role": "official_context_metadata",
+      "review_state": "pending",
+      "source_url": "https://unfccc.int/NDCREG",
+      "title": "Nationally Determined Contributions Registry",
+      "values_in_release": false,
+      "version": "continuous registry snapshot retrieved 2026-07-15"
+    },
+    {
+      "attribution": "Global Carbon Project (2025), Supplemental data of Global Carbon Budget 2025, version 1.0, https://doi.org/10.18160/GCP-2025. Changes and unit conversions by Earth Love United are identified.",
+      "id": "gcp-gcb-2025-v1.0",
+      "licence": "CC-BY-4.0",
+      "public_role": "metric_provenance",
+      "review_state": "approved",
+      "source_url": "https://doi.org/10.18160/GCP-2025",
+      "title": "Supplemental data of the Global Carbon Budget 2025",
+      "values_in_release": true,
+      "version": "2025 v1.0"
+    },
+    {
+      "attribution": "Gütschow, Busch and Pflüger (2025), PRIMAP-hist v2.6.1 final, https://doi.org/10.5281/zenodo.15016289, retrieved 2026-07-15. Earth Love United transformations and selected scenario, gases, sectors, GWP and LULUCF treatment must be identified.",
+      "id": "primap-hist-2.6.1-final",
+      "licence": "CC-BY-4.0",
+      "public_role": "citation_only",
+      "review_state": "approved",
+      "source_url": "https://doi.org/10.5281/zenodo.15016289",
+      "title": "The PRIMAP-hist national historical emissions time series (1750–2023)",
+      "values_in_release": false,
+      "version": "2.6.1 final, 13 March 2025"
+    },
+    {
+      "attribution": "Ember, Yearly Electricity Data, full release retrieved 2026-08-25, https://ember-energy.org/data/yearly-electricity-data/. Earth Love United transformations are identified.",
+      "id": "ember-yearly-electricity-data-2026-08-25",
+      "licence": "CC-BY-4.0",
+      "public_role": "metric_provenance",
+      "review_state": "pending",
+      "source_url": "https://ember-energy.org/data/yearly-electricity-data/",
+      "title": "Yearly Electricity Data",
+      "values_in_release": true,
+      "version": "full long-format release retrieved 2026-08-25"
+    },
+    {
+      "attribution": "World Bank Climate Change Knowledge Portal, CMIP6 0.25-degree projected climate country aggregates, responses re-fetched 2026-08-27. WCRP CMIP6 and ESGF are acknowledged; Earth Love United selections are identified.",
+      "id": "world-bank-cckp-cmip6-2026-08-24",
+      "licence": "CC-BY-4.0",
+      "public_role": "metric_provenance",
+      "review_state": "pending",
+      "source_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
+      "title": "CCKP projected climate data: CMIP6 0.25-degree country aggregates",
+      "values_in_release": true,
+      "version": "API snapshot retrieved 2026-08-24"
+    },
+    {
+      "attribution": "World Bank Climate Change Knowledge Portal, ERA5 0.25-degree annual country temperature and precipitation aggregates, 1950–2025 snapshots accessed 2026-08-25. Earth Love United selected 1970–2025 and derived OLS slopes per decade.",
+      "id": "world-bank-cckp-era5-2026-08-25",
+      "licence": "CC-BY-4.0",
+      "public_role": "metric_provenance",
+      "review_state": "pending",
+      "source_url": "https://worldbank.github.io/climateknowledgeportal/docs/collections/era5-x0.25.html",
+      "title": "CCKP ERA5 annual country temperature and precipitation aggregates",
+      "values_in_release": true,
+      "version": "API v1 global-country annual snapshot retrieved 2026-08-25; 1950–2025"
+    },
+    {
+      "attribution": "United Nations, Department of Economic and Social Affairs, Population Division (2024), World Population Prospects 2024, exact Medium file retrieved 2026-08-27. Earth Love United selected the 2024 mid-year projection and identifies its unit conversion.",
+      "id": "un-wpp-2024",
+      "licence": "CC-BY-3.0-IGO",
+      "public_role": "metric_provenance",
+      "review_state": "pending",
+      "source_url": "https://population.un.org/wpp/",
+      "title": "World Population Prospects 2024",
+      "values_in_release": true,
+      "version": "2024 Revision"
+    }
+  ],
+  "validation_receipts": []
+}

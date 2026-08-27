@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "source_registry_id": "ember-yearly-electricity-data-2026-08-25",
+  "source_url": "https://ember-energy.org/data/yearly-electricity-data/",
+  "retrieval_url": "https://files.ember-energy.org/public-downloads/yearly_full_release_long_format.csv",
+  "retrieved_on": "2026-08-25",
+  "file_name": "yearly_full_release_long_format.csv",
+  "raw_storage_policy": "upstream_only_unarchived",
+  "bytes": 49079981,
+  "row_count_including_header": 370785,
+  "sha256": "259e1095ee8ffeaf0aff37ad557916ae1823a2da13312da50ba4cec6b4574c3b",
+  "http_receipt": {
+    "content_length": 49079981,
+    "etag": "\"e4c54c09953364d6e86cd164711cda8a\"",
+    "last_modified": "Tue, 23 Jun 2026 10:58:24 GMT",
+    "response_date": "Tue, 25 Aug 2026 15:33:09 GMT",
+    "x_goog_generation": "1782212304329593"
+  },
+  "default_evidence_class": "actual",
+  "year_status_2019": "actual",
+  "year_status_2024": "actual",
+  "evidence_classification_basis": "The pinned 2026 full release treats 2019 and 2024 as completed historical annual rows. No latest-year estimate enters the 2024 comparison order.",
+  "selected_periods": [2019, 2024],
+  "selected_2024_generation_fuels": [
+    "Bioenergy",
+    "Coal",
+    "Gas",
+    "Hydro",
+    "Nuclear",
+    "Other Fossil",
+    "Other Renewables",
+    "Solar",
+    "Wind"
+  ],
+  "identity_exceptions": [
+    {
+      "upstream_iso3": "XKX",
+      "kind": "unmapped_exception",
+      "reason": "Kosovo is not one of the exact 249 ISO 3166-1 registry entities. Its rows are retained in the identity ledger as unmapped and are not imputed to a parent country."
+    }
+  ],
+  "review_boundary": {
+    "independent_scientific_review_complete": false,
+    "production_promotion_allowed": false,
+    "normalized_candidate_use_only": true
+  },
+  "notes": [
+    "Raw bytes are not committed or held in an Earth Love United archive; the receipt pins the checked upstream response by byte count, HTTP generation metadata, and SHA-256.",
+    "Other Renewables is Ember's combined geothermal, tidal, and wave category; it is not relabelled as geothermal.",
+    "Blank fuel-share cells remain gaps and are never converted to zero.",
+    "Fuel components must reconcile to the published clean and fossil aggregates within 0.02 percentage points before candidate compilation."
+  ]
+}

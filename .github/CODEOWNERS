@@ -71,12 +71,17 @@
 /tools/check-globe-runtime-approval.js @earth-love-united/maintainers
 /tools/lib/globe-runtime-approval.js @earth-love-united/maintainers
 /tools/check-staged-production-integrity.js @earth-love-united/maintainers
+/tools/check-staged-factual-public-integrity.js @earth-love-united/maintainers
 /tools/build-deploy.sh                @earth-love-united/maintainers
+/tools/build-factual-public-deploy.sh @earth-love-united/maintainers
 /tools/stage-public-deploy.js         @earth-love-united/maintainers
 /tools/check-public-deploy-surface.js @earth-love-united/maintainers
 /tools/lib/public-deploy-surface.js   @earth-love-united/maintainers
+/tools/check-public-climate-release-profile.js @earth-love-united/maintainers
+/tools/lib/public-climate-release-profile.js @earth-love-united/maintainers
 /tools/check-climate-production-readiness.js @earth-love-united/maintainers
 /tools/check-climate-production-readiness-policy.js @earth-love-united/maintainers
+/tools/check-climate-factual-public-readiness.js @earth-love-united/maintainers
 /tools/lib/climate-production-readiness.js @earth-love-united/maintainers
 /tools/check-climate-runtime-diff-boundary.js @earth-love-united/maintainers
 /tools/lib/climate-runtime-diff-boundary.js @earth-love-united/maintainers
@@ -111,6 +116,41 @@
 /data/climate/reviews/globe-runtime-assets-production-review.signatures.json @earth-love-united/maintainers
 /docs/LEGACY-COUNTRY-DATA-EXIT.md      @earth-love-united/maintainers
 /tools/climate-truth-ci.js            @earth-love-united/maintainers
+/tools/check-climate-truth-ci.js      @earth-love-united/maintainers
+/tools/lib/climate-truth-component-plan.js @earth-love-united/maintainers
+
+# ─── Country Climate Intelligence factual pipeline ─────────────
+/js/country-climate-intelligence.js   @earth-love-united/architects @earth-love-united/maintainers
+/data/climate/source-registry.json    @earth-love-united/maintainers
+/data/climate/governance/country-climate-intelligence-release-trust.json @earth-love-united/maintainers
+/data/climate/schemas/country-climate-intelligence-release-signatures.schema.json @earth-love-united/maintainers
+/data/climate/schemas/country-climate-intelligence.schema.json @earth-love-united/maintainers
+/data/climate/releases/country-climate-intelligence-v1/ @earth-love-united/maintainers
+/data/climate/runtime/country-climate-intelligence.json @earth-love-united/maintainers
+/docs/COUNTRY-CLIMATE-METHODOLOGY.md  @earth-love-united/maintainers
+/docs/COUNTRY-CLIMATE-TRUTH-PLAN.md   @earth-love-united/maintainers
+/tools/acquire-gcb-2025.js            @earth-love-united/maintainers
+/tools/build-country-climate-intelligence.js @earth-love-united/maintainers
+/tools/extract-reviewed-country-climate-components.js @earth-love-united/maintainers
+/tools/compile-gcb-emissions.js       @earth-love-united/maintainers
+/tools/compile-wpp-population.js      @earth-love-united/maintainers
+/tools/compile-ember-power.js         @earth-love-united/maintainers
+/tools/compile-cckp-physical.js       @earth-love-united/maintainers
+/tools/check-climate-source-registry.js @earth-love-united/maintainers
+/tools/test-climate-source-registry.js @earth-love-united/maintainers
+/tools/check-country-climate-intelligence.js @earth-love-united/maintainers
+/tools/check-country-climate-intelligence-ui.js @earth-love-united/maintainers
+/tools/check-country-climate-intelligence-ci.js @earth-love-united/maintainers
+/tools/check-country-climate-intelligence-release-gate.js @earth-love-united/maintainers
+/tools/check-country-climate-intelligence-release-signatures.js @earth-love-united/maintainers
+/tools/check-country-climate-public-release-boundary.js @earth-love-united/maintainers
+/tools/check-country-climate-runtime-atomic.js @earth-love-united/maintainers
+/tools/test-country-climate-compilers.js @earth-love-united/maintainers
+/tools/test-country-climate-intelligence-derivations.js @earth-love-united/maintainers
+/tools/lib/country-climate-intelligence.js @earth-love-united/maintainers
+/tools/lib/country-climate-intelligence-release-gate.js @earth-love-united/maintainers
+/tools/lib/country-climate-intelligence-release-signatures.js @earth-love-united/maintainers
+/tools/lib/gcb-country-intelligence.js @earth-love-united/maintainers
 
 # ─── CI / GitHub config ─────────────────────────────────────────
 /.github/                             @earth-love-united/maintainers

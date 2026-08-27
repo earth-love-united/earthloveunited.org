@@ -82,7 +82,7 @@ final staged copy. Notice integrity does not confer rights approval. The invento
 core's unchanged-state flags are historical inventory-only properties, while
 the later integration is recorded separately. Production still requires five
 asset-specific rights dispositions, four resolved counsel questions, an exact
-reviewed-commit binding, and one verified detached Ed25519 signature from each
+reviewed artifact-pin digest binding, and one verified detached Ed25519 signature from each
 of the asset-rights reviewer, licensing counsel, and release authorizer. The
 current registry contains no keys, so it is `unprovisioned` and cannot authorize
 a release.
@@ -172,7 +172,7 @@ the current builder HEAD, and contain the exact pinned CT-40 result bytes; a
 40-hex string alone is never a binding. Mere existence
 of `reviewed-rollback-proof.json` never satisfies release readiness. The same
 shared package validator runs from strict truth CI and production readiness;
-the signed release-authority reviewed-commit binding covers the validator,
+the signed release-authority artifact-pin binding covers the validator,
 schemas, and five release-package artifacts.
 
 The production artifacts have a deliberate acyclic generation order:

@@ -19,8 +19,8 @@ const {
 const ROOT = path.resolve(__dirname, '..');
 const PROOF_PATH = 'data/climate/reviews/ct42-candidate-rollback-rehearsal.json';
 const FIXTURE_PATH = 'data/climate/fixtures/ct42-runtime-rollback-proof.json';
-const EXPECTED_PROOF_CALCULATION_HASH = '61fb95514c4d85b453288e492a05f7ac6b612eaad07f35522e9126057f25fe49';
-const EXPECTED_PATCH_SHA256 = '11c627ff5769efc9992bd651e4ece02b25c1635b030b390411bb264eaa5c2391';
+const EXPECTED_PROOF_CALCULATION_HASH = 'be53c6b5022ba4033ec9d6bb84ced595c21727c5f03b1bf438cdc2a42391d76d';
+const EXPECTED_PATCH_SHA256 = 'afde366e045918bf65385144ea0368c0ea4a59d71db162954c6d668b9c68bfef';
 const VENDOR_PATH = EXPECTED_VENDOR_SPEC.destination;
 
 function readJson(relative) {

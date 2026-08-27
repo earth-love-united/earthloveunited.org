@@ -1,18 +1,18 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v40) — retain the reviewed runtime while shipping the repaired,
- * responsive Guided First Orbit orientation layer.
+ * Globe cache (v76) — atomically stage candidate.7 with independently
+ * re-fetched open-source inputs, review-safe presentation, and rollback runtime.
  */
-const CACHE_NAME = 'elu-v40-guided-orbit-review';
+const CACHE_NAME = 'elu-v77-cci-raw-byte-boundary';
 const STATIC_ASSETS = [
   // HTML
   '/',
   '/index.html',
   // CSS (critical CSS is inlined in index.html)
   '/css/carbon-clock.css?v=v2',
-  '/css/globe-system.css?v=v21',
-  '/css/guided-first-orbit.css?v=v2',
+  '/css/globe-system.css?v=v43',
+  '/css/guided-first-orbit.css?v=v11',
   '/assets/legacy/elu-logo.png',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint',
   '/assets/globe/runtime/manifest.json',
@@ -27,15 +27,17 @@ const STATIC_ASSETS = [
   '/js/event-bus.js',
   '/js/storage-adapter.js',
   '/js/storage.js',
-  '/js/data-schema.js?v=v1',
-  '/js/data.js?v=v2',
-  '/js/globe.js?v=v15',
+  '/js/data-schema.js?v=v2',
+  '/js/data.js?v=v16',
+  '/js/country-climate-intelligence.js?v=v17',
+  '/js/globe.js?v=v40',
   '/js/carbon-clock.js?v=v1',
-  '/js/guided-first-orbit.js?v=v2',
-  '/js/app.js?v=v3',
+  '/js/guided-first-orbit.js?v=v6',
+  '/js/app.js?v=v5',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
-  '/data/carbon-projects.json?v=ct42candidate1',
+  '/data/climate/runtime/country-climate-intelligence.json?v=cci1runtime13',
+  // Retained for one release epoch as the factual rollback artifact.
   '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',
 ];
 

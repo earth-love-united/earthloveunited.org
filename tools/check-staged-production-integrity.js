@@ -10,9 +10,22 @@ const path = require('node:path');
 const notices = require('./lib/globe-third-party-notices');
 const approvalPolicy = require('./lib/globe-runtime-approval');
 const publicSurface = require('./lib/public-deploy-surface');
+const climateProfile = require('./lib/public-climate-release-profile');
+const { exactSignedRuntimeAssetApproval } = require('./lib/climate-production-readiness');
+const { validateJsonSchema } = require('./lib/json-schema-lite');
 const {
+  PATHS: CCI_RELEASE_PATHS,
+  inspectReviewRequest: inspectCciReviewRequest,
+} = require('./lib/country-climate-intelligence-release-gate');
+const { PATHS: LEGACY_RELEASE_PATHS } = require('./lib/climate-reviewed-release');
+const {
+  ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
+  CURRENT_RUNTIME_PIN_PATHS,
+  EXPECTED_ASSETS,
+  EXPECTED_MANIFEST_SHA256,
   EXPECTED_UI_REVIEW_COMMIT,
   EXPECTED_UI_REVIEW_SHA256,
+  MANIFEST_PATH: GLOBE_RUNTIME_MANIFEST_PATH,
   REQUIRED_UI_REVIEW_PIN_PATHS,
   UI_REVIEW_PATH,
   ct42RuntimeProjection,
@@ -21,6 +34,22 @@ const {
 const ROOT = path.resolve(__dirname, '..');
 const PUBLIC_NOTICE_LINK = '<a href="/THIRD_PARTY_NOTICES.txt">Third-party notices</a>';
 const FINAL_CT45_REHASH_PATHS = REQUIRED_UI_REVIEW_PIN_PATHS;
+const FINAL_CCI_REHASH_PATHS = Object.freeze([
+  'index.html',
+  'css/globe-system.css',
+  'css/guided-first-orbit.css',
+  ...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
+  CCI_RELEASE_PATHS.runtime,
+  'sw.js',
+].sort());
+const CCI_RELEASE_AUTHORITY_PATHS = Object.freeze([
+  CCI_RELEASE_PATHS.approval,
+  CCI_RELEASE_PATHS.releaseDiff,
+  CCI_RELEASE_PATHS.runtimeManifest,
+  CCI_RELEASE_PATHS.rollbackProof,
+  CCI_RELEASE_PATHS.signatures,
+].sort());
+const LEGACY_RELEASE_AUTHORITY_PATHS = Object.freeze(Object.values(LEGACY_RELEASE_PATHS).sort());
 const PINNED_FILES = Object.freeze([
   Object.freeze({ path: notices.NOTICE_PATH, sha256: notices.EXPECTED_NOTICE_SHA256 }),
   Object.freeze({ path: notices.MANIFEST_PATH, sha256: notices.EXPECTED_MANIFEST_SHA256 }),
@@ -28,54 +57,7 @@ const PINNED_FILES = Object.freeze([
   Object.freeze({ path: notices.APPROVAL_SCHEMA_PATH, sha256: notices.EXPECTED_APPROVAL_SCHEMA_SHA256 }),
   Object.freeze({ path: approvalPolicy.TRUST_REGISTRY_PATH, sha256: approvalPolicy.EXPECTED_TRUST_REGISTRY_SHA256 }),
 ]);
-const APPROVAL_REVIEWED_PATHS = Object.freeze([...new Set([
-  ...REQUIRED_UI_REVIEW_PIN_PATHS,
-  UI_REVIEW_PATH,
-  notices.NOTICE_PATH,
-  notices.MANIFEST_PATH,
-  notices.INTEGRATION_PATH,
-  notices.APPROVAL_SCHEMA_PATH,
-  approvalPolicy.TRUST_REGISTRY_PATH,
-  'index.html',
-  'CREDITS.md',
-  '.github/workflows/ci.yml',
-  'tools/build-deploy.sh',
-  'tools/stage-public-deploy.js',
-  'tools/check-public-deploy-surface.js',
-  'tools/lib/public-deploy-surface.js',
-  '_headers',
-  'docs/LEGACY-COUNTRY-DATA-EXIT.md',
-  'docs/COUNTRY-CLIMATE-TRUTH-CI.md',
-  'data/climate/fixtures/release-eligibility.json',
-  'data/climate/fixtures/reviewed-climate-release.json',
-  'data/climate/fixtures/truth-ci-policy.json',
-  'data/climate/schemas/ct40-reviewed-release-input.schema.json',
-  'data/climate/schemas/reviewed-climate-runtime-manifest.schema.json',
-  'data/climate/schemas/reviewed-release-diff.schema.json',
-  'data/climate/schemas/reviewed-runtime-rollback-proof.schema.json',
-  'tools/check-globe-runtime-assets.js',
-  'tools/lib/globe-runtime-assets.js',
-  'tools/fixtures/globe-runtime-assets.json',
-  'tools/check-globe-third-party-notices.js',
-  'tools/lib/globe-third-party-notices.js',
-  'tools/fixtures/globe-third-party-notices.json',
-  'tools/check-globe-runtime-approval.js',
-  'tools/lib/globe-runtime-approval.js',
-  'tools/check-staged-production-integrity.js',
-  'tools/climate-truth-ci.js',
-  'tools/lib/climate-runtime-diff-boundary.js',
-  'tools/lib/climate-production-readiness.js',
-  'tools/check-climate-production-readiness.js',
-  'tools/check-climate-production-readiness-policy.js',
-  'tools/check-climate-factual-runtime-candidate.js',
-  'tools/check-climate-factual-runtime-data-review.js',
-  'tools/check-reviewed-climate-release.js',
-  'tools/lib/climate-release-gate.js',
-  'tools/lib/climate-reviewed-release.js',
-  'tools/lib/climate-truth-ci-policy.js',
-  'tools/lib/json-schema-lite.js',
-  'tools/lib/reviewed-runtime-rollback-proof.js',
-])]);
+const APPROVAL_REVIEWED_PATHS = approvalPolicy.REVIEWED_PATHS;
 
 function safeRelative(relative) {
   const normalized = path.posix.normalize(String(relative || '').replaceAll(path.sep, '/'));
@@ -126,6 +108,42 @@ function requireRegular(root, relative) {
   return record;
 }
 
+function releaseAuthorityPaths(profile) {
+  if (profile === climateProfile.PROFILE_CCI) {
+    return { active: CCI_RELEASE_AUTHORITY_PATHS, prohibited: LEGACY_RELEASE_AUTHORITY_PATHS };
+  }
+  if (profile === climateProfile.PROFILE_LEGACY_CT40) {
+    return { active: LEGACY_RELEASE_AUTHORITY_PATHS, prohibited: CCI_RELEASE_AUTHORITY_PATHS };
+  }
+  throw new Error('unknown release authority profile: ' + profile);
+}
+
+function releaseAuthoritySnapshot(root, profile) {
+  const paths = releaseAuthorityPaths(profile);
+  const crossProfile = paths.prohibited.filter(function (relative) {
+    return inspectEntry(root, relative).exists;
+  });
+  if (crossProfile.length) {
+    throw new Error('cross-profile release authority appeared after preflight: ' + crossProfile.join(', '));
+  }
+  return {
+    profile,
+    artifacts: paths.active.map(function (relative) {
+      const record = inspectEntry(root, relative);
+      if (!record.regular_file) {
+        throw new Error('release authority artifact must remain a regular non-symlink file: ' + relative);
+      }
+      return { path: relative, sha256: record.sha256 };
+    }),
+  };
+}
+
+function assertReleaseAuthoritySnapshotUnchanged(expected, actual) {
+  if (JSON.stringify(expected) !== JSON.stringify(actual)) {
+    throw new Error('release authority package changed after preflight');
+  }
+}
+
 function resolveStagedRoot(repoRoot, requested) {
   if (typeof requested !== 'string' || !requested.trim() || requested.includes('\0')) {
     throw new Error('--staged requires a safe staged directory');
@@ -167,19 +185,12 @@ function runChecker(root, args) {
   }
 }
 
-function reviewedCommitBindingPasses(root, approval) {
-  const reviewed = approval && approval.reviewed_commit_sha;
-  if (!/^[0-9a-f]{40}$/.test(reviewed || '')) return false;
-  const ancestor = childProcess.spawnSync('git', ['merge-base', '--is-ancestor', reviewed, 'HEAD'], {
-    cwd: root,
-    encoding: 'utf8',
-  });
-  if (ancestor.status !== 0) return false;
-  const diff = childProcess.spawnSync('git', ['diff', '--quiet', reviewed, 'HEAD', '--', ...APPROVAL_REVIEWED_PATHS], {
-    cwd: root,
-    encoding: 'utf8',
-  });
-  return diff.status === 0;
+function runFinalReleaseProfileCheck(options, sourceRoot) {
+  if (typeof options.releasePolicyRunner === 'function') {
+    options.releasePolicyRunner(sourceRoot);
+    return;
+  }
+  runChecker(sourceRoot, ['tools/check-public-climate-release-profile.js', '--release']);
 }
 
 function verifyPinnedFiles(sourceRoot, stagedRoot) {
@@ -204,20 +215,27 @@ function verifyFooter(sourceRoot, stagedRoot) {
   }
 }
 
-function verifyApprovalArtifacts(sourceRoot, stagedRoot) {
+function verifyApprovalArtifacts(sourceRoot, stagedRoot, required = false) {
   const sourceApproval = inspectEntry(sourceRoot, approvalPolicy.APPROVAL_PATH);
   const stagedApproval = inspectEntry(stagedRoot, approvalPolicy.APPROVAL_PATH);
   const sourceBundle = inspectEntry(sourceRoot, approvalPolicy.SIGNATURE_BUNDLE_PATH);
   const stagedBundle = inspectEntry(stagedRoot, approvalPolicy.SIGNATURE_BUNDLE_PATH);
   const anyPresent = sourceApproval.exists || stagedApproval.exists || sourceBundle.exists || stagedBundle.exists;
-  if (!anyPresent) return;
+  if (!anyPresent) {
+    if (required) throw new Error('signed globe runtime asset approval is required for release mode');
+    return { status: 'absent' };
+  }
   if (![sourceApproval, stagedApproval, sourceBundle, stagedBundle].every(record => record.regular_file)) {
     throw new Error('approval and detached signature artifacts must both be regular source/staged files');
   }
   if (sourceApproval.sha256 !== stagedApproval.sha256 || sourceBundle.sha256 !== stagedBundle.sha256) {
     throw new Error('approval or detached signature bytes differ between source and staged trees');
   }
+  const sourceTrust = requireRegular(sourceRoot, approvalPolicy.TRUST_REGISTRY_PATH);
   const stagedTrust = requireRegular(stagedRoot, approvalPolicy.TRUST_REGISTRY_PATH);
+  if (sourceTrust.sha256 !== stagedTrust.sha256) {
+    throw new Error('approval trust-registry bytes differ between source and staged trees');
+  }
   let approval;
   let registry;
   let signatureBundle;
@@ -231,19 +249,68 @@ function verifyApprovalArtifacts(sourceRoot, stagedRoot) {
   const report = approvalPolicy.evaluateApprovalAuthority({
     approval,
     approval_text: stagedApproval.text,
+    approval_bytes: stagedApproval.bytes,
     approval_file_regular: true,
     trust_registry: registry,
     trust_registry_text: stagedTrust.text,
+    trust_registry_bytes: stagedTrust.bytes,
     trust_registry_file_regular: true,
     expected_trust_registry_sha256: approvalPolicy.EXPECTED_TRUST_REGISTRY_SHA256,
     signature_bundle: signatureBundle,
     signature_bundle_text: stagedBundle.text,
+    signature_bundle_bytes: stagedBundle.bytes,
     signature_bundle_file_regular: true,
-    reviewed_commit_binding_passed: reviewedCommitBindingPasses(sourceRoot, approval),
+    reviewed_artifact_binding_passed: approvalPolicy.reviewedArtifactBindingPasses(sourceRoot, approval),
   });
   if (report.status !== 'pass') {
     throw new Error('detached production approval verification failed: ' + report.failure_ids.join(', '));
   }
+  const approvalSchemaRecord = requireRegular(sourceRoot, notices.APPROVAL_SCHEMA_PATH);
+  let approvalSchema;
+  try { approvalSchema = JSON.parse(approvalSchemaRecord.text); }
+  catch (_) { throw new Error('globe runtime approval schema must be valid JSON'); }
+  const schemaErrors = validateJsonSchema(approval, approvalSchema);
+  if (approvalSchemaRecord.sha256 !== notices.EXPECTED_APPROVAL_SCHEMA_SHA256 || schemaErrors.length) {
+    throw new Error('signed globe runtime approval does not satisfy the exact v3 schema: ' + schemaErrors.join('; '));
+  }
+  const runtimeManifest = requireRegular(sourceRoot, GLOBE_RUNTIME_MANIFEST_PATH);
+  const assetPins = EXPECTED_ASSETS.map(function (asset) {
+    const record = requireRegular(sourceRoot, asset.path);
+    if (record.sha256 !== asset.sha256) throw new Error('reviewed globe asset SHA-256 drift: ' + asset.path);
+    return { path: asset.path, sha256: record.sha256 };
+  });
+  const noticeRecords = [
+    [notices.NOTICE_PATH, notices.EXPECTED_NOTICE_SHA256],
+    [notices.MANIFEST_PATH, notices.EXPECTED_MANIFEST_SHA256],
+    [notices.INTEGRATION_PATH, notices.EXPECTED_INTEGRATION_SHA256],
+  ];
+  const noticesExact = noticeRecords.every(function (entry) {
+    return requireRegular(sourceRoot, entry[0]).sha256 === entry[1];
+  });
+  const semanticPass = exactSignedRuntimeAssetApproval({
+    approval_review_present: true,
+    approval_file_regular: true,
+    approval,
+    approval_text: stagedApproval.text,
+    approval_bytes: stagedApproval.bytes,
+    trust_registry_file_regular: true,
+    trust_registry: registry,
+    trust_registry_text: stagedTrust.text,
+    trust_registry_bytes: stagedTrust.bytes,
+    signature_bundle_present: true,
+    signature_bundle_file_regular: true,
+    signature_bundle: signatureBundle,
+    signature_bundle_text: stagedBundle.text,
+    signature_bundle_bytes: stagedBundle.bytes,
+    reviewed_artifact_binding_passed: true,
+    notices_integrity_passed: noticesExact,
+    manifest_sha256: runtimeManifest.sha256,
+    asset_pins: assetPins,
+  }, approvalPolicy.EXPECTED_TRUST_REGISTRY_SHA256);
+  if (runtimeManifest.sha256 !== EXPECTED_MANIFEST_SHA256 || !semanticPass) {
+    throw new Error('signed globe runtime approval lacks exact rights, counsel, notice, asset, or release semantics');
+  }
+  return { status: 'pass', approval_sha256: report.approval_sha256 };
 }
 
 function reviewedRuntimePins(sourceRoot) {
@@ -286,7 +353,8 @@ function reviewedCommitBytes(sourceRoot, commit, relative) {
     maxBuffer: 32 * 1024 * 1024,
   });
   if (result.status !== 0) {
-    throw new Error('reviewed Git object is unavailable: ' + relative);
+    throw new Error('reviewed Git object is unavailable; fetch the pinned review commit: ' +
+      commit + ':' + relative);
   }
   return result.stdout;
 }
@@ -308,37 +376,104 @@ function verifyCt45RuntimeBytes(sourceRoot, stagedRoot) {
   return FINAL_CT45_REHASH_PATHS.length;
 }
 
+function reviewedCciRuntimePins(sourceRoot) {
+  const result = inspectCciReviewRequest(sourceRoot);
+  if (!result.pass) {
+    const details = [...result.errors, ...result.blockers]
+      .map(item => item.code + ': ' + item.detail).join(' | ');
+    throw new Error('CCI review request is not an exact bound candidate: ' + details);
+  }
+  const pins = new Map((result.request.subject?.artifact_pins || []).map(entry => [entry.path, entry.sha256]));
+  FINAL_CCI_REHASH_PATHS.forEach(relative => {
+    if (!/^[0-9a-f]{64}$/.test(pins.get(relative) || '')) {
+      throw new Error('CCI review request does not pin the final runtime path: ' + relative);
+    }
+  });
+  return pins;
+}
+
+function verifyCciRuntimeBytes(sourceRoot, stagedRoot) {
+  const pins = reviewedCciRuntimePins(sourceRoot);
+  FINAL_CCI_REHASH_PATHS.forEach(relative => {
+    const expected = pins.get(relative);
+    const source = requireRegular(sourceRoot, relative);
+    const staged = requireRegular(stagedRoot, relative);
+    if (source.sha256 !== expected) throw new Error('source CCI reviewed runtime drift: ' + relative);
+    if (staged.sha256 !== expected) throw new Error('final staged CCI reviewed runtime drift: ' + relative);
+    if (source.sha256 !== staged.sha256) throw new Error('final CCI source/staged mismatch: ' + relative);
+  });
+  return FINAL_CCI_REHASH_PATHS.length;
+}
+
+function verifyActiveRuntimeBytes(sourceRoot, stagedRoot, profile) {
+  if (profile === climateProfile.PROFILE_CCI) {
+    return { profile, count: verifyCciRuntimeBytes(sourceRoot, stagedRoot), boundary: 'cci_review_request' };
+  }
+  if (profile === climateProfile.PROFILE_LEGACY_CT40) {
+    return { profile, count: verifyCt45RuntimeBytes(sourceRoot, stagedRoot), boundary: 'ct42_ui_review' };
+  }
+  throw new Error('unknown final climate runtime profile: ' + profile);
+}
+
 function verifyFinalStagedIntegrity(options) {
   const sourceRoot = path.resolve(options.sourceRoot);
   const stagedRoot = path.resolve(options.stagedRoot);
   if (!['candidate', 'release'].includes(options.mode)) {
     throw new Error('final staged integrity requires an explicit candidate or release mode');
   }
+  const initialProfile = climateProfile.detectPublicClimateReleaseProfile(sourceRoot);
+  const initialAuthoritySnapshot = options.mode === 'release'
+    ? releaseAuthoritySnapshot(sourceRoot, initialProfile.profile)
+    : null;
   if (typeof options.childCheckRunner === 'function') {
     options.childCheckRunner();
   } else if (!options.skipChildChecks) {
     if (options.mode === 'release') {
-      runChecker(sourceRoot, ['tools/check-climate-production-readiness.js', '--release']);
+      runChecker(sourceRoot, ['tools/check-public-climate-release-profile.js', '--release']);
     }
     runChecker(sourceRoot, ['tools/check-globe-third-party-notices.js', '--staged', stagedRoot]);
     runChecker(sourceRoot, ['tools/check-globe-runtime-assets.js', '--staged', stagedRoot]);
   }
   if (typeof options.afterPrecheck === 'function') options.afterPrecheck();
+  const profileParity = climateProfile.assertPublicClimateReleaseProfileParity(sourceRoot, stagedRoot);
+  if (JSON.stringify(initialProfile.fingerprint) !== JSON.stringify(profileParity.source.fingerprint)) {
+    throw new Error('source climate release profile changed after preflight');
+  }
+  if (initialAuthoritySnapshot) {
+    assertReleaseAuthoritySnapshotUnchanged(
+      initialAuthoritySnapshot,
+      releaseAuthoritySnapshot(sourceRoot, profileParity.source.profile)
+    );
+    runFinalReleaseProfileCheck(options, sourceRoot);
+    assertReleaseAuthoritySnapshotUnchanged(
+      initialAuthoritySnapshot,
+      releaseAuthoritySnapshot(sourceRoot, profileParity.source.profile)
+    );
+  }
   verifyPinnedFiles(sourceRoot, stagedRoot);
   verifyFooter(sourceRoot, stagedRoot);
-  verifyApprovalArtifacts(sourceRoot, stagedRoot);
+  verifyApprovalArtifacts(sourceRoot, stagedRoot, options.mode === 'release');
   const publicReport = options.skipPublicSurface ? null : publicSurface.verifyPublicDeploySurface({
     sourceRoot,
     stagedRoot,
     mode: options.mode,
     ...(options.expectedVendorSha256 ? { expectedVendorSha256: options.expectedVendorSha256 } : {}),
   });
-  const ct45RehashCount = verifyCt45RuntimeBytes(sourceRoot, stagedRoot);
+  const runtimeRehash = verifyActiveRuntimeBytes(sourceRoot, stagedRoot, profileParity.source.profile);
+  if (initialAuthoritySnapshot) {
+    assertReleaseAuthoritySnapshotUnchanged(
+      initialAuthoritySnapshot,
+      releaseAuthoritySnapshot(sourceRoot, profileParity.source.profile)
+    );
+  }
   return {
     status: 'pass',
+    climate_profile: runtimeRehash.profile,
+    runtime_review_boundary: runtimeRehash.boundary,
     pinned_file_count: PINNED_FILES.length,
     public_file_count: publicReport ? publicReport.file_count : null,
-    ct45_rehash_count: ct45RehashCount,
+    runtime_rehash_count: runtimeRehash.count,
+    ct45_rehash_count: runtimeRehash.profile === climateProfile.PROFILE_LEGACY_CT40 ? runtimeRehash.count : 0,
   };
 }
 
@@ -361,53 +496,58 @@ function copyFixtureFile(sourceRoot, targetRoot, relative) {
   fs.copyFileSync(path.join(sourceRoot, relative), destination);
 }
 
-function runFixtureGit(root, args) {
-  const result = childProcess.spawnSync('git', args, { cwd: root, encoding: 'utf8' });
-  if (result.status !== 0) throw new Error('fixture git failed: ' + (result.stderr || result.stdout || args.join(' ')));
-  return result.stdout.trim();
+function writeFixtureFile(targetRoot, relative, bytes) {
+  const destination = path.join(targetRoot, relative);
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  fs.writeFileSync(destination, bytes);
 }
 
-function runApprovalCommitBindingSelfTest() {
+function writeReviewedRuntimeFixture(targetRoot, relative) {
+  writeFixtureFile(
+    targetRoot,
+    relative,
+    reviewedCommitBytes(ROOT, EXPECTED_UI_REVIEW_COMMIT, relative)
+  );
+}
+
+function runApprovalArtifactBindingSelfTest() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-approval-binding-'));
   try {
     APPROVAL_REVIEWED_PATHS.forEach(relative => copyFixtureFile(ROOT, root, relative));
-    runFixtureGit(root, ['init', '-q']);
-    runFixtureGit(root, ['add', '.']);
-    runFixtureGit(root, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid', 'commit', '-q', '-m', 'reviewed']);
-    const reviewed = runFixtureGit(root, ['rev-parse', 'HEAD']);
-    assert.equal(reviewedCommitBindingPasses(root, { reviewed_commit_sha: reviewed }), true,
-      'exact reviewed approval scope must pass');
+    const pins = approvalPolicy.reviewedArtifactPins(root);
+    const approval = {
+      reviewed_artifact_pins: pins,
+      reviewed_artifact_pin_digest: approvalPolicy.artifactPinDigest(pins),
+    };
+    assert.equal(approvalPolicy.reviewedArtifactBindingPasses(root, approval), true,
+      'exact reviewed approval scope must pass without Git history');
 
     fs.writeFileSync(path.join(root, 'unreviewed-note.txt'), 'outside approval scope\n');
-    runFixtureGit(root, ['add', 'unreviewed-note.txt']);
-    runFixtureGit(root, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid', 'commit', '-q', '-m', 'outside scope']);
-    assert.equal(reviewedCommitBindingPasses(root, { reviewed_commit_sha: reviewed }), true,
-      'unrelated descendant changes must not falsify scoped approval binding');
+    assert.equal(approvalPolicy.reviewedArtifactBindingPasses(root, approval), true,
+      'unrelated files must not falsify scoped approval binding');
 
     fs.appendFileSync(path.join(root, 'js/gaia-utils.js'), '\n// post-review foundation drift\n');
-    runFixtureGit(root, ['add', 'js/gaia-utils.js']);
-    runFixtureGit(root, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid', 'commit', '-q', '-m', 'runtime drift']);
-    assert.equal(reviewedCommitBindingPasses(root, { reviewed_commit_sha: reviewed }), false,
-      'foundation runtime drift must invalidate approval commit binding');
+    assert.equal(approvalPolicy.reviewedArtifactBindingPasses(root, approval), false,
+      'foundation runtime drift must invalidate approval artifact binding');
 
     const reviewRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-approval-ui-review-binding-'));
     try {
       APPROVAL_REVIEWED_PATHS.forEach(relative => copyFixtureFile(ROOT, reviewRoot, relative));
-      runFixtureGit(reviewRoot, ['init', '-q']);
-      runFixtureGit(reviewRoot, ['add', '.']);
-      runFixtureGit(reviewRoot, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid',
-        'commit', '-q', '-m', 'reviewed']);
-      const reviewCommit = runFixtureGit(reviewRoot, ['rev-parse', 'HEAD']);
+      const reviewPins = approvalPolicy.reviewedArtifactPins(reviewRoot);
+      const reviewApproval = {
+        reviewed_artifact_pins: reviewPins,
+        reviewed_artifact_pin_digest: approvalPolicy.artifactPinDigest(reviewPins),
+      };
       fs.appendFileSync(path.join(reviewRoot, UI_REVIEW_PATH), '\n');
-      runFixtureGit(reviewRoot, ['add', UI_REVIEW_PATH]);
-      runFixtureGit(reviewRoot, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid',
-        'commit', '-q', '-m', 'ui review drift']);
-      assert.equal(reviewedCommitBindingPasses(reviewRoot, { reviewed_commit_sha: reviewCommit }), false,
-        'UI review attestation drift must invalidate approval commit binding');
+      assert.equal(approvalPolicy.reviewedArtifactBindingPasses(reviewRoot, reviewApproval), false,
+        'UI review attestation drift must invalidate approval artifact binding');
     } finally {
       fs.rmSync(reviewRoot, { recursive: true, force: true });
     }
-    return 3;
+    const reordered = { ...approval, reviewed_artifact_pins: [...pins].reverse() };
+    assert.equal(approvalPolicy.reviewedArtifactBindingPasses(root, reordered), false,
+      'noncanonical pin order must fail');
+    return 4;
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
@@ -417,13 +557,35 @@ function makeSelfTestFixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-final-integrity-'));
   const staged = path.join(root, '_deploy');
   fs.mkdirSync(staged);
-  const parityPaths = [...new Set(PINNED_FILES.map(entry => entry.path).concat(FINAL_CT45_REHASH_PATHS))];
-  parityPaths.forEach(function (relative) {
+  PINNED_FILES.map(entry => entry.path).forEach(function (relative) {
     copyFixtureFile(ROOT, root, relative);
     copyFixtureFile(ROOT, staged, relative);
   });
+  // A policy self-test needs a stable known-good subject. Build that subject
+  // from the exact Git objects named by the independent UI review instead of
+  // silently treating the mutable working tree as reviewed. The real --staged
+  // path still verifies today's source and staged bytes against these pins.
+  FINAL_CT45_REHASH_PATHS.forEach(function (relative) {
+    writeReviewedRuntimeFixture(root, relative);
+    writeReviewedRuntimeFixture(staged, relative);
+  });
   copyFixtureFile(ROOT, root, UI_REVIEW_PATH);
   return { root, staged };
+}
+
+function makeReleaseAuthoritySelfTestFixture(profile) {
+  const fixture = makeSelfTestFixture();
+  if (profile === climateProfile.PROFILE_CCI) {
+    climateProfile.ENTRYPOINTS.forEach(function (relative) {
+      copyFixtureFile(ROOT, fixture.root, relative);
+      copyFixtureFile(ROOT, fixture.staged, relative);
+    });
+  }
+  const paths = releaseAuthorityPaths(profile).active;
+  paths.forEach(function (relative) {
+    writeFixtureFile(fixture.root, relative, JSON.stringify({ fixture: relative }) + '\n');
+  });
+  return fixture;
 }
 
 function makePublicSurfaceSelfTestFixture() {
@@ -439,6 +601,10 @@ function makePublicSurfaceSelfTestFixture() {
     if (fs.existsSync(sourcePath)) fs.copyFileSync(sourcePath, fixtureSource);
     else fs.writeFileSync(fixtureSource, 'self-test dependency placeholder: ' + relative + '\n');
     fs.copyFileSync(fixtureSource, fixtureStaged);
+  });
+  FINAL_CT45_REHASH_PATHS.forEach(function (relative) {
+    writeReviewedRuntimeFixture(root, relative);
+    writeReviewedRuntimeFixture(staged, relative);
   });
   copyFixtureFile(ROOT, root, UI_REVIEW_PATH);
   fs.writeFileSync(path.join(staged, publicSurface.CANDIDATE_MARKER_PATH), publicSurface.CANDIDATE_MARKER_TEXT);
@@ -464,8 +630,52 @@ function assertMutationRejected(id, mutate, afterPrecheck) {
   }
 }
 
+function assertReleaseAuthorityMutationRejected(id, profile, afterPrecheck, duringPolicy) {
+  const fixture = makeReleaseAuthoritySelfTestFixture(profile);
+  let policyCalls = 0;
+  try {
+    assert.throws(function () {
+      verifyFinalStagedIntegrity({
+        sourceRoot: fixture.root,
+        stagedRoot: fixture.staged,
+        mode: 'release',
+        skipPublicSurface: true,
+        childCheckRunner() {},
+        afterPrecheck: function () { afterPrecheck(fixture); },
+        releasePolicyRunner: function () {
+          policyCalls += 1;
+          if (duringPolicy) duringPolicy(fixture);
+        },
+      });
+    }, /release authority|cross-profile/, id + ' unexpectedly passed');
+    assert.equal(policyCalls, duringPolicy ? 1 : 0,
+      id + ' did not preserve the expected post-precheck profile-policy order');
+  } finally {
+    fs.rmSync(fixture.root, { recursive: true, force: true });
+  }
+}
+
+function inspectCheckedInRuntimeReviewState() {
+  try {
+    return {
+      status: 'reviewed',
+      checked_path_count: verifyCt45RuntimeBytes(ROOT, ROOT),
+      first_drift_path: null,
+    };
+  } catch (error) {
+    const match = /^source reviewed runtime projection drift: (.+)$/.exec(error.message);
+    if (!match || !FINAL_CT45_REHASH_PATHS.includes(match[1])) throw error;
+    return {
+      status: 'pending_independent_review',
+      checked_path_count: 0,
+      first_drift_path: match[1],
+    };
+  }
+}
+
 function runSelfTest() {
-  const approvalBindingCases = runApprovalCommitBindingSelfTest();
+  const checkedInReview = inspectCheckedInRuntimeReviewState();
+  const approvalBindingCases = runApprovalArtifactBindingSelfTest();
   const fixture = makeSelfTestFixture();
   try {
     assert.throws(() => verifyFinalStagedIntegrity({
@@ -573,6 +783,73 @@ function runSelfTest() {
     fs.rmSync(cleanupFixture.root, { recursive: true, force: true });
   }
 
+  assertReleaseAuthorityMutationRejected(
+    'post-precheck legacy authority replacement',
+    climateProfile.PROFILE_LEGACY_CT40,
+    function (value) {
+      fs.appendFileSync(path.join(value.root, LEGACY_RELEASE_AUTHORITY_PATHS[0]), 'tampered\n');
+    }
+  );
+  assertReleaseAuthorityMutationRejected(
+    'post-precheck CCI authority deletion',
+    climateProfile.PROFILE_CCI,
+    function (value) {
+      fs.unlinkSync(path.join(value.root, CCI_RELEASE_AUTHORITY_PATHS[0]));
+    }
+  );
+  assertReleaseAuthorityMutationRejected(
+    'post-precheck legacy cross-profile authority addition',
+    climateProfile.PROFILE_LEGACY_CT40,
+    function (value) {
+      writeFixtureFile(value.root, CCI_RELEASE_AUTHORITY_PATHS[0], '{}\n');
+    }
+  );
+  assertReleaseAuthorityMutationRejected(
+    'during final CCI profile check authority mutation',
+    climateProfile.PROFILE_CCI,
+    function () {},
+    function (value) {
+      fs.appendFileSync(path.join(value.root, CCI_RELEASE_AUTHORITY_PATHS[0]), 'tampered during recheck\n');
+    }
+  );
+
+  const releaseWithoutAssetApproval = makeReleaseAuthoritySelfTestFixture(climateProfile.PROFILE_LEGACY_CT40);
+  let releasePolicyCalls = 0;
+  try {
+    assert.throws(() => verifyFinalStagedIntegrityWithCleanup({
+      sourceRoot: releaseWithoutAssetApproval.root,
+      stagedRoot: releaseWithoutAssetApproval.staged,
+      mode: 'release',
+      skipPublicSurface: true,
+      childCheckRunner() {},
+      releasePolicyRunner() { releasePolicyCalls += 1; },
+    }), /signed globe runtime asset approval is required/,
+    'release mode must reject an otherwise routed profile without signed asset approval');
+    assert.equal(releasePolicyCalls, 1,
+      'release mode must re-run its complete profile policy after the precheck window');
+    assert.equal(fs.existsSync(releaseWithoutAssetApproval.staged), false,
+      'missing release asset approval must remove staged output');
+  } finally {
+    fs.rmSync(releaseWithoutAssetApproval.root, { recursive: true, force: true });
+  }
+
+  const crossProfileFixture = makeSelfTestFixture();
+  try {
+    climateProfile.ENTRYPOINTS.forEach(relative => copyFixtureFile(ROOT, crossProfileFixture.staged, relative));
+    assert.throws(() => verifyFinalStagedIntegrityWithCleanup({
+      sourceRoot: crossProfileFixture.root,
+      stagedRoot: crossProfileFixture.staged,
+      mode: 'candidate',
+      skipChildChecks: true,
+      skipPublicSurface: true,
+    }), /profiles differ/,
+    'source legacy/staged CCI profile substitution must fail');
+    assert.equal(fs.existsSync(crossProfileFixture.staged), false,
+      'cross-profile staged substitution must remove staged output');
+  } finally {
+    fs.rmSync(crossProfileFixture.root, { recursive: true, force: true });
+  }
+
   const postChildCt45Fixture = makeSelfTestFixture();
   let childChecksCompleted = false;
   try {
@@ -650,9 +927,13 @@ function runSelfTest() {
   } finally {
     fs.rmSync(publicFixture.root, { recursive: true, force: true });
   }
-  process.stdout.write('Final staged production integrity self-test: PASS (18 fail-closed ' +
+  process.stdout.write('Final staged production integrity self-test: PASS (24 fail-closed ' +
     'filesystem/tamper/cleanup/public-surface/mode cases; ' + approvalBindingCases +
-    ' scoped approval commit-binding cases; post-child CT-45 mutation rejected and cleaned)\n');
+    ' scoped approval artifact-binding cases; release authority revalidated after precheck; ' +
+    'post-child CT-45 mutation rejected and cleaned; checked-in runtime ' +
+    (checkedInReview.status === 'reviewed'
+      ? 'reviewed across ' + checkedInReview.checked_path_count + ' paths'
+      : 'pending independent review at ' + checkedInReview.first_drift_path) + ')\n');
 }
 
 function runCli(argv) {
@@ -671,8 +952,9 @@ function runCli(argv) {
   const report = verifyFinalStagedIntegrityWithCleanup({ sourceRoot: ROOT, stagedRoot, mode });
   process.stdout.write('Final staged production integrity: PASS (' + report.pinned_file_count +
     ' pinned notice/trust files, ' + report.public_file_count +
-    ' exact public files, ' + report.ct45_rehash_count +
-    ' final CT-45 reviewed runtime rehashes, footer parity, approval boundary)\n');
+    ' exact public files, ' + report.runtime_rehash_count +
+    ' final ' + report.climate_profile + ' runtime rehashes via ' + report.runtime_review_boundary +
+    ', footer parity, approval boundary)\n');
 }
 
 if (require.main === module) {
@@ -686,9 +968,13 @@ if (require.main === module) {
 module.exports = {
   PINNED_FILES,
   APPROVAL_REVIEWED_PATHS,
+  FINAL_CCI_REHASH_PATHS,
   FINAL_CT45_REHASH_PATHS,
   inspectEntry,
   resolveStagedRoot,
+  verifyActiveRuntimeBytes,
+  verifyApprovalArtifacts,
+  verifyCciRuntimeBytes,
   verifyCt45RuntimeBytes,
   verifyFinalStagedIntegrity,
 };

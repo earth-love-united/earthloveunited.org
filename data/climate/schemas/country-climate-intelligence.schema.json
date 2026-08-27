@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://earthloveunited.org/data/climate/schemas/country-climate-intelligence.schema.json",
+  "title": "Country Climate Intelligence runtime v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "schema_ref",
+    "release",
+    "source_catalog",
+    "metric_definitions",
+    "lens_catalog",
+    "countries",
+    "coverage",
+    "lens_orders",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "schema_ref": {"const": "data/climate/schemas/country-climate-intelligence.schema.json"},
+    "release": {"$ref": "#/$defs/release"},
+    "source_catalog": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/source"}
+    },
+    "metric_definitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "emissions.fossil_co2.territorial",
+        "emissions.fossil_co2.territorial_per_capita",
+        "emissions.fossil_co2.cumulative",
+        "emissions.fossil_co2.consumption",
+        "emissions.fossil_co2.net_transfer",
+        "emissions.land_use_co2.net",
+        "population.wpp_medium_projection",
+        "electricity.clean_share",
+        "electricity.clean_share_change_5y",
+        "electricity.fossil_share",
+        "electricity.wind_solar_share",
+        "electricity.generation_share.bioenergy",
+        "electricity.generation_share.coal",
+        "electricity.generation_share.gas",
+        "electricity.generation_share.hydro",
+        "electricity.generation_share.nuclear",
+        "electricity.generation_share.other_fossil",
+        "electricity.generation_share.other_renewables",
+        "electricity.generation_share.solar",
+        "electricity.generation_share.wind",
+        "electricity.carbon_intensity",
+        "electricity.emissions",
+        "climate.temperature.observed_trend",
+        "climate.precipitation.observed_trend",
+        "climate.temperature.change",
+        "climate.precipitation.change"
+      ],
+      "patternProperties": {
+        "^[a-z][a-z0-9_.]+$": {"$ref": "#/$defs/metricDefinition"}
+      }
+    },
+    "lens_catalog": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"$ref": "#/$defs/lens"}
+    },
+    "countries": {
+      "type": "array",
+      "minItems": 249,
+      "maxItems": 249,
+      "items": {"$ref": "#/$defs/country"}
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/coverage"}
+    },
+    "lens_orders": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["carbon", "power", "physical"],
+      "properties": {
+        "carbon": {"$ref": "#/$defs/lensOrder"},
+        "power": {"$ref": "#/$defs/lensOrder"},
+        "physical": {"$ref": "#/$defs/lensOrder"}
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "composite_score",
+        "finance_judgment",
+        "mismatched_scope_deltas",
+        "offsets_adjust_country_record",
+        "performance_language",
+        "scope_match_function_available",
+        "source_comparison_rule",
+        "target_assessment"
+      ],
+      "properties": {
+        "composite_score": {"const": false},
+        "finance_judgment": {"const": false},
+        "mismatched_scope_deltas": {"const": false},
+        "offsets_adjust_country_record": {"const": false},
+        "performance_language": {"const": false},
+        "scope_match_function_available": {"const": true},
+        "source_comparison_rule": {"type": "string", "minLength": 1},
+        "target_assessment": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "release": {
+      "type": "object",
+      "required": [
+        "id",
+        "status",
+        "review_state",
+        "production_runtime_release",
+        "entity_count",
+        "comparison_baseline_year",
+        "generated_on",
+        "input_artifacts",
+        "prior_runtime_retained_for_rollback"
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["candidate", "production"]},
+        "review_state": {"enum": ["normalized_factual_candidate_pending_source_revalidation", "normalized_factual_candidate_pending_independent_scientific_review", "independently_reviewed"]},
+        "production_runtime_release": {"type": "boolean"},
+        "entity_count": {"const": 249},
+        "comparison_baseline_year": {"const": 2024},
+        "generated_on": {"type": "string", "format": "date"},
+        "input_artifacts": {"type": "object", "minProperties": 5},
+        "prior_runtime_retained_for_rollback": {"type": "string", "minLength": 1}
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": ["id", "title", "version", "source_url", "licence", "attribution", "review_state", "public_role", "values_in_release"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "source_url": {"type": "string", "format": "uri"},
+        "licence": {"type": "string", "minLength": 1},
+        "attribution": {"type": "string", "minLength": 1},
+        "review_state": {"enum": ["approved", "pending"]},
+        "public_role": {"enum": ["metric_provenance", "official_context_metadata", "citation_only", "gap_provenance"]},
+        "values_in_release": {"type": "boolean"}
+      }
+    },
+    "metricDefinition": {
+      "type": "object",
+      "required": ["label", "family", "comparison_period", "public_role"],
+      "properties": {
+        "label": {"type": "string", "minLength": 1},
+        "family": {"enum": ["carbon", "denominator", "power", "physical"]},
+        "comparison_period": {"type": "string", "minLength": 1},
+        "public_role": {"enum": ["comparison", "context", "methods", "non_comparable_context", "separate_context", "exploration"]},
+        "direction": {"const": "descending"}
+      }
+    },
+    "lens": {
+      "type": "object",
+      "required": ["id", "label", "heading", "comparison_metric_id", "period", "evidence_status", "order", "interpretation", "rail_term", "visual"],
+      "properties": {
+        "id": {"enum": ["carbon", "power", "physical"]},
+        "label": {"type": "string", "minLength": 1},
+        "heading": {"type": "string", "minLength": 1},
+        "comparison_metric_id": {"type": "string", "minLength": 1},
+        "period": {"type": "string", "minLength": 1},
+        "evidence_status": {"enum": ["actual", "estimated", "modeled"]},
+        "order": {"const": "descending"},
+        "interpretation": {"type": "string", "minLength": 1},
+        "rail_term": {"type": "string", "minLength": 1},
+        "visual": {"type": "object"}
+      }
+    },
+    "country": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["country_id", "name", "iso_alpha2", "iso_alpha3", "iso_numeric", "flag_emoji", "metrics", "official_context"],
+      "properties": {
+        "country_id": {"pattern": "^iso3166-1:[A-Z]{3}$"},
+        "name": {"type": "string", "minLength": 1},
+        "iso_alpha2": {"pattern": "^[A-Z]{2}$"},
+        "iso_alpha3": {"pattern": "^[A-Z]{3}$"},
+        "iso_numeric": {"pattern": "^[0-9]{3}$"},
+        "flag_emoji": {"type": "string", "minLength": 1},
+        "metrics": {
+          "type": "object",
+          "minProperties": 26,
+          "maxProperties": 26,
+          "additionalProperties": {"$ref": "#/$defs/metric"}
+        },
+        "official_context": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "metric": {
+      "type": "object",
+      "required": ["id", "value", "unit", "period", "status", "scope", "scope_fingerprint", "uncertainty", "fact_ids", "source_ids", "review_state", "transformation", "gap_reason"],
+      "properties": {
+        "id": {"pattern": "^[a-z][a-z0-9_.]+$"},
+        "value": {"type": ["number", "null"]},
+        "unit": {"type": ["string", "null"]},
+        "period": {"type": ["object", "null"]},
+        "status": {"enum": ["actual", "estimated", "modeled", null]},
+        "evidence_kind": {"enum": ["reanalysis"]},
+        "scope": {"type": ["object", "null"]},
+        "scope_fingerprint": {"anyOf": [{"pattern": "^[a-f0-9]{64}$"}, {"type": "null"}]},
+        "uncertainty": {"type": ["object", "null"]},
+        "fact_ids": {"type": "array", "items": {"type": "string"}},
+        "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "review_state": {"enum": ["source_validated_candidate", "normalized_candidate_pending_source_revalidation", "normalized_candidate_pending_independent_scientific_review", "gap_reviewed", "independently_reviewed"]},
+        "transformation": {"type": ["string", "null"]},
+        "gap_reason": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "required": ["code", "detail"],
+              "properties": {
+                "code": {
+                  "enum": [
+                    "exact_period_missing",
+                    "matched_endpoint_missing",
+                    "projection_percentile_or_scenario_missing",
+                    "source_entity_missing",
+                    "source_snapshot_empty",
+                    "source_value_missing",
+                    "territorial_numerator_missing",
+                    "three_model_coverage_missing",
+                    "year_matched_population_missing"
+                  ]
+                },
+                "detail": {"type": "string", "minLength": 1}
+              }
+            }
+          ]
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["available", "gaps"],
+      "properties": {
+        "available": {"type": "integer", "minimum": 0, "maximum": 249},
+        "gaps": {"type": "integer", "minimum": 0, "maximum": 249}
+      }
+    },
+    "lensOrder": {
+      "type": "object",
+      "required": ["lens_id", "metric_id", "period", "comparison_class", "rule", "eligible_count", "unranked_count", "ordered", "unranked"],
+      "properties": {
+        "lens_id": {"enum": ["carbon", "power", "physical"]},
+        "metric_id": {"type": "string", "minLength": 1},
+        "period": {"type": "string", "minLength": 1},
+        "comparison_class": {"enum": ["source_homogeneous_metric_order", "modeled_exploration_order"]},
+        "rule": {"type": "string", "minLength": 1},
+        "eligible_count": {"type": "integer", "minimum": 0, "maximum": 249},
+        "unranked_count": {"type": "integer", "minimum": 0, "maximum": 249},
+        "ordered": {"type": "array"},
+        "unranked": {"type": "array"}
+      }
+    }
+  }
+}

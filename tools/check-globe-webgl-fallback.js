@@ -37,119 +37,115 @@ function compile() {
   const guidedCss = text('css/guided-first-orbit.css');
   const smoke = text('tools/smoke-test.js');
   const architecture = text('ARCHITECTURE.md');
-  const candidate = json('data/climate/runtime/country-factual-candidate.json');
+  const runtime = json('data/climate/runtime/country-climate-intelligence.json');
+  const carbon = runtime.lens_orders.carbon;
+  const candidateState = runtime.release.status === 'candidate'
+    && runtime.release.review_state === 'normalized_factual_candidate_pending_independent_scientific_review'
+    && runtime.release.production_runtime_release === false;
+  const productionState = runtime.release.status === 'production'
+    && runtime.release.review_state === 'independently_reviewed'
+    && runtime.release.production_runtime_release === true;
   const fallbackHtml = between(html, '<section id="globe-fallback"', '</section>');
+  const fallbackOpenTag = (fallbackHtml.match(/^<section\b[^>]*>/) || [''])[0];
   const fallbackRuntime = between(globe, '  showFallback(reasonCode)', '  setTheme(theme)');
   const detailRuntime = between(globe, '  _renderFallbackCountry(iso, focusDetail)', '  hideFallback(options = {})');
-  const rankRuntime = between(globe, '  _renderRankRail()', '  _updateRankRail()');
-  const factual = candidate.countries.filter(country => country.emissions?.status === 'reviewed_factual').length;
-  const gaps = candidate.countries.filter(country => country.emissions?.status === 'source_gap').length;
 
   return {
-    schema_version: '1.0.0',
+    schema_version: '2.0.0',
     runtime: {
-      vendor_failure_route: app.includes("safeCall('GlobeModule', 'showFallback', 'library_load_failed')") &&
-        app.includes('return false;'),
+      vendor_failure_route: app.includes("safeCall('GlobeModule', 'showFallback', 'library_load_failed')") && app.includes('return false;'),
       boolean_initialization: app.includes('GlobeModule._initialized = GlobeModule.init() === true;'),
-      webgl_gate: globe.includes('hasWebGLSupport()') &&
-        globe.includes('if (!this.hasWebGLSupport())') &&
-        globe.includes("this.showFallback('webgl_unavailable')"),
-      constructor_boundary: /try\s*\{\s*renderer = new window\.Globe/.test(globe) &&
-        globe.includes("this.showFallback('globe_construction_failed')") &&
-        globe.includes('this._teardownFailedRenderer();'),
+      webgl_gate: globe.includes('hasWebGLSupport()') && globe.includes('if (!this.hasWebGLSupport())') && globe.includes("this.showFallback('webgl_unavailable')"),
+      constructor_boundary: /try\s*\{\s*renderer = new window\.Globe/.test(globe) && globe.includes("this.showFallback('globe_construction_failed')") && globe.includes('this._teardownFailedRenderer();'),
       missing_constructor_route: globe.includes("this.showFallback('library_unavailable')"),
-      retry_route: app.includes('async retryGlobe()') &&
-        globe.includes("if (name === 'retry') safeCall('App', 'retryGlobe')"),
-      stable_reason_codes: ['library_load_failed', 'library_unavailable', 'webgl_unavailable', 'globe_construction_failed', 'globe_container_missing']
-        .every(code => globe.includes(code)),
-      preparation_failure_codes: ['candidate_data_unavailable', 'country_geometry_unavailable', 'visual_assets_unavailable']
-        .every(code => globe.includes(code)),
-      user_invoked_browser: html.includes('aria-label="Browse all 249 evidence records"') &&
-        globe.includes("stableReason === 'evidence_browse_requested'") &&
-        globe.includes("evidence_browse_requested: 'All 249 registry entities"),
-      guarded_browser_return: globe.includes('closeEvidenceBrowser()') &&
-        globe.includes("querySelectorAll('canvas').length === 1") &&
-        globe.includes('this._teardownFailedRenderer();'),
-      context_loss_route: globe.includes("addEventListener('webglcontextlost', this._onCanvasWebGLContextLost)") &&
-        globe.includes("this.showFallback('webgl_unavailable')"),
-      contracts_registered: globe.includes("'hasWebGLSupport'") && globe.includes("'showFallback'") &&
-        globe.includes("'hideFallback'") && globe.includes("'closeEvidenceBrowser'") &&
-        globe.includes("'globe:fallback-shown'") && app.includes("'retryGlobe'") &&
-        app.includes("'browseEvidence'") && app.includes("'globe:fallback-shown'"),
+      retry_route: app.includes('async retryGlobe()') && globe.includes("if (name === 'retry') safeCall('App', 'retryGlobe')"),
+      stable_reason_codes: ['library_load_failed', 'library_unavailable', 'webgl_unavailable', 'globe_construction_failed', 'globe_container_missing'].every(code => globe.includes(code)),
+      preparation_failure_codes: ['candidate_data_unavailable', 'country_geometry_unavailable', 'visual_assets_unavailable'].every(code => globe.includes(code)),
+      user_invoked_browser: html.includes('aria-label="Browse all 249 climate intelligence records"') && globe.includes("stableReason === 'evidence_browse_requested'") && globe.includes("evidence_browse_requested: 'All 249 registry entities"),
+      guarded_browser_return: globe.includes('closeEvidenceBrowser()') && globe.includes("querySelectorAll('canvas').length === 1") && globe.includes('this._teardownFailedRenderer();'),
+      context_loss_route: globe.includes("addEventListener('webglcontextlost', this._onCanvasWebGLContextLost)") && globe.includes("this.showFallback('webgl_unavailable')"),
+      renderer_lifecycle: app.includes("safeCall('GlobeModule', 'pause')") &&
+        app.includes("safeCall('GlobeModule', 'resume')") &&
+        globe.includes("document.addEventListener('visibilitychange', this._onVisibilityChange)") &&
+        globe.includes('this.world.pauseAnimation()') && globe.includes('this.world.resumeAnimation()') &&
+        fallbackRuntime.includes('this.pause();') && fallbackRuntime.includes('this._syncAnimationLifecycle();'),
+      contracts_registered: globe.includes("'pause'") && globe.includes("'resume'") && globe.includes("'hasWebGLSupport'") && globe.includes("'showFallback'") && globe.includes("'hideFallback'") && globe.includes("'closeEvidenceBrowser'") && globe.includes("'globe:fallback-shown'") && globe.includes("'globe:fallback-hidden'") && globe.includes("'globe:country-navigated'") && guided.includes("EventBus.on('globe:fallback-hidden', _onFallbackHidden)") && guided.includes("EventBus.on('globe:country-navigated', _onCountryNavigated)") && app.includes("'retryGlobe'") && app.includes("'browseEvidence'") && app.includes("'globe:fallback-shown'"),
+      lens_parity: globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getRailRows'") && globe.includes("safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getCountryView'") && globe.includes('this._renderFallbackEvidence();'),
     },
     accessibility: {
       body_level_region: html.indexOf('<section id="globe-fallback"') > html.indexOf('<div id="globeViz" aria-hidden="true"></div>') &&
-        fallbackHtml.includes('aria-labelledby="globe-fallback-title"'),
-      closed_inert: fallbackHtml.includes('hidden aria-hidden="true"') &&
+        fallbackOpenTag.includes('role="region"') && !fallbackOpenTag.includes('aria-modal=') && fallbackHtml.includes('aria-labelledby="globe-fallback-title"'),
+      closed_inert: /\shidden(?:\s|>)/.test(fallbackOpenTag) &&
+        /\saria-hidden="true"(?:\s|>)/.test(fallbackOpenTag) &&
         css.includes('#globe-fallback[hidden] { display: none !important; }'),
-      labelled_status: fallbackHtml.includes('id="globe-fallback-title" tabindex="-1"') &&
-        fallbackHtml.includes('role="status" aria-live="polite"'),
-      searchable_evidence: fallbackHtml.includes('id="globe-fallback-search"') &&
-        fallbackHtml.includes('id="globe-fallback-country-list"') &&
-        fallbackRuntime.includes("data-fallback-country-iso") &&
-        fallbackRuntime.includes("if (name === 'close')"),
-      focus_restoration: app.includes("safeCall('GlobeModule', 'rememberFallbackOpener', document.activeElement)") &&
-        app.includes("safeCall('GlobeModule', 'hideFallback', { restoreFocus: true, preserveOpener: false })") &&
-        globe.includes('requestAnimationFrame(() => opener.focus({ preventScroll: true }))'),
-      touch_targets_44px: css.includes('.elu-fallback-actions .glass-btn') &&
-        css.includes('.elu-fallback-search input') &&
-        css.includes('min-height: 44px;') && css.includes('min-height: 52px;'),
-      reduced_motion: css.includes('@media (prefers-reduced-motion: reduce)') &&
-        css.includes('#globe-fallback *') && css.includes('transition: none !important;'),
-      theme_compatible: css.includes('background: var(--hud-bg-strong);') &&
-        css.includes('html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong'),
-      stacking_safe: css.includes('z-index: 60;') &&
-        css.includes('body.globe-fallback-active #globeViz') &&
-        css.includes('body.globe-fallback-active #globe-back-btn'),
+      labelled_status: fallbackHtml.includes('id="globe-fallback-title" tabindex="-1"') && fallbackHtml.includes('role="status" aria-live="polite"'),
+      searchable_evidence: fallbackHtml.includes('id="globe-fallback-search"') && fallbackHtml.includes('id="globe-fallback-country-list"') && fallbackRuntime.includes('data-fallback-country-iso') && fallbackRuntime.includes("if (name === 'close')"),
+      lens_and_tutorial_operable: !globe.includes('_setFallbackIsolation(') && !globe.includes('_onFallbackKeydown') &&
+        html.includes('id="climate-lens-controls"') && html.includes('id="guided-orbit"') &&
+        fallbackRuntime.includes('this._bindLensControls();') &&
+        guidedCss.includes('body.globe-fallback-active .guided-orbit[data-mode="interaction"] .guided-orbit-card') &&
+        guidedCss.includes('@media (min-width: 801px) and (max-width: 1280px)') &&
+        guidedCss.includes('top: auto;') && guidedCss.includes('right: 12px;') &&
+        guidedCss.includes('bottom: max(12px, env(safe-area-inset-bottom));') &&
+        guidedCss.includes('(max-height: 767px)') && guidedCss.includes('top: 132px;'),
+      focus_restoration: app.includes("safeCall('GlobeModule', 'rememberFallbackOpener', document.activeElement)") && app.includes("safeCall('GlobeModule', 'hideFallback', { restoreFocus: true, preserveOpener: false })") && globe.includes('requestAnimationFrame(() => opener.focus({ preventScroll: true }))'),
+      touch_targets_44px: css.includes('.elu-fallback-actions .glass-btn') && css.includes('.elu-fallback-search input') && css.includes('min-height: 44px;') && css.includes('min-height: 52px;'),
+      reduced_motion: css.includes('@media (prefers-reduced-motion: reduce)') && css.includes('#globe-fallback *') && css.includes('transition: none !important;'),
+      theme_compatible: css.includes('background: var(--hud-bg-strong);') && css.includes('html[data-theme="light"] body.globe-mode .elu-fallback-detail-value strong'),
+      stacking_safe: css.includes('z-index: 60;') && css.includes('body.globe-fallback-active #globeViz') && css.includes('body.globe-fallback-active #globe-back-btn'),
     },
     data: {
-      registry_entities: candidate.countries.length,
-      factual_series: factual,
-      source_gaps: gaps,
+      registry_entities: runtime.countries.length,
+      carbon_eligible: carbon.eligible_count,
+      carbon_gaps: carbon.unranked_count,
       mapped_entities: Number((globe.match(/EXPECTED_INTERACTIVE_ENTITY_COUNT = (\d+)/) || [])[1]),
-      mapped_factual: Number((globe.match(/EXPECTED_INTERACTIVE_FACTUAL_COUNT = (\d+)/) || [])[1]),
-      mapped_gaps: Number((globe.match(/EXPECTED_INTERACTIVE_GAP_COUNT = (\d+)/) || [])[1]),
-      review_status: candidate.review_status,
-      production_runtime_release: candidate.production_runtime_release,
+      metric_count: Object.keys(runtime.metric_definitions).length,
+      lens_count: runtime.lens_catalog.length,
+      release_state_coherent: candidateState || productionState,
     },
     truth: {
-      durable_public_copy: fallbackHtml.includes('This view shows emissions records and source gaps') &&
-        !/CT-\d|\bdeny|\bdenied/i.test(fallbackHtml),
-      no_public_review_claim: !/\breviewed\b/i.test(fallbackHtml) &&
-        !fallbackRuntime.includes('reviewed factual series'),
+      durable_public_copy: fallbackHtml.includes('same carbon, power, and physical-climate metrics') && !/CT-\d|\bdeny|\bdenied/i.test(fallbackHtml),
+      no_public_review_claim: !/\breviewed\b/i.test(fallbackHtml) && !fallbackRuntime.includes('reviewed factual series'),
       no_assessment_field_reads: !/country\.assessment|assessment\?\.|\.score\b/.test(detailRuntime),
-      performance_disclaimer: fallbackHtml.includes('Climate performance is not scored in this view') &&
-        fallbackRuntime.includes('not a performance score'),
-      persistent_rank_disclaimer: rankRuntime.includes('MtCO₂e/yr · not a performance score') &&
-        rankRuntime.includes('Magnitude ordering is not a climate-performance score.') &&
-        rankRuntime.includes('elu-rank-boundary-compact') && rankRuntime.includes('Not a performance score'),
-      gaps_unranked: fallbackRuntime.includes('explicit source gap, unranked') &&
-        fallbackRuntime.includes('missing data does not indicate better climate performance.'),
-      source_and_limits: fallbackRuntime.includes('Source &amp; methodology') &&
-        fallbackRuntime.includes('_getDisplayLimitations(emissions)') &&
-        globe.includes('emissions?.limitations') && fallbackRuntime.includes('emissions.source_url'),
+      no_performance_language: !/pledges?\s+vs\.?\s+reality|climate performance|performance score/i.test(fallbackHtml + fallbackRuntime),
+      gaps_unranked: fallbackRuntime.includes('explicit data gap, unranked') && fallbackRuntime.includes('Data gap'),
+      methods_and_sources: globe.includes('Methods &amp; sources') && globe.includes('fact.sources') && globe.includes('fact.uncertainty'),
+      no_public_primap: !/PRIMAP/i.test(fallbackHtml + fallbackRuntime + detailRuntime),
     },
     validation: {
       smoke_contract: smoke.includes('Non-WebGL fallback is body-level, accessible, and fail-closed') &&
         smoke.includes('data-fallback-evidence-state="factual"') &&
         smoke.includes('data-fallback-evidence-state="gap"') &&
         smoke.includes('All 249 evidence records remain first-class and searchable') &&
+        smoke.includes('Globe renderer follows the visible application lifecycle') &&
         smoke.includes('Guided orbit suppresses no-data routes and owns one control lifecycle') &&
-        smoke.includes('Country ranking persistently identifies magnitude as not performance') &&
-        smoke.includes('Guided orbit completion is keyboard-reachable inside the country dialog'),
+        smoke.includes('Fallback tutorial shelf leaves lens, search, and country chooser operable') &&
+        smoke.includes('Country rail exposes the exact lens metric and searchable gaps') &&
+        smoke.includes('Guided orbit cues one country-deck move and auto-completes'),
       guided_no_data_terminal: guided.includes("fallbackReason === 'candidate_data_unavailable'") &&
         guided.includes('_suppressUnavailableEvidence(options = {})') &&
         guided.includes("payload?.reason || window.GlobeModule?._fallbackReasonCode") &&
-        guided.includes('Guided First Orbit is unavailable because country evidence could not be loaded.'),
-      guided_modal_completion: guided.includes("button.id = 'guided-orbit-dialog-complete'") &&
-        guided.includes("root.dataset.completion = 'country-dialog'") &&
-        guided.includes("anchor.after(button)") &&
+        guided.includes('Climate Intelligence first orbit is unavailable because country evidence could not be loaded.'),
+      guided_three_move_completion: guided.includes('const STORAGE_VERSION = 4;') &&
+        guided.includes('const FINAL_STEP = 2;') &&
+        guided.includes('Swipe through the country deck.') &&
+        guided.includes("query.get('guided-orbit') === '1' || query.has('review')") &&
+        guided.includes("EventBus.on('globe:country-navigated', _onCountryNavigated)") &&
+        guided.includes("complete({ source: payload?.source || 'deck' })") &&
+        guided.includes("complete({ source: 'fallback-list' })") &&
         guided.includes("EventBus.on('globe:country-closed', _onCountryClosed)") &&
         guided.includes("goToStep(1, { focus: false })") &&
-        guidedCss.includes('.guided-orbit-dialog-complete'),
-      guided_visible_focus_restore: guided.includes("target.closest('[hidden],[aria-hidden=\"true\"]')") &&
-        guided.includes('target.getClientRects().length > 0') &&
-        guided.includes('[selectedHeading, fallbackHeading, opener, replay].find(_isVisibleFocusTarget)'),
+        globe.includes("EventBus.emit('globe:country-navigated'") &&
+        globe.includes("source: navigationSource") &&
+        globe.includes('cueCountrySwipe()') && globe.includes('clearCountrySwipeCue()') &&
+        guidedCss.includes('body.guided-orbit-step-3:not(.globe-fallback-active) #elu-country-card-wrap #hex-country-tooltip.tt-swipe-cue') &&
+        !guided.includes('guided-orbit-dialog-complete') && !guidedCss.includes('body.guided-orbit-step-4'),
+      guided_visible_focus_restore: guided.includes("target.closest('[hidden],[aria-hidden=\"true\"],[inert]')") &&
+        guided.includes('target.getClientRects().length > 0') && guided.includes('Number(nodeStyle.opacity) === 0') &&
+        guided.includes('const candidates = [selectedHeading, fallbackHeading, opener, replay]') &&
+        guided.includes('document.activeElement === candidate') &&
+        guided.includes('window.requestAnimationFrame(() =>') &&
+        detailRuntime.includes('id="globe-fallback-detail-title" tabindex="-1"'),
       guided_listener_teardown: ['_onPrimaryClick', '_onBackClick', '_onCloseClick'].every(handler =>
         guided.includes(`addEventListener('click', ${handler})`) && guided.includes(`removeEventListener('click', ${handler})`)),
       architecture_route: architecture.includes('load failure → show body-level #globe-fallback evidence view') &&
@@ -161,21 +157,18 @@ function compile() {
 }
 
 function validate(snapshot) {
-  assert.equal(snapshot.schema_version, '1.0.0');
+  assert.equal(snapshot.schema_version, '2.0.0');
   for (const [groupName, group] of Object.entries(snapshot)) {
     if (groupName === 'schema_version' || groupName === 'data') continue;
-    for (const [name, value] of Object.entries(group)) {
-      assert.equal(value, true, `${groupName}.${name} failed`);
-    }
+    for (const [name, value] of Object.entries(group)) assert.equal(value, true, `${groupName}.${name} failed`);
   }
   assert.equal(snapshot.data.registry_entities, 249);
-  assert.equal(snapshot.data.factual_series, 206);
-  assert.equal(snapshot.data.source_gaps, 43);
+  assert.equal(snapshot.data.carbon_eligible, 213);
+  assert.equal(snapshot.data.carbon_gaps, 36);
   assert.equal(snapshot.data.mapped_entities, 201);
-  assert.equal(snapshot.data.mapped_factual, 194);
-  assert.equal(snapshot.data.mapped_gaps, 7);
-  assert.equal(snapshot.data.review_status, 'not_reviewed');
-  assert.equal(snapshot.data.production_runtime_release, false);
+  assert.equal(snapshot.data.metric_count, 26);
+  assert.equal(snapshot.data.lens_count, 3);
+  assert.equal(snapshot.data.release_state_coherent, true);
 }
 
 function locate(target, dottedPath) {
@@ -197,6 +190,6 @@ for (const mutation of json(FIXTURE).mutations) {
   rejected++;
 }
 
-console.log(`globe WebGL fallback: PASS (vendor/WebGL/constructor fail closed; 249 entities = 206 factual candidate series + 43 explicit gaps; ${rejected} adversarial mutations rejected; production release remains false)`);
+console.log(`globe WebGL fallback: PASS (three-lens parity; 249 entities = 213 carbon records + 36 explicit gaps; ${rejected} adversarial mutations rejected; coherent release state)`);
 
 module.exports = { compile, validate };

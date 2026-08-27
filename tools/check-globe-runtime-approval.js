@@ -10,7 +10,10 @@ const approvalPolicy = require('./lib/globe-runtime-approval');
 
 const ROOT = path.resolve(__dirname, '..');
 const REVIEWED_AT = '2026-07-15T12:00:00.000Z';
-const REVIEWED_COMMIT = '1234567890abcdef1234567890abcdef12345678';
+const REVIEWED_ARTIFACT_PINS = Object.freeze(approvalPolicy.REVIEWED_PATHS.map(function (relative) {
+  return Object.freeze({ path: relative, sha256: approvalPolicy.sha256('reviewed:' + relative) });
+}));
+const REVIEWED_ARTIFACT_PIN_DIGEST = approvalPolicy.artifactPinDigest(REVIEWED_ARTIFACT_PINS);
 const IDENTITIES = Object.freeze({
   asset_rights_reviewer: 'asset-rights-reviewer@earthloveunited.org',
   licensing_counsel: 'licensing-counsel@earthloveunited.org',
@@ -59,9 +62,10 @@ function makeBaseline() {
   const registrySha = approvalPolicy.sha256(registryText);
   const keyIds = Object.fromEntries(registry.authorities.map(authority => [authority.role, authority.key_id]));
   const approval = {
-    schema_version: '2.0.0',
-    review_id: 'elu-globe-runtime-assets-production-review-v2',
-    reviewed_commit_sha: REVIEWED_COMMIT,
+    schema_version: '3.0.0',
+    review_id: 'elu-globe-runtime-assets-production-review-v3',
+    reviewed_artifact_pin_digest: REVIEWED_ARTIFACT_PIN_DIGEST,
+    reviewed_artifact_pins: REVIEWED_ARTIFACT_PINS.map(function (pin) { return { ...pin }; }),
     reviewed_at: REVIEWED_AT,
     builder_identity: 'release-builder@earthloveunited.org',
     reviewer_identity: IDENTITIES.asset_rights_reviewer,
@@ -82,7 +86,7 @@ function makeBaseline() {
       approval_sha256: approvalSha,
       trust_registry_path: approvalPolicy.TRUST_REGISTRY_PATH,
       trust_registry_sha256: registrySha,
-      reviewed_commit_sha: REVIEWED_COMMIT,
+      reviewed_artifact_pin_digest: REVIEWED_ARTIFACT_PIN_DIGEST,
       role: role,
     });
     return {
@@ -93,28 +97,31 @@ function makeBaseline() {
   });
   const signatureBundle = {
     schema_version: approvalPolicy.POLICY_VERSION,
-    signature_bundle_id: 'elu-globe-runtime-assets-production-review-signatures-v1',
+    signature_bundle_id: 'elu-globe-runtime-assets-production-review-signatures-v2',
     repository: approvalPolicy.REPOSITORY,
     approval_path: approvalPolicy.APPROVAL_PATH,
     approval_sha256: approvalSha,
     trust_registry_path: approvalPolicy.TRUST_REGISTRY_PATH,
     trust_registry_sha256: registrySha,
-    reviewed_commit_sha: REVIEWED_COMMIT,
+    reviewed_artifact_pin_digest: REVIEWED_ARTIFACT_PIN_DIGEST,
     signatures: signatures,
   };
   return {
     input: {
       approval: approval,
       approval_text: approvalText,
+      approval_bytes: Buffer.from(approvalText, 'utf8'),
       approval_file_regular: true,
       trust_registry: registry,
       trust_registry_text: registryText,
+      trust_registry_bytes: Buffer.from(registryText, 'utf8'),
       trust_registry_file_regular: true,
       expected_trust_registry_sha256: registrySha,
       signature_bundle: signatureBundle,
       signature_bundle_text: jsonText(signatureBundle),
+      signature_bundle_bytes: Buffer.from(jsonText(signatureBundle), 'utf8'),
       signature_bundle_file_regular: true,
-      reviewed_commit_binding_passed: true,
+      reviewed_artifact_binding_passed: true,
     },
     privateKeys: generated.map(item => item.privateKey),
   };
@@ -122,6 +129,7 @@ function makeBaseline() {
 
 function refreshText(input, name) {
   input[name + '_text'] = jsonText(input[name]);
+  input[name + '_bytes'] = Buffer.from(input[name + '_text'], 'utf8');
 }
 
 function assertRejected(id, mutate) {
@@ -146,13 +154,20 @@ assert.equal(fs.existsSync(path.join(ROOT, approvalPolicy.SIGNATURE_BUNDLE_PATH)
   'no signature bundle may be committed before real authorities sign it');
 
 const mutations = [
-  ['approval-missing', input => { input.approval = null; input.approval_text = null; }],
+  ['approval-missing', input => { input.approval = null; input.approval_text = null; input.approval_bytes = null; }],
   ['approval-not-regular', input => { input.approval_file_regular = false; }],
-  ['registry-missing', input => { input.trust_registry = null; input.trust_registry_text = null; }],
+  ['registry-missing', input => { input.trust_registry = null; input.trust_registry_text = null; input.trust_registry_bytes = null; }],
   ['registry-not-regular', input => { input.trust_registry_file_regular = false; }],
-  ['bundle-missing', input => { input.signature_bundle = null; input.signature_bundle_text = null; }],
+  ['bundle-missing', input => { input.signature_bundle = null; input.signature_bundle_text = null; input.signature_bundle_bytes = null; }],
   ['bundle-not-regular', input => { input.signature_bundle_file_regular = false; }],
   ['registry-hash-unpinned', input => { input.expected_trust_registry_sha256 = '0'.repeat(64); }],
+  ['approval-invalid-utf8', input => {
+    input.approval_bytes = Buffer.from(input.approval_bytes);
+    input.approval_bytes[input.approval_bytes.indexOf(Buffer.from('release-builder'))] = 0xff;
+  }],
+  ['bundle-bom-prefixed', input => {
+    input.signature_bundle_bytes = Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), input.signature_bundle_bytes]);
+  }],
   ['private-key-material', (input, state) => {
     input.trust_registry.authorities[0].public_key_spki_pem = state.privateKeys[0].export({ type: 'pkcs8', format: 'pem' });
     refreshText(input, 'trust_registry');
@@ -249,8 +264,8 @@ const mutations = [
     input.signature_bundle.trust_registry_sha256 = '3'.repeat(64);
     refreshText(input, 'signature_bundle');
   }],
-  ['bundle-commit-disagrees', input => {
-    input.signature_bundle.reviewed_commit_sha = '4'.repeat(40);
+  ['bundle-subject-digest-disagrees', input => {
+    input.signature_bundle.reviewed_artifact_pin_digest = '4'.repeat(64);
     refreshText(input, 'signature_bundle');
   }],
   ['bundle-repository-disagrees', input => {
@@ -265,7 +280,15 @@ const mutations = [
     input.approval.builder_identity = input.approval.reviewer_identity;
     refreshText(input, 'approval');
   }],
-  ['reviewed-commit-paths-drifted', input => { input.reviewed_commit_binding_passed = false; }],
+  ['reviewed-artifact-digest-mutated', input => {
+    input.approval.reviewed_artifact_pin_digest = '5'.repeat(64);
+    refreshText(input, 'approval');
+  }],
+  ['reviewed-artifact-pin-mutated', input => {
+    input.approval.reviewed_artifact_pins[0].sha256 = '6'.repeat(64);
+    refreshText(input, 'approval');
+  }],
+  ['reviewed-artifact-paths-drifted', input => { input.reviewed_artifact_binding_passed = false; }],
 ];
 
 mutations.forEach(function (entry) { assertRejected(entry[0], entry[1]); });

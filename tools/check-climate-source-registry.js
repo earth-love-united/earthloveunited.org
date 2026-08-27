@@ -25,12 +25,23 @@ const REQUIRED_DOMAINS = new Set([
   'official_progress',
   'policy_projection',
   'fossil_co2',
+  'consumption_emissions',
   'lulucf_co2',
   'economy_wide_ghg',
   'independent_ambition',
+  'power',
+  'observed_climate',
+  'projected_climate',
   'population',
   'economic_denominator',
   'climate_finance',
+]);
+const INTELLIGENCE_VALUE_SOURCES = new Set([
+  'gcp-gcb-2025-v1.0',
+  'un-wpp-2024',
+  'ember-yearly-electricity-data-2026-08-25',
+  'world-bank-cckp-cmip6-2026-08-24',
+  'world-bank-cckp-era5-2026-08-25',
 ]);
 
 function isObject(value) {
@@ -172,6 +183,37 @@ function validateSource(source, index, configuredDomains, errors) {
     if (typeof source.storage.snapshot_required !== 'boolean') errors.push(`${source.id}.storage.snapshot_required must be boolean.`);
   }
 
+  if ('ingestion_gate' in source) {
+    if (!isObject(source.ingestion_gate)) {
+      errors.push(`${source.id}.ingestion_gate must be an object.`);
+    } else {
+      requireFields(source.ingestion_gate, [
+        'licence_reviewed', 'attribution_reviewed', 'retrieval_receipt_required',
+        'exact_checksum_required', 'normalized_value_redistribution_approved',
+        'field_permitlist',
+      ], `${source.id}.ingestion_gate`, errors);
+      ['licence_reviewed', 'attribution_reviewed', 'retrieval_receipt_required', 'exact_checksum_required', 'normalized_value_redistribution_approved'].forEach(field => {
+        if (typeof source.ingestion_gate[field] !== 'boolean') errors.push(`${source.id}.ingestion_gate.${field} must be boolean.`);
+      });
+      if (!isStringArray(source.ingestion_gate.field_permitlist) ||
+          new Set(source.ingestion_gate.field_permitlist || []).size !== source.ingestion_gate.field_permitlist?.length) {
+        errors.push(`${source.id}.ingestion_gate.field_permitlist must be a non-empty unique string array.`);
+      }
+      if (source.ingestion_gate.normalized_value_redistribution_approved !== source.redistribution?.normalized_values) {
+        errors.push(`${source.id}.ingestion_gate normalization decision must match redistribution.normalized_values.`);
+      }
+    }
+  }
+
+  if (INTELLIGENCE_VALUE_SOURCES.has(source.id)) {
+    const gate = source.ingestion_gate;
+    if (!gate || gate.licence_reviewed !== true || gate.attribution_reviewed !== true ||
+        gate.retrieval_receipt_required !== true || gate.exact_checksum_required !== true ||
+        gate.normalized_value_redistribution_approved !== true) {
+      errors.push(`${source.id} must pass every Country Climate Intelligence ingestion gate.`);
+    }
+  }
+
   if ('legacy_gate' in source) {
     if (!isObject(source.legacy_gate)) {
       errors.push(`${source.id}.legacy_gate must be an object.`);
@@ -255,6 +297,67 @@ function validateSource(source, index, configuredDomains, errors) {
     }
   }
 
+  if (source.id === 'primap-hist-2.7-final') {
+    if (source.approval?.state !== 'pending' || source.redistribution?.normalized_values !== false || source.storage?.raw !== 'prohibited') {
+      errors.push(`${source.id} must remain blocked from public value ingestion.`);
+    }
+  }
+
+  if (source.id === 'ember-yearly-electricity-data-2026-08-25') {
+    if (!source.domains?.includes('power') || source.licence?.identifier !== 'CC-BY-4.0') {
+      errors.push(`${source.id} must retain the reviewed power domain and CC BY 4.0 terms.`);
+    }
+    ['Year', 'Area type', 'Category', 'Subcategory', 'Variable', 'Unit', 'Value', 'Evidence class'].forEach(field => {
+      if (!source.ingestion_gate?.field_permitlist?.includes(field)) errors.push(`${source.id} must permitlist ${field}.`);
+    });
+    const requiredMetrics = [
+      'electricity.clean_share',
+      'electricity.fossil_share',
+      'electricity.wind_solar_share',
+      'electricity.carbon_intensity',
+      'electricity.emissions',
+      'electricity.generation_share.bioenergy',
+      'electricity.generation_share.coal',
+      'electricity.generation_share.gas',
+      'electricity.generation_share.hydro',
+      'electricity.generation_share.nuclear',
+      'electricity.generation_share.other_fossil',
+      'electricity.generation_share.other_renewables',
+      'electricity.generation_share.solar',
+      'electricity.generation_share.wind',
+    ];
+    if (JSON.stringify(source.ingestion_gate?.metric_permitlist || []) !== JSON.stringify(requiredMetrics)) {
+      errors.push(`${source.id} must retain the exact maintainer-authorized metric permitlist.`);
+    }
+  }
+
+  if (source.id === 'world-bank-cckp-cmip6-2026-08-24') {
+    if (!source.domains?.includes('projected_climate') || source.approval?.state !== 'approved') {
+      errors.push(`${source.id} must remain the approved projected-climate component.`);
+    }
+    ['scenario', 'period', 'percentile', 'value'].forEach(field => {
+      if (!source.ingestion_gate?.field_permitlist?.includes(field)) errors.push(`${source.id} must permitlist ${field}.`);
+    });
+  }
+
+  if (source.id === 'world-bank-cckp-era5-2026-08-24') {
+    if (source.approval?.state !== 'pending' || source.redistribution?.normalized_values !== false ||
+        source.ingestion_gate?.normalized_value_redistribution_approved !== false || source.ingestion_gate?.snapshot_state !== 'empty_response') {
+      errors.push(`${source.id} must remain an empty-snapshot gap source until observed values are reviewed.`);
+    }
+  }
+
+  if (source.id === 'world-bank-cckp-era5-2026-08-25') {
+    if (!source.domains?.includes('observed_climate') || source.approval?.state !== 'approved' ||
+        source.redistribution?.normalized_values !== true || source.ingestion_gate?.normalized_value_redistribution_approved !== true ||
+        source.ingestion_gate?.snapshot_state !== 'non_empty_exact_response') {
+      errors.push(`${source.id} must retain the approved, non-empty observed-climate snapshot gates.`);
+    }
+    ['iso_alpha3', 'variable', 'year', 'value', 'unit'].forEach(field => {
+      if (!source.ingestion_gate?.field_permitlist?.includes(field)) errors.push(`${source.id} must permitlist ${field}.`);
+    });
+  }
+
   if (source.id === 'legacy-pledge-nodes-climate-watch-wri-family-2025-07-18') {
     if (source.approval?.state !== 'pending' || source.licence?.status !== 'uncertain') {
       errors.push(`${source.id} must remain pending with uncertain mixed-source terms.`);
@@ -314,6 +417,17 @@ function validateRegistry(registry) {
   }
   if (!ids.has('legacy-pledge-nodes-climate-watch-wri-family-2025-07-18')) {
     errors.push('Registry must include the legacy Climate Watch/WRI field-lineage gate.');
+  }
+  [
+    'ember-yearly-electricity-data-2026-08-25',
+    'world-bank-cckp-cmip6-2026-08-24',
+    'world-bank-cckp-era5-2026-08-24',
+    'world-bank-cckp-era5-2026-08-25',
+  ].forEach(id => {
+    if (!ids.has(id)) errors.push(`Registry must include the Country Climate Intelligence component source: ${id}`);
+  });
+  if (registry.schema_version !== '1.4.0' || registry.sources?.length !== 20) {
+    errors.push('Country Climate Intelligence registry v1 must contain schema 1.4.0 and exactly 20 reviewed source decisions.');
   }
 
   return errors;

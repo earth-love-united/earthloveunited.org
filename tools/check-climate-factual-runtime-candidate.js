@@ -51,18 +51,29 @@ assert.equal(manifest.review_status, 'not_reviewed'); assert.equal(manifest.deci
 for (const item of manifest.inputs.concat(manifest.outputs)) assert.equal(hashBytes(bytes(item.path)), item.sha256, `${item.path} hash drift`);
 for (const forbidden of manifest.prohibited_release_files) assert.equal(fs.existsSync(path.join(ROOT, forbidden)), false, `${forbidden} must not exist in candidate`);
 
-const index = bytes('index.html').toString(); const data = bytes('js/data.js').toString(); const globe = bytes('js/globe.js').toString(); const css = bytes('css/globe-system.css').toString();
-assert.ok(index.includes('country-factual-candidate') || data.includes('country-factual-candidate.json'));
+const index = bytes('index.html').toString(); const data = bytes('js/data.js').toString(); const globe = bytes('js/globe.js').toString(); const intelligence = bytes('js/country-climate-intelligence.js').toString(); const css = bytes('css/globe-system.css').toString();
+assert.ok(!index.includes('country-factual-candidate') && !data.includes('country-factual-candidate.json'),
+  'superseded PRIMAP candidate must remain citation-only and absent from the public runtime');
+assert.ok(index.includes('country-climate-intelligence.js') && data.includes('country-climate-intelligence.json'),
+  'Country Climate Intelligence candidate runtime is not wired atomically');
 assert.ok(manifest.compiler_files.includes('js/country-ranking-compiler.js') && manifest.compiler_files.includes('js/country-climate-view-model.js'));
 assert.ok(!data.includes('pledge-nodes.json') && !globe.includes('pledge-nodes.json'));
-['Reviewed emissions data', 'Climate performance', 'not reviewed', 'Annual emissions', 'Source gaps · unnumbered', 'not a performance score', 'excludes LULUCF', 'No emissions estimate · visible and unranked', 'Source &amp; methodology'].forEach(text => assert.ok(globe.includes(text) || index.includes(text), `missing public truth disclosure: ${text}`));
+const publicTruthSurface = [globe, index, intelligence].join('\n').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+[
+  ['Territorial fossil CO₂ · 2024', /Territorial fossil CO₂ (?:· )?2024/],
+  ['Clean electricity share · 2024', /Clean electricity share (?:· )?2024/],
+  ['Projected warming · 2040–2059', /Projected warming (?:· )?2040–2059/],
+  ['No composite score', /No composite score/],
+  ['explicit gaps', /explicit gaps/],
+  ['not a performance score', /not a performance score/],
+].forEach(([label, pattern]) => assert.ok(pattern.test(publicTruthSurface), `missing public truth disclosure: ${label}`));
 ['Annual harmonized emissions estimates', '2023 harmonized estimate · excludes LULUCF', 'Harmonized estimate · MtCO₂e/yr', 'Harmonized estimate, not an official Party inventory', '2023 harmonized emissions estimate · PRIMAP-hist'].forEach(text => assert.ok(!globe.includes(text) && !index.includes(text), `duplicate methodology copy returned: ${text}`));
 ['CT-42 candidate preview', 'runtime and release not reviewed', 'facts reviewed through CT-10C / CT-10C-R', 'did not pass its runtime boundary checks'].forEach(text => assert.ok(!globe.includes(text) && !index.includes(text), `internal governance language leaked into public copy: ${text}`));
 assert.ok(globe.includes('elu-trajectory-point') && globe.includes('elu-chart-axis') && globe.includes('Show chart data'));
-assert.ok(globe.includes("wrap.setAttribute('role', 'dialog')") && globe.includes("wrap.setAttribute('aria-modal', 'true')") && globe.includes('country-card-heading'));
-assert.ok(globe.includes("tt.removeAttribute('aria-modal')") && globe.includes("tt.setAttribute('aria-hidden', 'true')"), 'closed modal must leave the accessibility tree');
+assert.ok(globe.includes("wrap.setAttribute('role', 'dialog')") && globe.includes("wrap.setAttribute('aria-modal', 'false')") && globe.includes('country-card-heading'));
+assert.ok(globe.includes("tt.removeAttribute('aria-modal')") && globe.includes("tt.setAttribute('aria-hidden', 'true')"), 'closed evidence panel must leave the accessibility tree');
 assert.ok(globe.includes('restoreHeadingFocus') && globe.includes("heading.focus({ preventScroll: true })"), 'country navigation must restore focus after replacing dialog content');
-assert.ok(globe.includes('node.getClientRects().length > 0') && globe.includes("style.visibility !== 'hidden'"), 'dialog focus trap must exclude responsive controls hidden by CSS');
+assert.ok(!globe.includes('const first = tabbable[0];'), 'non-modal country panel must not trap focus away from lens controls');
 assert.ok(css.includes('.elu-rank-dot.is-magnitude') && css.includes('.elu-rank-dot.is-gap') && css.includes('.tt-candidate'));
 assert.ok(!/Measured \/ harmonized emissions|Measured annual observations/.test(JSON.stringify(output.runtime) + globe));
 assert.ok(!/Math\.log10\((?:0\.00334|15000)/.test(globe), 'hard-coded visual magnitude bounds leaked');

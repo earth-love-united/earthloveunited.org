@@ -1,15 +1,15 @@
 {
-  "schema_version": "1.1.0",
-  "registry_version": "0.2.0",
-  "methodology_version": "0.1.0",
-  "released_on": "2026-07-15",
-  "reviewed_through": "2026-07-15",
-  "purpose": "Fail-closed source, licence, attribution, and storage decisions for Country Climate Profile evidence.",
+  "schema_version": "1.4.0",
+  "registry_version": "0.8.0",
+  "methodology_version": "1.2.0",
+  "released_on": "2026-08-27",
+  "reviewed_through": "2026-08-27",
+  "purpose": "Fail-closed source, licence, attribution, field-permit, retrieval, and storage decisions for Country Climate Intelligence evidence.",
   "policy": {
     "default_approval_state": "pending",
     "approval_states": ["approved", "pending", "excluded"],
     "rule": "Only an approved source with normalized_value_redistribution=true may contribute values to a public compiled country profile.",
-    "raw_storage": "Large or third-party raw files stay in versioned external storage. This repository stores manifests, checksums, reviewed normalized evidence, and reproducible retrieval instructions.",
+    "raw_storage": "Raw files are not committed. Each release receipt must distinguish an immutable publisher object, an independently managed external archive, or upstream-only unarchived bytes. A checksum never implies archive custody.",
     "licence_review": "Approval is component-specific. Publisher-level terms never override a dataset, document, or upstream component restriction."
   },
   "evidence_planes": ["official", "harmonized", "independent", "context"],
@@ -20,9 +20,13 @@
     "official_progress",
     "policy_projection",
     "fossil_co2",
+    "consumption_emissions",
     "lulucf_co2",
     "economy_wide_ghg",
     "independent_ambition",
+    "power",
+    "observed_climate",
+    "projected_climate",
     "population",
     "economic_denominator",
     "climate_finance"
@@ -207,7 +211,7 @@
       "title": "Supplemental data of the Global Carbon Budget 2025",
       "version": "2025 v1.0",
       "evidence_plane": "harmonized",
-      "domains": ["fossil_co2", "lulucf_co2"],
+      "domains": ["fossil_co2", "consumption_emissions", "lulucf_co2"],
       "primary": false,
       "source_url": "https://doi.org/10.18160/GCP-2025",
       "retrieval_url": "https://meta.icos-cp.eu/collections/AxnIW-ydMBT4BdKjxV63DGQl",
@@ -222,7 +226,15 @@
       },
       "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
       "approval": {"state": "approved", "decision": "Approved for normalized fossil and land-use CO2 evidence with versioned citation, attribution, and transformation disclosure.", "required_action": "None; re-review on every new release."},
-      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true},
+      "ingestion_gate": {
+        "licence_reviewed": true,
+        "attribution_reviewed": true,
+        "retrieval_receipt_required": true,
+        "exact_checksum_required": true,
+        "normalized_value_redistribution_approved": true,
+        "field_permitlist": ["year", "source_entity_name", "territorial_emissions", "consumption_emissions", "emissions_transfers", "BLUE", "OSCAR", "LUCE"]
+      }
     },
     {
       "id": "primap-hist-2.6.1-final",
@@ -393,6 +405,157 @@
       }
     },
     {
+      "id": "ember-yearly-electricity-data-2026-08-25",
+      "publisher": "Ember",
+      "title": "Yearly Electricity Data",
+      "version": "full long-format release retrieved 2026-08-25",
+      "evidence_plane": "independent",
+      "domains": ["power"],
+      "primary": false,
+      "source_url": "https://ember-energy.org/data/yearly-electricity-data/",
+      "retrieval_url": "https://files.ember-energy.org/public-downloads/yearly_full_release_long_format.csv",
+      "cadence": {"frequency": "annual", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-4.0",
+        "status": "confirmed",
+        "terms_url": "https://api.ember-energy.org/v1/docs",
+        "evidence_url": "https://api.ember-energy.org/v1/docs",
+        "summary": "Ember publishes its API and electricity datasets under CC BY 4.0 for use for any purpose with attribution.",
+        "attribution": "Ember, Yearly Electricity Data, full release retrieved 2026-08-25, https://ember-energy.org/data/yearly-electricity-data/. Earth Love United transformations are identified.",
+        "restrictions": ["Credit Ember", "Use Ember's published aggregate and generation-fuel taxonomy", "Preserve actual versus estimated evidence classes", "Label Other Renewables as Ember's combined geothermal, tidal, and wave category", "Do not impose additional legal or technological restrictions"]
+      },
+      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
+      "approval": {
+        "state": "approved",
+        "decision": "Approved by the foundation maintainer on 2026-08-25 for exact-year 2019 and 2024 clean, fossil, wind-and-solar, intensity, power-emissions, and nine 2024 generation-fuel share fields under Ember's published taxonomy. The exact external raw receipt is retained with the candidate release.",
+        "required_action": "Refuse non-actual comparison rows, reconcile every published fuel mix to the clean/fossil anchors, preserve blank values as gaps, and disclose source rounding. Independent scientific review remains a separate false production gate."
+      },
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true},
+      "ingestion_gate": {
+        "licence_reviewed": true,
+        "attribution_reviewed": true,
+        "retrieval_receipt_required": true,
+        "exact_checksum_required": true,
+        "normalized_value_redistribution_approved": true,
+        "field_permitlist": ["Entity", "Entity code", "Area", "ISO 3 code", "Year", "Area type", "Category", "Subcategory", "Variable", "Unit", "Value", "Evidence class"],
+        "metric_permitlist": ["electricity.clean_share", "electricity.fossil_share", "electricity.wind_solar_share", "electricity.carbon_intensity", "electricity.emissions", "electricity.generation_share.bioenergy", "electricity.generation_share.coal", "electricity.generation_share.gas", "electricity.generation_share.hydro", "electricity.generation_share.nuclear", "electricity.generation_share.other_fossil", "electricity.generation_share.other_renewables", "electricity.generation_share.solar", "electricity.generation_share.wind"]
+      },
+      "limitations": ["Clean share is an electricity-system metric, not a whole-economy performance measure", "Latest annual rows may include estimates and must be classified before ranking", "Other Renewables combines geothermal, tidal, and wave generation and cannot identify those technologies separately", "Published percentage rows may differ from 100 by up to 0.02 percentage points because of source rounding"]
+    },
+    {
+      "id": "world-bank-cckp-cmip6-2026-08-24",
+      "publisher": "World Bank Climate Change Knowledge Portal",
+      "title": "CCKP projected climate data: CMIP6 0.25-degree country aggregates",
+      "version": "API snapshot retrieved 2026-08-24",
+      "evidence_plane": "context",
+      "domains": ["projected_climate"],
+      "primary": false,
+      "source_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_{variable}_anomaly_annual_2040-2059_{percentile}_{scenario}_ensemble_all_mean/global_countries?_format=json",
+      "cadence": {"frequency": "periodic", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-4.0",
+        "status": "confirmed",
+        "terms_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
+        "evidence_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
+        "summary": "The World Bank states that all CCKP data adhere to CC BY 4.0 and may be copied, modified, and distributed with attribution and change disclosure.",
+        "attribution": "World Bank Climate Change Knowledge Portal, CMIP6 0.25-degree projected climate data, API snapshot 2026-08-24. Earth Love United transformations are identified.",
+        "restrictions": ["Credit the World Bank CCKP and the CMIP6 modeling community", "Indicate transformations", "Preserve scenario, reference period, ensemble statistic, and percentile metadata"]
+      },
+      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
+      "approval": {
+        "state": "approved",
+        "decision": "Approved for country-area CMIP6 anomalies for 2040–2059 relative to 1995–2014, using SSP2-4.5 p10/median/p90 and SSP1-2.6/SSP5-8.5 medians.",
+        "required_action": "Pin each API snapshot and reject incomplete scenario or percentile sets."
+      },
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true},
+      "ingestion_gate": {
+        "licence_reviewed": true,
+        "attribution_reviewed": true,
+        "retrieval_receipt_required": true,
+        "exact_checksum_required": true,
+        "normalized_value_redistribution_approved": true,
+        "field_permitlist": ["iso_alpha3", "variable", "scenario", "period", "percentile", "value", "unit"]
+      },
+      "limitations": ["Projected warming is not vulnerability, damage, or responsibility", "Country aggregates conceal subnational variation", "Multi-model ranges are not probabilistic forecasts"]
+    },
+    {
+      "id": "world-bank-cckp-era5-2026-08-24",
+      "publisher": "World Bank Climate Change Knowledge Portal",
+      "title": "CCKP observed climate data: ERA5 country aggregates",
+      "version": "acquisition attempt 2026-08-24",
+      "evidence_plane": "context",
+      "domains": ["observed_climate"],
+      "primary": false,
+      "source_url": "https://worldbank.github.io/climateknowledgeportal/docs/collections/era5-x0.25.html",
+      "retrieval_url": "https://cckpapi.worldbank.org/cckp/v1/era5-x0.25_timeseries",
+      "cadence": {"frequency": "annual", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-4.0",
+        "status": "confirmed",
+        "terms_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
+        "evidence_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
+        "summary": "CCKP states that all portal data adhere to CC BY 4.0; the underlying ERA5 reanalysis citation must also be retained.",
+        "attribution": "World Bank Climate Change Knowledge Portal, ERA5 country data, accessed 2026-08-24. No normalized values are redistributed from the empty acquisition response.",
+        "restrictions": ["Credit World Bank CCKP and ERA5", "Indicate derived OLS trends", "Do not infer observations from an empty API payload"]
+      },
+      "redistribution": {"status": "metadata_only", "source_files": false, "normalized_values": false, "metadata_and_links": true},
+      "approval": {
+        "state": "pending",
+        "decision": "The acquisition returned an exact-checksummed empty payload. Gap provenance is approved, but observed values remain blocked until a non-empty snapshot is retrieved and reviewed.",
+        "required_action": "Retrieve a non-empty exact snapshot, validate the last complete year and country aggregation, and independently review the OLS transformation before approval."
+      },
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true},
+      "ingestion_gate": {
+        "licence_reviewed": true,
+        "attribution_reviewed": true,
+        "retrieval_receipt_required": true,
+        "exact_checksum_required": true,
+        "normalized_value_redistribution_approved": false,
+        "field_permitlist": ["iso_alpha3", "variable", "year", "value", "unit"],
+        "snapshot_state": "empty_response"
+      },
+      "limitations": ["No observed values are present in the v1 candidate", "ERA5 is reanalysis, not direct station observation", "Precipitation trends require multi-dataset caution"]
+    },
+    {
+      "id": "world-bank-cckp-era5-2026-08-25",
+      "publisher": "World Bank Climate Change Knowledge Portal",
+      "title": "CCKP ERA5 annual country temperature and precipitation aggregates",
+      "version": "API v1 global-country annual snapshot retrieved 2026-08-25; 1950–2025",
+      "evidence_plane": "context",
+      "domains": ["observed_climate"],
+      "primary": false,
+      "source_url": "https://worldbank.github.io/climateknowledgeportal/docs/collections/era5-x0.25.html",
+      "retrieval_url": "https://climateknowledgeportal.worldbank.org/download-data",
+      "cadence": {"frequency": "annual", "check_interval_days": 90},
+      "licence": {
+        "identifier": "CC-BY-4.0",
+        "status": "confirmed",
+        "terms_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
+        "evidence_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
+        "summary": "CCKP states that its processed portal data are available under CC BY 4.0; the underlying ERA5 reanalysis citation is retained.",
+        "attribution": "World Bank Climate Change Knowledge Portal, ERA5 0.25-degree annual country temperature and precipitation aggregates, 1950–2025 snapshots accessed 2026-08-25. Earth Love United selected 1970–2025 and derived OLS slopes per decade.",
+        "restrictions": ["Credit World Bank CCKP and ERA5", "Identify the 1970–2025 selection and OLS transformation", "Label ERA5 as reanalysis rather than direct station observations"]
+      },
+      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
+      "approval": {
+        "state": "approved",
+        "decision": "Approved for the exact-checksummed annual CCKP country-area tas and pr snapshots, retaining the 1970–2025 series and their derived OLS slopes per decade as reanalysis evidence.",
+        "required_action": "Pin every variable-specific raw response and normalized snapshot; preserve the KSV exception and four explicit registry gaps; independently review both trends before production promotion."
+      },
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true},
+      "ingestion_gate": {
+        "licence_reviewed": true,
+        "attribution_reviewed": true,
+        "retrieval_receipt_required": true,
+        "exact_checksum_required": true,
+        "normalized_value_redistribution_approved": true,
+        "field_permitlist": ["iso_alpha3", "variable", "year", "value", "unit"],
+        "snapshot_state": "non_empty_exact_response"
+      },
+      "limitations": ["ERA5 is reanalysis, not direct station observation", "The country API publishes values rounded to two decimals", "Country aggregates conceal subnational variation", "Annual precipitation is an area-mean accumulated total and does not by itself measure drought, flooding, or water availability", "Antarctica, Western Sahara, Falkland Islands (Malvinas), and South Georgia and the South Sandwich Islands remain explicit gaps"]
+    },
+    {
       "id": "un-wpp-2024",
       "publisher": "United Nations, Department of Economic and Social Affairs, Population Division",
       "title": "World Population Prospects 2024",
@@ -401,7 +564,7 @@
       "domains": ["population"],
       "primary": true,
       "source_url": "https://population.un.org/wpp/",
-      "retrieval_url": "https://population.un.org/wpp/Download/Standard/MostUsed/",
+      "retrieval_url": "https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_Demographic_Indicators_Medium.csv.gz",
       "cadence": {"frequency": "official_revision", "check_interval_days": 90},
       "licence": {
         "identifier": "CC-BY-3.0-IGO",
@@ -413,7 +576,15 @@
       },
       "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
       "approval": {"state": "approved", "decision": "Approved for year-matched population denominators under CC BY 3.0 IGO.", "required_action": "Re-review each revision and preserve estimate/projection labels."},
-      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true}
+      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true},
+      "ingestion_gate": {
+        "licence_reviewed": true,
+        "attribution_reviewed": true,
+        "retrieval_receipt_required": true,
+        "exact_checksum_required": true,
+        "normalized_value_redistribution_approved": true,
+        "field_permitlist": ["LocID", "ISO3_code", "Location", "Time", "Variant", "TPopulation1July"]
+      }
     },
     {
       "id": "world-bank-wdi-2026-07-01",

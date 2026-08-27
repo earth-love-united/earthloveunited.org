@@ -10,10 +10,11 @@ const path = require('node:path');
 const vm = require('node:vm');
 const {
   ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
+  CURRENT_RUNTIME_PIN_PATHS,
   EXPECTED_ASSETS,
+  EXPECTED_CLIMATE_INTELLIGENCE_SHA256,
   EXPECTED_INDEX_SW_KEYS,
   MANIFEST_PATH,
-  REQUIRED_UI_REVIEW_PIN_PATHS,
   digest,
   evaluateRuntimeAssets,
   exactAssetManifest,
@@ -25,20 +26,26 @@ const ROOT = path.resolve(__dirname, '..');
 const JSON_ONLY = process.argv.includes('--json');
 const STAGED_INDEX = process.argv.indexOf('--staged');
 const FIXTURE_PATH = 'tools/fixtures/globe-runtime-assets.json';
-const STAGED_RUNTIME_FILES = REQUIRED_UI_REVIEW_PIN_PATHS;
+const STAGED_RUNTIME_FILES = CURRENT_RUNTIME_PIN_PATHS;
 const PATHS = Object.freeze({
   index: 'index.html',
   globe: 'js/globe.js',
   app: 'js/app.js',
   data: 'js/data.js',
+  data_schema: 'js/data-schema.js',
+  climate_intelligence: 'js/country-climate-intelligence.js',
   globe_css: 'css/globe-system.css',
   sw: 'sw.js',
   build_deploy: 'tools/build-deploy.sh',
+  build_factual_public: 'tools/build-factual-public-deploy.sh',
   stage_public_deploy: 'tools/stage-public-deploy.js',
   public_deploy_surface: 'tools/lib/public-deploy-surface.js',
+  profile_selector: 'tools/check-public-climate-release-profile.js',
+  release_profile: 'tools/lib/public-climate-release-profile.js',
   ci: '.github/workflows/ci.yml',
   climate_truth_ci: 'tools/climate-truth-ci.js',
   final_integrity: 'tools/check-staged-production-integrity.js',
+  final_factual_integrity: 'tools/check-staged-factual-public-integrity.js',
   review_adapter: 'tools/lib/ct42-ct40-release-review.js',
   runtime_boundary: 'tools/lib/climate-runtime-diff-boundary.js',
   smoke: 'tools/smoke-test.js',
@@ -329,6 +336,8 @@ async function loadInput(root = ROOT) {
     files.globe = globeSource;
     files.app = read(root, PATHS.app);
     files.data = read(root, PATHS.data);
+    files.data_schema = read(root, PATHS.data_schema);
+    files.climate_intelligence = read(root, PATHS.climate_intelligence);
     files.sw = read(root, PATHS.sw);
   }
   const manifestBytes = fs.readFileSync(absolute(root, MANIFEST_PATH));
@@ -344,7 +353,7 @@ async function loadInput(root = ROOT) {
     },
     review_scope: {
       active_runtime_scripts: [...ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS],
-      ui_pins: [...REQUIRED_UI_REVIEW_PIN_PATHS],
+      ui_pins: [...CURRENT_RUNTIME_PIN_PATHS],
       runtime_fixed: [...FIXED_RUNTIME_PATHS],
       runtime_prefixes: [...RUNTIME_PATH_PREFIXES],
     },
@@ -532,7 +541,10 @@ function verifyStaged(root) {
   });
   assert.equal(sha256(fs.readFileSync(absolute(root, 'data/climate/runtime/country-factual-candidate.json'))),
     '7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664',
-    'staged critical candidate SHA-256 drift');
+    'staged rollback candidate SHA-256 drift');
+  assert.equal(sha256(fs.readFileSync(absolute(root, 'data/climate/runtime/country-climate-intelligence.json'))),
+    EXPECTED_CLIMATE_INTELLIGENCE_SHA256,
+    'staged Country Climate Intelligence SHA-256 drift');
   assert.equal(parseNavigationPoints(read(root, 'js/globe.js'))?.length, 28, 'staged navigation point set drift');
   return { root, assets: EXPECTED_ASSETS.length, releaseAuthority: manifest.release_authority === true };
 }
