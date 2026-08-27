@@ -125,7 +125,7 @@ This mode fails closed unless every item below is true:
 - CT-45 passes and a separate independent exact-digest runtime-asset review
   approves the visual-asset rights, confirms the complete deployed third-party notice
   inventory, and explicitly grants production use and release authority;
-- the exact v3 approval is a regular file that binds the canonical 78 reviewed
+- the exact v3 approval is a regular file that binds the canonical 95 reviewed
   artifact pins and their squash-safe digest, including the CT-45 manifest,
   readable notice, machine inventory, integration record, schemas, and
   enforcement controls. It must contain all five non-blanket approved asset rows, four

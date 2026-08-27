@@ -20,16 +20,48 @@ const REQUIRED_ABSENT_PATHS = Object.freeze([
   'tools/compile-climate-trace.js',
   'tools/migrate-climate-trace-source-identity.js',
 ].sort());
+// globe.gl is fetched only after checkout and is independently constrained by
+// the pinned vendor-integrity policy, fixture, fetcher, and staged-byte checks.
+// It is therefore the sole generated release dependency outside this subject.
+const EXTERNAL_GENERATED_DEPENDENCIES = Object.freeze([
+  'js/vendor/globe.gl.js',
+]);
 const SUBJECT_PATHS = Object.freeze([
+  '404.html',
   '.github/workflows/ci.yml',
   '.github/CODEOWNERS',
+  '.gitignore',
   'ARCHITECTURE.md',
   'CREDITS.md',
+  'LICENSE',
+  'README.md',
+  'THIRD_PARTY_NOTICES.txt',
+  '_headers',
+  '_redirects',
+  'assets/globe/runtime/earth-blue-marble.jpg',
+  'assets/globe/runtime/earth-night.jpg',
+  'assets/globe/runtime/earth-topology.png',
+  'assets/globe/runtime/manifest.json',
+  'assets/globe/runtime/ne_110m_admin_0_countries.geojson',
+  'assets/globe/runtime/night-sky.png',
+  'assets/legacy/brandon.jpg',
+  'assets/legacy/ekmel.jpg',
+  'assets/legacy/elu-logo-light.png',
+  'assets/legacy/elu-logo.png',
+  'assets/legacy/mike.png',
+  'assets/legacy/video-what-is-elu.jpg',
+  'assets/partners/climate-change-ai.png',
+  'assets/partners/connecticut-green-bank.png',
+  'assets/partners/avocademy.svg',
+  'assets/partners/save-planet-earth.svg',
+  'assets/partners/st-vincents-wordmark.png',
+  'css/carbon-clock.css',
   'css/globe-system.css',
   'css/guided-first-orbit.css',
   'data/climate/country-registry.json',
   'data/climate/governance/country-climate-intelligence-release-trust.json',
   'data/climate/mappings/gcb-2025-country-map.json',
+  'data/climate/operations/ct42-runtime-rollback.patch.b64',
   'data/climate/evidence/major-emitter-ndc-source-audit.json',
   'data/climate/releases/country-climate-intelligence-v1/TRANSFORMATION-LOG.md',
   'data/climate/releases/country-climate-intelligence-v1/cckp-physical.json',
@@ -60,11 +92,16 @@ const SUBJECT_PATHS = Object.freeze([
   'data/climate/schemas/reviewed-runtime-rollback-proof.schema.json',
   'data/climate/source-registry.json',
   'docs/COUNTRY-CLIMATE-METHODOLOGY.md',
+  'docs/CLIMATE-PRODUCTION-READINESS.md',
   'docs/COUNTRY-CLIMATE-RELEASE-REVIEW.md',
   'docs/COUNTRY-CLIMATE-SOURCE-RIGOR-AUDIT.md',
   'docs/COUNTRY-CLIMATE-TRUTH-PLAN.md',
+  'docs/COUNTRY-CLIMATE-TRUTH-CI.md',
   'docs/FACTUAL-PUBLIC-DEPLOYMENT.md',
+  'docs/LEGACY-COUNTRY-DATA-EXIT.md',
+  'docs/agents/README.md',
   'docs/operations/GO_PUBLIC.md',
+  'favicon.svg',
   'index.html',
   'js/app.js',
   'js/carbon-clock.js',
@@ -80,6 +117,9 @@ const SUBJECT_PATHS = Object.freeze([
   'js/module-contracts.js',
   'js/storage-adapter.js',
   'js/storage.js',
+  'manifest.json',
+  'robots.txt',
+  'sitemap.xml',
   'sw.js',
   'tools/build-deploy.sh',
   'tools/build-factual-public-deploy.sh',
@@ -204,6 +244,78 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/lib/target-comparability.js',
   'tools/lib/top20-primary-source-gap-queue.js',
   'tools/rehearse-ct42-runtime-rollback.js',
+  'data/carbon-projects.json',
+  'data/climate/evidence/primap-hist-2.6.1-histtp-m0el-2014-2023.json',
+  'data/climate/fixtures/climate-factual-runtime-candidate.json',
+  'data/climate/fixtures/climate-factual-runtime-data-review.json',
+  'data/climate/fixtures/country-accessibility.json',
+  'data/climate/fixtures/country-card-evidence-model.json',
+  'data/climate/fixtures/country-coverage-gap-queue.json',
+  'data/climate/fixtures/country-profile-compiler.json',
+  'data/climate/fixtures/country-ranking.json',
+  'data/climate/fixtures/country-view-model.json',
+  'data/climate/fixtures/ct42-ct40-release-review.json',
+  'data/climate/fixtures/ct42-runtime-rollback-proof.json',
+  'data/climate/fixtures/ct42-runtime-rollback-review.json',
+  'data/climate/fixtures/delivery-engine.json',
+  'data/climate/fixtures/primap-factual-display-promotion.json',
+  'data/climate/fixtures/primap-ingest.json',
+  'data/climate/fixtures/release-eligibility.json',
+  'data/climate/fixtures/reviewed-climate-release.json',
+  'data/climate/fixtures/source-rights-review-packets.json',
+  'data/climate/fixtures/source-routing-policy.json',
+  'data/climate/fixtures/target-comparability.json',
+  'data/climate/fixtures/top20-primary-source-gap-queue.json',
+  'data/climate/fixtures/truth-ci-policy.json',
+  'data/climate/governance/globe-runtime-approval-trust.json',
+  'data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json',
+  'data/climate/releases/country-coverage-gap-queue-2026-07-15.json',
+  'data/climate/releases/ct11-primary-source-pilot-2026-07-15.json',
+  'data/climate/releases/primap-hist-2.6.1-economy-wide-2026-07-15.json',
+  'data/climate/releases/primap-hist-2.6.1-factual-display-2026-07-15.json',
+  'data/climate/reviews/climate-factual-runtime-candidate-ct42-data-review.json',
+  'data/climate/reviews/climate-factual-runtime-ct42-ui-review.json',
+  'data/climate/reviews/ct42-candidate-rollback-rehearsal.json',
+  'data/climate/reviews/ct42-ct40-release-review-input.json',
+  'data/climate/reviews/ct42-ct40-release-review-result.json',
+  'data/climate/reviews/legacy-country-data-exit-ct04-review.json',
+  'data/climate/reviews/primap-hist-2.6.1-economy-wide-ct10b-review.json',
+  'data/climate/reviews/primap-hist-2.6.1-factual-display-ct10c-review.json',
+  'data/climate/runtime/candidate-manifest.json',
+  'data/climate/runtime/country-factual-candidate.json',
+  'data/climate/runtime/ct10c-batch-attestation-wrapper.json',
+  'data/climate/runtime/published-facts-candidate.json',
+  'data/climate/runtime/rollback-plan.json',
+  'data/climate/schemas/compiled-profile.schema.json',
+  'data/climate/schemas/country-accessibility.schema.json',
+  'data/climate/schemas/country-card-evidence-model.schema.json',
+  'data/climate/schemas/country-coverage-gap-queue.schema.json',
+  'data/climate/schemas/ct40-reviewed-release-input.schema.json',
+  'data/climate/schemas/ct42-runtime-rollback-review.schema.json',
+  'data/climate/schemas/delivery-reason-vocabulary.json',
+  'data/climate/schemas/delivery-result.schema.json',
+  'data/climate/schemas/enums.json',
+  'data/climate/schemas/globe-runtime-assets-production-review.schema.json',
+  'data/climate/schemas/observation.schema.json',
+  'data/climate/schemas/primap-batch-candidate.schema.json',
+  'data/climate/schemas/primap-factual-display-promotion.schema.json',
+  'data/climate/schemas/profile.schema.json',
+  'data/climate/schemas/ranking-release.schema.json',
+  'data/climate/schemas/release-eligibility-result.schema.json',
+  'data/climate/schemas/reviewed-climate-runtime-manifest.schema.json',
+  'data/climate/schemas/source-rights-review-packet.schema.json',
+  'data/climate/schemas/source-routing-policy.schema.json',
+  'data/climate/schemas/target-comparability-result.schema.json',
+  'data/climate/schemas/top20-source-routing-queue.schema.json',
+  'data/governance/vendor/globe-gl-2.46.1-notices-integration.json',
+  'data/governance/vendor/globe-gl-2.46.1-notices.json',
+  'data/pledge-nodes.json',
+  'data/small-nations.json',
+  'tools/authoring/fetch-nasa-black-marble.sh',
+  'tools/fetch-globe-vendor.sh',
+  'tools/fixtures/globe-third-party-notices.json',
+  'tools/fixtures/globe-vendor-integrity.json',
+  'wrangler.jsonc',
 ].sort());
 
 const SOURCE_REVIEWS = Object.freeze([
@@ -322,6 +434,7 @@ const INDEPENDENT_REVIEWS = Object.freeze([
   ['reproducibility', [
     'All artifact hashes, deterministic rebuild, compiler denial tests, 249-entity partitions, and rollback rehearsal.',
     'Current reviewed artifact-set release diff and runtime-manifest pin closure.',
+    'The sole external/generated dependency, js/vendor/globe.gl.js, is fetched by the pinned script and must satisfy the pinned vendor-integrity policy, fixture, and staged-byte checks.',
   ]],
   ['ui_accessibility_runtime', [
     'Globe and fallback parity, keyboard and screen-reader operation, focus return, reduced motion, mobile layouts, and slow-runtime behavior.',
@@ -373,18 +486,27 @@ function localSubjectDependencies(relative) {
       if (resolved) dependencies.add(resolved);
     }
   }
-  for (const match of text.matchAll(/['"]((?:tools|scripts)\/[A-Za-z0-9_.\/-]+\.(?:js|py))['"]/g)) {
+  const quotedPathPattern = /['"]((?:(?:\.github|tools|scripts|data|docs|js|css|assets)\/[A-Za-z0-9_.\/-]+\.(?:js|py|sh|json|md|html|css|txt|yml|yaml|b64|jpg|png|svg|geojson)|(?:404\.html|README\.md|CREDITS\.md|ARCHITECTURE\.md|LICENSE|\.gitignore|_headers|_redirects|favicon\.svg|index\.html|manifest\.json|robots\.txt|sitemap\.xml|sw\.js|THIRD_PARTY_NOTICES\.txt|wrangler\.jsonc)))['"]/g;
+  for (const match of text.matchAll(quotedPathPattern)) {
     if (fs.existsSync(path.join(ROOT, match[1]))) dependencies.add(match[1]);
+  }
+  if (relative.endsWith('.sh')) {
+    for (const match of text.matchAll(/(?:^|\s)((?:tools|scripts|data|docs|js|css|assets)\/[A-Za-z0-9_.\/-]+\.(?:js|py|sh|json|md|html|css|txt|yml|yaml|b64|jpg|png|svg|geojson))(?:\s|$)/gm)) {
+      if (fs.existsSync(path.join(ROOT, match[1]))) dependencies.add(match[1]);
+    }
   }
   return [...dependencies].sort();
 }
 
 function assertSubjectDependencyClosure(subjectPaths = SUBJECT_PATHS) {
   const subject = new Set(subjectPaths);
+  const externalGenerated = new Set(EXTERNAL_GENERATED_DEPENDENCIES);
   const missing = [];
   subjectPaths.forEach(function (relative) {
     localSubjectDependencies(relative).forEach(function (dependency) {
-      if (!subject.has(dependency)) missing.push(relative + ' -> ' + dependency);
+      if (dependency !== OUTPUT && !externalGenerated.has(dependency) && !subject.has(dependency)) {
+        missing.push(relative + ' -> ' + dependency);
+      }
     });
   });
   if (missing.length) throw new Error('CCI review subject dependency closure is incomplete:\n' + missing.sort().join('\n'));
@@ -455,6 +577,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  EXTERNAL_GENERATED_DEPENDENCIES,
   INDEPENDENT_REVIEWS,
   OUTPUT,
   REQUIRED_ABSENT_PATHS,

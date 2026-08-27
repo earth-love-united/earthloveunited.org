@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "d4fef6d92cbcdb4efff0118c3e9c6cb2a8acd6b25d56a76709fee516fa3ab8c5",
+  "calculation_hash": "06a520c688799b461d9adca772601e3a1a963c341a9f7243457e75c53b59384c",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -50,7 +50,8 @@
     {
       "required_scope": [
         "All artifact hashes, deterministic rebuild, compiler denial tests, 249-entity partitions, and rollback rehearsal.",
-        "Current reviewed artifact-set release diff and runtime-manifest pin closure."
+        "Current reviewed artifact-set release diff and runtime-manifest pin closure.",
+        "The sole external/generated dependency, js/vendor/globe.gl.js, is fetched by the pinned script and must satisfy the pinned vendor-integrity policy, fixture, and staged-byte checks."
       ],
       "reviewer_id": null,
       "role": "reproducibility",
@@ -212,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "1d8bc1d4ee36cd117e4f6af9d4960fe368f6d744240f7a729dec43693d0759e8",
+    "artifact_pin_digest": "75c1da723fa20caae134481c5122cb9e0c981aacfc81278185b05fcaf5db65b1",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -223,12 +224,112 @@
         "sha256": "3e7bd214f1c595d04ace4e9c13241ca8d52e1a83bc6fed64327a729d33bf0869"
       },
       {
+        "path": ".gitignore",
+        "sha256": "cdc8985e0f2298bee531c98f222dc8752885e57ef49bd3828bd4975bb8b4e9e4"
+      },
+      {
+        "path": "404.html",
+        "sha256": "5fce383d8f2cc6d7178ede70937943f0225a91880872f920731ded6998a4d5dc"
+      },
+      {
         "path": "ARCHITECTURE.md",
-        "sha256": "3d84408694e401f54063086022a0d591511f7fe3d9e53c3074df3ddcee82fb5d"
+        "sha256": "2557ed88bb0cad3a82fdb1fc2514bf4d5bf023f13c6c187c4c1bdb75f25a7e36"
       },
       {
         "path": "CREDITS.md",
         "sha256": "31968896e4e5cad9b2614373a3a15d799beab21bb384b8ae8f7fabbe8f6edc4b"
+      },
+      {
+        "path": "LICENSE",
+        "sha256": "89b5925afb633c4306b454a4acf0f909d12b6068f7e4a81cbcc7eda461924641"
+      },
+      {
+        "path": "README.md",
+        "sha256": "d6927e6e883354c6fd8d5f40d0b256dfa702f91153390e38e13538dba6f3adf3"
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.txt",
+        "sha256": "741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2"
+      },
+      {
+        "path": "_headers",
+        "sha256": "56bc8759bff3bc70b042c0861d0fbf729d73e0e451404de0c9d9bac6d21cd31e"
+      },
+      {
+        "path": "_redirects",
+        "sha256": "68949544790ca83cad3973d3edf8fa56f068e1ec3a47bbe21c03c6599558dd7d"
+      },
+      {
+        "path": "assets/globe/runtime/earth-blue-marble.jpg",
+        "sha256": "228deba2e4b600146bdcb6cfa359b8ead6aacc2b1c13550a29cd82824cfa1c01"
+      },
+      {
+        "path": "assets/globe/runtime/earth-night.jpg",
+        "sha256": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124"
+      },
+      {
+        "path": "assets/globe/runtime/earth-topology.png",
+        "sha256": "839b12da2e4dd346b256cebae72e10c479a102c8980a22084c41275e4b9a0e12"
+      },
+      {
+        "path": "assets/globe/runtime/manifest.json",
+        "sha256": "5c11517a0f75e1af70169c565b46002c4361cdac18d6a6191f06e9f31ac7f67a"
+      },
+      {
+        "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
+        "sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0"
+      },
+      {
+        "path": "assets/globe/runtime/night-sky.png",
+        "sha256": "7e1d5e780301e3a33bd79fd3ac414f7a742465f33ae4605abca743d43a3ab983"
+      },
+      {
+        "path": "assets/legacy/brandon.jpg",
+        "sha256": "f1f95c297e0741d1d5b4f93d57ce47aec275cd78006a52f8d5be8f97bc32987b"
+      },
+      {
+        "path": "assets/legacy/ekmel.jpg",
+        "sha256": "98106ca98b2789fe6b5a536902a11b594121386ae77f2211b1fdbb51e3204df2"
+      },
+      {
+        "path": "assets/legacy/elu-logo-light.png",
+        "sha256": "f1d088194a790bfb338df905d54c44ee13042d93922475274eeac537c35689d6"
+      },
+      {
+        "path": "assets/legacy/elu-logo.png",
+        "sha256": "9fab0acdc42cb98a874a120187390f9ffc9919b3cc16cfbb6d13272bcfe7899e"
+      },
+      {
+        "path": "assets/legacy/mike.png",
+        "sha256": "d99381ce0478c239c5917aceb804fdacc671cf10a20d3ca0c00190a6da6a2c37"
+      },
+      {
+        "path": "assets/legacy/video-what-is-elu.jpg",
+        "sha256": "995aeebab32c50408aec7d92fb82bf96a578c96969dfbf938106183497cec272"
+      },
+      {
+        "path": "assets/partners/avocademy.svg",
+        "sha256": "d6970760bb6a34feb0278872a5baafadcb20d556041ae848920d10d2f79c659f"
+      },
+      {
+        "path": "assets/partners/climate-change-ai.png",
+        "sha256": "0aaa9786e28c20f32d6eb7f355a8cd0e5b1efc0dda57ee2d31e4d0d35229c4c2"
+      },
+      {
+        "path": "assets/partners/connecticut-green-bank.png",
+        "sha256": "da43ce8bd09991b816933f2f9eec133adf735846b554142aed70e13861d04d26"
+      },
+      {
+        "path": "assets/partners/save-planet-earth.svg",
+        "sha256": "e088389606916188230a462c5e62055cc575c6e328f9719f5b4525c566059b40"
+      },
+      {
+        "path": "assets/partners/st-vincents-wordmark.png",
+        "sha256": "b7a978d8ea43a9d73323e7d7caee0bfdb5d8fffeaa52f55c0cdbe5b1db384b44"
+      },
+      {
+        "path": "css/carbon-clock.css",
+        "sha256": "819fed963e05885005955fedcfbb7ad851ddcec0fce5e2f879272696988bd184"
       },
       {
         "path": "css/globe-system.css",
@@ -239,6 +340,10 @@
         "sha256": "8e6a4becc8da0cab3b7bced1f2bda13d66de6385aab0aaf08eaffb7a503565fe"
       },
       {
+        "path": "data/carbon-projects.json",
+        "sha256": "1d689792d942ca8dc52386746d4ed6021ef45e4af1c5b1b0cb3ee3509bfd33eb"
+      },
+      {
         "path": "data/climate/country-registry.json",
         "sha256": "51fb321661684a88e80254cd5721ee70d0f52d95587222727fb9e9722e86b075"
       },
@@ -247,20 +352,120 @@
         "sha256": "c4764628073653bda0f3f8a14f49400a624dfb3935c36432db8754e23d2c6683"
       },
       {
+        "path": "data/climate/evidence/primap-hist-2.6.1-histtp-m0el-2014-2023.json",
+        "sha256": "e242e5a49ba963eaeafe472c8c6702a193e79f60cf6762083f4ba72e9aa239b6"
+      },
+      {
+        "path": "data/climate/fixtures/climate-factual-runtime-candidate.json",
+        "sha256": "f3e20ccb7cafe6391ad6562a89bab9cc3d2d925a122fb3717e94f2a2e9d564db"
+      },
+      {
+        "path": "data/climate/fixtures/climate-factual-runtime-data-review.json",
+        "sha256": "ecda5788bd4c5c1bf887bb2dd36c373fc90bb048dc8ab89be39a3fb309432ca8"
+      },
+      {
         "path": "data/climate/fixtures/climate-runtime-diff-boundary.json",
         "sha256": "2260eef0c4af82812907d68be924e85c5f92611d829ac930064fef69bc535250"
+      },
+      {
+        "path": "data/climate/fixtures/country-accessibility.json",
+        "sha256": "5edd53eef1eeabcac1dc7973c4ea0792388b20d02a1dc173b93397f8cfc5df52"
+      },
+      {
+        "path": "data/climate/fixtures/country-card-evidence-model.json",
+        "sha256": "9c1f790923a04dfe90943c31c1f184916b0067f384d598fcb4bd54e4c5acd1be"
+      },
+      {
+        "path": "data/climate/fixtures/country-coverage-gap-queue.json",
+        "sha256": "46764f85d3ae762797fd11be049555e620cadaa986fa0b2253bddef2e5da36be"
+      },
+      {
+        "path": "data/climate/fixtures/country-profile-compiler.json",
+        "sha256": "414d269dda07fb60a878a649c679f2606045dbab851b4d9840b8f1a5deeb003b"
+      },
+      {
+        "path": "data/climate/fixtures/country-ranking.json",
+        "sha256": "f4cf4460782ade69bb9617c5b2f1e67d795f2e0ad372b6af4f706ee483fa1198"
+      },
+      {
+        "path": "data/climate/fixtures/country-view-model.json",
+        "sha256": "3e8a81e107d2b1d61ae3fbe005895533bddf63eac2694e28e515c151f445e314"
+      },
+      {
+        "path": "data/climate/fixtures/ct42-ct40-release-review.json",
+        "sha256": "52d03d25fca21413fcfcdac8c1b9dcb6a891c7725bf29cd47965fdd8344c7b54"
+      },
+      {
+        "path": "data/climate/fixtures/ct42-runtime-rollback-proof.json",
+        "sha256": "891ce843cdbc674fe5a4cd0c1d881dc89990d7314141c52cc6a94fb0d990b343"
+      },
+      {
+        "path": "data/climate/fixtures/ct42-runtime-rollback-review.json",
+        "sha256": "2b92d1e1bbfa203a1b000ad8099b2c3e250e409cab7f42d7cfef30f2b13bbe75"
+      },
+      {
+        "path": "data/climate/fixtures/delivery-engine.json",
+        "sha256": "e26fce5fa70693740e61ffae3a5410b7b6f9ed8f3e54eebfe03c112d1d3bf068"
       },
       {
         "path": "data/climate/fixtures/globe-webgl-fallback.json",
         "sha256": "6a66b221b03ebcd4c863b5256bdd499cb034abedd8fdb6edaf90a21a70593a14"
       },
       {
+        "path": "data/climate/fixtures/primap-factual-display-promotion.json",
+        "sha256": "ceba79652b9549b5211b9045f8d8e68240d763a52b5668e0015ffd78509ea2ef"
+      },
+      {
+        "path": "data/climate/fixtures/primap-ingest.json",
+        "sha256": "a20e308fa397621e98bb589f6294d1b0b81830dc8168f81332b58a2dbe118264"
+      },
+      {
+        "path": "data/climate/fixtures/release-eligibility.json",
+        "sha256": "cca46a4282553e20dbd6cb9f3607cafcd63dc67b94c65877017b3935506e043d"
+      },
+      {
+        "path": "data/climate/fixtures/reviewed-climate-release.json",
+        "sha256": "75334c812fd362c59d9d99393f4edac8aa6ca81ebbde61bfa23e387bdf5340d8"
+      },
+      {
+        "path": "data/climate/fixtures/source-rights-review-packets.json",
+        "sha256": "b7cda08a480d0852486e061cdb70a469eb70bd6d9996cb9a0d788aa559115f81"
+      },
+      {
+        "path": "data/climate/fixtures/source-routing-policy.json",
+        "sha256": "fb52fa4c14fe4aa0fc014bbf06e5f05e9585b634f79909e9f718b224a15c8066"
+      },
+      {
+        "path": "data/climate/fixtures/target-comparability.json",
+        "sha256": "4b71392a0803c0311967f37057e2de7d20d4168acfa4cd751a58667e368110ab"
+      },
+      {
+        "path": "data/climate/fixtures/top20-primary-source-gap-queue.json",
+        "sha256": "a55be19b7f94f40f2d540bebfae15c28ec1d55564946db9d2c21911538114b62"
+      },
+      {
+        "path": "data/climate/fixtures/truth-ci-policy.json",
+        "sha256": "9f49356c18a04f96ecc2967391c92a88a64042a6bc4c8d2b4ea1e6f8f40eef61"
+      },
+      {
         "path": "data/climate/governance/country-climate-intelligence-release-trust.json",
         "sha256": "d83ac383e755ef37dc95f542efd26b85f7fb452d81a7c51f8870fe28caf9e435"
       },
       {
+        "path": "data/climate/governance/globe-runtime-approval-trust.json",
+        "sha256": "9bb47c15abef171c340b9389edf680f5a2d01cac5a505ca3d208281fef63cf73"
+      },
+      {
         "path": "data/climate/mappings/gcb-2025-country-map.json",
         "sha256": "4fb413229502868a27c796761e625e35da01654ddcba8577841c575de45c699c"
+      },
+      {
+        "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
+        "sha256": "afde366e045918bf65385144ea0368c0ea4a59d71db162954c6d668b9c68bfef"
+      },
+      {
+        "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
+        "sha256": "2939e0ab6eda7a5c90202c975826e8dcf33affda71cd0450ff499078b86478b4"
       },
       {
         "path": "data/climate/releases/country-climate-intelligence-v1/TRANSFORMATION-LOG.md",
@@ -319,6 +524,22 @@
         "sha256": "7ff9a8278e565fc7eb3a0119d3366c6bc413e07e3394f5063b591a78726aeab5"
       },
       {
+        "path": "data/climate/releases/country-coverage-gap-queue-2026-07-15.json",
+        "sha256": "62300ccb5e91db1144577cd2994568e76d1903a287206b1cd89e68652a2fe985"
+      },
+      {
+        "path": "data/climate/releases/ct11-primary-source-pilot-2026-07-15.json",
+        "sha256": "f39736e5927c42733eb59178b84497c15d588788734955ac4b048e9f012eece6"
+      },
+      {
+        "path": "data/climate/releases/primap-hist-2.6.1-economy-wide-2026-07-15.json",
+        "sha256": "aa7f841c0d3c17b6b4e75c0d7045a3ae80136db8895808bf62ce2467f07466a7"
+      },
+      {
+        "path": "data/climate/releases/primap-hist-2.6.1-factual-display-2026-07-15.json",
+        "sha256": "129cc563cbad1fa5c71d6953430a8eba510f4c26106d4f6e76cb7cbd11a7e76d"
+      },
+      {
         "path": "data/climate/releases/source-routing-policy-v2-2026-07-15.json",
         "sha256": "b17a0da307b3bb566c3a8c4126c384587a24a643502fa2f0403da3ff6d638447"
       },
@@ -331,12 +552,76 @@
         "sha256": "4bf47a926999d0b38cc65b4c45f9318602af904564f81be6f2ae1037e0fc874e"
       },
       {
+        "path": "data/climate/reviews/climate-factual-runtime-candidate-ct42-data-review.json",
+        "sha256": "32cff949a5d1a933ad027b7f4715a1839c85b47e9f70f6f44e85bc172eff7974"
+      },
+      {
+        "path": "data/climate/reviews/climate-factual-runtime-ct42-ui-review.json",
+        "sha256": "0af2fc7f2b90a6df1ff7fdc50fff602827469171e157420c3485b58b9e87d492"
+      },
+      {
+        "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
+        "sha256": "4f91495a4371d80bbe44abd73843b5642dce5e48a1892c806e456200f0477aca"
+      },
+      {
+        "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
+        "sha256": "69c7843d6afdc9b3136cae0439fd8786bfad3025013c3c0f7025327c4530df92"
+      },
+      {
+        "path": "data/climate/reviews/ct42-ct40-release-review-result.json",
+        "sha256": "684f38b3741a57e86e60e92873ecaa36336eb496f0443647ec067c2ee885444a"
+      },
+      {
+        "path": "data/climate/reviews/legacy-country-data-exit-ct04-review.json",
+        "sha256": "29b24f77a270ad61f419dc6f8a23d8312be754cdaf7c8c8a806c03120d04ccf4"
+      },
+      {
+        "path": "data/climate/reviews/primap-hist-2.6.1-economy-wide-ct10b-review.json",
+        "sha256": "e0c17b4191a0e62a0c91076f054d14df49325c867763f5f9f9907dddff421c84"
+      },
+      {
+        "path": "data/climate/reviews/primap-hist-2.6.1-factual-display-ct10c-review.json",
+        "sha256": "c2f233511db35ff98738a1d7df5b8a3b083009e03a128d9e406f6bd98678cfda"
+      },
+      {
         "path": "data/climate/reviews/source-rights-review-packets-2026-07-15.json",
         "sha256": "8b718a7cdff38693b37966190160dc737aed4c969c9aa6ca58a63a34108ea21b"
       },
       {
+        "path": "data/climate/runtime/candidate-manifest.json",
+        "sha256": "4273fe6e2df7a18e068ba7f10715e16e79a33ef990dff91dd1148fbf02e9321a"
+      },
+      {
         "path": "data/climate/runtime/country-climate-intelligence.json",
         "sha256": "4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe"
+      },
+      {
+        "path": "data/climate/runtime/country-factual-candidate.json",
+        "sha256": "7f002bc18396d827179cef0a3dda5bb83c3a1538dd6beffd6e4b80c2f7583664"
+      },
+      {
+        "path": "data/climate/runtime/ct10c-batch-attestation-wrapper.json",
+        "sha256": "fd1e5e0a8863b082574a175639abe30b3f5b8722c430019267dac907e09ef034"
+      },
+      {
+        "path": "data/climate/runtime/published-facts-candidate.json",
+        "sha256": "307b0a7c9edc59f6360ce05e66ccf54624f3233d809dd0f4232338b324b07e19"
+      },
+      {
+        "path": "data/climate/runtime/rollback-plan.json",
+        "sha256": "c23bd5caf21bf05b6e637c6f599742e13a47b822b298054ca8d56e968d8aeaae"
+      },
+      {
+        "path": "data/climate/schemas/compiled-profile.schema.json",
+        "sha256": "469a97000277c5082b52ebe905691c269b0de2033992a2ed663a1e9d3426ab89"
+      },
+      {
+        "path": "data/climate/schemas/country-accessibility.schema.json",
+        "sha256": "5cb4161235836668c34e1fba18d62680d66a20430c219c5cd260a4517446dd31"
+      },
+      {
+        "path": "data/climate/schemas/country-card-evidence-model.schema.json",
+        "sha256": "c1414ecec4d4cb111308b587f48e4f101b8b42a535275d35ccaa40f1363d8dfa"
       },
       {
         "path": "data/climate/schemas/country-climate-intelligence-release-approval.schema.json",
@@ -359,8 +644,64 @@
         "sha256": "0ff0ca3826c80cf7f15cba5892c62c3be38f1d35a6e033e8c57e6186b118ed94"
       },
       {
+        "path": "data/climate/schemas/country-coverage-gap-queue.schema.json",
+        "sha256": "9f06bb3682cd98ae1b76d879ca4a3d6129344868a8c42d648aeb6bcc4788bde3"
+      },
+      {
         "path": "data/climate/schemas/country-registry.schema.json",
         "sha256": "78de933d2ad0402086012876d22f4750631adaf4b57048c409b442645d6d677a"
+      },
+      {
+        "path": "data/climate/schemas/ct40-reviewed-release-input.schema.json",
+        "sha256": "d7ae9a2686dcb138ee57ba69bd88265671d2da2ecb1d7b741f5a70a9383f9e03"
+      },
+      {
+        "path": "data/climate/schemas/ct42-runtime-rollback-review.schema.json",
+        "sha256": "65bbd522affada0fb271ac9d827ed6435f2857f3211baf5980dae0f84f70e93b"
+      },
+      {
+        "path": "data/climate/schemas/delivery-reason-vocabulary.json",
+        "sha256": "0e7b00ed42d3ca22cf002acefdb08a092d1e5c03b43a2dd9931463cbb0e646ef"
+      },
+      {
+        "path": "data/climate/schemas/delivery-result.schema.json",
+        "sha256": "e5ab8c0489a2f93e8b51f950a007c57a2a563c0ce25e0fe9fe53c39029a4c478"
+      },
+      {
+        "path": "data/climate/schemas/enums.json",
+        "sha256": "4ad682c621a3c82c4c8f1ef4c1ea36543b951d5de1f3e90503d8df1dd02f8c70"
+      },
+      {
+        "path": "data/climate/schemas/globe-runtime-assets-production-review.schema.json",
+        "sha256": "0b9a3b30cb2366c137521dd2c2e9323966f12c24d98ca72dd08a66d574499be0"
+      },
+      {
+        "path": "data/climate/schemas/observation.schema.json",
+        "sha256": "364d0475afca10e657eec961db184e1524c3f5d2a29e67f44a81dad969a8a2af"
+      },
+      {
+        "path": "data/climate/schemas/primap-batch-candidate.schema.json",
+        "sha256": "ad39341d00a00320ffd0988f66e6524b14d342eb2ced510eefed564c209c696c"
+      },
+      {
+        "path": "data/climate/schemas/primap-factual-display-promotion.schema.json",
+        "sha256": "7b6b92a27bd14e4d2a1969d75209e073339d6099f8b016525cc18b48cc679158"
+      },
+      {
+        "path": "data/climate/schemas/profile.schema.json",
+        "sha256": "d3644d6b802c3a3979c00ce5eb2d65bf8162ccd5475fc54c127d2e08a79d9228"
+      },
+      {
+        "path": "data/climate/schemas/ranking-release.schema.json",
+        "sha256": "44fb922d299f232510c96b596375138e390b35ebe5c3064f193048dc543fe0f8"
+      },
+      {
+        "path": "data/climate/schemas/release-eligibility-result.schema.json",
+        "sha256": "3afd928bbb14107e2a07560244d284ee6b1bd536c997db0be4169bbfe8c9a8f2"
+      },
+      {
+        "path": "data/climate/schemas/reviewed-climate-runtime-manifest.schema.json",
+        "sha256": "3162ceabb26a65860d224cca21745201a8e6575d60b538373c5ccad454491433"
       },
       {
         "path": "data/climate/schemas/reviewed-release-diff.schema.json",
@@ -371,8 +712,44 @@
         "sha256": "057e994d8dc81bafe2c19afe473e759647135df6a9ff980a089d21cd3970e9e8"
       },
       {
+        "path": "data/climate/schemas/source-rights-review-packet.schema.json",
+        "sha256": "b721c46ef7dd7ec75291963affbc3fa7867c293cafde3504ccaf95462e6a76a5"
+      },
+      {
+        "path": "data/climate/schemas/source-routing-policy.schema.json",
+        "sha256": "56b7bc5688f67ec8f7950e7d747368f8b0812fee548cdb395766b13af202ef6b"
+      },
+      {
+        "path": "data/climate/schemas/target-comparability-result.schema.json",
+        "sha256": "e28a52aed16b5e23ece28b60c67bee9f0e4dc5abe3217c89252da843f60889f5"
+      },
+      {
+        "path": "data/climate/schemas/top20-source-routing-queue.schema.json",
+        "sha256": "25fefe3a30144de9f555e0a58d84f3091f93afb4a5410034344e941c0a12eab6"
+      },
+      {
         "path": "data/climate/source-registry.json",
         "sha256": "6b9e468096ffd073966dea5cc5c6cea6fdffea3c3ab03e78dd31fdf629cf4eba"
+      },
+      {
+        "path": "data/governance/vendor/globe-gl-2.46.1-notices-integration.json",
+        "sha256": "a911d998d0336b8ff5649d0a5ff07103a8fa54351cc64607771a98cd8cdeb795"
+      },
+      {
+        "path": "data/governance/vendor/globe-gl-2.46.1-notices.json",
+        "sha256": "542e9bf2043f1c670200be9c9b0455b93048514dfb8b602301ca1245918660c2"
+      },
+      {
+        "path": "data/pledge-nodes.json",
+        "sha256": "3c62f413f5988878f70a46492ee67c0ca1c219a85faf08155c35888acacb9fa1"
+      },
+      {
+        "path": "data/small-nations.json",
+        "sha256": "81086c45ee1a2d10a2859c2bdd1737db4e74be8f50aaad037307dda44cfe670a"
+      },
+      {
+        "path": "docs/CLIMATE-PRODUCTION-READINESS.md",
+        "sha256": "59435d830bb2b33372c4a28395267ec1ef5d5709d78bc07bf790831296ced243"
       },
       {
         "path": "docs/COUNTRY-CLIMATE-METHODOLOGY.md",
@@ -387,6 +764,10 @@
         "sha256": "8e5d47202b7af1f2fe0f1047c4720969db3868fb611c00ddce4de038bed93429"
       },
       {
+        "path": "docs/COUNTRY-CLIMATE-TRUTH-CI.md",
+        "sha256": "fc4d97fe8ef3894e2711b91bbfefdfc14ea07adfcdb141ab55531cca1cb13c75"
+      },
+      {
         "path": "docs/COUNTRY-CLIMATE-TRUTH-PLAN.md",
         "sha256": "bb61ce1f26de1e339a22fbed113a24091e67f8e91681bec8d7289de3415cf931"
       },
@@ -395,8 +776,20 @@
         "sha256": "de0939b508af7fd054c9326511c3a9ce7cdebfbd91cb90e3e2bb3b0ca292d57b"
       },
       {
+        "path": "docs/LEGACY-COUNTRY-DATA-EXIT.md",
+        "sha256": "ebac3f319279d9b431005bdf7225defad82e93cd2f0d4964638695caed30be6e"
+      },
+      {
+        "path": "docs/agents/README.md",
+        "sha256": "a7f2318a6457b2a59a823b11b58636e84c13dc846db07254bd059ec946535266"
+      },
+      {
         "path": "docs/operations/GO_PUBLIC.md",
         "sha256": "14fa420222baedbf4c2a85eec749025d4aad14e4f7006eb13fa435bb33bfb4eb"
+      },
+      {
+        "path": "favicon.svg",
+        "sha256": "d398ff6a1e8e735f1e321ab3b8a4598937e81af6db3a56c5aacbadaa404975be"
       },
       {
         "path": "index.html",
@@ -459,8 +852,20 @@
         "sha256": "6cb9b3742575eaaa3644ca4cffe42cc4cca6121dce2c49f1add566b7cd7b3734"
       },
       {
+        "path": "manifest.json",
+        "sha256": "cc7cf3ee37944ea792e72ed10a47b6ba57994afcb1270aa9855e488f835d0d75"
+      },
+      {
+        "path": "robots.txt",
+        "sha256": "a06b5350ab6a1093e9ced56c62b56467ecd757b12b180564b4c80e4a1d9fb695"
+      },
+      {
         "path": "scripts/verify_load_order.py",
         "sha256": "2b093dfe70a9a6e11da3aecd6e6f68753e1aab159280da940206c6d97a21c8ce"
+      },
+      {
+        "path": "sitemap.xml",
+        "sha256": "747b18e78edd0440fd391c94606acd44f8502da81c2d66d01a0b6cd2e94fbbeb"
       },
       {
         "path": "sw.js",
@@ -481,6 +886,10 @@
       {
         "path": "tools/apply-country-climate-rigor-corrections.js",
         "sha256": "1067c8d81ae0fdc05f575aec3b33bb5ec9fa06d45efb75ca879d2082d2c5035b"
+      },
+      {
+        "path": "tools/authoring/fetch-nasa-black-marble.sh",
+        "sha256": "ade65419169d17404506d2dee5cfdbacb8f2c0c6a76d3d59b34482892edd4466"
       },
       {
         "path": "tools/build-country-climate-intelligence.js",
@@ -735,8 +1144,20 @@
         "sha256": "df817edffdd101db44300065c41636abd99210a7f092d3225a68074aa3f55ff8"
       },
       {
+        "path": "tools/fetch-globe-vendor.sh",
+        "sha256": "bcb129135f8bb1f83aa5451a5b0524a3d65bac61b8c9f94b8e19ab1e48a9ac30"
+      },
+      {
         "path": "tools/fixtures/globe-runtime-assets.json",
         "sha256": "d2e15a109eb468e51559588070660dbb96d8070922d6af40ee01bb1b4d56d427"
+      },
+      {
+        "path": "tools/fixtures/globe-third-party-notices.json",
+        "sha256": "f4bfb3cdd3c98e2e16df2adeb1a1bc30dd36c2e53d28b5c2fd2cc55470747277"
+      },
+      {
+        "path": "tools/fixtures/globe-vendor-integrity.json",
+        "sha256": "768fb904ba31e2abca51e6944c306c23cc7f82d9e346d2974916b1ab83341f01"
       },
       {
         "path": "tools/impact-analyzer.js",
@@ -820,7 +1241,7 @@
       },
       {
         "path": "tools/lib/globe-runtime-approval.js",
-        "sha256": "7ea9b754b0f96c7cc5d3317f428059b691ab8c83b1b9c1cca929e757db940d0b"
+        "sha256": "ad2eec5a7ee468cc71856c2fb21e8e5523a2fada8f3001e2e51daaf052969228"
       },
       {
         "path": "tools/lib/globe-runtime-assets.js",
@@ -828,7 +1249,7 @@
       },
       {
         "path": "tools/lib/globe-third-party-notices.js",
-        "sha256": "88f7dbd66da8614865d1482f4ee68813198791e09f978518214e51f4a82aeac5"
+        "sha256": "40905f147557572871cdc14a086d8ef272cebe5d6402dea3e4fae2e6abfc7478"
       },
       {
         "path": "tools/lib/globe-vendor-integrity.js",
@@ -892,7 +1313,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "ae799c3540b02d9f9dfc1bbbba1f677c80c366c3597829864a3f52f05b870469"
+        "sha256": "f33b69bc6d093d29c47a7095c16b8d4763a49dc0df5a2d032abeb77c99966933"
       },
       {
         "path": "tools/reconstruct-gcb-country-map.js",
@@ -945,6 +1366,10 @@
       {
         "path": "tools/verify-legacy-country-exit.js",
         "sha256": "63dd90a443a2f0eaacdf93157587f0b6e89a71e128d384986547039c705783f8"
+      },
+      {
+        "path": "wrangler.jsonc",
+        "sha256": "846b5feae4ca7a6a81d6cdf262deaca63469ce422cde7a04163f2dff2377ccb5"
       }
     ]
   }
