@@ -267,7 +267,8 @@ rights review, production approval, and release authority remain false.
 The protected Ed25519 registry is intentionally empty and `unprovisioned`.
 Future release work must provision real public keys for the asset-rights,
 licensing-counsel, and release-authorizer roles through maintainer review, keep
-all private keys offline, bind the exact registry/approval/commit hashes, and
+all private keys offline, bind the exact registry hash, approval bytes, and
+reviewed artifact-pin digest, and
 commit only the detached signatures. Follow the sequence and exact signing
 message in `docs/CLIMATE-PRODUCTION-READINESS.md`; never edit `_deploy` after
 the final aggregate check.

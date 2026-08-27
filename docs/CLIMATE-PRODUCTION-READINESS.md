@@ -125,14 +125,16 @@ This mode fails closed unless every item below is true:
 - CT-45 passes and a separate independent exact-digest runtime-asset review
   approves the visual-asset rights, confirms the complete deployed third-party notice
   inventory, and explicitly grants production use and release authority;
-- the exact v2 approval is a regular file tied to the reviewed commit and pins
-  the CT-45 manifest, readable notice, machine inventory, and integration
-  record. It must contain all five non-blanket approved asset rows, four
+- the exact v3 approval is a regular file that binds the canonical 78 reviewed
+  artifact pins and their squash-safe digest, including the CT-45 manifest,
+  readable notice, machine inventory, integration record, schemas, and
+  enforcement controls. It must contain all five non-blanket approved asset rows, four
   resolved counsel rows, valid decision references/timestamps, and distinct
   non-placeholder builder, asset-rights reviewer, counsel reviewer, and release
   authorizer identities;
-- the protected registry is provisioned and the exact detached bundle verifies
-  one distinct Ed25519 signature for each required role at `reviewed_at`.
+- the protected registry is provisioned and the exact V2 detached bundle
+  verifies one distinct Ed25519 signature for each required role, with every
+  signing key valid at `reviewed_at`.
 
 The only successful production status is `release_ready`.
 

@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "c93a05b988b170ba460f2b06a0ccda4e12123d02a1ebbd06b7f92cbb4a05d970",
+  "calculation_hash": "d4fef6d92cbcdb4efff0118c3e9c6cb2a8acd6b25d56a76709fee516fa3ab8c5",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -212,7 +212,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "d4c54304bec2914b0b9c7e037aa7a78bd20b74e2e8668bf7baf27e6ed2afd083",
+    "artifact_pin_digest": "1d8bc1d4ee36cd117e4f6af9d4960fe368f6d744240f7a729dec43693d0759e8",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -224,7 +224,7 @@
       },
       {
         "path": "ARCHITECTURE.md",
-        "sha256": "52267fc074879fa360106528f0f4ff63c9107102dcf0fdf6069ac3c35cd3e361"
+        "sha256": "3d84408694e401f54063086022a0d591511f7fe3d9e53c3074df3ddcee82fb5d"
       },
       {
         "path": "CREDITS.md",
@@ -393,6 +393,10 @@
       {
         "path": "docs/FACTUAL-PUBLIC-DEPLOYMENT.md",
         "sha256": "de0939b508af7fd054c9326511c3a9ce7cdebfbd91cb90e3e2bb3b0ca292d57b"
+      },
+      {
+        "path": "docs/operations/GO_PUBLIC.md",
+        "sha256": "14fa420222baedbf4c2a85eec749025d4aad14e4f7006eb13fa435bb33bfb4eb"
       },
       {
         "path": "index.html",
@@ -816,7 +820,7 @@
       },
       {
         "path": "tools/lib/globe-runtime-approval.js",
-        "sha256": "e46319c96c471e9fbc2a43f26f1a77ad68e26d9983a57dae28ef8bdc8ac6035c"
+        "sha256": "7ea9b754b0f96c7cc5d3317f428059b691ab8c83b1b9c1cca929e757db940d0b"
       },
       {
         "path": "tools/lib/globe-runtime-assets.js",
@@ -824,7 +828,7 @@
       },
       {
         "path": "tools/lib/globe-third-party-notices.js",
-        "sha256": "ca9c74e1b2ef4f5dca17151e112d9d8dcecba54580ff23bca7207702971f9191"
+        "sha256": "88f7dbd66da8614865d1482f4ee68813198791e09f978518214e51f4a82aeac5"
       },
       {
         "path": "tools/lib/globe-vendor-integrity.js",
@@ -888,7 +892,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "7d9098148fc9fc5a4f8f9cda3dff5e9f4609f4c3bf5d0ee7245ecb63155c8cc8"
+        "sha256": "ae799c3540b02d9f9dfc1bbbba1f677c80c366c3597829864a3f52f05b870469"
       },
       {
         "path": "tools/reconstruct-gcb-country-map.js",

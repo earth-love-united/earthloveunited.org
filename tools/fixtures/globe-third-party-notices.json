@@ -8,7 +8,7 @@
     "notice_sha256": "741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2",
     "integration_sha256": "a911d998d0336b8ff5649d0a5ff07103a8fa54351cc64607771a98cd8cdeb795",
     "integration_calculation_hash": "eb378696e0433079aaa4dad0b8ecad0dab46b2526c1fcc7ad9976a545c75de1a",
-    "approval_schema_sha256": "5352565f13dba05e7049f405efb8af2cd38af12363036ad4ef9c29894d171996",
+    "approval_schema_sha256": "a65634cea4501254b469218e560a718be9bf2d397934cdca1d728b595f323b29",
     "approval_trust_sha256": "9bb47c15abef171c340b9389edf680f5a2d01cac5a505ca3d208281fef63cf73",
     "component_count": 44,
     "source_mapped_package_count": 37,

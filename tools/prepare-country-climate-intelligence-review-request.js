@@ -64,6 +64,7 @@ const SUBJECT_PATHS = Object.freeze([
   'docs/COUNTRY-CLIMATE-SOURCE-RIGOR-AUDIT.md',
   'docs/COUNTRY-CLIMATE-TRUTH-PLAN.md',
   'docs/FACTUAL-PUBLIC-DEPLOYMENT.md',
+  'docs/operations/GO_PUBLIC.md',
   'index.html',
   'js/app.js',
   'js/carbon-clock.js',

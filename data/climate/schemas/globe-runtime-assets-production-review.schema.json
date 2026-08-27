@@ -43,8 +43,8 @@
     },
     "reviewed_artifact_pins": {
       "type": "array",
-      "minItems": 77,
-      "maxItems": 77,
+      "minItems": 78,
+      "maxItems": 78,
       "uniqueItems": true,
       "items": {
         "type": "object",

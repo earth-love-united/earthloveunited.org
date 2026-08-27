@@ -261,7 +261,7 @@ empty and `unprovisioned`; approval and detached signature artifacts are absent.
 Notice integrity does not confer rights approval: the inventory core flags are
 historical inventory-only properties, and production requires five
 asset-specific rights dispositions plus four counsel resolutions in an exact
-commit approval, followed by distinct verified Ed25519 signatures from the
+78-file artifact-pin-digest approval, followed by distinct verified Ed25519 signatures from the
 asset-rights reviewer, licensing counsel, and release authorizer.
 
 The implemented data contract is documented in:

@@ -81,6 +81,7 @@ const REVIEWED_PATHS = Object.freeze([
   'docs/CLIMATE-PRODUCTION-READINESS.md',
   'docs/COUNTRY-CLIMATE-TRUTH-CI.md',
   'docs/LEGACY-COUNTRY-DATA-EXIT.md',
+  'docs/operations/GO_PUBLIC.md',
   'index.html',
   'js/app.js',
   'js/carbon-clock.js',
