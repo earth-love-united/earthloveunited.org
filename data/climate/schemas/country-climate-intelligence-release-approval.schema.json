@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": [
     "schema_version", "approval_id", "release_id", "status",
-    "subject_commit_sha", "builder_id", "review_request",
+    "subject_artifact_pin_digest", "builder_id", "review_request",
     "release_artifact_pins", "source_reviews", "independent_reviews",
     "protected_file_review", "decision", "calculation_hash"
   ],
@@ -15,7 +15,7 @@
     "approval_id": {"type": "string", "minLength": 10},
     "release_id": {"type": "string", "minLength": 10},
     "status": {"const": "reviewed"},
-    "subject_commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "subject_artifact_pin_digest": {"$ref": "#/$defs/sha256"},
     "builder_id": {"type": "string", "minLength": 5},
     "review_request": {"$ref": "#/$defs/pin"},
     "release_artifact_pins": {
@@ -33,12 +33,12 @@
     "protected_file_review": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status", "reviewer_id", "approval_reference", "reviewed_commit_sha", "reviewed_at"],
+      "required": ["status", "reviewer_id", "approval_reference", "reviewed_artifact_pin_digest", "reviewed_at"],
       "properties": {
         "status": {"const": "approved"},
         "reviewer_id": {"type": "string", "minLength": 5},
         "approval_reference": {"type": "string", "minLength": 10},
-        "reviewed_commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+        "reviewed_artifact_pin_digest": {"$ref": "#/$defs/sha256"},
         "reviewed_at": {"type": "string", "format": "date-time"}
       }
     },

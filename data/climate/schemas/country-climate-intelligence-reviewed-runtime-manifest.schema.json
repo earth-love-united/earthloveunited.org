@@ -5,7 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version", "manifest_id", "release_id", "subject_commit_sha",
+    "schema_version", "manifest_id", "release_id", "subject_artifact_pin_digest",
     "runtime", "review_request", "release_approval", "release_diff",
     "rollback_proof", "source_registry", "source_receipts",
     "artifact_pins", "review", "calculation_hash"
@@ -14,7 +14,7 @@
     "schema_version": {"const": "1.0.0"},
     "manifest_id": {"type": "string", "minLength": 10},
     "release_id": {"type": "string", "minLength": 10},
-    "subject_commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "subject_artifact_pin_digest": {"$ref": "#/$defs/sha256"},
     "runtime": {
       "type": "object",
       "additionalProperties": false,

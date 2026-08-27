@@ -21,10 +21,9 @@
     "subject": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["commit_binding_state", "subject_commit_sha", "artifact_pins"],
+      "required": ["artifact_pin_digest", "artifact_pins"],
       "properties": {
-        "commit_binding_state": {"enum": ["unbound_worktree_candidate", "bound_candidate_commit"]},
-        "subject_commit_sha": {"type": ["string", "null"], "pattern": "^[a-f0-9]{40}$"},
+        "artifact_pin_digest": {"$ref": "#/$defs/sha256"},
         "artifact_pins": {
           "type": "array",
           "minItems": 20,

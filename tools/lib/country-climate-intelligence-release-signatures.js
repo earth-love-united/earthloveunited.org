@@ -9,7 +9,7 @@ const TRUST_REGISTRY_PATH = 'data/climate/governance/country-climate-intelligenc
 const SIGNATURE_BUNDLE_PATH = RELEASE_DIR + '/release-signatures.json';
 const SIGNATURE_SCHEMA_PATH = 'data/climate/schemas/country-climate-intelligence-release-signatures.schema.json';
 const EXPECTED_TRUST_REGISTRY_SHA256 = 'd83ac383e755ef37dc95f542efd26b85f7fb452d81a7c51f8870fe28caf9e435';
-const SIGNATURE_DOMAIN = 'ELU-COUNTRY-CLIMATE-INTELLIGENCE-RELEASE-SIGNATURE-V1';
+const SIGNATURE_DOMAIN = 'ELU-COUNTRY-CLIMATE-INTELLIGENCE-RELEASE-SIGNATURE-V2';
 const REQUIRED_ROLES = Object.freeze([
   'carbon_accounting',
   'demography',
@@ -36,7 +36,7 @@ const REGISTRY_KEYS = Object.freeze([
 ]);
 const BUNDLE_KEYS = Object.freeze([
   'package_pins', 'release_id', 'repository', 'schema_version', 'signature_bundle_id',
-  'signatures', 'subject_commit_sha', 'trust_registry',
+  'signatures', 'subject_artifact_pin_digest', 'trust_registry',
 ]);
 const PIN_KEYS = Object.freeze(['path', 'sha256']);
 const SIGNATURE_KEYS = Object.freeze(['key_id', 'role', 'signature_base64', 'signed_at']);
@@ -173,7 +173,7 @@ function signatureMessage(fields) {
   return SIGNATURE_DOMAIN + '\n' +
     'repository=' + fields.repository + '\n' +
     'release_id=' + fields.release_id + '\n' +
-    'subject_commit_sha=' + fields.subject_commit_sha + '\n' +
+    'subject_artifact_pin_digest=' + fields.subject_artifact_pin_digest + '\n' +
     'trust_registry=' + fields.trust_registry.path + '#' + fields.trust_registry.sha256 + '\n' +
     packageLines + '\n' +
     'role=' + fields.role + '\n' +
@@ -228,12 +228,12 @@ function evaluateReleaseSignatures(input) {
   const requestRecord = records.find(record => record.path === RELEASE_DIR + '/review-request.json');
   const request = requestRecord && requestRecord.value;
   const releaseId = request && request.release_id;
-  const subjectCommit = request && request.subject && request.subject.subject_commit_sha;
+  const subjectArtifactPinDigest = request && request.subject && request.subject.artifact_pin_digest;
   check('signature-bundle-identity', exactKeys(bundle, BUNDLE_KEYS) &&
     bundle.schema_version === POLICY_VERSION &&
-    bundle.signature_bundle_id === 'elu-country-climate-intelligence-v1-release-signatures-v1' &&
+    bundle.signature_bundle_id === 'elu-country-climate-intelligence-v1-release-signatures-v2' &&
     bundle.repository === REPOSITORY && bundle.release_id === releaseId &&
-    bundle.subject_commit_sha === subjectCommit && exactKeys(bundle.trust_registry, PIN_KEYS) &&
+    bundle.subject_artifact_pin_digest === subjectArtifactPinDigest && exactKeys(bundle.trust_registry, PIN_KEYS) &&
     bundle.trust_registry.path === TRUST_REGISTRY_PATH && bundle.trust_registry.sha256 === registrySha);
   check('signature-package-pins', Array.isArray(bundle && bundle.package_pins) &&
     JSON.stringify(bundle.package_pins) === JSON.stringify(expectedPins) &&
@@ -259,7 +259,8 @@ function evaluateReleaseSignatures(input) {
     authorizerSignature && authorizerSignature.signed_at
   ));
   check('signature-subject-coordinate', approval && approval.release_id === releaseId &&
-    approval.subject_commit_sha === subjectCommit && /^[a-f0-9]{40}$/.test(subjectCommit || ''));
+    approval.subject_artifact_pin_digest === subjectArtifactPinDigest &&
+    /^[a-f0-9]{64}$/.test(subjectArtifactPinDigest || ''));
 
   const selectedCoordinates = [];
   let valid = signatures.length === REQUIRED_ROLES.length;
@@ -280,7 +281,7 @@ function evaluateReleaseSignatures(input) {
     const message = signatureMessage({
       repository: REPOSITORY,
       release_id: releaseId,
-      subject_commit_sha: subjectCommit,
+      subject_artifact_pin_digest: subjectArtifactPinDigest,
       trust_registry: { path: TRUST_REGISTRY_PATH, sha256: registrySha },
       package_pins: expectedPins,
       role: signature.role,

@@ -1,6 +1,5 @@
 'use strict';
 
-const childProcess = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 const { stable, validateJsonSchema } = require('./json-schema-lite');
@@ -14,6 +13,7 @@ const {
   REQUIRED_ABSENT_PATHS,
   SOURCE_REVIEWS,
   SUBJECT_PATHS,
+  artifactPinDigest,
   calculationHash: requestCalculationHash,
 } = require('../prepare-country-climate-intelligence-review-request');
 const { fileSha256, sha256 } = require('./country-climate-intelligence');
@@ -128,48 +128,20 @@ function exactPins(root, actual, expectedPaths, errors, code) {
   return pass;
 }
 
-function validateSubjectCommitPins(root, request, errors, blockers) {
-  const commit = request.subject?.subject_commit_sha;
-  if (!/^[a-f0-9]{40}$/.test(commit || '')) return;
-  const ancestor = childProcess.spawnSync('git', ['merge-base', '--is-ancestor', commit, 'HEAD'], {
-    cwd: root,
-    encoding: 'utf8',
-  });
-  if (ancestor.status !== 0) {
-    blockers.push({
-      code: 'review_request_commit_not_ancestor',
-      detail: 'The bound candidate commit must be available and an ancestor of the reviewed checkout.',
-    });
-    return;
-  }
-  (request.subject?.artifact_pins || []).forEach(entry => {
-    if (!entry || typeof entry.path !== 'string' || !/^[0-9a-f]{64}$/.test(entry.sha256 || '')) return;
-    const object = childProcess.spawnSync('git', ['show', commit + ':' + entry.path], {
-      cwd: root,
-      encoding: null,
-      maxBuffer: 64 * 1024 * 1024,
-    });
-    if (object.status !== 0 || sha256(object.stdout) !== entry.sha256) {
-      add(errors, 'review_request_commit_pin_mismatch', entry.path + ' does not match the bound Git object.');
-    }
-  });
-  REQUIRED_ABSENT_PATHS.forEach(relative => {
-    const object = childProcess.spawnSync('git', ['cat-file', '-e', commit + ':' + relative], {
-      cwd: root,
-      encoding: 'utf8',
-    });
-    if (object.status === 0) {
-      add(errors, 'review_request_forbidden_path_present_at_commit', relative + ' exists in the bound candidate commit.');
-    }
-  });
-}
-
 function requiredAbsentViolations(root, request) {
   if (JSON.stringify(request && request.required_absent_paths) !== JSON.stringify(REQUIRED_ABSENT_PATHS)) {
     return ['required_absent_paths is not the exact canonical exclusion set.'];
   }
   return REQUIRED_ABSENT_PATHS.filter(relative => entryPresent(root, relative))
     .map(relative => relative + ' must remain absent from the reviewed checkout.');
+}
+
+function validateSubjectArtifactPinDigest(request, errors) {
+  const expected = artifactPinDigest(request.subject?.artifact_pins, request.required_absent_paths);
+  if (!expected || request.subject?.artifact_pin_digest !== expected) {
+    add(errors, 'review_request_subject_digest_mismatch',
+      'The subject digest must canonically bind the exact artifact pins and required-absent path set.');
+  }
 }
 
 function validateEvidencePins(root, pins, errors, code) {
@@ -222,6 +194,7 @@ function inspectReviewRequest(root, requestOverride = null) {
     add(errors, 'review_request_calculation_hash_mismatch', 'Review request hash is not canonical.');
   }
   exactPins(root, request.subject?.artifact_pins, SUBJECT_PATHS, errors, 'review_request_artifact_pin_mismatch');
+  validateSubjectArtifactPinDigest(request, errors);
   if (!exactIdSet(request.source_reviews, 'source_registry_id', SOURCE_IDS)) {
     add(errors, 'review_request_source_set_mismatch', 'The five value-producing sources are not the exact required set.');
   }
@@ -234,15 +207,6 @@ function inspectReviewRequest(root, requestOverride = null) {
   const manifest = readJson(root, PATHS.releaseManifest);
   if (request.release_id !== runtime.release?.id || request.release_id !== manifest.release?.id) {
     add(errors, 'review_request_release_id_mismatch', 'Request, runtime, and release manifest do not identify one release.');
-  }
-  if (request.subject?.commit_binding_state !== 'bound_candidate_commit' ||
-      !/^[a-f0-9]{40}$/.test(request.subject?.subject_commit_sha || '')) {
-    blockers.push({
-      code: 'review_request_commit_unbound',
-      detail: 'Regenerate the request with --subject-commit after the candidate implementation commit.',
-    });
-  } else {
-    validateSubjectCommitPins(root, request, errors, blockers);
   }
   return {
     pass: errors.length === 0 && blockers.length === 0,
@@ -342,17 +306,18 @@ function inspectReleaseApproval(root, options = {}) {
 
   const request = requestResult.request;
   const releaseId = request.release_id;
-  const subjectCommit = request.subject.subject_commit_sha;
+  const subjectArtifactPinDigest = request.subject.artifact_pin_digest;
   [documents.approval, documents.releaseDiff, documents.runtimeManifest, documents.rollbackProof].forEach(document => {
     const documentReleaseId = document.release_id ?? document.data_release_id;
     if (documentReleaseId !== releaseId) {
       add(errors, 'reviewed_release_id_mismatch', 'Every reviewed release artifact must identify the request release.');
     }
   });
-  if (documents.approval.subject_commit_sha !== subjectCommit ||
-      documents.runtimeManifest.subject_commit_sha !== subjectCommit ||
-      documents.approval.protected_file_review?.reviewed_commit_sha !== subjectCommit) {
-    add(errors, 'reviewed_subject_commit_mismatch', 'Approval, protected review, runtime manifest, and request must bind one candidate commit.');
+  if (documents.approval.subject_artifact_pin_digest !== subjectArtifactPinDigest ||
+      documents.runtimeManifest.subject_artifact_pin_digest !== subjectArtifactPinDigest ||
+      documents.approval.protected_file_review?.reviewed_artifact_pin_digest !== subjectArtifactPinDigest) {
+    add(errors, 'reviewed_subject_artifact_digest_mismatch',
+      'Approval, protected review, runtime manifest, and request must bind one canonical artifact-pin digest.');
   }
 
   const requestPin = pin(root, PATHS.request);

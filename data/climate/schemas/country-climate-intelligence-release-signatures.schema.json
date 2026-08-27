@@ -6,14 +6,14 @@
   "additionalProperties": false,
   "required": [
     "schema_version", "signature_bundle_id", "repository", "release_id",
-    "subject_commit_sha", "trust_registry", "package_pins", "signatures"
+    "subject_artifact_pin_digest", "trust_registry", "package_pins", "signatures"
   ],
   "properties": {
     "schema_version": {"const": "1.0.0"},
-    "signature_bundle_id": {"const": "elu-country-climate-intelligence-v1-release-signatures-v1"},
+    "signature_bundle_id": {"const": "elu-country-climate-intelligence-v1-release-signatures-v2"},
     "repository": {"const": "earth-love-united/earthloveunited.org"},
     "release_id": {"type": "string", "minLength": 10},
-    "subject_commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "subject_artifact_pin_digest": {"$ref": "#/$defs/sha256"},
     "trust_registry": {"$ref": "#/$defs/pin"},
     "package_pins": {
       "type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true,

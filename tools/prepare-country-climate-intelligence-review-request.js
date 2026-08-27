@@ -13,6 +13,7 @@ const {
 } = require('./lib/country-climate-intelligence');
 
 const OUTPUT = 'data/climate/releases/country-climate-intelligence-v1/review-request.json';
+const SUBJECT_BINDING_DOMAIN = 'ELU-CCI-REVIEW-SUBJECT-ARTIFACT-PINS-AND-ABSENCES-V1';
 const REQUIRED_ABSENT_PATHS = Object.freeze([
   'data/climate/releases/country-climate-intelligence-v1/climate-trace-ghg.json',
   'tools/compile-climate-trace.js',
@@ -282,24 +283,36 @@ function calculationHash(value) {
   return sha256(JSON.stringify(stable(copy)));
 }
 
+function artifactPinDigest(pins, requiredAbsentPaths = REQUIRED_ABSENT_PATHS) {
+  if (!Array.isArray(pins) || !pins.length || !Array.isArray(requiredAbsentPaths)) return null;
+  if (pins.some(item => !item || Object.keys(item).sort().join(',') !== 'path,sha256' ||
+      typeof item.path !== 'string' || !/^[a-f0-9]{64}$/.test(item.sha256 || '')) ||
+      new Set(pins.map(item => item.path)).size !== pins.length ||
+      requiredAbsentPaths.some(relative => typeof relative !== 'string') ||
+      new Set(requiredAbsentPaths).size !== requiredAbsentPaths.length) return null;
+  const canonicalPins = pins.map(item => ({ path: item.path, sha256: item.sha256 }))
+    .sort((left, right) => left.path.localeCompare(right.path));
+  const canonicalBoundary = {
+    artifact_pins: canonicalPins,
+    required_absent_paths: [...requiredAbsentPaths].sort(),
+  };
+  return sha256(`${SUBJECT_BINDING_DOMAIN}\n${JSON.stringify(canonicalBoundary)}\n`);
+}
+
 function build(args) {
   const manifest = readJson(path.join(ROOT, 'data/climate/releases/country-climate-intelligence-v1/release-manifest.json'));
-  const subjectCommit = option(args, '--subject-commit');
-  if (subjectCommit !== null && !/^[a-f0-9]{40}$/.test(subjectCommit)) {
-    throw new Error('--subject-commit must be a lowercase 40-character Git commit SHA');
-  }
+  const artifactPins = SUBJECT_PATHS.map(pin);
   const request = {
     schema_version: '1.0.0',
-    request_id: `${manifest.release.id}-review-request.1`,
+    request_id: `${manifest.release.id}-review-request.2`,
     release_id: manifest.release.id,
     created_at: option(args, '--created-at', '2026-08-27T00:00:00Z'),
     status: 'requires_independent_review',
     release_authority: false,
     production_runtime_release: false,
     subject: {
-      commit_binding_state: subjectCommit ? 'bound_candidate_commit' : 'unbound_worktree_candidate',
-      subject_commit_sha: subjectCommit,
-      artifact_pins: SUBJECT_PATHS.map(pin),
+      artifact_pin_digest: artifactPinDigest(artifactPins, REQUIRED_ABSENT_PATHS),
+      artifact_pins: artifactPins,
     },
     governance_boundaries: {
       composite_score: false,
@@ -340,7 +353,7 @@ function main() {
   const request = build(args);
   const digest = writeJson(outputPath, request);
   process.stdout.write(`Prepared CCI review request for ${request.subject.artifact_pins.length} exact artifacts.\n`);
-  process.stdout.write(`Commit binding: ${request.subject.commit_binding_state}. SHA-256: ${digest}\n`);
+  process.stdout.write(`Subject artifact-pin digest: ${request.subject.artifact_pin_digest}. Request SHA-256: ${digest}\n`);
 }
 
 if (require.main === module) {
@@ -354,6 +367,8 @@ module.exports = {
   REQUIRED_ABSENT_PATHS,
   SOURCE_REVIEWS,
   SUBJECT_PATHS,
+  SUBJECT_BINDING_DOMAIN,
+  artifactPinDigest,
   build,
   calculationHash,
 };

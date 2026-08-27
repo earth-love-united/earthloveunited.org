@@ -9,17 +9,21 @@ The canonical machine-readable request is:
 The request is generated from exact artifact bytes by:
 
 ~~~sh
-node tools/prepare-country-climate-intelligence-review-request.js \
-  --subject-commit <candidate-implementation-commit-sha>
+node tools/prepare-country-climate-intelligence-review-request.js
 ~~~
 
-Run that command only after the candidate implementation commit exists. An unbound request is useful for preparation, but the production gate rejects it.
+Run that command only after every governed candidate file is final. The request
+binds the exact sorted artifact pins and required-absent paths with one canonical
+SHA-256 digest. Any later governed-byte or exclusion-boundary change requires a
+new request and new reviews; Git commit identity and ancestry are deliberately
+not release-authority coordinates because the repository lands pull requests by
+squash merge.
 
 ## Review boundary
 
 Country Climate Intelligence has no composite score, target assessment, finance judgment, offset adjustment, or mismatched-scope delta. Historical CT-40 reviews cover a different scored/NDC release and cannot be reused.
 
-A production decision requires all of the following to identify the same release, candidate commit, and exact hashes:
+A production decision requires all of the following to identify the same release, canonical subject digest, and exact hashes:
 
 1. release-specific source and rights decisions for every value-producing source;
 2. independent discipline reviews for carbon accounting, demography, power systems, physical climate, reproducibility, UI/accessibility/runtime, and source rights;
@@ -29,7 +33,7 @@ A production decision requires all of the following to identify the same release
 6. an executable `reviewed-rollback-proof.json`;
 7. `release-signatures.json`, with verified detached Ed25519 signatures from all seven discipline reviewers and the release authorizer over the exact five-artifact package;
 8. a provisioned, protected CCI release trust registry whose exact hash is pinned by the reviewed subject and verifier;
-9. protected-file/CODEOWNERS approval for the reviewed commit;
+9. protected-file/CODEOWNERS approval for the reviewed artifact-pin digest;
 10. a runtime and release manifest that both self-identify as independently reviewed production artifacts;
 11. a separately signed globe-runtime asset approval from the asset-rights reviewer, licensing counsel, and release authorizer.
 
@@ -53,7 +57,7 @@ The candidate builder cannot sign an independent review, source decision, protec
 
 Review reports and rights decisions must be regular repository artifacts with exact SHA-256 pins. A URL or prose assertion without a pinned decision/report is supporting evidence, not approval.
 
-Reviewer IDs, timestamps, hashes, and CODEOWNERS approval are not signatures. The CCI package uses a separate protected trust registry and eight detached Ed25519 role signatures: carbon accounting, demography, power systems, physical climate, reproducibility, UI/accessibility/runtime, source rights, and release authorizer. Each signature binds the repository, release ID, candidate commit, trust-registry hash, role identity/time, and raw SHA-256 of the review request, approval, release diff, runtime manifest, and rollback proof. A change to any signed byte invalidates the package.
+Reviewer IDs, timestamps, hashes, and CODEOWNERS approval are not signatures. The CCI package uses a separate protected trust registry and eight detached Ed25519 role signatures: carbon accounting, demography, power systems, physical climate, reproducibility, UI/accessibility/runtime, source rights, and release authorizer. Each signature binds the repository, release ID, canonical artifact-pin-and-absence digest, trust-registry hash, role identity/time, and raw SHA-256 of the review request, approval, release diff, runtime manifest, and rollback proof. A change to any signed byte invalidates the package.
 
 The committed trust registry is intentionally `unprovisioned`, and `release-signatures.json` is intentionally absent. Real public keys must be provisioned through protected-file review before the bound review request is regenerated; private keys never enter the repository. No agent-generated fixture key or identity may be promoted.
 
@@ -62,7 +66,7 @@ The committed trust registry is intentionally `unprovisioned`, and `release-sign
 The CCI-specific chain is intentionally separate from the historical `data/climate/runtime-manifest.json` CT-40 chain:
 
 ~~~text
-bound review-request.json
+artifact-bound review-request.json
   → release-approval.json
   → reviewed-runtime-manifest.json
   → reviewed-release-diff.json
@@ -74,7 +78,7 @@ bound review-request.json
   → release-mode public staging
 ~~~
 
-The reviewed runtime manifest must pin the request subject, approval, runtime, source registry, source receipts, components, compilers, public entrypoints, CSS, service worker, and accessibility/runtime checks. The release diff then pins the request, approval, and runtime manifest. The rollback proof pins that complete release package and must successfully restore a prior reviewed baseline in an isolated rehearsal.
+The reviewed runtime manifest must pin the request subject digest, approval, runtime, source registry, source receipts, components, compilers, public entrypoints, CSS, service worker, and accessibility/runtime checks. The release diff then pins the request, approval, and runtime manifest. The rollback proof pins that complete release package and must successfully restore a prior reviewed baseline in an isolated rehearsal.
 
 ## Commands
 

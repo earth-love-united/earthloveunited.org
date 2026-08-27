@@ -10,7 +10,7 @@ const policy = require('./lib/country-climate-intelligence-release-signatures');
 const { validateJsonSchema } = require('./lib/json-schema-lite');
 
 const ROOT = path.resolve(__dirname, '..');
-const SUBJECT_COMMIT = '1234567890abcdef1234567890abcdef12345678';
+const SUBJECT_ARTIFACT_PIN_DIGEST = '1234567890abcdef'.repeat(4);
 const RELEASE_ID = 'country-climate-intelligence-v1-signature-fixture';
 const REVIEWED_AT = '2026-08-27T12:00:00.000Z';
 const APPROVED_AT = '2026-08-27T12:05:00.000Z';
@@ -55,7 +55,7 @@ function fixtureDocuments() {
   return {
     [policy.PACKAGE_PATHS[0]]: {
       release_id: RELEASE_ID,
-      subject_commit_sha: SUBJECT_COMMIT,
+      subject_artifact_pin_digest: SUBJECT_ARTIFACT_PIN_DIGEST,
       builder_id: 'release-builder@earthloveunited.org',
       source_reviews: Array.from({ length: 5 }, (_, index) => ({
         source_registry_id: 'fixture-source-' + index,
@@ -71,7 +71,7 @@ function fixtureDocuments() {
     },
     [policy.PACKAGE_PATHS[1]]: {
       release_id: RELEASE_ID,
-      subject: { subject_commit_sha: SUBJECT_COMMIT },
+      subject: { artifact_pin_digest: SUBJECT_ARTIFACT_PIN_DIGEST },
     },
     [policy.PACKAGE_PATHS[2]]: {
       data_release_id: RELEASE_ID,
@@ -118,7 +118,7 @@ function makeBaseline() {
     const message = policy.signatureMessage({
       repository: policy.REPOSITORY,
       release_id: RELEASE_ID,
-      subject_commit_sha: SUBJECT_COMMIT,
+      subject_artifact_pin_digest: SUBJECT_ARTIFACT_PIN_DIGEST,
       trust_registry: { path: policy.TRUST_REGISTRY_PATH, sha256: registrySha },
       package_pins: pins,
       role,
@@ -134,10 +134,10 @@ function makeBaseline() {
   });
   const signatureBundle = {
     schema_version: policy.POLICY_VERSION,
-    signature_bundle_id: 'elu-country-climate-intelligence-v1-release-signatures-v1',
+    signature_bundle_id: 'elu-country-climate-intelligence-v1-release-signatures-v2',
     repository: policy.REPOSITORY,
     release_id: RELEASE_ID,
-    subject_commit_sha: SUBJECT_COMMIT,
+    subject_artifact_pin_digest: SUBJECT_ARTIFACT_PIN_DIGEST,
     trust_registry: { path: policy.TRUST_REGISTRY_PATH, sha256: registrySha },
     package_pins: pins,
     signatures,
@@ -193,7 +193,7 @@ function resignAuthorizer(input, state, signedAt) {
   const message = policy.signatureMessage({
     repository: policy.REPOSITORY,
     release_id: RELEASE_ID,
-    subject_commit_sha: SUBJECT_COMMIT,
+    subject_artifact_pin_digest: SUBJECT_ARTIFACT_PIN_DIGEST,
     trust_registry: input.signature_bundle.trust_registry,
     package_pins: input.signature_bundle.package_pins,
     role: signature.role,
@@ -303,8 +303,8 @@ const mutations = [
     input.signature_bundle.package_pins[0].sha256 = 'e'.repeat(64);
     refreshText(input, 'signature_bundle');
   }],
-  ['bundle-commit-disagrees', input => {
-    input.signature_bundle.subject_commit_sha = 'f'.repeat(40);
+  ['bundle-subject-digest-disagrees', input => {
+    input.signature_bundle.subject_artifact_pin_digest = 'f'.repeat(64);
     refreshText(input, 'signature_bundle');
   }],
   ['review-identity-disagrees', input => {
