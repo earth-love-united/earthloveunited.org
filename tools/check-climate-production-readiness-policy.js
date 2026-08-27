@@ -7,7 +7,13 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { COUNSEL_QUESTION_IDS, evaluateReadiness, parseReadinessArgs, releaseWorktreeCleanPasses } = require('./lib/climate-production-readiness');
+const {
+  COUNSEL_QUESTION_IDS,
+  evaluateReadiness,
+  exactSignedRuntimeAssetApproval,
+  parseReadinessArgs,
+  releaseWorktreeCleanPasses,
+} = require('./lib/climate-production-readiness');
 const { EXPECTED_ASSETS, EXPECTED_MANIFEST_SHA256, MANIFEST_PATH } = require('./lib/globe-runtime-assets');
 const {
   APPROVAL_PATH,
@@ -304,6 +310,13 @@ function attachSignedAuthority(input) {
 }
 
 attachSignedAuthority(release);
+assert.equal(exactSignedRuntimeAssetApproval(release.runtime_assets, SIGNING.registrySha), true,
+  'complete signed runtime-asset approval semantics must pass');
+const signedPartialApproval = structuredClone(release);
+delete signedPartialApproval.runtime_assets.approval.asset_rights_dispositions;
+attachSignedAuthority(signedPartialApproval);
+assert.equal(exactSignedRuntimeAssetApproval(signedPartialApproval.runtime_assets, SIGNING.registrySha), false,
+  'valid signatures over a semantically partial asset approval must fail');
 
 assert.equal(evaluateReadiness(candidate).status, 'candidate_integrity_ready_release_blocked');
 const signedReleaseReport = evaluateReadiness(release, { expectedTrustRegistrySha256: SIGNING.registrySha });

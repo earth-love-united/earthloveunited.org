@@ -11,6 +11,8 @@ const notices = require('./lib/globe-third-party-notices');
 const approvalPolicy = require('./lib/globe-runtime-approval');
 const publicSurface = require('./lib/public-deploy-surface');
 const climateProfile = require('./lib/public-climate-release-profile');
+const { exactSignedRuntimeAssetApproval } = require('./lib/climate-production-readiness');
+const { validateJsonSchema } = require('./lib/json-schema-lite');
 const {
   PATHS: CCI_RELEASE_PATHS,
   inspectReviewRequest: inspectCciReviewRequest,
@@ -19,8 +21,11 @@ const { PATHS: LEGACY_RELEASE_PATHS } = require('./lib/climate-reviewed-release'
 const {
   ACTIVE_GLOBE_TRUTH_RUNTIME_SCRIPT_PATHS,
   CURRENT_RUNTIME_PIN_PATHS,
+  EXPECTED_ASSETS,
+  EXPECTED_MANIFEST_SHA256,
   EXPECTED_UI_REVIEW_COMMIT,
   EXPECTED_UI_REVIEW_SHA256,
+  MANIFEST_PATH: GLOBE_RUNTIME_MANIFEST_PATH,
   REQUIRED_UI_REVIEW_PIN_PATHS,
   UI_REVIEW_PATH,
   ct42RuntimeProjection,
@@ -226,7 +231,11 @@ function verifyApprovalArtifacts(sourceRoot, stagedRoot, required = false) {
   if (sourceApproval.sha256 !== stagedApproval.sha256 || sourceBundle.sha256 !== stagedBundle.sha256) {
     throw new Error('approval or detached signature bytes differ between source and staged trees');
   }
+  const sourceTrust = requireRegular(sourceRoot, approvalPolicy.TRUST_REGISTRY_PATH);
   const stagedTrust = requireRegular(stagedRoot, approvalPolicy.TRUST_REGISTRY_PATH);
+  if (sourceTrust.sha256 !== stagedTrust.sha256) {
+    throw new Error('approval trust-registry bytes differ between source and staged trees');
+  }
   let approval;
   let registry;
   let signatureBundle;
@@ -255,6 +264,51 @@ function verifyApprovalArtifacts(sourceRoot, stagedRoot, required = false) {
   });
   if (report.status !== 'pass') {
     throw new Error('detached production approval verification failed: ' + report.failure_ids.join(', '));
+  }
+  const approvalSchemaRecord = requireRegular(sourceRoot, notices.APPROVAL_SCHEMA_PATH);
+  let approvalSchema;
+  try { approvalSchema = JSON.parse(approvalSchemaRecord.text); }
+  catch (_) { throw new Error('globe runtime approval schema must be valid JSON'); }
+  const schemaErrors = validateJsonSchema(approval, approvalSchema);
+  if (approvalSchemaRecord.sha256 !== notices.EXPECTED_APPROVAL_SCHEMA_SHA256 || schemaErrors.length) {
+    throw new Error('signed globe runtime approval does not satisfy the exact v3 schema: ' + schemaErrors.join('; '));
+  }
+  const runtimeManifest = requireRegular(sourceRoot, GLOBE_RUNTIME_MANIFEST_PATH);
+  const assetPins = EXPECTED_ASSETS.map(function (asset) {
+    const record = requireRegular(sourceRoot, asset.path);
+    if (record.sha256 !== asset.sha256) throw new Error('reviewed globe asset SHA-256 drift: ' + asset.path);
+    return { path: asset.path, sha256: record.sha256 };
+  });
+  const noticeRecords = [
+    [notices.NOTICE_PATH, notices.EXPECTED_NOTICE_SHA256],
+    [notices.MANIFEST_PATH, notices.EXPECTED_MANIFEST_SHA256],
+    [notices.INTEGRATION_PATH, notices.EXPECTED_INTEGRATION_SHA256],
+  ];
+  const noticesExact = noticeRecords.every(function (entry) {
+    return requireRegular(sourceRoot, entry[0]).sha256 === entry[1];
+  });
+  const semanticPass = exactSignedRuntimeAssetApproval({
+    approval_review_present: true,
+    approval_file_regular: true,
+    approval,
+    approval_text: stagedApproval.text,
+    approval_bytes: stagedApproval.bytes,
+    trust_registry_file_regular: true,
+    trust_registry: registry,
+    trust_registry_text: stagedTrust.text,
+    trust_registry_bytes: stagedTrust.bytes,
+    signature_bundle_present: true,
+    signature_bundle_file_regular: true,
+    signature_bundle: signatureBundle,
+    signature_bundle_text: stagedBundle.text,
+    signature_bundle_bytes: stagedBundle.bytes,
+    reviewed_artifact_binding_passed: true,
+    notices_integrity_passed: noticesExact,
+    manifest_sha256: runtimeManifest.sha256,
+    asset_pins: assetPins,
+  }, approvalPolicy.EXPECTED_TRUST_REGISTRY_SHA256);
+  if (runtimeManifest.sha256 !== EXPECTED_MANIFEST_SHA256 || !semanticPass) {
+    throw new Error('signed globe runtime approval lacks exact rights, counsel, notice, asset, or release semantics');
   }
   return { status: 'pass', approval_sha256: report.approval_sha256 };
 }

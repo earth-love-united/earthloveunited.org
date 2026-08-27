@@ -184,7 +184,7 @@ function exactCandidateNoticeBoundary(runtimeAssets) {
     boundary.integrity_is_not_approval === true;
 }
 
-function exactRuntimeAssetApproval(runtimeAssets, expectedTrustRegistrySha256 = EXPECTED_TRUST_REGISTRY_SHA256) {
+function exactSignedRuntimeAssetApproval(runtimeAssets, expectedTrustRegistrySha256 = EXPECTED_TRUST_REGISTRY_SHA256) {
   const approval = runtimeAssets?.approval;
   if (!runtimeAssets?.approval_review_present || runtimeAssets?.approval_file_regular !== true || !approval) return false;
   const runtimeManifest = approval.runtime_asset_manifest;
@@ -205,7 +205,7 @@ function exactRuntimeAssetApproval(runtimeAssets, expectedTrustRegistrySha256 = 
     signature_bundle_file_regular: runtimeAssets.signature_bundle_file_regular,
     reviewed_artifact_binding_passed: runtimeAssets.reviewed_artifact_binding_passed,
   });
-  return authorityReport.status === 'pass' && runtimeAssets.reviewed_release_passed === true &&
+  return authorityReport.status === 'pass' &&
     exactKeys(approval, RUNTIME_ASSET_REVIEW_KEYS) &&
     approval.schema_version === '3.0.0' && approval.review_id === RUNTIME_ASSET_REVIEW_ID &&
     approval.decision === 'approve' && exactKeys(runtimeManifest, ['path', 'sha256']) &&
@@ -229,6 +229,11 @@ function exactRuntimeAssetApproval(runtimeAssets, expectedTrustRegistrySha256 = 
       approval.release_authority_identity]).size === 4 && approval.independent === true &&
     approval.rights_review_status === 'reviewed' && approval.production_use_approved === true &&
     approval.third_party_notices_review_status === 'reviewed' && approval.release_authority === true;
+}
+
+function exactRuntimeAssetApproval(runtimeAssets, expectedTrustRegistrySha256 = EXPECTED_TRUST_REGISTRY_SHA256) {
+  return runtimeAssets?.reviewed_release_passed === true &&
+    exactSignedRuntimeAssetApproval(runtimeAssets, expectedTrustRegistrySha256);
 }
 
 function parseReadinessArgs(argv) {
@@ -376,6 +381,7 @@ module.exports = {
   exactCandidateNoticeBoundary,
   exactCounselResolutions,
   exactRuntimeAssetApproval,
+  exactSignedRuntimeAssetApproval,
   parseReadinessArgs,
   releaseWorktreeCleanPasses,
   validReviewIdentity,

@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "4946943c705f7fe740727c6496b63056657641f84cfe16d018fcda92634dc22e",
+  "calculation_hash": "c93a05b988b170ba460f2b06a0ccda4e12123d02a1ebbd06b7f92cbb4a05d970",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -212,7 +212,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "3cf5a12548481431a35c8db3f3223dcd6c016d794ac6bd187817f7711e5b1c84",
+    "artifact_pin_digest": "d4c54304bec2914b0b9c7e037aa7a78bd20b74e2e8668bf7baf27e6ed2afd083",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -520,7 +520,7 @@
       },
       {
         "path": "tools/check-climate-production-readiness-policy.js",
-        "sha256": "e640409dca102b0585ee766904c9f7a90bc367acdd0159acdf0634b188786881"
+        "sha256": "bcac7c29815784a0ced500b909fb52ddc8b374ceca9bd17f230fc8b8a37d094f"
       },
       {
         "path": "tools/check-climate-production-readiness.js",
@@ -696,7 +696,7 @@
       },
       {
         "path": "tools/check-staged-production-integrity.js",
-        "sha256": "38cf3ee7f4f969a172b1e50fac2bb53bacb22d2fcad0dec1a9beeabce35cf4cf"
+        "sha256": "373ff089cfdb09076b376c83e0c6dae7961e1f8ecfec915eb998ae395e5f7a8c"
       },
       {
         "path": "tools/check-target-comparability.js",
@@ -744,7 +744,7 @@
       },
       {
         "path": "tools/lib/climate-production-readiness.js",
-        "sha256": "9f1b8806289bd568bb0eb75041266e4f6847dc22aae37a2d804715febcc7b30d"
+        "sha256": "bfb4f9572df1d84b0f9f632a8ac7a183759add3f9987a18252ff8431ffcd4249"
       },
       {
         "path": "tools/lib/climate-release-gate.js",
