@@ -80,6 +80,8 @@ artifact-bound review-request.json
 
 The reviewed runtime manifest must pin the request subject digest, approval, runtime, source registry, source receipts, components, compilers, public entrypoints, CSS, service worker, and accessibility/runtime checks. The release diff then pins the request, approval, and runtime manifest. The rollback proof pins that complete release package and must successfully restore a prior reviewed baseline in an isolated rehearsal.
 
+The separate globe-runtime approval is also squash-safe: its three signatures bind an approval containing the exact canonical pins and digest for all governed asset, notice, runtime, staging, schema, and verifier files. It does not use a reviewed branch commit or ancestry as an approval coordinate. Rollback rehearsal remains deliberately different: it requires the named pre-release baseline commit and bytes to exist in local Git history. A normal squash merge retains that earlier `main` baseline; a history-free source archive is not sufficient to validate a complete production rollback package.
+
 ## Commands
 
 Candidate integrity:

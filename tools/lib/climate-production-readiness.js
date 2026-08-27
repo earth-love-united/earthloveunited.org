@@ -32,7 +32,7 @@ const CANDIDATE_MISSING = Object.freeze([
   'reviewed-release-diff',
   'reviewed-runtime-manifest',
 ]);
-const RUNTIME_ASSET_REVIEW_ID = 'elu-globe-runtime-assets-production-review-v2';
+const RUNTIME_ASSET_REVIEW_ID = 'elu-globe-runtime-assets-production-review-v3';
 const RUNTIME_ASSET_REVIEW_KEYS = Object.freeze([
   'asset_rights_dispositions',
   'authority_bindings',
@@ -45,8 +45,9 @@ const RUNTIME_ASSET_REVIEW_KEYS = Object.freeze([
   'release_authority',
   'release_authority_identity',
   'review_id',
+  'reviewed_artifact_pin_digest',
+  'reviewed_artifact_pins',
   'reviewed_at',
-  'reviewed_commit_sha',
   'reviewer_identity',
   'rights_review_status',
   'runtime_asset_manifest',
@@ -191,19 +192,22 @@ function exactRuntimeAssetApproval(runtimeAssets, expectedTrustRegistrySha256 = 
   const authorityReport = evaluateApprovalAuthority({
     approval,
     approval_text: runtimeAssets.approval_text,
+    approval_bytes: runtimeAssets.approval_bytes,
     approval_file_regular: runtimeAssets.approval_file_regular,
     trust_registry: runtimeAssets.trust_registry,
     trust_registry_text: runtimeAssets.trust_registry_text,
+    trust_registry_bytes: runtimeAssets.trust_registry_bytes,
     trust_registry_file_regular: runtimeAssets.trust_registry_file_regular,
     expected_trust_registry_sha256: expectedTrustRegistrySha256,
     signature_bundle: runtimeAssets.signature_bundle,
     signature_bundle_text: runtimeAssets.signature_bundle_text,
+    signature_bundle_bytes: runtimeAssets.signature_bundle_bytes,
     signature_bundle_file_regular: runtimeAssets.signature_bundle_file_regular,
-    reviewed_commit_binding_passed: runtimeAssets.reviewed_commit_binding_passed,
+    reviewed_artifact_binding_passed: runtimeAssets.reviewed_artifact_binding_passed,
   });
   return authorityReport.status === 'pass' && runtimeAssets.reviewed_release_passed === true &&
     exactKeys(approval, RUNTIME_ASSET_REVIEW_KEYS) &&
-    approval.schema_version === '2.0.0' && approval.review_id === RUNTIME_ASSET_REVIEW_ID &&
+    approval.schema_version === '3.0.0' && approval.review_id === RUNTIME_ASSET_REVIEW_ID &&
     approval.decision === 'approve' && exactKeys(runtimeManifest, ['path', 'sha256']) &&
     runtimeManifest.path === MANIFEST_PATH && runtimeManifest.sha256 === EXPECTED_MANIFEST_SHA256 &&
     exactKeys(noticeInventory, NOTICE_INVENTORY_KEYS) &&
@@ -216,8 +220,9 @@ function exactRuntimeAssetApproval(runtimeAssets, expectedTrustRegistrySha256 = 
     runtimeAssets.manifest_sha256 === EXPECTED_MANIFEST_SHA256 &&
     exactAssetPins(runtimeAssets.asset_pins) && exactApprovedAssetRights(approval.asset_rights_dispositions, approval) &&
     exactCounselResolutions(approval.counsel_resolutions, approval) &&
-    typeof approval.reviewed_commit_sha === 'string' && /^[0-9a-f]{40}$/.test(approval.reviewed_commit_sha) &&
-    runtimeAssets.reviewed_commit_binding_passed === true && validTimestamp(approval.reviewed_at) &&
+    typeof approval.reviewed_artifact_pin_digest === 'string' &&
+    /^[0-9a-f]{64}$/.test(approval.reviewed_artifact_pin_digest) &&
+    runtimeAssets.reviewed_artifact_binding_passed === true && validTimestamp(approval.reviewed_at) &&
     validReviewIdentity(approval.builder_identity) && validReviewIdentity(approval.reviewer_identity) &&
     validReviewIdentity(approval.counsel_reviewer_identity) && validReviewIdentity(approval.release_authority_identity) &&
     new Set([approval.builder_identity, approval.reviewer_identity, approval.counsel_reviewer_identity,
@@ -344,7 +349,7 @@ function evaluateReadiness(input, options = {}) {
       'Release requires the detached approval signature bundle as a regular non-symlink file.');
     check('runtime-asset-exact-independent-approval',
       exactRuntimeAssetApproval(runtimeAssets, options.expectedTrustRegistrySha256 || EXPECTED_TRUST_REGISTRY_SHA256),
-      'Release requires an exact commit-bound approval with verified, distinct Ed25519 signatures for asset rights, counsel, and release authority.');
+      'Release requires an exact artifact-bound approval with verified, distinct Ed25519 signatures for asset rights, counsel, and release authority.');
   }
 
   const failures = checks.filter(item => !item.pass);

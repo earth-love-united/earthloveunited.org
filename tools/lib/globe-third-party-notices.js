@@ -6,6 +6,7 @@ const { EXPECTED_MANIFEST_SHA256: EXPECTED_RUNTIME_MANIFEST_SHA256 } = require('
 const {
   APPROVAL_PATH,
   EXPECTED_TRUST_REGISTRY_SHA256: EXPECTED_APPROVAL_TRUST_SHA256,
+  REVIEWED_PATHS: APPROVAL_REVIEWED_PATHS,
   SIGNATURE_BUNDLE_PATH: APPROVAL_SIGNATURE_BUNDLE_PATH,
   TRUST_REGISTRY_PATH: APPROVAL_TRUST_PATH,
   exactUnprovisionedTrust,
@@ -21,7 +22,7 @@ const EXPECTED_MANIFEST_CALCULATION_HASH = '5b671c6e7357d35863b5bcd390a976939a27
 const EXPECTED_NOTICE_SHA256 = '741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2';
 const EXPECTED_INTEGRATION_SHA256 = 'a911d998d0336b8ff5649d0a5ff07103a8fa54351cc64607771a98cd8cdeb795';
 const EXPECTED_INTEGRATION_CALCULATION_HASH = 'eb378696e0433079aaa4dad0b8ecad0dab46b2526c1fcc7ad9976a545c75de1a';
-const EXPECTED_APPROVAL_SCHEMA_SHA256 = 'd93c141952e8da7f59f1ac65095775fed5fe86d44e019943a8c33ff52143bb27';
+const EXPECTED_APPROVAL_SCHEMA_SHA256 = '5352565f13dba05e7049f405efb8af2cd38af12363036ad4ef9c29894d171996';
 
 const EXPECTED_BUNDLE = Object.freeze({
   name: 'globe.gl',
@@ -819,6 +820,7 @@ function evaluateNoticeIntegration(input) {
   const approvalRows = approvalSchema.properties && approvalSchema.properties.asset_rights_dispositions;
   const approvalBindings = approvalSchema.properties && approvalSchema.properties.authority_bindings;
   const approvalManifest = approvalSchema.properties && approvalSchema.properties.runtime_asset_manifest;
+  const approvalSubjectPins = approvalSchema.properties && approvalSchema.properties.reviewed_artifact_pins;
   const schemaRequired = Array.isArray(approvalSchema.required) ? approvalSchema.required : [];
   const skyDisposition = approvalSchema.$defs && approvalSchema.$defs.nightSkyDisposition;
   const skyProperties = skyDisposition && skyDisposition.allOf && skyDisposition.allOf[1] &&
@@ -826,17 +828,21 @@ function evaluateNoticeIntegration(input) {
   check(
     sha256(input.approvalSchemaText || '') === EXPECTED_APPROVAL_SCHEMA_SHA256 &&
       approvalSchema.properties &&
-      approvalSchema.properties.schema_version && approvalSchema.properties.schema_version.const === '2.0.0' &&
-      approvalSchema.properties.review_id && approvalSchema.properties.review_id.const === 'elu-globe-runtime-assets-production-review-v2' &&
+      approvalSchema.properties.schema_version && approvalSchema.properties.schema_version.const === '3.0.0' &&
+      approvalSchema.properties.review_id && approvalSchema.properties.review_id.const === 'elu-globe-runtime-assets-production-review-v3' &&
       approvalNotice && approvalNotice.properties &&
       approvalNotice.properties.notice_sha256.const === EXPECTED_NOTICE_SHA256 &&
       approvalNotice.properties.manifest_sha256.const === EXPECTED_MANIFEST_SHA256 &&
       approvalNotice.properties.integration_sha256.const === EXPECTED_INTEGRATION_SHA256 &&
       approvalManifest && approvalManifest.properties &&
       approvalManifest.properties.sha256.const === EXPECTED_RUNTIME_MANIFEST_SHA256 &&
-      ['authority_bindings', 'counsel_reviewer_identity', 'release_authority_identity'].every(function (key) {
+      ['authority_bindings', 'counsel_reviewer_identity', 'release_authority_identity',
+        'reviewed_artifact_pin_digest', 'reviewed_artifact_pins'].every(function (key) {
         return schemaRequired.includes(key);
       }) &&
+      approvalSchema.properties.reviewed_artifact_pin_digest.pattern === '^[0-9a-f]{64}$' &&
+      approvalSubjectPins && approvalSubjectPins.minItems === APPROVAL_REVIEWED_PATHS.length &&
+      approvalSubjectPins.maxItems === APPROVAL_REVIEWED_PATHS.length &&
       approvalBindings && approvalBindings.properties &&
       approvalBindings.properties.trust_registry_path.const === APPROVAL_TRUST_PATH &&
       approvalBindings.properties.trust_registry_sha256.const === EXPECTED_APPROVAL_TRUST_SHA256 &&

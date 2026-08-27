@@ -52,60 +52,7 @@ const PINNED_FILES = Object.freeze([
   Object.freeze({ path: notices.APPROVAL_SCHEMA_PATH, sha256: notices.EXPECTED_APPROVAL_SCHEMA_SHA256 }),
   Object.freeze({ path: approvalPolicy.TRUST_REGISTRY_PATH, sha256: approvalPolicy.EXPECTED_TRUST_REGISTRY_SHA256 }),
 ]);
-const APPROVAL_REVIEWED_PATHS = Object.freeze([...new Set([
-  ...REQUIRED_UI_REVIEW_PIN_PATHS,
-  ...CURRENT_RUNTIME_PIN_PATHS,
-  UI_REVIEW_PATH,
-  notices.NOTICE_PATH,
-  notices.MANIFEST_PATH,
-  notices.INTEGRATION_PATH,
-  notices.APPROVAL_SCHEMA_PATH,
-  approvalPolicy.TRUST_REGISTRY_PATH,
-  'index.html',
-  'CREDITS.md',
-  '.github/workflows/ci.yml',
-  'tools/build-deploy.sh',
-  'tools/build-factual-public-deploy.sh',
-  'tools/stage-public-deploy.js',
-  'tools/check-public-deploy-surface.js',
-  'tools/lib/public-deploy-surface.js',
-  '_headers',
-  'docs/LEGACY-COUNTRY-DATA-EXIT.md',
-  'docs/COUNTRY-CLIMATE-TRUTH-CI.md',
-  'data/climate/fixtures/release-eligibility.json',
-  'data/climate/fixtures/reviewed-climate-release.json',
-  'data/climate/fixtures/truth-ci-policy.json',
-  'data/climate/schemas/ct40-reviewed-release-input.schema.json',
-  'data/climate/schemas/reviewed-climate-runtime-manifest.schema.json',
-  'data/climate/schemas/reviewed-release-diff.schema.json',
-  'data/climate/schemas/reviewed-runtime-rollback-proof.schema.json',
-  'tools/check-globe-runtime-assets.js',
-  'tools/lib/globe-runtime-assets.js',
-  'tools/fixtures/globe-runtime-assets.json',
-  'tools/check-globe-third-party-notices.js',
-  'tools/lib/globe-third-party-notices.js',
-  'tools/fixtures/globe-third-party-notices.json',
-  'tools/check-globe-runtime-approval.js',
-  'tools/lib/globe-runtime-approval.js',
-  'tools/check-staged-production-integrity.js',
-  'tools/check-staged-factual-public-integrity.js',
-  'tools/check-climate-factual-public-readiness.js',
-  'tools/check-public-climate-release-profile.js',
-  'tools/lib/public-climate-release-profile.js',
-  'tools/climate-truth-ci.js',
-  'tools/lib/climate-runtime-diff-boundary.js',
-  'tools/lib/climate-production-readiness.js',
-  'tools/check-climate-production-readiness.js',
-  'tools/check-climate-production-readiness-policy.js',
-  'tools/check-climate-factual-runtime-candidate.js',
-  'tools/check-climate-factual-runtime-data-review.js',
-  'tools/check-reviewed-climate-release.js',
-  'tools/lib/climate-release-gate.js',
-  'tools/lib/climate-reviewed-release.js',
-  'tools/lib/climate-truth-ci-policy.js',
-  'tools/lib/json-schema-lite.js',
-  'tools/lib/reviewed-runtime-rollback-proof.js',
-])]);
+const APPROVAL_REVIEWED_PATHS = approvalPolicy.REVIEWED_PATHS;
 
 function safeRelative(relative) {
   const normalized = path.posix.normalize(String(relative || '').replaceAll(path.sep, '/'));
@@ -241,21 +188,6 @@ function runFinalReleaseProfileCheck(options, sourceRoot) {
   runChecker(sourceRoot, ['tools/check-public-climate-release-profile.js', '--release']);
 }
 
-function reviewedCommitBindingPasses(root, approval) {
-  const reviewed = approval && approval.reviewed_commit_sha;
-  if (!/^[0-9a-f]{40}$/.test(reviewed || '')) return false;
-  const ancestor = childProcess.spawnSync('git', ['merge-base', '--is-ancestor', reviewed, 'HEAD'], {
-    cwd: root,
-    encoding: 'utf8',
-  });
-  if (ancestor.status !== 0) return false;
-  const diff = childProcess.spawnSync('git', ['diff', '--quiet', reviewed, 'HEAD', '--', ...APPROVAL_REVIEWED_PATHS], {
-    cwd: root,
-    encoding: 'utf8',
-  });
-  return diff.status === 0;
-}
-
 function verifyPinnedFiles(sourceRoot, stagedRoot) {
   PINNED_FILES.forEach(function (entry) {
     const source = requireRegular(sourceRoot, entry.path);
@@ -308,15 +240,18 @@ function verifyApprovalArtifacts(sourceRoot, stagedRoot, required = false) {
   const report = approvalPolicy.evaluateApprovalAuthority({
     approval,
     approval_text: stagedApproval.text,
+    approval_bytes: stagedApproval.bytes,
     approval_file_regular: true,
     trust_registry: registry,
     trust_registry_text: stagedTrust.text,
+    trust_registry_bytes: stagedTrust.bytes,
     trust_registry_file_regular: true,
     expected_trust_registry_sha256: approvalPolicy.EXPECTED_TRUST_REGISTRY_SHA256,
     signature_bundle: signatureBundle,
     signature_bundle_text: stagedBundle.text,
+    signature_bundle_bytes: stagedBundle.bytes,
     signature_bundle_file_regular: true,
-    reviewed_commit_binding_passed: reviewedCommitBindingPasses(sourceRoot, approval),
+    reviewed_artifact_binding_passed: approvalPolicy.reviewedArtifactBindingPasses(sourceRoot, approval),
   });
   if (report.status !== 'pass') {
     throw new Error('detached production approval verification failed: ' + report.failure_ids.join(', '));
@@ -521,53 +456,44 @@ function writeReviewedRuntimeFixture(targetRoot, relative) {
   );
 }
 
-function runFixtureGit(root, args) {
-  const result = childProcess.spawnSync('git', args, { cwd: root, encoding: 'utf8' });
-  if (result.status !== 0) throw new Error('fixture git failed: ' + (result.stderr || result.stdout || args.join(' ')));
-  return result.stdout.trim();
-}
-
-function runApprovalCommitBindingSelfTest() {
+function runApprovalArtifactBindingSelfTest() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-approval-binding-'));
   try {
     APPROVAL_REVIEWED_PATHS.forEach(relative => copyFixtureFile(ROOT, root, relative));
-    runFixtureGit(root, ['init', '-q']);
-    runFixtureGit(root, ['add', '.']);
-    runFixtureGit(root, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid', 'commit', '-q', '-m', 'reviewed']);
-    const reviewed = runFixtureGit(root, ['rev-parse', 'HEAD']);
-    assert.equal(reviewedCommitBindingPasses(root, { reviewed_commit_sha: reviewed }), true,
-      'exact reviewed approval scope must pass');
+    const pins = approvalPolicy.reviewedArtifactPins(root);
+    const approval = {
+      reviewed_artifact_pins: pins,
+      reviewed_artifact_pin_digest: approvalPolicy.artifactPinDigest(pins),
+    };
+    assert.equal(approvalPolicy.reviewedArtifactBindingPasses(root, approval), true,
+      'exact reviewed approval scope must pass without Git history');
 
     fs.writeFileSync(path.join(root, 'unreviewed-note.txt'), 'outside approval scope\n');
-    runFixtureGit(root, ['add', 'unreviewed-note.txt']);
-    runFixtureGit(root, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid', 'commit', '-q', '-m', 'outside scope']);
-    assert.equal(reviewedCommitBindingPasses(root, { reviewed_commit_sha: reviewed }), true,
-      'unrelated descendant changes must not falsify scoped approval binding');
+    assert.equal(approvalPolicy.reviewedArtifactBindingPasses(root, approval), true,
+      'unrelated files must not falsify scoped approval binding');
 
     fs.appendFileSync(path.join(root, 'js/gaia-utils.js'), '\n// post-review foundation drift\n');
-    runFixtureGit(root, ['add', 'js/gaia-utils.js']);
-    runFixtureGit(root, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid', 'commit', '-q', '-m', 'runtime drift']);
-    assert.equal(reviewedCommitBindingPasses(root, { reviewed_commit_sha: reviewed }), false,
-      'foundation runtime drift must invalidate approval commit binding');
+    assert.equal(approvalPolicy.reviewedArtifactBindingPasses(root, approval), false,
+      'foundation runtime drift must invalidate approval artifact binding');
 
     const reviewRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-approval-ui-review-binding-'));
     try {
       APPROVAL_REVIEWED_PATHS.forEach(relative => copyFixtureFile(ROOT, reviewRoot, relative));
-      runFixtureGit(reviewRoot, ['init', '-q']);
-      runFixtureGit(reviewRoot, ['add', '.']);
-      runFixtureGit(reviewRoot, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid',
-        'commit', '-q', '-m', 'reviewed']);
-      const reviewCommit = runFixtureGit(reviewRoot, ['rev-parse', 'HEAD']);
+      const reviewPins = approvalPolicy.reviewedArtifactPins(reviewRoot);
+      const reviewApproval = {
+        reviewed_artifact_pins: reviewPins,
+        reviewed_artifact_pin_digest: approvalPolicy.artifactPinDigest(reviewPins),
+      };
       fs.appendFileSync(path.join(reviewRoot, UI_REVIEW_PATH), '\n');
-      runFixtureGit(reviewRoot, ['add', UI_REVIEW_PATH]);
-      runFixtureGit(reviewRoot, ['-c', 'user.name=ELU Fixture', '-c', 'user.email=fixture.invalid',
-        'commit', '-q', '-m', 'ui review drift']);
-      assert.equal(reviewedCommitBindingPasses(reviewRoot, { reviewed_commit_sha: reviewCommit }), false,
-        'UI review attestation drift must invalidate approval commit binding');
+      assert.equal(approvalPolicy.reviewedArtifactBindingPasses(reviewRoot, reviewApproval), false,
+        'UI review attestation drift must invalidate approval artifact binding');
     } finally {
       fs.rmSync(reviewRoot, { recursive: true, force: true });
     }
-    return 3;
+    const reordered = { ...approval, reviewed_artifact_pins: [...pins].reverse() };
+    assert.equal(approvalPolicy.reviewedArtifactBindingPasses(root, reordered), false,
+      'noncanonical pin order must fail');
+    return 4;
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
@@ -695,7 +621,7 @@ function inspectCheckedInRuntimeReviewState() {
 
 function runSelfTest() {
   const checkedInReview = inspectCheckedInRuntimeReviewState();
-  const approvalBindingCases = runApprovalCommitBindingSelfTest();
+  const approvalBindingCases = runApprovalArtifactBindingSelfTest();
   const fixture = makeSelfTestFixture();
   try {
     assert.throws(() => verifyFinalStagedIntegrity({
@@ -949,7 +875,7 @@ function runSelfTest() {
   }
   process.stdout.write('Final staged production integrity self-test: PASS (24 fail-closed ' +
     'filesystem/tamper/cleanup/public-surface/mode cases; ' + approvalBindingCases +
-    ' scoped approval commit-binding cases; release authority revalidated after precheck; ' +
+    ' scoped approval artifact-binding cases; release authority revalidated after precheck; ' +
     'post-child CT-45 mutation rejected and cleaned; checked-in runtime ' +
     (checkedInReview.status === 'reviewed'
       ? 'reviewed across ' + checkedInReview.checked_path_count + ' paths'

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
+const fs = require('node:fs');
 const path = require('node:path');
 const {
   ROOT,
@@ -66,7 +67,9 @@ const SUBJECT_PATHS = Object.freeze([
   'index.html',
   'js/app.js',
   'js/carbon-clock.js',
+  'js/country-climate-view-model.js',
   'js/country-climate-intelligence.js',
+  'js/country-ranking-compiler.js',
   'js/data-schema.js',
   'js/data.js',
   'js/event-bus.js',
@@ -80,10 +83,18 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/build-deploy.sh',
   'tools/build-factual-public-deploy.sh',
   'tools/build-country-climate-intelligence.js',
+  'tools/build-ct42-runtime-rollback-proof.js',
+  'tools/build-major-emitter-ndc-release.js',
   'tools/acquire-cckp-cmip6.js',
   'tools/acquire-gcb-2025.js',
   'tools/acquire-wpp-2024.js',
   'tools/check-climate-factual-public-readiness.js',
+  'tools/check-climate-factual-runtime-candidate.js',
+  'tools/check-climate-factual-runtime-data-review.js',
+  'tools/check-climate-factual-runtime-ui-review.js',
+  'tools/check-climate-production-readiness-policy.js',
+  'tools/check-climate-production-readiness.js',
+  'tools/check-climate-release-gate.js',
   'tools/check-climate-source-registry.js',
   'tools/check-climate-runtime-diff-boundary.js',
   'tools/check-country-accessibility.js',
@@ -95,7 +106,10 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/check-country-climate-intelligence.js',
   'tools/check-country-climate-runtime-atomic.js',
   'tools/check-ct42-runtime-rollback-review.js',
+  'tools/check-globe-runtime-approval.js',
   'tools/check-globe-runtime-assets.js',
+  'tools/check-globe-third-party-notices.js',
+  'tools/check-globe-vendor-integrity.js',
   'tools/check-globe-webgl-fallback.js',
   'scripts/verify_load_order.py',
   'tools/check-public-copy.js',
@@ -115,6 +129,7 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/reconstruct-gcb-country-map.js',
   'tools/revalidate-cckp-cmip6-projections.js',
   'tools/extract-reviewed-country-climate-components.js',
+  'tools/impact-analyzer.js',
   'tools/fixtures/globe-runtime-assets.json',
   'data/climate/fixtures/climate-runtime-diff-boundary.json',
   'data/climate/fixtures/globe-webgl-fallback.json',
@@ -130,6 +145,7 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/lib/climate-truth-component-plan.js',
   'tools/lib/climate-runtime-diff-boundary.js',
   'tools/lib/globe-runtime-assets.js',
+  'tools/lib/globe-third-party-notices.js',
   'tools/lib/globe-vendor-integrity.js',
   'tools/lib/json-schema-lite.js',
   'tools/lib/public-climate-release-profile.js',
@@ -143,7 +159,50 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/stack-lint.js',
   'tools/test-climate-source-registry.js',
   'tools/test-country-climate-compilers.js',
+  'tools/test-country-climate-intelligence-derivations.js',
+  'tools/validate-visual-truth-fixtures.js',
   'tools/verify-legacy-country-exit.js',
+  'tools/check-canonical-source-links.js',
+  'tools/check-country-card-evidence-model.js',
+  'tools/check-country-coverage-gap-queue.js',
+  'tools/check-country-delivery-engine.js',
+  'tools/check-country-emissions-evidence.js',
+  'tools/check-country-evidence.js',
+  'tools/check-country-profile-compiler.js',
+  'tools/check-country-ranking.js',
+  'tools/check-country-view-model.js',
+  'tools/check-ct42-ct40-release-review-candidate.js',
+  'tools/check-ct42-runtime-rollback-proof.js',
+  'tools/check-legacy-country-exit-review.js',
+  'tools/check-major-emitter-ndc-evidence.js',
+  'tools/check-policy-finance-evidence.js',
+  'tools/check-primap-economy-wide.js',
+  'tools/check-primap-factual-display-promotion.js',
+  'tools/check-primap-factual-display-review.js',
+  'tools/check-primap-review-attestation.js',
+  'tools/check-reviewed-climate-release.js',
+  'tools/check-target-comparability.js',
+  'tools/lib/climate-factual-runtime-candidate.js',
+  'tools/lib/climate-production-readiness.js',
+  'tools/lib/climate-release-gate.js',
+  'tools/lib/climate-reviewed-release.js',
+  'tools/lib/climate-truth-ci-policy.js',
+  'tools/lib/country-accessibility-model.js',
+  'tools/lib/country-card-evidence-model.js',
+  'tools/lib/country-coverage-gap-queue.js',
+  'tools/lib/country-delivery-engine.js',
+  'tools/lib/country-profile-compiler.js',
+  'tools/lib/ct42-ct40-release-review.js',
+  'tools/lib/ct42-runtime-rollback-proof.js',
+  'tools/lib/ct42-runtime-rollback-review.js',
+  'tools/lib/globe-runtime-approval.js',
+  'tools/lib/primap-factual-display-promotion.js',
+  'tools/lib/primap-hist-ingest.js',
+  'tools/lib/primap-observation-boundary.js',
+  'tools/lib/source-routing-policy.js',
+  'tools/lib/target-comparability.js',
+  'tools/lib/top20-primary-source-gap-queue.js',
+  'tools/rehearse-ct42-runtime-rollback.js',
 ].sort());
 
 const SOURCE_REVIEWS = Object.freeze([
@@ -261,7 +320,7 @@ const INDEPENDENT_REVIEWS = Object.freeze([
   ]],
   ['reproducibility', [
     'All artifact hashes, deterministic rebuild, compiler denial tests, 249-entity partitions, and rollback rehearsal.',
-    'Current-head release diff and runtime-manifest pin closure.',
+    'Current reviewed artifact-set release diff and runtime-manifest pin closure.',
   ]],
   ['ui_accessibility_runtime', [
     'Globe and fallback parity, keyboard and screen-reader operation, focus return, reduced motion, mobile layouts, and slow-runtime behavior.',
@@ -291,7 +350,7 @@ function artifactPinDigest(pins, requiredAbsentPaths = REQUIRED_ABSENT_PATHS) {
       requiredAbsentPaths.some(relative => typeof relative !== 'string') ||
       new Set(requiredAbsentPaths).size !== requiredAbsentPaths.length) return null;
   const canonicalPins = pins.map(item => ({ path: item.path, sha256: item.sha256 }))
-    .sort((left, right) => left.path.localeCompare(right.path));
+    .sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0);
   const canonicalBoundary = {
     artifact_pins: canonicalPins,
     required_absent_paths: [...requiredAbsentPaths].sort(),
@@ -299,12 +358,45 @@ function artifactPinDigest(pins, requiredAbsentPaths = REQUIRED_ABSENT_PATHS) {
   return sha256(`${SUBJECT_BINDING_DOMAIN}\n${JSON.stringify(canonicalBoundary)}\n`);
 }
 
+function localSubjectDependencies(relative) {
+  if (!/\.(?:js|sh)$/.test(relative)) return [];
+  const text = fs.readFileSync(path.join(ROOT, relative), 'utf8');
+  const dependencies = new Set();
+  if (relative.endsWith('.js')) {
+    for (const match of text.matchAll(/require\(\s*['"]([^'"]+)['"]\s*\)/g)) {
+      if (!match[1].startsWith('.')) continue;
+      const unresolved = path.posix.normalize(path.posix.join(path.posix.dirname(relative), match[1]));
+      const candidates = [unresolved, unresolved + '.js', path.posix.join(unresolved, 'index.js')];
+      const resolved = candidates.find(candidate => fs.existsSync(path.join(ROOT, candidate)) &&
+        fs.statSync(path.join(ROOT, candidate)).isFile());
+      if (resolved) dependencies.add(resolved);
+    }
+  }
+  for (const match of text.matchAll(/['"]((?:tools|scripts)\/[A-Za-z0-9_.\/-]+\.(?:js|py))['"]/g)) {
+    if (fs.existsSync(path.join(ROOT, match[1]))) dependencies.add(match[1]);
+  }
+  return [...dependencies].sort();
+}
+
+function assertSubjectDependencyClosure(subjectPaths = SUBJECT_PATHS) {
+  const subject = new Set(subjectPaths);
+  const missing = [];
+  subjectPaths.forEach(function (relative) {
+    localSubjectDependencies(relative).forEach(function (dependency) {
+      if (!subject.has(dependency)) missing.push(relative + ' -> ' + dependency);
+    });
+  });
+  if (missing.length) throw new Error('CCI review subject dependency closure is incomplete:\n' + missing.sort().join('\n'));
+  return true;
+}
+
 function build(args) {
+  assertSubjectDependencyClosure();
   const manifest = readJson(path.join(ROOT, 'data/climate/releases/country-climate-intelligence-v1/release-manifest.json'));
   const artifactPins = SUBJECT_PATHS.map(pin);
   const request = {
     schema_version: '1.0.0',
-    request_id: `${manifest.release.id}-review-request.2`,
+    request_id: `${manifest.release.id}-review-request.3`,
     release_id: manifest.release.id,
     created_at: option(args, '--created-at', '2026-08-27T00:00:00Z'),
     status: 'requires_independent_review',
@@ -368,7 +460,9 @@ module.exports = {
   SOURCE_REVIEWS,
   SUBJECT_PATHS,
   SUBJECT_BINDING_DOMAIN,
+  assertSubjectDependencyClosure,
   artifactPinDigest,
   build,
   calculationHash,
+  localSubjectDependencies,
 };

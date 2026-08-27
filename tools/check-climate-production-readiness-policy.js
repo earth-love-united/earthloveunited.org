@@ -22,13 +22,17 @@ const {
 } = require('./lib/globe-third-party-notices');
 const approvalPolicy = require('./lib/globe-runtime-approval');
 
-const REVIEWED_COMMIT = '1234567890abcdef1234567890abcdef12345678';
 const REVIEWED_AT = '2026-07-15T12:00:00.000Z';
 const REVIEWER = 'independent-reviewer@earthloveunited.org';
 const COUNSEL_REVIEWER = 'licensing-counsel@earthloveunited.org';
 const RELEASE_AUTHORIZER = 'release-authorizer@earthloveunited.org';
 const EMPTY_TRUST_TEXT = fs.readFileSync(path.resolve(__dirname, '..', approvalPolicy.TRUST_REGISTRY_PATH), 'utf8');
 const EMPTY_TRUST = JSON.parse(EMPTY_TRUST_TEXT);
+const REVIEWED_ARTIFACT_PINS = Object.freeze(approvalPolicy.REVIEWED_PATHS.map(relative => Object.freeze({
+  path: relative,
+  sha256: approvalPolicy.sha256('reviewed:' + relative),
+})));
+const REVIEWED_ARTIFACT_PIN_DIGEST = approvalPolicy.artifactPinDigest(REVIEWED_ARTIFACT_PINS);
 
 function jsonText(value) { return JSON.stringify(value, null, 2) + '\n'; }
 
@@ -120,10 +124,11 @@ const counselResolutions = () => COUNSEL_QUESTION_IDS.map(questionId => ({
   decision_reference: 'counsel-decision-' + questionId,
 }));
 const exactApproval = () => ({
-  schema_version: '2.0.0',
-  review_id: 'elu-globe-runtime-assets-production-review-v2',
+  schema_version: '3.0.0',
+  review_id: 'elu-globe-runtime-assets-production-review-v3',
   decision: 'approve',
-  reviewed_commit_sha: REVIEWED_COMMIT,
+  reviewed_artifact_pin_digest: REVIEWED_ARTIFACT_PIN_DIGEST,
+  reviewed_artifact_pins: REVIEWED_ARTIFACT_PINS,
   reviewed_at: REVIEWED_AT,
   builder_identity: 'release-builder@earthloveunited.org',
   reviewer_identity: REVIEWER,
@@ -204,8 +209,7 @@ const candidate = {
     approval_text: null,
     manifest_sha256: EXPECTED_MANIFEST_SHA256,
     asset_pins: exactPins(),
-    current_commit_sha: REVIEWED_COMMIT,
-    reviewed_commit_binding_passed: false,
+    reviewed_artifact_binding_passed: false,
     notices_integrity_passed: true,
     trust_registry_file_regular: true,
     trust_registry: EMPTY_TRUST,
@@ -250,10 +254,10 @@ const release = {
     trust_registry_file_regular: true,
     trust_registry: SIGNING.registry,
     trust_registry_text: SIGNING.registryText,
+    trust_registry_bytes: Buffer.from(SIGNING.registryText, 'utf8'),
     manifest_sha256: EXPECTED_MANIFEST_SHA256,
     asset_pins: exactPins(),
-    current_commit_sha: REVIEWED_COMMIT,
-    reviewed_commit_binding_passed: true,
+    reviewed_artifact_binding_passed: true,
     reviewed_release_passed: true,
     notices_integrity_passed: true,
   },
@@ -270,7 +274,7 @@ function attachSignedAuthority(input) {
       approval_sha256: approvalSha,
       trust_registry_path: approvalPolicy.TRUST_REGISTRY_PATH,
       trust_registry_sha256: SIGNING.registrySha,
-      reviewed_commit_sha: REVIEWED_COMMIT,
+      reviewed_artifact_pin_digest: REVIEWED_ARTIFACT_PIN_DIGEST,
       role,
     });
     return {
@@ -281,20 +285,22 @@ function attachSignedAuthority(input) {
   });
   const bundle = {
     schema_version: '1.0.0',
-    signature_bundle_id: 'elu-globe-runtime-assets-production-review-signatures-v1',
+    signature_bundle_id: 'elu-globe-runtime-assets-production-review-signatures-v2',
     repository: approvalPolicy.REPOSITORY,
     approval_path: approvalPolicy.APPROVAL_PATH,
     approval_sha256: approvalSha,
     trust_registry_path: approvalPolicy.TRUST_REGISTRY_PATH,
     trust_registry_sha256: SIGNING.registrySha,
-    reviewed_commit_sha: REVIEWED_COMMIT,
+    reviewed_artifact_pin_digest: REVIEWED_ARTIFACT_PIN_DIGEST,
     signatures,
   };
   input.runtime_assets.approval_text = approvalText;
+  input.runtime_assets.approval_bytes = Buffer.from(approvalText, 'utf8');
   input.runtime_assets.signature_bundle_present = true;
   input.runtime_assets.signature_bundle_file_regular = true;
   input.runtime_assets.signature_bundle = bundle;
   input.runtime_assets.signature_bundle_text = jsonText(bundle);
+  input.runtime_assets.signature_bundle_bytes = Buffer.from(input.runtime_assets.signature_bundle_text, 'utf8');
 }
 
 attachSignedAuthority(release);
@@ -398,9 +404,9 @@ const releaseMutations = [
   input => { input.runtime_assets.approval.asset_rights_dispositions[0].production_use_approved = false; },
   input => { input.runtime_assets.approval.asset_rights_dispositions[0].release_authority = false; },
   input => { input.runtime_assets.asset_pins[0].sha256 = 'e'.repeat(64); },
-  input => { input.runtime_assets.approval.reviewed_commit_sha = 'short'; },
-  input => { input.runtime_assets.approval.reviewed_commit_sha = 'f'.repeat(40); input.runtime_assets.reviewed_commit_binding_passed = false; },
-  input => { input.runtime_assets.reviewed_commit_binding_passed = false; },
+  input => { input.runtime_assets.approval.reviewed_artifact_pin_digest = 'short'; },
+  input => { input.runtime_assets.approval.reviewed_artifact_pins[0].sha256 = 'f'.repeat(64); },
+  input => { input.runtime_assets.reviewed_artifact_binding_passed = false; },
   input => { input.runtime_assets.reviewed_release_passed = false; },
   input => { input.runtime_assets.approval.reviewed_at = 'not-a-time'; },
   input => { input.runtime_assets.approval.builder_identity = 'fake'; },

@@ -67,11 +67,11 @@ The recovery resolves the acquisition defect for 245 entities. It does not self-
 4. Independently review the CCKP ERA5 `tas`/`pr` aggregate semantics, units, 1970–2025 selection, OLS implementation, and four explicit identity gaps.
 5. Complete independent scientific review of the 216 GCB mappings and derivations, plus the retained WPP, Ember, and CCKP taxonomies and selections.
 6. Obtain the required visual/accessibility, protected-file, asset-rights, and final production approvals.
-7. Regenerate the machine-readable review request against the post-fix candidate commit, then produce the CCI-specific approval, reviewed release diff, reviewed runtime manifest, and executable rollback proof. Historical CT-40 bindings are structurally inapplicable and must not be reused.
+7. Regenerate the machine-readable review request against the final reviewed artifact set, then produce the CCI-specific approval, reviewed release diff, reviewed runtime manifest, and executable rollback proof. Historical CT-40 bindings are structurally inapplicable and must not be reused.
 
 The implementation-level `raw_receipt_revalidation` gate is now true. Until the remaining reviews are complete, `redistribution_rights_revalidation`, `independent_scientific_review`, and `production_runtime_release` remain false.
 
-The exact reviewer handoff and artifact chain are documented in [COUNTRY-CLIMATE-RELEASE-REVIEW.md](COUNTRY-CLIMATE-RELEASE-REVIEW.md). The committed `review-request.json` is intentionally unbound until the implementation commit exists; the release gate treats that state as a blocker, not an approval.
+The exact reviewer handoff and artifact chain are documented in [COUNTRY-CLIMATE-RELEASE-REVIEW.md](COUNTRY-CLIMATE-RELEASE-REVIEW.md). The committed `review-request.json` binds the canonical reviewed artifact-pin and required-absence digest; a byte drift or forbidden-path reappearance invalidates that boundary.
 
 ## Authoritative references used by the audit
 

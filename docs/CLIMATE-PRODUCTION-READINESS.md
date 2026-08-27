@@ -35,9 +35,9 @@ exactly three roles—`asset_rights_reviewer`, `licensing_counsel`, and
 keys never belong in the repository.
 
 After those real humans complete the review, each role signs the exact
-domain-separated `ELU-GLOBE-RUNTIME-APPROVAL-SIGNATURE-V1` message. That message
+domain-separated `ELU-GLOBE-RUNTIME-APPROVAL-SIGNATURE-V2` message. That message
 binds the repository, approval path and SHA-256, trust-registry path and
-SHA-256, reviewed commit SHA, and signer role, including its final newline. The
+SHA-256, reviewed artifact-pin digest, and signer role, including its final newline. The
 three signatures go in
 `data/climate/reviews/globe-runtime-assets-production-review.signatures.json`;
 the approval binds the same three derived Ed25519 key IDs. The verifier rejects
@@ -48,13 +48,13 @@ Each signer signs these exact UTF-8 bytes, substituting the pinned values and
 retaining the final newline after `role=...`:
 
 ```text
-ELU-GLOBE-RUNTIME-APPROVAL-SIGNATURE-V1
+ELU-GLOBE-RUNTIME-APPROVAL-SIGNATURE-V2
 repository=earth-love-united/earthloveunited.org
 approval_path=data/climate/reviews/globe-runtime-assets-production-review.json
 approval_sha256=<64 lowercase hex>
 trust_registry_path=data/climate/governance/globe-runtime-approval-trust.json
 trust_registry_sha256=<64 lowercase hex>
-reviewed_commit_sha=<40 lowercase hex>
+reviewed_artifact_pin_digest=<64 lowercase hex>
 role=<asset_rights_reviewer|licensing_counsel|release_authorizer>
 ```
 
@@ -62,7 +62,7 @@ Safe future sequence:
 
 1. provision only real public keys and identities through maintainer review;
 2. update every protected registry/schema/integration pin and complete the
-   exact commit-bound approval without committing private material;
+   exact artifact-pin-bound approval without committing private material;
 3. have each role sign the documented message offline and commit only the
    detached bundle;
 4. run the approval checker, readiness policy, source notice/CT-45 checks, and
