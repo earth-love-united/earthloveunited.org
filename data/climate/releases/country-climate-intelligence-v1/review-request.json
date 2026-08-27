@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "ede50daf0141185377278b00e243d9194908ae801215727e2bc32dccf16e36a6",
+  "calculation_hash": "27912c23760d3c1f4524ced924a1faa8f4bd6921cd3a9e4268e038aea0ce353c",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -710,7 +710,7 @@
         "sha256": "63dd90a443a2f0eaacdf93157587f0b6e89a71e128d384986547039c705783f8"
       }
     ],
-    "commit_binding_state": "unbound_worktree_candidate",
-    "subject_commit_sha": null
+    "commit_binding_state": "bound_candidate_commit",
+    "subject_commit_sha": "56e7cbf7d6f22d460cf98445f463839ab215222a"
   }
 }
