@@ -7,9 +7,16 @@ const os = require('os');
 const path = require('path');
 const { fileSha256, readJson, writeJson } = require('./lib/country-climate-intelligence');
 const { compile: compileWpp } = require('./compile-wpp-population');
-const { compile: compileTrace } = require('./compile-climate-trace');
 const { compile: compileEmber } = require('./compile-ember-power');
 const { compile: compileCckp } = require('./compile-cckp-physical');
+const {
+  FACTOR: GCB_FACTOR,
+  applyIdentity: applyGcbIdentity,
+  fossilMetrics: gcbFossilMetrics,
+  landMetric: gcbLandMetric,
+  loadIdentityMap: loadGcbIdentityMap,
+  matrix: gcbMatrix,
+} = require('./lib/gcb-country-intelligence');
 
 const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-cci-compilers-'));
 
@@ -33,7 +40,63 @@ function receiptFor(sourceRegistryId, file, extra = {}) {
 }
 
 try {
-  const wppInput = write('wpp.csv', 'ISO3_code,Location,Time,Variant,PopTotal\nABW,Aruba,2024,Medium,123.456\n');
+  const gcbRows = [
+    { _row: 1, A: 'Year', B: 'Aruba' },
+    { _row: 2, A: 1850, B: 1 },
+    { _row: 3, A: 2024, B: 2 },
+  ];
+  const parsedGcb = gcbMatrix(gcbRows, 'Territorial Emissions fixture');
+  assert.deepStrictEqual(parsedGcb, [{
+    source_name: 'Aruba',
+    observations: [{ year: 1850, value: 1 }, { year: 2024, value: 2 }],
+  }]);
+  assert.throws(() => gcbMatrix([
+    { _row: 1, A: 'Year', B: 'Aruba' },
+    { _row: 2, A: 2023, B: 'not-a-number' },
+    { _row: 3, A: 2024, B: 2 },
+  ], 'invalid fixture'), /non-numeric value/);
+
+  const gcbFossil = gcbFossilMetrics('ABW',
+    [{ year: 1850, value: 1 }, { year: 2024, value: 2 }],
+    [{ year: 2023, value: 3 }],
+    [{ year: 2023, value: -1 }]);
+  assert.strictEqual(gcbFossil['emissions.fossil_co2.territorial'].value, 2 * GCB_FACTOR);
+  assert.strictEqual(gcbFossil['emissions.fossil_co2.cumulative'].value, 3 * GCB_FACTOR);
+  assert.strictEqual(gcbFossil['emissions.fossil_co2.cumulative'].context.available_years, 2,
+    'GCB cumulative must count only source years with numeric values');
+  assert.strictEqual(gcbFossil['emissions.fossil_co2.consumption'].value, 3 * GCB_FACTOR);
+  assert.strictEqual(gcbFossil['emissions.fossil_co2.net_transfer'].value, -1 * GCB_FACTOR,
+    'GCB transfer sign must be preserved rather than absolutized or reversed');
+
+  const constantModel = value => Array.from({ length: 10 }, (_, index) => ({ year: 2015 + index, value }));
+  const gcbLand = gcbLandMetric('ABW', {
+    BLUE: constantModel(1),
+    OSCAR: constantModel(2),
+    LUCE: constantModel(3),
+  });
+  assert.deepStrictEqual(gcbLand.context.model_means, { BLUE: GCB_FACTOR, OSCAR: 2 * GCB_FACTOR, LUCE: 3 * GCB_FACTOR });
+  assert.strictEqual(gcbLand.value, 2 * GCB_FACTOR, 'GCB land central value must be the mean of the three model means');
+  assert.strictEqual(gcbLand.uncertainty.kind, 'model_spread_population_standard_deviation');
+  assert.strictEqual(gcbLand.uncertainty.sigma,
+    Math.round((GCB_FACTOR * Math.sqrt(2 / 3)) * 1e6) / 1e6,
+    'GCB land spread must use population standard deviation across BLUE, OSCAR, and LUCE');
+  assert.strictEqual(gcbLandMetric('ABW', { BLUE: constantModel(1).slice(1), OSCAR: constantModel(2), LUCE: constantModel(3) }).value, null,
+    'GCB land values must fail closed when any model-year is missing');
+
+  const duplicateIdentityPath = write('gcb-duplicate-identity.json', JSON.stringify({
+    mappings: [{ source_name: 'Aruba', iso_alpha3: 'ABW' }],
+    exceptions: [{ source_name: 'Aruba', kind: 'unmapped', reason: 'fixture ambiguity' }],
+  }));
+  assert.throws(() => loadGcbIdentityMap(duplicateIdentityPath), /Duplicate GCB identity disposition/);
+  const registryFixture = { entities: [{ iso_alpha3: 'ABW' }] };
+  assert.throws(() => applyGcbIdentity([parsedGcb], new Map(), registryFixture), /no reviewed identity disposition/);
+  assert.throws(() => applyGcbIdentity([parsedGcb], new Map([['Aruba', { kind: 'mapped', iso_alpha3: 'XXX' }]]), registryFixture), /unknown ISO3/);
+  assert.throws(() => applyGcbIdentity([parsedGcb], new Map([
+    ['Aruba', { kind: 'mapped', iso_alpha3: 'ABW' }],
+    ['Unused', { kind: 'unmapped', reason: 'fixture' }],
+  ]), registryFixture), /unused dispositions/);
+
+  const wppInput = write('wpp.csv', 'LocID,ISO3_code,Location,Time,Variant,TPopulation1July\n533,ABW,Aruba,2024,Medium,123.456\n');
   const wppReceipt = receiptFor('un-wpp-2024', wppInput, { year_classification_2024: 'projection' });
   const wppOutput = path.join(temporaryDirectory, 'wpp-output.json');
   compileWpp(['--input', wppInput, '--receipt', wppReceipt, '--output', wppOutput]);
@@ -42,25 +105,6 @@ try {
   assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'ABW').metrics['population.wpp_medium_projection'].value, 123456);
   assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'ABW').metrics['population.wpp_medium_projection'].status, 'modeled');
   assert.strictEqual(wpp.countries.find(country => country.iso_alpha3 === 'AFG').metrics['population.wpp_medium_projection'].value, null);
-
-  const traceInput = write('trace.json', `${JSON.stringify({
-    release_version: '5.9.0',
-    rows: [{
-      iso_alpha3: 'ABW', country_name: 'Aruba', year: 2024, sector: 'power', gas: 'co2',
-      emissions_tonnes: 1000000, co2e_100yr_tonnes: 1000000,
-      gwp_basis: 'IPCC_AR6_GWP100', estimate_status: 'estimated',
-    }],
-  })}\n`);
-  const traceReceipt = receiptFor('climate-trace-api-v7-2026-08-24-country-annual', traceInput, {
-    api_version: 'v7',
-    immutable_inventory_release_confirmed: true,
-    reported_inventory_version: '5.9.0',
-  });
-  const traceOutput = path.join(temporaryDirectory, 'trace-output.json');
-  compileTrace(['--input', traceInput, '--receipt', traceReceipt, '--output', traceOutput]);
-  const trace = readJson(traceOutput);
-  assert.strictEqual(trace.countries.find(country => country.iso_alpha3 === 'ABW').metrics['emissions.ghg.independent'].value, 1);
-  assert.strictEqual(trace.countries.find(country => country.iso_alpha3 === 'AFG').metrics['emissions.ghg.independent'].value, null);
 
   const emberRows = [
     ['Aruba', 'ABW', 2019, 'Country or economy', 'Electricity generation', 'Aggregate fuel', 'Clean', '%', 10, 'actual'],
@@ -161,8 +205,8 @@ try {
     '--output', cckpOutput,
   ]), /Duplicate CCKP projection tuple/);
 
-  assert.throws(() => compileEmber(['--input', emberInput, '--receipt', traceReceipt, '--output', emberOutput]), /Ember receipt/);
-  console.log('Country Climate Intelligence compiler fixtures passed (WPP, Climate TRACE, Ember, and CCKP; 249-row gap-preserving outputs).');
+  assert.throws(() => compileEmber(['--input', emberInput, '--receipt', wppReceipt, '--output', emberOutput]), /Ember receipt/);
+  console.log('Country Climate Intelligence compiler fixtures passed (GCB, WPP, Ember, and CCKP; source math, identity denials, and 249-row gap-preserving outputs).');
 } finally {
   fs.rmSync(temporaryDirectory, { recursive: true, force: true });
 }

@@ -67,7 +67,6 @@ const FIXED_RUNTIME_PATHS = Object.freeze([
   'tools/extract-reviewed-country-climate-components.js',
   'tools/compile-gcb-emissions.js',
   'tools/compile-wpp-population.js',
-  'tools/compile-climate-trace.js',
   'tools/compile-ember-power.js',
   'tools/compile-cckp-physical.js',
   'tools/check-climate-source-registry.js',
@@ -154,13 +153,13 @@ function cciCandidateReasons(runtime, releaseManifest) {
   const release = runtime.release || {};
   if (release.status !== 'candidate') reasons.push('cci_runtime_status_not_candidate');
   if (release.production_runtime_release !== false) reasons.push('cci_runtime_production_release_not_false');
-  if (!/pending_source_revalidation/.test(release.review_state || '')) {
+  if (!/pending_independent_scientific_review/.test(release.review_state || '')) {
     reasons.push('cci_runtime_review_state_not_fail_closed');
   }
   const gates = releaseManifest && typeof releaseManifest === 'object' && !Array.isArray(releaseManifest)
     ? releaseManifest.gates || {}
     : {};
-  if (gates.raw_receipt_revalidation !== false) reasons.push('cci_raw_receipt_gate_not_false');
+  if (gates.raw_receipt_revalidation !== true) reasons.push('cci_raw_receipt_gate_not_true');
   if (gates.redistribution_rights_revalidation !== false) reasons.push('cci_redistribution_rights_gate_not_false');
   if (gates.independent_scientific_review !== false) reasons.push('cci_scientific_review_gate_not_false');
   return reasons.sort();

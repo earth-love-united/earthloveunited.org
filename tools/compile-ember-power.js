@@ -143,7 +143,7 @@ function metricRecord(entity, metricId, value, year, config, transformation = 's
     period: metricId.endsWith('_5y')
       ? { end: 2024, label: '2019–2024 change', start: 2019 }
       : { end: year, label: String(year), start: year },
-    review_state: 'normalized_candidate_pending_source_revalidation',
+    review_state: 'normalized_candidate_pending_independent_scientific_review',
     scope,
     scope_fingerprint: scopeFingerprint(scope),
     source_ids: [SOURCE_ID],
@@ -314,7 +314,7 @@ function compile(args) {
     },
     input_receipt: receipt,
     metric_ids: [...Object.keys(METRIC_CONFIG), 'electricity.clean_share_change_5y'],
-    review_state: 'normalized_factual_candidate_pending_source_revalidation',
+    review_state: 'normalized_factual_candidate_pending_independent_scientific_review',
     schema_version: '1.0.0',
     source_registry_ids: [SOURCE_ID],
   };

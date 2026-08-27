@@ -22,14 +22,16 @@ Country Climate Intelligence has no composite score, target assessment, finance 
 A production decision requires all of the following to identify the same release, candidate commit, and exact hashes:
 
 1. release-specific source and rights decisions for every value-producing source;
-2. independent discipline reviews for carbon accounting, demography, GHG inventory, power systems, physical climate, reproducibility, UI/accessibility/runtime, and source rights;
+2. independent discipline reviews for carbon accounting, demography, power systems, physical climate, reproducibility, UI/accessibility/runtime, and source rights;
 3. `release-approval.json`;
 4. `reviewed-release-diff.json`;
 5. `reviewed-runtime-manifest.json`;
 6. an executable `reviewed-rollback-proof.json`;
-7. protected-file/CODEOWNERS approval for the reviewed commit;
-8. a runtime and release manifest that both self-identify as independently reviewed production artifacts.
-9. a separately signed globe-runtime asset approval from the asset-rights reviewer, licensing counsel, and release authorizer.
+7. `release-signatures.json`, with verified detached Ed25519 signatures from all seven discipline reviewers and the release authorizer over the exact five-artifact package;
+8. a provisioned, protected CCI release trust registry whose exact hash is pinned by the reviewed subject and verifier;
+9. protected-file/CODEOWNERS approval for the reviewed commit;
+10. a runtime and release manifest that both self-identify as independently reviewed production artifacts;
+11. a separately signed globe-runtime asset approval from the asset-rights reviewer, licensing counsel, and release authorizer.
 
 Missing, partial, stale, self-reviewed, placeholder, non-regular, symlinked, hash-mismatched, or CT-40-derived evidence fails closed.
 
@@ -37,22 +39,23 @@ Missing, partial, stale, self-reviewed, placeholder, non-regular, symlinked, has
 
 | Source | Exact release question | Current blocker |
 |---|---|---|
-| Global Carbon Budget 2025 v1.0 | Reproduce the two publisher object hashes; verify territorial, cumulative, consumption, transfer-sign, and three-model land-use selections; approve release attribution and normalized redistribution. | Independent receipt, science, and rights attestations are not signed. |
-| UN WPP 2024 | Pin the exact input file and receipt; confirm that the 2024 Medium value belongs to the projection period; approve `population.wpp_medium_projection`, the per-capita denominator lineage, CC BY 3.0 IGO attribution, and change notice. | Raw receipt and demography review are missing. |
-| Climate TRACE API v7 response, 2026-08-24 | Bind the exact response to an immutable inventory release; resolve every selected field against the terms-page external-dataset exceptions; verify AR6 GWP100, estimate status, gas/sector filters, and forestry/LULUCF exclusion. | Immutable release identity, raw receipt, field-level rights, and inventory review are unresolved. |
-| Ember Yearly Electricity Data, 2026-08-25 | Reproduce the pinned long-format snapshot; verify actual-year selection, aggregate/fuel taxonomy, blank-versus-zero behavior, reconciliation, intensity, emissions, and five-year change; approve attribution and redistribution. | Independent receipt, power-systems, and rights attestations are not signed. |
-| CCKP CMIP6 response, 2026-08-24 | Pin the response or individual model files, model roster, parameters, and country aggregation chain; resolve CCKP and source-model licence obligations; verify scenarios, percentiles, baseline, and gaps. | Raw receipt, model roster, derivative rights, and physical-climate review are unresolved. |
-| CCKP ERA5 responses, 2026-08-25 | Reproduce the temperature and precipitation response/normalization hashes; resolve CCKP processing and ERA5 attribution; verify annual semantics, units, 1970–2025 selection, OLS, KSV exception, and four gaps. | Independent receipt, derivative-rights, and physical-climate attestations are not signed. |
-
-Climate TRACE is deliberately named by the retained API route and retrieval date. The response-reported `5.9.0` value is metadata, not proof of an immutable v5.9.0 release archive.
+| Global Carbon Budget 2025 v1.0 | Confirm the independently reproduced publisher hashes; verify territorial, cumulative, consumption, transfer-sign, and three-model land-use selections; approve release attribution and normalized redistribution. | Science and release-owner rights attestations are not signed. |
+| UN WPP 2024 | Confirm the exact current official gzip and receipt; verify that 2024 Medium belongs to the projection period; approve `population.wpp_medium_projection`, per-capita lineage, CC BY 3.0 IGO attribution, and change notice. | Exact receipt is pinned; demography and release-owner rights reviews remain open. |
+| Ember Yearly Electricity Data, 2026-08-25 | Confirm the independently reproduced long-format snapshot; verify actual-year selection, aggregate/fuel taxonomy, blank-versus-zero behavior, reconciliation, intensity, emissions, and five-year change; approve attribution and redistribution. | Power-systems and release-owner rights attestations are not signed. |
+| CCKP CMIP6 responses, re-fetched 2026-08-27 | Confirm ten exact `ensemble_all_mean` country responses and their parameters; verify scenarios, percentiles, baseline, aggregation, and gaps; approve CCKP CC BY 4.0 with WCRP/ESGF acknowledgement. | All 2,450 mapped values reproduce exactly; physical-climate and release-owner rights reviews remain open. |
+| CCKP ERA5 responses, 2026-08-25 | Confirm the independently reproduced temperature and precipitation hashes; approve CCKP CC BY 4.0 and ERA5/Copernicus attribution; verify annual semantics, units, 1970–2025 selection, OLS, KSV exception, and four gaps. | Physical-climate and release-owner rights attestations are not signed. |
 
 WPP is deliberately named `population.wpp_medium_projection`. The UN methodology places 1 January 2024 at the start of the projection interval; no reviewer should approve the legacy `population.estimate` identity.
 
 ## Reviewer independence
 
-The candidate builder cannot sign an independent review, source decision, protected-file review, or final approval. At least four distinct independent people must cover the eight discipline roles. A source-rights decision must state the reviewed source version, exact receipts, selected fields, normalized-value and derivative-database permissions, attribution text, required notices, external-dataset exceptions, and any expiry/recheck date.
+The candidate builder cannot sign an independent review, source decision, protected-file review, or final approval. At least four distinct independent people must cover the seven discipline roles. A source-rights decision must state the reviewed source version, exact receipts, selected fields, normalized-value and derivative-database permissions, attribution text, required notices, external-dataset exceptions, and any expiry/recheck date.
 
 Review reports and rights decisions must be regular repository artifacts with exact SHA-256 pins. A URL or prose assertion without a pinned decision/report is supporting evidence, not approval.
+
+Reviewer IDs, timestamps, hashes, and CODEOWNERS approval are not signatures. The CCI package uses a separate protected trust registry and eight detached Ed25519 role signatures: carbon accounting, demography, power systems, physical climate, reproducibility, UI/accessibility/runtime, source rights, and release authorizer. Each signature binds the repository, release ID, candidate commit, trust-registry hash, role identity/time, and raw SHA-256 of the review request, approval, release diff, runtime manifest, and rollback proof. A change to any signed byte invalidates the package.
+
+The committed trust registry is intentionally `unprovisioned`, and `release-signatures.json` is intentionally absent. Real public keys must be provisioned through protected-file review before the bound review request is regenerated; private keys never enter the repository. No agent-generated fixture key or identity may be promoted.
 
 ## Exact release chain
 
@@ -64,6 +67,7 @@ bound review-request.json
   → reviewed-runtime-manifest.json
   → reviewed-release-diff.json
   → executable reviewed-rollback-proof.json
+  → eight-role detached release-signatures.json
   → tools/check-country-climate-intelligence-release-gate.js --require-release
   → three-role signed globe-runtime asset approval
   → tools/check-public-climate-release-profile.js --release
@@ -78,6 +82,7 @@ Candidate integrity:
 
 ~~~sh
 node tools/check-country-climate-intelligence-ci.js
+node tools/check-country-climate-intelligence-release-signatures.js
 node tools/check-country-climate-intelligence-release-gate.js
 node tools/check-public-climate-release-profile.js --candidate
 ~~~
@@ -92,7 +97,7 @@ node tools/check-public-climate-release-profile.js --release
 ./tools/build-deploy.sh --release
 ~~~
 
-The strict gate must remain red until the exact external decisions and independent reports exist. Passing candidate checks never implies production authority or deployment authority.
+The strict gate must remain red until the exact external decisions, independent reports, provisioned trust registry, and eight valid human signatures exist. Passing candidate checks never implies production authority or deployment authority.
 
 The selector does not approve data, rights, science, protected files, or
 assets. It only prevents a CCI release from falling through to CT-40 authority

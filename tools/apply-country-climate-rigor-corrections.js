@@ -31,10 +31,6 @@ const COMPONENTS = Object.freeze({
     file: 'ember-power.json',
     sha256: '975f2bf780cb30da16aa1b618c8dc3ca7e9b76d6bf95d30842b0111841cdad15',
   }),
-  trace: Object.freeze({
-    file: 'climate-trace-ghg.json',
-    sha256: '0abe0e471e3afb92d63a7daadb93562b03b77cc41a1a1d310053be2182ca54da',
-  }),
   wpp: Object.freeze({
     file: 'wpp-population.json',
     sha256: '41a44109a7a3ae3816141ec135ac3c0db6008e29669bcccaeecb1539e7a58f07',

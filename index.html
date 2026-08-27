@@ -101,8 +101,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="js/gaia-utils.js" as="script">
-<link rel="preload" href="js/data.js?v=v11" as="script">
-<link rel="preload" href="js/country-climate-intelligence.js?v=v14" as="script">
+<link rel="preload" href="js/data.js?v=v16" as="script">
+<link rel="preload" href="js/country-climate-intelligence.js?v=v17" as="script">
 
 <!-- ═══ CRITICAL CSS (inlined) ═══ -->
 <style>
@@ -338,6 +338,15 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 .big-cta{max-width:100%;margin-top:34px;padding:15px 32px!important;font-size:12px!important;white-space:normal}@media(max-width:360px){.big-cta{width:100%;padding:14px 12px!important}}
 .data-note{margin-top:24px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--text3);max-width:760px}
 .data-note a{color:var(--teal);text-decoration:none;border-bottom:1px dotted rgba(78,205,196,.4)}
+.source-credits{max-width:860px;margin:22px 0 0;border-top:1px solid rgba(78,205,196,.14);border-bottom:1px solid rgba(78,205,196,.14);font-family:var(--mono);color:var(--text3)}
+.source-credits summary{display:inline-flex;align-items:center;min-height:44px;color:var(--teal);font-size:11px;letter-spacing:.8px;cursor:pointer;list-style:none}
+.source-credits summary::-webkit-details-marker{display:none}
+.source-credits summary::after{content:'＋';margin-left:8px;font-size:12px}
+.source-credits[open] summary::after{content:'−'}
+.source-credits summary:focus-visible{outline:2px solid var(--mint);outline-offset:3px;border-radius:3px}
+.source-credits-body{padding:2px 0 16px;font-size:11px;line-height:1.75;color:var(--text2)}
+.source-credits-body p{margin:7px 0}
+.source-credits-body a{color:var(--teal);text-decoration:none;border-bottom:1px dotted rgba(78,205,196,.4)}
 /* volunteer video (click-to-load; YouTube loads only on demand) */
 .video-block{margin-top:36px}
 .video-poster{position:relative;display:block;width:100%;max-width:760px;aspect-ratio:16/9;padding:0;border:1px solid rgba(78,205,196,.18);border-radius:12px;overflow:hidden;background:var(--bg2);cursor:pointer;transition:border-color .25s,transform .25s}
@@ -625,17 +634,25 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <span role="listitem"><i style="background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1"></i> Neutral pattern · exact comparison metric unavailable, visible and unranked</span>
     </div>
     <p class="data-note">Map boundaries use generalized Natural Earth 1:110m geometry for navigation only. Twenty-eight small states absent from that dataset use manually curated approximate navigation points, not boundaries or precise centroids. Disputed subfeatures including Northern Cyprus and Somaliland are excluded from the data overlay and never inherit a parent entity’s evidence. None of these representations expresses a position on sovereignty or legal boundaries.</p>
-    <p class="data-note">Visual credits: <a href="https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/" target="_blank" rel="noopener">NASA Earth Observatory Black Marble 2012</a>, image by Robert Simmon with Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA National Geophysical Data Center. Decorative background only. Original starfield from Three-Globe 2.45.2.</p>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Source &amp; Methodology</div>
-        <p>Five independently scoped data streams support the dashboard: <a href="https://meta.icos-cp.eu/collections/AxnIW-ydMBT4BdKjxV63DGQl" target="_blank" rel="noopener">carbon</a>, <a href="https://population.un.org/wpp/" target="_blank" rel="noopener">population</a>, <a href="https://climatetrace.org/data" target="_blank" rel="noopener">independent GHG context</a>, <a href="https://api.ember-energy.org/v1/docs" target="_blank" rel="noopener">electricity</a>, and <a href="https://climateknowledgeportal.worldbank.org/index.php/metadata" target="_blank" rel="noopener">physical climate</a>. Definitions, scopes, uncertainty, checksums, and citations expand inside every country card.</p>
+        <p>Open country data from GCB, UN WPP, Ember, and the World Bank CCKP. Definitions, scope, uncertainty, checksums, and citations expand inside every country card.</p>
       </div>
       <div class="card">
         <div class="card-tag">Country Cards</div>
-        <p>Plain-language facts come first; an analyst drawer preserves method, uncertainty, scope, transformation, release checksum, citations, and explicit gap reasons. Fossil CO₂, land use, independent GHG, electricity, and modeled climate remain separately labelled.</p>
+        <p>Plain-language facts come first; an analyst drawer preserves method, uncertainty, scope, transformation, release checksum, citations, and explicit gap reasons. Fossil CO₂, land use, electricity, and physical climate remain separately labelled.</p>
       </div>
     </div>
+    <details class="source-credits">
+      <summary>Sources &amp; credits</summary>
+      <div class="source-credits-body">
+        <p><a href="https://doi.org/10.18160/GCP-2025" target="_blank" rel="noopener">Global Carbon Budget 2025 v1.0</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; Earth Love United selects country series, converts carbon to CO₂, and derives cumulative and WPP-based per-capita values.</p>
+        <p><a href="https://population.un.org/wpp/" target="_blank" rel="noopener">UN World Population Prospects 2024</a> · <a href="https://creativecommons.org/licenses/by/3.0/igo/" target="_blank" rel="noopener">CC BY 3.0 IGO</a>; 2024 Medium population projection. <a href="https://ember-energy.org/data/yearly-electricity-data/" target="_blank" rel="noopener">Ember Yearly Electricity Data</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; published actual-year values and fuel taxonomy.</p>
+        <p><a href="https://climateknowledgeportal.worldbank.org/index.php/metadata" target="_blank" rel="noopener">World Bank Climate Change Knowledge Portal</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; CCKP country aggregates from CMIP6 and ERA5. We acknowledge WCRP CMIP6 modeling groups, ESGF, ECMWF, and the Copernicus Climate Change Service. Earth Love United selects scenarios and periods and derives ERA5 trends.</p>
+        <p><a href="https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/" target="_blank" rel="noopener">NASA Earth Observatory Black Marble 2012</a>, image by Robert Simmon; Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA NCEI. Decorative background only. Original starfield from Three-Globe 2.45.2. <a href="https://github.com/earth-love-united/earthloveunited.org/blob/main/CREDITS.md" target="_blank" rel="noopener">Full attribution and change notes</a>.</p>
+      </div>
+    </details>
     <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
   </section>
 
@@ -717,12 +734,12 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       </div>
       <div class="card">
         <div class="card-tag">Open Data</div>
-        <p>The live atlas reads one hashed, reproducible 249-entity factual candidate. Source receipts, explicit gaps, scope fingerprints, transformations, and the rollback boundary are published with it.</p>
+        <p>The live atlas reads one hashed, reproducible 249-entity factual release artifact. Source receipts, explicit gaps, scope fingerprints, transformations, and the rollback boundary are published with it.</p>
         <a class="card-cta glass-btn" href="docs/COUNTRY-CLIMATE-METHODOLOGY.md">Read the climate methodology</a>
       </div>
       <div class="card">
         <div class="card-tag">Truth Checks</div>
-        <p>Deterministic checks verify source checksums, all 249 identities, exact lens coverage, permitted derivations, scope separation, accessible fallback parity, and the candidate-only release boundary.</p>
+        <p>Deterministic checks verify source checksums, all 249 identities, exact lens coverage, permitted derivations, scope separation, accessible fallback parity, and the exact release-state boundary.</p>
       </div>
     </div>
   </section>
@@ -834,10 +851,10 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <script src="js/event-bus.js"></script>
 <script src="js/storage-adapter.js"></script>
 <script src="js/storage.js"></script>
-<script src="js/data-schema.js?v=v1"></script>
-<script src="js/data.js?v=v11"></script>
-<script src="js/country-climate-intelligence.js?v=v14"></script>
-<script src="js/globe.js?v=v38"></script>
+<script src="js/data-schema.js?v=v2"></script>
+<script src="js/data.js?v=v16"></script>
+<script src="js/country-climate-intelligence.js?v=v17"></script>
+<script src="js/globe.js?v=v40"></script>
 <script src="js/carbon-clock.js?v=v1"></script>
 <script src="js/guided-first-orbit.js?v=v6"></script>
 <script src="js/app.js?v=v5"></script>
@@ -985,7 +1002,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=72-tutorial-lens-clear', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=77-cci-raw-byte-boundary', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

@@ -35,7 +35,6 @@
         "emissions.fossil_co2.consumption",
         "emissions.fossil_co2.net_transfer",
         "emissions.land_use_co2.net",
-        "emissions.ghg.independent",
         "population.wpp_medium_projection",
         "electricity.clean_share",
         "electricity.clean_share_change_5y",
@@ -129,12 +128,12 @@
       "properties": {
         "id": {"type": "string", "minLength": 1},
         "status": {"enum": ["candidate", "production"]},
-        "review_state": {"enum": ["normalized_factual_candidate_pending_source_revalidation", "independently_reviewed"]},
+        "review_state": {"enum": ["normalized_factual_candidate_pending_source_revalidation", "normalized_factual_candidate_pending_independent_scientific_review", "independently_reviewed"]},
         "production_runtime_release": {"type": "boolean"},
         "entity_count": {"const": 249},
         "comparison_baseline_year": {"const": 2024},
         "generated_on": {"type": "string", "format": "date"},
-        "input_artifacts": {"type": "object", "minProperties": 6},
+        "input_artifacts": {"type": "object", "minProperties": 5},
         "prior_runtime_retained_for_rollback": {"type": "string", "minLength": 1}
       }
     },
@@ -193,8 +192,8 @@
         "flag_emoji": {"type": "string", "minLength": 1},
         "metrics": {
           "type": "object",
-          "minProperties": 27,
-          "maxProperties": 27,
+          "minProperties": 26,
+          "maxProperties": 26,
           "additionalProperties": {"$ref": "#/$defs/metric"}
         },
         "official_context": {"type": "array", "items": {"type": "object"}}
@@ -215,7 +214,7 @@
         "uncertainty": {"type": ["object", "null"]},
         "fact_ids": {"type": "array", "items": {"type": "string"}},
         "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
-        "review_state": {"enum": ["source_validated_candidate", "normalized_candidate_pending_source_revalidation", "gap_reviewed", "independently_reviewed"]},
+        "review_state": {"enum": ["source_validated_candidate", "normalized_candidate_pending_source_revalidation", "normalized_candidate_pending_independent_scientific_review", "gap_reviewed", "independently_reviewed"]},
         "transformation": {"type": ["string", "null"]},
         "gap_reason": {
           "anyOf": [

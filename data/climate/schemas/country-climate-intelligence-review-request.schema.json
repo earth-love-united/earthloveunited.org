@@ -7,7 +7,7 @@
   "required": [
     "schema_version", "request_id", "release_id", "created_at", "status",
     "release_authority", "production_runtime_release", "subject",
-    "governance_boundaries", "source_reviews", "independent_reviews",
+    "governance_boundaries", "required_absent_paths", "source_reviews", "independent_reviews",
     "required_release_artifacts", "prohibited_substitutions", "calculation_hash"
   ],
   "properties": {
@@ -49,29 +49,37 @@
         "ct40_reuse_allowed": {"const": false}
       }
     },
+    "required_absent_paths": {
+      "const": [
+        "data/climate/releases/country-climate-intelligence-v1/climate-trace-ghg.json",
+        "tools/compile-climate-trace.js",
+        "tools/migrate-climate-trace-source-identity.js"
+      ]
+    },
     "source_reviews": {
       "type": "array",
-      "minItems": 6,
-      "maxItems": 6,
+      "minItems": 5,
+      "maxItems": 5,
       "uniqueItems": true,
       "items": {"$ref": "#/$defs/sourceRequirement"}
     },
     "independent_reviews": {
       "type": "array",
-      "minItems": 8,
-      "maxItems": 8,
+      "minItems": 7,
+      "maxItems": 7,
       "uniqueItems": true,
       "items": {"$ref": "#/$defs/reviewRequirement"}
     },
     "required_release_artifacts": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["approval", "release_diff", "runtime_manifest", "rollback_proof"],
+      "required": ["approval", "release_diff", "runtime_manifest", "rollback_proof", "signatures"],
       "properties": {
         "approval": {"const": "data/climate/releases/country-climate-intelligence-v1/release-approval.json"},
         "release_diff": {"const": "data/climate/releases/country-climate-intelligence-v1/reviewed-release-diff.json"},
         "runtime_manifest": {"const": "data/climate/releases/country-climate-intelligence-v1/reviewed-runtime-manifest.json"},
-        "rollback_proof": {"const": "data/climate/releases/country-climate-intelligence-v1/reviewed-rollback-proof.json"}
+        "rollback_proof": {"const": "data/climate/releases/country-climate-intelligence-v1/reviewed-rollback-proof.json"},
+        "signatures": {"const": "data/climate/releases/country-climate-intelligence-v1/release-signatures.json"}
       }
     },
     "prohibited_substitutions": {
@@ -105,13 +113,20 @@
         "source_registry_id": {"type": "string", "minLength": 5},
         "values_in_release": {"const": true},
         "raw_receipt_state": {
-          "enum": ["exact_receipt_pinned_pending_independent_revalidation", "raw_receipt_revalidation_required"]
+          "enum": [
+            "exact_receipt_pinned_pending_independent_revalidation",
+            "raw_receipt_revalidation_required",
+            "exact_receipts_independently_refetched_and_reproduced",
+            "exact_receipt_independently_refetched_and_reproduced",
+            "ten_exact_api_receipts_independently_refetched_2450_values_reproduced",
+            "both_exact_api_receipts_independently_refetched"
+          ]
         },
         "source_identity_state": {
-          "enum": ["exact_object_pinned", "retrieval_snapshot_pinned", "immutable_release_binding_unresolved", "raw_object_unpinned"]
+          "enum": ["exact_object_pinned", "retrieval_snapshot_pinned", "official_2024_medium_csv_gzip_pinned", "exact_country_ensemble_routes_pinned", "immutable_release_binding_unresolved", "raw_object_unpinned"]
         },
         "rights_state": {
-          "enum": ["documented_pending_independent_confirmation", "external_dataset_exceptions_unresolved", "derivative_chain_unresolved"]
+          "enum": ["documented_pending_independent_confirmation", "cckp_cc_by_4_documented_pending_independent_confirmation", "cckp_cc_by_4_and_copernicus_attribution_documented_pending_independent_confirmation", "external_dataset_exceptions_unresolved", "derivative_chain_unresolved"]
         },
         "attribution_candidate": {"type": "string", "minLength": 20},
         "official_evidence_urls": {
@@ -135,7 +150,7 @@
       "properties": {
         "role": {
           "enum": [
-            "carbon_accounting", "demography", "ghg_inventory", "power_systems",
+            "carbon_accounting", "demography", "power_systems",
             "physical_climate", "reproducibility", "ui_accessibility_runtime", "source_rights"
           ]
         },

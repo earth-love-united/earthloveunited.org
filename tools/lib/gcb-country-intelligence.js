@@ -119,7 +119,7 @@ function record({ iso3, metric, value, unit, period, accountingFrame, sectors, l
     gap_reason: null,
     id: metric,
     period,
-    review_state: 'compiler_candidate_requires_scientific_review',
+    review_state: 'normalized_candidate_pending_independent_scientific_review',
     scope: metricScope,
     scope_fingerprint: scopeFingerprint(metricScope),
     source_ids: [SOURCE_ID],
@@ -282,7 +282,7 @@ function compile(args) {
       land_use: { ...EXPECTED_ARTIFACTS['land-use'] },
     },
     metric_ids: METRICS,
-    review_state: 'compiler_candidate_requires_scientific_review',
+    review_state: 'normalized_factual_candidate_pending_independent_scientific_review',
     schema_version: '1.0.0',
     source_registry_ids: [SOURCE_ID],
   };
@@ -290,4 +290,4 @@ function compile(args) {
   return { artifact, digest };
 }
 
-module.exports = { FACTOR, METRICS, compile, fossilMetrics, landMetric, matrix };
+module.exports = { FACTOR, METRICS, applyIdentity, compile, fossilMetrics, landMetric, loadIdentityMap, matrix };

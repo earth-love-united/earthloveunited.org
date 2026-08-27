@@ -16,7 +16,6 @@ const {
   readJson,
   round,
   scopeFingerprint,
-  scopesExactlyMatch,
 } = require('./lib/country-climate-intelligence');
 
 const RUNTIME_PATH = path.join(ROOT, 'data/climate/runtime/country-climate-intelligence.json');
@@ -60,7 +59,6 @@ const EXPECTED_COVERAGE = {
   'emissions.fossil_co2.net_transfer': 120,
   'emissions.fossil_co2.territorial': 213,
   'emissions.fossil_co2.territorial_per_capita': 213,
-  'emissions.ghg.independent': 249,
   'emissions.land_use_co2.net': 197,
   'population.wpp_medium_projection': 236,
 };
@@ -235,9 +233,9 @@ function check() {
   assert.strictEqual(runtime.release.production_runtime_release, false);
   assert.strictEqual(runtime.release.entity_count, ENTITY_COUNT);
   assert.strictEqual(runtime.release.comparison_baseline_year, 2024);
-  assert.strictEqual(runtime.release.review_state, 'normalized_factual_candidate_pending_source_revalidation');
+  assert.strictEqual(runtime.release.review_state, 'normalized_factual_candidate_pending_independent_scientific_review');
   assert.strictEqual(manifest.gates.independent_scientific_review, false, 'candidate must not claim independent scientific review');
-  assert.strictEqual(manifest.gates.raw_receipt_revalidation, false, 'candidate must not claim raw-receipt revalidation');
+  assert.strictEqual(manifest.gates.raw_receipt_revalidation, true, 'candidate must pin complete raw-receipt revalidation');
   assert.strictEqual(manifest.gates.redistribution_rights_revalidation, false, 'candidate must not claim release-specific redistribution-rights revalidation');
   checkComponentReceipts(runtime, manifest);
 
@@ -246,7 +244,7 @@ function check() {
   assert.strictEqual(new Set(countryIds).size, ENTITY_COUNT, 'country_id values must be unique');
   assert.deepStrictEqual(new Set(countryIds), new Set(registry.entities.map(entity => entity.country_id)), 'runtime and registry entity universes differ');
   const metricIds = Object.keys(runtime.metric_definitions).sort();
-  assert.strictEqual(metricIds.length, 27);
+  assert.strictEqual(metricIds.length, 26);
   const coverage = Object.fromEntries(metricIds.map(id => [id, 0]));
   for (const country of runtime.countries) {
     assert.deepStrictEqual(Object.keys(country.metrics).sort(), metricIds, `${country.country_id} metric set differs`);
@@ -290,10 +288,6 @@ function check() {
     order.unranked.forEach(row => assert(row.reason?.code && row.reason?.detail, `${lens.id} gap lacks a reason`));
   }
 
-  assert.strictEqual(scopesExactlyMatch(
-    runtime.countries[0].metrics['emissions.fossil_co2.territorial'].scope,
-    runtime.countries[0].metrics['emissions.ghg.independent'].scope
-  ), false, 'mismatched carbon scopes must not match');
   assert.strictEqual(runtime.boundaries.mismatched_scope_deltas, false);
   assert.strictEqual(runtime.boundaries.composite_score, false);
   const raw = fs.readFileSync(RUNTIME_PATH, 'utf8');
@@ -307,7 +301,7 @@ function check() {
 
 function main() {
   const result = check();
-  console.log(`Country Climate Intelligence runtime check passed (SHA-256 ${result.runtimeSha}; 249 entities; 27 metrics; 3 lenses).`);
+  console.log(`Country Climate Intelligence runtime check passed (SHA-256 ${result.runtimeSha}; 249 entities; 26 metrics; 3 lenses).`);
 }
 
 if (require.main === module) {

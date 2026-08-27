@@ -1,28 +1,30 @@
 # Country Climate Intelligence v1 — transformation log
 
-Release: `country-climate-intelligence-2026-08-25-candidate.5`
+Release: `country-climate-intelligence-2026-08-27-candidate.7`
 
-Status: normalized factual candidate pending source revalidation. This is not a production promotion receipt. Independent scientific review, external raw-receipt revalidation, and release-specific redistribution-rights review remain open.
+Status: normalized factual candidate with exact value-source re-fetch receipts. This is not a production promotion receipt. Independent scientific review and release-owner confirmation of the documented redistribution-rights decisions remain open.
 
 ## Reproducibility boundary
 
 - Raw third-party files stay outside the repository.
-- The repository stores exact source/component receipts, reviewed normalized country facts, explicit gap records, transformation code, and the compact runtime.
+- The repository stores exact source/component receipts, normalized country facts pending independent scientific review, explicit gap records, transformation code, and the compact runtime.
 - The browser runtime uses recursively key-sorted, newline-terminated compact JSON. Human-review component artifacts remain indented; formatting never changes values or ordering.
 - Every compiler starts from the 249-entry country registry. A source row must map once or receive one enumerated aggregate, territory, or unmapped exception. Missing data is never converted to zero and a territory never inherits its parent country's value.
-- The prior reviewed normalized facts were recovered byte-for-byte from candidate SHA-256 `436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09` after an uncommitted temporary worktree was purged. Carbon, population, independent GHG, and CMIP6 projections are unchanged. Observed temperature/precipitation and the Ember power component are refreshed from exact-checksummed snapshots.
+- Prior normalized candidate facts were recovered byte-for-byte from candidate SHA-256 `436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09` after an uncommitted temporary worktree was purged. Carbon, population, and CMIP6 projections are unchanged. Observed temperature/precipitation and the Ember power component are refreshed from exact-checksummed snapshots.
 - Candidate.5 changes the WPP denominator metric ID from `population.estimate` to `population.wpp_medium_projection`. `tools/migrate-wpp-medium-projection-id.js` requires the exact candidate.4 WPP component hash, verifies all 236 available records were already modeled 2024 Medium projections, recomputes only the scope fingerprint after changing the metric ID, and records `value_changes=false`. No population or per-capita input value changes in this contract migration.
-- Candidate.5 replaces the unproven Climate TRACE source ID `climate-trace-v5.9.0-country-annual` with `climate-trace-api-v7-2026-08-24-country-annual`. The migration preserves all 249 values and scopes, records the API-reported 5.9.0 version separately from the unresolved immutable release binding, and requires that binding in the production compiler receipt.
-- Source registry version `0.7.0` binds methodology `1.1.0` and records the breaking Climate TRACE source-identity correction. The release-review request pins the methodology, source-rigor audit, truth plan, and reviewer handoff alongside the runtime and compilers.
+- Candidate.6 removes the Climate TRACE component, source record, compiler path, all 249 independent-GHG metric records, and its scientific/rights review obligations. GCB carbon values, ordering, coverage, and derivations are unchanged.
+- Candidate.7 independently re-fetches every value-contributing source. Exact GCB workbooks reproduce annual territorial, consumption, and transfer values; a fresh compile changes only 182 sub-display-precision cumulative/land-use results by at most 0.000008 MtCO₂. The current official WPP gzip replaces 26 one-person rounding differences from the recovered component. Ten exact CCKP projection responses reproduce all 2,450 mapped projected values without a difference. Ember and both ERA5 responses reproduce their pinned bytes exactly. The final CCKP component header is normalized to the same pending-review artifact type as the other components; obsolete recovery labels, a candidate.3 identifier, and an empty 2026-08-24 ERA5 acquisition attempt are not carried into the public runtime. No CCKP country value changes in that metadata cleanup.
+- Source registry version `0.8.0` binds methodology `1.2.0` and excludes Climate TRACE from the product evidence boundary. The release-review request pins the methodology, source-rigor audit, truth plan, and reviewer handoff alongside the runtime and retained compilers.
 
 ## Carbon
 
+- The official fossil and land-use workbooks were independently re-fetched from their ICOS objects and reproduced at 755,198 / 1,271,678 bytes with SHA-256 `968097cacb1a6a5bfa0cf74ee90763f74a90ef10499e060ab43d1a74c671d46b` / `9a29536d6925d06f8c4a97581b720121fcf219732c240e970bc24167d74e38d1`.
+- The 237 distinct workbook entities have a complete disposition ledger: 216 registry mappings and 21 enumerated aggregate, bunker, or Kosovo exceptions. The mapping receipt is `data/climate/mappings/gcb-2025-country-map.json`.
 - Territorial fossil CO₂: GCB source MtC multiplied by 3.664; 2024 is the comparison record; 1990–2024 remains a source series.
 - Cumulative fossil CO₂: sum of available 1850–2024 territorial MtC values, then multiplied by 3.664.
 - Consumption emissions and net transfers: latest published source value, kept in their own accounting frames. Net transfer follows GCB's territorial-minus-consumption convention; positive means net exported embodied emissions.
 - Land-use CO₂: calculate each model's 2015–2024 arithmetic mean for BLUE, OSCAR, and LUCE; the central value is the arithmetic mean of those three model means; uncertainty is their population standard deviation. Negative values remain removals.
 - Per capita: `territorial MtCO₂ × 1,000,000 ÷ year-matched WPP 2024 Medium population projection`. No different year or variant is substituted. The denominator and derived result are labeled modeled rather than actual or estimated.
-- Climate TRACE: sum explicit 2024 annual country/gas/sector tonnes after excluding forestry and land use; convert tonnes to megatonnes; retain AR6 GWP100, gas, sector, estimate, and uncertainty-availability context. This independent GHG scope is shown beside—not subtracted from or compared by percentage with—GCB fossil CO₂.
 
 ## Power
 
@@ -37,6 +39,7 @@ Status: normalized factual candidate pending source revalidation. This is not a 
 ## Physical climate
 
 - Projected temperature and precipitation use country-area CMIP6 anomalies for 2040–2059 relative to 1995–2014.
+- Ten exact official CCKP country API responses pin both variables for SSP1-2.6 median, SSP2-4.5 p10/median/p90, and SSP5-8.5 median. All 2,450 mapped values reproduce the prior projection component exactly; each response contains 246 upstream entities, including the documented `KSV` exception.
 - The public comparison is SSP2-4.5 median with p10–p90. SSP1-2.6 and SSP5-8.5 medians remain analyst context.
 - The public projection-range graphic copies only the published SSP2-4.5 p10, median, and p90. It fits no probability distribution, creates no synthetic samples, and draws no path through intervening years.
 - The live CCKP download interface resolved to separate official `api/v1` global-country ERA5 `tas` and `pr` routes. Each exact response contains 246 annual country/area series from 1950 through 2025; both raw responses remain external and their byte counts, retrieval URLs, response timestamps, and SHA-256 digests are pinned in variable-specific receipts.
@@ -49,4 +52,5 @@ Status: normalized factual candidate pending source revalidation. This is not a 
 
 - No composite score, target assessment, finance judgment, performance label, offset adjustment, or mismatched-scope source delta is produced.
 - PRIMAP v2.7 is not acquired or ingested. The reviewed v2.6.1 release is retained only as detailed citation provenance and contributes no runtime value.
+- Climate TRACE is not acquired, compiled, represented in runtime metrics, or included in the release source catalog.
 - UNFCCC titles, submission dates, and direct links are metadata only.

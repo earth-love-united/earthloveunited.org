@@ -1,0 +1,1203 @@
+{
+  "artifact_type": "gcb_2025_country_identity_map",
+  "derivation": {
+    "direct_name_reviews": 8,
+    "fossil_workbook_sha256": "968097cacb1a6a5bfa0cf74ee90763f74a90ef10499e060ab43d1a74c671d46b",
+    "land_use_workbook_sha256": "9a29536d6925d06f8c4a97581b720121fcf219732c240e970bc24167d74e38d1",
+    "reference_candidate_sha256": "0423f8150939455e07260dec49951575ee4123f174f00ceefbda441364b66825",
+    "signature_matches": 208,
+    "signature_precision_decimal_places": 4
+  },
+  "exceptions": [
+    {
+      "kind": "aggregate",
+      "reason": "GCB regional aggregate; not a registry country.",
+      "source_name": "Africa"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB regional aggregate; not a registry country.",
+      "source_name": "Asia"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB regional aggregate; not a registry country.",
+      "source_name": "Central America"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB bookkeeping category; not a registry country.",
+      "source_name": "DISPUTED"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB regional aggregate; not a registry country.",
+      "source_name": "EU27"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB regional aggregate; not a registry country.",
+      "source_name": "Europe"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB global aggregate; not a registry country.",
+      "source_name": "Global"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "International bunker category excluded from country values.",
+      "source_name": "International Aviation"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "International bunker category excluded from country values.",
+      "source_name": "International Shipping"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB policy grouping; not a registry country.",
+      "source_name": "KP Annex B"
+    },
+    {
+      "kind": "unmapped",
+      "reason": "GCB publishes Kosovo separately, but it is not an ISO 3166-1 entity in the fixed 249-entity registry.",
+      "source_name": "Kosovo"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB regional aggregate; not a registry country.",
+      "source_name": "Middle East"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB policy grouping; not a registry country.",
+      "source_name": "Non KP Annex B"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB economic grouping; not a registry country.",
+      "source_name": "Non-OECD"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB regional aggregate; not a registry country.",
+      "source_name": "North America"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB economic grouping; not a registry country.",
+      "source_name": "OECD"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB bookkeeping category; not a registry country.",
+      "source_name": "OTHER"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB regional aggregate; not a registry country.",
+      "source_name": "Oceania"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB regional aggregate; not a registry country.",
+      "source_name": "South America"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB balancing category; not a registry country.",
+      "source_name": "Statistical Difference"
+    },
+    {
+      "kind": "aggregate",
+      "reason": "GCB global aggregate; not a registry country.",
+      "source_name": "World"
+    }
+  ],
+  "mappings": [
+    {
+      "iso_alpha3": "AFG",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Afghanistan"
+    },
+    {
+      "iso_alpha3": "ALB",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Albania"
+    },
+    {
+      "iso_alpha3": "DZA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Algeria"
+    },
+    {
+      "iso_alpha3": "AND",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Andorra"
+    },
+    {
+      "iso_alpha3": "AGO",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Angola"
+    },
+    {
+      "iso_alpha3": "AIA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Anguilla"
+    },
+    {
+      "iso_alpha3": "ATG",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Antigua and Barbuda"
+    },
+    {
+      "iso_alpha3": "ARG",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Argentina"
+    },
+    {
+      "iso_alpha3": "ARM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Armenia"
+    },
+    {
+      "iso_alpha3": "ABW",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Aruba"
+    },
+    {
+      "iso_alpha3": "AUS",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Australia"
+    },
+    {
+      "iso_alpha3": "AUT",
+      "match_basis": "exact_source_name_reviewed_against_iso_registry",
+      "source_name": "Austria"
+    },
+    {
+      "iso_alpha3": "AZE",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Azerbaijan"
+    },
+    {
+      "iso_alpha3": "BHS",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Bahamas"
+    },
+    {
+      "iso_alpha3": "BHR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Bahrain"
+    },
+    {
+      "iso_alpha3": "BGD",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Bangladesh"
+    },
+    {
+      "iso_alpha3": "BRB",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Barbados"
+    },
+    {
+      "iso_alpha3": "BLR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Belarus"
+    },
+    {
+      "iso_alpha3": "BEL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Belgium"
+    },
+    {
+      "iso_alpha3": "BLZ",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Belize"
+    },
+    {
+      "iso_alpha3": "BEN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Benin"
+    },
+    {
+      "iso_alpha3": "BMU",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Bermuda"
+    },
+    {
+      "iso_alpha3": "BTN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Bhutan"
+    },
+    {
+      "iso_alpha3": "BOL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Bolivia"
+    },
+    {
+      "iso_alpha3": "BES",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Bonaire, Saint Eustatius and Saba"
+    },
+    {
+      "iso_alpha3": "BIH",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Bosnia and Herzegovina"
+    },
+    {
+      "iso_alpha3": "BWA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Botswana"
+    },
+    {
+      "iso_alpha3": "BRA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Brazil"
+    },
+    {
+      "iso_alpha3": "VGB",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "British Virgin Islands"
+    },
+    {
+      "iso_alpha3": "BRN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Brunei Darussalam"
+    },
+    {
+      "iso_alpha3": "BGR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Bulgaria"
+    },
+    {
+      "iso_alpha3": "BFA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Burkina Faso"
+    },
+    {
+      "iso_alpha3": "BDI",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Burundi"
+    },
+    {
+      "iso_alpha3": "KHM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Cambodia"
+    },
+    {
+      "iso_alpha3": "CMR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Cameroon"
+    },
+    {
+      "iso_alpha3": "CAN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Canada"
+    },
+    {
+      "iso_alpha3": "CPV",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Cape Verde"
+    },
+    {
+      "iso_alpha3": "CAF",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Central African Republic"
+    },
+    {
+      "iso_alpha3": "TCD",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Chad"
+    },
+    {
+      "iso_alpha3": "CHL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Chile"
+    },
+    {
+      "iso_alpha3": "CHN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "China"
+    },
+    {
+      "iso_alpha3": "COL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Colombia"
+    },
+    {
+      "iso_alpha3": "COM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Comoros"
+    },
+    {
+      "iso_alpha3": "COG",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Congo"
+    },
+    {
+      "iso_alpha3": "COK",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Cook Islands"
+    },
+    {
+      "iso_alpha3": "CRI",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Costa Rica"
+    },
+    {
+      "iso_alpha3": "HRV",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Croatia"
+    },
+    {
+      "iso_alpha3": "CUB",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Cuba"
+    },
+    {
+      "iso_alpha3": "CUW",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Curaçao"
+    },
+    {
+      "iso_alpha3": "CYP",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Cyprus"
+    },
+    {
+      "iso_alpha3": "CZE",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Czechia"
+    },
+    {
+      "iso_alpha3": "CIV",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Côte d'Ivoire"
+    },
+    {
+      "iso_alpha3": "COD",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Democratic Republic of the Congo"
+    },
+    {
+      "iso_alpha3": "DNK",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Denmark"
+    },
+    {
+      "iso_alpha3": "DJI",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Djibouti"
+    },
+    {
+      "iso_alpha3": "DMA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Dominica"
+    },
+    {
+      "iso_alpha3": "DOM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Dominican Republic"
+    },
+    {
+      "iso_alpha3": "ECU",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Ecuador"
+    },
+    {
+      "iso_alpha3": "EGY",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Egypt"
+    },
+    {
+      "iso_alpha3": "SLV",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "El Salvador"
+    },
+    {
+      "iso_alpha3": "GNQ",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Equatorial Guinea"
+    },
+    {
+      "iso_alpha3": "ERI",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Eritrea"
+    },
+    {
+      "iso_alpha3": "EST",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Estonia"
+    },
+    {
+      "iso_alpha3": "SWZ",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Eswatini"
+    },
+    {
+      "iso_alpha3": "ETH",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Ethiopia"
+    },
+    {
+      "iso_alpha3": "FRO",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Faeroe Islands"
+    },
+    {
+      "iso_alpha3": "FJI",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Fiji"
+    },
+    {
+      "iso_alpha3": "FIN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Finland"
+    },
+    {
+      "iso_alpha3": "FRA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "France"
+    },
+    {
+      "iso_alpha3": "PYF",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "French Polynesia"
+    },
+    {
+      "iso_alpha3": "GAB",
+      "match_basis": "exact_source_name_reviewed_against_iso_registry",
+      "source_name": "Gabon"
+    },
+    {
+      "iso_alpha3": "GMB",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Gambia"
+    },
+    {
+      "iso_alpha3": "GEO",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Georgia"
+    },
+    {
+      "iso_alpha3": "DEU",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Germany"
+    },
+    {
+      "iso_alpha3": "GHA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Ghana"
+    },
+    {
+      "iso_alpha3": "GRC",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Greece"
+    },
+    {
+      "iso_alpha3": "GRL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Greenland"
+    },
+    {
+      "iso_alpha3": "GRD",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Grenada"
+    },
+    {
+      "iso_alpha3": "GTM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Guatemala"
+    },
+    {
+      "iso_alpha3": "GIN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Guinea"
+    },
+    {
+      "iso_alpha3": "GNB",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Guinea-Bissau"
+    },
+    {
+      "iso_alpha3": "GUY",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Guyana"
+    },
+    {
+      "iso_alpha3": "HTI",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Haiti"
+    },
+    {
+      "iso_alpha3": "HND",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Honduras"
+    },
+    {
+      "iso_alpha3": "HKG",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Hong Kong"
+    },
+    {
+      "iso_alpha3": "HUN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Hungary"
+    },
+    {
+      "iso_alpha3": "ISL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Iceland"
+    },
+    {
+      "iso_alpha3": "IND",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "India"
+    },
+    {
+      "iso_alpha3": "IDN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Indonesia"
+    },
+    {
+      "iso_alpha3": "IRN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Iran"
+    },
+    {
+      "iso_alpha3": "IRQ",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Iraq"
+    },
+    {
+      "iso_alpha3": "IRL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Ireland"
+    },
+    {
+      "iso_alpha3": "ISR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Israel"
+    },
+    {
+      "iso_alpha3": "ITA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Italy"
+    },
+    {
+      "iso_alpha3": "JAM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Jamaica"
+    },
+    {
+      "iso_alpha3": "JPN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Japan"
+    },
+    {
+      "iso_alpha3": "JOR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Jordan"
+    },
+    {
+      "iso_alpha3": "KAZ",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Kazakhstan"
+    },
+    {
+      "iso_alpha3": "KEN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Kenya"
+    },
+    {
+      "iso_alpha3": "KIR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Kiribati"
+    },
+    {
+      "iso_alpha3": "KWT",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Kuwait"
+    },
+    {
+      "iso_alpha3": "KGZ",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Kyrgyzstan"
+    },
+    {
+      "iso_alpha3": "LAO",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Laos"
+    },
+    {
+      "iso_alpha3": "LVA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Latvia"
+    },
+    {
+      "iso_alpha3": "LBN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Lebanon"
+    },
+    {
+      "iso_alpha3": "LSO",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Lesotho"
+    },
+    {
+      "iso_alpha3": "LBR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Liberia"
+    },
+    {
+      "iso_alpha3": "LBY",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Libya"
+    },
+    {
+      "iso_alpha3": "LIE",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Liechtenstein"
+    },
+    {
+      "iso_alpha3": "LTU",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Lithuania"
+    },
+    {
+      "iso_alpha3": "LUX",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Luxembourg"
+    },
+    {
+      "iso_alpha3": "MAC",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Macao"
+    },
+    {
+      "iso_alpha3": "MDG",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Madagascar"
+    },
+    {
+      "iso_alpha3": "MWI",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Malawi"
+    },
+    {
+      "iso_alpha3": "MYS",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Malaysia"
+    },
+    {
+      "iso_alpha3": "MDV",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Maldives"
+    },
+    {
+      "iso_alpha3": "MLI",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Mali"
+    },
+    {
+      "iso_alpha3": "MLT",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Malta"
+    },
+    {
+      "iso_alpha3": "MHL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Marshall Islands"
+    },
+    {
+      "iso_alpha3": "MRT",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Mauritania"
+    },
+    {
+      "iso_alpha3": "MUS",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Mauritius"
+    },
+    {
+      "iso_alpha3": "MEX",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Mexico"
+    },
+    {
+      "iso_alpha3": "FSM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Micronesia (Federated States of)"
+    },
+    {
+      "iso_alpha3": "MDA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Moldova"
+    },
+    {
+      "iso_alpha3": "MCO",
+      "match_basis": "exact_source_name_reviewed_against_iso_registry",
+      "source_name": "Monaco"
+    },
+    {
+      "iso_alpha3": "MNG",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Mongolia"
+    },
+    {
+      "iso_alpha3": "MNE",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Montenegro"
+    },
+    {
+      "iso_alpha3": "MSR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Montserrat"
+    },
+    {
+      "iso_alpha3": "MAR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Morocco"
+    },
+    {
+      "iso_alpha3": "MOZ",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Mozambique"
+    },
+    {
+      "iso_alpha3": "MMR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Myanmar"
+    },
+    {
+      "iso_alpha3": "NAM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Namibia"
+    },
+    {
+      "iso_alpha3": "NRU",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Nauru"
+    },
+    {
+      "iso_alpha3": "NPL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Nepal"
+    },
+    {
+      "iso_alpha3": "NLD",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Netherlands"
+    },
+    {
+      "iso_alpha3": "NCL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "New Caledonia"
+    },
+    {
+      "iso_alpha3": "NZL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "New Zealand"
+    },
+    {
+      "iso_alpha3": "NIC",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Nicaragua"
+    },
+    {
+      "iso_alpha3": "NER",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Niger"
+    },
+    {
+      "iso_alpha3": "NGA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Nigeria"
+    },
+    {
+      "iso_alpha3": "NIU",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Niue"
+    },
+    {
+      "iso_alpha3": "PRK",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "North Korea"
+    },
+    {
+      "iso_alpha3": "MKD",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "North Macedonia"
+    },
+    {
+      "iso_alpha3": "NOR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Norway"
+    },
+    {
+      "iso_alpha3": "OMN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Oman"
+    },
+    {
+      "iso_alpha3": "PAK",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Pakistan"
+    },
+    {
+      "iso_alpha3": "PLW",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Palau"
+    },
+    {
+      "iso_alpha3": "PAN",
+      "match_basis": "exact_source_name_reviewed_against_iso_registry",
+      "source_name": "Panama"
+    },
+    {
+      "iso_alpha3": "PNG",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Papua New Guinea"
+    },
+    {
+      "iso_alpha3": "PRY",
+      "match_basis": "exact_source_name_reviewed_against_iso_registry",
+      "source_name": "Paraguay"
+    },
+    {
+      "iso_alpha3": "PER",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Peru"
+    },
+    {
+      "iso_alpha3": "PHL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Philippines"
+    },
+    {
+      "iso_alpha3": "POL",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Poland"
+    },
+    {
+      "iso_alpha3": "PRT",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Portugal"
+    },
+    {
+      "iso_alpha3": "QAT",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Qatar"
+    },
+    {
+      "iso_alpha3": "ROU",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Romania"
+    },
+    {
+      "iso_alpha3": "RUS",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Russia"
+    },
+    {
+      "iso_alpha3": "RWA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Rwanda"
+    },
+    {
+      "iso_alpha3": "SHN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Saint Helena"
+    },
+    {
+      "iso_alpha3": "KNA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Saint Kitts and Nevis"
+    },
+    {
+      "iso_alpha3": "LCA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Saint Lucia"
+    },
+    {
+      "iso_alpha3": "SPM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Saint Pierre and Miquelon"
+    },
+    {
+      "iso_alpha3": "VCT",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Saint Vincent and the Grenadines"
+    },
+    {
+      "iso_alpha3": "WSM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Samoa"
+    },
+    {
+      "iso_alpha3": "SMR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "San Marino"
+    },
+    {
+      "iso_alpha3": "STP",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Sao Tome and Principe"
+    },
+    {
+      "iso_alpha3": "SAU",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Saudi Arabia"
+    },
+    {
+      "iso_alpha3": "SEN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Senegal"
+    },
+    {
+      "iso_alpha3": "SRB",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Serbia"
+    },
+    {
+      "iso_alpha3": "SYC",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Seychelles"
+    },
+    {
+      "iso_alpha3": "SLE",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Sierra Leone"
+    },
+    {
+      "iso_alpha3": "SGP",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Singapore"
+    },
+    {
+      "iso_alpha3": "SXM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Sint Maarten (Dutch part)"
+    },
+    {
+      "iso_alpha3": "SVK",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Slovakia"
+    },
+    {
+      "iso_alpha3": "SVN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Slovenia"
+    },
+    {
+      "iso_alpha3": "SLB",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Solomon Islands"
+    },
+    {
+      "iso_alpha3": "SOM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Somalia"
+    },
+    {
+      "iso_alpha3": "ZAF",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "South Africa"
+    },
+    {
+      "iso_alpha3": "KOR",
+      "match_basis": "exact_source_name_reviewed_against_iso_registry",
+      "source_name": "South Korea"
+    },
+    {
+      "iso_alpha3": "SSD",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "South Sudan"
+    },
+    {
+      "iso_alpha3": "ESP",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Spain"
+    },
+    {
+      "iso_alpha3": "LKA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Sri Lanka"
+    },
+    {
+      "iso_alpha3": "PSE",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "State of Palestine"
+    },
+    {
+      "iso_alpha3": "SDN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Sudan"
+    },
+    {
+      "iso_alpha3": "SUR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Suriname"
+    },
+    {
+      "iso_alpha3": "SWE",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Sweden"
+    },
+    {
+      "iso_alpha3": "CHE",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Switzerland"
+    },
+    {
+      "iso_alpha3": "SYR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Syria"
+    },
+    {
+      "iso_alpha3": "TWN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Taiwan"
+    },
+    {
+      "iso_alpha3": "TJK",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Tajikistan"
+    },
+    {
+      "iso_alpha3": "TZA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Tanzania"
+    },
+    {
+      "iso_alpha3": "THA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Thailand"
+    },
+    {
+      "iso_alpha3": "TLS",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Timor-Leste"
+    },
+    {
+      "iso_alpha3": "TGO",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Togo"
+    },
+    {
+      "iso_alpha3": "TON",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Tonga"
+    },
+    {
+      "iso_alpha3": "TTO",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Trinidad and Tobago"
+    },
+    {
+      "iso_alpha3": "TUN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Tunisia"
+    },
+    {
+      "iso_alpha3": "TKM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Turkmenistan"
+    },
+    {
+      "iso_alpha3": "TCA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Turks and Caicos Islands"
+    },
+    {
+      "iso_alpha3": "TUV",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Tuvalu"
+    },
+    {
+      "iso_alpha3": "TUR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Türkiye"
+    },
+    {
+      "iso_alpha3": "USA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "USA"
+    },
+    {
+      "iso_alpha3": "UGA",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Uganda"
+    },
+    {
+      "iso_alpha3": "UKR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Ukraine"
+    },
+    {
+      "iso_alpha3": "ARE",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "United Arab Emirates"
+    },
+    {
+      "iso_alpha3": "GBR",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "United Kingdom"
+    },
+    {
+      "iso_alpha3": "URY",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Uruguay"
+    },
+    {
+      "iso_alpha3": "UZB",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Uzbekistan"
+    },
+    {
+      "iso_alpha3": "VUT",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Vanuatu"
+    },
+    {
+      "iso_alpha3": "VAT",
+      "match_basis": "exact_source_name_reviewed_against_iso_registry",
+      "source_name": "Vatican City"
+    },
+    {
+      "iso_alpha3": "VEN",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Venezuela"
+    },
+    {
+      "iso_alpha3": "VNM",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Viet Nam"
+    },
+    {
+      "iso_alpha3": "WLF",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Wallis and Futuna Islands"
+    },
+    {
+      "iso_alpha3": "YEM",
+      "match_basis": "exact_source_name_reviewed_against_iso_registry",
+      "source_name": "Yemen"
+    },
+    {
+      "iso_alpha3": "ZMB",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Zambia"
+    },
+    {
+      "iso_alpha3": "ZWE",
+      "match_basis": "unique_five_metric_signature_match_at_four_decimal_places",
+      "source_name": "Zimbabwe"
+    }
+  ],
+  "review_state": "candidate_mapping_ledger_requires_independent_scientific_review",
+  "schema_version": "1.0.0",
+  "source_registry_id": "gcp-gcb-2025-v1.0"
+}

@@ -23,11 +23,11 @@
       "items": {"$ref": "#/$defs/pin"}
     },
     "source_reviews": {
-      "type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true,
+      "type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true,
       "items": {"$ref": "#/$defs/sourceReview"}
     },
     "independent_reviews": {
-      "type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true,
+      "type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true,
       "items": {"$ref": "#/$defs/disciplineReview"}
     },
     "protected_file_review": {
@@ -111,7 +111,7 @@
       "properties": {
         "role": {
           "enum": [
-            "carbon_accounting", "demography", "ghg_inventory", "power_systems",
+            "carbon_accounting", "demography", "power_systems",
             "physical_climate", "reproducibility", "ui_accessibility_runtime", "source_rights"
           ]
         },

@@ -40,11 +40,6 @@ const COMPONENTS = {
     metrics: ['population.wpp_medium_projection'],
     source_registry_ids: ['un-wpp-2024'],
   },
-  trace: {
-    file: 'climate-trace-ghg.json',
-    metrics: ['emissions.ghg.independent'],
-    source_registry_ids: ['climate-trace-api-v7-2026-08-24-country-annual'],
-  },
   ember: {
     file: 'ember-power.json',
     metrics: [
@@ -81,14 +76,12 @@ const COMPONENTS = {
   },
 };
 const COMPONENT_REVIEW_STATES = Object.freeze({
-  cckp: 'normalized_factual_candidate_pending_source_revalidation',
-  ember: 'normalized_factual_candidate_pending_source_revalidation',
-  gcb: 'source_validated_factual_candidate',
-  trace: 'normalized_factual_candidate_pending_source_revalidation',
-  wpp: 'normalized_factual_candidate_pending_source_revalidation',
+  cckp: 'normalized_factual_candidate_pending_independent_scientific_review',
+  ember: 'normalized_factual_candidate_pending_independent_scientific_review',
+  gcb: 'normalized_factual_candidate_pending_independent_scientific_review',
+  wpp: 'normalized_factual_candidate_pending_independent_scientific_review',
 });
 const RELEASE_PENDING_SOURCE_IDS = new Set([
-  'climate-trace-api-v7-2026-08-24-country-annual',
   'ember-yearly-electricity-data-2026-08-25',
   'un-wpp-2024',
   'world-bank-cckp-cmip6-2026-08-24',
@@ -128,7 +121,7 @@ function main() {
     });
     assertEntityPartition(countries);
     const artifact = {
-      artifact_type: 'reviewed_normalized_country_facts',
+      artifact_type: 'recovered_normalized_country_facts_pending_source_revalidation',
       countries,
       entity_count: ENTITY_COUNT,
       generated_on: runtime.release.generated_on,
@@ -141,9 +134,9 @@ function main() {
       },
       metric_ids: definition.metrics,
       provenance_recovery: {
-        input_kind: 'exact_sha_reviewed_factual_candidate',
+        input_kind: 'exact_sha_candidate_runtime',
         input_sha256: actualSha,
-        reason: 'Recovered reviewed normalized facts after an uncommitted temporary mission worktree was purged. No value was recalculated in this step.',
+        reason: 'Recovered normalized candidate facts after an uncommitted temporary mission worktree was purged. No value was recalculated or independently reviewed in this step.',
         reusable_for_future_source_release: false,
       },
       release_id: runtime.release.id,
@@ -170,7 +163,7 @@ function main() {
       atomic_service_worker_staging: false,
       independent_scientific_review: false,
       runtime_validation: false,
-      raw_receipt_revalidation: false,
+      raw_receipt_revalidation: true,
       redistribution_rights_revalidation: false,
       source_registry_approval: true,
       visual_review: false,

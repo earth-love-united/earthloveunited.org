@@ -17,13 +17,12 @@ const {
   writeCompactJson,
 } = require('./lib/country-climate-intelligence');
 
-const COMPONENT_IDS = ['gcb', 'wpp', 'trace', 'ember', 'cckp'];
+const COMPONENT_IDS = ['gcb', 'wpp', 'ember', 'cckp'];
 const COMPONENT_REVIEW_STATES = Object.freeze({
-  cckp: 'normalized_factual_candidate_pending_source_revalidation',
-  ember: 'normalized_factual_candidate_pending_source_revalidation',
-  gcb: 'source_validated_factual_candidate',
-  trace: 'normalized_factual_candidate_pending_source_revalidation',
-  wpp: 'normalized_factual_candidate_pending_source_revalidation',
+  cckp: 'normalized_factual_candidate_pending_independent_scientific_review',
+  ember: 'normalized_factual_candidate_pending_independent_scientific_review',
+  gcb: 'normalized_factual_candidate_pending_independent_scientific_review',
+  wpp: 'normalized_factual_candidate_pending_independent_scientific_review',
 });
 const PER_CAPITA_ID = 'emissions.fossil_co2.territorial_per_capita';
 const REANALYSIS_METRIC_IDS = new Set([
@@ -90,7 +89,7 @@ function perCapitaMetric(country) {
     gap_reason: null,
     id: PER_CAPITA_ID,
     period: { end: 2024, label: '2024', start: 2024 },
-    review_state: 'normalized_candidate_pending_source_revalidation',
+    review_state: 'normalized_candidate_pending_independent_scientific_review',
     scope,
     scope_fingerprint: scopeFingerprint(scope),
     source_ids: ['gcp-gcb-2025-v1.0', 'un-wpp-2024'],
@@ -127,8 +126,9 @@ function officialContextByCountry(receipt) {
 
 function mergeCountries(registry, components, officialContext) {
   const componentMaps = components.map(({ id, artifact: component }) => {
-    if (component.entity_count !== ENTITY_COUNT || component.review_state !== COMPONENT_REVIEW_STATES[id]) {
-      throw new Error('Component artifact is not a complete reviewed factual candidate');
+    if (component.artifact_type !== 'normalized_country_climate_component' ||
+        component.entity_count !== ENTITY_COUNT || component.review_state !== COMPONENT_REVIEW_STATES[id]) {
+      throw new Error('Component artifact is not a complete normalized factual candidate');
     }
     assertEntityPartition(component.countries);
     return new Map(component.countries.map(country => [country.country_id, country]));

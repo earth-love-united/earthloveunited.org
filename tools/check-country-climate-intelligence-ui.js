@@ -2,12 +2,14 @@
 'use strict';
 
 const assert = require('assert');
+const crypto = require('node:crypto');
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 const { ROOT } = require('./lib/country-climate-intelligence');
 
 const index = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+const dataSource = fs.readFileSync(path.join(ROOT, 'js/data.js'), 'utf8');
 const presentation = fs.readFileSync(path.join(ROOT, 'js/country-climate-intelligence.js'), 'utf8');
 const globe = fs.readFileSync(path.join(ROOT, 'js/globe.js'), 'utf8');
 const guidedOrbit = fs.readFileSync(path.join(ROOT, 'js/guided-first-orbit.js'), 'utf8');
@@ -16,9 +18,9 @@ const css = fs.readFileSync(path.join(ROOT, 'css/globe-system.css'), 'utf8');
 const guidedCss = fs.readFileSync(path.join(ROOT, 'css/guided-first-orbit.css'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
 
-const dataAt = index.indexOf('src="js/data.js?v=v11"');
-const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v14"');
-const globeAt = index.indexOf('src="js/globe.js?v=v38"');
+const dataAt = index.indexOf('src="js/data.js?v=v16"');
+const intelligenceAt = index.indexOf('src="js/country-climate-intelligence.js?v=v17"');
+const globeAt = index.indexOf('src="js/globe.js?v=v40"');
 assert(dataAt >= 0 && dataAt < intelligenceAt && intelligenceAt < globeAt, 'classic script order must be Data → Country Climate Intelligence → GlobeModule');
 
 assert(presentation.includes('const COUNTRY_CLIMATE_INTELLIGENCE = (() => {'));
@@ -153,6 +155,91 @@ assert(physicalLayout.indexOf('+ futureProjectionBlock') < physicalLayout.indexO
 assert(physicalLayout.indexOf('+ precipitationFact') < physicalLayout.indexOf('Observed data'));
 
 const release = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/climate/runtime/country-climate-intelligence.json'), 'utf8'));
+const runtimeBytes = fs.readFileSync(path.join(ROOT, 'data/climate/runtime/country-climate-intelligence.json'));
+const runtimeSha256 = crypto.createHash('sha256')
+  .update(runtimeBytes).digest('hex');
+function dataBoundaryResult(candidateRelease) {
+  const errors = [];
+  const sandbox = {
+    AbortController,
+    TextDecoder,
+    TextEncoder,
+    clearTimeout,
+    console,
+    hasModule: name => name === 'DATA_SCHEMA',
+    reportError: (_context, error) => errors.push(error.message),
+    reportWarn: () => {},
+    safeCall: () => ({ ok: true, errors: [] }),
+    setTimeout,
+  };
+  sandbox.window = sandbox;
+  sandbox.globalThis = sandbox;
+  vm.runInNewContext(dataSource, sandbox, { filename: 'data.js' });
+  sandbox.Data.climateIntelligence = candidateRelease;
+  const accepted = sandbox.Data._indexClimateIntelligence();
+  return { accepted, errors, state: sandbox.Data.climateIntelligenceState };
+}
+
+async function criticalRuntimeBytesResult(bytes, expectedSha256 = runtimeSha256) {
+  const errors = [];
+  const source = dataSource.replace(
+    `const CLIMATE_INTELLIGENCE_SHA256 = '${runtimeSha256}';`,
+    `const CLIMATE_INTELLIGENCE_SHA256 = '${expectedSha256}';`
+  );
+  const sandbox = {
+    AbortController,
+    ArrayBuffer,
+    TextDecoder,
+    Uint8Array,
+    clearTimeout,
+    console,
+    crypto: crypto.webcrypto,
+    hasModule: () => false,
+    reportError: (_context, error) => errors.push(error.message),
+    reportWarn: () => {},
+    safeCall: () => ({ ok: true, errors: [] }),
+    setTimeout,
+  };
+  sandbox.window = sandbox;
+  sandbox.globalThis = sandbox;
+  vm.runInNewContext(source, sandbox, { filename: 'data.raw-byte-test.js' });
+  const raw = Uint8Array.from(bytes).buffer;
+  const parsed = await sandbox.Data._parseCriticalClimateIntelligenceResponse({
+    status: 'fulfilled',
+    value: { ok: true, status: 200, bytes: raw },
+  });
+  return { errors, parsed };
+}
+
+const candidateRelease = JSON.parse(JSON.stringify(release));
+candidateRelease.release.status = 'candidate';
+candidateRelease.release.review_state = 'normalized_factual_candidate_pending_independent_scientific_review';
+candidateRelease.release.production_runtime_release = false;
+const candidateBoundary = dataBoundaryResult(candidateRelease);
+assert.strictEqual(candidateBoundary.accepted, true, 'the exact pending candidate must remain reviewable');
+assert.strictEqual(candidateBoundary.state, 'ready');
+const productionRelease = JSON.parse(JSON.stringify(release));
+productionRelease.release.status = 'production';
+productionRelease.release.review_state = 'independently_reviewed';
+productionRelease.release.production_runtime_release = true;
+const productionBoundary = dataBoundaryResult(productionRelease);
+assert.strictEqual(productionBoundary.accepted, true, 'an independently reviewed production runtime must be renderable');
+assert.strictEqual(productionBoundary.state, 'ready');
+const currentBoundary = dataBoundaryResult(release);
+assert.strictEqual(currentBoundary.accepted, true, 'the committed runtime must use one coherent accepted release state');
+for (const incoherentRelease of [
+  { status: 'candidate', review_state: 'independently_reviewed', production_runtime_release: false },
+  { status: 'production', review_state: 'normalized_factual_candidate_pending_independent_scientific_review', production_runtime_release: true },
+  { status: 'production', review_state: 'independently_reviewed', production_runtime_release: false },
+]) {
+  const mixed = JSON.parse(JSON.stringify(release));
+  Object.assign(mixed.release, incoherentRelease);
+  const result = dataBoundaryResult(mixed);
+  assert.strictEqual(result.accepted, false, `mixed release state must fail closed: ${JSON.stringify(incoherentRelease)}`);
+  assert.strictEqual(result.state, 'unavailable');
+  assert(result.errors.some(message => message.includes('release-state boundary invalid')));
+}
+
 const presentationSandbox = {
   URLSearchParams,
   console,
@@ -160,6 +247,7 @@ const presentationSandbox = {
   safeGet(globalName, methodName, fallback) {
     if (globalName !== 'Data') return fallback;
     if (methodName === 'getClimateIntelligenceRelease') return release;
+    if (methodName === 'getClimateIntelligenceSha256') return runtimeSha256;
     if (methodName === 'isClimateIntelligenceReady') return true;
     return fallback;
   },
@@ -175,6 +263,63 @@ for (const [lensId, view] of Object.entries(viewsByLens)) {
   const panelIds = Array.from(view.active_panel.facts, fact => fact.id);
   assert.strictEqual(glanceIds.filter(id => panelIds.includes(id)).length, 0, `${lensId} At-a-glance metrics must not repeat in the lens panel`);
 }
+const expectedCurrentReviewLabel = release.release.status === 'production'
+  ? 'Independently reviewed release · raw sources revalidated'
+  : 'Normalized candidate · raw sources revalidated · independent review pending';
+assert.strictEqual(viewsByLens.carbon.methods.review_label, expectedCurrentReviewLabel);
+const candidatePresentationSandbox = {
+  URLSearchParams,
+  console,
+  hasModule: () => false,
+  safeGet(globalName, methodName, fallback) {
+    if (globalName !== 'Data') return fallback;
+    if (methodName === 'getClimateIntelligenceRelease') return candidateRelease;
+    if (methodName === 'getClimateIntelligenceSha256') return runtimeSha256;
+    if (methodName === 'isClimateIntelligenceReady') return true;
+    return fallback;
+  },
+};
+candidatePresentationSandbox.window = candidatePresentationSandbox;
+candidatePresentationSandbox.location = { search: '' };
+vm.runInNewContext(presentation, candidatePresentationSandbox, { filename: 'country-climate-intelligence.candidate.js' });
+const candidateCarbonView = candidatePresentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('JPN', 'carbon');
+assert.strictEqual(candidateCarbonView.methods.review_label, 'Normalized candidate · raw sources revalidated · independent review pending',
+  'candidate Methods copy must retain its pending-review boundary');
+const productionPresentationSandbox = {
+  URLSearchParams,
+  console,
+  hasModule: () => false,
+  safeGet(globalName, methodName, fallback) {
+    if (globalName !== 'Data') return fallback;
+    if (methodName === 'getClimateIntelligenceRelease') return productionRelease;
+    if (methodName === 'getClimateIntelligenceSha256') return runtimeSha256;
+    if (methodName === 'isClimateIntelligenceReady') return true;
+    return fallback;
+  },
+};
+productionPresentationSandbox.window = productionPresentationSandbox;
+productionPresentationSandbox.location = { search: '' };
+vm.runInNewContext(presentation, productionPresentationSandbox, { filename: 'country-climate-intelligence.production.js' });
+const productionCarbonView = productionPresentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE.getCountryView('JPN', 'carbon');
+assert.strictEqual(productionCarbonView.methods.review_label, 'Independently reviewed release · raw sources revalidated',
+  'production Methods copy must not retain candidate or pending-review language');
+assert.strictEqual(viewsByLens.carbon.methods.checksum, runtimeSha256, 'Methods must expose the exact independently verified runtime SHA-256');
+assert(globe.includes("view.methods.checksum ? '<p><strong>Verified SHA-256:</strong> <code>'"), 'Methods renderer must show the exact runtime checksum');
+
+const cumulativeCoverageCounts = new Set();
+for (const country of release.countries) {
+  const cumulative = presentationSandbox.COUNTRY_CLIMATE_INTELLIGENCE
+    .getCountryView(country.iso_alpha3, 'carbon').at_a_glance
+    .find(fact => fact.id === 'emissions.fossil_co2.cumulative');
+  if (!cumulative.available) continue;
+  const years = cumulative.context?.available_years;
+  assert(Number.isInteger(years) && years > 0 && years <= 175, `${country.iso_alpha3} cumulative coverage count is invalid`);
+  assert.strictEqual(cumulative.explanation,
+    `Sum of ${years} available annual territorial fossil CO₂ values within 1850–2024.`,
+    `${country.iso_alpha3} cumulative card must visibly disclose its actual annual coverage`);
+  cumulativeCoverageCounts.add(years);
+}
+assert(cumulativeCoverageCounts.size > 1, 'the cumulative coverage test must exercise unequal country histories');
 const physicalView = viewsByLens.physical;
 const powerView = viewsByLens.power;
 const powerField = powerView.power_story.field;
@@ -340,6 +485,7 @@ assert(presentation.includes('citation_only_sources'));
 assert(presentation.includes('Citation retained for historical provenance; no values from this source appear in this release.'));
 assert(globe.includes('Methods &amp; sources'));
 assert(globe.includes('At a glance'));
+assert(globe.includes('<strong>Uncertainty:</strong> '), 'compact fact cards must label uncertainty text explicitly');
 assert(globe.includes('view.primary.evidence_label') && globe.includes('view.tooltip.evidence_class'));
 assert(css.includes('.tt-methods > summary'));
 assert(css.includes('min-height: 44px') || css.includes('min-height:44px'));
@@ -361,16 +507,45 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v72-tutorial-lens-clear'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v77-cci-raw-byte-boundary'"));
 assert(serviceWorker.includes("'/css/globe-system.css?v=v43'"));
 assert(serviceWorker.includes("'/css/guided-first-orbit.css?v=v11'"));
-assert(serviceWorker.includes("'/js/data.js?v=v11'"));
-assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v14'"));
-assert(serviceWorker.includes("'/js/globe.js?v=v38'"));
+assert(serviceWorker.includes("'/js/data-schema.js?v=v2'"));
+assert(serviceWorker.includes("'/js/data.js?v=v16'"));
+assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v17'"));
+assert(serviceWorker.includes("'/js/globe.js?v=v40'"));
 assert(serviceWorker.includes("'/js/guided-first-orbit.js?v=v6'"));
 assert(serviceWorker.includes("'/js/app.js?v=v5'"));
-assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate8'"));
+assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1runtime13'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired project data must not be pinned by the climate runtime cache');
 
-console.log('Country Climate Intelligence UI contract check passed (classic load order, three-move orbit, three lenses, non-modal evidence panels, and rollback pin).');
+async function verifyCriticalRawByteBoundary() {
+  assert(dataSource.includes('bytes: await response.arrayBuffer()'), 'critical runtime fetch must retain exact response bytes');
+  assert(!dataSource.includes('text: await response.text()'), 'critical runtime must not hash a browser-decoded string');
+
+  const exact = await criticalRuntimeBytesResult(runtimeBytes);
+  assert.strictEqual(JSON.stringify(exact.parsed), JSON.stringify(release), 'exact pinned runtime bytes must parse');
+  assert.deepStrictEqual(exact.errors, []);
+
+  const bomPrefixed = Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), runtimeBytes]);
+  const bom = await criticalRuntimeBytesResult(bomPrefixed);
+  assert.strictEqual(bom.parsed, null, 'a BOM-prefixed byte mutation must fail the raw SHA-256 boundary');
+  assert(bom.errors.some(message => message.includes('SHA-256 mismatch')));
+
+  const invalidUtf8 = Buffer.from(runtimeBytes);
+  const schemaMarker = invalidUtf8.indexOf(Buffer.from('schema_version'));
+  assert(schemaMarker >= 0);
+  invalidUtf8[schemaMarker] = 0xff;
+  const invalidSha256 = crypto.createHash('sha256').update(invalidUtf8).digest('hex');
+  const invalid = await criticalRuntimeBytesResult(invalidUtf8, invalidSha256);
+  assert.strictEqual(invalid.parsed, null, 'even hash-matching invalid UTF-8 must fail before JSON parsing');
+  assert(invalid.errors.length > 0);
+}
+
+verifyCriticalRawByteBoundary().then(() => {
+  console.log('Country Climate Intelligence UI contract check passed (classic load order, raw-byte runtime binding, three-move orbit, three lenses, non-modal evidence panels, and rollback pin).');
+}).catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

@@ -20,12 +20,12 @@
     "release": {
       "status": "candidate",
       "production_runtime_release": false,
-      "review_state": "normalized_factual_candidate_pending_source_revalidation"
+      "review_state": "normalized_factual_candidate_pending_independent_scientific_review"
     }
   },
   "base_cci_release_manifest": {
     "gates": {
-      "raw_receipt_revalidation": false,
+      "raw_receipt_revalidation": true,
       "redistribution_rights_revalidation": false,
       "independent_scientific_review": false
     }

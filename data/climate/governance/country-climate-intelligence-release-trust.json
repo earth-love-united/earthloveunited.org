@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "registry_id": "elu-country-climate-intelligence-release-trust-v1",
+  "status": "unprovisioned",
+  "repository": "earth-love-united/earthloveunited.org",
+  "required_roles": [
+    "carbon_accounting",
+    "demography",
+    "power_systems",
+    "physical_climate",
+    "reproducibility",
+    "ui_accessibility_runtime",
+    "source_rights",
+    "release_authorizer"
+  ],
+  "authorities": []
+}

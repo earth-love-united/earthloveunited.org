@@ -13,33 +13,29 @@
   "component_artifacts": {
     "cckp": {
       "path": "data/climate/releases/country-climate-intelligence-v1/cckp-physical.json",
-      "sha256": "168fa7271a16569bde4da9dd1c55054e831090c88931d9595755af3db106c2dd"
+      "sha256": "aad0c81bafe85ae1659da031330ffc6db2dcc1c5af2dc7ef6eeb4151c280400a"
     },
     "ember": {
       "path": "data/climate/releases/country-climate-intelligence-v1/ember-power.json",
-      "sha256": "2f566e0035353dd7b8d67aed7b2211e6a164ca16ba98c431d6f3e14d45c8e24a"
+      "sha256": "3966f719430c8be3fb73b8dad8bf3c330c4380039e6394f8cece1ac8df64a5ec"
     },
     "gcb": {
       "path": "data/climate/releases/country-climate-intelligence-v1/gcb-carbon.json",
-      "sha256": "0423f8150939455e07260dec49951575ee4123f174f00ceefbda441364b66825"
-    },
-    "trace": {
-      "path": "data/climate/releases/country-climate-intelligence-v1/climate-trace-ghg.json",
-      "sha256": "b95a853ad5fa6e1117c4d21cdf7aa46d3cd5beee24a613e4681b3ab3dd3d37f3"
+      "sha256": "540e33d294d3eedc55cd02f6a589dd4c2bce21f651eed5a58e5cdeecd82ee048"
     },
     "wpp": {
       "path": "data/climate/releases/country-climate-intelligence-v1/wpp-population.json",
-      "sha256": "ab5c482feeeaea24c91ad316873c17e90a4c560a210e42a6199a104165f276e5"
+      "sha256": "7ff9a8278e565fc7eb3a0119d3366c6bc413e07e3394f5063b591a78726aeab5"
     }
   },
   "gates": {
     "atomic_service_worker_staging": true,
     "independent_scientific_review": false,
-    "raw_receipt_revalidation": false,
+    "raw_receipt_revalidation": true,
     "redistribution_rights_revalidation": false,
     "runtime_validation": true,
     "source_registry_approval": true,
-    "visual_review": true
+    "visual_review": false
   },
   "lens_catalog": [
     {
@@ -242,12 +238,6 @@
       "label": "Territorial fossil CO₂ per person",
       "public_role": "context"
     },
-    "emissions.ghg.independent": {
-      "comparison_period": "2024",
-      "family": "carbon",
-      "label": "Independent GHG context",
-      "public_role": "non_comparable_context"
-    },
     "emissions.land_use_co2.net": {
       "comparison_period": "2015–2024 mean",
       "family": "carbon",
@@ -270,20 +260,19 @@
   "release": {
     "comparison_baseline_year": 2024,
     "entity_count": 249,
-    "generated_on": "2026-08-25",
-    "id": "country-climate-intelligence-2026-08-25-candidate.5",
+    "generated_on": "2026-08-27",
+    "id": "country-climate-intelligence-2026-08-27-candidate.7",
     "production_runtime_release": false,
-    "review_state": "normalized_factual_candidate_pending_source_revalidation",
+    "review_state": "normalized_factual_candidate_pending_independent_scientific_review",
     "status": "candidate"
   },
-  "reviewed_candidate_recovery_sha256": "436db7290378d9d9f1a1f59f83d2cb219638ac490f5f7f3dccffc8fe203bde09",
   "source_receipts": {
     "path": "data/climate/releases/country-climate-intelligence-v1/source-receipts.json",
-    "sha256": "3015a86253972273456605bb446b82effb22e93b13124343f7180c33f57e86ec"
+    "sha256": "011c94573788fff681b0f6069a9718ae39ce6c01564d7273969fe3d499edef5e"
   },
   "transformation_log": {
     "path": "data/climate/releases/country-climate-intelligence-v1/TRANSFORMATION-LOG.md",
-    "sha256": "9cd831a7fb594f42feaacc4d93e32810d4b6bbc74ac5552ddd9f617b6a6f9ef8"
+    "sha256": "3fc0675335cb8a98e65ac13a12fb76c5cbaa219e1e74d29829714664d867576a"
   },
   "schema_ref": "data/climate/schemas/country-climate-intelligence.schema.json",
   "schema_version": "1.0.0",
@@ -322,17 +311,6 @@
       "version": "2.6.1 final, 13 March 2025"
     },
     {
-      "attribution": "Climate TRACE API v7 country-emissions response, retrieved 2026-08-24, https://climatetrace.org/data; response reported inventory version 5.9.0. Immutable v5.9.0 release identity remains unresolved. Earth Love United transformations are identified.",
-      "id": "climate-trace-api-v7-2026-08-24-country-annual",
-      "licence": "CC-BY-4.0-with-listed-exceptions-pending-field-review",
-      "public_role": "metric_provenance",
-      "review_state": "pending",
-      "source_url": "https://climatetrace.org/data",
-      "title": "Climate TRACE annual country emissions snapshot",
-      "values_in_release": true,
-      "version": "API v7 response retrieved 2026-08-24; reported inventory version 5.9.0; immutable release binding unresolved"
-    },
-    {
       "attribution": "Ember, Yearly Electricity Data, full release retrieved 2026-08-25, https://ember-energy.org/data/yearly-electricity-data/. Earth Love United transformations are identified.",
       "id": "ember-yearly-electricity-data-2026-08-25",
       "licence": "CC-BY-4.0",
@@ -344,7 +322,7 @@
       "version": "full long-format release retrieved 2026-08-25"
     },
     {
-      "attribution": "World Bank Climate Change Knowledge Portal, CMIP6 0.25-degree projected climate data, API snapshot 2026-08-24. Earth Love United transformations are identified.",
+      "attribution": "World Bank Climate Change Knowledge Portal, CMIP6 0.25-degree projected climate country aggregates, responses re-fetched 2026-08-27. WCRP CMIP6 and ESGF are acknowledged; Earth Love United selections are identified.",
       "id": "world-bank-cckp-cmip6-2026-08-24",
       "licence": "CC-BY-4.0",
       "public_role": "metric_provenance",
@@ -353,17 +331,6 @@
       "title": "CCKP projected climate data: CMIP6 0.25-degree country aggregates",
       "values_in_release": true,
       "version": "API snapshot retrieved 2026-08-24"
-    },
-    {
-      "attribution": "World Bank Climate Change Knowledge Portal, ERA5 country data, accessed 2026-08-24. No normalized values are redistributed from the empty acquisition response.",
-      "id": "world-bank-cckp-era5-2026-08-24",
-      "licence": "CC-BY-4.0",
-      "public_role": "gap_provenance",
-      "review_state": "pending",
-      "source_url": "https://worldbank.github.io/climateknowledgeportal/docs/collections/era5-x0.25.html",
-      "title": "CCKP observed climate data: ERA5 country aggregates",
-      "values_in_release": false,
-      "version": "acquisition attempt 2026-08-24"
     },
     {
       "attribution": "World Bank Climate Change Knowledge Portal, ERA5 0.25-degree annual country temperature and precipitation aggregates, 1950–2025 snapshots accessed 2026-08-25. Earth Love United selected 1970–2025 and derived OLS slopes per decade.",
@@ -377,7 +344,7 @@
       "version": "API v1 global-country annual snapshot retrieved 2026-08-25; 1950–2025"
     },
     {
-      "attribution": "United Nations, Department of Economic and Social Affairs, Population Division (2024), World Population Prospects 2024, retrieved 2026-08-24. Changes by Earth Love United are identified.",
+      "attribution": "United Nations, Department of Economic and Social Affairs, Population Division (2024), World Population Prospects 2024, exact Medium file retrieved 2026-08-27. Earth Love United selected the 2024 mid-year projection and identifies its unit conversion.",
       "id": "un-wpp-2024",
       "licence": "CC-BY-3.0-IGO",
       "public_role": "metric_provenance",

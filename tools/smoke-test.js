@@ -73,29 +73,34 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'Country Climate Intelligence candidate passes its runtime boundary',
+        name: 'Country Climate Intelligence release passes its runtime boundary',
         critical: true,
         test: () => {
-          const candidate = window.Data?.getClimateIntelligenceRelease?.();
-          const lenses = candidate?.lens_catalog || [];
+          const runtime = window.Data?.getClimateIntelligenceRelease?.();
+          const lenses = runtime?.lens_catalog || [];
           const partitionsValid = lenses.every(lens => {
-            const order = candidate.lens_orders?.[lens.id];
+            const order = runtime.lens_orders?.[lens.id];
             return order?.eligible_count + order?.unranked_count === 249 &&
               order?.ordered?.length === order?.eligible_count && order?.unranked?.length === order?.unranked_count;
           });
+          const candidateState = runtime?.release?.status === 'candidate'
+            && runtime?.release?.review_state === 'normalized_factual_candidate_pending_independent_scientific_review'
+            && runtime?.release?.production_runtime_release === false;
+          const productionState = runtime?.release?.status === 'production'
+            && runtime?.release?.review_state === 'independently_reviewed'
+            && runtime?.release?.production_runtime_release === true;
           const ok = window.Data?.isClimateIntelligenceReady?.() === true
-            && candidate?.release?.status === 'candidate'
-            && candidate?.release?.production_runtime_release === false
-            && candidate?.countries?.length === 249
-            && new Set(candidate.countries.map(country => country.country_id)).size === 249
-            && Object.keys(candidate?.metric_definitions || {}).length === 27
+            && (candidateState || productionState)
+            && runtime?.countries?.length === 249
+            && new Set(runtime.countries.map(country => country.country_id)).size === 249
+            && Object.keys(runtime?.metric_definitions || {}).length === 26
             && lenses.map(lens => lens.id).join(',') === 'carbon,power,physical'
             && partitionsValid;
           return {
             pass: ok,
             detail: ok
-              ? 'exact-SHA candidate; 249 unique entities; 27 metrics; three complete lens partitions; production release false'
-              : `runtime boundary mismatch (registry ${candidate?.countries?.length || 0}, metrics ${Object.keys(candidate?.metric_definitions || {}).length}, lenses ${lenses.length})`,
+              ? `exact-SHA ${runtime.release.status}; 249 unique entities; 26 metrics; three complete lens partitions`
+              : `runtime boundary mismatch (registry ${runtime?.countries?.length || 0}, metrics ${Object.keys(runtime?.metric_definitions || {}).length}, lenses ${lenses.length})`,
           };
         },
       },
@@ -639,14 +644,14 @@ const SmokeTest = (() => {
         },
       },
       {
-        name: 'Active climate intelligence candidate loaded successfully',
+        name: 'Active climate intelligence release loaded successfully',
         critical: true,
         test: () => {
           if (typeof Data === 'undefined') return { pass: false, detail: 'Data module not loaded' };
           const ready = Data.isClimateIntelligenceReady?.() === true;
           return {
             pass: ready && Data.climateIntelligenceState === 'ready',
-            detail: ready ? 'Exact-SHA climate intelligence candidate is ready' : `candidate state ${Data.climateIntelligenceState}`,
+            detail: ready ? 'Exact-SHA climate intelligence release is ready' : `release state ${Data.climateIntelligenceState}`,
           };
         },
       },

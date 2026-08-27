@@ -42,6 +42,7 @@ const CCI_RELEASE_AUTHORITY_PATHS = Object.freeze([
   CCI_RELEASE_PATHS.releaseDiff,
   CCI_RELEASE_PATHS.runtimeManifest,
   CCI_RELEASE_PATHS.rollbackProof,
+  CCI_RELEASE_PATHS.signatures,
 ].sort());
 const LEGACY_RELEASE_AUTHORITY_PATHS = Object.freeze(Object.values(LEGACY_RELEASE_PATHS).sort());
 const PINNED_FILES = Object.freeze([

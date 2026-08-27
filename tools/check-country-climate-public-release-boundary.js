@@ -26,9 +26,9 @@ function verifyBoundary(options = {}) {
   assert.equal(candidate.includes(RUNTIME_PATH), true, 'CCI runtime must remain on the candidate-only surface');
   assert.equal(runtime?.release?.status, 'candidate', 'CCI runtime status must remain candidate');
   assert.equal(runtime?.release?.production_runtime_release, false, 'CCI runtime production release must remain false');
-  assert.match(runtime?.release?.review_state || '', /pending_source_revalidation/,
-    'CCI runtime must retain its pending source-revalidation state');
-  assert.equal(manifest?.gates?.raw_receipt_revalidation, false, 'raw receipts are not revalidated');
+  assert.match(runtime?.release?.review_state || '', /pending_independent_scientific_review/,
+    'CCI runtime must retain its pending independent-scientific-review state');
+  assert.equal(manifest?.gates?.raw_receipt_revalidation, true, 'raw receipts must remain exactly revalidated');
   assert.equal(manifest?.gates?.redistribution_rights_revalidation, false, 'redistribution rights are not revalidated');
   assert.equal(manifest?.gates?.independent_scientific_review, false, 'independent scientific review is not complete');
   assert.equal(candidatePaths.includes(RUNTIME_PATH), true, 'local candidate surface must retain the CCI runtime');
@@ -38,8 +38,8 @@ function verifyBoundary(options = {}) {
 }
 
 function runSelfTest() {
-  const runtime = { release: { status: 'candidate', production_runtime_release: false, review_state: 'normalized_factual_candidate_pending_source_revalidation' } };
-  const manifest = { gates: { raw_receipt_revalidation: false, redistribution_rights_revalidation: false, independent_scientific_review: false } };
+  const runtime = { release: { status: 'candidate', production_runtime_release: false, review_state: 'normalized_factual_candidate_pending_independent_scientific_review' } };
+  const manifest = { gates: { raw_receipt_revalidation: true, redistribution_rights_revalidation: false, independent_scientific_review: false } };
   const base = {
     runtime,
     manifest,
@@ -60,7 +60,7 @@ function main() {
   if (process.argv.length === 3 && process.argv[2] === '--self-test') return runSelfTest();
   if (process.argv.length !== 2) throw new Error('usage: check-country-climate-public-release-boundary.js [--self-test]');
   verifyBoundary();
-  process.stdout.write('Country Climate Intelligence public-release boundary: PASS (candidate retained; factual-public staging refused pending rights, source, and scientific review)\n');
+  process.stdout.write('Country Climate Intelligence public-release boundary: PASS (candidate retained; factual-public staging refused pending rights and scientific review)\n');
 }
 
 if (require.main === module) {

@@ -63,11 +63,6 @@ expectFailure('Legacy scoring bypass', candidate => {
     .legacy_gate.scoring_allowed = true;
 }, /scoring_allowed must remain false/);
 
-expectFailure('Climate TRACE checksum gate bypass', candidate => {
-  sourceById(candidate, 'climate-trace-api-v7-2026-08-24-country-annual')
-    .ingestion_gate.exact_checksum_required = false;
-}, /must pass every Country Climate Intelligence ingestion gate/);
-
 expectFailure('Ember field permit removal', candidate => {
   const source = sourceById(candidate, 'ember-yearly-electricity-data-2026-08-25');
   source.ingestion_gate.field_permitlist = source.ingestion_gate.field_permitlist.filter(field => field !== 'Subcategory');

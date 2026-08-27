@@ -11,7 +11,7 @@ const EXPECTED_UI_REVIEW_SHA256 = '0af2fc7f2b90a6df1ff7fdc50fff602827469171e1574
 const EXPECTED_MANIFEST_SHA256 = '5c11517a0f75e1af70169c565b46002c4361cdac18d6a6191f06e9f31ac7f67a';
 const EXPECTED_MANIFEST_SEMANTIC_SHA256 = '1bf154b73ddcb4d2ef51397d1e489b22f0bcadb8b13cbcec2bc7d2bbff949a9f';
 const EXPECTED_NASA_FETCHER_SHA256 = 'ade65419169d17404506d2dee5cfdbacb8f2c0c6a76d3d59b34482892edd4466';
-const EXPECTED_CLIMATE_INTELLIGENCE_SHA256 = 'd961610b1786b82755ecca266e20236f5ad13e0d5df25dd8345703fd50a41728';
+const EXPECTED_CLIMATE_INTELLIGENCE_SHA256 = '4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe';
 const EXPECTED_NATURAL_EARTH_SOURCES = Object.freeze({
   about_url: 'https://www.naturalearthdata.com/about/',
   terms_url: 'https://www.naturalearthdata.com/about/terms-of-use/',
@@ -206,10 +206,10 @@ const EXPECTED_INDEX_SW_KEYS = Object.freeze([
   '/js/event-bus.js',
   '/js/storage-adapter.js',
   '/js/storage.js',
-  '/js/data-schema.js?v=v1',
-  '/js/data.js?v=v11',
-  '/js/country-climate-intelligence.js?v=v14',
-  '/js/globe.js?v=v38',
+  '/js/data-schema.js?v=v2',
+  '/js/data.js?v=v16',
+  '/js/country-climate-intelligence.js?v=v17',
+  '/js/globe.js?v=v40',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v6',
   '/js/app.js?v=v5',
@@ -488,11 +488,15 @@ function evaluateRuntimeAssets(input) {
     data.includes('if (actual !== CLIMATE_INTELLIGENCE_SHA256)') && data.includes("crypto.subtle.digest('SHA-256'") &&
     data.includes('DATA_FETCH_TIMEOUT_MS = 60000') && data.includes("release?.release?.status === 'candidate'") &&
     data.includes('release?.release?.production_runtime_release === false') &&
+    data.includes("release?.release?.status === 'production'") &&
+    data.includes("release?.release?.review_state === 'independently_reviewed'") &&
+    data.includes('release?.release?.production_runtime_release === true') &&
+    data.includes('const boundaryValid = candidateBoundaryValid || productionBoundaryValid') &&
     dataSchema.includes("value.countries.length !== 249") && dataSchema.includes('recordIds.join(\'|\') !== metricIds.join(\'|\')') &&
     dataSchema.includes('partition.length !== 249') && dataSchema.includes("['carbon', 'power', 'physical']") &&
     climateIntelligence.includes("window.COUNTRY_CLIMATE_INTELLIGENCE = COUNTRY_CLIMATE_INTELLIGENCE") &&
     app.includes("reason: 'globe_construction_failed'") && globe.includes("'candidate_data_unavailable'"),
-    'Missing, malformed, checksum-drifted, or non-candidate Country Climate Intelligence data must become unavailable before rendering.');
+    'Missing, malformed, checksum-drifted, or incoherent-state Country Climate Intelligence data must become unavailable before rendering.');
   check('exact-interactive-boundary', globe.includes('EXPECTED_INTERACTIVE_ENTITY_COUNT = 201') &&
     globe.includes('this._countryFeatures.length !== EXPECTED_INTERACTIVE_ENTITY_COUNT') &&
     globe.includes('uniqueFeatureIsos.size !== EXPECTED_INTERACTIVE_ENTITY_COUNT') &&
@@ -549,7 +553,7 @@ function evaluateRuntimeAssets(input) {
     index.includes('Original starfield from Three-Globe 2.45.2'),
     'Public copy must credit NASA and identify the historical surface and restored sky as decorative visual context.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v72-tutorial-lens-clear';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=72-tutorial-lens-clear'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v77-cci-raw-byte-boundary';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=77-cci-raw-byte-boundary'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&
@@ -563,8 +567,8 @@ function evaluateRuntimeAssets(input) {
     EXPECTED_INDEX_SW_KEYS.every(key => input?.service_worker?.static_assets?.filter(item => item === key).length === 1),
     'Every versioned CSS/JS request used by the globe entry path must have the exact same service-worker precache key.');
   check('service-worker-data-fallback', sw.includes("url.pathname.startsWith('/data/')") &&
-    data.includes("version: 'cci1candidate8'") &&
-    sw.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate8'") &&
+    data.includes("version: 'cci1runtime13'") &&
+    sw.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1runtime13'") &&
     sw.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'") &&
     !sw.includes('/data/carbon-projects.json') &&
     occurrences(sw, 'caches.match(request)') >= 2 && !sw.includes('ignoreSearch'),

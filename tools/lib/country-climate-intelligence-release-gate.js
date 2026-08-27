@@ -11,11 +11,13 @@ const {
 } = require('./reviewed-runtime-rollback-proof');
 const {
   INDEPENDENT_REVIEWS,
+  REQUIRED_ABSENT_PATHS,
   SOURCE_REVIEWS,
   SUBJECT_PATHS,
   calculationHash: requestCalculationHash,
 } = require('../prepare-country-climate-intelligence-review-request');
 const { fileSha256, sha256 } = require('./country-climate-intelligence');
+const releaseSignatures = require('./country-climate-intelligence-release-signatures');
 
 const RELEASE_DIR = 'data/climate/releases/country-climate-intelligence-v1';
 const PATHS = Object.freeze({
@@ -24,6 +26,8 @@ const PATHS = Object.freeze({
   releaseDiff: `${RELEASE_DIR}/reviewed-release-diff.json`,
   runtimeManifest: `${RELEASE_DIR}/reviewed-runtime-manifest.json`,
   rollbackProof: `${RELEASE_DIR}/reviewed-rollback-proof.json`,
+  signatures: releaseSignatures.SIGNATURE_BUNDLE_PATH,
+  trustRegistry: releaseSignatures.TRUST_REGISTRY_PATH,
   runtime: 'data/climate/runtime/country-climate-intelligence.json',
   releaseManifest: `${RELEASE_DIR}/release-manifest.json`,
   sourceReceipts: `${RELEASE_DIR}/source-receipts.json`,
@@ -36,6 +40,7 @@ const SCHEMAS = Object.freeze({
   releaseDiff: 'data/climate/schemas/reviewed-release-diff.schema.json',
   runtimeManifest: 'data/climate/schemas/country-climate-intelligence-reviewed-runtime-manifest.schema.json',
   rollbackProof: 'data/climate/schemas/reviewed-runtime-rollback-proof.schema.json',
+  signatures: releaseSignatures.SIGNATURE_SCHEMA_PATH,
 });
 const SOURCE_IDS = Object.freeze(SOURCE_REVIEWS.map(item => item.source_registry_id).sort());
 const REVIEW_ROLES = Object.freeze(INDEPENDENT_REVIEWS.map(item => item.role).sort());
@@ -70,6 +75,23 @@ function releaseDiffHash(value) {
   const copy = structuredClone(value);
   copy.diff_hash = null;
   return sha256(JSON.stringify(stable(copy)));
+}
+
+function releaseDiffSemanticFailures(releaseDiff, runtime) {
+  const failures = [];
+  if (releaseDiff && (releaseDiff.initial_release !== true || releaseDiff.previous_release_id !== null)) {
+    failures.push('release_diff_lineage_invalid');
+  }
+  const expectedEntities = Array.isArray(runtime && runtime.countries)
+    ? runtime.countries.map(country => country && country.country_id).sort()
+    : [];
+  if (!releaseDiff || JSON.stringify(releaseDiff.changed_entity_ids) !== JSON.stringify(expectedEntities)) {
+    failures.push('release_diff_entity_set_mismatch');
+  }
+  if (!releaseDiff || JSON.stringify(releaseDiff.source_revision_ids) !== JSON.stringify(SOURCE_IDS)) {
+    failures.push('release_diff_source_set_mismatch');
+  }
+  return failures;
 }
 
 function add(errors, code, detail) {
@@ -131,6 +153,23 @@ function validateSubjectCommitPins(root, request, errors, blockers) {
       add(errors, 'review_request_commit_pin_mismatch', entry.path + ' does not match the bound Git object.');
     }
   });
+  REQUIRED_ABSENT_PATHS.forEach(relative => {
+    const object = childProcess.spawnSync('git', ['cat-file', '-e', commit + ':' + relative], {
+      cwd: root,
+      encoding: 'utf8',
+    });
+    if (object.status === 0) {
+      add(errors, 'review_request_forbidden_path_present_at_commit', relative + ' exists in the bound candidate commit.');
+    }
+  });
+}
+
+function requiredAbsentViolations(root, request) {
+  if (JSON.stringify(request && request.required_absent_paths) !== JSON.stringify(REQUIRED_ABSENT_PATHS)) {
+    return ['required_absent_paths is not the exact canonical exclusion set.'];
+  }
+  return REQUIRED_ABSENT_PATHS.filter(relative => entryPresent(root, relative))
+    .map(relative => relative + ' must remain absent from the reviewed checkout.');
 }
 
 function validateEvidencePins(root, pins, errors, code) {
@@ -184,11 +223,13 @@ function inspectReviewRequest(root, requestOverride = null) {
   }
   exactPins(root, request.subject?.artifact_pins, SUBJECT_PATHS, errors, 'review_request_artifact_pin_mismatch');
   if (!exactIdSet(request.source_reviews, 'source_registry_id', SOURCE_IDS)) {
-    add(errors, 'review_request_source_set_mismatch', 'The six value-producing sources are not the exact required set.');
+    add(errors, 'review_request_source_set_mismatch', 'The five value-producing sources are not the exact required set.');
   }
   if (!exactIdSet(request.independent_reviews, 'role', REVIEW_ROLES)) {
-    add(errors, 'review_request_role_set_mismatch', 'The eight independent review roles are not the exact required set.');
+    add(errors, 'review_request_role_set_mismatch', 'The seven independent review roles are not the exact required set.');
   }
+  requiredAbsentViolations(root, request).forEach(detail =>
+    add(errors, 'review_request_forbidden_path_boundary_invalid', detail));
   const runtime = readJson(root, PATHS.runtime);
   const manifest = readJson(root, PATHS.releaseManifest);
   if (request.release_id !== runtime.release?.id || request.release_id !== manifest.release?.id) {
@@ -218,12 +259,18 @@ function inspectReleaseApproval(root, options = {}) {
   const blockers = [...requestResult.blockers];
   if (errors.length) return { ...requestResult, production_runtime_release: false, release_authority: false };
 
-  const packagePaths = [PATHS.approval, PATHS.releaseDiff, PATHS.runtimeManifest, PATHS.rollbackProof];
+  const packagePaths = [
+    PATHS.approval,
+    PATHS.releaseDiff,
+    PATHS.runtimeManifest,
+    PATHS.rollbackProof,
+    PATHS.signatures,
+  ];
   const present = packagePaths.filter(relative => entryPresent(root, relative));
   if (present.length === 0) {
     blockers.push({
       code: 'reviewed_release_package_absent',
-      detail: 'Independent approval, reviewed release diff, reviewed runtime manifest, and executable rollback proof are all required.',
+      detail: 'Independent approval, reviewed release diff, reviewed runtime manifest, executable rollback proof, and detached release signatures are all required.',
     });
     return {
       pass: false,
@@ -258,6 +305,8 @@ function inspectReleaseApproval(root, options = {}) {
     documents.releaseDiff = readJson(root, PATHS.releaseDiff);
     documents.runtimeManifest = readJson(root, PATHS.runtimeManifest);
     documents.rollbackProof = readJson(root, PATHS.rollbackProof);
+    documents.signatures = readJson(root, PATHS.signatures);
+    documents.trustRegistry = readJson(root, PATHS.trustRegistry);
   } catch (error) {
     add(errors, 'reviewed_release_json_invalid', error.message);
   }
@@ -271,12 +320,22 @@ function inspectReleaseApproval(root, options = {}) {
   validateAgainstSchema(root, 'approval', documents.approval, errors);
   validateAgainstSchema(root, 'releaseDiff', documents.releaseDiff, errors);
   validateAgainstSchema(root, 'runtimeManifest', documents.runtimeManifest, errors);
+  validateAgainstSchema(root, 'signatures', documents.signatures, errors);
   if (documents.approval.calculation_hash !== canonicalHash(documents.approval)) {
     add(errors, 'approval_calculation_hash_mismatch', 'Approval hash is not canonical.');
   }
   if (documents.releaseDiff.diff_hash !== releaseDiffHash(documents.releaseDiff)) {
     add(errors, 'release_diff_calculation_hash_mismatch', 'Release diff hash is not canonical.');
   }
+  const runtime = readJson(root, PATHS.runtime);
+  releaseDiffSemanticFailures(documents.releaseDiff, runtime).forEach(code => {
+    const detail = code === 'release_diff_lineage_invalid'
+      ? 'CCI v1 must be an initial release with no previous release ID.'
+      : code === 'release_diff_entity_set_mismatch'
+        ? 'Reviewed diff must list the exact sorted 249 runtime country IDs.'
+        : 'Reviewed diff must list the exact sorted five value-producing source IDs.';
+    add(errors, code, detail);
+  });
   if (documents.runtimeManifest.calculation_hash !== canonicalHash(documents.runtimeManifest)) {
     add(errors, 'runtime_manifest_calculation_hash_mismatch', 'Runtime manifest hash is not canonical.');
   }
@@ -302,10 +361,10 @@ function inspectReleaseApproval(root, options = {}) {
   }
   exactPins(root, documents.approval.release_artifact_pins, CORE_RELEASE_PIN_PATHS, errors, 'approval_release_pin_mismatch');
   if (!exactIdSet(documents.approval.source_reviews, 'source_registry_id', SOURCE_IDS)) {
-    add(errors, 'approval_source_set_mismatch', 'Approval does not review the exact six value-producing sources.');
+    add(errors, 'approval_source_set_mismatch', 'Approval does not review the exact five value-producing sources.');
   }
   if (!exactIdSet(documents.approval.independent_reviews, 'role', REVIEW_ROLES)) {
-    add(errors, 'approval_role_set_mismatch', 'Approval does not contain the exact eight independent review roles.');
+    add(errors, 'approval_role_set_mismatch', 'Approval does not contain the exact seven independent review roles.');
   }
   (documents.approval.source_reviews || []).forEach(review =>
     validateEvidencePins(root, review.evidence_pins, errors, 'source_review_evidence_pin_mismatch'));
@@ -335,7 +394,7 @@ function inspectReleaseApproval(root, options = {}) {
     add(errors, 'release_diff_review_identity_invalid', 'Release-diff builder and reviewer must be independent identities.');
   }
   if (new Set((documents.approval.independent_reviews || []).map(item => item.reviewer_id)).size < 4) {
-    add(errors, 'independent_reviewer_diversity_missing', 'At least four independent people must cover the eight review roles.');
+    add(errors, 'independent_reviewer_diversity_missing', 'At least four independent people must cover the seven review roles.');
   }
 
   const manifestPinPaths = [...SUBJECT_PATHS, PATHS.approval, PATHS.request].sort();
@@ -360,7 +419,6 @@ function inspectReleaseApproval(root, options = {}) {
   });
   rollbackResult.errors.forEach(error => add(errors, error.code, error.detail));
 
-  const runtime = readJson(root, PATHS.runtime);
   const releaseManifest = readJson(root, PATHS.releaseManifest);
   if (runtime.release?.status !== 'production' || runtime.release?.review_state !== 'independently_reviewed' ||
       runtime.release?.production_runtime_release !== true) {
@@ -389,6 +447,39 @@ function inspectReleaseApproval(root, options = {}) {
     add(errors, 'ct40_review_reuse_forbidden', 'CCI approval artifacts must not reuse CT-40 scoring/NDC review bindings.');
   }
 
+  const packageValues = {
+    [PATHS.request]: request,
+    [PATHS.approval]: documents.approval,
+    [PATHS.releaseDiff]: documents.releaseDiff,
+    [PATHS.rollbackProof]: documents.rollbackProof,
+    [PATHS.runtimeManifest]: documents.runtimeManifest,
+  };
+  const trustRegistryBytes = fs.readFileSync(path.join(root, PATHS.trustRegistry));
+  const signatureBundleBytes = fs.readFileSync(path.join(root, PATHS.signatures));
+  const signatureReport = releaseSignatures.evaluateReleaseSignatures({
+    approval: documents.approval,
+    trust_registry: documents.trustRegistry,
+    trust_registry_bytes: trustRegistryBytes,
+    trust_registry_text: trustRegistryBytes.toString('utf8'),
+    trust_registry_file_regular: regularNonSymlink(root, PATHS.trustRegistry),
+    expected_trust_registry_sha256: releaseSignatures.EXPECTED_TRUST_REGISTRY_SHA256,
+    signature_bundle: documents.signatures,
+    signature_bundle_bytes: signatureBundleBytes,
+    signature_bundle_text: signatureBundleBytes.toString('utf8'),
+    signature_bundle_file_regular: regularNonSymlink(root, PATHS.signatures),
+    package_records: releaseSignatures.PACKAGE_PATHS.map(relative => {
+      const bytes = fs.readFileSync(path.join(root, relative));
+      return {
+        path: relative,
+        value: packageValues[relative],
+        bytes,
+        text: bytes.toString('utf8'),
+        regular_file: regularNonSymlink(root, relative),
+      };
+    }),
+  });
+  signatureReport.failure_ids.forEach(id => add(errors, 'release_signature_invalid', id));
+
   errors.sort((a, b) => a.code.localeCompare(b.code) || a.detail.localeCompare(b.detail));
   return {
     pass: errors.length === 0 && blockers.length === 0,
@@ -399,6 +490,7 @@ function inspectReleaseApproval(root, options = {}) {
     production_runtime_release: errors.length === 0 && blockers.length === 0,
     release_authority: errors.length === 0 && blockers.length === 0,
     rollback_rehearsal: rollbackResult.rehearsal,
+    signature_report: signatureReport,
   };
 }
 
@@ -412,4 +504,6 @@ module.exports = {
   inspectReleaseApproval,
   inspectReviewRequest,
   releaseDiffHash,
+  releaseDiffSemanticFailures,
+  requiredAbsentViolations,
 };

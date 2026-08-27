@@ -24,7 +24,7 @@
     {"id": "mapped-entity-count-regressed", "path": "data.mapped_entities", "value": 200},
     {"id": "metric-count-regressed", "path": "data.metric_count", "value": 17},
     {"id": "lens-count-regressed", "path": "data.lens_count", "value": 2},
-    {"id": "production-boundary-widened", "path": "data.production_runtime_release", "value": true},
+    {"id": "release-state-incoherent", "path": "data.release_state_coherent", "value": false},
     {"id": "assessment-field-read", "path": "truth.no_assessment_field_reads", "value": false},
     {"id": "performance-language-restored", "path": "truth.no_performance_language", "value": false},
     {"id": "primap-made-public", "path": "truth.no_public_primap", "value": false},

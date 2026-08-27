@@ -1,15 +1,15 @@
 {
   "schema_version": "1.4.0",
-  "registry_version": "0.7.0",
-  "methodology_version": "1.1.0",
-  "released_on": "2026-08-26",
-  "reviewed_through": "2026-08-25",
+  "registry_version": "0.8.0",
+  "methodology_version": "1.2.0",
+  "released_on": "2026-08-27",
+  "reviewed_through": "2026-08-27",
   "purpose": "Fail-closed source, licence, attribution, field-permit, retrieval, and storage decisions for Country Climate Intelligence evidence.",
   "policy": {
     "default_approval_state": "pending",
     "approval_states": ["approved", "pending", "excluded"],
     "rule": "Only an approved source with normalized_value_redistribution=true may contribute values to a public compiled country profile.",
-    "raw_storage": "Large or third-party raw files stay in versioned external storage. This repository stores manifests, checksums, reviewed normalized evidence, and reproducible retrieval instructions.",
+    "raw_storage": "Raw files are not committed. Each release receipt must distinguish an immutable publisher object, an independently managed external archive, or upstream-only unarchived bytes. A checksum never implies archive custody.",
     "licence_review": "Approval is component-specific. Publisher-level terms never override a dataset, document, or upstream component restriction."
   },
   "evidence_planes": ["official", "harmonized", "independent", "context"],
@@ -23,7 +23,6 @@
     "consumption_emissions",
     "lulucf_co2",
     "economy_wide_ghg",
-    "independent_ghg",
     "independent_ambition",
     "power",
     "observed_climate",
@@ -406,43 +405,6 @@
       }
     },
     {
-      "id": "climate-trace-api-v7-2026-08-24-country-annual",
-      "publisher": "Climate TRACE",
-      "title": "Climate TRACE annual country emissions snapshot",
-      "version": "API v7 response retrieved 2026-08-24; reported inventory version 5.9.0; immutable release binding unresolved",
-      "evidence_plane": "independent",
-      "domains": ["independent_ghg"],
-      "primary": false,
-      "source_url": "https://climatetrace.org/data",
-      "retrieval_url": "https://api.climatetrace.org/v7/country/emissions",
-      "cadence": {"frequency": "monthly", "check_interval_days": 30},
-      "licence": {
-        "identifier": "CC-BY-4.0-with-listed-exceptions",
-        "status": "confirmed",
-        "terms_url": "https://climatetrace.org/terms",
-        "evidence_url": "https://climatetrace.org/data",
-        "summary": "Climate TRACE publishes its emissions data and associated metadata under CC BY 4.0, subject to listed external-dataset exceptions.",
-        "attribution": "Climate TRACE API v7 country-emissions response, retrieved 2026-08-24, https://climatetrace.org/data; response reported inventory version 5.9.0. Immutable v5.9.0 release identity remains unresolved. Earth Love United transformations are identified.",
-        "restrictions": ["Credit Climate TRACE", "Check the external-dataset exception list", "Preserve estimate status, gas, sector, GWP, and forestry treatment"]
-      },
-      "redistribution": {"status": "permitted", "source_files": true, "normalized_values": true, "metadata_and_links": true},
-      "approval": {
-        "state": "approved",
-        "decision": "Compiler permitlist approved for a receipt that independently confirms the immutable inventory release behind the API v7 response; the recovered candidate does not yet carry that confirmation.",
-        "required_action": "Obtain the exact API response receipt, immutable inventory-release binding, and field-level external-dataset exception review before production; keep estimates out of rankings and historical charts."
-      },
-      "storage": {"raw": "external_only", "checksum_required": true, "snapshot_required": true},
-      "ingestion_gate": {
-        "licence_reviewed": true,
-        "attribution_reviewed": true,
-        "retrieval_receipt_required": true,
-        "exact_checksum_required": true,
-        "normalized_value_redistribution_approved": true,
-        "field_permitlist": ["iso_alpha3", "country_name", "year", "sector", "gas", "emissions_tonnes", "co2e_100yr_tonnes", "gwp_basis", "estimate_status"]
-      },
-      "limitations": ["The recovered candidate identifies an API v7 response that reported inventory version 5.9.0, but no immutable v5.9.0 archive binding is retained", "The 2024 snapshot is an independent estimate, not an official national inventory", "Climate TRACE terms list external-dataset exceptions that require field-level rights review", "Uncertainty values are available on request but are not present in the compiled API snapshot", "The scope does not match GCB fossil CO2 and no disagreement percentage is allowed"]
-    },
-    {
       "id": "ember-yearly-electricity-data-2026-08-25",
       "publisher": "Ember",
       "title": "Yearly Electricity Data",
@@ -489,7 +451,7 @@
       "domains": ["projected_climate"],
       "primary": false,
       "source_url": "https://climateknowledgeportal.worldbank.org/index.php/metadata",
-      "retrieval_url": "https://cckpapi.worldbank.org/cckp/v1/cmip6-x0.25_climatology",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_{variable}_anomaly_annual_2040-2059_{percentile}_{scenario}_ensemble_all_mean/global_countries?_format=json",
       "cadence": {"frequency": "periodic", "check_interval_days": 90},
       "licence": {
         "identifier": "CC-BY-4.0",
@@ -602,7 +564,7 @@
       "domains": ["population"],
       "primary": true,
       "source_url": "https://population.un.org/wpp/",
-      "retrieval_url": "https://population.un.org/wpp/Download/Standard/MostUsed/",
+      "retrieval_url": "https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_Demographic_Indicators_Medium.csv.gz",
       "cadence": {"frequency": "official_revision", "check_interval_days": 90},
       "licence": {
         "identifier": "CC-BY-3.0-IGO",
@@ -621,7 +583,7 @@
         "retrieval_receipt_required": true,
         "exact_checksum_required": true,
         "normalized_value_redistribution_approved": true,
-        "field_permitlist": ["ISO3_code", "Location", "Time", "Year", "Variant", "PopTotal"]
+        "field_permitlist": ["LocID", "ISO3_code", "Location", "Time", "Variant", "TPopulation1July"]
       }
     },
     {

@@ -8,7 +8,7 @@
 const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   'use strict';
 
-  const VERSION = '1.9.0';
+  const VERSION = '1.10.0';
   const RELIEF_BASE_ALTITUDE = 0.007;
   const RELIEF_RANGE = 0.005;
   const CARBON_RELIEF_DEMO_VALUE = 'low-is-high';
@@ -20,7 +20,6 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       'emissions.fossil_co2.consumption',
       'emissions.fossil_co2.net_transfer',
       'emissions.land_use_co2.net',
-      'emissions.ghg.independent',
     ]),
     power: Object.freeze([
       'electricity.clean_share',
@@ -49,7 +48,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   const PANEL_COPY = Object.freeze({
     carbon: Object.freeze({
       heading: 'Carbon responsibility',
-      description: 'Fossil CO₂, land-use CO₂, and independent greenhouse-gas context remain separate because their accounting scopes differ.',
+      description: 'Fossil CO₂ and land-use CO₂ remain separate because their accounting scopes differ.',
     }),
     power: Object.freeze({
       heading: 'Power transition',
@@ -63,11 +62,10 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
   const FACT_COPY = Object.freeze({
     'emissions.fossil_co2.territorial': 'Fossil fuel combustion, industrial processes, and cement carbonation sink; land use excluded.',
     'emissions.fossil_co2.territorial_per_capita': 'Exact 2024 territorial fossil CO₂ divided by the year-matched WPP 2024 Medium population projection.',
-    'emissions.fossil_co2.cumulative': 'Sum of available territorial fossil CO₂ from 1850 through 2024.',
+    'emissions.fossil_co2.cumulative': 'Sum of available annual territorial fossil CO₂ values within 1850–2024.',
     'emissions.fossil_co2.consumption': 'Territorial fossil CO₂ adjusted for embodied trade; latest source year shown.',
     'emissions.fossil_co2.net_transfer': 'Territorial minus consumption-based fossil CO₂; positive values indicate net exported emissions embodied in trade.',
     'emissions.land_use_co2.net': 'Mean of BLUE, OSCAR, and LUCE over 2015–2024; negative values are net removals.',
-    'emissions.ghg.independent': 'Independent 2024 GHG estimate excluding forestry/LULUCF, using AR6 GWP100. Not directly comparable with fossil CO₂.',
     'electricity.clean_share': 'Share of electricity generation in the published clean aggregate.',
     'electricity.fossil_share': 'Share of electricity generation in the published fossil aggregate.',
     'electricity.wind_solar_share': 'Combined wind and solar share of electricity generation.',
@@ -179,6 +177,14 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
     const metric = country.metrics[metricId];
     const available = finite(metric?.value);
     const scenarioMedians = metric?.context?.scenario_medians || null;
+    const availableYears = metricId === 'emissions.fossil_co2.cumulative'
+      && Number.isInteger(metric?.context?.available_years)
+      && metric.context.available_years > 0
+      ? metric.context.available_years
+      : null;
+    const explanation = availableYears === null
+      ? (FACT_COPY[metricId] || '')
+      : `Sum of ${availableYears} available annual territorial fossil CO₂ values within 1850–2024.`;
     return {
       id: metricId,
       label: definition?.label || metricId,
@@ -190,7 +196,7 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       status: metric?.status || null,
       evidence_kind: metric?.evidence_kind || null,
       evidence_label: evidenceLabel(metric?.status, metricId, metric?.evidence_kind),
-      explanation: FACT_COPY[metricId] || '',
+      explanation,
       gap: available ? null : {
         code: metric?.gap_reason?.code || 'metric_unavailable',
         detail: gapCopy(metric),
@@ -208,8 +214,17 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       trend_line: Array.isArray(metric?.context?.trend_line) ? metric.context.trend_line.slice() : [],
       context: metric?.context || null,
       scenario_medians: scenarioMedians,
-      non_comparable: metricId === 'emissions.ghg.independent',
     };
+  }
+
+  function releaseReviewLabel() {
+    const release = _release?.release || {};
+    if (release.status === 'production'
+      && release.production_runtime_release === true
+      && release.review_state === 'independently_reviewed') {
+      return 'Independently reviewed release · raw sources revalidated';
+    }
+    return 'Normalized candidate · raw sources revalidated · independent review pending';
   }
 
   function buildTemperatureProjectionRange(fact) {
@@ -564,10 +579,10 @@ const COUNTRY_CLIMATE_INTELLIGENCE = (() => {
       methods: {
         release_id: _release.release.id,
         release_status: _release.release.status,
-        review_label: 'Normalized candidate · source revalidation pending',
+        review_label: releaseReviewLabel(),
         review_state: _release.release.review_state,
         generated_on: _release.release.generated_on,
-        checksum: _release.release.verified_sha256 || null,
+        checksum: safeGet('Data', 'getClimateIntelligenceSha256', null),
         facts: activeFacts,
         citation_only_sources: citationOnlySources,
         official_context: Array.isArray(country.official_context) ? country.official_context.slice() : [],

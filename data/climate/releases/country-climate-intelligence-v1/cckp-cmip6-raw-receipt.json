@@ -1,0 +1,139 @@
+{
+  "artifact_type": "raw_cckp_cmip6_country_projection_receipt",
+  "raw_storage_policy": "upstream_only_unarchived",
+  "artifacts": [
+    {
+      "bytes": 5994,
+      "content_type": "application/json",
+      "file_name": "pr-ssp126-median.json",
+      "percentile": "median",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_pr_anomaly_annual_2040-2059_median_ssp126_ensemble_all_mean/global_countries?_format=json",
+      "scenario": "SSP1-2.6",
+      "sha256": "135f2a4142fb8a7feba478d9598f9c2f8b783d09d6395291237b363dfb8969be",
+      "unit": "mm/year",
+      "variable": "pr"
+    },
+    {
+      "bytes": 6012,
+      "content_type": "application/json",
+      "file_name": "pr-ssp245-median.json",
+      "percentile": "median",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_pr_anomaly_annual_2040-2059_median_ssp245_ensemble_all_mean/global_countries?_format=json",
+      "scenario": "SSP2-4.5",
+      "sha256": "74d995363c4b5a91f527f45abf56ea845794f7dee5475144b2fdff5b7805e9f9",
+      "unit": "mm/year",
+      "variable": "pr"
+    },
+    {
+      "bytes": 6219,
+      "content_type": "application/json",
+      "file_name": "pr-ssp245-p10.json",
+      "percentile": "p10",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_pr_anomaly_annual_2040-2059_p10_ssp245_ensemble_all_mean/global_countries?_format=json",
+      "scenario": "SSP2-4.5",
+      "sha256": "c971a5bd6c03ee677f9571451d54f4e2ee49de0a2fab43bf3e04652e81ec0a6d",
+      "unit": "mm/year",
+      "variable": "pr"
+    },
+    {
+      "bytes": 6037,
+      "content_type": "application/json",
+      "file_name": "pr-ssp245-p90.json",
+      "percentile": "p90",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_pr_anomaly_annual_2040-2059_p90_ssp245_ensemble_all_mean/global_countries?_format=json",
+      "scenario": "SSP2-4.5",
+      "sha256": "658e818d04b3b892bf5275e612071fd0d6f3418293845153e30fb50edb3f501b",
+      "unit": "mm/year",
+      "variable": "pr"
+    },
+    {
+      "bytes": 6069,
+      "content_type": "application/json",
+      "file_name": "pr-ssp585-median.json",
+      "percentile": "median",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_pr_anomaly_annual_2040-2059_median_ssp585_ensemble_all_mean/global_countries?_format=json",
+      "scenario": "SSP5-8.5",
+      "sha256": "8517fad49e794372a60e9c2f84f211e18f2f943558b6231bffe03b4157d20cb4",
+      "unit": "mm/year",
+      "variable": "pr"
+    },
+    {
+      "bytes": 5704,
+      "content_type": "application/json",
+      "file_name": "tas-ssp126-median.json",
+      "percentile": "median",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_tas_anomaly_annual_2040-2059_median_ssp126_ensemble_all_mean/global_countries?_format=json",
+      "scenario": "SSP1-2.6",
+      "sha256": "aa89f3a01b517cdf10c993e4b7ee57730071674ac69c385aa313b602d3fd36c6",
+      "unit": "°C",
+      "variable": "tas"
+    },
+    {
+      "bytes": 5699,
+      "content_type": "application/json",
+      "file_name": "tas-ssp245-median.json",
+      "percentile": "median",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_tas_anomaly_annual_2040-2059_median_ssp245_ensemble_all_mean/global_countries?_format=json",
+      "scenario": "SSP2-4.5",
+      "sha256": "931ea3fafa620ef92e3a48eb71406f673fae143a0df0191fd85b8227d7781b3b",
+      "unit": "°C",
+      "variable": "tas"
+    },
+    {
+      "bytes": 5711,
+      "content_type": "application/json",
+      "file_name": "tas-ssp245-p10.json",
+      "percentile": "p10",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_tas_anomaly_annual_2040-2059_p10_ssp245_ensemble_all_mean/global_countries?_format=json",
+      "scenario": "SSP2-4.5",
+      "sha256": "32f61e4290023112271f99f9270bb87dd804c3754705f78a547b0a02ee4b082b",
+      "unit": "°C",
+      "variable": "tas"
+    },
+    {
+      "bytes": 5713,
+      "content_type": "application/json",
+      "file_name": "tas-ssp245-p90.json",
+      "percentile": "p90",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_tas_anomaly_annual_2040-2059_p90_ssp245_ensemble_all_mean/global_countries?_format=json",
+      "scenario": "SSP2-4.5",
+      "sha256": "0195938a1f036784bbb0ef210d49841e08d22a8b9314b6b7422752110e6684f2",
+      "unit": "°C",
+      "variable": "tas"
+    },
+    {
+      "bytes": 5703,
+      "content_type": "application/json",
+      "file_name": "tas-ssp585-median.json",
+      "percentile": "median",
+      "retrieval_url": "https://cckpapi.worldbank.org/api/v1/cmip6-x0.25_climatology_tas_anomaly_annual_2040-2059_median_ssp585_ensemble_all_mean/global_countries?_format=json",
+      "scenario": "SSP5-8.5",
+      "sha256": "635bc1c1d135105ec8870f11f686dd759a82b9d8518e1de1869dc127f9899476",
+      "unit": "°C",
+      "variable": "tas"
+    }
+  ],
+  "identity_accounting": {
+    "mapped_registry_entities": 245,
+    "registry_gaps": [
+      "ATA",
+      "ESH",
+      "FLK",
+      "SGS"
+    ],
+    "unmapped_exception": {
+      "reason": "CCKP uses KSV for Kosovo, which is not an ISO 3166-1 entity in the fixed 249-entity registry.",
+      "upstream_code": "KSV"
+    },
+    "upstream_entities": 246
+  },
+  "period": "2040–2059 vs 1995–2014",
+  "response_metadata": {
+    "api_version": "v1",
+    "content_type": "application/json",
+    "retrieved_at": "2026-08-27T04:16:17Z",
+    "status": "success"
+  },
+  "retrieval_interface": "https://climateknowledgeportal.worldbank.org/download-data",
+  "source_registry_id": "world-bank-cckp-cmip6-2026-08-24"
+}

@@ -5,6 +5,13 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 const { POLICY_VERSION, evaluateTruthPolicy, resolveRunStatus } = require('./lib/climate-truth-ci-policy');
+const { PROFILE_CCI } = require('./lib/public-climate-release-profile');
+const {
+  CCI_AUTHORITY_PATHS,
+  CCI_COMPONENTS,
+  cciReleasePhase,
+  componentPlan,
+} = require('./lib/climate-truth-component-plan');
 
 const ROOT = path.resolve(__dirname, '..');
 const fixture = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/climate/fixtures/truth-ci-policy.json'), 'utf8'));
@@ -29,6 +36,17 @@ assert.strictEqual(POLICY_VERSION, fixture._meta.fixture_version);
 assert.deepStrictEqual(resolveRunStatus({ hardFailure: false, missingCount: 2, strict: true, allowIncomplete: false, reviewedCandidate: false }), { status: 'fail', exit_code: 1 });
 assert.deepStrictEqual(resolveRunStatus({ hardFailure: false, missingCount: 2, strict: false, allowIncomplete: true, reviewedCandidate: false }), { status: 'incomplete', exit_code: 0 });
 assert.deepStrictEqual(resolveRunStatus({ hardFailure: false, missingCount: 2, strict: false, allowIncomplete: true, reviewedCandidate: true }), { status: 'fail', exit_code: 1 });
+assert.equal(cciReleasePhase(ROOT, () => false), 'candidate');
+assert.equal(cciReleasePhase(ROOT, relative => CCI_AUTHORITY_PATHS.includes(relative)), 'release');
+assert.throws(() => cciReleasePhase(ROOT, relative => relative === CCI_AUTHORITY_PATHS[0]), /partial/);
+assert.deepStrictEqual(
+  componentPlan(CCI_COMPONENTS, PROFILE_CCI, 'candidate').map(item => item.id),
+  ['CCI-V1'],
+);
+assert.deepStrictEqual(
+  componentPlan(CCI_COMPONENTS, PROFILE_CCI, 'release').map(item => item.id),
+  ['CCI-RELEASE'],
+);
 const realRegistryInput = materialize(fixture.base);
 realRegistryInput.sources = realSourceRegistry.sources;
 assert.strictEqual(evaluateTruthPolicy(realRegistryInput).status, 'pass', 'real CT-01 registry is incompatible with the CT-10C fact fixture');
@@ -52,5 +70,6 @@ process.stdout.write([
   `  fictional cases: ${fixture.cases.length}`,
   `  pass / expected fail: ${passed} / ${failedAsExpected}`,
   '  real CT-01 PRIMAP source shape: compatible',
+  '  CCI candidate/release aggregate component sets: phase-exclusive',
   '  legacy runtime, truth language, release, diff, enums, lineage, licence, batch review, forbidden uses, and drift: covered'
 ].join('\n') + '\n');

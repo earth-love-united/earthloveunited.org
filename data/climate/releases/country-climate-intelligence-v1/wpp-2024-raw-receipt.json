@@ -1,0 +1,1621 @@
+{
+  "artifact_type": "raw_wpp_2024_receipt",
+  "raw_storage_policy": "upstream_only_unarchived",
+  "bytes": 16557272,
+  "content_md5": "ozQZwRtAcIbbevlCUsWpXQ==",
+  "content_type": "application/x-gzip",
+  "file_name": "WPP2024_Demographic_Indicators_Medium.csv.gz",
+  "identity_accounting": {
+    "aggregate_exceptions": 318,
+    "mapped_registry_entities": 236,
+    "selected_rows": 555,
+    "unmapped_exceptions": 1
+  },
+  "identity_exceptions": [
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ADB region: Central and West Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5507:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ADB region: Developed” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5512:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ADB region: East Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5508:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ADB region: South Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5509:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ADB region: Southeast Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5510:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ADB region: The Pacific” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5511:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “AUKUS” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1857:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “African Group” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1823:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “African Union” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1560:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “African Union: Central Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2080:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “African Union: Eastern Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2081:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “African Union: Northern Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2082:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “African Union: Southern Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2083:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “African Union: Western Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2084:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “African, Caribbean and Pacific (ACP) Group of States” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1200:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Andean Community” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1533:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Asia-Pacific Economic Cooperation (APEC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1207:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Asia-Pacific Group” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1824:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Association of Southeast Asian Nations (ASEAN)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1557:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “BRIC” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1525:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “BRICS” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1526:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Belt-Road Initiative (BRI)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2067:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Belt-Road Initiative: Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2068:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Belt-Road Initiative: Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2069:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Belt-Road Initiative: Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2070:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Belt-Road Initiative: Latin America and the Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2071:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Belt-Road Initiative: Pacific” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2072:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Black Sea Economic Cooperation (BSEC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1527:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Bolivarian Alliance for the Americas (ALBA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1569:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “CANZUK” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1858:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Caribbean Community and Common Market (CARICOM)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1530:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Central European Free Trade Agreement (CEFTA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1545:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “China (and dependencies)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1105:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Commonwealth of Independent States (CIS)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1566:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Commonwealth of Nations” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2074:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Commonwealth: Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2075:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Commonwealth: Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2076:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Commonwealth: Caribbean and Americas” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2077:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Commonwealth: Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2078:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Commonwealth: Pacific” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2079:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Countries with Access to the Sea” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1638:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Countries with Access to the Sea: Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2094:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Countries with Access to the Sea: Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2095:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Countries with Access to the Sea: Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2096:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Countries with Access to the Sea: Latin America and the Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2097:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Countries with Access to the Sea: Northern America” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2098:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Countries with Access to the Sea: Oceania” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2099:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Denmark (and dependencies)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1106:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: AMU” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98111:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: African Union Commission” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98106:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: CEN-SAD” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98112:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: COMESA” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98113:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Central Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98101:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: EAC” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98114:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: ECCAS” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98107:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: ECOWAS” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98108:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Eastern Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98102:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: IGAD” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98109:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Island economies” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98115:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Land-locked LDCs” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98117:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Land-locked countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98116:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Least developed countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98118:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Mineral-rich countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98119:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Non-Oil LDCs” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98120:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Non-Oil Producing” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98121:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: North Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98103:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Oil LDCs” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98122:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Oil producing economies” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98123:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: SADC” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98110:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Sahel” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98124:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Small Island states” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98125:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Southern Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98104:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: Sub-Saharan Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98126:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: United Nations Economic Commission for Africa - All countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98100:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECA: West Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98105:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECE: CIS (CWG)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98201:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECE: Eastern Europe, Caucasus and Central Asia (CIS)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98202:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECE: Euro area (EMU)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98204:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECE: European Union (E25)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98203:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECE: United Nations Economic Commission for Europe - All countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98200:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECE: West Balkans (ST7)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98205:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECLAC: Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98301:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECLAC: Latin America” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98302:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ECLAC: United Nations Economic Commission for Latin America and the Caribbean - All countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98300:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: ADB Developing member countries (ADB_DMC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98401:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: ADB Group A (ADB_DMC_A)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98402:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: ADB Group B (ADB_DMC_B)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98403:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: ADB Group C (ADB_DMC_C)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98404:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: ASEAN (ASEAN)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98406:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: Africa (AFR)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98405:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: Countries with Special Needs” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98434:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: ECO (ECO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98407:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: ENEA including Russian Fed (ENEA_RUS)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98433:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: East and North-East Asia (ENEA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98408:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: Europe (Europe)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98423:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: LDC (LDC_E)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98411:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: LLDC (LLDC_E)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98412:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: Latin America (LAC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98424:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: North America (NAM)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98425:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: North and Central Asia (NCA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98417:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: Other Area (OTH_REGION)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98426:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: PACIFIC (PAC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98418:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: Pacific island developing economies (PIDE)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98427:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: SAARC (SAARC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98428:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: Small Islands Developing States” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98435:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: South and South-West Asia (SSWA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98420:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: South-East Asia (SEA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98419:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: United Nations Economic and Social Commission for Asia and the Pacific - All countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98400:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: WB High Income Economies” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98436:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: WB Low Income Economies” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98439:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: WB Lower Middle Income Economies” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98438:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCAP: WB Upper Middle Income Economies” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98437:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCWA: Arab LDCs subregion” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98505:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCWA: Arab Low-Income Countries (LICs)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98509:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCWA: Arab Middle-Income Countries (MICs)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98508:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCWA: Arab countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98501:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCWA: Countries in conflict” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98506:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCWA: Gulf Cooperation Council (GCC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98502:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCWA: Maghreb subregion” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98504:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCWA: Mashreq subregion” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98503:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “ESCWA: Non-conflict middle income countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:98507:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “East African Community (EAC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1563:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Eastern European Group” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1825:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Economic Community of Central African States (ECCAS)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1538:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Economic Community of West African States (ECOWAS)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1540:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Economic Cooperation Organization (ECO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1547:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Eurasian Economic Community (Eurasec)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1546:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Europe (48)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1506:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “European Community (EC: 12)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1550:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “European Free Trade Agreement (EFTA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1544:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “European Union (EU: 15)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1549:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “European Union (EU: 27)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1551:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “European Union (EU: 28)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:986:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Five Eyes (FVEY)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1856:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “France (and dependencies)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1107:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Greater Arab Free Trade Area (GAFTA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1536:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group of 77 (G77)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1556:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group of Eight (G8)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1523:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group of Seven (G7)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1522:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group of Twenty (G20) - member states” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1524:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Gulf Cooperation Council (GCC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1561:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “IPCC AR6: Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5514:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “IPCC AR6: Australia, Japan, and New Zealand” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5522:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “IPCC AR6: Eastern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5518:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “IPCC AR6: Eastern Europe and West-Central Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5523:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “IPCC AR6: Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5521:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “IPCC AR6: Latin America and Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5516:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “IPCC AR6: Middle East” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5515:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “IPCC AR6: North America” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5517:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “IPCC AR6: South-East Asia and Pacific” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5520:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “IPCC AR6: Southern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5519:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Indo-Pacific Economic Framework (IPEF)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1854:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Lancang-Mekong Cooperation (LMC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1853:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Land-locked Countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1607:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Land-locked Countries (Others)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1674:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Latin American Integration Association (ALADI)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1532:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Latin American and Caribbean Group (GRULAC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1826:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “League of Arab States (LAS, informal name: Arab League)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1559:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Least developed: Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1475:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Least developed: Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1476:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Least developed: Latin America and the Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1477:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Least developed: Oceania” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1478:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Less developed: Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1479:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Less developed: Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1480:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Less developed: Latin America and the Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1481:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Less developed: Oceania” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1482:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “More developed: Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1483:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “More developed: Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1484:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “More developed: Northern America” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1485:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “More developed: Oceania” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1486:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Netherlands (and dependencies)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1108:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “New EU member states (joined since 2004)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1552:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “New Zealand (and dependencies)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1109:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Non-Self-Governing Territories” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1615:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “North Atlantic Treaty Organization (NATO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1555:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Organisation for Economic Co-operation and Development (OECD)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1505:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Organization for Security and Co-operation in Europe (OSCE)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2086:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Organization of American States (OAS)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2085:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Organization of Islamic Cooperation (OIC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1570:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Organization of Petroleum Exporting countries (OPEC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1521:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Quadrilateral Security Dialogue (QSD) (colloquially the Quad)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1855:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Shanghai Cooperation Organization (SCO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2073:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “South Asian Association for Regional Cooperation (SAARC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1321:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Southern African Development Community (SADC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1564:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Southern Common Market (MERCOSUR)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1534:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNFPA Regions” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1819:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNFPA: Arab States (AS)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1611:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNFPA: Asia and the Pacific (AP)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1610:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNFPA: East and Southern Africa (ESA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1703:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNFPA: Eastern Europe and Central Asia (EECA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1612:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNFPA: Latin America and the Caribbean (LAC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1613:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNFPA: West and Central Africa (WCA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1704:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF PROGRAMME REGIONS” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1818:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Programme Regions: East Asia and Pacific (EAPRO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1586:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Programme Regions: Eastern Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2042:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Programme Regions: Eastern and Southern Africa (ESARO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1587:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Programme Regions: Europe and Central Asia (CEECIS)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1585:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Programme Regions: Latin America” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2041:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Programme Regions: Latin America and Caribbean (LACRO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1589:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Programme Regions: Middle East and North Africa (MENARO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1590:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Programme Regions: South Asia (ROSA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1591:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Programme Regions: West and Central Africa (WCARO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1592:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF REGIONS” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2035:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Regions: East Asia and Pacific” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2036:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Regions: Eastern Europe and Central Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2034:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Regions: Eastern and Southern Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2039:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Regions: Europe and Central Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2029:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Regions: Latin America and Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2031:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Regions: Middle East and North Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2037:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Regions: North America” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2032:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Regions: South Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2038:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Regions: Sub-Saharan Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2033:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Regions: West and Central Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2040:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “UNICEF Regions: Western Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2030:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “United Kingdom (and dependencies)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1110:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “United Nations Member States” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1599:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “United States of America (and dependencies)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1111:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “United States-Mexico-Canada Agreement (USMCA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1852:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WB region: East Asia and Pacific (excluding high income)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1509:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WB region: Europe and Central Asia (excluding high income)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1510:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WB region: Latin America and Caribbean (excluding high income)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1511:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WB region: Middle East and North Africa (excluding high income)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1512:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WB region: South Asia (excluding high income)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1513:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WB region: Sub-Saharan Africa (excluding high income)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1508:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WHO Regions” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1820:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WHO: African region (AFRO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1593:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WHO: Americas (AMRO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1596:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WHO: Eastern Mediterranean Region (EMRO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1595:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WHO: European Region (EURO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1594:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WHO: South-East Asia region (SEARO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1597:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “WHO: Western Pacific region (WPRO)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1598:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “West African Economic and Monetary Union (UEMOA)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1543:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Western European and Others Group (WEOG)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1827:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “World Bank Regional Groups (developing only)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1801:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “World” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:900:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Sub-Saharan Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1834:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Northern Africa and Western Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1833:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Central and Southern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1831:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Eastern and South-Eastern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1832:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Latin America and the Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1830:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Oceania (excluding Australia and New Zealand)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1835:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Australia/New Zealand” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1836:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Europe and Northern America” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1829:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Europe, Northern America, Australia, and New Zealand” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5502:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “More developed regions” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:901:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Less developed regions” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:902:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Least developed countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:941:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Less developed regions, excluding least developed countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:934:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Less developed regions, excluding China” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:948:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Land-locked Developing Countries (LLDC)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1636:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “LLDC: Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2087:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “LLDC: Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2088:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “LLDC: Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2089:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “LLDC: Latin America” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2090:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Small Island Developing States (SIDS)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1637:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “SIDS Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2091:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “SIDS Pacific” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2092:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “SIDS Atlantic, Indian Ocean and South China Sea (AIS)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:2093:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “High-and-upper-middle-income countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5503:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Low-and-Lower-middle-income countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5504:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “High-income countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1503:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Low-and-middle-income countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1859:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Middle-income countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1517:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Upper-middle-income countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1502:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Lower-middle-income countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1501:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Low-income countries” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1500:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “No income group available” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:1518:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group A – already peaked (before 2024)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5536:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group A: Sub-Saharan Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5537:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group A: Northern Africa and Western Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5538:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group A: Eastern and South-Eastern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5540:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group A: Latin America and the Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5541:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group A: Oceania (excluding Australia and New Zealand)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5542:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group A: Europe, Northern America, Australia and New Zealand” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5543:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group B – peaking (between 2025-2054)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5544:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group B: Sub-Saharan Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5545:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group B: Northern Africa and Western Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5546:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group B: Central and Southern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5547:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group B: Eastern and South-Eastern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5548:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group B: Latin America and the Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5549:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group B: Oceania (excluding Australia and New Zealand)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5550:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group B: Europe, Northern America, Australia and New Zealand” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5551:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group C – growing (peak after 2055)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5552:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group C: Sub-Saharan Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5553:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group C: Northern Africa and Western Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5554:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group C: Central and Southern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5555:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group C: Eastern and South-Eastern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5556:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group C: Latin America and the Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5557:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group C: Oceania (excluding Australia and New Zealand)” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5558:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Group C: Europe, Northern America, Australia and New Zealand” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5559:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:903:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Eastern Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:910:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Middle Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:911:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Northern Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:912:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Southern Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:913:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Western Africa” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:914:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:935:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Central Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5500:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Eastern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:906:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Southern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5501:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “South-Eastern Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:920:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Western Asia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:922:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:908:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Eastern Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:923:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Northern Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:924:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Southern Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:925:2024:Medium"
+    },
+    {
+      "kind": "unmapped_exception",
+      "reason": "WPP publishes XKX for Kosovo, which is not an ISO 3166-1 entity in the fixed 249-entity registry.",
+      "upstream_id": "wpp-2024:iso3:XKX:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Western Europe” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:926:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Americas” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:5505:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Latin America and the Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:904:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Caribbean” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:915:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Central America” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:916:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “South America” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:931:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Northern America” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:905:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Oceania” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:909:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Australia/New Zealand” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:927:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Melanesia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:928:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Micronesia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:954:2024:Medium"
+    },
+    {
+      "kind": "aggregate_exception",
+      "reason": "UN WPP row “Polynesia” is an aggregate or non-country grouping outside the fixed ISO registry.",
+      "upstream_id": "wpp-2024:loc:957:2024:Medium"
+    }
+  ],
+  "last_modified": "Fri, 13 Dec 2024 19:11:17 GMT",
+  "retrieval_url": "https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_Demographic_Indicators_Medium.csv.gz",
+  "retrieved_on": "2026-08-27",
+  "selected_field": "TPopulation1July",
+  "selected_period": "2024",
+  "selected_variant": "Medium",
+  "sha256": "286ac36bb1415e2e1ade03acfef0a29f0e4c087e2f78e38c48f50c5df89082bc",
+  "source_catalog_url": "https://population.un.org/wpp/assets/downloads.json",
+  "source_registry_id": "un-wpp-2024",
+  "year_classification_2024": "projection"
+}

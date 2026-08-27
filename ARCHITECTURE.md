@@ -150,7 +150,7 @@ view model.
 ```mermaid
 flowchart LR
     SR["fail-closed source registry"] --> C["offline component compilers"]
-    C --> F["five reviewed normalized<br/>249-row component artifacts"]
+    C --> F["four reviewed normalized<br/>249-row component artifacts"]
     F --> X["deterministic intelligence builder"]
     X --> J["country-climate-intelligence.json<br/>exact SHA-256"]
     J --> D["Data.init()"]
@@ -168,8 +168,8 @@ flowchart LR
 
 `Data.init()` gives the essential Country Climate Intelligence runtime a bounded 60-second first-transfer deadline. The runtime still fails closed on timeout, HTTP failure, checksum drift, schema drift, or missing WebCrypto, but normal slow links are not converted into an empty evidence fallback. Headless CI holds the first response for 8.5 seconds with service workers disabled and requires all 249 entities to remain available.
 The candidate is parsed only after WebCrypto verifies SHA-256
-`d961610b1786b82755ecca266e20236f5ad13e0d5df25dd8345703fd50a41728`.
-Schema validation then proves 249 unique registry entities, exactly 27 metric
+`4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe`.
+Schema validation then proves 249 unique registry entities, exactly 26 metric
 records per entity, coverage derived from records, three complete lens
 partitions, explicit gaps, and the non-production release boundary. Candidate
 failure blocks 3D rendering and exposes no inferred climate values.
@@ -422,7 +422,7 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v69 precaches the public page, core CSS/JS, the refined
+`sw.js` cache epoch v73 precaches the public page, core CSS/JS, the refined
 three-move Climate Intelligence first orbit with separately spaced visual cue lanes and runtime-enforced compact lens/card air, the shared raised-tile lenses, evidence-only
 Physical-card percentile range, the simplified two-track Power fuel palette,
 verified local globe.gl, the CT-45 manifest and localized globe assets, the
@@ -502,7 +502,7 @@ release-profile selector cannot itself grant that authority.
 | Scientific policy added to `js/globe.js` | Renderer and evidence semantics can silently diverge | Keep eligibility, gaps, provenance, and visual models in `COUNTRY_CLIMATE_INTELLIGENCE` |
 | Missing upstream row treated as zero | Gaps become false measurements | Compile an enumerated gap or documented mapping exception |
 | Cross-source delta without exact scope equality | Accounting-frame differences look like disagreement | Require an identical scope fingerprint before computing a delta |
-| Raw snapshot retained in Git | Redistribution and repository-size risk | Keep raw files external; commit receipts, logs, reviewed normalized facts, and the compact runtime only |
+| Raw snapshot retained in Git | Redistribution and repository-size risk | Keep raw files out of Git; receipts must say whether publisher-immutable, externally archived, or upstream-only/unarchived |
 | Color alone conveys a lens value | Low vision and grayscale users lose the evidence class | Pair color with metric text, units, period, ordering, and explicit gap copy |
 | Geometry used as factual eligibility | Small states disappear from the dashboard | Keep the 249-entity evidence browser authoritative |
 | Archived subsystems copied into v1 | Reintroduces dead dependencies | Architecture review before restoration |

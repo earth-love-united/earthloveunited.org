@@ -4,7 +4,7 @@
 // Must load AFTER storage.js (depends on window.Storage).
 // ═══════════════════════════════════════════════
 
-const CLIMATE_INTELLIGENCE_SHA256 = 'd961610b1786b82755ecca266e20236f5ad13e0d5df25dd8345703fd50a41728';
+const CLIMATE_INTELLIGENCE_SHA256 = '4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe';
 // This is the essential 249-country runtime, not a decorative asset. Keep a
 // bounded fail-closed deadline, but allow slow first visits to finish the
 // compressed transfer and checksum instead of turning latency into "no data".
@@ -23,9 +23,14 @@ function _fetchTextWithTimeout(url, options = {}) {
     .then(async response => ({
       ok: response.ok,
       status: response.status,
-      text: await response.text(),
+      bytes: await response.arrayBuffer(),
     }));
   return Promise.race([request, timeout]).finally(() => clearTimeout(timer));
+}
+
+function _decodeUtf8(bytes) {
+  if (typeof TextDecoder !== 'function') throw new Error('Fatal UTF-8 decoding is unavailable');
+  return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
 }
 
 const Data = {
@@ -43,12 +48,12 @@ const Data = {
   climateCountries: null,
   climateRanking: null,
   climateCandidateState: 'idle',
-  version: 'cci1candidate8',
+  version: 'cci1runtime13',
 
   async init() {
-    // Country Climate Intelligence v1 is a hashed, static factual candidate.
-    // Browser code never calls source APIs and never upgrades candidate facts
-    // into scores, target assessments, or finance judgments.
+    // Country Climate Intelligence v1 is a hashed, static factual runtime.
+    // Browser code never calls source APIs or upgrades source facts into
+    // scores, target assessments, or finance judgments.
     const v = '?v=' + this.version;
     this.climateIntelligenceState = 'loading';
     this.climateCandidateState = 'loading';
@@ -73,7 +78,7 @@ const Data = {
         reportWarn('Data', `HTTP ${resp.status} for ${name}`);
         return null;
       }
-      const raw = JSON.parse(resp.text);
+      const raw = JSON.parse(_decodeUtf8(resp.bytes));
       // Unwrap envelope if present (_meta + data structure)
       if (raw && typeof raw === 'object' && '_meta' in raw && 'data' in raw) {
         this._meta = this._meta || {};
@@ -97,21 +102,22 @@ const Data = {
       reportWarn('Data', `HTTP ${response.status} for country-climate-intelligence`);
       return null;
     }
-    if (!globalThis.crypto?.subtle || typeof TextEncoder !== 'function') {
-      reportError('Data._parseCriticalClimateIntelligenceResponse()', new Error('WebCrypto SHA-256 is unavailable'));
+    if (!globalThis.crypto?.subtle || typeof TextDecoder !== 'function') {
+      reportError('Data._parseCriticalClimateIntelligenceResponse()', new Error('Raw-byte SHA-256 or fatal UTF-8 decoding is unavailable'));
       return null;
     }
     try {
-      const text = response.text;
-      const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+      const bytes = response.bytes;
+      if (!(bytes instanceof ArrayBuffer) && !ArrayBuffer.isView(bytes)) {
+        throw new Error('Country Climate Intelligence response did not expose raw bytes');
+      }
+      const digest = await globalThis.crypto.subtle.digest('SHA-256', bytes);
       const actual = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
       if (actual !== CLIMATE_INTELLIGENCE_SHA256) {
         reportError('Data._parseCriticalClimateIntelligenceResponse()', new Error('Country Climate Intelligence SHA-256 mismatch'));
         return null;
       }
-      const parsed = JSON.parse(text);
-      if (parsed?.release) parsed.release.verified_sha256 = actual;
-      return parsed;
+      return JSON.parse(_decodeUtf8(bytes));
     } catch (error) {
       reportError('Data._parseCriticalClimateIntelligenceResponse()', error);
       return null;
@@ -135,6 +141,7 @@ const Data = {
   getSite(id) { return this.sites ? this.sites.find(s => s.id === id) : null; },
   getCarbonProjects() { return null; },
   getClimateIntelligenceRelease() { return this.climateIntelligence; },
+  getClimateIntelligenceSha256() { return CLIMATE_INTELLIGENCE_SHA256; },
   getClimateIntelligenceCountry(id) {
     if (!this.climateIntelligenceCountries || typeof id !== 'string') return null;
     const trimmed = id.trim();
@@ -153,11 +160,15 @@ const Data = {
     const validation = hasModule('DATA_SCHEMA')
       ? safeCall('DATA_SCHEMA', 'validateClimateIntelligence', release)
       : { ok: false, errors: ['DATA_SCHEMA unavailable'] };
-    const boundaryValid = release?.release?.status === 'candidate' &&
-      release?.release?.review_state === 'normalized_factual_candidate_pending_source_revalidation' &&
+    const candidateBoundaryValid = release?.release?.status === 'candidate' &&
+      release?.release?.review_state === 'normalized_factual_candidate_pending_independent_scientific_review' &&
       release?.release?.production_runtime_release === false;
+    const productionBoundaryValid = release?.release?.status === 'production' &&
+      release?.release?.review_state === 'independently_reviewed' &&
+      release?.release?.production_runtime_release === true;
+    const boundaryValid = candidateBoundaryValid || productionBoundaryValid;
     if (!validation?.ok || !boundaryValid) {
-      const details = validation?.errors?.slice(0, 3).join('; ') || 'candidate release boundary invalid';
+      const details = validation?.errors?.slice(0, 3).join('; ') || 'release-state boundary invalid';
       this.climateIntelligence = null;
       this.climateIntelligenceCountries = null;
       this.climateCandidate = null;
@@ -233,7 +244,7 @@ window.Data = Data;
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('Data', {
-    provides: ['init', 'reloadClimateIntelligence', 'getClimateIntelligenceRelease', 'getClimateIntelligenceCountry', 'getClimateLensCatalog', 'isClimateIntelligenceReady', 'fmt', 'getClimateCountry', 'getClimateRanking', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'reloadClimateIntelligence', 'getClimateIntelligenceRelease', 'getClimateIntelligenceSha256', 'getClimateIntelligenceCountry', 'getClimateLensCatalog', 'isClimateIntelligenceReady', 'fmt', 'getClimateCountry', 'getClimateRanking', 'reset', 'destroy', 'getState'],
     requires: ['STORAGE_ADAPTER'],
   });
 }

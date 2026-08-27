@@ -1,10 +1,10 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v72) — atomically stage the candidate.5 scientific-identity
- * corrections, exact release-review contract, and lens-clear tutorial shelf.
+ * Globe cache (v76) — atomically stage candidate.7 with independently
+ * re-fetched open-source inputs, review-safe presentation, and rollback runtime.
  */
-const CACHE_NAME = 'elu-v72-tutorial-lens-clear';
+const CACHE_NAME = 'elu-v77-cci-raw-byte-boundary';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -27,16 +27,16 @@ const STATIC_ASSETS = [
   '/js/event-bus.js',
   '/js/storage-adapter.js',
   '/js/storage.js',
-  '/js/data-schema.js?v=v1',
-  '/js/data.js?v=v11',
-  '/js/country-climate-intelligence.js?v=v14',
-  '/js/globe.js?v=v38',
+  '/js/data-schema.js?v=v2',
+  '/js/data.js?v=v16',
+  '/js/country-climate-intelligence.js?v=v17',
+  '/js/globe.js?v=v40',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v6',
   '/js/app.js?v=v5',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
-  '/data/climate/runtime/country-climate-intelligence.json?v=cci1candidate8',
+  '/data/climate/runtime/country-climate-intelligence.json?v=cci1runtime13',
   // Retained for one release epoch as the factual rollback artifact.
   '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',
 ];

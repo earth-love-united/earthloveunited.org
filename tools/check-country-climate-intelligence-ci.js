@@ -33,11 +33,12 @@ try {
   run('tools/check-country-climate-intelligence.js');
   run('tools/check-country-climate-intelligence-ui.js');
   run('tools/check-country-climate-runtime-atomic.js');
+  run('tools/check-country-climate-intelligence-release-signatures.js');
   run('tools/check-country-climate-intelligence-release-gate.js', ['--self-test']);
   run('tools/check-country-climate-intelligence-release-gate.js');
   run('tools/check-country-climate-public-release-boundary.js', ['--self-test']);
   run('tools/check-country-climate-public-release-boundary.js');
-  console.log('Country Climate Intelligence CI passed (governance, compilers, derivations, deterministic build, runtime, UI, atomic staging, and candidate-only public boundary).');
+  console.log('Country Climate Intelligence CI passed (governance, compilers, derivations, deterministic build, runtime, UI, atomic staging, release-signature policy, and candidate-only public boundary).');
 } finally {
   fs.rmSync(temporaryDirectory, { recursive: true, force: true });
 }

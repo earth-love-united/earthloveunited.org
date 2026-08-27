@@ -11,6 +11,11 @@ const {
   PROFILE_LEGACY_CT40,
   detectPublicClimateReleaseProfile,
 } = require('./lib/public-climate-release-profile');
+const {
+  CCI_COMPONENTS,
+  cciReleasePhase,
+  componentPlan,
+} = require('./lib/climate-truth-component-plan');
 
 const ROOT = path.resolve(__dirname, '..');
 const STRICT = process.argv.includes('--strict') || process.argv.includes('--require-complete');
@@ -50,14 +55,7 @@ const COMPONENTS = Object.freeze([
   { id: 'CT-42-ROLLBACK', script: 'tools/check-ct42-runtime-rollback-proof.js', profiles: [PROFILE_LEGACY_CT40], required: true },
   { id: 'CT-40', script: 'tools/check-climate-release-gate.js', profiles: [PROFILE_LEGACY_CT40], required: true },
   { id: 'CT-40-RELEASE', script: 'tools/check-reviewed-climate-release.js', profiles: [PROFILE_LEGACY_CT40], required: true },
-  { id: 'CCI-V1', script: 'tools/check-country-climate-intelligence-ci.js', profiles: [PROFILE_CCI], required: true },
-  {
-    id: 'CCI-RELEASE',
-    script: 'tools/check-country-climate-intelligence-release-gate.js',
-    args: STRICT ? ['--require-release'] : [],
-    profiles: [PROFILE_CCI],
-    required: true,
-  },
+  ...CCI_COMPONENTS,
   { id: 'public-copy', script: 'tools/check-public-copy.js', required: true },
   { id: 'CT-11-generated', script: 'tools/build-major-emitter-ndc-release.js', args: ['--check'], required: false }
 ]);
@@ -196,9 +194,8 @@ function isRelativePath(value) {
 }
 
 const before = gitClimateStatus();
-const components = COMPONENTS
-  .filter((component) => !component.profiles || component.profiles.includes(ACTIVE_PROFILE))
-  .map(runComponent);
+const ACTIVE_PHASE = ACTIVE_PROFILE === PROFILE_CCI ? cciReleasePhase(ROOT) : null;
+const components = componentPlan(COMPONENTS, ACTIVE_PROFILE, ACTIVE_PHASE).map(runComponent);
 const after = gitClimateStatus();
 const generatedDrift = JSON.stringify(before) !== JSON.stringify(after);
 const missing = components.filter((item) => item.status === 'missing' && item.required).map((item) => item.id);
@@ -216,6 +213,7 @@ const resolved = resolveRunStatus({ hardFailure, missingCount: uniqueMissing.len
 const report = {
   schema_version: '1.0.0',
   active_profile: ACTIVE_PROFILE,
+  active_phase: ACTIVE_PHASE,
   mode: STRICT ? 'strict' : ALLOW_INCOMPLETE ? 'allow-incomplete' : 'stack-aware',
   status: resolved.status,
   components,

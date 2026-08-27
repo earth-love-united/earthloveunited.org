@@ -21,6 +21,12 @@ const {
 const SOURCE_ID = 'un-wpp-2024';
 const METRIC_ID = 'population.wpp_medium_projection';
 
+function upstreamId(row) {
+  return row.ISO3_code
+    ? `wpp-2024:iso3:${row.ISO3_code}:2024:Medium`
+    : `wpp-2024:loc:${row.LocID}:2024:Medium`;
+}
+
 function compile(args) {
   const inputPath = path.resolve(option(args, '--input'));
   const receiptPath = path.resolve(option(args, '--receipt'));
@@ -31,7 +37,7 @@ function compile(args) {
   }
   verifySnapshot(inputPath, receipt);
   const sourceRegistry = readJson(path.join(ROOT, 'data/climate/source-registry.json'));
-  assertSourceApproved(sourceRegistry, SOURCE_ID, ['ISO3_code', 'Location', 'Time', 'Year', 'Variant', 'PopTotal']);
+  assertSourceApproved(sourceRegistry, SOURCE_ID, ['ISO3_code', 'LocID', 'Location', 'Time', 'Variant', 'TPopulation1July']);
   const registry = loadCountryRegistry();
   const registryByIso3 = new Map(registry.entities.map(entity => [entity.iso_alpha3, entity]));
   const rows = readCsvSnapshot(inputPath);
@@ -40,21 +46,21 @@ function compile(args) {
   const exceptions = new Map((receipt.identity_exceptions || []).map(exception => [exception.upstream_id, exception]));
   const values = new Map();
   const dispositions = [];
-  for (const [index, row] of selected.entries()) {
-    const upstreamId = row.ISO3_code || `row:${index + 2}`;
+  for (const row of selected) {
+    const rowUpstreamId = upstreamId(row);
     const iso3 = row.ISO3_code;
     if (registryByIso3.has(iso3)) {
       if (values.has(iso3)) throw new Error(`Duplicate WPP 2024 population row for ${iso3}`);
-      const raw = Number(row.PopTotal);
-      if (!Number.isFinite(raw) || raw < 0) throw new Error(`Invalid WPP PopTotal for ${iso3}`);
+      const raw = Number(row.TPopulation1July);
+      if (!Number.isFinite(raw) || raw < 0) throw new Error(`Invalid WPP TPopulation1July for ${iso3}`);
       values.set(iso3, { location: row.Location, value: round(raw * 1000, 0) });
-      dispositions.push({ country_id: registryByIso3.get(iso3).country_id, upstream_id: upstreamId });
+      dispositions.push({ country_id: registryByIso3.get(iso3).country_id, upstream_id: rowUpstreamId });
     } else {
-      const exception = exceptions.get(upstreamId);
+      const exception = exceptions.get(rowUpstreamId);
       if (!exception || !['aggregate_exception', 'territory_exception', 'unmapped_exception'].includes(exception.kind) || !exception.reason) {
-        throw new Error(`WPP upstream row ${upstreamId} has neither a registry mapping nor an enumerated exception`);
+        throw new Error(`WPP upstream row ${rowUpstreamId} has neither a registry mapping nor an enumerated exception`);
       }
-      dispositions.push({ [exception.kind]: exception.reason, upstream_id: upstreamId });
+      dispositions.push({ [exception.kind]: exception.reason, upstream_id: rowUpstreamId });
     }
   }
   const unusedExceptions = [...exceptions.keys()].filter(id => !dispositions.some(item => item.upstream_id === id));
@@ -88,12 +94,12 @@ function compile(args) {
         gap_reason: null,
         id: METRIC_ID,
         period: { end: 2024, label: '2024', start: 2024 },
-        review_state: 'compiler_candidate_requires_scientific_review',
+        review_state: 'normalized_candidate_pending_independent_scientific_review',
         scope,
         scope_fingerprint: scopeFingerprint(scope),
         source_ids: [SOURCE_ID],
         status: 'modeled',
-        transformation: 'PopTotal_thousands_times_1000;year_2024_and_Medium_projection_selected',
+        transformation: 'TPopulation1July_thousands_times_1000;year_2024_and_Medium_projection_selected',
         uncertainty: { kind: 'not_provided_in_selected_table', lower: null, upper: null },
         unit: 'persons',
         value: population.value,
@@ -110,7 +116,7 @@ function compile(args) {
     identity_accounting: { dispositions, rule: 'Every selected 2024 Medium upstream row maps once or has one enumerated exception.' },
     input_receipt: receipt,
     metric_ids: [METRIC_ID],
-    review_state: 'compiler_candidate_requires_scientific_review',
+    review_state: 'normalized_factual_candidate_pending_independent_scientific_review',
     schema_version: '1.0.0',
     source_registry_ids: [SOURCE_ID],
   };
@@ -128,4 +134,4 @@ if (require.main === module) {
   try { main(); } catch (error) { console.error(error.stack || error.message); process.exitCode = 1; }
 }
 
-module.exports = { compile };
+module.exports = { compile, upstreamId };

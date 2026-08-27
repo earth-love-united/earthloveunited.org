@@ -1,10 +1,10 @@
 # Country Climate Intelligence v1 methodology
 
-**Status:** normalized factual candidate pending source revalidation; not a production scientific release
+**Status:** exact-source-revalidated factual candidate pending independent scientific and release-owner review
 
-**Methodology version:** 1.1.0
+**Methodology version:** 1.2.0
 
-**Candidate date:** 2026-08-25
+**Candidate date:** 2026-08-27
 
 ## Purpose
 
@@ -38,8 +38,7 @@ The card keeps these facts separate:
 - latest available consumption-based fossil CO₂;
 - latest net transfer of embodied fossil CO₂;
 - 2015–2024 land-use CO₂ mean and model spread;
-- territorial fossil CO₂ per person using the year-matched WPP 2024 Medium population projection;
-- independent 2024 GHG context from Climate TRACE.
+- territorial fossil CO₂ per person using the year-matched WPP 2024 Medium population projection.
 
 Land-use change never enters the territorial fossil comparison value. Positive net transfer follows the GCB territorial-minus-consumption convention and means net exported embodied emissions.
 
@@ -71,13 +70,12 @@ Each upstream identity ledger maps 245 series to registry entities and records C
 |---|---|
 | Core carbon | Global Carbon Budget 2025 v1.0, including separate national fossil and land-use workbooks |
 | Population denominator | UN World Population Prospects 2024, exact 2024 Medium projection only |
-| Independent GHG context | Climate TRACE API v7 country response retrieved 2026-08-24, reporting inventory version 5.9.0; immutable inventory binding unresolved; 2024 estimate, forestry/LULUCF excluded, IPCC AR6 GWP100 |
 | Power | Ember Yearly Electricity Data, exact 2019/2024 annual aggregates and nine exact 2024 generation-fuel rows under Ember's published taxonomy |
 | Projected physical climate | World Bank CCKP CMIP6 country aggregates |
 | Observed physical climate | World Bank CCKP ERA5 annual country temperature and precipitation aggregates; exact variable-specific 1950–2025 snapshots, with both 1970–2025 series and OLS trends retained |
 | Official context | Existing UNFCCC document title, submission date, and direct-link metadata only |
 
-Every value-contributing component requires a reviewed licence, attribution, field and metric permitlists, exact retrieval receipt/checksum, external raw-storage decision, normalized-value redistribution approval, and versioned source ID. The GCB, Ember, and refreshed ERA5 temperature and precipitation inputs have pinned raw receipts; their normalized snapshots and complete upstream disposition ledgers are also pinned. WPP, Climate TRACE, and CCKP CMIP6 remain candidate-only pending retained raw-receipt revalidation; Climate TRACE external-data exceptions and the CCKP/CMIP6 derivative licence chain also require release-specific rights review. Ember and all other optional components still require independent scientific review before production promotion. Browser code calls no source API and uses no API key.
+Every value-contributing component requires a reviewed licence, attribution, field and metric permitlists, exact retrieval receipt/checksum, explicit raw-custody class, normalized-value redistribution decision, and versioned source ID. Candidate.7 independently re-fetches and pins the exact GCB, WPP, Ember, CCKP CMIP6, and CCKP ERA5 inputs. Ten CCKP projection responses reproduce all 2,450 mapped projection values; Ember and both ERA5 responses reproduce their pinned bytes; the current WPP gzip and both GCB workbooks compile from exact official bytes with complete identity ledgers. GCB uses immutable publisher objects. WPP, Ember, and CCKP are explicitly upstream-only/unarchived, so later recovery of those exact raw bytes is not guaranteed if publishers replace them; normalized components and the runtime remain pinned. The source registry documents GCB/Ember/CCKP CC BY 4.0 and WPP CC BY 3.0 IGO permissions and change notices. Independent scientific review and release-owner confirmation of those rights decisions remain required before production promotion. Browser code calls no source API and uses no API key. Climate TRACE is outside the v1 evidence boundary and contributes no source record, component, metric, or review obligation.
 
 PRIMAP-hist v2.7 is not acquired or ingested. The reviewed v2.6.1 artifact contributes no value and appears only in detailed citation provenance.
 
@@ -118,7 +116,7 @@ All numeric outputs are rounded to six decimal places after the stated calculati
 
 A numerical source delta is allowed only when metric, accounting frame, gases, sectors, geography, LULUCF treatment, GWP, unit, and period all match exactly. The scope fingerprint is evidence for the complete scope object, not permission to compare two different metric IDs.
 
-GCB territorial fossil CO₂ and Climate TRACE economy-wide GHG do not match. They are displayed side by side with a non-comparability note; no disagreement percentage is calculated.
+No cross-source carbon disagreement percentage is calculated in v1.
 
 ## Ordering and gaps
 
@@ -148,7 +146,7 @@ The body-level fallback exposes the same 249 records, current lens, comparison p
 
 The checked-in artifact is a candidate with `production_runtime_release=false`. The previous factual runtime remains staged for rollback. Promotion requires all of the following:
 
-1. source licences, permitlists, external raw receipts, and checksums independently revalidated;
+1. source licences, permitlists, exact raw receipts, custody classes, and checksums independently revalidated;
 2. core-carbon and optional-component scientific review;
 3. schema, compiler, derivation, coverage, and exact-runtime checks;
 4. visual, keyboard, screen-reader, narrow-screen, WebGL, and fallback review;

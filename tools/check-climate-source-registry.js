@@ -28,7 +28,6 @@ const REQUIRED_DOMAINS = new Set([
   'consumption_emissions',
   'lulucf_co2',
   'economy_wide_ghg',
-  'independent_ghg',
   'independent_ambition',
   'power',
   'observed_climate',
@@ -40,7 +39,6 @@ const REQUIRED_DOMAINS = new Set([
 const INTELLIGENCE_VALUE_SOURCES = new Set([
   'gcp-gcb-2025-v1.0',
   'un-wpp-2024',
-  'climate-trace-api-v7-2026-08-24-country-annual',
   'ember-yearly-electricity-data-2026-08-25',
   'world-bank-cckp-cmip6-2026-08-24',
   'world-bank-cckp-era5-2026-08-25',
@@ -305,16 +303,6 @@ function validateSource(source, index, configuredDomains, errors) {
     }
   }
 
-  if (source.id === 'climate-trace-api-v7-2026-08-24-country-annual') {
-    if (source.version !== 'API v7 response retrieved 2026-08-24; reported inventory version 5.9.0; immutable release binding unresolved' ||
-        source.licence?.identifier !== 'CC-BY-4.0-with-listed-exceptions') {
-      errors.push(`${source.id} must identify the API response separately from the unresolved immutable inventory release.`);
-    }
-    ['sector', 'gas', 'co2e_100yr_tonnes', 'gwp_basis', 'estimate_status'].forEach(field => {
-      if (!source.ingestion_gate?.field_permitlist?.includes(field)) errors.push(`${source.id} must permitlist ${field}.`);
-    });
-  }
-
   if (source.id === 'ember-yearly-electricity-data-2026-08-25') {
     if (!source.domains?.includes('power') || source.licence?.identifier !== 'CC-BY-4.0') {
       errors.push(`${source.id} must retain the reviewed power domain and CC BY 4.0 terms.`);
@@ -431,7 +419,6 @@ function validateRegistry(registry) {
     errors.push('Registry must include the legacy Climate Watch/WRI field-lineage gate.');
   }
   [
-    'climate-trace-api-v7-2026-08-24-country-annual',
     'ember-yearly-electricity-data-2026-08-25',
     'world-bank-cckp-cmip6-2026-08-24',
     'world-bank-cckp-era5-2026-08-24',
@@ -439,8 +426,8 @@ function validateRegistry(registry) {
   ].forEach(id => {
     if (!ids.has(id)) errors.push(`Registry must include the Country Climate Intelligence component source: ${id}`);
   });
-  if (registry.schema_version !== '1.4.0' || registry.sources?.length !== 21) {
-    errors.push('Country Climate Intelligence registry v1 must contain schema 1.4.0 and exactly 21 reviewed source decisions.');
+  if (registry.schema_version !== '1.4.0' || registry.sources?.length !== 20) {
+    errors.push('Country Climate Intelligence registry v1 must contain schema 1.4.0 and exactly 20 reviewed source decisions.');
   }
 
   return errors;

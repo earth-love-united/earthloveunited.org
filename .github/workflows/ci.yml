@@ -21,18 +21,22 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   static:
     name: SDK static checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '20'
 
@@ -50,6 +54,9 @@ jobs:
 
       - name: Globe runtime approval cryptographic policy
         run: node tools/check-globe-runtime-approval.js
+
+      - name: Country Climate Intelligence release signature policy
+        run: node tools/check-country-climate-intelligence-release-signatures.js
 
       - name: Final staged production integrity policy self-test
         run: node tools/check-staged-production-integrity.js --self-test
@@ -90,7 +97,12 @@ jobs:
         run: python3 scripts/verify_load_order.py
 
       - name: Country Climate Intelligence v1 candidate contract
+        if: ${{ steps.climate_profile.outputs.profile == 'cci' && steps.climate_profile.outputs.phase == 'candidate' }}
         run: node tools/check-country-climate-intelligence-ci.js
+
+      - name: Country Climate Intelligence v1 reviewed-release gate
+        if: ${{ steps.climate_profile.outputs.profile == 'cci' && steps.climate_profile.outputs.phase == 'release' }}
+        run: node tools/check-country-climate-intelligence-release-gate.js --require-release
 
       - name: Country Climate Intelligence WebGL fallback parity
         run: node tools/check-globe-webgl-fallback.js
@@ -121,7 +133,7 @@ jobs:
         run: node tools/climate-truth-ci.js --allow-incomplete
 
       - name: Climate truth CI reviewed-release gate
-        if: ${{ steps.climate_profile.outputs.profile == 'legacy_ct40' && steps.climate_profile.outputs.phase == 'release' }}
+        if: ${{ steps.climate_profile.outputs.phase == 'release' }}
         run: node tools/climate-truth-ci.js --strict
 
       - name: node --check on every JS file
@@ -150,13 +162,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: static
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '20'
 
@@ -219,10 +232,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [static, factual_public]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '20'
 
@@ -273,7 +287,7 @@ jobs:
       - name: Install Playwright + Chromium
         run: |
           npm init -y >/dev/null
-          npm install --no-save playwright@1
+          npm install --no-save --no-package-lock playwright@1.59.1
           npx playwright install chromium --with-deps
 
       - name: Serve static site in background

@@ -1,8 +1,8 @@
 # Country Climate Intelligence v1 source-rigor audit
 
-**Audit date:** 2026-08-24; observed-climate and Ember fuel-mix follow-up 2026-08-25
+**Audit date:** 2026-08-24; observed-climate and Ember fuel-mix follow-up 2026-08-25; Climate TRACE removal and full source re-fetch 2026-08-27
 
-**Candidate runtime SHA-256:** `d961610b1786b82755ecca266e20236f5ad13e0d5df25dd8345703fd50a41728`
+**Candidate runtime SHA-256:** `4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe`
 
 **Verdict:** no priority-zero scientific defect found; candidate remains ineligible for production promotion pending the open evidence and rights gates below.
 
@@ -10,11 +10,13 @@ This record combines the independent read-only review of the source registry, no
 
 ## Verified strengths
 
-- Global Carbon Budget acquisition receipts and exact raw checksums are retained and verified.
-- Ember's 49,079,981-byte long-format snapshot, retrieval metadata, and SHA-256 are retained externally by exact receipt; the normalized component is separately checksummed.
+- Global Carbon Budget acquisition receipts and exact raw checksums are independently re-fetched and verified; a complete 237-entity source-name disposition ledger is pinned.
+- Ember's 49,079,981-byte long-format snapshot, retrieval metadata, and SHA-256 were independently re-fetched byte-for-byte; the normalized component rebuild is identical.
+- The exact current WPP 2024 Medium gzip and ten CCKP CMIP6 projection responses are pinned. WPP maps 236 registry entities; all 2,450 mapped CCKP projection values reproduce without a difference.
+- Both exact CCKP ERA5 country responses were independently re-fetched and match their pinned temperature and precipitation hashes.
 - The runtime deterministically partitions all 249 registry entities: Carbon 213 comparable / 36 explicit gaps, Power 195 / 54, and Physical 245 / 4.
 - Missing values remain distinct from zero and territory records are not populated from parent countries.
-- GCB territorial fossil CO₂ and independent economy-wide GHG context remain explicitly non-comparable; the runtime produces no disagreement percentage.
+- GCB fossil and land-use accounting scopes remain separate; the runtime produces no disagreement percentage.
 - Lens ordering is constrained by metric, period, and evidence class.
 - PRIMAP-hist v2.7 is absent. The reviewed v2.6.1 artifact remains citation-only and contributes no public value.
 
@@ -23,13 +25,13 @@ This record combines the independent read-only review of the source registry, no
 | Finding | Correction |
 |---|---|
 | WPP 2024 Medium was described as an estimate even though the 2024 Medium series is a projection. | The compiler now requires a `projection` receipt classification. The stable denominator ID is `population.wpp_medium_projection`; population and derived per-capita records are modeled, with public copy stating “WPP 2024 Medium population projection.” |
-| Climate TRACE candidate provenance named inventory v5.9.0 even though the retained acquisition identity was an API v7 response. | The source ID now names the exact API route/date. The response-reported 5.9.0 version is separate metadata, immutable release identity remains explicitly unresolved, and the production compiler requires independent confirmation of that binding. |
+| Climate TRACE carried unresolved source identity and field-level upstream rights. | Candidate.6 removes the component, source record, compiler path, all 249 independent-GHG metric records, and the corresponding scientific and rights review obligations. |
 | The Ember compiler could accept `MtCO2e` and relabel it as `MtCO2`. | Power-emissions normalization now accepts only an explicit `MtCO2` unit; CO₂-equivalent rows fail closed. |
 | A clean/fossil/wind-and-solar display could look additive while hiding the generation taxonomy. | The compiler now permitlists nine exact fuel-share metrics, preserves blank cells as gaps, distinguishes source zeroes, and accepts a visual mix only when non-blank clean and fossil components reconcile to their aggregate anchors within ±0.02 percentage points. The browser uses two aligned tracks and never rescales the source rows. |
 | Duplicate CCKP scenario/percentile tuples could overwrite an earlier row. | Projection and observed-year duplicates now throw, with negative compiler fixtures. |
-| Optional-source normalized facts appeared more approved than their retained evidence justified. | WPP, Climate TRACE, Ember, and CCKP facts now carry `normalized_candidate_pending_source_revalidation`; release-specific source states and gates remain pending. |
+| Optional-source normalized facts appeared more approved than their retained evidence justified. | WPP, Ember, and CCKP facts remain candidates pending independent scientific review. Candidate.7 adds exact raw receipts and reproduction evidence without self-promoting their science or final rights decisions. |
 
-The original classification corrections changed evidence state and validation without altering existing metrics. The later Ember follow-up expands the candidate from 18 to 27 metrics with exact published fuel shares; it does not modify the existing clean-share comparison values or ordering.
+The original classification corrections changed evidence state and validation without altering existing metrics. The Ember follow-up expanded the candidate with exact published fuel shares; candidate.6 then removed the single Climate TRACE metric, leaving 26 metrics. Candidate.7 compiles the current official inputs: 26 WPP denominators change by one person and 182 GCB cumulative/land-use results change by at most 0.000008 MtCO₂, while annual GCB facts, Ember, and all CCKP values remain exact.
 
 The later v46 raised-tile treatment and v47 subtle/inverse-relief demo change only presentation behavior. They do not alter source facts, coverage, ordering, or country-level numeric values. The inverse Carbon treatment is query-only, declares its direction in the legend and view model, and leaves the raw descending emissions rail unchanged.
 
@@ -59,16 +61,15 @@ The recovery resolves the acquisition defect for 245 entities. It does not self-
 
 ## Open production blockers
 
-1. Independently retain and revalidate exact external raw acquisition receipts and checksums for WPP, Climate TRACE, and CCKP CMIP6; independently verify the pinned Ember and ERA5 receipts against their reviewed compiler contracts.
-2. Complete release-specific redistribution review for Climate TRACE fields that may originate in listed external datasets.
-3. Complete release-specific review of the World Bank CCKP and underlying CMIP6 derivative-licence chain.
-4. Approve the CCKP individual-model roster, NetCDF licence receipts, pinned boundary representation, and model-first aggregation method before filling any of the four projected-temperature gaps.
-5. Independently review the CCKP ERA5 `tas`/`pr` attribution, permitlists, aggregate semantics, 1970–2025 selection, OLS implementation, and four explicit identity gaps.
-6. Complete independent scientific review of core-carbon mappings and derivations, plus the optional source taxonomies and selections.
-7. Obtain the required protected-file and final production approvals.
-8. Regenerate the machine-readable review request against the post-fix candidate commit, then produce the CCI-specific approval, reviewed release diff, reviewed runtime manifest, and executable rollback proof. Historical CT-40 bindings are structurally inapplicable and must not be reused.
+1. Independently review the GCB, WPP, Ember, CMIP6, and ERA5 receipt pins already reproduced by the implementation candidate.
+2. Confirm the documented release-specific rights decisions: GCB/Ember/CCKP under CC BY 4.0, WPP under CC BY 3.0 IGO, WCRP/ESGF acknowledgement, and ERA5/Copernicus attribution.
+3. Approve an individual-model roster, NetCDF licence receipts, pinned boundary representation, and model-first aggregation method before filling any of the four projected-temperature gaps; the v1 country-API gaps remain explicit.
+4. Independently review the CCKP ERA5 `tas`/`pr` aggregate semantics, units, 1970–2025 selection, OLS implementation, and four explicit identity gaps.
+5. Complete independent scientific review of the 216 GCB mappings and derivations, plus the retained WPP, Ember, and CCKP taxonomies and selections.
+6. Obtain the required visual/accessibility, protected-file, asset-rights, and final production approvals.
+7. Regenerate the machine-readable review request against the post-fix candidate commit, then produce the CCI-specific approval, reviewed release diff, reviewed runtime manifest, and executable rollback proof. Historical CT-40 bindings are structurally inapplicable and must not be reused.
 
-Until these are complete, `raw_receipt_revalidation`, `redistribution_rights_revalidation`, `independent_scientific_review`, and `production_runtime_release` remain false.
+The implementation-level `raw_receipt_revalidation` gate is now true. Until the remaining reviews are complete, `redistribution_rights_revalidation`, `independent_scientific_review`, and `production_runtime_release` remain false.
 
 The exact reviewer handoff and artifact chain are documented in [COUNTRY-CLIMATE-RELEASE-REVIEW.md](COUNTRY-CLIMATE-RELEASE-REVIEW.md). The committed `review-request.json` is intentionally unbound until the implementation commit exists; the release gate treats that state as a blocker, not an approval.
 
@@ -76,7 +77,6 @@ The exact reviewer handoff and artifact chain are documented in [COUNTRY-CLIMATE
 
 - [Global Carbon Budget 2025 ICOS collection](https://meta.icos-cp.eu/collections/AxnIW-ydMBT4BdKjxV63DGQl)
 - [UN World Population Prospects 2024 portal](https://www.un.org/development/desa/pd/world-population-prospects-2024) and [methodology report](https://population.un.org/wpp/assets/Files/WPP2024_Methodology-Report_Final.pdf)
-- [Climate TRACE data guide](https://climatetrace.org/data) and [terms](https://climatetrace.org/terms)
 - [Ember Yearly Electricity Data](https://ember-energy.org/data/yearly-electricity-data/) and [API documentation](https://api.ember-energy.org/v1/docs)
 - [World Bank CCKP metadata](https://climateknowledgeportal.worldbank.org/index.php/metadata) and [CMIP6 collection documentation](https://worldbank.github.io/climateknowledgeportal/docs/collections/cmip6-x0.25.html)
 - [CCKP public AWS data documentation](https://worldbank.github.io/climateknowledgeportal/README.html) and [ERA5 collection documentation](https://worldbank.github.io/climateknowledgeportal/docs/collections/era5-x0.25.html)
@@ -86,4 +86,4 @@ The exact reviewer handoff and artifact chain are documented in [COUNTRY-CLIMATE
 
 ## Audit boundary
 
-This audit did not acquire replacement source files, infer missing country data, reinterpret published aggregate taxonomies, or authorize redistribution. Formal release gates remain controlled by `data/climate/releases/country-climate-intelligence-v1/release-manifest.json`.
+The 2026-08-27 follow-up acquired exact replacement source bytes and receipts but did not infer missing country data, reinterpret published aggregate taxonomies, or sign final redistribution authority. Formal release gates remain controlled by `data/climate/releases/country-climate-intelligence-v1/release-manifest.json`.

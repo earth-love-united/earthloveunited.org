@@ -37,8 +37,14 @@ function compile() {
   const guidedCss = text('css/guided-first-orbit.css');
   const smoke = text('tools/smoke-test.js');
   const architecture = text('ARCHITECTURE.md');
-  const candidate = json('data/climate/runtime/country-climate-intelligence.json');
-  const carbon = candidate.lens_orders.carbon;
+  const runtime = json('data/climate/runtime/country-climate-intelligence.json');
+  const carbon = runtime.lens_orders.carbon;
+  const candidateState = runtime.release.status === 'candidate'
+    && runtime.release.review_state === 'normalized_factual_candidate_pending_independent_scientific_review'
+    && runtime.release.production_runtime_release === false;
+  const productionState = runtime.release.status === 'production'
+    && runtime.release.review_state === 'independently_reviewed'
+    && runtime.release.production_runtime_release === true;
   const fallbackHtml = between(html, '<section id="globe-fallback"', '</section>');
   const fallbackOpenTag = (fallbackHtml.match(/^<section\b[^>]*>/) || [''])[0];
   const fallbackRuntime = between(globe, '  showFallback(reasonCode)', '  setTheme(theme)');
@@ -89,14 +95,13 @@ function compile() {
       stacking_safe: css.includes('z-index: 60;') && css.includes('body.globe-fallback-active #globeViz') && css.includes('body.globe-fallback-active #globe-back-btn'),
     },
     data: {
-      registry_entities: candidate.countries.length,
+      registry_entities: runtime.countries.length,
       carbon_eligible: carbon.eligible_count,
       carbon_gaps: carbon.unranked_count,
       mapped_entities: Number((globe.match(/EXPECTED_INTERACTIVE_ENTITY_COUNT = (\d+)/) || [])[1]),
-      metric_count: Object.keys(candidate.metric_definitions).length,
-      lens_count: candidate.lens_catalog.length,
-      review_status: candidate.release.review_state,
-      production_runtime_release: candidate.release.production_runtime_release,
+      metric_count: Object.keys(runtime.metric_definitions).length,
+      lens_count: runtime.lens_catalog.length,
+      release_state_coherent: candidateState || productionState,
     },
     truth: {
       durable_public_copy: fallbackHtml.includes('same carbon, power, and physical-climate metrics') && !/CT-\d|\bdeny|\bdenied/i.test(fallbackHtml),
@@ -161,10 +166,9 @@ function validate(snapshot) {
   assert.equal(snapshot.data.carbon_eligible, 213);
   assert.equal(snapshot.data.carbon_gaps, 36);
   assert.equal(snapshot.data.mapped_entities, 201);
-  assert.equal(snapshot.data.metric_count, 27);
+  assert.equal(snapshot.data.metric_count, 26);
   assert.equal(snapshot.data.lens_count, 3);
-  assert.equal(snapshot.data.review_status, 'normalized_factual_candidate_pending_source_revalidation');
-  assert.equal(snapshot.data.production_runtime_release, false);
+  assert.equal(snapshot.data.release_state_coherent, true);
 }
 
 function locate(target, dottedPath) {
@@ -186,6 +190,6 @@ for (const mutation of json(FIXTURE).mutations) {
   rejected++;
 }
 
-console.log(`globe WebGL fallback: PASS (three-lens parity; 249 entities = 213 carbon records + 36 explicit gaps; ${rejected} adversarial mutations rejected; production release remains false)`);
+console.log(`globe WebGL fallback: PASS (three-lens parity; 249 entities = 213 carbon records + 36 explicit gaps; ${rejected} adversarial mutations rejected; coherent release state)`);
 
 module.exports = { compile, validate };

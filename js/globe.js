@@ -1974,17 +1974,11 @@ const GlobeModule = {
       ? '<strong>' + _escapeHtml(fact.display_value) + '</strong>' + (fact.unit ? ' <span>' + _escapeHtml(fact.unit) + '</span>' : '')
       : '<strong>Not available</strong>';
     const context = [];
-    if (fact.non_comparable) context.push('<p class="tt-fact-warning"><strong>Separate scope:</strong> shown alongside fossil CO₂, never as a numerical disagreement or delta.</p>');
     if (fact.id === 'emissions.land_use_co2.net' && fact.available && fact.value < 0) context.push('<p class="tt-fact-note">Negative value: modeled net removal.</p>');
-    if (fact.id === 'emissions.ghg.independent' && fact.context) {
-      const gases = Object.entries(fact.context.gas_breakdown || {}).map(([gas, item]) => '<li><span>' + _escapeHtml(gas.toUpperCase()) + '</span><strong>' + _escapeHtml(String(item.value)) + ' ' + _escapeHtml(item.unit) + '</strong></li>').join('');
-      const sectors = Object.entries(fact.context.sector_breakdown_mtco2e || {}).map(([sector, valueMt]) => '<li><span>' + _escapeHtml(sector.replace(/-/g, ' ')) + '</span><strong>' + _escapeHtml(String(valueMt)) + ' MtCO₂e/yr</strong></li>').join('');
-      if (gases || sectors) context.push('<details class="tt-breakdown"><summary>Gas and sector breakdowns</summary>' + (gases ? '<h5>Gases</h5><ul>' + gases + '</ul>' : '') + (sectors ? '<h5>Sectors</h5><ul>' + sectors + '</ul>' : '') + '</details>');
-    }
     return '<article class="tt-fact' + (fact.available ? '' : ' is-gap') + '"><h4>' + _escapeHtml(fact.label) + '</h4><div class="tt-fact-value">' + value + '</div>'
       + '<p class="tt-fact-meta">' + _escapeHtml(fact.period || 'Period unavailable') + ' · ' + _escapeHtml(fact.evidence_label) + '</p>'
       + '<p>' + _escapeHtml(fact.available ? fact.explanation : fact.gap.detail) + '</p>'
-      + (fact.available ? '<p class="tt-fact-uncertainty">' + _escapeHtml(fact.uncertainty_text) + '</p>' : '') + context.join('') + '</article>';
+      + (fact.available ? '<p class="tt-fact-uncertainty"><strong>Uncertainty:</strong> ' + _escapeHtml(fact.uncertainty_text) + '</p>' : '') + context.join('') + '</article>';
   },
 
   _renderPowerField(view, idPrefix = 'country-card') {

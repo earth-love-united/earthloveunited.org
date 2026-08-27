@@ -47,7 +47,7 @@ function refresh(args) {
 
   const countries = base.countries.map(country => {
     const metric = observedMetric(country, 'tas', rowsByIso3.get(country.iso_alpha3) || [], receipt.last_complete_year, false);
-    if (metric.value !== null) metric.review_state = 'normalized_candidate_pending_source_revalidation';
+    if (metric.value !== null) metric.review_state = 'normalized_candidate_pending_independent_scientific_review';
     return {
       ...country,
       metrics: {

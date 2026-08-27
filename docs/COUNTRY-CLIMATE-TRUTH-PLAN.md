@@ -2,7 +2,7 @@
 
 **Mission:** `country-climate-intelligence-v1`
 
-**Release:** `country-climate-intelligence-2026-08-25-candidate.5`
+**Release:** `country-climate-intelligence-2026-08-27-candidate.7`
 
 **State:** implemented factual candidate; production promotion withheld
 
@@ -34,7 +34,6 @@ approved source registry + exact external snapshots
 | `data/climate/source-registry.json` | Fail-closed licence, attribution, permitlist, receipt, checksum, storage, and redistribution decisions |
 | `tools/compile-gcb-emissions.js` | Existing GCB compiler plus Country Climate Intelligence fossil/consumption/transfer/land-use mode |
 | `tools/compile-wpp-population.js` | Exact-year WPP Medium population-projection normalization |
-| `tools/compile-climate-trace.js` | 2024 AR6 GWP100 independent GHG context, forestry/LULUCF excluded |
 | `tools/compile-ember-power.js` | Exact 2019/2024 power aggregates, five-year change, nine 2024 fuel shares, blank-preserving reconciliation, and identity dispositions |
 | `tools/compile-cckp-physical.js` | CMIP6 projection ranges and ERA5 OLS trends/gaps |
 | `tools/normalize-cckp-era5-country-timeseries.js` | Exact CCKP country-response validation, 246-series identity ledger, and variable-aware 1970–2025 annual temperature/precipitation normalization |
@@ -54,16 +53,16 @@ approved source registry + exact external snapshots
 
 | Gate | Candidate state | Promotion requirement |
 |---|---|---|
-| Source-registry licensing and attribution | configured | Climate TRACE exception-backed fields and the CCKP/CMIP6 derivative chain require release-specific revalidation |
+| Source-registry licensing and attribution | configured with official licence evidence | release owner independently confirms the GCB/Ember/CCKP CC BY 4.0 and WPP CC BY 3.0 IGO decisions and public notices |
 | Field permitlists and compiler denial | passed | no unreviewed source field can be selected |
 | Exact normalized component checksums | passed | deterministic rebuild must match committed runtime |
-| External raw-receipt revalidation | Ember and ERA5 temperature/precipitation receipts pinned; other optional components open | independently revalidate and retain the WPP, TRACE, and CCKP CMIP6 acquisition receipts |
+| External raw-receipt revalidation | passed for all five value-source families | independent reviewer confirms exact GCB, WPP, Ember, ten CMIP6, and two ERA5 receipt pins |
 | Commit-bound review request | unbound preparation packet generated | regenerate after the candidate implementation commit with `--subject-commit` |
 | CCI-specific release package | absent by design | exact independent approval, reviewed release diff, reviewed runtime manifest, and executable rollback proof |
 | Core-carbon scientific review | open | independent reviewer verifies GCB identity mapping, scopes, transfer sign, cumulative, land-use mean/σ, and per-capita denominator |
-| Optional-component scientific review | open | independent reviewer verifies TRACE GWP/filter, Ember taxonomy/evidence class, and CCKP scenario/percentile selections |
+| Optional-component scientific review | open | independent reviewer verifies Ember taxonomy/evidence class and CCKP scenario/percentile selections |
 | Runtime/static validation | passed for candidate | rerun after any factual or code change |
-| Visual/accessibility review | passed for current candidate; rerun required after changes | light/dark, desktop/tablet/mobile, keyboard, screen-reader summaries, WebGL and fallback parity |
+| Visual/accessibility review | automated contracts and a local browser spot-check passed; final human review remains open | light/dark, desktop/tablet/mobile, keyboard, screen-reader summaries, WebGL and fallback parity |
 | Atomic service-worker staging | passed for current candidate | current runtime and previous rollback artifact must stage together |
 | Production promotion | blocked | every gate above plus protected reviewer approval |
 | Public artifact surface | candidate-only and staging refused | the active CCI entrypoints cannot produce a factual-public artifact until the new review chain is complete; historical CT-42 approval does not authorize CCI |
@@ -98,7 +97,7 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 ### Runtime and UI
 
 - exact runtime SHA-256 and schema v1;
-- 249 unique registry IDs and exactly 27 metric records per entity;
+- 249 unique registry IDs and exactly 26 metric records per entity;
 - deterministic coverage and complete lens partitions;
 - China, United States, India, Brazil, France, Norway, Tuvalu, and Antarctica fixtures;
 - PRIMAP absent from headings, legends, tooltips, ordered rails, and primary charts;
@@ -121,9 +120,9 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 | Entity | Required coverage |
 |---|---|
-| China | Carbon order leader; long fossil series; consumption/transfer; independent GHG context |
+| China | Carbon order leader; long fossil series; consumption/transfer context |
 | United States | Carbon order position; cumulative responsibility and consumption context |
-| India | Carbon order position; denominator and independent context |
+| India | Carbon order position and population denominator |
 | Brazil | Land-use model spread and separate fossil record |
 | France | Consumption/transfer context and high-clean power case |
 | Norway | Very high clean-power share without whole-economy praise |
@@ -132,12 +131,12 @@ The release manifest never self-promotes. `independent_scientific_review=false` 
 
 ## Rollback
 
-The v69 service worker composes the refined three-move Climate Intelligence
+The v77 service worker composes the refined three-move Climate Intelligence
 first orbit with separately spaced visual cue lanes and runtime-enforced compact lens/card air, the subtle relief presentation, full Retina render density with density-aware antialiasing, the candidate dashboard, and both
 runtime generations:
 
 ```text
-data/climate/runtime/country-climate-intelligence.json?v=cci1candidate7
+data/climate/runtime/country-climate-intelligence.json?v=cci1runtime13
 data/climate/runtime/country-factual-candidate.json?v=ct42candidate1
 ```
 
