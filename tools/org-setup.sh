@@ -25,9 +25,10 @@ REPO="earthloveunited.org"
 ADMIN="elu-foundation"               # org owner account, added to every team
 TEAMS=(architects reviewers maintainers)
 
-# CI job names from .github/workflows/ci.yml — these are the required checks
+# CI job names from the repository workflows — these are the required checks
 CHECK1="SDK static checks"
 CHECK2="Headless SmokeTest + StackLint"
+CHECK3="Public edge and payload hygiene"
 
 TOKEN="${GH_TOKEN:-${1:-}}"
 if [ -z "$TOKEN" ]; then
@@ -98,7 +99,7 @@ read -r -d '' PROT <<JSON
 {
   "required_status_checks": {
     "strict": true,
-    "contexts": ["$CHECK1", "$CHECK2"]
+    "contexts": ["$CHECK1", "$CHECK2", "$CHECK3"]
   },
   "enforce_admins": false,
   "required_pull_request_reviews": {
