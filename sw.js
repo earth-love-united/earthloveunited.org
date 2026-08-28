@@ -1,10 +1,10 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v78) — atomically stage candidate.7 with independently
+ * Globe cache (v79) — atomically stage candidate.7 with independently
  * re-fetched open-source inputs, review-safe presentation, and rollback runtime.
  */
-const CACHE_NAME = 'elu-v78-first-paint-ready';
+const CACHE_NAME = 'elu-v79-self-hosted-fonts';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -15,6 +15,12 @@ const STATIC_ASSETS = [
   '/css/guided-first-orbit.css?v=v11',
   '/assets/legacy/elu-logo.png?v=mint-384-p256',
   '/assets/legacy/elu-logo-light.png?v=light-title-mint-384-p256',
+  '/assets/fonts/cormorant-garamond-latin-ext.woff2?v=cfa9a397d86f',
+  '/assets/fonts/cormorant-garamond-latin.woff2?v=d80df8ff5aec',
+  '/assets/fonts/outfit-latin-ext.woff2?v=0f53d1c03b39',
+  '/assets/fonts/outfit-latin.woff2?v=6c18d579fd87',
+  '/assets/fonts/jetbrains-mono-latin-ext.woff2?v=db5ff4db83e5',
+  '/assets/fonts/jetbrains-mono-latin.woff2?v=83c005d49d8a',
   '/assets/globe/runtime/manifest.json',
   '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75',
   '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3',
@@ -69,7 +75,7 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
-  // Skip external requests (CDNs, APIs, fonts)
+  // Skip external requests (CDNs and APIs)
   if (url.origin !== self.location.origin) return;
 
   // Data files: network-first (always fresh)

@@ -454,7 +454,8 @@ Rules:
 
 ## Service worker and freshness
 
-The source candidate uses `sw.js` cache epoch v78. The separately authorized
+The source candidate uses `sw.js` cache epoch v79 and self-hosts the three ELU
+font families as immutable, hash-versioned WOFF2 assets. The separately authorized
 CCI AI-factual builder deterministically stages epoch v80, with coupled script
 query pins, so the public browser cannot pair transformed runtime code with the
 candidate cache. The active epoch precaches the public page, core CSS/JS, the refined

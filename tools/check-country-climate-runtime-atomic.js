@@ -13,8 +13,8 @@ const manifest = readJson(path.join(ROOT, 'data/climate/releases/country-climate
 const runtimePath = path.join(ROOT, 'data/climate/runtime/country-climate-intelligence.json');
 const rollbackPath = path.join(ROOT, manifest.prior_runtime_retained_for_rollback);
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v78-first-paint-ready'"), 'service-worker cache epoch is not v78');
-assert(index.includes("navigator.serviceWorker.register('/sw.js?v=78-first-paint-ready'"), 'HTML does not request the v78 service worker');
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v79-self-hosted-fonts'"), 'service-worker cache epoch is not v79');
+assert(index.includes("navigator.serviceWorker.register('/sw.js?v=79-self-hosted-fonts'"), 'HTML does not request the v79 service worker');
 for (const asset of [
   '/css/globe-system.css?v=v43',
   '/css/guided-first-orbit.css?v=v11',
@@ -38,4 +38,4 @@ assert(serviceWorker.includes('keys.filter((k) => k !== CACHE_NAME).map((k) => c
 assert(serviceWorker.includes('self.skipWaiting()') && serviceWorker.includes('self.clients.claim()'), 'atomic service-worker activation hooks are missing');
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired carbon-project data remains in the atomic cache set');
 
-console.log(`Country Climate Intelligence atomic staging check passed (elu-v78; runtime ${fileSha256(runtimePath)}; rollback retained).`);
+console.log(`Country Climate Intelligence atomic staging check passed (elu-v79; runtime ${fileSha256(runtimePath)}; rollback retained).`);

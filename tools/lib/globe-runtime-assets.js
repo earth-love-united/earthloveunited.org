@@ -553,7 +553,7 @@ function evaluateRuntimeAssets(input) {
     index.includes('Original starfield from Three-Globe 2.45.2'),
     'Public copy must credit NASA and identify the historical surface and restored sky as decorative visual context.');
 
-  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v78-first-paint-ready';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=78-first-paint-ready'"),
+  check('service-worker-epoch', sw.includes("const CACHE_NAME = 'elu-v79-self-hosted-fonts';") && files.index.includes("navigator.serviceWorker.register('/sw.js?v=79-self-hosted-fonts'"),
     'Service-worker code and registration must share the runtime-asset cache epoch.');
   const requiredCachePaths = ['/js/vendor/globe.gl.js', `/${MANIFEST_PATH}`, ...EXPECTED_ASSETS.map(asset => asset.runtime_url)];
   check('service-worker-required-assets', Array.isArray(input?.service_worker?.static_assets) &&

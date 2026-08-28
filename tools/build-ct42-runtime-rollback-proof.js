@@ -183,7 +183,7 @@ function neutralIndex(bytes) {
     'Choose an item to inspect its lens metrics, evidence class, methods, sources, or explicit gap state.',
     'Choose an entity to inspect its explicit evidence-withheld state. No climate value, commitment, target, delivery, performance, impact, finance, rating, or score conclusion is shown here.',
     'neutral fallback detail');
-  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=78-first-paint-ready'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
+  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=79-self-hosted-fonts'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
   return Buffer.from(index);
 }
 

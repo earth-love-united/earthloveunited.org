@@ -507,7 +507,7 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v78-first-paint-ready'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v79-self-hosted-fonts'"));
 assert(serviceWorker.includes("'/css/globe-system.css?v=v43'"));
 assert(serviceWorker.includes("'/css/guided-first-orbit.css?v=v11'"));
 assert(serviceWorker.includes("'/js/data-schema.js?v=v2'"));
