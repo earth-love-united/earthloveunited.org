@@ -13,7 +13,7 @@ const ROOT = path.resolve(__dirname, '..');
 const RECEIPT_PATH = 'data/performance/first-paint-mobile-2026-08-28.json';
 const TOOL_PATH = 'tools/run-first-paint-benchmark.js';
 const BASELINE_COMMIT = '41a694f925e36669b72ca62029cd1d62c8ddfeaf';
-const CANDIDATE_COMMIT = '4adeea0fc327f53b3f4e2082185d156f296ed4f5';
+const CANDIDATE_COMMIT = '911fc30f1d5847bba91f976f59d64d42e1731f7c';
 const EXPECTED_ORDER = Object.freeze([
   'baseline', 'candidate', 'candidate', 'baseline',
   'baseline', 'candidate', 'candidate', 'baseline',
