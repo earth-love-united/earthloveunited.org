@@ -118,10 +118,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ELU">
 
-<!-- ELU typography: self-hosted variable WOFF2; no Google Fonts request. -->
-<link rel="preload" href="assets/fonts/cormorant-garamond-latin.woff2?v=d80df8ff5aec" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/outfit-latin.woff2?v=6c18d579fd87" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/jetbrains-mono-latin.woff2?v=83c005d49d8a" as="font" type="font/woff2" crossorigin>
+<!-- ELU typography: compact page glyphs first; full self-hosted coverage on demand. -->
+<link rel="preload" href="assets/fonts/cormorant-garamond-site.woff2?v=7f4b7877020b" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/outfit-site.woff2?v=fff758eb92d3" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-site.woff2?v=317775f7afde" as="font" type="font/woff2" crossorigin>
 
 <!-- Resource hints -->
 <link rel="preload" href="assets/legacy/elu-logo-light.png?v=light-title-mint-384-p256" as="image" type="image/png" fetchpriority="high">
@@ -132,12 +132,15 @@
 <!-- ═══ CRITICAL CSS (inlined) ═══ -->
 <style>
 /* base */
-@font-face{font-family:'Cormorant Garamond';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/cormorant-garamond-latin-ext.woff2?v=cfa9a397d86f') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'Cormorant Garamond';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/cormorant-garamond-latin.woff2?v=d80df8ff5aec') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Outfit';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/outfit-latin-ext.woff2?v=0f53d1c03b39') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'Outfit';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/outfit-latin.woff2?v=6c18d579fd87') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 500;font-display:swap;src:url('assets/fonts/jetbrains-mono-latin-ext.woff2?v=db5ff4db83e5') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 500;font-display:swap;src:url('assets/fonts/jetbrains-mono-latin.woff2?v=83c005d49d8a') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Cormorant Garamond';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/cormorant-garamond-site.woff2?v=7f4b7877020b') format('woff2');unicode-range:U+0020,U+0026,U+0028-002F,U+0030-003B,U+003F,U+0041-0059,U+0061-007A,U+007E,U+00A9,U+00B7,U+2013-2014,U+2019,U+201C-201D,U+2082,U+2192-2193}
+@font-face{font-family:'Cormorant Garamond Full';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/cormorant-garamond-latin-ext.woff2?v=cfa9a397d86f') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Cormorant Garamond Full';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/cormorant-garamond-latin.woff2?v=d80df8ff5aec') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Outfit';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/outfit-site.woff2?v=fff758eb92d3') format('woff2');unicode-range:U+0020,U+0026,U+0028-002F,U+0030-003B,U+003F,U+0041-0059,U+0061-007A,U+007E,U+00A9,U+00B7,U+2013-2014,U+2019,U+201C-201D,U+2082,U+2192-2193}
+@font-face{font-family:'Outfit Full';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/outfit-latin-ext.woff2?v=0f53d1c03b39') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Outfit Full';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/outfit-latin.woff2?v=6c18d579fd87') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 500;font-display:swap;src:url('assets/fonts/jetbrains-mono-site.woff2?v=317775f7afde') format('woff2');unicode-range:U+0020,U+0026,U+0028-002F,U+0030-003B,U+003F,U+0041-0059,U+0061-007A,U+007E,U+00A9,U+00B7,U+2013-2014,U+2019,U+201C-201D,U+2082,U+2192-2193}
+@font-face{font-family:'JetBrains Mono Full';font-style:normal;font-weight:400 500;font-display:swap;src:url('assets/fonts/jetbrains-mono-latin-ext.woff2?v=db5ff4db83e5') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'JetBrains Mono Full';font-style:normal;font-weight:400 500;font-display:swap;src:url('assets/fonts/jetbrains-mono-latin.woff2?v=83c005d49d8a') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root,[data-theme="dark"]{
   color-scheme:dark;
@@ -147,7 +150,7 @@
   --hero-glow:radial-gradient(circle at 50% 40%,rgba(196,92,74,.16),rgba(196,92,74,.04) 34%,transparent 58%),radial-gradient(circle at 50% 62%,rgba(78,205,196,.08),transparent 42%);
   --hero-vignette:radial-gradient(circle at center,transparent 48%,rgba(5,5,9,.72) 100%);
   --nav-bg:linear-gradient(180deg,rgba(5,5,9,.94),rgba(5,5,9,.6) 72%,transparent);--footer-bg:linear-gradient(0deg,rgba(5,5,9,1),rgba(5,5,9,.9));
-  --mono:'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace;--display:'Cormorant Garamond',Georgia,'Times New Roman',serif;--body:'Outfit','Avenir Next',Avenir,'Segoe UI',sans-serif
+  --mono:'JetBrains Mono','JetBrains Mono Full','SFMono-Regular',Consolas,'Liberation Mono',monospace;--display:'Cormorant Garamond','Cormorant Garamond Full',Georgia,'Times New Roman',serif;--body:'Outfit','Outfit Full','Avenir Next',Avenir,'Segoe UI',sans-serif
 }
 [data-theme="light"]{
   color-scheme:only light;
