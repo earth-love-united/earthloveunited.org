@@ -85,6 +85,7 @@ const DELTA_PATHS_BY_CATEGORY = Object.freeze({
   deterministic_runtime_proof: Object.freeze([
     'data/climate/operations/ct42-runtime-rollback.patch.b64',
     'data/climate/reviews/ct42-candidate-rollback-rehearsal.json',
+    'js/app.js',
     'tools/build-ct42-runtime-rollback-proof.js',
     'tools/check-country-climate-intelligence-ui.js',
     'tools/check-country-climate-runtime-atomic.js',

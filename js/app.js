@@ -148,15 +148,14 @@ const App = {
       this._dataInitPromise = null;
     }
     if (!isCurrentActivation()) return false;
-    if (!climateReady || !stylesReady) {
+    if (!stylesReady) {
       _setEnterGlobeBusy(false);
-      _setAppReadinessStatus(stylesReady
-        ? 'Country evidence is unavailable. Please retry.'
-        : 'The Living Globe interface could not be prepared. Please retry.');
+      _setAppReadinessStatus('The Living Globe interface could not be prepared. Please retry.');
       if (!climateReady) _showDataErrorBanner();
       if (opener instanceof HTMLElement && document.contains(opener)) opener.focus({ preventScroll: true });
       return false;
     }
+    if (!climateReady) _showDataErrorBanner();
 
     _setEvidenceBrowseEnabled(false);
     if (!document.body.classList.contains('globe-mode')) {
@@ -187,6 +186,9 @@ const App = {
       const reason = preparation?.reason || 'globe_construction_failed';
       _setGlobeLoading(false);
       _setEnterGlobeBusy(false);
+      _setAppReadinessStatus(reason === 'candidate_data_unavailable'
+        ? 'Country evidence is unavailable. Please retry.'
+        : 'The 3D view is unavailable. Please retry.');
       document.body.removeAttribute('aria-busy');
       safeCall('GlobeModule', 'showFallback', reason);
       if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { fallback: true, reason, timestamp: Date.now() });
