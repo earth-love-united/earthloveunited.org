@@ -122,6 +122,26 @@ function enforceLegacyFactualDisplayProfile(options) {
   };
 }
 
+function enforceCciAiFactualProfile(options) {
+  const root = path.resolve(options.root);
+  const detected = options.detected || detectPublicClimateReleaseProfile(root);
+  const packageState = authorityPackageState(root, detected.profile, options.entryPresent || entryPresent);
+  if (detected.profile !== PROFILE_CCI || packageState.mode !== 'candidate') {
+    throw new Error('AI-reviewed source-data staging requires exact cci:candidate state');
+  }
+  const runner = options.runner || runChecker;
+  runner(root, ['tools/check-country-climate-intelligence-ci.js']);
+  runner(root, ['tools/check-cci-factual-public-review.js']);
+  return {
+    status: 'pass',
+    mode: 'ai_reviewed_source_data',
+    profile: detected.profile,
+    fingerprint: detected.fingerprint,
+    human_review: false,
+    legal_certification: false,
+  };
+}
+
 function runSelfTest() {
   const detectionCases = runDetectionSelfTest();
   assert.deepEqual(policyPlan(PROFILE_CCI, 'release'), [
@@ -186,14 +206,34 @@ function runSelfTest() {
     detected: { profile: PROFILE_LEGACY_CT40, fingerprint: {} },
     entryPresent(_root, relative) { return LEGACY_AUTHORITY_PATHS.includes(relative); },
   }), /exact legacy_ct40:candidate/);
+  let aiFactualCalls = 0;
+  assert.equal(enforceCciAiFactualProfile({
+    root: ROOT,
+    detected: { profile: PROFILE_CCI, fingerprint: {} },
+    entryPresent() { return false; },
+    runner() { aiFactualCalls += 1; },
+  }).mode, 'ai_reviewed_source_data');
+  assert.equal(aiFactualCalls, 2, 'AI-factual mode must run exact CCI and review-artifact checks');
+  assert.throws(() => enforceCciAiFactualProfile({
+    root: ROOT,
+    detected: { profile: PROFILE_LEGACY_CT40, fingerprint: {} },
+    entryPresent() { return false; },
+    runner() { throw new Error('runner must not execute'); },
+  }), /exact cci:candidate/);
+  assert.throws(() => enforceCciAiFactualProfile({
+    root: ROOT,
+    detected: { profile: PROFILE_CCI, fingerprint: {} },
+    entryPresent(_root, relative) { return CCI_AUTHORITY_PATHS.includes(relative); },
+    runner() { throw new Error('runner must not execute'); },
+  }), /exact cci:candidate/);
   assert.throws(() => policyPlan('mixed', 'release'), /unknown/);
   process.stdout.write('Public climate release-profile self-test: PASS (' + detectionCases +
-    ' detection cases; exclusive routing; limited factual-display isolation; release-only signed-asset boundary)\n');
+    ' detection cases; exclusive routing; limited factual-display isolation; separate AI-factual isolation; release-only signed-asset boundary)\n');
 }
 
 function parseArgs(argv) {
-  if (argv.length !== 1 || !['--profile', '--state', '--verify-active', '--factual-display', '--candidate', '--release', '--self-test'].includes(argv[0])) {
-    throw new Error('usage: node tools/check-public-climate-release-profile.js --profile | --state | --verify-active | --factual-display | --candidate | --release | --self-test');
+  if (argv.length !== 1 || !['--profile', '--state', '--verify-active', '--factual-display', '--cci-ai-factual', '--candidate', '--release', '--self-test'].includes(argv[0])) {
+    throw new Error('usage: node tools/check-public-climate-release-profile.js --profile | --state | --verify-active | --factual-display | --cci-ai-factual | --candidate | --release | --self-test');
   }
   return argv[0];
 }
@@ -221,6 +261,11 @@ function main() {
     process.stdout.write('Public climate release profile: PASS (' + report.profile + '; ' + report.mode + ')\n');
     return;
   }
+  if (command === '--cci-ai-factual') {
+    const report = enforceCciAiFactualProfile({ root: ROOT, detected });
+    process.stdout.write('Public climate release profile: PASS (' + report.profile + '; ' + report.mode + '; human_review=false; legal_certification=false)\n');
+    return;
+  }
   const report = enforceProfilePolicy({ root: ROOT, mode: command.slice(2), detected });
   process.stdout.write('Public climate release profile: PASS (' + report.profile + '; ' + report.mode + ')\n');
 }
@@ -239,6 +284,7 @@ module.exports = {
   assertNoCrossProfileAuthority,
   authorityPackageState,
   enforceActiveProfilePolicy,
+  enforceCciAiFactualProfile,
   enforceLegacyFactualDisplayProfile,
   enforceProfilePolicy,
   parseArgs,

@@ -1,6 +1,6 @@
 {
-  "calculation_hash": "3f194660ead72bd394af4ff826b1e00f3e021bd09a8b4d8b8e4350bfd1489286",
-  "created_at": "2026-08-27T00:00:00Z",
+  "calculation_hash": "d29eb4fcae6b60041a8fcbca86f94b939c1a4a62e5d2758f41b850402e414206",
+  "created_at": "2026-08-28T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
     "ct40_reuse_allowed": false,
@@ -213,15 +213,15 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "0b4c0a8c6f298e1e995886858b3fd57747ccf6c7c2567c6a8f28ff9daf318e68",
+    "artifact_pin_digest": "6a920fadfa3a245e4544facf2faac5fd0692cc80a4c23fdb7c0cf48bf02073d5",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
-        "sha256": "16040c3e9088f9740b58f1604589543be9876289bad7267b658a9d915e1663cb"
+        "sha256": "eb5032a791d8a2f9674ab34481086f1d0827a4decd3a446ee0b667b77e8d4302"
       },
       {
         "path": ".github/workflows/ci.yml",
-        "sha256": "3e7bd214f1c595d04ace4e9c13241ca8d52e1a83bc6fed64327a729d33bf0869"
+        "sha256": "71202487085c25c9ef3bfb5818045561bcb55391892532cc13eaacf122052d73"
       },
       {
         "path": ".gitignore",
@@ -233,7 +233,7 @@
       },
       {
         "path": "ARCHITECTURE.md",
-        "sha256": "2557ed88bb0cad3a82fdb1fc2514bf4d5bf023f13c6c187c4c1bdb75f25a7e36"
+        "sha256": "ab5000ac86dfe98afaea9d158c25189d995d0f79c3f5988d104e6988644c18fe"
       },
       {
         "path": "CREDITS.md",
@@ -892,6 +892,10 @@
         "sha256": "ade65419169d17404506d2dee5cfdbacb8f2c0c6a76d3d59b34482892edd4466"
       },
       {
+        "path": "tools/build-cci-factual-public-deploy.sh",
+        "sha256": "2ed46b95e96b4d5100eaf59576351963370db01d5d9a020dc67a374bae93dec6"
+      },
+      {
         "path": "tools/build-country-climate-intelligence.js",
         "sha256": "a0728e17026e52cc2c929f52b30a5176ff603867e4dad7b26ac949dcfb6a5f5d"
       },
@@ -914,6 +918,14 @@
       {
         "path": "tools/check-canonical-source-links.js",
         "sha256": "7bf4ca8c6318fbedfcfc69af98bed283350ccc33b61c1956a382b4a64c377cd5"
+      },
+      {
+        "path": "tools/check-cci-factual-public-deploy.js",
+        "sha256": "cd09eed85f8484300baf15ad129f3bc9f37595ded11ec736f401eff70931ccd4"
+      },
+      {
+        "path": "tools/check-cci-factual-public-review.js",
+        "sha256": "7d292ab2917146042adc1e90faa658de4b5bce900c5e43f03e711e444e6fa3ef"
       },
       {
         "path": "tools/check-climate-factual-public-readiness.js",
@@ -1081,7 +1093,7 @@
       },
       {
         "path": "tools/check-public-climate-release-profile.js",
-        "sha256": "d505872e0500b6a897153437ebfdded9b3bab0e40a0060d9d57b4a385f47479d"
+        "sha256": "2221675b776616155716e713569e5b3892d8f494fd7ef7377db3d0c7fb6b5b8f"
       },
       {
         "path": "tools/check-public-copy.js",
@@ -1104,12 +1116,16 @@
         "sha256": "2031e41f7b812ca437b6ffa66e19eb568ea48dac963cfa354ed9246aca822440"
       },
       {
+        "path": "tools/check-staged-cci-factual-public-integrity.js",
+        "sha256": "a703815dd3e33f2e44787eb12813fdb0834fc1f7b1d53c04214964eda7a0e51b"
+      },
+      {
         "path": "tools/check-staged-factual-public-integrity.js",
         "sha256": "efb279beee9ee817b8cde9b06daaf21f7eb52f10dbcecabed35256346f60a1d5"
       },
       {
         "path": "tools/check-staged-production-integrity.js",
-        "sha256": "373ff089cfdb09076b376c83e0c6dae7961e1f8ecfec915eb998ae395e5f7a8c"
+        "sha256": "fd3ac6a54213c3e07d0c1363ae42f1180340554f1964fddfa29838cdc15e9221"
       },
       {
         "path": "tools/check-target-comparability.js",
@@ -1149,11 +1165,11 @@
       },
       {
         "path": "tools/fixtures/globe-runtime-assets.json",
-        "sha256": "d2e15a109eb468e51559588070660dbb96d8070922d6af40ee01bb1b4d56d427"
+        "sha256": "3757af12953a80260d49edf89ff1887709b6237ca1bb52f46dd4046f53a1b1a4"
       },
       {
         "path": "tools/fixtures/globe-third-party-notices.json",
-        "sha256": "f4bfb3cdd3c98e2e16df2adeb1a1bc30dd36c2e53d28b5c2fd2cc55470747277"
+        "sha256": "9d1160d59c15b061126c8cd351572d7dd0aef85e4b83292af17fd4d6e6ab9c92"
       },
       {
         "path": "tools/fixtures/globe-vendor-integrity.json",
@@ -1162,6 +1178,10 @@
       {
         "path": "tools/impact-analyzer.js",
         "sha256": "7a16f9ac20229af63b61ab625b7de0bb58c223c110be9dccb38432071c47c83c"
+      },
+      {
+        "path": "tools/lib/cci-factual-public.js",
+        "sha256": "c49a355e197e3370ae0f29283b336aa1deea28f3edb325246473018a7a94c613"
       },
       {
         "path": "tools/lib/climate-factual-runtime-candidate.js",
@@ -1245,7 +1265,7 @@
       },
       {
         "path": "tools/lib/globe-runtime-assets.js",
-        "sha256": "d17910d45bf569bd47d13d272904d483d956c6134fad2b51d247ee232d42fba5"
+        "sha256": "e0236a7d049c9e9f2efa8bdf688056dbfc3974faee7858445985723dffa9dea3"
       },
       {
         "path": "tools/lib/globe-third-party-notices.js",
@@ -1313,7 +1333,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "f33b69bc6d093d29c47a7095c16b8d4763a49dc0df5a2d032abeb77c99966933"
+        "sha256": "e343c6a8f6d0e5e0458fbc97f4b0b378622f7411415966699117e381b6f4d3d1"
       },
       {
         "path": "tools/reconstruct-gcb-country-map.js",
@@ -1342,6 +1362,10 @@
       {
         "path": "tools/stack-lint.js",
         "sha256": "d7b0bbac4ee9fcffc34932b88c9e71398a0b604c287c6fbb04ba5652b33818aa"
+      },
+      {
+        "path": "tools/stage-cci-factual-public-deploy.js",
+        "sha256": "8c283fd84cd608ae75a6eb27f7f36d5d184d80c270c6aafb7b36384597ff29fe"
       },
       {
         "path": "tools/stage-public-deploy.js",

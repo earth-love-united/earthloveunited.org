@@ -81,6 +81,9 @@ jobs:
       - name: Exact public deploy surface policy self-test
         run: node tools/check-public-deploy-surface.js --self-test
 
+      - name: CCI AI-factual deploy policy self-test
+        run: node tools/check-cci-factual-public-deploy.js --self-test
+
       - name: Country Climate Intelligence public-release exclusion policy
         run: node tools/check-country-climate-public-release-boundary.js --self-test
 
@@ -99,6 +102,10 @@ jobs:
       - name: Country Climate Intelligence v1 candidate contract
         if: ${{ steps.climate_profile.outputs.profile == 'cci' && steps.climate_profile.outputs.phase == 'candidate' }}
         run: node tools/check-country-climate-intelligence-ci.js
+
+      - name: Country Climate Intelligence multi-model AI review artifact
+        if: ${{ steps.climate_profile.outputs.profile == 'cci' && steps.climate_profile.outputs.phase == 'candidate' }}
+        run: node tools/check-cci-factual-public-review.js
 
       - name: Country Climate Intelligence v1 reviewed-release gate
         if: ${{ steps.climate_profile.outputs.profile == 'cci' && steps.climate_profile.outputs.phase == 'release' }}
@@ -187,9 +194,9 @@ jobs:
           echo "profile=$profile" >> "$GITHUB_OUTPUT"
           echo "phase=$phase" >> "$GITHUB_OUTPUT"
 
-      - name: Verify CCI keeps factual-public staging fail-closed
+      - name: Build CCI AI-reviewed source-data deploy directory
         if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'candidate' }}
-        run: node tools/check-country-climate-public-release-boundary.js
+        run: ./tools/build-cci-factual-public-deploy.sh --cci-ai-factual
 
       - name: Build limited legacy factual-display deploy directory
         if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'candidate' }}
@@ -207,9 +214,17 @@ jobs:
         if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' || (steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release') }}
         run: node tools/check-public-deploy-surface.js --staged ./_deploy --mode release
 
+      - name: Verify CCI AI-factual exact surface independently
+        if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'candidate' }}
+        run: node tools/check-cci-factual-public-deploy.js --staged ./_deploy
+
       - name: Verify factual-public notices independently
-        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' || (steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release') }}
+        if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' || steps.factual_profile.outputs.profile == 'cci' }}
         run: node tools/check-globe-third-party-notices.js --staged ./_deploy
+
+      - name: Verify final CCI AI-factual integrity independently
+        if: ${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'candidate' }}
+        run: node tools/check-staged-cci-factual-public-integrity.js --staged ./_deploy
 
       - name: Verify final limited legacy factual-display integrity independently
         if: ${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'candidate' }}
@@ -245,11 +260,19 @@ jobs:
         run: |
           state="$(node tools/check-public-climate-release-profile.js --state)"
           case "$state" in
-            cci:candidate|legacy_ct40:candidate) phase="candidate" ;;
-            cci:release|legacy_ct40:release) phase="release" ;;
+            cci:candidate) profile="cci"; phase="candidate" ;;
+            cci:release) profile="cci"; phase="release" ;;
+            legacy_ct40:candidate) profile="legacy_ct40"; phase="candidate" ;;
+            legacy_ct40:release) profile="legacy_ct40"; phase="release" ;;
             *) echo "::error::Unknown or incomplete public climate release state: $state"; exit 1 ;;
           esac
+          echo "profile=$profile" >> "$GITHUB_OUTPUT"
           echo "phase=$phase" >> "$GITHUB_OUTPUT"
+          if [ "$profile:$phase" = "cci:candidate" ]; then
+            echo "integrity_mode=cci-ai-factual" >> "$GITHUB_OUTPUT"
+          else
+            echo "integrity_mode=$phase" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Fetch verified globe.gl runtime dependency
         run: ./tools/fetch-globe-vendor.sh
@@ -257,17 +280,25 @@ jobs:
       - name: Verify browser-test dependency bytes
         run: node tools/check-globe-vendor-integrity.js --require-file
 
-      - name: Build candidate deploy directory
-        if: ${{ steps.smoke_profile.outputs.phase == 'candidate' }}
+      - name: Build legacy candidate deploy directory
+        if: ${{ steps.smoke_profile.outputs.profile == 'legacy_ct40' && steps.smoke_profile.outputs.phase == 'candidate' }}
         run: ./tools/build-deploy.sh --candidate
+
+      - name: Build CCI AI-reviewed source-data browser deploy directory
+        if: ${{ steps.smoke_profile.outputs.profile == 'cci' && steps.smoke_profile.outputs.phase == 'candidate' }}
+        run: ./tools/build-cci-factual-public-deploy.sh --cci-ai-factual
 
       - name: Build reviewed release deploy directory
         if: ${{ steps.smoke_profile.outputs.phase == 'release' }}
         run: ./tools/build-deploy.sh --release
 
       - name: Verify exact public deploy surface independently
-        if: ${{ steps.smoke_profile.outputs.phase == 'candidate' }}
+        if: ${{ steps.smoke_profile.outputs.profile == 'legacy_ct40' && steps.smoke_profile.outputs.phase == 'candidate' }}
         run: node tools/check-public-deploy-surface.js --staged _deploy --mode candidate
+
+      - name: Verify CCI AI-factual deploy surface independently
+        if: ${{ steps.smoke_profile.outputs.profile == 'cci' && steps.smoke_profile.outputs.phase == 'candidate' }}
+        run: node tools/check-cci-factual-public-deploy.js --staged _deploy
 
       - name: Verify release public deploy surface independently
         if: ${{ steps.smoke_profile.outputs.phase == 'release' }}
@@ -277,12 +308,17 @@ jobs:
         run: node tools/check-globe-third-party-notices.js --staged _deploy
 
       - name: Verify staged CT-45 bytes independently
+        if: ${{ steps.smoke_profile.outputs.profile != 'cci' || steps.smoke_profile.outputs.phase != 'candidate' }}
         run: node tools/check-globe-runtime-assets.js --staged _deploy
 
       - name: Verify final staged production integrity independently
         env:
-          ELU_VERIFIED_DEPLOY_MODE: ${{ steps.smoke_profile.outputs.phase }}
+          ELU_VERIFIED_DEPLOY_MODE: ${{ steps.smoke_profile.outputs.integrity_mode }}
         run: node tools/check-staged-production-integrity.js --staged _deploy
+
+      - name: Verify final staged CCI AI-factual integrity independently
+        if: ${{ steps.smoke_profile.outputs.profile == 'cci' && steps.smoke_profile.outputs.phase == 'candidate' }}
+        run: node tools/check-staged-cci-factual-public-integrity.js --staged _deploy
 
       - name: Install Playwright + Chromium
         run: |
@@ -302,9 +338,12 @@ jobs:
           done
 
       - name: Run SmokeTest + StackLint in headless Chromium
+        env:
+          CCI_AI_FACTUAL: ${{ steps.smoke_profile.outputs.profile == 'cci' && steps.smoke_profile.outputs.phase == 'candidate' }}
         run: |
           cat > runchecks.mjs <<'JS'
           import { chromium } from 'playwright';
+          const aiFactual = process.env.CCI_AI_FACTUAL === 'true';
           const browser = await chromium.launch();
           const ctx = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1280, height: 800 } });
           await ctx.addInitScript(() => {
@@ -430,8 +469,10 @@ jobs:
           await exercisePreRenderFailure('**/data/climate/runtime/country-climate-intelligence.json*', 'candidate_data_unavailable', { status: 503, body: 'candidate unavailable' }, /\[Data\._indexClimateIntelligence\(\)\] Country Climate Intelligence schema rejected/);
           await exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable', { status: 503, body: 'geometry unavailable' });
           await exercisePreRenderFailure('**/assets/globe/runtime/earth-night.jpg*', 'visual_assets_unavailable', { status: 200, contentType: 'image/jpeg', headers: { 'Cache-Control': 'no-store' }, body: 'invalid image bytes' });
-          await exercisePreRenderFailure('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable', { status: 200, contentType: 'image/png', headers: { 'Cache-Control': 'no-store' }, body: 'invalid png bytes' });
-          await exercisePreRenderTimeout('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable');
+          if (!aiFactual) {
+            await exercisePreRenderFailure('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable', { status: 200, contentType: 'image/png', headers: { 'Cache-Control': 'no-store' }, body: 'invalid png bytes' });
+            await exercisePreRenderTimeout('**/assets/globe/runtime/night-sky.png*', 'visual_assets_unavailable');
+          }
 
           const cancellationPage = await ctx.newPage();
           trackErrors(cancellationPage);
@@ -456,14 +497,26 @@ jobs:
 
           await page.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
 
-          const skyResponse = await page.evaluate(async () => {
-            const response = await fetch('/assets/globe/runtime/night-sky.png?v=7e1d5e780301', { cache: 'no-store' });
+          const excludedAssetResponses = await page.evaluate(async () => Promise.all([
+            '/assets/globe/runtime/night-sky.png',
+            '/assets/globe/runtime/earth-blue-marble.jpg',
+            '/assets/globe/runtime/earth-topology.png',
+          ].map(async url => {
+            const response = await fetch(url, { cache: 'no-store' });
             return {
-              ok: response.ok,
-              exactMime: response.headers.get('content-type')?.split(';')[0] === 'image/png',
+              url,
+              status: response.status,
+              exactPng: !url.endsWith('/night-sky.png') ||
+                response.headers.get('content-type')?.split(';')[0] === 'image/png',
             };
-          });
-          assert(skyResponse.ok && skyResponse.exactMime, 'night-sky.png must be served with the exact image/png MIME type');
+          })));
+          if (aiFactual) {
+            assert(excludedAssetResponses.every(result => result.status === 404),
+              'AI-factual surface must return 404 for every excluded Three-Globe image');
+          } else {
+            assert(excludedAssetResponses.every(result => result.status === 200 && result.exactPng),
+              'full texture surface must retain every pinned globe image and exact sky MIME type');
+          }
 
           const viewportPolicy = await page.locator('meta[name="viewport"]').getAttribute('content');
           assert(viewportPolicy?.includes('width=device-width') && viewportPolicy?.includes('initial-scale=1.0') &&
@@ -532,17 +585,26 @@ jobs:
             window.COUNTRY_CLIMATE_INTELLIGENCE.reset();
             return { state, high, low, gap, railFirst: rail.ordered[0], reliefNote: rail.relief_note, legend };
           });
-          assert(inverseCarbonDemo.state.carbonReliefMode === 'lower_value_higher' &&
-            inverseCarbonDemo.low.visual.altitude > inverseCarbonDemo.high.visual.altitude &&
-            inverseCarbonDemo.low.visual.altitude <= 0.012 &&
-            inverseCarbonDemo.gap.visual.altitude === 0.007 &&
-            inverseCarbonDemo.gap.visual.relief_encodes_metric === false,
-          'inverse Carbon demo must raise lower values subtly without promoting gaps');
-          assert(inverseCarbonDemo.railFirst.iso_alpha3 === 'CHN' &&
-            inverseCarbonDemo.railFirst.ordinal === 1 && inverseCarbonDemo.reliefNote === 'Inverse relief demo' &&
-            inverseCarbonDemo.legend.relief_demo === true &&
-            inverseCarbonDemo.legend.extrusion_note.includes('not a performance score'),
-          'inverse Carbon demo must preserve the raw descending rail and disclose its presentation direction');
+          if (aiFactual) {
+            assert(inverseCarbonDemo.state.carbonReliefMode === 'higher_value_higher' &&
+              inverseCarbonDemo.high.visual.altitude > inverseCarbonDemo.low.visual.altitude &&
+              inverseCarbonDemo.gap.visual.altitude === 0.007 &&
+              inverseCarbonDemo.gap.visual.relief_encodes_metric === false &&
+              inverseCarbonDemo.legend.relief_demo === false,
+            'AI-factual public lane must reject the inverted Carbon relief query');
+          } else {
+            assert(inverseCarbonDemo.state.carbonReliefMode === 'lower_value_higher' &&
+              inverseCarbonDemo.low.visual.altitude > inverseCarbonDemo.high.visual.altitude &&
+              inverseCarbonDemo.low.visual.altitude <= 0.012 &&
+              inverseCarbonDemo.gap.visual.altitude === 0.007 &&
+              inverseCarbonDemo.gap.visual.relief_encodes_metric === false,
+            'inverse Carbon demo must raise lower values subtly without promoting gaps');
+            assert(inverseCarbonDemo.railFirst.iso_alpha3 === 'CHN' &&
+              inverseCarbonDemo.railFirst.ordinal === 1 && inverseCarbonDemo.reliefNote === 'Inverse relief demo' &&
+              inverseCarbonDemo.legend.relief_demo === true &&
+              inverseCarbonDemo.legend.extrusion_note.includes('not a performance score'),
+            'inverse Carbon demo must preserve the raw descending rail and disclose its presentation direction');
+          }
           await page.locator('#country-card-heading').focus();
           await page.waitForFunction(() => document.activeElement?.id === 'country-card-heading');
           await page.keyboard.press('Tab');
@@ -574,38 +636,49 @@ jobs:
           assert(cancelledCountryNavigation.selected === null && !cancelledCountryNavigation.visible && cancelledCountryNavigation.focusIso === 'CHN',
             'Escape must cancel a pending country swap without reopening the card or splitting focus');
 
-          await page.waitForFunction(() => {
+          await page.waitForFunction(expectSky => {
             const textureState = window.GlobeModule?.getRuntimeTextureState?.();
-            return textureState?.surface?.src.includes('/assets/globe/runtime/earth-night.jpg') &&
-              textureState?.surface?.width === 3600 && textureState?.surface?.height === 1800 &&
-              textureState?.sky?.src.includes('/assets/globe/runtime/night-sky.png') &&
+            const surfaceReady = textureState?.surface?.src.includes('/assets/globe/runtime/earth-night.jpg') &&
+              textureState?.surface?.width === 3600 && textureState?.surface?.height === 1800;
+            const skyReady = textureState?.sky?.src.includes('/assets/globe/runtime/night-sky.png') &&
               textureState?.sky?.width === 4096 && textureState?.sky?.height === 2048;
-          }, null, { timeout: 30000 });
+            return surfaceReady && (expectSky ? skyReady : textureState?.sky === null);
+          }, !aiFactual, { timeout: 30000 });
           let textureState = await page.evaluate(() => window.GlobeModule.getRuntimeTextureState());
           assert(textureState.surface.src.includes('/assets/globe/runtime/earth-night.jpg') &&
             textureState.surface.width === 3600 && textureState.surface.height === 1800 && textureState.surface.flipY === true,
           'live Three.js surface must use the exact NASA JPEG dimensions and orientation');
-          assert(textureState.sky.src.includes('/assets/globe/runtime/night-sky.png') &&
-            textureState.sky.width === 4096 && textureState.sky.height === 2048 && textureState.sky.flipY === true &&
-            textureState.sky.materialSide === 1 && textureState.sky.mesh === true,
-          'live Three.js skysphere must use the exact local PNG texture on a back-side mesh');
+          if (aiFactual) {
+            assert(textureState.sky === null, 'AI-factual globe must use a solid background without a sky texture');
+          } else {
+            assert(textureState.sky.src.includes('/assets/globe/runtime/night-sky.png') &&
+              textureState.sky.width === 4096 && textureState.sky.height === 2048 && textureState.sky.flipY === true &&
+              textureState.sky.materialSide === 1 && textureState.sky.mesh === true,
+            'live Three.js skysphere must use the exact local PNG texture on a back-side mesh');
+          }
 
           const initialTheme = await page.evaluate(() => document.documentElement.dataset.theme || 'dark');
           assert(initialTheme === 'dark', 'texture lifecycle test must begin on the dark NASA/starfield theme');
           await page.click('#globe-theme-toggle');
           await page.waitForFunction(theme => (document.documentElement.dataset.theme || 'dark') !== theme, initialTheme);
           assert((await liveSnapshot(page)).rendererCanvasCount === 1, 'theme change must retain one renderer');
+          if (aiFactual) {
+            const lightTexture = await page.evaluate(() => window.GlobeModule.getRuntimeTextureState());
+            assert(lightTexture.surface.src.includes('/assets/globe/runtime/earth-night.jpg') && lightTexture.sky === null,
+              'AI-factual light theme must retain the NASA surface and solid background');
+          }
           await page.click('#globe-theme-toggle');
           await page.waitForFunction(() => document.documentElement.dataset.theme === 'dark');
-          await page.waitForFunction(() => {
+          await page.waitForFunction(expectSky => {
             const state = window.GlobeModule?.getRuntimeTextureState?.();
             return state?.surface?.src.includes('/assets/globe/runtime/earth-night.jpg') &&
-              state?.sky?.src.includes('/assets/globe/runtime/night-sky.png');
-          }, null, { timeout: 30000 });
+              (expectSky ? state?.sky?.src.includes('/assets/globe/runtime/night-sky.png') : state?.sky === null);
+          }, !aiFactual, { timeout: 30000 });
           textureState = await page.evaluate(() => window.GlobeModule.getRuntimeTextureState());
-          assert(textureState.surface.width === 3600 && textureState.sky.width === 4096 &&
+          assert(textureState.surface.width === 3600 &&
+            (aiFactual ? textureState.sky === null : textureState.sky.width === 4096) &&
             (await liveSnapshot(page)).rendererCanvasCount === 1,
-          'returning to dark theme must restore both exact textures without duplicating the renderer');
+          'returning to dark theme must restore the exact rights-safe texture state without duplicating the renderer');
 
           await page.emulateMedia({ reducedMotion: 'reduce' });
           await page.waitForFunction(() =>

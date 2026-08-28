@@ -22,8 +22,10 @@ const REQUIRED_ABSENT_PATHS = Object.freeze([
 ].sort());
 // globe.gl is fetched only after checkout and is independently constrained by
 // the pinned vendor-integrity policy, fixture, fetcher, and staged-byte checks.
-// It is therefore the sole generated release dependency outside this subject.
+// The AI review aggregate is created only after reviewers inspect this subject;
+// its checker then binds the subject digest, complete reports, and public bytes.
 const EXTERNAL_GENERATED_DEPENDENCIES = Object.freeze([
+  'data/climate/reviews/country-climate-intelligence-v1-multi-model-ai-review.json',
   'js/vendor/globe.gl.js',
 ]);
 const SUBJECT_PATHS = Object.freeze([
@@ -122,6 +124,7 @@ const SUBJECT_PATHS = Object.freeze([
   'sitemap.xml',
   'sw.js',
   'tools/build-deploy.sh',
+  'tools/build-cci-factual-public-deploy.sh',
   'tools/build-factual-public-deploy.sh',
   'tools/build-country-climate-intelligence.js',
   'tools/build-ct42-runtime-rollback-proof.js',
@@ -155,11 +158,14 @@ const SUBJECT_PATHS = Object.freeze([
   'scripts/verify_load_order.py',
   'tools/check-public-copy.js',
   'tools/check-climate-truth-ci.js',
+  'tools/check-cci-factual-public-deploy.js',
+  'tools/check-cci-factual-public-review.js',
   'tools/check-public-climate-release-profile.js',
   'tools/check-public-deploy-surface.js',
   'tools/check-source-rights-review-packets.js',
   'tools/check-source-routing-policy.js',
   'tools/check-staged-production-integrity.js',
+  'tools/check-staged-cci-factual-public-integrity.js',
   'tools/check-staged-factual-public-integrity.js',
   'tools/check-top20-primary-source-gap-queue.js',
   'tools/climate-truth-ci.js',
@@ -183,6 +189,7 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/lib/gcb-country-intelligence.js',
   'tools/lib/country-climate-intelligence-release-gate.js',
   'tools/lib/country-climate-intelligence-release-signatures.js',
+  'tools/lib/cci-factual-public.js',
   'tools/lib/climate-truth-component-plan.js',
   'tools/lib/climate-runtime-diff-boundary.js',
   'tools/lib/globe-runtime-assets.js',
@@ -195,6 +202,7 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/lib/source-rights-review-packets.js',
   'tools/lib/xlsx-table.js',
   'tools/prepare-country-climate-intelligence-review-request.js',
+  'tools/stage-cci-factual-public-deploy.js',
   'tools/stage-public-deploy.js',
   'tools/smoke-test.js',
   'tools/stack-lint.js',

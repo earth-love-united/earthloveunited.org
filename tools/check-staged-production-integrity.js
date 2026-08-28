@@ -945,10 +945,21 @@ function runCli(argv) {
     throw new Error('usage: node tools/check-staged-production-integrity.js --staged <directory> | --self-test');
   }
   const mode = process.env.ELU_VERIFIED_DEPLOY_MODE;
-  if (!['candidate', 'release'].includes(mode)) {
-    throw new Error('ELU_VERIFIED_DEPLOY_MODE must explicitly be candidate or release');
+  if (!['candidate', 'release', 'cci-ai-factual'].includes(mode)) {
+    throw new Error('ELU_VERIFIED_DEPLOY_MODE must explicitly be candidate, release, or cci-ai-factual');
   }
   const stagedRoot = resolveStagedRoot(ROOT, argv[1]);
+  if (mode === 'cci-ai-factual') {
+    try {
+      const report = require('./check-staged-cci-factual-public-integrity').verifyStagedIntegrity(stagedRoot);
+      process.stdout.write('Final staged production integrity: PASS (delegated to strict CCI AI-factual verifier; ' +
+        report.file_count + ' exact public files; rollback ' + report.rollback_sha256 + ')\n');
+      return;
+    } catch (error) {
+      fs.rmSync(stagedRoot, { recursive: true, force: true });
+      throw error;
+    }
+  }
   const report = verifyFinalStagedIntegrityWithCleanup({ sourceRoot: ROOT, stagedRoot, mode });
   process.stdout.write('Final staged production integrity: PASS (' + report.pinned_file_count +
     ' pinned notice/trust files, ' + report.public_file_count +

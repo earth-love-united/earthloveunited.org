@@ -72,11 +72,17 @@
 /tools/lib/globe-runtime-approval.js @earth-love-united/maintainers
 /tools/check-staged-production-integrity.js @earth-love-united/maintainers
 /tools/check-staged-factual-public-integrity.js @earth-love-united/maintainers
+/tools/check-staged-cci-factual-public-integrity.js @earth-love-united/maintainers
 /tools/build-deploy.sh                @earth-love-united/maintainers
 /tools/build-factual-public-deploy.sh @earth-love-united/maintainers
+/tools/build-cci-factual-public-deploy.sh @earth-love-united/maintainers
 /tools/stage-public-deploy.js         @earth-love-united/maintainers
+/tools/stage-cci-factual-public-deploy.js @earth-love-united/maintainers
 /tools/check-public-deploy-surface.js @earth-love-united/maintainers
 /tools/lib/public-deploy-surface.js   @earth-love-united/maintainers
+/tools/check-cci-factual-public-deploy.js @earth-love-united/maintainers
+/tools/check-cci-factual-public-review.js @earth-love-united/maintainers
+/tools/lib/cci-factual-public.js      @earth-love-united/maintainers
 /tools/check-public-climate-release-profile.js @earth-love-united/maintainers
 /tools/lib/public-climate-release-profile.js @earth-love-united/maintainers
 /tools/check-climate-production-readiness.js @earth-love-united/maintainers
