@@ -332,6 +332,9 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.59.1
           npx playwright install chromium --with-deps
 
+      - name: Verify streamed first-paint action capture
+        run: node tools/check-streamed-first-paint-action.js --root _deploy
+
       - name: Serve static site in background
         run: |
           cd _deploy
@@ -504,32 +507,44 @@ jobs:
             await target.close();
           }
 
-          async function exerciseGlobeStylesFailure() {
+          async function exerciseGlobeStylesFailure(urlPattern, failedComponent) {
             const target = await ctx.newPage();
             trackErrors(target);
             const handler = route => route.abort('failed');
-            await target.route('**/css/globe-system.css*', handler);
+            await target.route(urlPattern, handler);
             await target.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
             await waitForApp(target);
             assert(await target.evaluate(() => window.App.enterGlobe()) === false,
-              'missing globe CSS must refuse globe-mode activation');
-            const snapshot = await target.evaluate(() => ({
-              globeMode: document.body.classList.contains('globe-mode'),
-              styleState: document.documentElement.dataset.globeStylesReady,
-              status: document.getElementById('app-readiness-status')?.textContent || '',
-              exposed: [
+              'missing ' + failedComponent + ' CSS must refuse globe-mode activation');
+            const snapshot = await target.evaluate(failed => {
+              const guide = document.getElementById('guided-orbit');
+              if (guide) {
+                guide.hidden = false;
+                guide.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('guided-orbit-active');
+              }
+              const exposed = [
                 '#climate-lens-controls', '#hex-legend', '#elu-country-rank-rail',
-                '#elu-country-card-wrap', '#guided-orbit-replay', '#globe-loading',
+                '#elu-country-card-wrap', '#guided-orbit-replay', '#guided-orbit', '#globe-loading',
                 '#globe-fallback', '#globe-back-btn',
               ].filter(selector => {
                 const element = document.querySelector(selector);
                 return element && getComputedStyle(element).display !== 'none';
-              }),
-            }));
-            assert(!snapshot.globeMode && snapshot.styleState === 'error' && snapshot.exposed.length === 0 &&
+              });
+              return {
+                componentState: failed === 'guided'
+                  ? document.documentElement.dataset.guidedOrbitStylesReady
+                  : document.documentElement.dataset.globeSystemStylesReady,
+                exposed,
+                globeMode: document.body.classList.contains('globe-mode'),
+                styleState: document.documentElement.dataset.globeStylesReady,
+                status: document.getElementById('app-readiness-status')?.textContent || '',
+              };
+            }, failedComponent);
+            assert(!snapshot.globeMode && snapshot.styleState === 'error' && snapshot.componentState === 'error' && snapshot.exposed.length === 0 &&
               snapshot.status.includes('could not be prepared'),
-              'failed deferred globe CSS must keep every HUD surface hidden and announce retry readiness');
-            await target.unroute('**/css/globe-system.css*', handler);
+              'failed deferred ' + failedComponent + ' CSS must keep every HUD and tutorial surface hidden and announce retry readiness');
+            await target.unroute(urlPattern, handler);
             await target.close();
           }
 
@@ -567,7 +582,8 @@ jobs:
           }
 
           await exerciseSlowClimateRuntimeFirstVisit();
-          await exerciseGlobeStylesFailure();
+          await exerciseGlobeStylesFailure('**/css/globe-system.css*', 'globe');
+          await exerciseGlobeStylesFailure('**/css/guided-first-orbit.css*', 'guided');
           await exerciseServiceWorkerUpgradeOffline();
           await exercisePreRenderFailure('**/data/climate/runtime/country-climate-intelligence.json*', 'candidate_data_unavailable', { status: 503, body: 'candidate unavailable' }, /\[Data\._indexClimateIntelligence\(\)\] Country Climate Intelligence schema rejected/);
           await exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable', { status: 503, body: 'geometry unavailable' });

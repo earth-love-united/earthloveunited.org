@@ -11,6 +11,29 @@
     (savedTheme === 'dark' || savedTheme === 'light') ? savedTheme : 'light';
 })();
 </script>
+<!-- Capture the primary action before any visible body bytes can arrive. This
+     keeps the first-painted CTA responsive even when HTML is streamed slowly. -->
+<script>
+(function () {
+  var state = window.__ELU_EARLY_GLOBE__ = window.__ELU_EARLY_GLOBE__ || { pending: false, requestedAt: null };
+  document.addEventListener('click', function (event) {
+    if (window.App && window.App._staticActionsBound) return;
+    if (!(event.target instanceof Element)) return;
+    var trigger = event.target.closest('[data-action="enterGlobe"]');
+    if (!trigger) return;
+    event.preventDefault();
+    event.stopPropagation();
+    state.pending = true;
+    state.requestedAt = performance.now();
+    document.querySelectorAll('[data-action="enterGlobe"]').forEach(function (button) {
+      if ('disabled' in button) button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+    });
+    var status = document.getElementById('app-readiness-status');
+    if (status) status.textContent = 'Loading verified country evidence for the Living Globe.';
+  }, true);
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ─── Identity & social preview ─────────────────────────────── -->
@@ -183,6 +206,7 @@ html:not([data-globe-styles-ready="true"]) .hex-legend,
 html:not([data-globe-styles-ready="true"]) #elu-country-rank-rail,
 html:not([data-globe-styles-ready="true"]) #elu-country-card-wrap,
 html:not([data-globe-styles-ready="true"]) #guided-orbit-replay,
+html:not([data-globe-styles-ready="true"]) .guided-orbit,
 html:not([data-globe-styles-ready="true"]) #globe-loading,
 html:not([data-globe-styles-ready="true"]) #globe-fallback,
 html:not([data-globe-styles-ready="true"]) #globe-back-btn{display:none!important}
@@ -395,9 +419,26 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 @media(prefers-reduced-motion:reduce){#hero *,#hero *::before,#hero *::after{animation:none!important;transition:none!important}.glass-btn{transition:--arm-w .4s ease,--arm-h .4s ease,--cc .3s ease}.partner-logo-cell{transition:none!important}}
 </style>
 
-<!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link id="globe-system-styles" rel="stylesheet" href="css/globe-system.css?v=v43" media="print" onload="this.media='all';document.documentElement.dataset.globeStylesReady='true';window.dispatchEvent(new Event('elu:globe-styles-ready'))" onerror="document.documentElement.dataset.globeStylesReady='error';window.dispatchEvent(new Event('elu:globe-styles-error'))">
-<link rel="stylesheet" href="css/guided-first-orbit.css?v=v11" media="print" onload="this.media='all'">
+<!-- ELU 0.7 globe HUD: both deferred sheets form one atomic readiness gate. -->
+<script>
+(function () {
+  var state = { globe: false, guided: false, failed: false, published: null };
+  window.__ELU_GLOBE_STYLE_RESULT__ = function (name, ready) {
+    if (name !== 'globe' && name !== 'guided') return;
+    if (ready) state[name] = true;
+    else state.failed = true;
+    var root = document.documentElement;
+    root.dataset[name === 'globe' ? 'globeSystemStylesReady' : 'guidedOrbitStylesReady'] = ready ? 'true' : 'error';
+    var result = state.failed ? 'error' : (state.globe && state.guided ? 'true' : null);
+    if (!result || state.published === result) return;
+    state.published = result;
+    root.dataset.globeStylesReady = result;
+    window.dispatchEvent(new Event(result === 'true' ? 'elu:globe-styles-ready' : 'elu:globe-styles-error'));
+  };
+})();
+</script>
+<link id="globe-system-styles" rel="stylesheet" href="css/globe-system.css?v=v43" media="print" onload="this.media='all';window.__ELU_GLOBE_STYLE_RESULT__('globe',true)" onerror="window.__ELU_GLOBE_STYLE_RESULT__('globe',false)">
+<link id="guided-orbit-styles" rel="stylesheet" href="css/guided-first-orbit.css?v=v11" media="print" onload="this.media='all';window.__ELU_GLOBE_STYLE_RESULT__('guided',true)" onerror="window.__ELU_GLOBE_STYLE_RESULT__('guided',false)">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
@@ -864,30 +905,6 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <div class="footer-copy">© 2026 Earth Love United Foundation · earthloveunited.org</div>
   </div>
 </div>
-
-<!-- First-paint action bridge: acknowledge a globe request even while the
-     deferred application and country evidence are still arriving. -->
-<script>
-(function () {
-  var state = window.__ELU_EARLY_GLOBE__ = window.__ELU_EARLY_GLOBE__ || { pending: false, requestedAt: null };
-  document.addEventListener('click', function (event) {
-    if (window.App && window.App._staticActionsBound) return;
-    if (!(event.target instanceof Element)) return;
-    var trigger = event.target.closest('[data-action="enterGlobe"]');
-    if (!trigger) return;
-    event.preventDefault();
-    event.stopPropagation();
-    state.pending = true;
-    state.requestedAt = performance.now();
-    document.querySelectorAll('[data-action="enterGlobe"]').forEach(function (button) {
-      if ('disabled' in button) button.disabled = true;
-      button.setAttribute('aria-busy', 'true');
-    });
-    var status = document.getElementById('app-readiness-status');
-    if (status) status.textContent = 'Loading verified country evidence for the Living Globe.';
-  }, true);
-})();
-</script>
 
 <!-- JS Modules — loaded in dependency order.
      NOTE: js/vendor/globe.gl.js (1.8MB) is NOT loaded here — App.enterGlobe()

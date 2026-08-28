@@ -235,12 +235,17 @@ claim is limited to the hero LCP image payload, while latency, layout shift,
 blocking time, partial transfer, and post-deploy PageSpeed remain separate
 reported outcomes.
 
-The first-paint action bridge must acknowledge an Enter-the-Globe request even
-before deferred application scripts bind. It queues exactly one intent,
-disables both entry controls, sets `aria-busy`, and announces the evidence wait.
-`App` consumes that intent, shares the exact-data promise, and may reveal globe
-mode only after both evidence and asynchronously loaded globe CSS are ready.
-All globe HUD surfaces fail closed until `data-globe-styles-ready="true"`.
+The first-paint action bridge is installed in `<head>`, before any visible body
+bytes, and must acknowledge an Enter-the-Globe request even while the remaining
+HTML stream and deferred application scripts are still arriving. It queues
+exactly one intent, disables both entry controls, sets `aria-busy`, and
+announces the evidence wait. `tools/check-streamed-first-paint-action.js`
+holds the document tail after the visible hero and proves this boundary in a
+real browser. `App` consumes that intent, shares the exact-data promise, and
+may reveal globe mode only after evidence and both asynchronously loaded HUD
+stylesheets (`globe-system.css` and `guided-first-orbit.css`) are ready. Every
+globe and tutorial surface fails closed until the aggregate
+`data-globe-styles-ready="true"` gate is published.
 
 The live renderer targets a 120 Hz-capable display budget of 8.333 ms per
 frame. This is a scene and interaction budget, not a claim that a 60 Hz panel
