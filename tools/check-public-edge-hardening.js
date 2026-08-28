@@ -9,6 +9,8 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 const CANONICAL_ORIGIN = 'https://earthloveunited.org/';
 const REQUIRED_HSTS_MAX_AGE = 31536000;
+const HSTS_TOKEN = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/;
+const HSTS_QUOTED_STRING = /^"(?:[\t !#-\[\]-~]|\\[\t -~])*"$/;
 
 function fail(message) {
   throw new Error(message);
@@ -40,6 +42,65 @@ function parseHeaderBlocks(source) {
     if (active) blocks.get(active).push(trimmed);
   });
   return blocks;
+}
+
+function splitHstsDirectives(policy) {
+  if (typeof policy !== 'string' || /[\r\n]/.test(policy)) fail('HSTS policy must be one header-field value');
+  const directives = [];
+  let current = '';
+  let quoted = false;
+  let escaped = false;
+
+  for (const character of policy) {
+    if (escaped) {
+      current += character;
+      escaped = false;
+    } else if (quoted && character === '\\') {
+      current += character;
+      escaped = true;
+    } else if (character === '"') {
+      current += character;
+      quoted = !quoted;
+    } else if (character === ';' && !quoted) {
+      directives.push(current.trim());
+      current = '';
+    } else {
+      current += character;
+    }
+  }
+
+  if (quoted || escaped) fail('HSTS policy contains an unterminated quoted-string');
+  directives.push(current.trim());
+  if (directives.some(directive => directive.length === 0)) fail('HSTS policy contains an empty directive');
+  return directives;
+}
+
+function parseHstsPolicy(policy) {
+  const directives = new Map();
+  for (const rawDirective of splitHstsDirectives(policy)) {
+    const equals = rawDirective.indexOf('=');
+    const name = (equals === -1 ? rawDirective : rawDirective.slice(0, equals)).trim();
+    const value = equals === -1 ? null : rawDirective.slice(equals + 1).trim();
+    if (!HSTS_TOKEN.test(name)) fail('HSTS policy contains a malformed directive name');
+    if (value !== null && (!value || (!HSTS_TOKEN.test(value) && !HSTS_QUOTED_STRING.test(value)))) {
+      fail('HSTS policy contains a malformed directive value: ' + name);
+    }
+
+    const normalizedName = name.toLowerCase();
+    if (directives.has(normalizedName)) fail('HSTS policy contains a duplicate directive: ' + name);
+    directives.set(normalizedName, value);
+  }
+
+  const maxAgeValue = directives.get('max-age');
+  if (typeof maxAgeValue !== 'string' || !/^\d+$/.test(maxAgeValue)) {
+    fail('HSTS max-age must appear exactly once with an unquoted decimal value');
+  }
+  const maxAge = Number(maxAgeValue);
+  if (!Number.isSafeInteger(maxAge)) fail('HSTS max-age must be a safe decimal integer');
+  if (directives.has('includesubdomains') && directives.get('includesubdomains') !== null) {
+    fail('HSTS includeSubDomains directive must not have a value');
+  }
+  return { directives, maxAge };
 }
 
 function checkPublicEdgeHardening(root) {
@@ -92,15 +153,15 @@ function checkPublicEdgeHardening(root) {
     fail('HSTS must be declared exactly once on the global /* route');
   }
   const policy = hstsHeaders[0].value.slice(hstsHeaders[0].value.indexOf(':') + 1);
-  const maxAge = policy.match(/(?:^|;)\s*max-age=(\d+)\s*(?:;|$)/i);
-  if (!maxAge || Number(maxAge[1]) < REQUIRED_HSTS_MAX_AGE) {
+  const parsedHsts = parseHstsPolicy(policy);
+  if (parsedHsts.maxAge < REQUIRED_HSTS_MAX_AGE) {
     fail('HSTS max-age must be at least one year');
   }
 
   return {
     status: 'pass',
     checks: 6,
-    hsts_max_age: Number(maxAge[1]),
+    hsts_max_age: parsedHsts.maxAge,
     canonical_origin: CANONICAL_ORIGIN,
   };
 }
@@ -111,7 +172,7 @@ function selfTest() {
     'robots.txt': 'User-agent: *\nAllow: /\n\nSitemap: https://earthloveunited.org/sitemap.xml\n',
     'sitemap.xml': '<urlset><url><loc>https://earthloveunited.org/</loc></url></urlset>\n',
     'index.html': '<!doctype html><link rel="canonical" href="https://earthloveunited.org/">\n',
-    '_headers': '/*\n  Strict-Transport-Security: max-age=31536000\n',
+    '_headers': '/*\n  Strict-Transport-Security: max-age=31536000; includeSubDomains; extension="quoted;value"\n',
     'wrangler.jsonc': '{"assets":{"directory":"./_deploy","not_found_handling":"404-page"}}\n',
   };
 
@@ -120,11 +181,13 @@ function selfTest() {
     Object.entries(fixtures).forEach(([relative, content]) => fs.writeFileSync(path.join(root, relative), content));
     return root;
   };
+  let rejected = 0;
   const mutate = (relative, replacement, expected) => {
     const root = makeFixture();
     try {
       fs.writeFileSync(path.join(root, relative), replacement);
       assert.throws(() => checkPublicEdgeHardening(root), expected);
+      rejected += 1;
     } finally {
       fs.rmSync(root, { recursive: true, force: true });
     }
@@ -140,10 +203,17 @@ function selfTest() {
   mutate('sitemap.xml', '<urlset><url><loc>https://example.com/</loc></url></urlset>', /canonical root/);
   mutate('index.html', '<!doctype html>', /canonical root link/);
   mutate('_headers', '/*\n  Strict-Transport-Security: max-age=0\n', /at least one year/);
-  return 6;
+  mutate('_headers', '/*\n  Strict-Transport-Security: max-age=31536000; max-age=0\n', /duplicate directive/);
+  mutate('_headers', '/*\n  Strict-Transport-Security: max-age=31536000; includeSubDomains; includeSubDomains\n', /duplicate directive/);
+  mutate('_headers', '/*\n  Strict-Transport-Security: max-age="31536000"\n', /unquoted decimal/);
+  mutate('_headers', '/*\n  Strict-Transport-Security: max-age=31536000oops\n', /unquoted decimal/);
+  mutate('_headers', '/*\n  Strict-Transport-Security: max-age=31536000;; includeSubDomains\n', /empty directive/);
+  mutate('_headers', '/*\n  Strict-Transport-Security: max-age=31536000; includeSubDomains=1\n', /must not have a value/);
+  mutate('_headers', '/*\n  Strict-Transport-Security: max-age=31536000, max-age=0\n', /malformed directive value/);
+  return rejected;
 }
 
-module.exports = { checkPublicEdgeHardening, parseHeaderBlocks, selfTest };
+module.exports = { checkPublicEdgeHardening, parseHeaderBlocks, parseHstsPolicy, selfTest };
 
 if (require.main === module) {
   const args = process.argv.slice(2);

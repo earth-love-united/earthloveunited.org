@@ -29,8 +29,8 @@ jobs:
         shell: bash
         run: |
           sha256sum --check --strict <<'CHECKSUMS'
-          036726a3ff34ee09b335338055e13697d53df4ad8276aab325c80219e738322d  tools/check-carbon-project-data-hygiene.js
-          60f4e6eb5f9051d416105bb156707545dd4ad085302ed14e54c3638b0c48e403  tools/check-public-edge-hardening.js
+          b3b95d882674de6826e3a9bfdc51fa9589777af914ebb519d62afc0715b9c39e  tools/check-carbon-project-data-hygiene.js
+          8e999aaaea0d8b88d6196344e06f8140237467fce7dc05383c34fac553abd4ab  tools/check-public-edge-hardening.js
           CHECKSUMS
 
       - name: Verify public edge protections

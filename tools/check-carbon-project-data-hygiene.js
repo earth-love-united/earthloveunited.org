@@ -31,10 +31,16 @@ const FORBIDDEN_PATTERNS = [
   { pattern: /\bdata:/i, reason: '"data:" URI is an active-content sink' },
 ];
 
+// The WHATWG URL parser removes ASCII tab/newline characters before scheme
+// parsing. Apply the same normalization before the defense-in-depth blacklist
+// so values such as "java\\nscript:" cannot become active only at the sink.
+const URL_SCHEME_IGNORABLE_CONTROLS = /[\u0009\u000A\u000D]/g;
+
 function collectViolations(node, location, violations) {
   if (typeof node === 'string') {
+    const normalized = node.replace(URL_SCHEME_IGNORABLE_CONTROLS, '');
     for (const { pattern, reason } of FORBIDDEN_PATTERNS) {
-      if (pattern.test(node)) {
+      if (pattern.test(normalized)) {
         violations.push({ location, reason });
       }
     }
@@ -50,9 +56,15 @@ function collectViolations(node, location, violations) {
 
 function checkPayload(sourceRoot) {
   const absolute = path.join(sourceRoot, PAYLOAD_PATH);
+  const source = fs.readFileSync(absolute, 'utf8');
   let parsed;
   try {
-    parsed = parseJsonNoDuplicateKeys(fs.readFileSync(absolute).toString('utf8'), PAYLOAD_PATH);
+    // Validate duplicate keys with the release parser, but scan JSON.parse's
+    // result. JSON.parse preserves "__proto__" as an enumerable own property;
+    // the validator's ordinary-object assignments intentionally are not used
+    // as the security walk input.
+    parseJsonNoDuplicateKeys(source, PAYLOAD_PATH);
+    parsed = JSON.parse(source);
   } catch (error) {
     throw new Error(`${PAYLOAD_PATH} is not strict duplicate-free JSON: ${error.message}`);
   }
@@ -96,10 +108,17 @@ function selfTest() {
   assert.throws(() => run(JSON.stringify({ data: { TST: { sandbox: [{ label: '<script>' }] } } })), /tag-opening/);
   assert.throws(() => run(JSON.stringify({ data: { '<unsafe>': { name: 'key' } } })), /tag-opening/);
 
+  // JSON magic keys remain enumerable scan inputs rather than mutating the
+  // security walker's prototype and disappearing from Object.entries().
+  assert.throws(() => run('{"data":{"TST":{"__proto__":{"html":"<script>"}}}}'), /tag-opening/);
+  assert.throws(() => run('{"data":{"TST":{"__proto__":{"url":"javascript:alert(1)"}}}}'), /javascript:/);
+
   // Script-bearing schemes fail, including nested arrays and non-obvious case.
   assert.throws(() => run(JSON.stringify({ data: { TST: { connection: 'JAVASCRIPT:alert(1)' } } })), /javascript:/);
   assert.throws(() => run(JSON.stringify({ data: { TST: { links: ['vbscript:msgbox(1)'] } } })), /vbscript:/);
   assert.throws(() => run(JSON.stringify({ data: { TST: { links: ['data:image/png;base64,AAAA'] } } })), /"data:"/);
+  assert.throws(() => run('{"data":{"TST":{"u":"java\\nscript:alert(1)"}}}'), /javascript:/);
+  assert.throws(() => run('{"data":{"TST":{"u":"da\\tta:text/plain,active"}}}'), /"data:"/);
 
   // Duplicate keys fail via strict parsing.
   assert.throws(() => run('{"data":{"TST":{"name":"a","name":"b"}}}'), /duplicate/i);
