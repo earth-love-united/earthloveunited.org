@@ -1,0 +1,44 @@
+# Additive security checks live outside the exact-pinned climate review
+# workflow so new defensive controls cannot invalidate or silently rebind the
+# reviewed climate subject. CODEOWNERS still requires maintainer review here.
+name: security-hardening
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  public-surface:
+    name: Public edge and payload hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '20'
+
+      - name: Verify hardening checker integrity
+        shell: bash
+        run: |
+          sha256sum --check --strict <<'CHECKSUMS'
+          036726a3ff34ee09b335338055e13697d53df4ad8276aab325c80219e738322d  tools/check-carbon-project-data-hygiene.js
+          60f4e6eb5f9051d416105bb156707545dd4ad085302ed14e54c3638b0c48e403  tools/check-public-edge-hardening.js
+          CHECKSUMS
+
+      - name: Verify public edge protections
+        run: |
+          node tools/check-public-edge-hardening.js --self-test
+          node tools/check-public-edge-hardening.js
+
+      - name: Verify carbon project payload hygiene
+        run: |
+          node tools/check-carbon-project-data-hygiene.js --self-test
+          node tools/check-carbon-project-data-hygiene.js
