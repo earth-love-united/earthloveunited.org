@@ -59,7 +59,9 @@ mission.
 
 ## Script load order
 
-The twelve classic scripts load synchronously at the end of `index.html`:
+The twelve classic scripts use `defer` and preserve dependency order at the
+end of `index.html`. Downloads can proceed without blocking the foundation's
+first paint; ordered execution still completes before `DOMContentLoaded`:
 
 ```text
 1.  js/gaia-utils.js
@@ -75,6 +77,12 @@ The twelve classic scripts load synchronously at the end of `index.html`:
 11. js/guided-first-orbit.js
 12. js/app.js
 ```
+
+A dependency-free inline bridge acknowledges and queues a globe-entry click
+before those deferred files finish. `App` consumes that intent while the
+exact-SHA country evidence loads. Globe mode itself remains fail-closed until
+the asynchronous `globe-system.css` link marks its HUD geometry ready; a load
+error leaves every globe control hidden and keeps the Foundation view active.
 
 `js/vendor/globe.gl.js` is loaded by `App.enterGlobe()` rather than at page
 boot. This keeps WebGL work out of the foundation-page path.

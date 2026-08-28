@@ -94,12 +94,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ELU">
 
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Fonts: optional + non-render-blocking. System fallbacks paint immediately. -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=optional" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=optional" rel="stylesheet">
+</noscript>
 
 <!-- Resource hints -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="assets/legacy/elu-logo-light.png?v=light-title-mint-384-p256" as="image" type="image/png" fetchpriority="high">
 <link rel="preload" href="js/gaia-utils.js" as="script">
 <link rel="preload" href="js/data.js?v=v16" as="script">
 <link rel="preload" href="js/country-climate-intelligence.js?v=v17" as="script">
@@ -116,7 +118,7 @@
   --hero-glow:radial-gradient(circle at 50% 40%,rgba(196,92,74,.16),rgba(196,92,74,.04) 34%,transparent 58%),radial-gradient(circle at 50% 62%,rgba(78,205,196,.08),transparent 42%);
   --hero-vignette:radial-gradient(circle at center,transparent 48%,rgba(5,5,9,.72) 100%);
   --nav-bg:linear-gradient(180deg,rgba(5,5,9,.94),rgba(5,5,9,.6) 72%,transparent);--footer-bg:linear-gradient(0deg,rgba(5,5,9,1),rgba(5,5,9,.9));
-  --mono:'JetBrains Mono',monospace;--display:'Cormorant Garamond',serif;--body:'Outfit',sans-serif
+  --mono:'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace;--display:'Cormorant Garamond',Georgia,'Times New Roman',serif;--body:'Outfit','Avenir Next',Avenir,'Segoe UI',sans-serif
 }
 [data-theme="light"]{
   color-scheme:only light;
@@ -140,6 +142,7 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 .glass-btn:active{transform:translateY(0)}
 .skip-nav{position:absolute;top:-100%;left:0;z-index:9999;padding:8px 16px;background:var(--teal);color:var(--bg);font-size:14px;font-weight:600;text-decoration:none;border-radius:0 0 4px 0}
 .skip-nav:focus{top:0}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 /* hero */
 #hero{position:relative;z-index:200;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding-top:54px;box-sizing:border-box;transition:opacity 1.2s,visibility 1.2s;overflow:hidden}
 #hero.hidden{opacity:0;visibility:hidden;pointer-events:none}
@@ -148,8 +151,8 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 #hero > *{position:relative;z-index:1}
 .hero-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;max-width:1040px;width:90%;min-height:calc(100vh - 54px);text-align:center}
 .hero-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:0 0 20px;box-sizing:border-box}
-.foundation-mark,.hero-foundation-logo{background:url("assets/legacy/elu-logo.png") center/contain no-repeat}
-[data-theme="light"] .foundation-mark,[data-theme="light"] .hero-foundation-logo{background-image:url("assets/legacy/elu-logo-light.png?v=light-title-mint")}
+.foundation-mark,.hero-foundation-logo{background:url("assets/legacy/elu-logo.png?v=mint-384-p256") center/contain no-repeat}
+[data-theme="light"] .foundation-mark,[data-theme="light"] .hero-foundation-logo{background-image:url("assets/legacy/elu-logo-light.png?v=light-title-mint-384-p256")}
 .hero-foundation-logo{order:0;display:block;width:clamp(132px,17vw,188px);height:clamp(132px,17vw,188px);margin:0 auto 22px;filter:drop-shadow(0 16px 34px rgba(78,205,196,.12));animation:fadeUp .8s ease-out .16s both}
 #hero h1{order:1;font-family:var(--display);font-size:clamp(34px,5vw,58px);font-weight:300;color:var(--mint);margin-bottom:10px;letter-spacing:3px;animation:fadeUp .8s ease-out .3s both}
 .hero-value{order:2;max-width:760px;margin:0 auto 36px;color:var(--text2);font-size:clamp(15px,2vw,21px);line-height:1.55;animation:fadeUp .8s ease-out .42s both}
@@ -159,8 +162,30 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 #hero .memorial{position:relative;bottom:auto;order:5;margin:0 auto 24px;font-size:11px;color:var(--text3);font-style:italic;opacity:.72;animation:fadeUp .8s ease-out 1s both}
 .hero-telemetry{order:3;display:flex;align-items:center;justify-content:center;width:min(920px,100%);margin:0 auto;padding:0;color:var(--text2);animation:fadeUp .6s ease-out .15s both}
 #hero-carbon-clock{margin:0;min-width:0}
+/* Critical carbon-clock geometry. The full clock stylesheet stays deferred,
+   but these rules reserve the first-paint layout and prevent a late hero jump. */
+#carbon-clock-hero{width:100%;margin:0 auto;max-width:none;text-align:center}
+.cc-hero-inner{display:flex;flex-direction:column;align-items:center;gap:0;padding:0;background:none;border:0;border-radius:0;position:relative}
+.cc-hero-inner::before{content:none}
+.cc-label{font-family:var(--mono);font-size:clamp(10px,1.2vw,12px);text-transform:uppercase;letter-spacing:clamp(2px,.45vw,4px);color:var(--warn);margin-bottom:14px;text-shadow:0 0 18px rgba(196,92,74,.22)}
+.cc-value-row{display:inline-flex;align-items:baseline;justify-content:center;gap:clamp(6px,1vw,12px);width:max-content;max-width:100%;margin:0 auto}
+.cc-value{font-family:var(--mono);font-size:clamp(66px,13vw,168px);font-weight:700;color:var(--text);line-height:.86;margin-bottom:0;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1,"lnum" 1;letter-spacing:0;text-align:center;white-space:nowrap;text-shadow:0 0 24px rgba(196,92,74,.26)}
+html[data-theme="light"] #hero .cc-value{text-shadow:0 4px 24px rgba(63,125,84,.16),0 0 12px rgba(63,125,84,.1)}
+.cc-unit{transform:translateY(-.08em);color:var(--warn);font-family:var(--body);font-size:clamp(30px,5.2vw,58px);font-weight:300;line-height:1;white-space:nowrap;text-shadow:0 0 18px rgba(196,92,74,.22)}
+.cc-explainer{display:flex;flex-direction:column;gap:4px;max-width:640px;margin-top:22px;color:var(--text2);font-size:clamp(15px,2vw,22px);font-weight:300;line-height:1.48}
+.cc-explainer strong{color:var(--text);font-weight:400}
+@media(max-width:768px){#carbon-clock-hero{margin:0}.cc-value{font-size:clamp(54px,19vw,92px);letter-spacing:0}.cc-unit{transform:translateY(-.06em)}.cc-hero-inner{justify-content:center}.cc-explainer{margin-top:18px;font-size:15px}}
 /* globe */
 #globeViz{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+/* Fail closed until the deferred globe stylesheet establishes HUD geometry. */
+html:not([data-globe-styles-ready="true"]) .climate-lens-controls,
+html:not([data-globe-styles-ready="true"]) .hex-legend,
+html:not([data-globe-styles-ready="true"]) #elu-country-rank-rail,
+html:not([data-globe-styles-ready="true"]) #elu-country-card-wrap,
+html:not([data-globe-styles-ready="true"]) #guided-orbit-replay,
+html:not([data-globe-styles-ready="true"]) #globe-loading,
+html:not([data-globe-styles-ready="true"]) #globe-fallback,
+html:not([data-globe-styles-ready="true"]) #globe-back-btn{display:none!important}
 body.globe-mode #hero,body.globe-mode .sections{display:none!important}
 body.globe-mode #globeViz{z-index:1;pointer-events:all}
 body.globe-mode #topbar{opacity:1;pointer-events:all}
@@ -371,12 +396,14 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 </style>
 
 <!-- ELU 0.7 globe HUD: loaded after critical CSS so it can own the instrument layer -->
-<link rel="stylesheet" href="css/globe-system.css?v=v43">
-<link rel="stylesheet" href="css/guided-first-orbit.css?v=v11">
+<link id="globe-system-styles" rel="stylesheet" href="css/globe-system.css?v=v43" media="print" onload="this.media='all';document.documentElement.dataset.globeStylesReady='true';window.dispatchEvent(new Event('elu:globe-styles-ready'))" onerror="document.documentElement.dataset.globeStylesReady='error';window.dispatchEvent(new Event('elu:globe-styles-error'))">
+<link rel="stylesheet" href="css/guided-first-orbit.css?v=v11" media="print" onload="this.media='all'">
 
 <!-- Non-critical CSS: deferred async load -->
 <link rel="stylesheet" href="css/carbon-clock.css?v=v2" media="print" onload="this.media='all'">
 <noscript>
+  <link rel="stylesheet" href="css/globe-system.css?v=v43">
+  <link rel="stylesheet" href="css/guided-first-orbit.css?v=v11">
   <link rel="stylesheet" href="css/carbon-clock.css?v=v2">
 </noscript>
 
@@ -452,6 +479,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
         <button class="enter-btn glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
         <a class="ghost-btn glass-btn" href="#about">Explore the Foundation ↓</a>
       </div>
+      <p id="app-readiness-status" class="sr-only" role="status" aria-live="polite"></p>
     </div>
 
     <div class="memorial"><a href="#tribute">In memory of Jean Missinhoun (1972–2024) · From oil to earth</a></div>
@@ -578,7 +606,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     </div>
     <div class="video-block">
       <button class="video-poster" id="elu-video" aria-label="Play video: What is Earth Love United?">
-        <img src="assets/legacy/video-what-is-elu.jpg" alt="" loading="lazy" decoding="async">
+        <img src="assets/legacy/video-what-is-elu.jpg?v=poster-768" alt="" width="768" height="432" loading="lazy" decoding="async">
         <span class="video-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
       </button>
       <p class="video-caption">“What is Earth Love United?” — made by our volunteers.</p>
@@ -696,26 +724,26 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     </div>
     <div class="partner-logo-grid" role="list" aria-label="Earth Love United partners">
       <a class="partner-logo-cell partner-logo-cell--st" href="https://www.stvin.com/" target="_blank" rel="noopener" role="listitem" aria-label="Visit St Vincent’s School">
-        <img src="assets/partners/st-vincents-wordmark.png" alt="St Vincent’s School" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <img src="assets/partners/st-vincents-wordmark.png" alt="St Vincent’s School" width="2171" height="724" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
         <span class="partner-logo-fallback">St Vincent’s School</span>
       </a>
       <div class="partner-logo-cell" role="listitem" aria-label="GRND"><span class="partner-wordmark">GRND</span></div>
       <a class="partner-logo-cell partner-logo-cell--spe" href="https://www.saveplanetearth.io/" target="_blank" rel="noopener" role="listitem" aria-label="Visit SavePlanetEarth">
-        <img src="assets/partners/save-planet-earth.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <img src="assets/partners/save-planet-earth.svg" alt="" width="657" height="929" aria-hidden="true" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
         <span class="partner-spe-name" aria-hidden="true">SavePlanetEarth</span>
         <span class="partner-logo-fallback">SavePlanetEarth</span>
       </a>
       <a class="partner-logo-cell partner-logo-cell--wide" href="https://www.ctgreenbank.com/" target="_blank" rel="noopener" role="listitem" aria-label="Visit Connecticut Green Bank">
-        <img src="assets/partners/connecticut-green-bank.png" alt="Connecticut Green Bank" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <img src="assets/partners/connecticut-green-bank.png" alt="Connecticut Green Bank" width="800" height="164" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
         <span class="partner-logo-fallback">Connecticut Green Bank</span>
       </a>
       <a class="partner-logo-cell partner-logo-cell--climate" href="https://www.climatechange.ai/" target="_blank" rel="noopener" role="listitem" aria-label="Visit Climate Change AI">
-        <img src="assets/partners/climate-change-ai.png" alt="" aria-hidden="true" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <img src="assets/partners/climate-change-ai.png" alt="" width="1201" height="1037" aria-hidden="true" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
         <span class="partner-climate-name" aria-hidden="true">Climate AI</span>
         <span class="partner-logo-fallback">Climate Change AI</span>
       </a>
       <a class="partner-logo-cell partner-logo-cell--wide" href="https://www.avocademy.com/" target="_blank" rel="noopener" role="listitem" aria-label="Visit Avocademy">
-        <img src="assets/partners/avocademy.svg" alt="Avocademy" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <img src="assets/partners/avocademy.svg" alt="Avocademy" width="140" height="43" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
         <span class="partner-logo-fallback">Avocademy</span>
       </a>
     </div>
@@ -750,22 +778,22 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <h2 id="team-h">The Team</h2>
     <div class="team-grid">
       <div class="t-card">
-        <div class="t-photo" data-initials="EO"><img src="assets/legacy/ekmel.jpg" alt="Ekmel Ozdemir" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <div class="t-photo" data-initials="EO"><img src="assets/legacy/ekmel.jpg" alt="Ekmel Ozdemir" width="245" height="250" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
         <h3>Ekmel Ozdemir</h3>
         <div class="t-role">General Manager</div>
       </div>
       <div class="t-card">
-        <div class="t-photo" data-initials="BG"><img src="assets/legacy/brandon.jpg" alt="Brandon Garvey" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <div class="t-photo" data-initials="BG"><img src="assets/legacy/brandon.jpg" alt="Brandon Garvey" width="245" height="249" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
         <h3>Brandon Garvey</h3>
         <div class="t-role">Marketing</div>
       </div>
       <div class="t-card">
-        <div class="t-photo" data-initials="IK"><img src="assets/legacy/ishita.png" alt="Ishita Kumar" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <div class="t-photo noimg" data-initials="IK" role="img" aria-label="Ishita Kumar"></div>
         <h3>Ishita Kumar</h3>
         <div class="t-role">Legal Lead</div>
       </div>
       <div class="t-card">
-        <div class="t-photo" data-initials="MM"><img src="assets/legacy/mike.png" alt="Mike Mutai" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <div class="t-photo" data-initials="MM"><img src="assets/legacy/mike.png" alt="Mike Mutai" width="433" height="577" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
         <h3>Mike Mutai</h3>
         <div class="t-role">Lead Developer</div>
       </div>
@@ -783,12 +811,6 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
         <p>Ekmel Ozdemir, who worked alongside Jean as General Manager since the founding of Earth Love United in 2020, serves as interim chairman. Though we mourn the loss of a visionary leader, we are comforted in knowing that Jean’s spirit will live on through the work of the Foundation. Together, we honor his memory by championing worldwide environmental stewardship and sustainable practices.</p>
         <p>Jean’s legacy will be embodied by the advancements of the Foundation but also in the hearts of those he inspired to fight against climate change. We extend our deepest condolences to Jean Missinhoun’s family, friends, and all those whose lives he touched.</p>
         <div class="trib-close">May your vision guide us toward a future of harmony with our planet’s precious ecosystems and drive us to never stop saving the world.</div>
-      </div>
-      <div class="trib-aside">
-        <figure>
-          <img src="assets/legacy/dove.jpg" alt="A dove in flight" loading="lazy" decoding="async" onerror="this.closest('.trib-aside').classList.add('noimg')">
-          <figcaption>From oil to earth — Jean Missinhoun, 1972–2024</figcaption>
-        </figure>
       </div>
     </div>
   </section>
@@ -843,21 +865,45 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   </div>
 </div>
 
+<!-- First-paint action bridge: acknowledge a globe request even while the
+     deferred application and country evidence are still arriving. -->
+<script>
+(function () {
+  var state = window.__ELU_EARLY_GLOBE__ = window.__ELU_EARLY_GLOBE__ || { pending: false, requestedAt: null };
+  document.addEventListener('click', function (event) {
+    if (window.App && window.App._staticActionsBound) return;
+    if (!(event.target instanceof Element)) return;
+    var trigger = event.target.closest('[data-action="enterGlobe"]');
+    if (!trigger) return;
+    event.preventDefault();
+    event.stopPropagation();
+    state.pending = true;
+    state.requestedAt = performance.now();
+    document.querySelectorAll('[data-action="enterGlobe"]').forEach(function (button) {
+      if ('disabled' in button) button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+    });
+    var status = document.getElementById('app-readiness-status');
+    if (status) status.textContent = 'Loading verified country evidence for the Living Globe.';
+  }, true);
+})();
+</script>
+
 <!-- JS Modules — loaded in dependency order.
      NOTE: js/vendor/globe.gl.js (1.8MB) is NOT loaded here — App.enterGlobe()
      lazy-loads it via loadGlobeGL(). -->
-<script src="js/gaia-utils.js"></script>
-<script src="js/module-contracts.js"></script>
-<script src="js/event-bus.js"></script>
-<script src="js/storage-adapter.js"></script>
-<script src="js/storage.js"></script>
-<script src="js/data-schema.js?v=v2"></script>
-<script src="js/data.js?v=v16"></script>
-<script src="js/country-climate-intelligence.js?v=v17"></script>
-<script src="js/globe.js?v=v40"></script>
-<script src="js/carbon-clock.js?v=v1"></script>
-<script src="js/guided-first-orbit.js?v=v6"></script>
-<script src="js/app.js?v=v5"></script>
+<script src="js/gaia-utils.js" defer></script>
+<script src="js/module-contracts.js" defer></script>
+<script src="js/event-bus.js" defer></script>
+<script src="js/storage-adapter.js" defer></script>
+<script src="js/storage.js" defer></script>
+<script src="js/data-schema.js?v=v2" defer></script>
+<script src="js/data.js?v=v16" defer></script>
+<script src="js/country-climate-intelligence.js?v=v17" defer></script>
+<script src="js/globe.js?v=v40" defer></script>
+<script src="js/carbon-clock.js?v=v1" defer></script>
+<script src="js/guided-first-orbit.js?v=v6" defer></script>
+<script src="js/app.js?v=v6" defer></script>
 
 <!-- Glass system behavior: scroll reveal + theme toggle (design handoff v1) -->
 <script>
@@ -916,7 +962,9 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     syncBodyTheme(next);
     try { localStorage.setItem('elu-theme', next); } catch (e) {}
     syncMeta(next);
-    if (hasModule('GlobeModule')) safeCall('GlobeModule', 'setTheme', next);
+    if (typeof window.hasModule === 'function' && window.hasModule('GlobeModule')) {
+      window.safeCall('GlobeModule', 'setTheme', next);
+    }
   }
   themeButtons.forEach(function (button) { button.addEventListener('click', toggleTheme); });
 })();
@@ -1002,7 +1050,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js?v=77-cci-raw-byte-boundary', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('/sw.js?v=78-first-paint-ready', { updateViaCache: 'none' })
       .then(function(registration) { return registration.update(); })
       .catch(function() {
         // SW registration failed — site still works without it

@@ -8,10 +8,12 @@
 
 const App = {
   _globeActivationAttempt: 0,
+  _dataInitPromise: null,
 
   async init() {
     syncHeroScrollState();
     _bindGlobeLoadingEvents();
+    this._bindStaticActions();
 
     // ── Carbon Clock — zero data dependencies; must start BEFORE any network
     //    waits. On slow connections Data.init() can take seconds, and the hero
@@ -20,34 +22,16 @@ const App = {
       CARBON_CLOCK.init();
     }
 
-    // Load data first
+    // Start the exact-SHA country evidence load, but keep actions bound while
+    // it is in flight so a first-paint click is acknowledged immediately.
+    let climateReady = false;
     try {
-      await Data.init();
+      climateReady = await this._ensureClimateIntelligence();
     } catch (err) {
       reportError('App.Data.init()', err);
-      // Show user-visible error so the page isn't silently broken
-      const hero = $('hero');
-      if (hero) {
-        const existing = hero.querySelector('.data-error-banner');
-        if (!existing) {
-          const banner = document.createElement('div');
-          banner.className = 'data-error-banner';
-          banner.style.cssText = 'background:rgba(196,92,74,0.15);border:1px solid rgba(196,92,74,0.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:12px;color:var(--warn);line-height:1.6;';
-          banner.innerHTML = '⚠️ Could not load site data. Some features may be unavailable. <button type="button" class="data-error-retry" style="background:rgba(196,92,74,0.2);border:1px solid rgba(196,92,74,0.3);border-radius:4px;color:var(--warn);padding:2px 8px;cursor:pointer;font-size:11px;margin-left:8px;">Retry</button>';
-          hero.querySelector('.hero-inner')?.insertBefore(banner, hero.querySelector('.hero-inner').firstChild)
-            || hero.insertBefore(banner, hero.firstChild);
-          banner.querySelector('.data-error-retry')?.addEventListener('click', () => location.reload());
-        }
-      }
-      // Continue init -- modules that depend on Data will handle undefined gracefully
+      this._dataInitPromise = null;
     }
-
-    if (hasModule('COUNTRY_CLIMATE_INTELLIGENCE')) {
-      const ready = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'init');
-      if (!ready && safeGet('Data', 'isClimateIntelligenceReady', false)) {
-        reportError('App.COUNTRY_CLIMATE_INTELLIGENCE.init()', new Error('Climate intelligence presentation layer did not initialize'));
-      }
-    }
+    if (!climateReady) _showDataErrorBanner();
 
     // ── Pre-flight: validate module contracts ──
     if (hasModule('MODULE_CONTRACTS')) {
@@ -72,8 +56,30 @@ const App = {
       });
     }
 
-    this._bindStaticActions();
+  },
 
+  async _ensureClimateIntelligence(options = {}) {
+    if (options.reloadCandidate === true) {
+      this._dataInitPromise = Promise.resolve().then(() => Data.reloadClimateIntelligence());
+    } else if (!this._dataInitPromise) {
+      this._dataInitPromise = Promise.resolve().then(() => Data.init());
+    }
+    await this._dataInitPromise;
+    const dataState = safeGet('Data', 'getState', {});
+    if (dataState.climateCandidateState === 'withheld' && !hasModule('COUNTRY_CLIMATE_INTELLIGENCE')) {
+      return true;
+    }
+    if (!safeGet('Data', 'isClimateIntelligenceReady', false)) {
+      this._dataInitPromise = null;
+      return false;
+    }
+    if (!hasModule('COUNTRY_CLIMATE_INTELLIGENCE')) return false;
+    const ready = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'init');
+    if (!ready) {
+      reportError('App.COUNTRY_CLIMATE_INTELLIGENCE.init()', new Error('Climate intelligence presentation layer did not initialize'));
+      return false;
+    }
+    return true;
   },
 
   _bindStaticActions() {
@@ -109,15 +115,46 @@ const App = {
       if (!el || !el.matches('[role="button"],button,a')) return;
       runAction(el, e);
     });
+
+    const earlyIntent = window.__ELU_EARLY_GLOBE__;
+    if (earlyIntent?.pending) {
+      earlyIntent.pending = false;
+      queueMicrotask(() => this.enterGlobe({ earlyIntent: true }));
+    }
   },
 
   async enterGlobe(options = {}) {
     const activationAttempt = ++this._globeActivationAttempt;
-    const isCurrentActivation = () =>
-      this._globeActivationAttempt === activationAttempt && document.body.classList.contains('globe-mode');
+    const isCurrentActivation = () => this._globeActivationAttempt === activationAttempt;
+    const opener = document.activeElement;
+    _setEnterGlobeBusy(true);
+    _setAppReadinessStatus(hasModule('COUNTRY_CLIMATE_INTELLIGENCE')
+      ? 'Loading verified country evidence for the Living Globe.'
+      : 'Preparing neutral country navigation for the Living Globe.');
+    let climateReady = false;
+    let stylesReady = false;
+    try {
+      [climateReady, stylesReady] = await Promise.all([
+        this._ensureClimateIntelligence(options),
+        _waitForGlobeStyles(),
+      ]);
+    } catch (error) {
+      reportError('App.enterGlobe.readiness()', error);
+      this._dataInitPromise = null;
+    }
+    if (!isCurrentActivation()) return false;
+    if (!climateReady || !stylesReady) {
+      _setEnterGlobeBusy(false);
+      _setAppReadinessStatus(stylesReady
+        ? 'Country evidence is unavailable. Please retry.'
+        : 'The Living Globe interface could not be prepared. Please retry.');
+      if (!climateReady) _showDataErrorBanner();
+      return false;
+    }
+
     _setEvidenceBrowseEnabled(false);
     if (!document.body.classList.contains('globe-mode')) {
-      safeCall('GlobeModule', 'rememberFallbackOpener', document.activeElement);
+      safeCall('GlobeModule', 'rememberFallbackOpener', opener);
     }
     _setGlobeLoading(true, 'Preparing the living globe');
     document.body.classList.add('globe-mode');
@@ -142,6 +179,7 @@ const App = {
     if (!preparation?.ok) {
       const reason = preparation?.reason || 'globe_construction_failed';
       _setGlobeLoading(false);
+      _setEnterGlobeBusy(false);
       document.body.removeAttribute('aria-busy');
       safeCall('GlobeModule', 'showFallback', reason);
       if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { fallback: true, reason, timestamp: Date.now() });
@@ -156,6 +194,7 @@ const App = {
         if (!isCurrentActivation()) return false;
         reportWarn('App', 'globe.gl failed to load: ' + (err?.message || 'unknown error'));
         _setGlobeLoading(false);
+        _setEnterGlobeBusy(false);
         document.body.removeAttribute('aria-busy');
         safeCall('GlobeModule', 'showFallback', 'library_load_failed');
         if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { fallback: true, reason: 'library_load_failed', timestamp: Date.now() });
@@ -176,6 +215,7 @@ const App = {
     }
     if (!hasModule('GlobeModule') || !GlobeModule._initialized) {
       _setGlobeLoading(false);
+      _setEnterGlobeBusy(false);
       document.body.removeAttribute('aria-busy');
       if (!$('globe-fallback') || $('globe-fallback').hidden) {
         safeCall('GlobeModule', 'showFallback', 'globe_construction_failed');
@@ -197,6 +237,8 @@ const App = {
       });
     }
     if (!isCurrentActivation()) return false;
+    _setEnterGlobeBusy(false);
+    _setAppReadinessStatus('The Living Globe is ready.');
     _setEvidenceBrowseEnabled(true);
     if (hasModule('EventBus')) EventBus.emit('app:globe-entered', { fallback: false, timestamp: Date.now() });
     document.addEventListener('keydown', _onGlobeKeyDown);
@@ -224,6 +266,8 @@ const App = {
 
   exitGlobe() {
     this._globeActivationAttempt += 1;
+    _setEnterGlobeBusy(false);
+    _setAppReadinessStatus('');
     _setEvidenceBrowseEnabled(false);
     _setGlobeLoading(false);
     safeCall('GlobeModule', 'pause');
@@ -248,7 +292,11 @@ const App = {
     return true;
   },
   getState() {
-    return {};
+    return {
+      staticActionsBound: this._staticActionsBound === true,
+      climateIntelligenceState: safeGet('Data', 'getState', {}).climateIntelligenceState || 'unavailable',
+      globeStylesReady: document.documentElement.dataset.globeStylesReady === 'true',
+    };
   },
 };
 
@@ -277,6 +325,56 @@ function _setEvidenceBrowseEnabled(enabled) {
   if (!button) return;
   button.disabled = !enabled;
   button.setAttribute('aria-disabled', String(!enabled));
+}
+
+function _setEnterGlobeBusy(busy) {
+  document.querySelectorAll('[data-action="enterGlobe"]').forEach(button => {
+    if ('disabled' in button) button.disabled = !!busy;
+    if (busy) button.setAttribute('aria-busy', 'true');
+    else button.removeAttribute('aria-busy');
+  });
+}
+
+function _setAppReadinessStatus(message) {
+  const status = $('app-readiness-status');
+  if (status) status.textContent = message || '';
+}
+
+function _waitForGlobeStyles(timeoutMs = 10000) {
+  const root = document.documentElement;
+  const link = $('globe-system-styles');
+  if (root.dataset.globeStylesReady === 'true') return Promise.resolve(true);
+  if (!link || root.dataset.globeStylesReady === 'error') return Promise.resolve(false);
+  return new Promise(resolve => {
+    let settled = false;
+    let timer = null;
+    const finish = ready => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      window.removeEventListener('elu:globe-styles-ready', onReady);
+      window.removeEventListener('elu:globe-styles-error', onError);
+      resolve(ready);
+    };
+    const onReady = () => finish(root.dataset.globeStylesReady === 'true');
+    const onError = () => finish(false);
+    window.addEventListener('elu:globe-styles-ready', onReady);
+    window.addEventListener('elu:globe-styles-error', onError);
+    timer = setTimeout(() => finish(false), timeoutMs);
+  });
+}
+
+function _showDataErrorBanner() {
+  const hero = $('hero');
+  if (!hero || hero.querySelector('.data-error-banner')) return;
+  const banner = document.createElement('div');
+  banner.className = 'data-error-banner';
+  banner.style.cssText = 'background:rgba(196,92,74,0.15);border:1px solid rgba(196,92,74,0.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:12px;color:var(--warn);line-height:1.6;';
+  banner.innerHTML = '⚠️ Could not load site data. Some features may be unavailable. <button type="button" class="data-error-retry" style="background:rgba(196,92,74,0.2);border:1px solid rgba(196,92,74,0.3);border-radius:4px;color:var(--warn);padding:2px 8px;cursor:pointer;font-size:11px;margin-left:8px;">Retry</button>';
+  const inner = hero.querySelector('.hero-inner');
+  if (inner) inner.insertBefore(banner, inner.firstChild);
+  else hero.insertBefore(banner, hero.firstChild);
+  banner.querySelector('.data-error-retry')?.addEventListener('click', () => location.reload());
 }
 
 function syncHeroScrollState() {

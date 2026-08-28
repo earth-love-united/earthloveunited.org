@@ -414,6 +414,26 @@ const SmokeTest = (() => {
         },
       },
       {
+        name: 'First-paint globe action and deferred HUD styles fail closed',
+        critical: true,
+        test: () => {
+          const bridge = window.__ELU_EARLY_GLOBE__;
+          const status = document.getElementById('app-readiness-status');
+          const styles = document.getElementById('globe-system-styles');
+          const buttons = [...document.querySelectorAll('[data-action="enterGlobe"]')];
+          const pass = bridge && bridge.pending === false && window.App?._staticActionsBound === true &&
+            status?.getAttribute('aria-live') === 'polite' && styles &&
+            document.documentElement.dataset.globeStylesReady === 'true' &&
+            buttons.length >= 2 && buttons.every(button => button.getAttribute('aria-busy') === null);
+          return {
+            pass,
+            detail: pass
+              ? 'Early action bridge consumed; HUD stylesheet ready; entry controls are no longer busy'
+              : `bridge ${bridge?.pending}, App ${window.App?._staticActionsBound}, styles ${document.documentElement.dataset.globeStylesReady}, buttons ${buttons.length}`,
+          };
+        },
+      },
+      {
         name: 'exitGlobe() is callable (back button)',
         critical: true,
         test: () => {

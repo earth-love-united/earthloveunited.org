@@ -1,10 +1,10 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v76) — atomically stage candidate.7 with independently
+ * Globe cache (v78) — atomically stage candidate.7 with independently
  * re-fetched open-source inputs, review-safe presentation, and rollback runtime.
  */
-const CACHE_NAME = 'elu-v77-cci-raw-byte-boundary';
+const CACHE_NAME = 'elu-v78-first-paint-ready';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -13,8 +13,8 @@ const STATIC_ASSETS = [
   '/css/carbon-clock.css?v=v2',
   '/css/globe-system.css?v=v43',
   '/css/guided-first-orbit.css?v=v11',
-  '/assets/legacy/elu-logo.png',
-  '/assets/legacy/elu-logo-light.png?v=light-title-mint',
+  '/assets/legacy/elu-logo.png?v=mint-384-p256',
+  '/assets/legacy/elu-logo-light.png?v=light-title-mint-384-p256',
   '/assets/globe/runtime/manifest.json',
   '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75',
   '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3',
@@ -33,7 +33,7 @@ const STATIC_ASSETS = [
   '/js/globe.js?v=v40',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v6',
-  '/js/app.js?v=v5',
+  '/js/app.js?v=v6',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
   '/data/climate/runtime/country-climate-intelligence.json?v=cci1runtime13',

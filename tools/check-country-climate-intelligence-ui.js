@@ -507,7 +507,7 @@ assert(!/PRIMAP/i.test(publicClimateSurface), 'PRIMAP must not appear in public 
 assert(!/pledges?\s+vs\.?\s+reality|climate performance|country performance score/i.test([presentation, globe].join('\n')), 'retired performance copy remains in the climate UI');
 assert(!/provider-logo|source-logo/i.test([index, presentation, globe, css].join('\n')), 'provider logos must not dominate metric-first UI');
 
-assert(serviceWorker.includes("const CACHE_NAME = 'elu-v77-cci-raw-byte-boundary'"));
+assert(serviceWorker.includes("const CACHE_NAME = 'elu-v78-first-paint-ready'"));
 assert(serviceWorker.includes("'/css/globe-system.css?v=v43'"));
 assert(serviceWorker.includes("'/css/guided-first-orbit.css?v=v11'"));
 assert(serviceWorker.includes("'/js/data-schema.js?v=v2'"));
@@ -515,7 +515,7 @@ assert(serviceWorker.includes("'/js/data.js?v=v16'"));
 assert(serviceWorker.includes("'/js/country-climate-intelligence.js?v=v17'"));
 assert(serviceWorker.includes("'/js/globe.js?v=v40'"));
 assert(serviceWorker.includes("'/js/guided-first-orbit.js?v=v6'"));
-assert(serviceWorker.includes("'/js/app.js?v=v5'"));
+assert(serviceWorker.includes("'/js/app.js?v=v6'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-climate-intelligence.json?v=cci1runtime13'"));
 assert(serviceWorker.includes("'/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1'"));
 assert(!serviceWorker.includes('/data/carbon-projects.json'), 'retired project data must not be pinned by the climate runtime cache');
