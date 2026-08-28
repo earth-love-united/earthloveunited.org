@@ -13,7 +13,7 @@ const ROOT = path.resolve(__dirname, '..');
 const RECEIPT_PATH = 'data/performance/first-paint-mobile-2026-08-28.json';
 const TOOL_PATH = 'tools/run-first-paint-benchmark.js';
 const BASELINE_COMMIT = '41a694f925e36669b72ca62029cd1d62c8ddfeaf';
-const CANDIDATE_COMMIT = '46a627e71b51127f6a7664ec2f6438c4cbb7f922';
+const CANDIDATE_COMMIT = 'a3631a1a37862d946af39046d9a6b5dd484d4d16';
 const EXPECTED_ORDER = Object.freeze([
   'baseline', 'candidate', 'candidate', 'baseline',
   'baseline', 'candidate', 'candidate', 'baseline',
@@ -105,7 +105,7 @@ function validateReceipt(receipt) {
   assert.match(receipt.subjects.candidate.url, /^http:\/\/127\.0\.0\.1:\d+\/$/);
   assert.notEqual(receipt.subjects.baseline.url, receipt.subjects.candidate.url);
 
-  assert.equal(receipt.environment.node, 'v22.22.3');
+  assert.equal(receipt.environment.node, 'v24.19.0');
   assert.equal(receipt.environment.browser, '151.0.7922.174');
   assert.match(receipt.environment.operating_system, /^Darwin 25\.6\.0 arm64$/);
   assert.match(receipt.environment.server, /no content encoding/);
