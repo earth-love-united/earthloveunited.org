@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "dfd4b50b1482bbc6688b68b1536b8a2700625873424f13a60be8427bab093f35",
+  "calculation_hash": "8ee7e3ae14b2ac9044f8e6a1fd92ac9ba88f907637ea54e36c9c2a531580385b",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "75804cbb652bedb85acabf35996889600f82a963aebb124f4960b7a1f7b0e017",
+    "artifact_pin_digest": "dba75ca4cd0a40df222c0271144cfd5924ae7d6feff29ec7017d11458b4f038c",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -221,7 +221,7 @@
       },
       {
         "path": ".github/workflows/ci.yml",
-        "sha256": "5154058023ec298ff2c4e0b9090a7c9cb45f1d17a313c17cfe5f06eb70c68c30"
+        "sha256": "d7ad72e9503142d8f550b92505a62c8f25ab4243352184dd8b7c383db0e6bfe2"
       },
       {
         "path": ".gitignore",
@@ -237,11 +237,11 @@
       },
       {
         "path": "ARCHITECTURE.md",
-        "sha256": "4bed6b2dc8c1658b45ea93f2a53369927e09afbbe477a6a751647114553b446b"
+        "sha256": "cc8185a995883a559865fd6bac1ac836a6ae556f954325010c8fb022ec3bc572"
       },
       {
         "path": "CREDITS.md",
-        "sha256": "31968896e4e5cad9b2614373a3a15d799beab21bb384b8ae8f7fabbe8f6edc4b"
+        "sha256": "c4a121194969e91562091e289a1b45f0b73d65c9f95f1e39649be0c7e1df9662"
       },
       {
         "path": "LICENSE",
@@ -257,11 +257,63 @@
       },
       {
         "path": "_headers",
-        "sha256": "56bc8759bff3bc70b042c0861d0fbf729d73e0e451404de0c9d9bac6d21cd31e"
+        "sha256": "d4a292331ae4a6cd1aff4a6ecc7729c413de35d306af87913fc85f40265202d0"
       },
       {
         "path": "_redirects",
         "sha256": "68949544790ca83cad3973d3edf8fa56f068e1ec3a47bbe21c03c6599558dd7d"
+      },
+      {
+        "path": "assets/fonts/OFL-cormorant-garamond.txt",
+        "sha256": "60700d351cac4650c51f3f9db318d2a420f8b45052dba2715eb5fec41f0f6956"
+      },
+      {
+        "path": "assets/fonts/OFL-jetbrains-mono.txt",
+        "sha256": "b2fe5e8987594e9ffd1d2ca52a2f5d73eb8335243893c5d6254b5ad69269591d"
+      },
+      {
+        "path": "assets/fonts/OFL-outfit.txt",
+        "sha256": "c676351bf8576b9aba743cd5eaa8c0e7ee0d51f805d720447b4df4ddb6a2e416"
+      },
+      {
+        "path": "assets/fonts/README.md",
+        "sha256": "a9489c0fab89324182da7185d0e75fd54753e3608760c6319d53aae71c3c4a4e"
+      },
+      {
+        "path": "assets/fonts/cormorant-garamond-latin-ext.woff2",
+        "sha256": "cfa9a397d86f66c5c51775a2500a712d5f632a04f0c5eca6930dfaf612d4566d"
+      },
+      {
+        "path": "assets/fonts/cormorant-garamond-latin.woff2",
+        "sha256": "d80df8ff5aecd299a61549f9e29ab1ed0b9b05f4ea71d50fe978e07d5240b235"
+      },
+      {
+        "path": "assets/fonts/cormorant-garamond-site.woff2",
+        "sha256": "7f4b7877020b1eec89781e6e2be59825456b59e1ec99412e2af78472ce0b0423"
+      },
+      {
+        "path": "assets/fonts/jetbrains-mono-latin-ext.woff2",
+        "sha256": "db5ff4db83e580426280e9337a58dc57d3a83784a1b03ad80914651594441d52"
+      },
+      {
+        "path": "assets/fonts/jetbrains-mono-latin.woff2",
+        "sha256": "83c005d49d8a6a50474c73a5a36ac0468076e9c4a29da7bdb14995d80560a5be"
+      },
+      {
+        "path": "assets/fonts/jetbrains-mono-site.woff2",
+        "sha256": "317775f7afde0159f060f6cb6590ab7f4c2a167e6fd579a635b5e5652736ea68"
+      },
+      {
+        "path": "assets/fonts/outfit-latin-ext.woff2",
+        "sha256": "0f53d1c03b3918d744a843b5039001ee31695ca1e255e3914188df81beb461e9"
+      },
+      {
+        "path": "assets/fonts/outfit-latin.woff2",
+        "sha256": "6c18d579fd87c3776be068b762cbc83fde3acb543d49eabd3ade842eb987e887"
+      },
+      {
+        "path": "assets/fonts/outfit-site.woff2",
+        "sha256": "fff758eb92d35deee7cddeb11edcb2b6fafbbc78f207392772aca440c9277877"
       },
       {
         "path": "assets/globe/runtime/earth-blue-marble.jpg",
@@ -465,7 +517,7 @@
       },
       {
         "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
-        "sha256": "24eb59810aa525c664e8fb5745d380756ecb8ccb568183e5605826c1a77a7f09"
+        "sha256": "7da329b792bbcfee2b02a64a3beb6cbc0808d23703aafb5de3a4c28772b709d9"
       },
       {
         "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -565,7 +617,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "a62c285fe94f96281680e8ec21a61a1a4bde24aa9ee1443e62df527d30e6d4fa"
+        "sha256": "c60a8fbce4822a8984e92942cfb340199eb1aac0e77e82d6ea239becf0291ea1"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -745,7 +797,7 @@
       },
       {
         "path": "data/performance/first-paint-mobile-2026-08-28.json",
-        "sha256": "b39acb33548ad9e23d3df23d878175b3aa67b87c25bf7236ad9a9eea17ff144d"
+        "sha256": "c3c2955765a96ad3f9a745e38907235cb754c30d5c96b6efc12460809cc37e57"
       },
       {
         "path": "data/pledge-nodes.json",
@@ -801,7 +853,7 @@
       },
       {
         "path": "index.html",
-        "sha256": "1cb352d50ac411177c0f0f51ae272ec4bc8899b12ab1050282ce75e3e270eca3"
+        "sha256": "52dde039c413aedccdebeb9ebfae7634e34fcab538fbd69caf7386870b7daff7"
       },
       {
         "path": "js/app.js",
@@ -877,7 +929,7 @@
       },
       {
         "path": "sw.js",
-        "sha256": "ad7115851d9878c5d465a2bebd986f9aaa172dba6fd614abcd29a4b95248d8de"
+        "sha256": "aef8600231fa492119cc14f0ac6637184eeaccc30b7159d8dbe7956b64c06a83"
       },
       {
         "path": "tools/acquire-cckp-cmip6.js",
@@ -909,7 +961,7 @@
       },
       {
         "path": "tools/build-ct42-runtime-rollback-proof.js",
-        "sha256": "3cc0c6d38676014c99bb0e892a3b9aa936be086a60ea49ad3dd63fdf61088b40"
+        "sha256": "9f4d8b4541040573bbb080d02e999e0ceee59ae5a9d6604d53519dbb787110dc"
       },
       {
         "path": "tools/build-deploy.sh",
@@ -997,7 +1049,7 @@
       },
       {
         "path": "tools/check-country-climate-intelligence-ui.js",
-        "sha256": "7caf67ec895fd904f580bf828105ed2ef788d1672ef26bba8a70a7807499ef04"
+        "sha256": "1d4005b7924e78ac6f35a5b5b6f2b7cda8bb4c12ea32c14089f4ffb6904712c0"
       },
       {
         "path": "tools/check-country-climate-intelligence.js",
@@ -1009,7 +1061,7 @@
       },
       {
         "path": "tools/check-country-climate-runtime-atomic.js",
-        "sha256": "6760800c89b375e4a1aac4d55533e39698b6a513efb66d161411200294da5fb9"
+        "sha256": "ff9bda8928f43a69969cb02ac618c466b80d031732f4bd59abef35eb05b53d4d"
       },
       {
         "path": "tools/check-country-coverage-gap-queue.js",
@@ -1045,7 +1097,7 @@
       },
       {
         "path": "tools/check-ct42-runtime-rollback-proof.js",
-        "sha256": "20d3fbb964669f9d824771e06cd3d003780d56b9d173d7a3b905c4aaa032d534"
+        "sha256": "df05f54af271b764f09dbf1b8c25039e9fe5814453929c07de48b488e032f239"
       },
       {
         "path": "tools/check-ct42-runtime-rollback-review.js",
@@ -1053,7 +1105,7 @@
       },
       {
         "path": "tools/check-first-paint-performance-receipt.js",
-        "sha256": "1bbb8eb9d2e63582dac78c497e40b5b4428bf751a579c0b0e8f67c0e02f12a6d"
+        "sha256": "289df945ff7dec1f28799502f14b0b1e7d621b12c2750413686b49c8e816bb43"
       },
       {
         "path": "tools/check-globe-runtime-approval.js",
@@ -1181,7 +1233,7 @@
       },
       {
         "path": "tools/fixtures/globe-runtime-assets.json",
-        "sha256": "3376611b5a48f08e46c5c1a4bb8ca20906dde07606630240f8bf0f75332e71c2"
+        "sha256": "2a67dad8e2b27568583b7e1121955d244909c26be2f94d3c0761786e742517b2"
       },
       {
         "path": "tools/fixtures/globe-third-party-notices.json",
@@ -1197,7 +1249,7 @@
       },
       {
         "path": "tools/lib/cci-factual-public.js",
-        "sha256": "c6899c83d1c146da785c8b4fbb9d6adaad719b04eadb284a10290312c9db66d8"
+        "sha256": "d488570bca20c1688710398dbd9b843c91eadaa0c6c937e3485b0e0a8b1d77e3"
       },
       {
         "path": "tools/lib/climate-factual-runtime-candidate.js",
@@ -1265,7 +1317,7 @@
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-proof.js",
-        "sha256": "8d6dbba47edc5e7333dea2e3811242f980f31f615fd9ed7fa067eae5907166e6"
+        "sha256": "4586009cc0f917ed7fa9bf354cc7d04811fdef086a8bf885e0976d430482258b"
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-review.js",
@@ -1281,7 +1333,7 @@
       },
       {
         "path": "tools/lib/globe-runtime-assets.js",
-        "sha256": "51aecdfd6504832de06081c2c5fbf728cc92dcfb4df5009a99abfcf8e737061b"
+        "sha256": "e08426b431943517f791962b9194d63c4db4546613a5b7ff5d4321e05527e05d"
       },
       {
         "path": "tools/lib/globe-third-party-notices.js",
@@ -1313,7 +1365,7 @@
       },
       {
         "path": "tools/lib/public-deploy-surface.js",
-        "sha256": "90c53003a9f41d71ca07a2efa1359bd5c89d5798f71b4f1b674756fee699d17c"
+        "sha256": "eb2e0603bb4d28c06064e09df860118b960405fce8f37b5229c6584d18799756"
       },
       {
         "path": "tools/lib/reviewed-runtime-rollback-proof.js",
@@ -1349,7 +1401,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "3f2aaca33f48c3381b43e59bb415b9ac33c83753975ddf1cde880a180ebdcacc"
+        "sha256": "0672c255100e5620b35716b67c1179afc7c51dc9fbf31bceb85df9490da35bbf"
       },
       {
         "path": "tools/reconstruct-gcb-country-map.js",
@@ -1409,7 +1461,7 @@
       },
       {
         "path": "tools/verify-legacy-country-exit.js",
-        "sha256": "c26237d5c67356845d7756497108ba1bd2d162f71d26f8f842c5007d52e7e456"
+        "sha256": "3a2c7d4799b52c0192cf7a089e87398c7bf0caf279f3017febc6f117bb8248c2"
       },
       {
         "path": "wrangler.jsonc",

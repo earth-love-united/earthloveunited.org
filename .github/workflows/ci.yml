@@ -551,8 +551,8 @@ jobs:
           async function exerciseServiceWorkerUpgradeOffline() {
             const swContext = await browser.newContext({ serviceWorkers: 'allow', viewport: { width: 412, height: 823 } });
             const target = await swContext.newPage();
-            const expectedCache = aiFactual ? 'elu-v80-cci-factual-ai-review' : 'elu-v78-first-paint-ready';
-            const expectedEpoch = aiFactual ? 'v=80-cci-factual-ai-review' : 'v=78-first-paint-ready';
+            const expectedCache = aiFactual ? 'elu-v80-cci-factual-ai-review' : 'elu-v79-self-hosted-fonts';
+            const expectedEpoch = aiFactual ? 'v=80-cci-factual-ai-review' : 'v=79-self-hosted-fonts';
             await target.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
             await target.waitForFunction(() => navigator.serviceWorker.controller, null, { timeout: 30000 });
             await waitForApp(target);
