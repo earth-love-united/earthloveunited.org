@@ -163,6 +163,7 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/check-globe-vendor-integrity.js',
   'tools/check-globe-webgl-fallback.js',
   'tools/check-first-paint-performance-receipt.js',
+  'tools/check-streamed-first-paint-action.js',
   'scripts/verify_load_order.py',
   'tools/check-public-copy.js',
   'tools/check-climate-truth-ci.js',
