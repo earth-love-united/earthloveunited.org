@@ -1,6 +1,6 @@
 {
-  "calculation_hash": "4ba23537d1995418c86a7d0f0c164469578cbe0431d18b59368caeca7e38e1aa",
-  "created_at": "2026-08-28T00:00:00Z",
+  "calculation_hash": "cec4249891b7ac8c1fa291dcceaf5db0f23f8f5c73689d4fd5fc3a4ff2e15841",
+  "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
     "ct40_reuse_allowed": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200",
+    "artifact_pin_digest": "a9f65a3517440a56b87012dcbae9b5f4497b2e801551a25cfcf330235e660b41",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -221,7 +221,7 @@
       },
       {
         "path": ".github/workflows/ci.yml",
-        "sha256": "71202487085c25c9ef3bfb5818045561bcb55391892532cc13eaacf122052d73"
+        "sha256": "81ff7276d66a4e17556d77db1f7d97efa2b48f4697db32334066377a2e66a756"
       },
       {
         "path": ".gitignore",
@@ -233,7 +233,7 @@
       },
       {
         "path": "ARCHITECTURE.md",
-        "sha256": "ab5000ac86dfe98afaea9d158c25189d995d0f79c3f5988d104e6988644c18fe"
+        "sha256": "ee3eb4ff0e8d700921df4b03ff8f18ca61aff53e144ad596b49023bb3f2a4627"
       },
       {
         "path": "CREDITS.md",
@@ -293,11 +293,11 @@
       },
       {
         "path": "assets/legacy/elu-logo-light.png",
-        "sha256": "f1d088194a790bfb338df905d54c44ee13042d93922475274eeac537c35689d6"
+        "sha256": "899ac2c93503300de2d74f549a4eca1dcc09e688e24e4a9a551b297ac9e20e77"
       },
       {
         "path": "assets/legacy/elu-logo.png",
-        "sha256": "9fab0acdc42cb98a874a120187390f9ffc9919b3cc16cfbb6d13272bcfe7899e"
+        "sha256": "f8752d54831a60df2679fed46f0454522ca9eab0435a755dca43d12292bb19cf"
       },
       {
         "path": "assets/legacy/mike.png",
@@ -305,7 +305,7 @@
       },
       {
         "path": "assets/legacy/video-what-is-elu.jpg",
-        "sha256": "995aeebab32c50408aec7d92fb82bf96a578c96969dfbf938106183497cec272"
+        "sha256": "b7022a0d44cbc2452f6f9b473e92bce1bd66d095d427df8241622aa93cd3ccc1"
       },
       {
         "path": "assets/partners/avocademy.svg",
@@ -461,7 +461,7 @@
       },
       {
         "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
-        "sha256": "6def0d046eccae7d96a7ac4c9c2dbd0acea13c3a1f436e6cdd56b73fe0e17e79"
+        "sha256": "2cf6bbd06fb9f4d7c156b61c223c192e0ce555fd8de7d432cc2cf5a36d9a1250"
       },
       {
         "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -561,7 +561,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "4a86e875f2f57156d3f522cef59cf8573dd453aacf95f9d8ce8d2316bdbb10eb"
+        "sha256": "1d9829a21cdf6f91452cdfd4a526d65b9f381b36101b59ae20bd785dd783161b"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -740,6 +740,10 @@
         "sha256": "542e9bf2043f1c670200be9c9b0455b93048514dfb8b602301ca1245918660c2"
       },
       {
+        "path": "data/performance/first-paint-mobile-2026-08-28.json",
+        "sha256": "80ab5cfaf2f3986c611b97782661c50581eba224bf99025c91a2f334ffde65e9"
+      },
+      {
         "path": "data/pledge-nodes.json",
         "sha256": "3c62f413f5988878f70a46492ee67c0ca1c219a85faf08155c35888acacb9fa1"
       },
@@ -793,11 +797,11 @@
       },
       {
         "path": "index.html",
-        "sha256": "865e59145cf1225a2de56f6e1592f1c5a43fe03d9ce9cd21cdf09904ac50d7a4"
+        "sha256": "94606928080d450b2ab6405ee3cd1ba116305907f2966e86717dada79022c42a"
       },
       {
         "path": "js/app.js",
-        "sha256": "25feee040ff4e668516b386d040b49ea29baa6fda768771cf786204fdc95c3c0"
+        "sha256": "db08399c17c81e9b8adddd719d10cb4babe28af4dd3ffed3e49e48e4b8e41d13"
       },
       {
         "path": "js/carbon-clock.js",
@@ -869,7 +873,7 @@
       },
       {
         "path": "sw.js",
-        "sha256": "bce9d736e61b2d8e5ed026256684a2f5e37b3bc5d3b719888fbac2e8f6b47572"
+        "sha256": "ad7115851d9878c5d465a2bebd986f9aaa172dba6fd614abcd29a4b95248d8de"
       },
       {
         "path": "tools/acquire-cckp-cmip6.js",
@@ -901,7 +905,7 @@
       },
       {
         "path": "tools/build-ct42-runtime-rollback-proof.js",
-        "sha256": "ad82402a1f8685521f11081cfa7cf3695874fdda9079b5f812e1e6a4cb899f31"
+        "sha256": "c2da661fdc4e566746fb249e212bea40668fecf80e32bb889a6e1c2d8954b5d6"
       },
       {
         "path": "tools/build-deploy.sh",
@@ -921,7 +925,7 @@
       },
       {
         "path": "tools/check-cci-factual-public-deploy.js",
-        "sha256": "cd09eed85f8484300baf15ad129f3bc9f37595ded11ec736f401eff70931ccd4"
+        "sha256": "90972cb43b2b561b60edf6a8d44aa4b238caeb3fbbc1a43d65973c40c1581c05"
       },
       {
         "path": "tools/check-cci-factual-public-review.js",
@@ -989,7 +993,7 @@
       },
       {
         "path": "tools/check-country-climate-intelligence-ui.js",
-        "sha256": "99fb56840c837d7f2f4933b98cf3bc110df9dbc1486f8ea0fa95fbbeecd9eb92"
+        "sha256": "7caf67ec895fd904f580bf828105ed2ef788d1672ef26bba8a70a7807499ef04"
       },
       {
         "path": "tools/check-country-climate-intelligence.js",
@@ -1001,7 +1005,7 @@
       },
       {
         "path": "tools/check-country-climate-runtime-atomic.js",
-        "sha256": "60c7b5219e9d1d928708f9a69be2cc431e2f88260caa2dd16e61f52b22132446"
+        "sha256": "6760800c89b375e4a1aac4d55533e39698b6a513efb66d161411200294da5fb9"
       },
       {
         "path": "tools/check-country-coverage-gap-queue.js",
@@ -1037,11 +1041,15 @@
       },
       {
         "path": "tools/check-ct42-runtime-rollback-proof.js",
-        "sha256": "c3a0d0fcd534dee9440328de1ae82b092cc64f6563def552d376a6f9d639faab"
+        "sha256": "bbc30d10edbf32bda2e9131076dfa44710b7ba65d90fc43ef88c3130b40e7bdc"
       },
       {
         "path": "tools/check-ct42-runtime-rollback-review.js",
         "sha256": "906d443a2e41387c9b5b913a3b1e39ff5d8937b7c781b5cee7725d123aa7fca5"
+      },
+      {
+        "path": "tools/check-first-paint-performance-receipt.js",
+        "sha256": "f77b59ecc99fb3c1035ac709e69ade9ed44a83e96661d8898935c045db823e9b"
       },
       {
         "path": "tools/check-globe-runtime-approval.js",
@@ -1165,7 +1173,7 @@
       },
       {
         "path": "tools/fixtures/globe-runtime-assets.json",
-        "sha256": "3757af12953a80260d49edf89ff1887709b6237ca1bb52f46dd4046f53a1b1a4"
+        "sha256": "3376611b5a48f08e46c5c1a4bb8ca20906dde07606630240f8bf0f75332e71c2"
       },
       {
         "path": "tools/fixtures/globe-third-party-notices.json",
@@ -1181,7 +1189,7 @@
       },
       {
         "path": "tools/lib/cci-factual-public.js",
-        "sha256": "c49a355e197e3370ae0f29283b336aa1deea28f3edb325246473018a7a94c613"
+        "sha256": "c6899c83d1c146da785c8b4fbb9d6adaad719b04eadb284a10290312c9db66d8"
       },
       {
         "path": "tools/lib/climate-factual-runtime-candidate.js",
@@ -1249,7 +1257,7 @@
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-proof.js",
-        "sha256": "a7dca8322955bf2e907a731315aa5fe35b3e696078ff0dfb9ed415695c31b08b"
+        "sha256": "ec2b664590f47534cfb77409d773c1ba99f094fe874ebc8def85e16df639be93"
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-review.js",
@@ -1265,7 +1273,7 @@
       },
       {
         "path": "tools/lib/globe-runtime-assets.js",
-        "sha256": "e0236a7d049c9e9f2efa8bdf688056dbfc3974faee7858445985723dffa9dea3"
+        "sha256": "51aecdfd6504832de06081c2c5fbf728cc92dcfb4df5009a99abfcf8e737061b"
       },
       {
         "path": "tools/lib/globe-third-party-notices.js",
@@ -1333,7 +1341,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "68f050e6f09029932e8513236350b145eac68913d4e14ac28d56bd106071be6e"
+        "sha256": "f3e5552bc2e26bd917b546608040b2b987b250a9be40e880e00334bfaf0a1dae"
       },
       {
         "path": "tools/reconstruct-gcb-country-map.js",
@@ -1356,8 +1364,12 @@
         "sha256": "1d6a21122baac923154dcb135ec087987b8b014859345b1790cce8c44ae10971"
       },
       {
+        "path": "tools/run-first-paint-benchmark.js",
+        "sha256": "1c70611f2534b41dc582ce53393a517dc4513ce6c3e380e75393c06d4225ca10"
+      },
+      {
         "path": "tools/smoke-test.js",
-        "sha256": "1f676d349e48fcfb7251b94ee057a3062cf034227f44ad3d470259025555a1a3"
+        "sha256": "7e1d76a543ac495dfb6bae6f96093fa2d2b18ef3d0c5e757c2cdf9ad5cd98dfa"
       },
       {
         "path": "tools/stack-lint.js",
@@ -1389,7 +1401,7 @@
       },
       {
         "path": "tools/verify-legacy-country-exit.js",
-        "sha256": "63dd90a443a2f0eaacdf93157587f0b6e89a71e128d384986547039c705783f8"
+        "sha256": "c26237d5c67356845d7756497108ba1bd2d162f71d26f8f842c5007d52e7e456"
       },
       {
         "path": "wrangler.jsonc",
