@@ -151,8 +151,23 @@ async function main() {
       releaseTail();
       await page.waitForLoadState('domcontentloaded', { timeout: 15000 });
       await page.waitForFunction(() => window.App?._staticActionsBound === true && window.__ELU_EARLY_GLOBE__?.pending === false, null, { timeout: 15000 });
+      await page.waitForFunction(() => (
+        document.body.classList.contains('globe-mode') &&
+        document.querySelectorAll('#globeViz canvas').length === 1
+      ), null, { timeout: 30000 });
+      await page.evaluate(() => window.App.exitGlobe());
+      await page.waitForFunction(() => !document.body.classList.contains('globe-mode'), null, { timeout: 5000 });
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      const afterExit = await page.evaluate(() => ({
+        openerRestored: document.activeElement?.matches?.('.enter-btn[data-action="enterGlobe"]') === true,
+        topbarAriaHidden: document.getElementById('topbar')?.getAttribute('aria-hidden') || null,
+        topbarInert: document.getElementById('topbar')?.hasAttribute('inert') === true,
+      }));
+      assert.equal(afterExit.openerRestored, true, `${activation}: globe exit must restore the exact streamed CTA opener`);
+      assert.equal(afterExit.topbarInert, true, `${activation}: globe exit must make the hidden topbar inert`);
+      assert.equal(afterExit.topbarAriaHidden, 'true', `${activation}: globe exit must hide the topbar from the accessibility tree`);
       assert.deepEqual(pageErrors, [], `${activation}: streamed first-paint path emitted page errors: ${pageErrors.join('; ')}`);
-      activationResults[activation] = { before, after };
+      activationResults[activation] = { before, after, after_exit: afterExit };
       await page.close();
     }
 

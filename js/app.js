@@ -88,7 +88,7 @@ const App = {
     this._staticActionsBound = true;
 
     const handlers = {
-      enterGlobe: () => this.enterGlobe(),
+      enterGlobe: (el) => this.enterGlobe({ opener: el }),
       browseEvidence: () => this.browseEvidence(),
     };
 
@@ -98,7 +98,7 @@ const App = {
 
       e.preventDefault();
       e.stopPropagation();
-      handlers[action]();
+      handlers[action](el);
       return true;
     };
 
@@ -119,15 +119,19 @@ const App = {
 
     const earlyIntent = window.__ELU_EARLY_GLOBE__;
     if (earlyIntent?.pending) {
+      const opener = earlyIntent.opener;
       earlyIntent.pending = false;
-      queueMicrotask(() => this.enterGlobe({ earlyIntent: true }));
+      earlyIntent.opener = null;
+      queueMicrotask(() => this.enterGlobe({ earlyIntent: true, opener }));
     }
   },
 
   async enterGlobe(options = {}) {
     const activationAttempt = ++this._globeActivationAttempt;
     const isCurrentActivation = () => this._globeActivationAttempt === activationAttempt;
-    const opener = document.activeElement;
+    const opener = options.opener instanceof HTMLElement && document.contains(options.opener)
+      ? options.opener
+      : document.activeElement;
     _setEnterGlobeBusy(true);
     _setAppReadinessStatus(hasModule('COUNTRY_CLIMATE_INTELLIGENCE')
       ? 'Loading verified country evidence for the Living Globe.'
@@ -150,6 +154,7 @@ const App = {
         ? 'Country evidence is unavailable. Please retry.'
         : 'The Living Globe interface could not be prepared. Please retry.');
       if (!climateReady) _showDataErrorBanner();
+      if (opener instanceof HTMLElement && document.contains(opener)) opener.focus({ preventScroll: true });
       return false;
     }
 

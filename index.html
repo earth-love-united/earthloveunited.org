@@ -15,7 +15,7 @@
      keeps the first-painted CTA responsive even when HTML is streamed slowly. -->
 <script>
 (function () {
-  var state = window.__ELU_EARLY_GLOBE__ = window.__ELU_EARLY_GLOBE__ || { pending: false, requestedAt: null };
+  var state = window.__ELU_EARLY_GLOBE__ = window.__ELU_EARLY_GLOBE__ || { pending: false, requestedAt: null, opener: null };
   document.addEventListener('click', function (event) {
     if (window.App && window.App._staticActionsBound) return;
     if (!(event.target instanceof Element)) return;
@@ -25,6 +25,7 @@
     event.stopPropagation();
     state.pending = true;
     state.requestedAt = performance.now();
+    state.opener = trigger;
     document.querySelectorAll('[data-action="enterGlobe"]').forEach(function (button) {
       if ('disabled' in button) button.disabled = true;
       button.setAttribute('aria-busy', 'true');
