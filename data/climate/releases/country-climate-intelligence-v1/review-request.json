@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "ed7405323c6b22a844b69add6627714c3a4e542f6267a87dcc77e0150cc1bfa1",
+  "calculation_hash": "f0b9ba692cb56d52aa01f9457b300220c3a563a99b6f24098ce094b28a336983",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "ac4024d994a9f31bcb4d8c51c7aca4e236add9729fe8ae2cac246190a1262af7",
+    "artifact_pin_digest": "9d346fb0426479b146c20e777cc01a3a7009b74edc2cd8fe4821781b700508f1",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -617,7 +617,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "c60a8fbce4822a8984e92942cfb340199eb1aac0e77e82d6ea239becf0291ea1"
+        "sha256": "f69402413f6109e3558881f625392e0a722115756f08b39bd7f5157590777794"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -857,7 +857,7 @@
       },
       {
         "path": "js/app.js",
-        "sha256": "582a468ebf982985f00d435fb29dcd7bba77413406a7381cf42751ea721a7d7b"
+        "sha256": "da75c42955d3a84f43b10938829799b8b45a6e3565719b64cfd2769b1cbc9efd"
       },
       {
         "path": "js/carbon-clock.js",
@@ -1101,7 +1101,7 @@
       },
       {
         "path": "tools/check-ct42-runtime-rollback-proof.js",
-        "sha256": "df05f54af271b764f09dbf1b8c25039e9fe5814453929c07de48b488e032f239"
+        "sha256": "16645da7baca729df385da15f797329c35c47ffab1d0d12f3087d42e5da3d57e"
       },
       {
         "path": "tools/check-ct42-runtime-rollback-review.js",
@@ -1257,7 +1257,7 @@
       },
       {
         "path": "tools/lib/cci-scoped-delta-review.js",
-        "sha256": "5b7d97aa82c2fd32962273c5dade4a4566a0adf289b2712a229bea6c1ef4d2af"
+        "sha256": "0a39e7d24e14e02cf23569d932584baf5e7001d680680f3562eda897908697a3"
       },
       {
         "path": "tools/lib/climate-factual-runtime-candidate.js",
@@ -1325,7 +1325,7 @@
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-proof.js",
-        "sha256": "4586009cc0f917ed7fa9bf354cc7d04811fdef086a8bf885e0976d430482258b"
+        "sha256": "ba5e629e7bfbf4463f17a34f46e3d4e2a84beff4556d009bec8b44ace462b5b9"
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-review.js",

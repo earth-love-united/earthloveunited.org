@@ -13,7 +13,7 @@
   },
   "candidate": {
     "builder_commit": "793eade295ae3fa787749e4d6ee112cf374a7634",
-    "runtime_control_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+    "runtime_control_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
     "review_chain_head": null,
     "review_chain_late_bound": true,
     "review_chain_ct40_sha256": null,
@@ -73,7 +73,7 @@
   },
   "rollback": {
     "strategy": "current_hardened_runtime_to_neutral_surface",
-    "source_runtime_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+    "source_runtime_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
     "baseline_commit": null,
     "cache_name": "elu-v34-ct42-neutral-rollback",
     "service_worker_registration": "/sw.js?v=34-ct42-neutral-rollback",
@@ -96,7 +96,7 @@
     },
     "app_globe_compatibility": {
       "app_path": "js/app.js",
-      "app_sha256": "582a468ebf982985f00d435fb29dcd7bba77413406a7381cf42751ea721a7d7b",
+      "app_sha256": "da75c42955d3a84f43b10938829799b8b45a6e3565719b64cfd2769b1cbc9efd",
       "app_called_apis": [
         "prepare",
         "init",
@@ -163,8 +163,8 @@
         "path": "js/app.js",
         "role": "unchanged_app_globe_compatibility_pin",
         "changed": false,
-        "candidate_sha256": "582a468ebf982985f00d435fb29dcd7bba77413406a7381cf42751ea721a7d7b",
-        "rollback_sha256": "582a468ebf982985f00d435fb29dcd7bba77413406a7381cf42751ea721a7d7b"
+        "candidate_sha256": "da75c42955d3a84f43b10938829799b8b45a6e3565719b64cfd2769b1cbc9efd",
+        "rollback_sha256": "da75c42955d3a84f43b10938829799b8b45a6e3565719b64cfd2769b1cbc9efd"
       },
       {
         "path": "sw.js",
@@ -185,63 +185,63 @@
       {
         "path": "manifest.json",
         "role": "pwa_manifest_metadata",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "cc7cf3ee37944ea792e72ed10a47b6ba57994afcb1270aa9855e488f835d0d75",
         "materialized_sha256": "cc7cf3ee37944ea792e72ed10a47b6ba57994afcb1270aa9855e488f835d0d75"
       },
       {
         "path": "css/carbon-clock.css",
         "role": "supporting_runtime_style",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "819fed963e05885005955fedcfbb7ad851ddcec0fce5e2f879272696988bd184",
         "materialized_sha256": "819fed963e05885005955fedcfbb7ad851ddcec0fce5e2f879272696988bd184"
       },
       {
         "path": "js/gaia-utils.js",
         "role": "foundation_runtime",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "06b34641d8fffc9c9fb17cad8539035d55758b07992ec8573a41152a14e37e94",
         "materialized_sha256": "06b34641d8fffc9c9fb17cad8539035d55758b07992ec8573a41152a14e37e94"
       },
       {
         "path": "js/module-contracts.js",
         "role": "module_contract_runtime",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "e0609b87b686afb7fa7154b2b378b8960136c645a9f07314262a624b621e5c84",
         "materialized_sha256": "e0609b87b686afb7fa7154b2b378b8960136c645a9f07314262a624b621e5c84"
       },
       {
         "path": "js/event-bus.js",
         "role": "event_runtime",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "076e3549298b113308115331d72ed563477630e6850d73704871641b1d1ecd63",
         "materialized_sha256": "076e3549298b113308115331d72ed563477630e6850d73704871641b1d1ecd63"
       },
       {
         "path": "js/storage-adapter.js",
         "role": "storage_runtime",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "4b7210624cf0829fe5687e2aac9ce6919fe19ee42c991544c018bdd31fd6b8b3",
         "materialized_sha256": "4b7210624cf0829fe5687e2aac9ce6919fe19ee42c991544c018bdd31fd6b8b3"
       },
       {
         "path": "js/storage.js",
         "role": "storage_facade_runtime",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "6cb9b3742575eaaa3644ca4cffe42cc4cca6121dce2c49f1add566b7cd7b3734",
         "materialized_sha256": "6cb9b3742575eaaa3644ca4cffe42cc4cca6121dce2c49f1add566b7cd7b3734"
       },
       {
         "path": "js/data-schema.js",
         "role": "data_schema_runtime",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "15454da35479253ccf83533ed6cfc16dc0ff3b5f6a9739424fe51d0ca55541e3",
         "materialized_sha256": "15454da35479253ccf83533ed6cfc16dc0ff3b5f6a9739424fe51d0ca55541e3"
       },
       {
         "path": "js/carbon-clock.js",
         "role": "carbon_clock_runtime",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "d577ff8e991b387f27d5f0e531a9aaf3eda47f6ee72ff675998eaad46159519a",
         "materialized_sha256": "d577ff8e991b387f27d5f0e531a9aaf3eda47f6ee72ff675998eaad46159519a"
       },
@@ -255,28 +255,28 @@
       {
         "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
         "role": "pinned_country_geometry",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0",
         "materialized_sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0"
       },
       {
         "path": "data/carbon-projects.json",
         "role": "noncritical_runtime_data",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "1d689792d942ca8dc52386746d4ed6021ef45e4af1c5b1b0cb3ee3509bfd33eb",
         "materialized_sha256": "1d689792d942ca8dc52386746d4ed6021ef45e4af1c5b1b0cb3ee3509bfd33eb"
       },
       {
         "path": "tools/stack-lint.js",
         "role": "browser_rehearsal_stack_audit",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "d7b0bbac4ee9fcffc34932b88c9e71398a0b604c287c6fbb04ba5652b33818aa",
         "materialized_sha256": "d7b0bbac4ee9fcffc34932b88c9e71398a0b604c287c6fbb04ba5652b33818aa"
       },
       {
         "path": "scripts/verify_load_order.py",
         "role": "static_rehearsal_load_order",
-        "source_commit": "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0",
+        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
         "source_sha256": "2b093dfe70a9a6e11da3aecd6e6f68753e1aab159280da940206c6d97a21c8ce",
         "materialized_sha256": "2b093dfe70a9a6e11da3aecd6e6f68753e1aab159280da940206c6d97a21c8ce"
       }
@@ -318,7 +318,7 @@
     "materialize_temporary_site": "node tools/rehearse-ct42-runtime-rollback.js --site /absolute/new/temp/directory",
     "checker": "node tools/check-ct42-runtime-rollback-proof.js",
     "builder_requires_git_objects": [
-      "3a788b83cfbf1b159ca12d5d91c2e423427f6ae0"
+      "7971e3287c8730278d9bf28164871cc550ac2dd9"
     ],
     "late_bound_regeneration": "rerun builder with --review-chain-head <final exact review-chain commit>, then refresh checker pins after final CT-40 DENY regeneration",
     "browser_rehearsal": [
@@ -343,5 +343,5 @@
     "writes_workspace": false,
     "deploys": false
   },
-  "calculation_hash": "da5a21c573bf6b28f6cd8bf238670a4f572b50fa27cdd19cbca549b1921b76c7"
+  "calculation_hash": "9147661d65777ea98d920e77e188e94ba58c7d7ec4cf98abee1fe8505c37e7a5"
 }
