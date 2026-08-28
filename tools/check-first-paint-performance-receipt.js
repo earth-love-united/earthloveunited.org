@@ -13,7 +13,7 @@ const ROOT = path.resolve(__dirname, '..');
 const RECEIPT_PATH = 'data/performance/first-paint-mobile-2026-08-28.json';
 const TOOL_PATH = 'tools/run-first-paint-benchmark.js';
 const BASELINE_COMMIT = '41a694f925e36669b72ca62029cd1d62c8ddfeaf';
-const CANDIDATE_COMMIT = '81566497a3eb36b3ef1206366959bae13a7c0cfb';
+const CANDIDATE_COMMIT = '46a627e71b51127f6a7664ec2f6438c4cbb7f922';
 const EXPECTED_ORDER = Object.freeze([
   'baseline', 'candidate', 'candidate', 'baseline',
   'baseline', 'candidate', 'candidate', 'baseline',
@@ -159,8 +159,14 @@ function validateReceipt(receipt) {
     assert.ok(run.metrics.fcp_ms > 0);
     assert.ok(run.metrics.lcp_ms >= run.metrics.fcp_ms);
     assert.equal(run.threshold_loss, round(loss(run.metrics), 6));
-    assert.equal(run.lcp_entry.element.className, 'hero-foundation-logo');
-    assert.match(run.lcp_entry.url, /\/assets\/legacy\/elu-logo-light\.png\?/);
+    if (run.lcp_entry.element.className === 'hero-foundation-logo') {
+      assert.match(run.lcp_entry.url, /\/assets\/legacy\/elu-logo-light\.png\?/);
+    } else {
+      assert.equal(run.subject, 'candidate', 'only the candidate live carbon value may supersede the hero image as LCP');
+      assert.equal(run.lcp_entry.element.className, 'cc-value');
+      assert.equal(run.lcp_entry.element.id, 'cc-hero-value');
+      assert.equal(run.lcp_entry.url, null);
+    }
     if (run.hero_logo !== null) {
       assert.equal(run.hero_logo.complete, true);
       assert.ok(run.hero_logo.natural_width > 0 && run.hero_logo.natural_height > 0);
@@ -216,7 +222,7 @@ function validateReceipt(receipt) {
 
   const ratio = baselineLogo.length / candidateLogo.length;
   const tenX = receipt.verdict.requested_ten_x_improvement;
-  assert.equal(tenX.metric, 'hero LCP image payload bytes');
+  assert.equal(tenX.metric, 'hero image payload bytes');
   assert.equal(tenX.baseline_bytes, baselineLogo.length);
   assert.equal(tenX.candidate_bytes, candidateLogo.length);
   assert.equal(tenX.improvement_factor, round(ratio));
@@ -226,7 +232,8 @@ function validateReceipt(receipt) {
   assert.equal(receipt.verdict.observed_local_lcp_latency_is_ten_x,
     receipt.summary.improvement_factors.lcp_latency >= 10);
   assert.equal(receipt.verdict.above_threshold_loss_eliminated_percent, 100);
-  assert.match(receipt.verdict.claim_boundary, /10x pass applies only to the exact hero LCP asset payload/);
+  assert.match(receipt.verdict.claim_boundary, /10x pass applies only to the exact hero image asset payload/);
+  assert.match(receipt.verdict.claim_boundary, /image or the live carbon value as LCP/);
   assert.match(receipt.verdict.claim_boundary, /Public PageSpeed field\/lab performance requires post-deploy measurement/);
 
   const action = receipt.first_paint_action_readiness;
@@ -289,5 +296,5 @@ if (process.argv.includes('--self-test')) {
   }
   process.stdout.write(`First-paint performance receipt self-test: PASS (${rejected} recomputed-hash adversarial mutations rejected; no network or release authority)\n`);
 } else {
-  process.stdout.write(`First-paint performance receipt: PASS (${result.ratio}x hero LCP payload reduction; ${result.lcpFactor}x median local LCP latency improvement; 12 counterbalanced cold runs; first-paint action ready)\n`);
+  process.stdout.write(`First-paint performance receipt: PASS (${result.ratio}x hero image payload reduction; ${result.lcpFactor}x median local LCP latency improvement; 12 counterbalanced cold runs; first-paint action ready)\n`);
 }

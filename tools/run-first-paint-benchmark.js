@@ -532,7 +532,7 @@ async function main() {
     first_paint_action_readiness: action,
     verdict: {
       requested_ten_x_improvement: {
-        metric: 'hero LCP image payload bytes',
+        metric: 'hero image payload bytes',
         baseline_bytes: served.baseline_hero_logo.bytes,
         candidate_bytes: served.candidate_hero_logo.bytes,
         improvement_factor: round(heroRatio),
@@ -549,7 +549,7 @@ async function main() {
         action.final.globe_mode === true &&
         action.final.canvas_count === 1 &&
         action.page_errors.length === 0,
-      claim_boundary: 'The 10x pass applies only to the exact hero LCP asset payload. Local FCP/LCP latency, CLS, TBT, partial transfer, and first-action readiness are reported separately. Public PageSpeed field/lab performance requires post-deploy measurement.',
+      claim_boundary: 'The 10x pass applies only to the exact hero image asset payload. The browser may select either that image or the live carbon value as LCP; local FCP/LCP latency, CLS, TBT, partial transfer, and first-action readiness are reported separately. Public PageSpeed field/lab performance requires post-deploy measurement.',
     },
     calculation_hash: null,
   };

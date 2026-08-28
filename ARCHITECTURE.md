@@ -231,7 +231,7 @@ archives with a counterbalanced cold-mobile protocol; its receipt is pinned at
 by `tools/check-first-paint-performance-receipt.js`. The loss is a weighted,
 threshold-clipped FCP/LCP/CLS/TBT penalty. A zero loss means the above-threshold
 penalty was eliminated; it is never divided into a ratio. The measured 10×
-claim is limited to the hero LCP image payload, while latency, layout shift,
+claim is limited to the exact hero image payload, while latency, layout shift,
 blocking time, partial transfer, and post-deploy PageSpeed remain separate
 reported outcomes.
 
