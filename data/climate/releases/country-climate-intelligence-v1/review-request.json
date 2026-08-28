@@ -1,6 +1,6 @@
 {
-  "calculation_hash": "cec4249891b7ac8c1fa291dcceaf5db0f23f8f5c73689d4fd5fc3a4ff2e15841",
-  "created_at": "2026-08-27T00:00:00Z",
+  "calculation_hash": "e82e30138bc5394bb4cf5af72b41ae3ebcb7124a5d5f85e9c76eecddcf030d15",
+  "created_at": "2026-08-28T17:31:23Z",
   "governance_boundaries": {
     "composite_score": false,
     "ct40_reuse_allowed": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "a9f65a3517440a56b87012dcbae9b5f4497b2e801551a25cfcf330235e660b41",
+    "artifact_pin_digest": "cbcb6180ffc56067bd245866add2af01641a2d71c3eca59863dc907b9c1ba349",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -221,7 +221,7 @@
       },
       {
         "path": ".github/workflows/ci.yml",
-        "sha256": "81ff7276d66a4e17556d77db1f7d97efa2b48f4697db32334066377a2e66a756"
+        "sha256": "5154058023ec298ff2c4e0b9090a7c9cb45f1d17a313c17cfe5f06eb70c68c30"
       },
       {
         "path": ".gitignore",
@@ -233,7 +233,7 @@
       },
       {
         "path": "ARCHITECTURE.md",
-        "sha256": "ee3eb4ff0e8d700921df4b03ff8f18ca61aff53e144ad596b49023bb3f2a4627"
+        "sha256": "c5316fd833d7112a610814a36ceccea1f3e30ddd7c4c6c1d010e87245b0f875d"
       },
       {
         "path": "CREDITS.md",
@@ -741,7 +741,7 @@
       },
       {
         "path": "data/performance/first-paint-mobile-2026-08-28.json",
-        "sha256": "80ab5cfaf2f3986c611b97782661c50581eba224bf99025c91a2f334ffde65e9"
+        "sha256": "b6d027a9229686b0cbc084f3c4423aac01f47ce4d739450b66169d89d0efd9a1"
       },
       {
         "path": "data/pledge-nodes.json",
@@ -797,7 +797,7 @@
       },
       {
         "path": "index.html",
-        "sha256": "94606928080d450b2ab6405ee3cd1ba116305907f2966e86717dada79022c42a"
+        "sha256": "75d8ae2267c08f3b0f3bd1e9ab46bad7b207735d62af5cfc49920ef841662d35"
       },
       {
         "path": "js/app.js",
@@ -1049,7 +1049,7 @@
       },
       {
         "path": "tools/check-first-paint-performance-receipt.js",
-        "sha256": "f77b59ecc99fb3c1035ac709e69ade9ed44a83e96661d8898935c045db823e9b"
+        "sha256": "49bda97ae0909126b502ee639e103691f846f55bb4024301f9f5cfa62de37778"
       },
       {
         "path": "tools/check-globe-runtime-approval.js",
@@ -1134,6 +1134,10 @@
       {
         "path": "tools/check-staged-production-integrity.js",
         "sha256": "fd3ac6a54213c3e07d0c1363ae42f1180340554f1964fddfa29838cdc15e9221"
+      },
+      {
+        "path": "tools/check-streamed-first-paint-action.js",
+        "sha256": "8c3b73ae347b70ace030c71e170928c265ea935acbf118a3d07f0ff360877ca5"
       },
       {
         "path": "tools/check-target-comparability.js",
@@ -1341,7 +1345,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "f3e5552bc2e26bd917b546608040b2b987b250a9be40e880e00334bfaf0a1dae"
+        "sha256": "bbd28ed5dd312f791c3f35c4f469e38db09b2cca6d484b807d3a264e2f988fc5"
       },
       {
         "path": "tools/reconstruct-gcb-country-map.js",
@@ -1365,7 +1369,7 @@
       },
       {
         "path": "tools/run-first-paint-benchmark.js",
-        "sha256": "1c70611f2534b41dc582ce53393a517dc4513ce6c3e380e75393c06d4225ca10"
+        "sha256": "7edb22aed0b3bfe522b715253e579cb25a0d8d3eded96532e67a21c2fab2cb77"
       },
       {
         "path": "tools/smoke-test.js",
