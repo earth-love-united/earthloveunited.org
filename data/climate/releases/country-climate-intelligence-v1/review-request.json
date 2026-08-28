@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "690cafe23e0f698759ceb33f555e57724ef9d22f0fa881ec7bf72c69337a63dc",
+  "calculation_hash": "dfd4b50b1482bbc6688b68b1536b8a2700625873424f13a60be8427bab093f35",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "a4a7cf8064bc9b7e687dace75d2b798e8315beda0256d2c758a4810bf29b4fce",
+    "artifact_pin_digest": "75804cbb652bedb85acabf35996889600f82a963aebb124f4960b7a1f7b0e017",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -465,7 +465,7 @@
       },
       {
         "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
-        "sha256": "b59fe84834588fb18166aafa4346100f9886ba7fce26d28a51e9c054b02a424d"
+        "sha256": "24eb59810aa525c664e8fb5745d380756ecb8ccb568183e5605826c1a77a7f09"
       },
       {
         "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -565,7 +565,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "a414f320c06c1d287ccf3ec5c6c4b5ef0e8e81d43dc2ad41e57da7e35f992a2f"
+        "sha256": "a62c285fe94f96281680e8ec21a61a1a4bde24aa9ee1443e62df527d30e6d4fa"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -745,7 +745,7 @@
       },
       {
         "path": "data/performance/first-paint-mobile-2026-08-28.json",
-        "sha256": "3320f6d9c70d6bd2a4b7158e43705e8291a79940e8daf1c8e787aafca9fd433b"
+        "sha256": "b39acb33548ad9e23d3df23d878175b3aa67b87c25bf7236ad9a9eea17ff144d"
       },
       {
         "path": "data/pledge-nodes.json",
@@ -801,11 +801,11 @@
       },
       {
         "path": "index.html",
-        "sha256": "374ebf8df051be81b7dc9b6a9a78cae557bfd7753380a5873a28dd972dc4046d"
+        "sha256": "1cb352d50ac411177c0f0f51ae272ec4bc8899b12ab1050282ce75e3e270eca3"
       },
       {
         "path": "js/app.js",
-        "sha256": "b498b029a16902c17240896fd4add7830e2a244f08bf2065abf4f0e7a737f913"
+        "sha256": "582a468ebf982985f00d435fb29dcd7bba77413406a7381cf42751ea721a7d7b"
       },
       {
         "path": "js/carbon-clock.js",
@@ -1045,7 +1045,7 @@
       },
       {
         "path": "tools/check-ct42-runtime-rollback-proof.js",
-        "sha256": "de027eb2c76df497528b31bbab61c0e9408be96af1f41840d291b4a5b40a790d"
+        "sha256": "20d3fbb964669f9d824771e06cd3d003780d56b9d173d7a3b905c4aaa032d534"
       },
       {
         "path": "tools/check-ct42-runtime-rollback-review.js",
@@ -1053,7 +1053,7 @@
       },
       {
         "path": "tools/check-first-paint-performance-receipt.js",
-        "sha256": "139f8ba0201972c9de126bfb660d81c5ef02275ff54e7c36df04430d5c59ed5e"
+        "sha256": "1bbb8eb9d2e63582dac78c497e40b5b4428bf751a579c0b0e8f67c0e02f12a6d"
       },
       {
         "path": "tools/check-globe-runtime-approval.js",
@@ -1141,7 +1141,7 @@
       },
       {
         "path": "tools/check-streamed-first-paint-action.js",
-        "sha256": "7713d95082e219ba70d87ffdd5aad44f4b556e198999b98f79806067f4aa240e"
+        "sha256": "34c11d0812a77fd207316c04a5b1b40735b553813721366a99f15336ede36c32"
       },
       {
         "path": "tools/check-target-comparability.js",
@@ -1265,7 +1265,7 @@
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-proof.js",
-        "sha256": "1fd541c8880158529c0a8abcdefe24bc43957b17eeeeba52f03d7662076cc546"
+        "sha256": "8d6dbba47edc5e7333dea2e3811242f980f31f615fd9ed7fa067eae5907166e6"
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-review.js",
