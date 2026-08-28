@@ -224,6 +224,24 @@ drawer, so the renderer never duplicates a headline fact card.
 
 ### Globe performance boundary
 
+Landing-paint performance is a separate boundary from renderer frame time.
+`tools/run-first-paint-benchmark.js` compares exact baseline and candidate Git
+archives with a counterbalanced cold-mobile protocol; its receipt is pinned at
+`data/performance/first-paint-mobile-2026-08-28.json` and independently checked
+by `tools/check-first-paint-performance-receipt.js`. The loss is a weighted,
+threshold-clipped FCP/LCP/CLS/TBT penalty. A zero loss means the above-threshold
+penalty was eliminated; it is never divided into a ratio. The measured 10×
+claim is limited to the hero LCP image payload, while latency, layout shift,
+blocking time, partial transfer, and post-deploy PageSpeed remain separate
+reported outcomes.
+
+The first-paint action bridge must acknowledge an Enter-the-Globe request even
+before deferred application scripts bind. It queues exactly one intent,
+disables both entry controls, sets `aria-busy`, and announces the evidence wait.
+`App` consumes that intent, shares the exact-data promise, and may reveal globe
+mode only after both evidence and asynchronously loaded globe CSS are ready.
+All globe HUD surfaces fail closed until `data-globe-styles-ready="true"`.
+
 The live renderer targets a 120 Hz-capable display budget of 8.333 ms per
 frame. This is a scene and interaction budget, not a claim that a 60 Hz panel
 or a browser throttled by the operating system will report 120 frames per

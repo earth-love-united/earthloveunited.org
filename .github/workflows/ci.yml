@@ -99,6 +99,12 @@ jobs:
       - name: Verify script load-order DAG
         run: python3 scripts/verify_load_order.py
 
+      - name: First-paint performance receipt self-test
+        run: node tools/check-first-paint-performance-receipt.js --self-test
+
+      - name: First-paint performance receipt
+        run: node tools/check-first-paint-performance-receipt.js
+
       - name: Country Climate Intelligence v1 candidate contract
         if: ${{ steps.climate_profile.outputs.profile == 'cci' && steps.climate_profile.outputs.phase == 'candidate' }}
         run: node tools/check-country-climate-intelligence-ci.js
