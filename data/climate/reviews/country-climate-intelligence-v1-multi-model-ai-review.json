@@ -1,0 +1,275 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_id": "country-climate-intelligence-v1-multi-model-ai-review-2026-08-28",
+  "status": "ai_factual_public_authorized",
+  "review_type": "multi_model_ai",
+  "human_review": false,
+  "legal_certification": false,
+  "independent_institutional_review": false,
+  "publication_authority": {
+    "authorized": true,
+    "scope": "country_climate_intelligence_ai_factual_public_lane_only",
+    "note": "Authority is limited to this exact AI-reviewed factual lane and remains contingent on the strict verifier and staged-integrity checks passing."
+  },
+  "public_label": "AI-reviewed source-data release — source observations, estimates, modeled projections, reanalysis, and disclosed deterministic derivations; no human review or legal certification.",
+  "subject": {
+    "release_id": "country-climate-intelligence-2026-08-27-candidate.7",
+    "review_request_path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
+    "review_request_sha256": "0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372",
+    "review_request_artifact_pin_digest": "3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200",
+    "runtime_sha256": "4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe",
+    "registry_entity_count": 249,
+    "metric_count": 26,
+    "public_file_count": 51
+  },
+  "maintainer_authorization": {
+    "authorized": true,
+    "authorized_at": "2026-08-28T02:16:26Z",
+    "policy": "ai_reviewed_source_data_publication",
+    "scope": "country_climate_intelligence_v1_factual_source_data_surface",
+    "human_review_substitute": false,
+    "receipt": "The foundation maintainer explicitly authorized the separate AI-reviewed factual publication lane in the release task."
+  },
+  "existing_human_signature_gate": "unchanged_and_unsatisfied",
+  "aggregation_policy": {
+    "rule": "No unresolved reviewer blocker may be overridden by a vote. Every condition must have a fail-closed implementation receipt before authorization.",
+    "review_count": 4,
+    "model_family_count": 3,
+    "composition": "two Luna reviews, one Terra review, and one Sol review",
+    "institutional_independence_claim": false
+  },
+  "review_count": 4,
+  "model_family_count": 3,
+  "reviewers": [
+    {
+      "reviewer_id": "ai-reviewer:luna-science",
+      "provider": "OpenAI",
+      "model": "gpt-5.6-luna",
+      "role": "scientific_data_method",
+      "reviewed_at": "2026-08-28T03:06:41Z",
+      "scope": "Source semantics, formulas, evidence classes, derivations, gaps, and all 249 entity mappings.",
+      "post_mitigation_verdict": "approve_with_conditions",
+      "report": {
+        "path": "data/climate/reviews/cci-v1-ai-reports/luna-science.md",
+        "sha256": "caff5cf48a7f49b7dc1c66d78eacdd6b289ea60f8dc6b9b9918eb663f476a91f"
+      }
+    },
+    {
+      "reviewer_id": "ai-reviewer:luna-rights",
+      "provider": "OpenAI",
+      "model": "gpt-5.6-luna",
+      "role": "source_rights_attribution_provenance",
+      "reviewed_at": "2026-08-28T03:04:16Z",
+      "scope": "Source licence bases, attribution, excluded image assets, retained NASA/Natural Earth evidence, and public limitations.",
+      "post_mitigation_verdict": "approve_with_conditions",
+      "report": {
+        "path": "data/climate/reviews/cci-v1-ai-reports/luna-rights.md",
+        "sha256": "73930c6b4afc6e9801169ad4d5eb40a860ef33debb41d2ff3471399bcde1e095"
+      }
+    },
+    {
+      "reviewer_id": "ai-reviewer:terra-runtime",
+      "provider": "OpenAI",
+      "model": "gpt-5.6-terra",
+      "role": "runtime_accessibility_release_rails",
+      "reviewed_at": "2026-08-28T03:07:23Z",
+      "scope": "Deterministic public staging, runtime/fallback behavior, accessibility, cache coupling, rollback, and gate isolation.",
+      "post_mitigation_verdict": "approve_with_conditions",
+      "report": {
+        "path": "data/climate/reviews/cci-v1-ai-reports/terra-runtime.md",
+        "sha256": "640393a44ae146bec9f916393bd7c302c4e52ff322561072d4693873c1ccc246"
+      }
+    },
+    {
+      "reviewer_id": "ai-reviewer:sol-red-team",
+      "provider": "OpenAI",
+      "model": "gpt-5.6-sol",
+      "role": "final_adversarial_release_review",
+      "reviewed_at": "2026-08-28T03:04:08Z",
+      "scope": "Final adversarial review of the mitigated source subject, reports, aggregate, deployment surface, and legacy-gate isolation.",
+      "post_mitigation_verdict": "approve_with_conditions",
+      "report": {
+        "path": "data/climate/reviews/cci-v1-ai-reports/sol-red-team.md",
+        "sha256": "0b8369505ab2a550512b6e5cbd899e19cfc896e8ff5d88fe763d29af22c3b493"
+      }
+    }
+  ],
+  "publication_boundary": {
+    "composite_score": false,
+    "target_assessment": false,
+    "finance_judgment": false,
+    "performance_grade": false,
+    "offset_adjustment": false,
+    "mismatched_scope_comparison": false,
+    "climate_trace_included": false,
+    "inverted_carbon_relief_experiment": false
+  },
+  "source_rights": [
+    {
+      "id": "gcb",
+      "source_registry_id": "gcp-gcb-2025-v1.0",
+      "ai_reviewed_publication_decision": "allow_with_attribution",
+      "licence_basis": "CC BY 4.0 on the ICOS/GCB 2025 v1.0 collection; DOI 10.18160/GCP-2025.",
+      "required_attribution": "Global Carbon Project (2025), Supplemental data of Global Carbon Budget 2025, version 1.0; Earth Love United selections, conversions, and transformations identified.",
+      "limitations": "2024 territorial fossil CO2 values are source estimates; fossil and land-use series remain separate."
+    },
+    {
+      "id": "wpp",
+      "source_registry_id": "un-wpp-2024",
+      "ai_reviewed_publication_decision": "allow_with_attribution",
+      "licence_basis": "United Nations World Population Prospects 2024 under CC BY 3.0 IGO.",
+      "required_attribution": "United Nations DESA Population Division (2024), World Population Prospects 2024; Earth Love United selected the 2024 Medium projection and converted thousands to persons.",
+      "limitations": "The 2024 Medium value is a modeled projection denominator, not an observed census count."
+    },
+    {
+      "id": "ember",
+      "source_registry_id": "ember-yearly-electricity-data-2026-08-25",
+      "ai_reviewed_publication_decision": "allow_with_attribution",
+      "licence_basis": "Ember Yearly Electricity Data and API under CC BY 4.0.",
+      "required_attribution": "Ember, Yearly Electricity Data, full release retrieved 2026-08-25; Earth Love United selections and transformations identified.",
+      "limitations": "Published actual-year evidence classes and Ember's generation-fuel taxonomy are preserved; blank values remain gaps."
+    },
+    {
+      "id": "cckp_cmip6",
+      "source_registry_id": "world-bank-cckp-cmip6-2026-08-24",
+      "ai_reviewed_publication_decision": "allow_with_attribution",
+      "licence_basis": "World Bank Climate Change Knowledge Portal processed CMIP6 data under CC BY 4.0.",
+      "required_attribution": "World Bank CCKP; WCRP CMIP6 modeling groups and ESGF acknowledged; Earth Love United scenario, period, percentile, and transformation choices identified.",
+      "limitations": "2040–2059 country aggregates are modeled anomalies relative to 1995–2014; ranges are not probabilistic forecasts."
+    },
+    {
+      "id": "cckp_era5",
+      "source_registry_id": "world-bank-cckp-era5-2026-08-25",
+      "ai_reviewed_publication_decision": "allow_with_attribution",
+      "licence_basis": "World Bank CCKP processed ERA5 country aggregates under CC BY 4.0 with underlying ERA5/Copernicus attribution retained.",
+      "required_attribution": "World Bank CCKP and ERA5/Copernicus; Earth Love United 1970–2025 selection and OLS trends per decade identified.",
+      "limitations": "ERA5 is reanalysis, not station observation; annual precipitation is an area-mean accumulation and not a drought or runoff measure."
+    }
+  ],
+  "globe_asset_decisions": [
+    {
+      "path": "assets/globe/runtime/manifest.json",
+      "decision": "exclude",
+      "reason": "The legacy five-asset manifest describes assets that are deliberately absent from this exact public lane."
+    },
+    {
+      "path": "assets/globe/runtime/night-sky.png",
+      "decision": "exclude",
+      "reason": "Underlying example-image rights were not established."
+    },
+    {
+      "path": "assets/globe/runtime/earth-blue-marble.jpg",
+      "decision": "exclude",
+      "reason": "Underlying example-image rights were not established."
+    },
+    {
+      "path": "assets/globe/runtime/earth-topology.png",
+      "decision": "exclude",
+      "reason": "Underlying example-image rights were not established."
+    },
+    {
+      "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
+      "decision": "retain_with_attribution_and_limits",
+      "basis": "Natural Earth public-domain terms.",
+      "limits": "Generalized navigation geometry only; no sovereignty or legal-boundary claim; approximate points for some small nations."
+    },
+    {
+      "path": "assets/globe/runtime/earth-night.jpg",
+      "decision": "retain_with_attribution_and_limits",
+      "basis": "Exact bytes traced to NASA Earth Observatory Black Marble 2012 and used with source/data credit.",
+      "limits": "Historical decorative surface only; no current-climate-data or endorsement claim."
+    }
+  ],
+  "condition_resolutions": [
+    {
+      "id": "exclude_ambiguous_globe_images",
+      "status": "resolved",
+      "evidence": "The 51-file allowlist excludes the three image paths and legacy manifest; negative checks reject paths, hashes, URLs, and executable tokens."
+    },
+    {
+      "id": "correct_public_globe_attribution",
+      "status": "resolved",
+      "evidence": "The staged page states that Three-Globe example images are excluded and describes the retained NASA surface as historical/decorative with no endorsement implied."
+    },
+    {
+      "id": "retain_source_attribution_and_transformations",
+      "status": "resolved",
+      "evidence": "GCB, WPP, Ember, CCKP CMIP6, and CCKP ERA5 licence bases, source roles, changes, and limitations remain in public and machine-readable evidence."
+    },
+    {
+      "id": "precise_ai_review_label",
+      "status": "resolved",
+      "evidence": "Public page, interactive UI, fallback, and this artifact state source-data evidence classes and deny human review and legal certification."
+    },
+    {
+      "id": "remove_evaluative_outputs",
+      "status": "resolved",
+      "evidence": "No target, finance, score, grade, offset, mismatched-scope, or performance output is enabled; order remains same-metric magnitude only."
+    },
+    {
+      "id": "disable_inverted_carbon_relief",
+      "status": "resolved",
+      "evidence": "The public transform removes the query token, fixes higher values to higher relief, and the verifier rejects regressions."
+    },
+    {
+      "id": "preserve_human_gate",
+      "status": "resolved",
+      "evidence": "The existing eight-role production release package and globe-asset signature trust remain absent/unprovisioned and fail closed; the AI lane is separately routed."
+    },
+    {
+      "id": "deterministic_stage_and_rollback",
+      "status": "resolved",
+      "evidence": "The exact 51-file stage, four deterministic transforms, 249-entity rollback snapshot, cache epoch, and strict aggregate dispatch are independently verified."
+    },
+    {
+      "id": "four_ai_reports_three_model_families",
+      "status": "resolved",
+      "evidence": "Two Luna, one Terra, and one Sol report are complete, exactly pinned, and bound to the same canonical subject digest and review-request SHA."
+    }
+  ],
+  "artifact_pins": [
+    { "path": ".github/CODEOWNERS", "sha256": "eb5032a791d8a2f9674ab34481086f1d0827a4decd3a446ee0b667b77e8d4302" },
+    { "path": ".github/workflows/ci.yml", "sha256": "71202487085c25c9ef3bfb5818045561bcb55391892532cc13eaacf122052d73" },
+    { "path": "ARCHITECTURE.md", "sha256": "ab5000ac86dfe98afaea9d158c25189d995d0f79c3f5988d104e6988644c18fe" },
+    { "path": "CREDITS.md", "sha256": "31968896e4e5cad9b2614373a3a15d799beab21bb384b8ae8f7fabbe8f6edc4b" },
+    { "path": "THIRD_PARTY_NOTICES.txt", "sha256": "741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2" },
+    { "path": "assets/globe/runtime/earth-night.jpg", "sha256": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124" },
+    { "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson", "sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0" },
+    { "path": "data/climate/releases/country-climate-intelligence-v1/release-manifest.json", "sha256": "e7674a0c338a22d1b2e891cfa54a47361a4a9cc935361a816332074afd7c1aa1" },
+    { "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json", "sha256": "0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372" },
+    { "path": "data/climate/reviews/country-climate-intelligence-v1-multi-model-ai-prepublication-review.json", "sha256": "0b31ad40c5a42cad33d641d2a0d87e009322e5efb6b7dcee33f0f4d7fef69adc" },
+    { "path": "data/climate/runtime/country-climate-intelligence.json", "sha256": "4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe" },
+    { "path": "data/climate/source-registry.json", "sha256": "6b9e468096ffd073966dea5cc5c6cea6fdffea3c3ab03e78dd31fdf629cf4eba" },
+    { "path": "tools/build-cci-factual-public-deploy.sh", "sha256": "2ed46b95e96b4d5100eaf59576351963370db01d5d9a020dc67a374bae93dec6" },
+    { "path": "tools/check-cci-factual-public-deploy.js", "sha256": "cd09eed85f8484300baf15ad129f3bc9f37595ded11ec736f401eff70931ccd4" },
+    { "path": "tools/check-cci-factual-public-review.js", "sha256": "e95beb2ad6a1edde2316e8587dce0c32ca029e19625a552ad3ef54fdaff58b04" },
+    { "path": "tools/check-public-climate-release-profile.js", "sha256": "2221675b776616155716e713569e5b3892d8f494fd7ef7377db3d0c7fb6b5b8f" },
+    { "path": "tools/check-staged-cci-factual-public-integrity.js", "sha256": "a703815dd3e33f2e44787eb12813fdb0834fc1f7b1d53c04214964eda7a0e51b" },
+    { "path": "tools/check-staged-production-integrity.js", "sha256": "fd3ac6a54213c3e07d0c1363ae42f1180340554f1964fddfa29838cdc15e9221" },
+    { "path": "tools/fixtures/globe-runtime-assets.json", "sha256": "3757af12953a80260d49edf89ff1887709b6237ca1bb52f46dd4046f53a1b1a4" },
+    { "path": "tools/fixtures/globe-third-party-notices.json", "sha256": "9d1160d59c15b061126c8cd351572d7dd0aef85e4b83292af17fd4d6e6ab9c92" },
+    { "path": "tools/lib/cci-factual-public.js", "sha256": "c49a355e197e3370ae0f29283b336aa1deea28f3edb325246473018a7a94c613" },
+    { "path": "tools/lib/globe-runtime-assets.js", "sha256": "e0236a7d049c9e9f2efa8bdf688056dbfc3974faee7858445985723dffa9dea3" },
+    { "path": "tools/prepare-country-climate-intelligence-review-request.js", "sha256": "68f050e6f09029932e8513236350b145eac68913d4e14ac28d56bd106071be6e" },
+    { "path": "tools/stage-cci-factual-public-deploy.js", "sha256": "8c283fd84cd608ae75a6eb27f7f36d5d184d80c270c6aafb7b36384597ff29fe" }
+  ],
+  "public_output_pins": [
+    { "path": "THIRD_PARTY_NOTICES.txt", "sha256": "741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2" },
+    { "path": "assets/globe/runtime/earth-night.jpg", "sha256": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124" },
+    { "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson", "sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0" },
+    { "path": "data/climate/runtime/country-climate-intelligence.json", "sha256": "4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe" },
+    { "path": "index.html", "sha256": "d3eddf0726717464091d285cbd516babe8a114cdedce727c9af46cb68c4a9227" },
+    { "path": "js/country-climate-intelligence.js", "sha256": "e4ebdf2afb1f7662d04e8a371c0bb6587cd7eedcdeec21c105212073aa02cac8" },
+    { "path": "js/globe.js", "sha256": "9620c953112b7db0305ca7b0242e344d9c0ec4cea912480b7480fb776597edc6" },
+    { "path": "js/vendor/globe.gl.js", "sha256": "2ab6767f47e2be0ac346cd7a5eb55d259ea3da06d479dc22f1820ddd698f496a" },
+    { "path": "sw.js", "sha256": "b49c237a06f699352d7637e8cca87d80cc4d17f9740401bd94f120803627118b" }
+  ],
+  "known_limitations": [
+    "This is four AI reviews across three model families, not four institutions and not human scientific review.",
+    "Country-level uncertainty is unavailable for several inputs; CMIP6 spread is shown, while ERA5 OLS trend uncertainty is not propagated.",
+    "Some upstream raw sources are referenced by exact external receipts rather than archived in this repository.",
+    "A standalone legacy source-routing snapshot checker has pre-existing source-registry hash drift; CCI-specific checks and the canonical request pin the current registry bytes.",
+    "Cloudflare production status is an operational post-merge requirement and is not implied by this review artifact."
+  ],
+  "calculation_hash": "6e8de4b102aefb8ec904689ecadd56a6131fbabb8d90838ec85bfad14fa9c84a"
+}

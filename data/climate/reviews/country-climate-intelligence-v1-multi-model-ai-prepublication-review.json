@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_id": "country-climate-intelligence-v1-multi-model-ai-prepublication-review-2026-08-28",
+  "created_at": "2026-08-28T01:37:45Z",
+  "status": "conditional_prepublication_review_complete",
+  "review_type": "multi_model_ai",
+  "reviewer_composition": {
+    "review_count": 4,
+    "model_family_count": 3,
+    "description": "Four AI reviews across three model families: two Luna, one Terra, and one Sol.",
+    "human_review": false,
+    "legal_certification": false,
+    "independent_institutional_review": false
+  },
+  "subject": {
+    "git_commit": "91357d1389c2269609328ffb332850d5e8b85637",
+    "release_id": "country-climate-intelligence-2026-08-27-candidate.7",
+    "review_request_artifact_pin_digest": "0b4c0a8c6f298e1e995886858b3fd57747ccf6c7c2567c6a8f28ff9daf318e68",
+    "pins": [
+      {
+        "path": "data/climate/runtime/country-climate-intelligence.json",
+        "sha256": "4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/release-manifest.json",
+        "sha256": "e7674a0c338a22d1b2e891cfa54a47361a4a9cc935361a816332074afd7c1aa1"
+      },
+      {
+        "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
+        "sha256": "98df6b2e9cbe48d51bd56e5827760bb655a17e2a2a85416f2534fb6488c8de15"
+      },
+      {
+        "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
+        "sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0"
+      },
+      {
+        "path": "assets/globe/runtime/earth-night.jpg",
+        "sha256": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124"
+      }
+    ]
+  },
+  "reviewers": [
+    {
+      "reviewer_id": "ai-reviewer:luna-science",
+      "model": "gpt-5.6-luna",
+      "scope": "scientific methods, source semantics, derivations, gaps, and 249-entity mapping boundary",
+      "verdict": "approve_with_conditions",
+      "key_findings": [
+        "All deterministic CCI compiler, derivation, mapping, source-registry, and public-boundary checks passed.",
+        "GCB fossil and land-use accounting remain separate; WPP projection identity, Ember gap semantics, and CCKP model/reanalysis semantics are disclosed.",
+        "No live publisher re-fetch was performed in this read-only review; verification was against pinned receipts, exact artifacts, and fixtures."
+      ]
+    },
+    {
+      "reviewer_id": "ai-reviewer:luna-rights",
+      "model": "gpt-5.6-luna",
+      "scope": "source rights, attribution, provenance, and globe assets",
+      "verdict": "block_current_tree",
+      "key_findings": [
+        "GCB, WPP, Ember, and CCKP have credible open licence bases with attribution and transformation-disclosure obligations.",
+        "Natural Earth geometry has a favorable public-domain basis and NASA Black Marble has official byte-pinned provenance with attribution and no-endorsement conditions.",
+        "The Three-Globe example starfield, blue-marble, and topology images have package provenance but no established underlying image-rights basis."
+      ]
+    },
+    {
+      "reviewer_id": "ai-reviewer:terra-runtime",
+      "model": "gpt-5.6-terra",
+      "scope": "runtime, accessibility, fallback parity, cache atomicity, and reproducibility",
+      "verdict": "block_current_tree",
+      "key_findings": [
+        "CCI contract, public fail-closed boundary, release-profile, WebGL fallback, public copy, syntax, and load-order checks passed.",
+        "The accessible fallback exposed 249 records, exact Carbon and Power partitions, keyboard focus, compact controls, and no 320px horizontal overflow.",
+        "The fallback needs an explicit public review-state disclosure, and the exact staged WebGL lane requires a final browser run."
+      ]
+    },
+    {
+      "reviewer_id": "ai-reviewer:sol-red-team",
+      "model": "gpt-5.6-sol",
+      "scope": "independent red-team of scientific, rights, runtime, and deployment-gate claims",
+      "verdict": "approve_with_conditions",
+      "key_findings": [
+        "The concept of a narrowly scoped, separately labeled AI-reviewed source-data lane is defensible; the pinned current tree is not approved as-is.",
+        "The three ambiguous images must be absent from staged bytes and all executable, preload, and service-worker references.",
+        "The new lane must not weaken or claim to satisfy the existing human-signature production gate."
+      ]
+    }
+  ],
+  "agreed_scientific_boundary": {
+    "public_label": "AI-reviewed source-data release — source observations, estimates, modeled projections, and disclosed deterministic derivations; no human review or legal certification.",
+    "composite_score": false,
+    "target_assessment": false,
+    "finance_judgment": false,
+    "performance_grade": false,
+    "offset_adjustment": false,
+    "mismatched_scope_comparison": false,
+    "climate_trace_included": false
+  },
+  "rights_dispositions_for_proposed_lane": [
+    {
+      "asset": "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
+      "disposition": "retain_with_public-domain basis, Made with Natural Earth attribution, and sovereignty limitation"
+    },
+    {
+      "asset": "assets/globe/runtime/earth-night.jpg",
+      "disposition": "retain with NASA Earth Observatory and VIIRS/NOAA credits, historical-2012 context, and no-endorsement disclosure"
+    },
+    {
+      "asset": "assets/globe/runtime/night-sky.png",
+      "disposition": "exclude from public bytes and executable references"
+    },
+    {
+      "asset": "assets/globe/runtime/earth-blue-marble.jpg",
+      "disposition": "exclude from public bytes and executable references"
+    },
+    {
+      "asset": "assets/globe/runtime/earth-topology.png",
+      "disposition": "exclude from public bytes and executable references"
+    }
+  ],
+  "required_conditions": [
+    "Remove the three excluded Three-Globe images from staged public output and every executable, preload, service-worker, and runtime reference.",
+    "Add negative staged checks for the excluded paths, filenames, hashes, and URLs.",
+    "Retain exact Natural Earth and NASA bytes, sources, attribution, historical context, and limitations.",
+    "Bind all four complete AI reports and the final post-mitigation file hashes in the publication artifact.",
+    "Publish human_review=false and legal_certification=false; never claim independent human scientific review, certification, or rights clearance.",
+    "Create a separate AI-factual profile without changing the semantics of the existing human-reviewed and signed production gate.",
+    "Exclude the inverted carbon-relief experiment from the public AI-factual profile.",
+    "Keep every value's evidence class, period, scope, uncertainty, transformation, and provenance visible.",
+    "Run exact staged integrity, accessibility, full browser smoke, rollback, strict CI, and Cloudflare deployment checks on the final digest."
+  ],
+  "publication_authority": false,
+  "authority_note": "This prepublication artifact records AI review evidence and conditions. It does not itself authorize deployment or satisfy the repository's existing human-signature release gate.",
+  "calculation_hash": "2bc742a80c3f49d4530ef6ecf92a109fad39adb4f7d3120329fe903645a16f44"
+}

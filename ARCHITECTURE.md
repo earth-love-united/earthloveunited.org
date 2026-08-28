@@ -422,10 +422,14 @@ Rules:
 
 ## Service worker and freshness
 
-`sw.js` cache epoch v73 precaches the public page, core CSS/JS, the refined
+The source candidate uses `sw.js` cache epoch v77. The separately authorized
+CCI AI-factual builder deterministically stages epoch v79, with coupled script
+query pins, so the public browser cannot pair transformed runtime code with the
+candidate cache. The active epoch precaches the public page, core CSS/JS, the refined
 three-move Climate Intelligence first orbit with separately spaced visual cue lanes and runtime-enforced compact lens/card air, the shared raised-tile lenses, evidence-only
 Physical-card percentile range, the simplified two-track Power fuel palette,
-verified local globe.gl, the CT-45 manifest and localized globe assets, the
+verified local globe.gl, the public Natural Earth geometry and NASA Black
+Marble surface, the
 scroll-proof non-modal selected-country identity header, and the exact-version
 Country Climate Intelligence candidate. The prior
 country-factual candidate is retained for one release
@@ -459,6 +463,8 @@ HTML or code with an old runtime artifact.
 | Stacking | `StackLint.audit()` | No known invisible blockers/z-index regressions |
 | Country intelligence aggregate | `node tools/check-country-climate-intelligence-ci.js` | Registry gates, exact component receipts, compiler derivations, 249×27 runtime, lens coverage, UI contract, and atomic pin agree |
 | CCI public-release exclusion | `node tools/check-country-climate-public-release-boundary.js` | Unapproved CCI values exist only in the marked local candidate artifact surface; factual-public staging omits them |
+| CCI AI-factual review | `node tools/check-cci-factual-public-review.js` | Four AI reviews across three model families, exact post-mitigation pins, source/asset decisions, explicit `human_review=false` and `legal_certification=false`, and maintainer authorization agree |
+| CCI AI-factual surface | `node tools/check-cci-factual-public-deploy.js --staged _deploy` | The exact public output excludes three ambiguous Three-Globe images and the inverted-relief experiment, retains the pinned NASA/Natural Earth assets, and exposes review-state disclosure in WebGL and fallback paths |
 | WebGL/fallback parity | `node tools/check-globe-webgl-fallback.js` | Three lenses share the 249-entity evidence model and explicit gaps |
 | Country truth | `tools/verify-globe-country-truth.js` | Intended country-status invariants; currently requires repair for v1 |
 | Public copy | `node tools/check-public-copy.js` | No unresolved draft markers; not scientific fact-checking |
@@ -475,24 +481,33 @@ scientific-review or production-promotion gates.
 
 The exact public artifact allowlist treats
 `data/climate/runtime/country-climate-intelligence.json` as candidate-only.
-The factual-public CI job has four exact profile/phase routes. The internal
+The factual-public CI job has four exact profile/phase routes plus a separately
+named publication tier within `cci:candidate`. The internal
 `legacy_ct40:candidate` label means that no complete assessed-release authority
 package is present; it may enter only the separately reviewed, limited
 `factual_display` tier through `--factual-display`. That tier publishes the
 historical CT-42 facts and explicit gaps, never a candidate preview or an
 assessed release. `legacy_ct40:release` must instead use the standard
 release-mode builder, final aggregate verifier, and signed asset approval.
-Candidate `cci` proves that legacy factual-display staging is refused; once the
-exact CCI authority package passes, `cci:release` also uses the standard
-release-mode stage and final verifier. Browser smoke stays
+Candidate `cci` cannot borrow legacy factual-display or signed-release
+authority. It may enter only the `--cci-ai-factual` builder when the exact
+four-review AI artifact passes. That lane keeps `human_review=false`,
+`legal_certification=false`, and the existing signed production gate unchanged;
+it publishes source observations, estimates, modeled projections, reanalysis,
+and disclosed deterministic derivations rather than claiming human scientific
+or legal certification. It also strips `night-sky.png`,
+`earth-blue-marble.jpg`, and `earth-topology.png` from staged bytes and runtime
+references. Once the exact CCI human authority package passes, `cci:release`
+still uses the standard release-mode stage and final verifier. Browser smoke stays
 downstream of that policy job, so a factual candidate can still receive runtime
 review without borrowing legacy publication authority. Profile and phase are
 derived from the active entrypoints plus an exact authority-package inventory:
-no authority files means candidate, every canonical file means release, and a
+no human-authority files means candidate, every canonical file means release, and a
 partial or cross-profile package is invalid. A new
 data/UI/source-rights/scientific-review chain must replace the current false
-promotion flags before CCI enters release-mode public staging; the
-release-profile selector cannot itself grant that authority.
+promotion flags before CCI enters the human-reviewed release-mode public stage.
+The AI-factual selector grants no such human authority; it verifies only its
+separate, explicitly labeled publication policy.
 
 ## Known traps and debt
 

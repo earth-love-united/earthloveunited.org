@@ -661,15 +661,21 @@ function evaluateRuntimeAssets(input) {
     publicDeploySurface.includes("const CLIMATE_INTELLIGENCE_RUNTIME_PATH = 'data/climate/runtime/country-climate-intelligence.json';") &&
     publicDeploySurface.includes('const CANDIDATE_ONLY_PATHS = Object.freeze([\n  CLIMATE_INTELLIGENCE_RUNTIME_PATH,') &&
     hasExactCiStep(ci, 'Country Climate Intelligence public-release exclusion policy', 'node tools/check-country-climate-public-release-boundary.js --self-test') &&
-    hasExactConditionalCiStep(ci, 'Verify CCI keeps factual-public staging fail-closed',
-      'node tools/check-country-climate-public-release-boundary.js',
+    hasExactConditionalCiStep(ci, 'Build CCI AI-reviewed source-data deploy directory',
+      './tools/build-cci-factual-public-deploy.sh --cci-ai-factual',
+      "${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'candidate' }}") &&
+    hasExactConditionalCiStep(ci, 'Verify CCI AI-factual exact surface independently',
+      'node tools/check-cci-factual-public-deploy.js --staged ./_deploy',
+      "${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'candidate' }}") &&
+    hasExactConditionalCiStep(ci, 'Verify final CCI AI-factual integrity independently',
+      'node tools/check-staged-cci-factual-public-integrity.js --staged ./_deploy',
       "${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'candidate' }}") &&
     hasExactConditionalCiStep(ci, 'Build reviewed CCI release deploy directory', './tools/build-deploy.sh --release',
       "${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release' }}") &&
     hasExactConditionalCiStep(ci, 'Verify final CCI release integrity independently',
       'node tools/check-staged-production-integrity.js --staged ./_deploy',
       "${{ steps.factual_profile.outputs.profile == 'cci' && steps.factual_profile.outputs.phase == 'release' }}"),
-    'The CCI runtime must remain candidate-only and both static and factual-public CI must enforce its unapproved release boundary.');
+    'The CCI runtime must remain excluded from the legacy candidate surface; the separate AI-factual lane and human-reviewed release lane must each stay explicit and fail closed.');
   const legacyCandidateCondition =
     "${{ steps.factual_profile.outputs.profile == 'legacy_ct40' && steps.factual_profile.outputs.phase == 'candidate' }}";
   const legacyReleaseCondition =
@@ -696,19 +702,31 @@ function evaluateRuntimeAssets(input) {
     hasExactCiStep(ci, 'Exact public deploy surface policy self-test', 'node tools/check-public-deploy-surface.js --self-test') &&
     hasExactConditionalCiStep(ci, 'Verify exact public deploy surface independently',
       'node tools/check-public-deploy-surface.js --staged _deploy --mode candidate',
-      "${{ steps.smoke_profile.outputs.phase == 'candidate' }}") &&
+      "${{ steps.smoke_profile.outputs.profile == 'legacy_ct40' && steps.smoke_profile.outputs.phase == 'candidate' }}") &&
+    hasExactConditionalCiStep(ci, 'Verify CCI AI-factual deploy surface independently',
+      'node tools/check-cci-factual-public-deploy.js --staged _deploy',
+      "${{ steps.smoke_profile.outputs.profile == 'cci' && steps.smoke_profile.outputs.phase == 'candidate' }}") &&
     hasExactConditionalCiStep(ci, 'Verify release public deploy surface independently',
       'node tools/check-public-deploy-surface.js --staged _deploy --mode release',
       "${{ steps.smoke_profile.outputs.phase == 'release' }}") &&
     hasExactCiStep(ci, 'Climate production readiness policy fixtures', 'node tools/check-climate-production-readiness-policy.js') &&
-    hasExactConditionalCiStep(ci, 'Build candidate deploy directory', './tools/build-deploy.sh --candidate',
-      "${{ steps.smoke_profile.outputs.phase == 'candidate' }}") &&
+    hasExactConditionalCiStep(ci, 'Build legacy candidate deploy directory', './tools/build-deploy.sh --candidate',
+      "${{ steps.smoke_profile.outputs.profile == 'legacy_ct40' && steps.smoke_profile.outputs.phase == 'candidate' }}") &&
+    hasExactConditionalCiStep(ci, 'Build CCI AI-reviewed source-data browser deploy directory',
+      './tools/build-cci-factual-public-deploy.sh --cci-ai-factual',
+      "${{ steps.smoke_profile.outputs.profile == 'cci' && steps.smoke_profile.outputs.phase == 'candidate' }}") &&
     hasExactConditionalCiStep(ci, 'Build reviewed release deploy directory', './tools/build-deploy.sh --release',
       "${{ steps.smoke_profile.outputs.phase == 'release' }}") &&
     hasExactCiStep(ci, 'Verify final staged production integrity independently',
       'node tools/check-staged-production-integrity.js --staged _deploy') &&
-    ci.includes('ELU_VERIFIED_DEPLOY_MODE: ${{ steps.smoke_profile.outputs.phase }}') &&
-    hasExactCiStep(ci, 'Verify staged CT-45 bytes independently', 'node tools/check-globe-runtime-assets.js --staged _deploy'),
+    ci.includes('echo "integrity_mode=cci-ai-factual" >> "$GITHUB_OUTPUT"') &&
+    ci.includes('ELU_VERIFIED_DEPLOY_MODE: ${{ steps.smoke_profile.outputs.integrity_mode }}') &&
+    hasExactConditionalCiStep(ci, 'Verify staged CT-45 bytes independently',
+      'node tools/check-globe-runtime-assets.js --staged _deploy',
+      "${{ steps.smoke_profile.outputs.profile != 'cci' || steps.smoke_profile.outputs.phase != 'candidate' }}") &&
+    hasExactConditionalCiStep(ci, 'Verify final staged CCI AI-factual integrity independently',
+      'node tools/check-staged-cci-factual-public-integrity.js --staged _deploy',
+      "${{ steps.smoke_profile.outputs.profile == 'cci' && steps.smoke_profile.outputs.phase == 'candidate' }}"),
     'CI must enforce CT-45 source policy and independently verify staged deployment bytes.');
   const browserLifecycleStep = workflowStep(ci, 'Run SmokeTest + StackLint in headless Chromium');
   check('ci-browser-runtime-lifecycle', occurrences(ci, '- name: Run SmokeTest + StackLint in headless Chromium') === 1 && [
