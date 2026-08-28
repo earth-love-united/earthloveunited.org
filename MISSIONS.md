@@ -39,3 +39,4 @@ See `AGENTS.md` § Operations for the full lifecycle.
 |----------|------|------|----|---------|
 | 2026-08-24T19:15:26Z | architect | country-climate-intelligence-v1 | https://github.com/earth-love-united/earthloveunited.org/pull/67 | pending-review |
 | 2026-08-24T14:07:24Z | designer | guided-first-orbit-production | https://github.com/earth-love-united/earthloveunited.org/pull/66 | pending-review |
+| 2026-08-28T21:05:56Z | generalist | pagespeed-first-paint | https://github.com/earth-love-united/earthloveunited.org/pull/72 | pending-review |
