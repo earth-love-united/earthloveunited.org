@@ -10,7 +10,7 @@
     "review_request_sha256": "8fe8a47dbf8eea2081f7135ab11b3baab1c4af164e6fc9542d7ceaf06c780753",
     "reviewed_head": "108e6b6be2e3a53c45b4c2a596de11656774ab8c"
   },
-  "calculation_hash": "a772b11fb6941bf261c4531b7db0ebe2409f4250440f62350b43e6d1e3f736c1",
+  "calculation_hash": "1e8a63169079fccb01b224dd58b5b23203b1dddad082db947ffae6a064ceecdf",
   "changes": [
     {
       "base_sha256": "eb5032a791d8a2f9674ab34481086f1d0827a4decd3a446ee0b667b77e8d4302",
@@ -169,7 +169,7 @@
     {
       "base_sha256": "14fa420222baedbf4c2a85eec749025d4aad14e4f7006eb13fa435bb33bfb4eb",
       "category": "scoped_release_rail",
-      "current_sha256": "edc4d0b615b40dae83d505af5ed00d3e3c2d645b4e1d866d32526d4cea1860e1",
+      "current_sha256": "a5a3def4801039c3950c0b083ebc88a699e1af3b3a7e916ed34bcce43f078bea",
       "operation": "modify",
       "path": "docs/operations/GO_PUBLIC.md"
     },
@@ -301,11 +301,11 @@
   ],
   "created_at": "2026-08-28T21:15:39Z",
   "current_subject": {
-    "artifact_pin_digest": "b3fdc7569bc322bbe6a3efba7687c2e5bfad5cecef4030dd7bbb6a9b7350d0c3",
-    "calculation_hash": "0f967bb670944095868c9e0065bf118621378aabb0cafed1d584ebe97ddce238",
+    "artifact_pin_digest": "ac4024d994a9f31bcb4d8c51c7aca4e236add9729fe8ae2cac246190a1262af7",
+    "calculation_hash": "ed7405323c6b22a844b69add6627714c3a4e542f6267a87dcc77e0150cc1bfa1",
     "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
     "pin_count": 315,
-    "review_request_sha256": "33b2b7aa8a0d9b61b718ce523927ae8ffe9535d19706a2833ce7a2c56063ab5c"
+    "review_request_sha256": "0cf856129c629ea062db94dc21ded05ed626721984b1af6825d44556aa9cddb9"
   },
   "deploy_authority": false,
   "evidence": [

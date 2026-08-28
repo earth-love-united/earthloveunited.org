@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "0f967bb670944095868c9e0065bf118621378aabb0cafed1d584ebe97ddce238",
+  "calculation_hash": "ed7405323c6b22a844b69add6627714c3a4e542f6267a87dcc77e0150cc1bfa1",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "b3fdc7569bc322bbe6a3efba7687c2e5bfad5cecef4030dd7bbb6a9b7350d0c3",
+    "artifact_pin_digest": "ac4024d994a9f31bcb4d8c51c7aca4e236add9729fe8ae2cac246190a1262af7",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -845,7 +845,7 @@
       },
       {
         "path": "docs/operations/GO_PUBLIC.md",
-        "sha256": "edc4d0b615b40dae83d505af5ed00d3e3c2d645b4e1d866d32526d4cea1860e1"
+        "sha256": "a5a3def4801039c3950c0b083ebc88a699e1af3b3a7e916ed34bcce43f078bea"
       },
       {
         "path": "favicon.svg",

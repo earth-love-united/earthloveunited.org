@@ -243,6 +243,7 @@ In your browser:
 | Fully signed, human-reviewed assessed release | `./tools/build-deploy.sh --release` |
 | Historical CT-42 limited factual display | `./tools/build-factual-public-deploy.sh --factual-public` |
 
+For the fully signed assessed-release lane, **Build command:** `./tools/build-deploy.sh --release`.
 For the current CCI AI-factual launch, use the first row. It verifies the frozen
 four-specialist-review base plus the single scoped presentation/performance
 delta and refuses branch previews. Do not select `--release` unless the complete
