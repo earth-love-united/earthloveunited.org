@@ -22,12 +22,18 @@ const REQUIRED_ABSENT_PATHS = Object.freeze([
 ].sort());
 // globe.gl is fetched only after checkout and is independently constrained by
 // the pinned vendor-integrity policy, fixture, fetcher, and staged-byte checks.
-// The AI review aggregate is created only after reviewers inspect this subject;
-// its checker then binds the subject digest, complete reports, and public bytes.
+// The AI review outputs are created only after reviewers inspect this subject;
+// their checker binds the subject digest, exact request, complete reports, and
+// public bytes. Keeping review outputs outside the subject avoids a hash cycle.
 const EXTERNAL_GENERATED_DEPENDENCIES = Object.freeze([
+  'data/climate/reviews/cci-v1-ai-reports/luna-rights.md',
+  'data/climate/reviews/cci-v1-ai-reports/luna-science.md',
+  'data/climate/reviews/cci-v1-ai-reports/sol-red-team.md',
+  'data/climate/reviews/cci-v1-ai-reports/terra-runtime.md',
   'data/climate/reviews/country-climate-intelligence-v1-multi-model-ai-review.json',
+  'data/climate/reviews/country-climate-intelligence-v1-multi-model-ai-prepublication-review.json',
   'js/vendor/globe.gl.js',
-]);
+].sort());
 const SUBJECT_PATHS = Object.freeze([
   '404.html',
   '.github/workflows/ci.yml',

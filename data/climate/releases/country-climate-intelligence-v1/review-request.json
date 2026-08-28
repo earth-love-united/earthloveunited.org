@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "d29eb4fcae6b60041a8fcbca86f94b939c1a4a62e5d2758f41b850402e414206",
+  "calculation_hash": "4ba23537d1995418c86a7d0f0c164469578cbe0431d18b59368caeca7e38e1aa",
   "created_at": "2026-08-28T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "6a920fadfa3a245e4544facf2faac5fd0692cc80a4c23fdb7c0cf48bf02073d5",
+    "artifact_pin_digest": "3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -925,7 +925,7 @@
       },
       {
         "path": "tools/check-cci-factual-public-review.js",
-        "sha256": "7d292ab2917146042adc1e90faa658de4b5bce900c5e43f03e711e444e6fa3ef"
+        "sha256": "e95beb2ad6a1edde2316e8587dce0c32ca029e19625a552ad3ef54fdaff58b04"
       },
       {
         "path": "tools/check-climate-factual-public-readiness.js",
@@ -1333,7 +1333,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "e343c6a8f6d0e5e0458fbc97f4b0b378622f7411415966699117e381b6f4d3d1"
+        "sha256": "68f050e6f09029932e8513236350b145eac68913d4e14ac28d56bd106071be6e"
       },
       {
         "path": "tools/reconstruct-gcb-country-map.js",

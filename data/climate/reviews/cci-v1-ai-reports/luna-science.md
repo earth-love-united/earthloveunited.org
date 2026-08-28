@@ -4,8 +4,8 @@ Reviewer: `ai-reviewer:luna-science` — second/final Luna scientific pass
 Model: `gpt-5.6-luna`
 Scope: source semantics, evidence classes, formulas, derivations, gaps, 249-entity mapping, and factual-public boundaries.
 
-Subject digest: `6a920fadfa3a245e4544facf2faac5fd0692cc80a4c23fdb7c0cf48bf02073d5`
-Review-request SHA-256: `7d7a47e9d2f8cceb1c9d95d26a5f38471062f079c81058ed6f18f182c7319a6e`
+Subject digest: `3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200`
+Review-request SHA-256: `0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372`
 
 The test-rail changes do not alter the scientific source records, formulas, public transforms, or runtime values. Verified runtime SHA remains `4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe`.
 
@@ -37,7 +37,7 @@ The test-rail changes do not alter the scientific source records, formulas, publ
 
 ## Findings by severity
 
-- P1 condition — The aggregate artifact remains `draft_final_sol_pending`. The Sol report, final authorized status, and calculation hash remain pending. Complete and repin those fields against subject digest `6a920fadfa3a245e4544facf2faac5fd0692cc80a4c23fdb7c0cf48bf02073d5` and request SHA `7d7a47e9d2f8cceb1c9d95d26a5f38471062f079c81058ed6f18f182c7319a6e`, then rerun strict staged integrity. This is the declared final-pinning condition, not a defect in the implementation subject.
+- P1 condition — Repin the aggregate and report receipts against subject digest `3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200` and request SHA `0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372`, then rerun strict staged integrity. This is the declared final-pinning condition, not a defect in the implementation subject.
 - P2 non-CCI infrastructure issue — standalone `check-source-routing-policy.js` still reports the existing immutable source-registry hash mismatch (`6b9e…` actual versus `5c722…` expected). Strict CCI climate-truth passes and the current CCI request pins the actual source-registry bytes; reconcile this separately.
 
 ## Limitations
@@ -48,6 +48,29 @@ The test-rail changes do not alter the scientific source records, formulas, publ
 - GCB 2024 is an estimate; WPP 2024 is a projection denominator; ERA5 is reanalysis rather than direct station observation; CCKP precipitation is an annual area mean, not a drought, runoff, or water-availability measure.
 
 This is an AI review, not human institutional scientific review, legal certification, or rights clearance.
+
+```json
+{"post_mitigation_verdict":"approve_with_conditions"}
+```
+
+## Superseding delta addendum — final Luna science binding
+
+Timestamp: `2026-08-28T03:06:41Z`
+Reviewer/model: `ai-reviewer:luna-science` / `gpt-5.6-luna`
+Scope: Scientific and data-method integrity; read-only AI review.
+
+Canonical subject digest: `3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200`
+Review-request SHA-256: `0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372`
+
+The latest delta remains verifier/preparer/request binding only. The vendor fallback is correctly narrow: only `js/vendor/globe.gl.js` with an actual `ENOENT` may use the pinned policy SHA; dangling symlinks, permission errors, other paths, and other filesystem errors propagate and fail closed. In-memory checks confirmed all cases.
+
+The preparer’s external set contains exactly the four generated reports, aggregate, prepublication review, and generated vendor. Canonical request regeneration matches exactly: 295 pins, subject digest, request SHA, and calculation hash.
+
+Strict climate-truth CI passed, including CT-45 63/63 policy checks, 149 adversarial mutations, and 3 symlink cases. Vendor integrity passed 23/23 policy checks and 41 adversarial mutations. CCI CI/release-gate self-tests and the 51-file staged deploy passed. Runtime remains SHA `4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe`, with 249 entities, 26 metrics, and 3 lenses. Exact artifact/public/report path-set checks reject missing, extra, and duplicate pins.
+
+Scientific conclusions and limitations are unchanged. The aggregate and report receipts must be repinned to the canonical subject/request above and the final checker rerun. This is a release-integrity condition, not a scientific defect.
+
+This is an AI review, not human institutional scientific review, peer review, legal certification, or rights clearance.
 
 ```json
 {"post_mitigation_verdict":"approve_with_conditions"}

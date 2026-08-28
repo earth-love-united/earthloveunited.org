@@ -2,8 +2,8 @@
 
 Reviewer: `ai-reviewer:terra-runtime`
 Model: `gpt-5.6-terra`
-Canonical subject digest: `6a920fadfa3a245e4544facf2faac5fd0692cc80a4c23fdb7c0cf48bf02073d5`
-Review-request SHA-256: `7d7a47e9d2f8cceb1c9d95d26a5f38471062f079c81058ed6f18f182c7319a6e`
+Canonical subject digest: `3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200`
+Review-request SHA-256: `0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372`
 Base commit: `91357d1389c2269609328ffb332850d5e8b85637`, with the supplied uncommitted mitigation subject.
 Staged surface: 51 exact files.
 
@@ -37,5 +37,22 @@ No blocker was found in the implementation subject.
 1. The four-report aggregate is still draft (`draft_final_sol_pending`); its final report pins, condition receipts, authorization, and current subject binding must be completed before the strict AI-factual profile can authorize staging.
 2. CI must run the exact Chromium SmokeTest/StackLint path against this final staged digest. Local Playwright Chromium is unavailable, so the reviewer did not independently execute the live WebGL browser lane.
 3. This approval applies only to the separately labeled AI-reviewed source-data lane. It does not authorize a human-reviewed, legally certified, or signed production release.
+
+`post_mitigation_verdict: approve_with_conditions`
+
+## Terra final binding addendum — 2026-08-28T03:07:23Z
+
+Model: `gpt-5.6-terra`
+Reviewed commit: `3a9a17b7c6d04e92f8fe3b9248af806e0f807b93`
+Bound subject: `3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200`
+Request SHA-256: `0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372`
+
+- The revised `expectedPublicOutputSha()` is correct: it falls back only for the exact vendor destination with `ENOENT`.
+- Direct branch tests for absent exact vendor, present-good vendor, dangling symlink, regular-symlink rejection, permission failure, and absent non-vendor all behaved fail-closed as intended.
+- The actual ignored/untracked vendor remains exact when present: `2ab6767f47e2be0ac346cd7a5eb55d259ea3da06d479dc22f1820ddd698f496a`.
+- CCI deploy self-test, the 51-file staged check, and release-profile isolation passed.
+- Candidate/runtime/signature/rollback rails pass; the checked-in human-signature gate remains candidate-only and fail-closed.
+
+Remaining condition: repin the four reports and aggregate to the final subject/request, then rerun the strict checker and complete Chromium CI/browser runtime evidence.
 
 `post_mitigation_verdict: approve_with_conditions`

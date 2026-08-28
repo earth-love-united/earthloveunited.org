@@ -3,11 +3,11 @@
 Reviewer: `ai-reviewer:sol-red-team`
 Model: `gpt-5.6-sol`
 Reviewer type: AI; not human review, legal counsel, legal certification, or institutional scientific review
-Reviewed at: `2026-08-28T02:42:47Z`
+Reviewed at: `2026-08-28T03:04:08Z`
 Role: final adversarial release review
 
-Subject digest: `6a920fadfa3a245e4544facf2faac5fd0692cc80a4c23fdb7c0cf48bf02073d5`
-Review-request SHA-256: `7d7a47e9d2f8cceb1c9d95d26a5f38471062f079c81058ed6f18f182c7319a6e`
+Subject digest: `3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200`
+Review-request SHA-256: `0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372`
 Runtime SHA-256: `4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe`
 Base commit: `91357d1389c2269609328ffb332850d5e8b85637`
 Reviewed public stage: `_deploy`, 51 exact regular files
@@ -44,11 +44,9 @@ This is the declared final-pinning step, not an implementation defect.
 
 This does not invalidate the separate CCI lane: the canonical request pins the current registry, strict CCI climate-truth passes, and profile-aware routing is adversarially tested. The stale standalone legacy snapshot should nevertheless be reconciled separately to avoid confusing future maintainers.
 
-### P2 — Publication-authority field is not independently enforced by the verifier
+### RESOLVED — Publication-authority field is independently enforced by the verifier
 
-`check-cci-factual-public-review.js` enforces authorized status, maintainer authority, reviewer composition, boundaries, pins, conditions, and calculation hash, but does not directly assert `publication_authority.authorized === true`.
-
-The exact final artifact must set it true. Adding a future fail-closed assertion would prevent a contradictory artifact from passing after status changes.
+`check-cci-factual-public-review.js` now requires `publication_authority.authorized === true` and the exact AI-factual scope. Contradictory artifacts fail closed.
 
 ### P3 — Excluded-asset names remain only in non-executable provenance
 
@@ -101,9 +99,9 @@ Stage construction is deterministic and exact, uses coupled CCI/globe/service-wo
 
 The refreshed specialist reports are exactly pinned:
 
-- Luna science: `222fb5e60a17e8c05b2bad4bcfe86c7ef7b009bbc30b2cec9221de8ac2a4a527`
-- Luna rights: `b76ea9bef254152df855fd71e711a86c4052a740b6a5528732fbabf96c855ff5`
-- Terra runtime: `48af1f31cc9b9eecea68c5e8e18f72991b33c0c4fc4f4683416c6986c7e50897`
+- Luna science: `caff5cf48a7f49b7dc1c66d78eacdd6b289ea60f8dc6b9b9918eb663f476a91f`
+- Luna rights: `73930c6b4afc6e9801169ad4d5eb40a860ef33debb41d2ff3471399bcde1e095`
+- Terra runtime: `640393a44ae146bec9f916393bd7c302c4e52ff322561072d4693873c1ccc246`
 
 Independent pin recomputation checked 24 implementation pins, four report pins, and nine public-output pins: all 37 matched.
 
@@ -142,6 +140,55 @@ The aggregation policy correctly states that no unresolved blocker may be overri
 - Browser evidence is a bounded Chrome session, not exhaustive device or assistive-technology certification.
 - Cloudflare production health remains a post-merge operational requirement and is not implied by this review.
 - The existing human-signature and independent-review gates remain unsatisfied and confer no authority on this separate AI-factual lane.
+
+```json
+{"post_mitigation_verdict":"approve_with_conditions"}
+```
+
+## Superseding final delta addendum
+
+Reviewer: `ai-reviewer:sol-red-team`
+Model: `gpt-5.6-sol`
+Reviewed at: `2026-08-28T03:04:08Z`
+Reviewer type: AI; not human review or legal certification
+
+This addendum supersedes prior subject-binding references. All unchanged scientific, rights, runtime, accessibility, and publication-boundary conclusions remain in force.
+
+Canonical subject digest: `3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200`
+Review-request SHA-256: `0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372`
+Verifier SHA-256: `e95beb2ad6a1edde2316e8587dce0c32ca029e19625a552ad3ef54fdaff58b04`
+Request-preparer SHA-256: `68f050e6f09029932e8513236350b145eac68913d4e14ac28d56bd106071be6e`
+
+### Result
+
+No new P0 or P1 implementation defect remains.
+
+The generated-vendor exception is now narrowly correct:
+
+- Vendor absent: PASS using only the canonical vendor-policy digest.
+- Exact generated vendor present: PASS.
+- Generated vendor with wrong bytes: BLOCK on public-output pin mismatch.
+- Dangling vendor symlink: BLOCK because public deploy paths must not contain symlinks.
+- Any other missing public output: BLOCK on filesystem inspection.
+
+Subject and authority attacks also fail closed:
+
+- `publication_authority.authorized=false`: BLOCK.
+- Wrong publication-authority scope: BLOCK.
+- Wrong subject digest: BLOCK.
+- Stale review-request SHA: BLOCK.
+- Removed review-request artifact pin: BLOCK.
+- Substituted reviewer report path: BLOCK.
+- Removed public-output pin: BLOCK.
+- Correctly rebound in-memory control artifact: PASS.
+
+The verifier requires exact sets of 24 implementation pins and nine public-output pins, canonical report paths for all four reviewers, the exact review-request bytes, and the exact subject digest.
+
+Deterministic request regeneration matched byte-for-byte: 295 subject pins, dependency closure passed, and the regenerated request SHA and subject digest matched the values above. The four reviewer reports, prepublication artifact, aggregate, and generated vendor dependency are correctly classified as post-subject generated outputs, avoiding a hash cycle while remaining mandatory final-aggregate pins.
+
+The profile-routing self-test passed all nine exclusive-routing cases. The legacy human release gate remains separately fail-closed with `reviewed_release_package_absent`.
+
+At review time the aggregate still referenced the superseded subject; the remaining condition was to repin every report and aggregate field, recompute the calculation hash, rebuild `_deploy`, and require the final verifier/profile/staged-integrity suite to pass.
 
 ```json
 {"post_mitigation_verdict":"approve_with_conditions"}

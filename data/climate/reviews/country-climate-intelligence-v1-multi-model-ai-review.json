@@ -15,8 +15,8 @@
   "subject": {
     "release_id": "country-climate-intelligence-2026-08-27-candidate.7",
     "review_request_path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
-    "review_request_sha256": "7d7a47e9d2f8cceb1c9d95d26a5f38471062f079c81058ed6f18f182c7319a6e",
-    "review_request_artifact_pin_digest": "6a920fadfa3a245e4544facf2faac5fd0692cc80a4c23fdb7c0cf48bf02073d5",
+    "review_request_sha256": "0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372",
+    "review_request_artifact_pin_digest": "3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200",
     "runtime_sha256": "4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe",
     "registry_entity_count": 249,
     "metric_count": 26,
@@ -46,12 +46,12 @@
       "provider": "OpenAI",
       "model": "gpt-5.6-luna",
       "role": "scientific_data_method",
-      "reviewed_at": "2026-08-28T02:33:06Z",
+      "reviewed_at": "2026-08-28T03:06:41Z",
       "scope": "Source semantics, formulas, evidence classes, derivations, gaps, and all 249 entity mappings.",
       "post_mitigation_verdict": "approve_with_conditions",
       "report": {
         "path": "data/climate/reviews/cci-v1-ai-reports/luna-science.md",
-        "sha256": "222fb5e60a17e8c05b2bad4bcfe86c7ef7b009bbc30b2cec9221de8ac2a4a527"
+        "sha256": "caff5cf48a7f49b7dc1c66d78eacdd6b289ea60f8dc6b9b9918eb663f476a91f"
       }
     },
     {
@@ -59,12 +59,12 @@
       "provider": "OpenAI",
       "model": "gpt-5.6-luna",
       "role": "source_rights_attribution_provenance",
-      "reviewed_at": "2026-08-28T02:32:39Z",
+      "reviewed_at": "2026-08-28T03:04:16Z",
       "scope": "Source licence bases, attribution, excluded image assets, retained NASA/Natural Earth evidence, and public limitations.",
       "post_mitigation_verdict": "approve_with_conditions",
       "report": {
         "path": "data/climate/reviews/cci-v1-ai-reports/luna-rights.md",
-        "sha256": "b76ea9bef254152df855fd71e711a86c4052a740b6a5528732fbabf96c855ff5"
+        "sha256": "73930c6b4afc6e9801169ad4d5eb40a860ef33debb41d2ff3471399bcde1e095"
       }
     },
     {
@@ -72,12 +72,12 @@
       "provider": "OpenAI",
       "model": "gpt-5.6-terra",
       "role": "runtime_accessibility_release_rails",
-      "reviewed_at": "2026-08-28T02:31:49Z",
+      "reviewed_at": "2026-08-28T03:07:23Z",
       "scope": "Deterministic public staging, runtime/fallback behavior, accessibility, cache coupling, rollback, and gate isolation.",
       "post_mitigation_verdict": "approve_with_conditions",
       "report": {
         "path": "data/climate/reviews/cci-v1-ai-reports/terra-runtime.md",
-        "sha256": "48af1f31cc9b9eecea68c5e8e18f72991b33c0c4fc4f4683416c6986c7e50897"
+        "sha256": "640393a44ae146bec9f916393bd7c302c4e52ff322561072d4693873c1ccc246"
       }
     },
     {
@@ -85,12 +85,12 @@
       "provider": "OpenAI",
       "model": "gpt-5.6-sol",
       "role": "final_adversarial_release_review",
-      "reviewed_at": "2026-08-28T02:42:47Z",
+      "reviewed_at": "2026-08-28T03:04:08Z",
       "scope": "Final adversarial review of the mitigated source subject, reports, aggregate, deployment surface, and legacy-gate isolation.",
       "post_mitigation_verdict": "approve_with_conditions",
       "report": {
         "path": "data/climate/reviews/cci-v1-ai-reports/sol-red-team.md",
-        "sha256": "14532a41c25586a98f3b6101dc3e64100447e4cbde9fba39324e63e4646dc268"
+        "sha256": "0b8369505ab2a550512b6e5cbd899e19cfc896e8ff5d88fe763d29af22c3b493"
       }
     }
   ],
@@ -236,13 +236,13 @@
     { "path": "assets/globe/runtime/earth-night.jpg", "sha256": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124" },
     { "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson", "sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0" },
     { "path": "data/climate/releases/country-climate-intelligence-v1/release-manifest.json", "sha256": "e7674a0c338a22d1b2e891cfa54a47361a4a9cc935361a816332074afd7c1aa1" },
-    { "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json", "sha256": "7d7a47e9d2f8cceb1c9d95d26a5f38471062f079c81058ed6f18f182c7319a6e" },
+    { "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json", "sha256": "0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372" },
     { "path": "data/climate/reviews/country-climate-intelligence-v1-multi-model-ai-prepublication-review.json", "sha256": "0b31ad40c5a42cad33d641d2a0d87e009322e5efb6b7dcee33f0f4d7fef69adc" },
     { "path": "data/climate/runtime/country-climate-intelligence.json", "sha256": "4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe" },
     { "path": "data/climate/source-registry.json", "sha256": "6b9e468096ffd073966dea5cc5c6cea6fdffea3c3ab03e78dd31fdf629cf4eba" },
     { "path": "tools/build-cci-factual-public-deploy.sh", "sha256": "2ed46b95e96b4d5100eaf59576351963370db01d5d9a020dc67a374bae93dec6" },
     { "path": "tools/check-cci-factual-public-deploy.js", "sha256": "cd09eed85f8484300baf15ad129f3bc9f37595ded11ec736f401eff70931ccd4" },
-    { "path": "tools/check-cci-factual-public-review.js", "sha256": "7d292ab2917146042adc1e90faa658de4b5bce900c5e43f03e711e444e6fa3ef" },
+    { "path": "tools/check-cci-factual-public-review.js", "sha256": "e95beb2ad6a1edde2316e8587dce0c32ca029e19625a552ad3ef54fdaff58b04" },
     { "path": "tools/check-public-climate-release-profile.js", "sha256": "2221675b776616155716e713569e5b3892d8f494fd7ef7377db3d0c7fb6b5b8f" },
     { "path": "tools/check-staged-cci-factual-public-integrity.js", "sha256": "a703815dd3e33f2e44787eb12813fdb0834fc1f7b1d53c04214964eda7a0e51b" },
     { "path": "tools/check-staged-production-integrity.js", "sha256": "fd3ac6a54213c3e07d0c1363ae42f1180340554f1964fddfa29838cdc15e9221" },
@@ -250,7 +250,7 @@
     { "path": "tools/fixtures/globe-third-party-notices.json", "sha256": "9d1160d59c15b061126c8cd351572d7dd0aef85e4b83292af17fd4d6e6ab9c92" },
     { "path": "tools/lib/cci-factual-public.js", "sha256": "c49a355e197e3370ae0f29283b336aa1deea28f3edb325246473018a7a94c613" },
     { "path": "tools/lib/globe-runtime-assets.js", "sha256": "e0236a7d049c9e9f2efa8bdf688056dbfc3974faee7858445985723dffa9dea3" },
-    { "path": "tools/prepare-country-climate-intelligence-review-request.js", "sha256": "e343c6a8f6d0e5e0458fbc97f4b0b378622f7411415966699117e381b6f4d3d1" },
+    { "path": "tools/prepare-country-climate-intelligence-review-request.js", "sha256": "68f050e6f09029932e8513236350b145eac68913d4e14ac28d56bd106071be6e" },
     { "path": "tools/stage-cci-factual-public-deploy.js", "sha256": "8c283fd84cd608ae75a6eb27f7f36d5d184d80c270c6aafb7b36384597ff29fe" }
   ],
   "public_output_pins": [
@@ -271,5 +271,5 @@
     "A standalone legacy source-routing snapshot checker has pre-existing source-registry hash drift; CCI-specific checks and the canonical request pin the current registry bytes.",
     "Cloudflare production status is an operational post-merge requirement and is not implied by this review artifact."
   ],
-  "calculation_hash": "f01a754e4a9d6fef60b75637be8f34a027bd80a839b76067f401f243ba456789"
+  "calculation_hash": "6e8de4b102aefb8ec904689ecadd56a6131fbabb8d90838ec85bfad14fa9c84a"
 }
