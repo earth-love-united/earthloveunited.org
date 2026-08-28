@@ -93,7 +93,14 @@ function neutralIndex(bytes) {
   index = index.replace(/^<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">\n/m, '');
   index = index.replace(/^<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>\n/m, '');
   index = replaceOnce(index, '<link rel="preload" href="js/country-climate-intelligence.js?v=v17" as="script">\n', '', 'remove Climate Intelligence preload');
-  index = replaceOnce(index, '<link rel="stylesheet" href="css/guided-first-orbit.css?v=v11" media="print" onload="this.media=\'all\'">\n', '', 'remove guided orbit CSS');
+  index = replaceSection(index,
+    '<!-- ELU 0.7 globe HUD: both deferred sheets form one atomic readiness gate. -->',
+    '<!-- Non-critical CSS: deferred async load -->',
+    `<!-- ELU 0.7 neutral rollback HUD: only the neutral globe sheet is required. -->
+<link id="globe-system-styles" rel="stylesheet" href="css/globe-system.css?v=v43" media="print" onload="this.media='all';document.documentElement.dataset.globeStylesReady='true';window.dispatchEvent(new Event('elu:globe-styles-ready'))" onerror="document.documentElement.dataset.globeStylesReady='error';window.dispatchEvent(new Event('elu:globe-styles-error'))">
+
+`,
+    'replace atomic candidate style gate with neutral rollback style gate');
   index = replaceOnce(index, '  <link rel="stylesheet" href="css/guided-first-orbit.css?v=v11">\n', '', 'remove guided orbit noscript CSS');
   index = replaceOnce(index,
     '  <link rel="stylesheet" href="css/globe-system.css?v=v43">\n',
