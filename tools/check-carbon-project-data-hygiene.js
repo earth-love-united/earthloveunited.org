@@ -19,6 +19,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { URL } = require('node:url');
 const { parseJsonNoDuplicateKeys } = require('./lib/ct42-runtime-rollback-review');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -36,6 +37,21 @@ const FORBIDDEN_PATTERNS = [
 // so values such as "java\\nscript:" cannot become active only at the sink.
 const URL_SCHEME_IGNORABLE_CONTROLS = /[\u0009\u000A\u000D]/g;
 
+function collectHttpsUrlViolation(value, location, violations) {
+  const reason = 'URL field "u" must be a string containing an absolute HTTPS URL';
+  if (typeof value !== 'string') {
+    violations.push({ location, reason });
+    return;
+  }
+
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol !== 'https:') violations.push({ location, reason });
+  } catch {
+    violations.push({ location, reason });
+  }
+}
+
 function collectViolations(node, location, violations) {
   if (typeof node === 'string') {
     const normalized = node.replace(URL_SCHEME_IGNORABLE_CONTROLS, '');
@@ -49,7 +65,11 @@ function collectViolations(node, location, violations) {
   } else if (node && typeof node === 'object') {
     for (const [key, value] of Object.entries(node)) {
       collectViolations(key, `${location}{key:${JSON.stringify(key)}}`, violations);
-      collectViolations(value, `${location}.${key}`, violations);
+      const valueLocation = `${location}.${key}`;
+      // Registry-link fields are allowlisted instead of HTML-reference decoded:
+      // encoded colons/letters cannot satisfy the absolute-HTTPS URL contract.
+      if (key === 'u') collectHttpsUrlViolation(value, valueLocation, violations);
+      collectViolations(value, valueLocation, violations);
     }
   }
 }
@@ -101,7 +121,7 @@ function selfTest() {
   };
 
   // Clean payloads pass, including prose with > & quotes.
-  run(JSON.stringify({ data: { TST: { name: "St. Vincent's > R&D", icon: '🌱' } } }));
+  run(JSON.stringify({ data: { TST: { name: "St. Vincent's > R&D", icon: '🌱', u: 'https://registry.example/projects/1' } } }));
 
   // Tag opening fails.
   assert.throws(() => run(JSON.stringify({ data: { TST: { narrative: 'fine <img src=x onerror=alert(1)>' } } })), /failed HTML-inert hygiene/);
@@ -119,6 +139,15 @@ function selfTest() {
   assert.throws(() => run(JSON.stringify({ data: { TST: { links: ['data:image/png;base64,AAAA'] } } })), /"data:"/);
   assert.throws(() => run('{"data":{"TST":{"u":"java\\nscript:alert(1)"}}}'), /javascript:/);
   assert.throws(() => run('{"data":{"TST":{"u":"da\\tta:text/plain,active"}}}'), /"data:"/);
+
+  // Every project registry URL is an absolute HTTPS URL. This rejects active
+  // schemes hidden behind HTML character references before any HTML sink can
+  // decode them, without maintaining a partial entity decoder here.
+  assert.throws(() => run(JSON.stringify({ data: { TST: { u: 'java&#x73;cript:alert(1)' } } })), /absolute HTTPS URL/);
+  assert.throws(() => run(JSON.stringify({ data: { TST: { u: 'javascript&colon;alert(1)' } } })), /absolute HTTPS URL/);
+  assert.throws(() => run(JSON.stringify({ data: { TST: { u: 'http://registry.example/projects/1' } } })), /absolute HTTPS URL/);
+  assert.throws(() => run(JSON.stringify({ data: { TST: { u: '/projects/1' } } })), /absolute HTTPS URL/);
+  assert.throws(() => run(JSON.stringify({ data: { TST: { u: 42 } } })), /absolute HTTPS URL/);
 
   // Duplicate keys fail via strict parsing.
   assert.throws(() => run('{"data":{"TST":{"name":"a","name":"b"}}}'), /duplicate/i);

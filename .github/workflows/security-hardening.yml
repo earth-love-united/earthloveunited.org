@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           sha256sum --check --strict <<'CHECKSUMS'
-          b3b95d882674de6826e3a9bfdc51fa9589777af914ebb519d62afc0715b9c39e  tools/check-carbon-project-data-hygiene.js
+          83e6f83a58df321b3e79a6082633f2873c6bc2974289eeba458d5df19c01ab58  tools/check-carbon-project-data-hygiene.js
           8e999aaaea0d8b88d6196344e06f8140237467fce7dc05383c34fac553abd4ab  tools/check-public-edge-hardening.js
           CHECKSUMS
 
