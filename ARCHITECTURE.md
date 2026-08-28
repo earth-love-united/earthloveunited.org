@@ -322,8 +322,28 @@ staged profile, requires an exact source/staged fingerprint match, rehashes the
 active runtime against that profile's own review authority, and requires the
 separate three-role signed globe-asset approval. Candidate mode may omit those
 external approvals, but carries the non-publication marker and never acquires
-release authority. Every externally reachable Cloudflare build still forces
-release mode.
+release authority. Every externally reachable Cloudflare build must use one
+explicitly authorized main-branch lane; generic candidate staging remains
+forbidden.
+
+### CCI scoped presentation/performance re-review
+
+The CCI AI-factual lane keeps the original four specialist reports and their
+300-pin review request as an immutable scientific, source-rights, and runtime
+base. A single focused AI review may extend that base only for the exact
+presentation, self-hosted-font delivery, measured first-paint evidence,
+deterministic rollback proof, and release-rail files enumerated by
+`tools/lib/cci-scoped-delta-review.js`.
+
+The delta checker compares every base and current pin, rejects deletions and
+unclassified paths, and rehashes the original four reports. Climate runtime or
+source data, source-registry/rights decisions, globe data or texture bytes,
+scoring, targets, finance judgments, or publication-boundary changes are not
+eligible for the focused lane and require fresh specialist review. The focused
+artifact grants no human, legal, institutional, standalone release, or
+standalone deployment authority; it is usable only with the byte-exact
+four-review base, explicit maintainer authorization, CODEOWNERS review, and all
+staged-integrity gates.
 
 ## Current country-selection flow
 
@@ -496,7 +516,7 @@ HTML or code with an old runtime artifact.
 | Stacking | `StackLint.audit()` | No known invisible blockers/z-index regressions |
 | Country intelligence aggregate | `node tools/check-country-climate-intelligence-ci.js` | Registry gates, exact component receipts, compiler derivations, 249×27 runtime, lens coverage, UI contract, and atomic pin agree |
 | CCI public-release exclusion | `node tools/check-country-climate-public-release-boundary.js` | Unapproved CCI values exist only in the marked local candidate artifact surface; factual-public staging omits them |
-| CCI AI-factual review | `node tools/check-cci-factual-public-review.js` | Four AI reviews across three model families, exact post-mitigation pins, source/asset decisions, explicit `human_review=false` and `legal_certification=false`, and maintainer authorization agree |
+| CCI AI-factual review | `node tools/check-cci-factual-public-review.js` | The immutable four-review/three-model base, one exact scoped presentation/performance delta, unchanged high-risk pins, source/asset decisions, explicit `human_review=false` and `legal_certification=false`, and maintainer authorization agree |
 | CCI AI-factual surface | `node tools/check-cci-factual-public-deploy.js --staged _deploy` | The exact public output excludes three ambiguous Three-Globe images and the inverted-relief experiment, retains the pinned NASA/Natural Earth assets, and exposes review-state disclosure in WebGL and fallback paths |
 | WebGL/fallback parity | `node tools/check-globe-webgl-fallback.js` | Three lenses share the 249-entity evidence model and explicit gaps |
 | Country truth | `tools/verify-globe-country-truth.js` | Intended country-status invariants; currently requires repair for v1 |
@@ -525,8 +545,11 @@ release-mode builder, final aggregate verifier, and signed asset approval.
 Candidate `cci` cannot borrow legacy factual-display or signed-release
 authority. It may enter only the `--cci-ai-factual` builder when the exact
 four-review AI artifact passes. That lane keeps `human_review=false`,
-`legal_certification=false`, and the existing signed production gate unchanged;
-it publishes source observations, estimates, modeled projections, reanalysis,
+`legal_certification=false`, and the existing signed production gate unchanged.
+Presentation/performance-only changes may reuse the byte-exact four-review base
+through the single focused delta rail above; any high-risk subject change fails
+closed and requires fresh specialist review. The AI-factual lane publishes
+source observations, estimates, modeled projections, reanalysis,
 and disclosed deterministic derivations rather than claiming human scientific
 or legal certification. It also strips `night-sky.png`,
 `earth-blue-marble.jpg`, and `earth-topology.png` from staged bytes and runtime

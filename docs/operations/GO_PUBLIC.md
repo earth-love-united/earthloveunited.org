@@ -232,17 +232,29 @@ In your browser:
    not create a second production project to change build settings
 5. **Production branch:** `main`
 6. **Framework preset:** **None**
-7. **Build command:** `./tools/build-deploy.sh --release`
+7. **Build command:** select the exact authorized lane from the table below
 8. **Build output directory:** `_deploy`
 9. **Environment variables:** none needed
 10. Click **Save and Deploy**
 
-The build command reproducibly fetches `globe.gl@2.46.1`, refuses any SHA-256
-mismatch, verifies the exact source notice artifacts, stages only browser files
-in `_deploy`, then finishes with the aggregate verifier. That last command
-reruns CT-45/notices and rehashes the trust registry, footer, and any detached
-approval/signature pair after every staged write. First
-deploy takes about 30 seconds. Subsequent commits to `main` auto-deploy.
+| Authorized public lane | Cloudflare build command |
+|---|---|
+| CCI AI-reviewed factual candidate | `./tools/build-cci-factual-public-deploy.sh --cci-ai-factual` |
+| Fully signed, human-reviewed assessed release | `./tools/build-deploy.sh --release` |
+| Historical CT-42 limited factual display | `./tools/build-factual-public-deploy.sh --factual-public` |
+
+For the current CCI AI-factual launch, use the first row. It verifies the frozen
+four-specialist-review base plus the single scoped presentation/performance
+delta and refuses branch previews. Do not select `--release` unless the complete
+human review and three-role signed authority package exists.
+
+The selected builder reproducibly fetches `globe.gl@2.46.1`, refuses any
+SHA-256 mismatch, verifies the exact source notice artifacts, stages only its
+lane-specific browser allowlist in `_deploy`, and finishes with that lane's
+independent aggregate verifier. The signed-release verifier also rehashes the
+trust registry, footer, and detached approval/signature pair after every staged
+write; factual lanes explicitly retain false human/legal/signature authority.
+First deploy takes about 30 seconds. Subsequent commits to `main` auto-deploy.
 Notice integrity does not confer rights approval; the production gate still requires
 five asset-specific rights dispositions and the three-role signed approval described
 in `docs/CLIMATE-PRODUCTION-READINESS.md`.
@@ -251,9 +263,9 @@ These Pages settings live outside this repository. A maintainer must confirm
 the production project uses this exact command and output directory before the
 dependency-delivery gate can be considered operational in production.
 
-Public PR preview builds intentionally run the same `--release` gate and remain
-blocked while runtime image rights, complete third-party notices, CT-40, or any
-other production input is unresolved. Use
+Public PR preview builds intentionally run the selected production gate and
+remain blocked when its authority contract is unavailable or when a main-only
+factual lane detects a branch preview. Use
 `./tools/build-deploy.sh --candidate` only for local QA; its output carries a
 `CANDIDATE-NOT-FOR-PUBLICATION.txt` marker and must not be uploaded or shared as
 a public preview.
@@ -330,8 +342,8 @@ response alone does not prove that Cloudflare served the approved bytes. When
 WebGL or the library is unavailable, the tested
 accessible factual fallback should appear instead. If the generated vendor URL
 returns 404 or its digest differs, inspect the Cloudflare build log and confirm
-that the external project settings exactly use `./tools/build-deploy.sh --release` and
-`_deploy`. Do not bypass the verified local path with a runtime CDN URL, and do
+that the external project settings exactly use the build command for the
+authorized lane above and `_deploy`. Do not bypass the verified local path with a runtime CDN URL, and do
 not commit the generated 1.8 MB file.
 
 ---

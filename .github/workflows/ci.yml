@@ -84,6 +84,9 @@ jobs:
       - name: CCI AI-factual deploy policy self-test
         run: node tools/check-cci-factual-public-deploy.js --self-test
 
+      - name: CCI scoped presentation-performance review policy self-test
+        run: node tools/check-cci-factual-public-review.js --self-test
+
       - name: Country Climate Intelligence public-release exclusion policy
         run: node tools/check-country-climate-public-release-boundary.js --self-test
 

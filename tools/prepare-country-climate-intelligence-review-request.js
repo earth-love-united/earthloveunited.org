@@ -26,10 +26,12 @@ const REQUIRED_ABSENT_PATHS = Object.freeze([
 // their checker binds the subject digest, exact request, complete reports, and
 // public bytes. Keeping review outputs outside the subject avoids a hash cycle.
 const EXTERNAL_GENERATED_DEPENDENCIES = Object.freeze([
+  'data/climate/reviews/cci-v1-ai-reports/base-first-paint-v78-review-request.json',
   'data/climate/reviews/cci-v1-ai-reports/luna-rights.md',
   'data/climate/reviews/cci-v1-ai-reports/luna-science.md',
   'data/climate/reviews/cci-v1-ai-reports/sol-red-team.md',
   'data/climate/reviews/cci-v1-ai-reports/terra-runtime.md',
+  'data/climate/reviews/cci-v1-presentation-performance-delta-review.json',
   'data/climate/reviews/country-climate-intelligence-v1-multi-model-ai-review.json',
   'data/climate/reviews/country-climate-intelligence-v1-multi-model-ai-prepublication-review.json',
   'js/vendor/globe.gl.js',
@@ -146,6 +148,7 @@ const SUBJECT_PATHS = Object.freeze([
   'sw.js',
   'tools/build-deploy.sh',
   'tools/build-cci-factual-public-deploy.sh',
+  'tools/build-cci-scoped-delta-review.js',
   'tools/build-factual-public-deploy.sh',
   'tools/build-country-climate-intelligence.js',
   'tools/build-ct42-runtime-rollback-proof.js',
@@ -213,6 +216,7 @@ const SUBJECT_PATHS = Object.freeze([
   'tools/lib/country-climate-intelligence-release-gate.js',
   'tools/lib/country-climate-intelligence-release-signatures.js',
   'tools/lib/cci-factual-public.js',
+  'tools/lib/cci-scoped-delta-review.js',
   'tools/lib/climate-truth-component-plan.js',
   'tools/lib/climate-runtime-diff-boundary.js',
   'tools/lib/globe-runtime-assets.js',
