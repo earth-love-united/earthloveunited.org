@@ -83,7 +83,10 @@ before those deferred files finish. `App` consumes that intent while the
 exact-SHA country evidence loads. Globe mode itself remains fail-closed until
 both asynchronous `globe-system.css` and `guided-first-orbit.css` links mark
 their HUD geometry ready; either load error leaves every globe control hidden
-and keeps the Foundation view active.
+and keeps the Foundation view active. A later globe-entry action replaces only
+the failed stylesheet links with a cache-busted same-origin retry, resets the
+aggregate gate to `loading`, and still refuses globe mode until both component
+states return to `true`.
 
 `js/vendor/globe.gl.js` is loaded by `App.enterGlobe()` rather than at page
 boot. This keeps WebGL work out of the foundation-page path.
@@ -247,6 +250,13 @@ may reveal globe mode only after evidence and both asynchronously loaded HUD
 stylesheets (`globe-system.css` and `guided-first-orbit.css`) are ready. Every
 globe and tutorial surface fails closed until the aggregate
 `data-globe-styles-ready="true"` gate is published.
+
+The deterministic CT-42 rollback proof binds its seven controls and fourteen
+runtime dependencies through individual SHA-256 pins plus one canonical
+path/content-tree digest. It does not require a feature-branch commit object or
+ancestry edge. Its checker performs a synthetic `git merge --squash`, deletes
+and prunes both intermediate commits, then reruns authoritative validation and
+the complete temporary-site rehearsal from the surviving squash snapshot.
 
 The live renderer targets a 120 Hz-capable display budget of 8.333 ms per
 frame. This is a scene and interaction budget, not a claim that a 60 Hz panel

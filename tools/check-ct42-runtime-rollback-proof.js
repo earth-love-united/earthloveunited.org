@@ -2,10 +2,12 @@
 'use strict';
 
 const assert = require('node:assert/strict');
+const childProcess = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const {
+  CONTROL_FILES,
   EXPECTED_VENDOR_SPEC,
   PROHIBITED_OUTPUTS,
   RUNTIME_DEPENDENCY_FILES,
@@ -19,8 +21,8 @@ const {
 const ROOT = path.resolve(__dirname, '..');
 const PROOF_PATH = 'data/climate/reviews/ct42-candidate-rollback-rehearsal.json';
 const FIXTURE_PATH = 'data/climate/fixtures/ct42-runtime-rollback-proof.json';
-const EXPECTED_PROOF_CALCULATION_HASH = '9147661d65777ea98d920e77e188e94ba58c7d7ec4cf98abee1fe8505c37e7a5';
-const EXPECTED_PATCH_SHA256 = '7da329b792bbcfee2b02a64a3beb6cbc0808d23703aafb5de3a4c28772b709d9';
+const EXPECTED_PROOF_CALCULATION_HASH = '76646aea263bac27cc417e0091b93c77147270f73e7a7bb90aea1afddf053bcd';
+const EXPECTED_PATCH_SHA256 = 'eaec0ff608cb571f5d1f16f65f5b7ea1eb204130e5706517928f7e7a8ec5736e';
 const VENDOR_PATH = EXPECTED_VENDOR_SPEC.destination;
 
 function readJson(relative) {
@@ -52,6 +54,85 @@ function mutateBytes(bytes, mutation) {
   throw new Error(`${mutation.id}: unsupported byte mutation ${mutation.operation}`);
 }
 
+function runGit(root, args, options = {}) {
+  const result = childProcess.spawnSync('git', args, {
+    cwd: root,
+    encoding: options.encoding || 'utf8',
+  });
+  if (options.allowFailure !== true) {
+    assert.equal(result.status, 0, `git ${args.join(' ')} failed: ${String(result.stderr || result.stdout || '').trim()}`);
+  }
+  return result;
+}
+
+function copySnapshotFile(destinationRoot, relative) {
+  const source = path.join(ROOT, relative);
+  if (!fs.existsSync(source)) return false;
+  const destination = path.join(destinationRoot, relative);
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  fs.copyFileSync(source, destination);
+  return true;
+}
+
+function commitSnapshot(root, message) {
+  runGit(root, ['add', '.']);
+  runGit(root, ['commit', '-qm', message]);
+  return runGit(root, ['rev-parse', 'HEAD']).stdout.trim();
+}
+
+function runSquashMergeRegression(proof, pins) {
+  const holder = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-ct42-squash-regression-'));
+  const root = path.join(holder, 'repository');
+  fs.mkdirSync(root);
+  try {
+    runGit(root, ['init', '-q']);
+    runGit(root, ['config', 'user.name', 'Earth Love United squash regression']);
+    runGit(root, ['config', 'user.email', 'squash-regression@invalid.example']);
+    fs.writeFileSync(path.join(root, 'base.txt'), 'synthetic current main\n');
+    commitSnapshot(root, 'synthetic current main');
+    runGit(root, ['branch', '-M', 'main']);
+    runGit(root, ['checkout', '-q', '-b', 'feature']);
+
+    const runtimePaths = new Set([
+      ...CONTROL_FILES,
+      ...RUNTIME_DEPENDENCY_FILES,
+      proof.candidate.builder.path,
+      proof.candidate.candidate_manifest.path,
+      proof.candidate.runtime_data.path,
+      proof.candidate.ct40_result.path,
+      proof.candidate.rollback_plan.path,
+    ]);
+    runtimePaths.forEach(relative => copySnapshotFile(root, relative));
+    const runtimeIntermediate = commitSnapshot(root, 'intermediate runtime control');
+    [PROOF_PATH, proof.rollback.patch.path].forEach(relative => copySnapshotFile(root, relative));
+    const proofIntermediate = commitSnapshot(root, 'intermediate rollback proof');
+
+    runGit(root, ['checkout', '-q', 'main']);
+    runGit(root, ['merge', '--squash', 'feature']);
+    commitSnapshot(root, 'squashed pull request');
+    runGit(root, ['branch', '-D', 'feature']);
+    runGit(root, ['reflog', 'expire', '--expire=now', '--all']);
+    runGit(root, ['gc', '--prune=now']);
+    for (const intermediate of [runtimeIntermediate, proofIntermediate]) {
+      const object = runGit(root, ['cat-file', '-e', `${intermediate}^{commit}`], { allowFailure: true });
+      assert.notEqual(object.status, 0, 'squash regression retained an intermediate commit object');
+    }
+
+    const squashedProof = JSON.parse(fs.readFileSync(path.join(root, PROOF_PATH)));
+    const squashPins = {
+      ...pins,
+      allowMissingVendor: !fs.existsSync(path.join(root, VENDOR_PATH)),
+    };
+    validateProofDocument(root, squashedProof, squashPins);
+    const result = rehearse(root, squashedProof, squashPins);
+    assert.equal(result.workspace_mutation, false);
+    assert.equal(result.changed_files, 6);
+    return true;
+  } finally {
+    fs.rmSync(holder, { recursive: true, force: true });
+  }
+}
+
 const proof = readJson(PROOF_PATH);
 let vendorEntryPresent = true;
 try { fs.lstatSync(path.join(ROOT, VENDOR_PATH)); }
@@ -65,6 +146,19 @@ const pins = {
   allowMissingVendor: !vendorEntryPresent,
 };
 validateProofDocument(ROOT, proof, pins);
+for (const [label, mutate] of [
+  ['runtime content tree digest drift', changed => { changed.candidate.runtime_control.sha256 = 'a'.repeat(64); }],
+  ['rollback source tree digest drift', changed => { changed.rollback.source_runtime_tree_sha256 = 'b'.repeat(64); }],
+  ['unexpected runtime commit topology binding', changed => { changed.candidate.runtime_control_commit = 'c'.repeat(40); }],
+]) {
+  const changed = clone(proof);
+  mutate(changed);
+  changed.calculation_hash = calculationHash(changed);
+  assert.throws(() => validateProofDocument(ROOT, changed, {
+    expectedPatchSha256: EXPECTED_PATCH_SHA256,
+    allowMissingVendor: !vendorEntryPresent,
+  }), undefined, `${label} was accepted`);
+}
 for (const [label, commit] of [
   ['nonexistent review-chain commit', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'],
   ['ancestor with stale CT-40 tree', 'd3f5818d81f877dbb7217cff38a7a00644fc09e3'],
@@ -79,6 +173,7 @@ for (const [label, commit] of [
   }), undefined, `${label} was accepted`);
 }
 const result = rehearse(ROOT, proof, pins);
+const squashMergeRegression = runSquashMergeRegression(proof, pins);
 assert.equal(result.workspace_mutation, false);
 assert.equal(result.changed_files, 6);
 assert.equal(result.pinned_control_files, 7);
@@ -152,6 +247,7 @@ process.stdout.write([
   `  pinned unchanged runtime dependencies: ${result.pinned_runtime_dependencies}`,
   `  materialized runtime dependencies: ${result.materialized_runtime_dependencies}; vendor materialized: ${result.vendor_materialized}`,
   `  deterministic adversarial mutations rejected: ${rejected}`,
+  `  squash-merge regression with pruned intermediate commits: ${squashMergeRegression ? 'PASS' : 'FAIL'}`,
   result.runtime_dependencies_complete
     ? '  complete exact temporary browser site materialization: PASS'
     : '  static temporary site materialization: PASS; browser site remains incomplete until the canonical vendor fetch gate supplies exact globe.gl bytes',

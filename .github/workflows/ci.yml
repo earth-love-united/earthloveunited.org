@@ -513,7 +513,11 @@ jobs:
           async function exerciseGlobeStylesFailure(urlPattern, failedComponent) {
             const target = await ctx.newPage();
             trackErrors(target);
-            const handler = route => route.abort('failed');
+            let failedRequests = 0;
+            const handler = route => {
+              failedRequests += 1;
+              return route.abort('failed');
+            };
             await target.route(urlPattern, handler);
             await target.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
             await waitForApp(target);
@@ -548,6 +552,31 @@ jobs:
               snapshot.status.includes('could not be prepared'),
               'failed deferred ' + failedComponent + ' CSS must keep every HUD and tutorial surface hidden and announce retry readiness');
             await target.unroute(urlPattern, handler);
+            await target.evaluate(() => {
+              const guide = document.getElementById('guided-orbit');
+              if (guide) {
+                guide.hidden = true;
+                guide.setAttribute('aria-hidden', 'true');
+              }
+              document.body.classList.remove('guided-orbit-active');
+            });
+            await target.locator('.enter-btn[data-action="enterGlobe"]').first().click();
+            await waitForLiveGlobe(target);
+            const recovered = await target.evaluate(failed => ({
+              aggregateState: document.documentElement.dataset.globeStylesReady,
+              componentState: failed === 'guided'
+                ? document.documentElement.dataset.guidedOrbitStylesReady
+                : document.documentElement.dataset.globeSystemStylesReady,
+              canvasCount: document.querySelectorAll('#globeViz canvas').length,
+              globeMode: document.body.classList.contains('globe-mode'),
+              fallbackActive: document.body.classList.contains('globe-fallback-active'),
+              status: document.getElementById('app-readiness-status')?.textContent || '',
+              retryHref: document.getElementById(failed === 'guided' ? 'guided-orbit-styles' : 'globe-system-styles')?.href || '',
+            }), failedComponent);
+            assert(failedRequests >= 1 && recovered.aggregateState === 'true' && recovered.componentState === 'true' &&
+              recovered.globeMode && !recovered.fallbackActive && recovered.canvasCount === 1 &&
+              recovered.status === 'The Living Globe is ready.' && recovered.retryHref.includes('elu-style-retry='),
+              'restored ' + failedComponent + ' CSS must reload on the next user click and recover exactly one live renderer');
             await target.close();
           }
 

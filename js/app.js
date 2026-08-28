@@ -364,9 +364,8 @@ function _setAppReadinessStatus(message) {
 
 function _waitForGlobeStyles(timeoutMs = 10000) {
   const root = document.documentElement;
-  const link = $('globe-system-styles');
   if (root.dataset.globeStylesReady === 'true') return Promise.resolve(true);
-  if (!link || root.dataset.globeStylesReady === 'error') return Promise.resolve(false);
+  if (!$('globe-system-styles')) return Promise.resolve(false);
   return new Promise(resolve => {
     let settled = false;
     let timer = null;
@@ -383,7 +382,39 @@ function _waitForGlobeStyles(timeoutMs = 10000) {
     window.addEventListener('elu:globe-styles-ready', onReady);
     window.addEventListener('elu:globe-styles-error', onError);
     timer = setTimeout(() => finish(false), timeoutMs);
+    if (root.dataset.globeStylesReady === 'error' && !_reloadFailedGlobeStyles()) finish(false);
   });
+}
+
+let _globeStyleRetryAttempt = 0;
+function _reloadFailedGlobeStyles() {
+  const root = document.documentElement;
+  if (root.dataset.globeStylesReady !== 'error') return false;
+  const definitions = [
+    { id: 'globe-system-styles', state: 'globeSystemStylesReady' },
+    { id: 'guided-orbit-styles', state: 'guidedOrbitStylesReady' },
+  ];
+  const available = definitions
+    .map(definition => ({ ...definition, link: $(definition.id) }))
+    .filter(definition => definition.link instanceof HTMLLinkElement);
+  if (!available.length) return false;
+
+  let failed = available.filter(definition => root.dataset[definition.state] === 'error');
+  // The neutral rollback surface has one stylesheet and only publishes the
+  // aggregate state, so an aggregate error deliberately reloads that link.
+  if (!failed.length) failed = available;
+  const retryAttempt = ++_globeStyleRetryAttempt;
+  root.dataset.globeStylesReady = 'loading';
+  failed.forEach(definition => { root.dataset[definition.state] = 'loading'; });
+  failed.forEach(({ link }) => {
+    const replacement = link.cloneNode(true);
+    const retryUrl = new URL(link.getAttribute('href') || link.href, document.baseURI);
+    retryUrl.searchParams.set('elu-style-retry', String(retryAttempt));
+    replacement.setAttribute('href', retryUrl.pathname + retryUrl.search);
+    replacement.media = 'print';
+    link.replaceWith(replacement);
+  });
+  return true;
 }
 
 function _showDataErrorBanner() {

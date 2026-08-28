@@ -56,6 +56,10 @@ listed below. CCI, mixed/partial authority packages, and
 - The exact CT-42 data/UI review, deterministic rollback proof, localized runtime bytes,
   source links, public copy, notices, and marker-free browser allowlist pass.
 
+The deterministic rollback proof is squash-safe: exact file SHA-256 pins roll
+up into a canonical path/content-tree digest, and CI rehearses the proof after
+pruning the feature branch's intermediate commit objects.
+
 The gate is `node tools/check-climate-factual-public-readiness.js`. A protected
 maintainer-reviewed merge authorizes this narrow deployment. It does not create
 or imply authority for the separate assessed-production release.

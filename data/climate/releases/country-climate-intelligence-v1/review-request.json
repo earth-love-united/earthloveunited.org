@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "f0b9ba692cb56d52aa01f9457b300220c3a563a99b6f24098ce094b28a336983",
+  "calculation_hash": "1520a1705eba3ed87d7b54a97a13be8cc51166d33c776ce2681bfa272c775a96",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "9d346fb0426479b146c20e777cc01a3a7009b74edc2cd8fe4821781b700508f1",
+    "artifact_pin_digest": "c9ad7b629472834c38501ce641a03ca69aa02e391d6c00c7242a6bbfd0d2136e",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -221,7 +221,7 @@
       },
       {
         "path": ".github/workflows/ci.yml",
-        "sha256": "06144c01a7dc2fce69636e5ae2d414fc57d62b1f45d840659d17417f45873a89"
+        "sha256": "29f8c5e179a6e9c2df271a6d98d58528c102c26e2b256b230f7589decc8746a4"
       },
       {
         "path": ".gitignore",
@@ -237,7 +237,7 @@
       },
       {
         "path": "ARCHITECTURE.md",
-        "sha256": "41dd06d14599cedde7e4bcc5b170bc0fd90c85b60f3f87b2f1b07438cb795822"
+        "sha256": "e2c609c56626f287e876f831326b5178e3fa388d5cd7b3b1adc8b822ed35cbde"
       },
       {
         "path": "CREDITS.md",
@@ -517,7 +517,7 @@
       },
       {
         "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
-        "sha256": "7da329b792bbcfee2b02a64a3beb6cbc0808d23703aafb5de3a4c28772b709d9"
+        "sha256": "eaec0ff608cb571f5d1f16f65f5b7ea1eb204130e5706517928f7e7a8ec5736e"
       },
       {
         "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -617,7 +617,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "f69402413f6109e3558881f625392e0a722115756f08b39bd7f5157590777794"
+        "sha256": "26c86ac390327419ee3ad00d4d470d64a29fb9538b9cd745c3d0be41135206b4"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -833,7 +833,7 @@
       },
       {
         "path": "docs/FACTUAL-PUBLIC-DEPLOYMENT.md",
-        "sha256": "7ffb3dbbd3207d3b3a71fc79f5ec60483d1344045333c98145ed967a108039ef"
+        "sha256": "029baa3c4d973afe69ff80cba3da1c2a8f1b94722d0f49c7278c2c156b163e6d"
       },
       {
         "path": "docs/LEGACY-COUNTRY-DATA-EXIT.md",
@@ -853,11 +853,11 @@
       },
       {
         "path": "index.html",
-        "sha256": "52dde039c413aedccdebeb9ebfae7634e34fcab538fbd69caf7386870b7daff7"
+        "sha256": "84b47f0a8542d627c96ea33c1cf0ca959ab0cc09a16eae5dcc82470e33d949a4"
       },
       {
         "path": "js/app.js",
-        "sha256": "da75c42955d3a84f43b10938829799b8b45a6e3565719b64cfd2769b1cbc9efd"
+        "sha256": "8794531875217cba0943f74df5da0901a22cf57cf5b28aaa053c6dcf0c5d45a0"
       },
       {
         "path": "js/carbon-clock.js",
@@ -965,7 +965,7 @@
       },
       {
         "path": "tools/build-ct42-runtime-rollback-proof.js",
-        "sha256": "9f4d8b4541040573bbb080d02e999e0ceee59ae5a9d6604d53519dbb787110dc"
+        "sha256": "e0d47ee045e24a196d7525f2c842423ad24dd503eeeb99cf3cbdcc0c3ff4d788"
       },
       {
         "path": "tools/build-deploy.sh",
@@ -1101,11 +1101,11 @@
       },
       {
         "path": "tools/check-ct42-runtime-rollback-proof.js",
-        "sha256": "16645da7baca729df385da15f797329c35c47ffab1d0d12f3087d42e5da3d57e"
+        "sha256": "bb99d847c7555d3fb7ae03bab4e554114216b86ec37898e3c602d45488808ad5"
       },
       {
         "path": "tools/check-ct42-runtime-rollback-review.js",
-        "sha256": "906d443a2e41387c9b5b913a3b1e39ff5d8937b7c781b5cee7725d123aa7fca5"
+        "sha256": "fa84bda6dcd27b6ead453bbccfb3675395630106c96304616501a9b46e5d5c83"
       },
       {
         "path": "tools/check-first-paint-performance-receipt.js",
@@ -1257,7 +1257,7 @@
       },
       {
         "path": "tools/lib/cci-scoped-delta-review.js",
-        "sha256": "0a39e7d24e14e02cf23569d932584baf5e7001d680680f3562eda897908697a3"
+        "sha256": "68e67bbb16930f12d40ca2bc10c58a40498af6a16c88592ddce36dac592d4d39"
       },
       {
         "path": "tools/lib/climate-factual-runtime-candidate.js",
@@ -1325,11 +1325,11 @@
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-proof.js",
-        "sha256": "ba5e629e7bfbf4463f17a34f46e3d4e2a84beff4556d009bec8b44ace462b5b9"
+        "sha256": "a8519badeb1427c71f45920c3d1fa7b51350a4356bad9b5ff6f02d1a703f9d7d"
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-review.js",
-        "sha256": "8de5708fe62024b1a4255f7e9e1f9e3f6f6e392f2f6e9f33f8bdb0426b5d35ad"
+        "sha256": "bf77cecc7352650bfb9abca9a0519d61d2858849a8485626b908779fd0056285"
       },
       {
         "path": "tools/lib/gcb-country-intelligence.js",

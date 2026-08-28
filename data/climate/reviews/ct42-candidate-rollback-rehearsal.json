@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.3.0",
+  "schema_version": "2.4.0",
   "proof_id": "ct-42-neutral-runtime-rollback-rehearsal-2026-07-15",
   "status": "built_not_reviewed_browser_gate_required",
   "release_authority": false,
@@ -12,8 +12,17 @@
     "independent_review_required": true
   },
   "candidate": {
-    "builder_commit": "793eade295ae3fa787749e4d6ee112cf374a7634",
-    "runtime_control_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+    "builder": {
+      "path": "tools/build-ct42-runtime-rollback-proof.js",
+      "sha256": "e0d47ee045e24a196d7525f2c842423ad24dd503eeeb99cf3cbdcc0c3ff4d788"
+    },
+    "runtime_control": {
+      "format": "elu-sha256-path-content-tree-v1",
+      "sha256": "c203a36a1dae50a23d25d6fcf34e92c3b76b3bfca1adea7a9c537352a0d14d6f",
+      "member_count": 21,
+      "git_history_required": false,
+      "squash_merge_safe": true
+    },
     "review_chain_head": null,
     "review_chain_late_bound": true,
     "review_chain_ct40_sha256": null,
@@ -73,7 +82,7 @@
   },
   "rollback": {
     "strategy": "current_hardened_runtime_to_neutral_surface",
-    "source_runtime_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+    "source_runtime_tree_sha256": "c203a36a1dae50a23d25d6fcf34e92c3b76b3bfca1adea7a9c537352a0d14d6f",
     "baseline_commit": null,
     "cache_name": "elu-v34-ct42-neutral-rollback",
     "service_worker_registration": "/sw.js?v=34-ct42-neutral-rollback",
@@ -96,7 +105,7 @@
     },
     "app_globe_compatibility": {
       "app_path": "js/app.js",
-      "app_sha256": "da75c42955d3a84f43b10938829799b8b45a6e3565719b64cfd2769b1cbc9efd",
+      "app_sha256": "8794531875217cba0943f74df5da0901a22cf57cf5b28aaa053c6dcf0c5d45a0",
       "app_called_apis": [
         "prepare",
         "init",
@@ -119,8 +128,8 @@
     "patch": {
       "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
       "encoding": "base64",
-      "sha256": "7da329b792bbcfee2b02a64a3beb6cbc0808d23703aafb5de3a4c28772b709d9",
-      "decoded_sha256": "4fa53e1e2fe46b3ed492bad2c9b8a5f91fafcc1081744ffd9bf83c4b533ada72",
+      "sha256": "eaec0ff608cb571f5d1f16f65f5b7ea1eb204130e5706517928f7e7a8ec5736e",
+      "decoded_sha256": "292af4b21431b53044eb7f8403b4a4f9e5be84c00f1537de788e45e2759fab0d",
       "changed_files": [
         "index.html",
         "css/globe-system.css",
@@ -135,7 +144,7 @@
         "path": "index.html",
         "role": "neutral_public_copy_and_v34_registration",
         "changed": true,
-        "candidate_sha256": "52dde039c413aedccdebeb9ebfae7634e34fcab538fbd69caf7386870b7daff7",
+        "candidate_sha256": "84b47f0a8542d627c96ea33c1cf0ca959ab0cc09a16eae5dcc82470e33d949a4",
         "rollback_sha256": "d2fbb9d63fd12ef9ff6905e3b42b654b4cf562860ea8a52374f78a617cf1f092"
       },
       {
@@ -163,8 +172,8 @@
         "path": "js/app.js",
         "role": "unchanged_app_globe_compatibility_pin",
         "changed": false,
-        "candidate_sha256": "da75c42955d3a84f43b10938829799b8b45a6e3565719b64cfd2769b1cbc9efd",
-        "rollback_sha256": "da75c42955d3a84f43b10938829799b8b45a6e3565719b64cfd2769b1cbc9efd"
+        "candidate_sha256": "8794531875217cba0943f74df5da0901a22cf57cf5b28aaa053c6dcf0c5d45a0",
+        "rollback_sha256": "8794531875217cba0943f74df5da0901a22cf57cf5b28aaa053c6dcf0c5d45a0"
       },
       {
         "path": "sw.js",
@@ -185,98 +194,98 @@
       {
         "path": "manifest.json",
         "role": "pwa_manifest_metadata",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "cc7cf3ee37944ea792e72ed10a47b6ba57994afcb1270aa9855e488f835d0d75",
         "materialized_sha256": "cc7cf3ee37944ea792e72ed10a47b6ba57994afcb1270aa9855e488f835d0d75"
       },
       {
         "path": "css/carbon-clock.css",
         "role": "supporting_runtime_style",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "819fed963e05885005955fedcfbb7ad851ddcec0fce5e2f879272696988bd184",
         "materialized_sha256": "819fed963e05885005955fedcfbb7ad851ddcec0fce5e2f879272696988bd184"
       },
       {
         "path": "js/gaia-utils.js",
         "role": "foundation_runtime",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "06b34641d8fffc9c9fb17cad8539035d55758b07992ec8573a41152a14e37e94",
         "materialized_sha256": "06b34641d8fffc9c9fb17cad8539035d55758b07992ec8573a41152a14e37e94"
       },
       {
         "path": "js/module-contracts.js",
         "role": "module_contract_runtime",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "e0609b87b686afb7fa7154b2b378b8960136c645a9f07314262a624b621e5c84",
         "materialized_sha256": "e0609b87b686afb7fa7154b2b378b8960136c645a9f07314262a624b621e5c84"
       },
       {
         "path": "js/event-bus.js",
         "role": "event_runtime",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "076e3549298b113308115331d72ed563477630e6850d73704871641b1d1ecd63",
         "materialized_sha256": "076e3549298b113308115331d72ed563477630e6850d73704871641b1d1ecd63"
       },
       {
         "path": "js/storage-adapter.js",
         "role": "storage_runtime",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "4b7210624cf0829fe5687e2aac9ce6919fe19ee42c991544c018bdd31fd6b8b3",
         "materialized_sha256": "4b7210624cf0829fe5687e2aac9ce6919fe19ee42c991544c018bdd31fd6b8b3"
       },
       {
         "path": "js/storage.js",
         "role": "storage_facade_runtime",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "6cb9b3742575eaaa3644ca4cffe42cc4cca6121dce2c49f1add566b7cd7b3734",
         "materialized_sha256": "6cb9b3742575eaaa3644ca4cffe42cc4cca6121dce2c49f1add566b7cd7b3734"
       },
       {
         "path": "js/data-schema.js",
         "role": "data_schema_runtime",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "15454da35479253ccf83533ed6cfc16dc0ff3b5f6a9739424fe51d0ca55541e3",
         "materialized_sha256": "15454da35479253ccf83533ed6cfc16dc0ff3b5f6a9739424fe51d0ca55541e3"
       },
       {
         "path": "js/carbon-clock.js",
         "role": "carbon_clock_runtime",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "d577ff8e991b387f27d5f0e531a9aaf3eda47f6ee72ff675998eaad46159519a",
         "materialized_sha256": "d577ff8e991b387f27d5f0e531a9aaf3eda47f6ee72ff675998eaad46159519a"
       },
       {
         "path": "js/vendor/globe.gl.js",
         "role": "verified_globe_renderer",
-        "source_commit": null,
+        "source_binding": "verified_external_sha256",
         "source_sha256": "2ab6767f47e2be0ac346cd7a5eb55d259ea3da06d479dc22f1820ddd698f496a",
         "materialized_sha256": "2ab6767f47e2be0ac346cd7a5eb55d259ea3da06d479dc22f1820ddd698f496a"
       },
       {
         "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
         "role": "pinned_country_geometry",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0",
         "materialized_sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0"
       },
       {
         "path": "data/carbon-projects.json",
         "role": "noncritical_runtime_data",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "1d689792d942ca8dc52386746d4ed6021ef45e4af1c5b1b0cb3ee3509bfd33eb",
         "materialized_sha256": "1d689792d942ca8dc52386746d4ed6021ef45e4af1c5b1b0cb3ee3509bfd33eb"
       },
       {
         "path": "tools/stack-lint.js",
         "role": "browser_rehearsal_stack_audit",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "d7b0bbac4ee9fcffc34932b88c9e71398a0b604c287c6fbb04ba5652b33818aa",
         "materialized_sha256": "d7b0bbac4ee9fcffc34932b88c9e71398a0b604c287c6fbb04ba5652b33818aa"
       },
       {
         "path": "scripts/verify_load_order.py",
         "role": "static_rehearsal_load_order",
-        "source_commit": "7971e3287c8730278d9bf28164871cc550ac2dd9",
+        "source_binding": "runtime_content_tree",
         "source_sha256": "2b093dfe70a9a6e11da3aecd6e6f68753e1aab159280da940206c6d97a21c8ce",
         "materialized_sha256": "2b093dfe70a9a6e11da3aecd6e6f68753e1aab159280da940206c6d97a21c8ce"
       }
@@ -294,7 +303,7 @@
       "js/guided-first-orbit.js"
     ],
     "assertions": [
-      "rollback targets are deterministic transformations of the pinned current hardened runtime, not a historical baseline transplant",
+      "rollback targets are deterministic transformations of the SHA-256 path/content runtime tree, not a historical baseline transplant",
       "App is byte-identical and every App-called Globe API plus reset/destroy/getState remains callable",
       "GlobeModule.init retains a boolean success boundary and renderer failure stays fail-closed",
       "exact 201 alphabetical neutral entities equal 173 retained polygons plus 28 approximate navigation points",
@@ -317,9 +326,8 @@
     "command": "node tools/rehearse-ct42-runtime-rollback.js",
     "materialize_temporary_site": "node tools/rehearse-ct42-runtime-rollback.js --site /absolute/new/temp/directory",
     "checker": "node tools/check-ct42-runtime-rollback-proof.js",
-    "builder_requires_git_objects": [
-      "7971e3287c8730278d9bf28164871cc550ac2dd9"
-    ],
+    "builder_requires_git_objects": [],
+    "squash_merge_regression": "the checker recreates the subject through git merge --squash, prunes intermediate commits, and reruns validation plus rehearsal",
     "late_bound_regeneration": "rerun builder with --review-chain-head <final exact review-chain commit>, then refresh checker pins after final CT-40 DENY regeneration",
     "browser_rehearsal": [
       "serve the materialized temporary site from localhost with service workers blocked or a fresh origin",
@@ -343,5 +351,5 @@
     "writes_workspace": false,
     "deploys": false
   },
-  "calculation_hash": "9147661d65777ea98d920e77e188e94ba58c7d7ec4cf98abee1fe8505c37e7a5"
+  "calculation_hash": "76646aea263bac27cc417e0091b93c77147270f73e7a7bb90aea1afddf053bcd"
 }

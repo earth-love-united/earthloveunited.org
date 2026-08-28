@@ -15,18 +15,19 @@ const {
   PROHIBITED_OUTPUTS,
   REQUIRED_GLOBE_LIFECYCLE_APIS,
   ROLLBACK_PLAN_SHA256,
-  RUNTIME_CONTROL_COMMIT,
+  RUNTIME_CONTENT_TREE_FORMAT,
   RUNTIME_DEPENDENCIES,
   RUNTIME_EXCLUSIONS,
   SERVICE_WORKER_REGISTRATION,
   calculationHash,
+  runtimeContentTreeHash,
   sha256,
 } = require('./lib/ct42-runtime-rollback-proof');
 
 const ROOT = path.resolve(__dirname, '..');
-const CANDIDATE_BUILDER_COMMIT = '793eade295ae3fa787749e4d6ee112cf374a7634';
 const PATCH_PATH = 'data/climate/operations/ct42-runtime-rollback.patch.b64';
 const PROOF_PATH = 'data/climate/reviews/ct42-candidate-rollback-rehearsal.json';
+const BUILDER_PATH = 'tools/build-ct42-runtime-rollback-proof.js';
 
 function cliValue(flag) {
   const index = process.argv.indexOf(flag);
@@ -37,7 +38,6 @@ function cliValue(flag) {
 
 const reviewChainHead = cliValue('--review-chain-head');
 if (reviewChainHead !== null) assert.match(reviewChainHead, /^[a-f0-9]{40}$/, '--review-chain-head must be a full Git SHA');
-const runtimeControlCommit = RUNTIME_CONTROL_COMMIT;
 
 function git(args, options = {}) {
   const run = childProcess.spawnSync('git', args, {
@@ -1071,16 +1071,10 @@ function buildPatch(current, targets) {
 }
 
 const current = Object.fromEntries(CONTROL_FILES.map(relative => {
-  const bytes = fs.readFileSync(path.join(ROOT, relative));
-  assert.deepEqual(bytes, gitFile(runtimeControlCommit, relative), `${relative} no longer matches the exact hardened runtime-control commit`);
-  return [relative, bytes];
+  return [relative, fs.readFileSync(path.join(ROOT, relative))];
 }));
 const dependencyBytes = Object.fromEntries(RUNTIME_DEPENDENCIES.map(dependency => {
-  const bytes = fs.readFileSync(path.join(ROOT, dependency.path));
-  if (dependency.path !== EXPECTED_VENDOR_SPEC.destination) {
-    assert.deepEqual(bytes, gitFile(runtimeControlCommit, dependency.path), `${dependency.path} no longer matches the exact hardened runtime-control commit`);
-  }
-  return [dependency.path, bytes];
+  return [dependency.path, fs.readFileSync(path.join(ROOT, dependency.path))];
 }));
 const targets = rollbackTargets(current);
 const patch = buildPatch(current, targets);
@@ -1120,8 +1114,26 @@ const roles = {
   'tools/smoke-test.js': 'rollback_browser_runtime_assertions',
 };
 
+const controls = CONTROL_FILES.map(relative => ({
+  path: relative,
+  role: roles[relative],
+  changed: PATCH_FILES.includes(relative),
+  candidate_sha256: sha256(current[relative]),
+  rollback_sha256: sha256(targets[relative]),
+}));
+const runtimeDependencyClosure = RUNTIME_DEPENDENCIES.map(dependency => ({
+  path: dependency.path,
+  role: dependency.role,
+  source_binding: dependency.path === EXPECTED_VENDOR_SPEC.destination
+    ? 'verified_external_sha256'
+    : 'runtime_content_tree',
+  source_sha256: sha256(dependencyBytes[dependency.path]),
+  materialized_sha256: sha256(dependencyBytes[dependency.path]),
+}));
+const runtimeTreeSha256 = runtimeContentTreeHash(controls, runtimeDependencyClosure);
+
 const proof = {
-  schema_version: '2.3.0',
+  schema_version: '2.4.0',
   proof_id: 'ct-42-neutral-runtime-rollback-rehearsal-2026-07-15',
   status: 'built_not_reviewed_browser_gate_required',
   release_authority: false,
@@ -1134,8 +1146,14 @@ const proof = {
     independent_review_required: true,
   },
   candidate: {
-    builder_commit: CANDIDATE_BUILDER_COMMIT,
-    runtime_control_commit: runtimeControlCommit,
+    builder: { path: BUILDER_PATH, sha256: sha256(fs.readFileSync(path.join(ROOT, BUILDER_PATH))) },
+    runtime_control: {
+      format: RUNTIME_CONTENT_TREE_FORMAT,
+      sha256: runtimeTreeSha256,
+      member_count: CONTROL_FILES.length + RUNTIME_DEPENDENCIES.length,
+      git_history_required: false,
+      squash_merge_safe: true,
+    },
     review_chain_head: reviewChainHead,
     review_chain_late_bound: reviewChainHead === null,
     review_chain_ct40_sha256: reviewChainHead === null ? null : sha256(ct40Bytes),
@@ -1156,7 +1174,7 @@ const proof = {
   },
   rollback: {
     strategy: 'current_hardened_runtime_to_neutral_surface',
-    source_runtime_commit: runtimeControlCommit,
+    source_runtime_tree_sha256: runtimeTreeSha256,
     baseline_commit: null,
     cache_name: CACHE_NAME,
     service_worker_registration: SERVICE_WORKER_REGISTRATION,
@@ -1191,23 +1209,11 @@ const proof = {
       decoded_sha256: sha256(patch),
       changed_files: PATCH_FILES,
     },
-    controls: CONTROL_FILES.map(relative => ({
-      path: relative,
-      role: roles[relative],
-      changed: PATCH_FILES.includes(relative),
-      candidate_sha256: sha256(current[relative]),
-      rollback_sha256: sha256(targets[relative]),
-    })),
-    runtime_dependency_closure: RUNTIME_DEPENDENCIES.map(dependency => ({
-      path: dependency.path,
-      role: dependency.role,
-      source_commit: dependency.path === EXPECTED_VENDOR_SPEC.destination ? null : runtimeControlCommit,
-      source_sha256: sha256(dependencyBytes[dependency.path]),
-      materialized_sha256: sha256(dependencyBytes[dependency.path]),
-    })),
+    controls,
+    runtime_dependency_closure: runtimeDependencyClosure,
     runtime_exclusions: RUNTIME_EXCLUSIONS,
     assertions: [
-      'rollback targets are deterministic transformations of the pinned current hardened runtime, not a historical baseline transplant',
+      'rollback targets are deterministic transformations of the SHA-256 path/content runtime tree, not a historical baseline transplant',
       'App is byte-identical and every App-called Globe API plus reset/destroy/getState remains callable',
       'GlobeModule.init retains a boolean success boundary and renderer failure stays fail-closed',
       'exact 201 alphabetical neutral entities equal 173 retained polygons plus 28 approximate navigation points',
@@ -1226,7 +1232,8 @@ const proof = {
     command: 'node tools/rehearse-ct42-runtime-rollback.js',
     materialize_temporary_site: 'node tools/rehearse-ct42-runtime-rollback.js --site /absolute/new/temp/directory',
     checker: 'node tools/check-ct42-runtime-rollback-proof.js',
-    builder_requires_git_objects: [runtimeControlCommit],
+    builder_requires_git_objects: [],
+    squash_merge_regression: 'the checker recreates the subject through git merge --squash, prunes intermediate commits, and reruns validation plus rehearsal',
     late_bound_regeneration: reviewChainHead === null
       ? 'rerun builder with --review-chain-head <final exact review-chain commit>, then refresh checker pins after final CT-40 DENY regeneration'
       : null,
@@ -1262,6 +1269,6 @@ process.stdout.write([
   `CT-42 neutral rollback proof built: ${proof.calculation_hash}`,
   `  patch artifact ${proof.rollback.patch.sha256}`,
   `  decoded patch ${proof.rollback.patch.decoded_sha256}`,
-  `  current runtime ${runtimeControlCommit}`,
+  `  current runtime tree ${runtimeTreeSha256}`,
   `  review chain ${reviewChainHead || 'late-bound (no authority)'}`,
 ].join('\n') + '\n');

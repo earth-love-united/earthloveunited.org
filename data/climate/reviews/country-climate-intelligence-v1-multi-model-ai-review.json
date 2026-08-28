@@ -16,11 +16,11 @@
     },
     {
       "path": ".github/workflows/ci.yml",
-      "sha256": "06144c01a7dc2fce69636e5ae2d414fc57d62b1f45d840659d17417f45873a89"
+      "sha256": "29f8c5e179a6e9c2df271a6d98d58528c102c26e2b256b230f7589decc8746a4"
     },
     {
       "path": "ARCHITECTURE.md",
-      "sha256": "41dd06d14599cedde7e4bcc5b170bc0fd90c85b60f3f87b2f1b07438cb795822"
+      "sha256": "e2c609c56626f287e876f831326b5178e3fa388d5cd7b3b1adc8b822ed35cbde"
     },
     {
       "path": "CREDITS.md",
@@ -44,7 +44,7 @@
     },
     {
       "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
-      "sha256": "083481a87c5263ec72b8c39462995a6fb25f4c57d74209ae3539b9fc08eaf2f8"
+      "sha256": "b0d549ab5827d02814b75cea5ed9e903bfdd9deaf851432f7be1d6186c07797e"
     },
     {
       "path": "data/climate/reviews/cci-v1-ai-reports/base-first-paint-v78-review-request.json",
@@ -52,7 +52,7 @@
     },
     {
       "path": "data/climate/reviews/cci-v1-presentation-performance-delta-review.json",
-      "sha256": "4d019a6569131bd8024d637de7d805f42212178d9a34b166f269269dceaa0caa"
+      "sha256": "fb068ebb245fdaf44227d138903476cf8903246377cd425e77ef5e477e91e5a5"
     },
     {
       "path": "data/climate/reviews/country-climate-intelligence-v1-multi-model-ai-prepublication-review.json",
@@ -108,7 +108,7 @@
     },
     {
       "path": "tools/lib/cci-scoped-delta-review.js",
-      "sha256": "0a39e7d24e14e02cf23569d932584baf5e7001d680680f3562eda897908697a3"
+      "sha256": "68e67bbb16930f12d40ca2bc10c58a40498af6a16c88592ddce36dac592d4d39"
     },
     {
       "path": "tools/lib/globe-runtime-assets.js",
@@ -132,7 +132,7 @@
     "review_request_sha256": "8fe8a47dbf8eea2081f7135ab11b3baab1c4af164e6fc9542d7ceaf06c780753",
     "reviewed_head": "108e6b6be2e3a53c45b4c2a596de11656774ab8c"
   },
-  "calculation_hash": "76e41ed89549b34a6b8722142f706737888ddb74af4a02fc8e388130605158f2",
+  "calculation_hash": "d29eebe5b14a7fe9f8a173a18eca49f18bdad4d6f3e44df3b3e71f51b84bd315",
   "condition_resolutions": [
     {
       "evidence": "The 64-file allowlist excludes the three image paths and legacy manifest; negative checks reject paths, hashes, URLs, and executable tokens.",
@@ -252,12 +252,12 @@
   "model_family_count": 3,
   "presentation_performance_delta_review": {
     "artifact_id": "cci-v1-presentation-performance-delta-review-2026-08-29",
-    "calculation_hash": "85068990cea32aa33993bd9afce1d899e4a04fdd22796493b6cf1709785189ea",
-    "change_count": 41,
+    "calculation_hash": "aaeac4ade2db4d467d179683b4a118105e293b8b58ee972cd4585acb2e33cba5",
+    "change_count": 43,
     "path": "data/climate/reviews/cci-v1-presentation-performance-delta-review.json",
     "reviewer_id": "ai-reviewer:codex-focused-presentation-runtime",
     "scope": "cci_ai_factual_presentation_performance_delta_only",
-    "sha256": "4d019a6569131bd8024d637de7d805f42212178d9a34b166f269269dceaa0caa",
+    "sha256": "fb068ebb245fdaf44227d138903476cf8903246377cd425e77ef5e477e91e5a5",
     "verdict": "approve_with_conditions"
   },
   "public_label": "AI-reviewed source-data release — four-model base plus one focused presentation/performance delta review; no human review or legal certification.",
@@ -332,7 +332,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "ca83ed08b8586397838b3338de7d7c6252dcd0b75add72fced57432f0013cdae"
+      "sha256": "294d6e6fa0f547d8c36174155df01f5dda48c5b3f4b2574915e1bd612fb1d98e"
     },
     {
       "path": "js/country-climate-intelligence.js",
@@ -471,9 +471,9 @@
     "public_file_count": 64,
     "registry_entity_count": 249,
     "release_id": "country-climate-intelligence-2026-08-27-candidate.7",
-    "review_request_artifact_pin_digest": "9d346fb0426479b146c20e777cc01a3a7009b74edc2cd8fe4821781b700508f1",
+    "review_request_artifact_pin_digest": "c9ad7b629472834c38501ce641a03ca69aa02e391d6c00c7242a6bbfd0d2136e",
     "review_request_path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
-    "review_request_sha256": "083481a87c5263ec72b8c39462995a6fb25f4c57d74209ae3539b9fc08eaf2f8",
+    "review_request_sha256": "b0d549ab5827d02814b75cea5ed9e903bfdd9deaf851432f7be1d6186c07797e",
     "runtime_sha256": "4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe"
   },
   "total_ai_review_artifact_count": 5

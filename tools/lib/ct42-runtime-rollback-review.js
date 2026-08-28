@@ -5,7 +5,11 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const { stable, validateJsonSchema } = require('./json-schema-lite');
-const { validateProofDocument } = require('./ct42-runtime-rollback-proof');
+const {
+  RUNTIME_CONTENT_TREE_FORMAT,
+  runtimeContentTreeHash,
+  validateProofDocument,
+} = require('./ct42-runtime-rollback-proof');
 
 const SCHEMA_PATH = 'data/climate/schemas/ct42-runtime-rollback-review.schema.json';
 const REVIEW_PATH = 'data/climate/reviews/ct42-runtime-rollback-review.json';
@@ -284,9 +288,9 @@ function validateProofSemantics(root, proof, pins, errors, ct40Commit, review) {
       candidate.release_eligible !== false || candidate.production_runtime_release !== false) {
     add(errors, 'proof_candidate_boundary_widened', 'CT-42 candidate must remain a denied assessed-climate release.');
   }
-  if (candidate.review_chain_head !== ct40Commit || candidate.runtime_control_commit !== ct40Commit ||
-      candidate.review_chain_late_bound !== false || candidate.review_chain_ct40_sha256 !== pins.get(CT40_RESULT_PATH)?.sha256) {
-    add(errors, 'proof_review_chain_binding_invalid', 'Proof must bind its final CT-40 U commit and result hash directly, not a stale runtime coordinate.');
+  if (candidate.review_chain_head !== ct40Commit || candidate.review_chain_late_bound !== false ||
+      candidate.review_chain_ct40_sha256 !== pins.get(CT40_RESULT_PATH)?.sha256) {
+    add(errors, 'proof_review_chain_binding_invalid', 'Proof must bind its final CT-40 U commit and result hash directly.');
   }
   if (candidate.ct40_result?.path !== CT40_RESULT_PATH || candidate.ct40_result?.sha256 !== pins.get(CT40_RESULT_PATH)?.sha256) {
     add(errors, 'proof_ct40_pin_mismatch', 'Proof CT-40 result must match the reviewed subject pin.');
@@ -328,11 +332,24 @@ function validateProofSemantics(root, proof, pins, errors, ct40Commit, review) {
     add(errors, 'proof_patch_decoded_pin_mismatch', 'Proof decoded patch hash must match the independently reviewed subject binding.');
   }
   const dependencies = proof.rollback?.runtime_dependency_closure || [];
-  const committedDependencies = dependencies.filter(dependency => dependency?.source_commit === ct40Commit);
-  const vendorDependency = dependencies.filter(dependency => dependency?.path === 'js/vendor/globe.gl.js' && dependency?.source_commit === null);
-  if (committedDependencies.length !== 13 || vendorDependency.length !== 1 ||
-      dependencies.some(dependency => dependency?.source_commit !== ct40Commit && dependency?.path !== 'js/vendor/globe.gl.js')) {
-    add(errors, 'proof_runtime_dependency_commit_binding_invalid', 'All thirteen committed runtime dependencies must be sourced from U; only the verified vendor dependency may be external.');
+  const treeDependencies = dependencies.filter(dependency => dependency?.source_binding === 'runtime_content_tree');
+  const vendorDependency = dependencies.filter(dependency => dependency?.path === 'js/vendor/globe.gl.js' &&
+    dependency?.source_binding === 'verified_external_sha256');
+  if (treeDependencies.length !== 13 || vendorDependency.length !== 1 ||
+      dependencies.some(dependency => Object.hasOwn(dependency || {}, 'source_commit'))) {
+    add(errors, 'proof_runtime_dependency_tree_binding_invalid', 'All thirteen repository dependencies must use the squash-safe content tree; only the verified vendor dependency may use its external SHA-256 binding.');
+  }
+  try {
+    const treeSha256 = runtimeContentTreeHash(proof.rollback?.controls || [], dependencies);
+    if (candidate.runtime_control?.format !== RUNTIME_CONTENT_TREE_FORMAT ||
+        candidate.runtime_control?.sha256 !== treeSha256 ||
+        candidate.runtime_control?.git_history_required !== false ||
+        candidate.runtime_control?.squash_merge_safe !== true ||
+        proof.rollback?.source_runtime_tree_sha256 !== treeSha256) {
+      add(errors, 'proof_runtime_content_tree_invalid', 'Proof runtime controls must bind the exact squash-safe SHA-256 path/content tree.');
+    }
+  } catch (error) {
+    add(errors, 'proof_runtime_content_tree_invalid', error.message);
   }
   if (!/^[a-f0-9]{64}$/.test(proof.calculation_hash || '') || proof.calculation_hash !== calculationHash(proof)) {
     add(errors, 'proof_calculation_hash_mismatch', 'Rollback proof calculation hash is not canonical.');

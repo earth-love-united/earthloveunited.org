@@ -431,16 +431,16 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <!-- ELU 0.7 globe HUD: both deferred sheets form one atomic readiness gate. -->
 <script>
 (function () {
-  var state = { globe: false, guided: false, failed: false, published: null };
   window.__ELU_GLOBE_STYLE_RESULT__ = function (name, ready) {
     if (name !== 'globe' && name !== 'guided') return;
-    if (ready) state[name] = true;
-    else state.failed = true;
     var root = document.documentElement;
     root.dataset[name === 'globe' ? 'globeSystemStylesReady' : 'guidedOrbitStylesReady'] = ready ? 'true' : 'error';
-    var result = state.failed ? 'error' : (state.globe && state.guided ? 'true' : null);
-    if (!result || state.published === result) return;
-    state.published = result;
+    var globe = root.dataset.globeSystemStylesReady;
+    var guided = root.dataset.guidedOrbitStylesReady;
+    var result = globe === 'error' || guided === 'error'
+      ? 'error'
+      : (globe === 'true' && guided === 'true' ? 'true' : null);
+    if (!result || root.dataset.globeStylesReady === result) return;
     root.dataset.globeStylesReady = result;
     window.dispatchEvent(new Event(result === 'true' ? 'elu:globe-styles-ready' : 'elu:globe-styles-error'));
   };
