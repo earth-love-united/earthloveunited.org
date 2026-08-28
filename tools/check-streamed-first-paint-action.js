@@ -48,12 +48,11 @@ async function main() {
   const firstChunk = html.slice(0, splitAt);
   const finalChunk = html.slice(splitAt);
   let pendingTail = null;
-  let streamClaimed = false;
 
   const server = http.createServer((request, response) => {
     const url = new URL(request.url, 'http://127.0.0.1');
-    if (url.pathname === '/' && !streamClaimed) {
-      streamClaimed = true;
+    if (url.pathname === '/') {
+      assert.equal(pendingTail, null, 'stream cases must run sequentially');
       response.writeHead(200, {
         'Cache-Control': 'no-store',
         'Content-Type': 'text/html; charset=utf-8',
@@ -99,49 +98,123 @@ async function main() {
       serviceWorkers: 'block',
       viewport: { width: 412, height: 823 },
     });
-    const page = await context.newPage();
-    const pageErrors = [];
-    page.on('pageerror', error => pageErrors.push(error.message));
-    await page.goto(url, { waitUntil: 'commit', timeout: 15000 });
-    const button = page.locator('.enter-btn[data-action="enterGlobe"]');
-    await button.waitFor({ state: 'visible', timeout: 10000 });
-    await page.waitForFunction(() => performance.getEntriesByName('first-contentful-paint').length > 0, null, { timeout: 10000 });
+    const releaseTail = () => {
+      assert.ok(pendingTail, 'server must retain the streamed tail until the test releases it');
+      const tail = pendingTail;
+      pendingTail = null;
+      tail.response.end(tail.finalChunk);
+    };
+    const activationResults = {};
 
-    const before = await page.evaluate(() => ({
-      appBound: window.App?._staticActionsBound === true,
-      bridge: Boolean(window.__ELU_EARLY_GLOBE__),
-      documentState: document.readyState,
-      fcp: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || null,
-      now: performance.now(),
-    }));
-    assert.equal(before.bridge, true, 'capture bridge must exist by first contentful paint');
-    assert.equal(before.appBound, false, 'stream tail must still hold the deferred App runtime');
-    assert.equal(before.documentState, 'loading', 'document must still be streaming at the interaction boundary');
+    for (const activation of ['pointer', 'enter', 'space']) {
+      const page = await context.newPage();
+      const pageErrors = [];
+      page.on('pageerror', error => pageErrors.push(error.message));
+      await page.goto(url, { waitUntil: 'commit', timeout: 15000 });
+      const button = page.locator('.enter-btn[data-action="enterGlobe"]');
+      await button.waitFor({ state: 'visible', timeout: 10000 });
+      await page.waitForFunction(() => performance.getEntriesByName('first-contentful-paint').length > 0, null, { timeout: 10000 });
 
-    await button.click();
-    const after = await page.evaluate(() => ({
-      appBound: window.App?._staticActionsBound === true,
-      busy: document.querySelector('.enter-btn')?.getAttribute('aria-busy') || null,
-      disabled: document.querySelector('.enter-btn')?.disabled === true,
-      globeMode: document.body.classList.contains('globe-mode'),
-      pending: window.__ELU_EARLY_GLOBE__?.pending === true,
-      requestedAt: window.__ELU_EARLY_GLOBE__?.requestedAt || null,
-      status: document.getElementById('app-readiness-status')?.textContent || '',
-    }));
-    assert.equal(after.appBound, false, 'stream tail must remain paused through the first click');
-    assert.equal(after.pending, true, 'first-paint click must queue while the document is still streaming');
-    assert.equal(after.busy, 'true', 'first-paint click must expose an immediate busy state');
-    assert.equal(after.disabled, true, 'first-paint click must prevent duplicate activation');
-    assert.equal(after.globeMode, false, 'hero must remain stable until exact evidence and renderer readiness');
-    assert.ok(Number.isFinite(after.requestedAt), 'first-paint click must retain an exact request timestamp');
-    assert.match(after.status, /Loading verified country evidence/, 'first-paint click must announce its queued state');
+      const before = await page.evaluate(() => ({
+        appBound: window.App?._staticActionsBound === true,
+        bridge: Boolean(window.__ELU_EARLY_GLOBE__),
+        documentState: document.readyState,
+        fcp: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || null,
+        now: performance.now(),
+      }));
+      assert.equal(before.bridge, true, `${activation}: capture bridge must exist by first contentful paint`);
+      assert.equal(before.appBound, false, `${activation}: stream tail must still hold the deferred App runtime`);
+      assert.equal(before.documentState, 'loading', `${activation}: document must still be streaming at the interaction boundary`);
 
-    assert.ok(pendingTail, 'server must retain the streamed tail until after the interaction assertion');
-    pendingTail.response.end(pendingTail.finalChunk);
-    pendingTail = null;
-    await page.waitForLoadState('domcontentloaded', { timeout: 15000 });
-    await page.waitForFunction(() => window.App?._staticActionsBound === true && window.__ELU_EARLY_GLOBE__?.pending === false, null, { timeout: 15000 });
-    assert.deepEqual(pageErrors, [], `streamed first-paint path emitted page errors: ${pageErrors.join('; ')}`);
+      if (activation === 'pointer') await button.click();
+      else {
+        await button.focus();
+        await button.press(activation === 'enter' ? 'Enter' : 'Space');
+      }
+      const after = await page.evaluate(() => ({
+        appBound: window.App?._staticActionsBound === true,
+        busy: document.querySelector('.enter-btn')?.getAttribute('aria-busy') || null,
+        disabled: document.querySelector('.enter-btn')?.disabled === true,
+        globeMode: document.body.classList.contains('globe-mode'),
+        pending: window.__ELU_EARLY_GLOBE__?.pending === true,
+        requestedAt: window.__ELU_EARLY_GLOBE__?.requestedAt || null,
+        status: document.getElementById('app-readiness-status')?.textContent || '',
+      }));
+      assert.equal(after.appBound, false, `${activation}: stream tail must remain paused through activation`);
+      assert.equal(after.pending, true, `${activation}: first-paint activation must queue while the document is still streaming`);
+      assert.equal(after.busy, 'true', `${activation}: first-paint activation must expose an immediate busy state`);
+      assert.equal(after.disabled, true, `${activation}: first-paint activation must prevent duplicates`);
+      assert.equal(after.globeMode, false, `${activation}: hero must remain stable until exact evidence and renderer readiness`);
+      assert.ok(Number.isFinite(after.requestedAt), `${activation}: activation must retain an exact request timestamp`);
+      assert.match(after.status, /Loading verified country evidence/, `${activation}: activation must announce its queued state`);
+
+      releaseTail();
+      await page.waitForLoadState('domcontentloaded', { timeout: 15000 });
+      await page.waitForFunction(() => window.App?._staticActionsBound === true && window.__ELU_EARLY_GLOBE__?.pending === false, null, { timeout: 15000 });
+      assert.deepEqual(pageErrors, [], `${activation}: streamed first-paint path emitted page errors: ${pageErrors.join('; ')}`);
+      activationResults[activation] = { before, after };
+      await page.close();
+    }
+
+    const focusPage = await context.newPage();
+    const focusErrors = [];
+    focusPage.on('pageerror', error => focusErrors.push(error.message));
+    await focusPage.goto(url, { waitUntil: 'commit', timeout: 15000 });
+    await focusPage.locator('.enter-btn[data-action="enterGlobe"]').waitFor({ state: 'visible', timeout: 10000 });
+    releaseTail();
+    await focusPage.waitForLoadState('domcontentloaded', { timeout: 15000 });
+    await focusPage.waitForFunction(() => window.App?._staticActionsBound === true, null, { timeout: 15000 });
+    const topbarState = await focusPage.evaluate(() => {
+      const topbar = document.getElementById('topbar');
+      return {
+        ariaHidden: topbar?.getAttribute('aria-hidden') || null,
+        inert: topbar?.hasAttribute('inert') === true,
+      };
+    });
+    assert.equal(topbarState.inert, true, 'Foundation view must keep the invisible topbar inert');
+    assert.equal(topbarState.ariaHidden, 'true', 'Foundation view must keep the invisible topbar out of the accessibility tree');
+    await focusPage.locator('.enter-btn[data-action="enterGlobe"]').focus();
+    const foundationFocusTrail = [];
+    for (let index = 0; index < 8; index += 1) {
+      await focusPage.keyboard.press('Tab');
+      foundationFocusTrail.push(await focusPage.evaluate(() => ({
+        id: document.activeElement?.id || null,
+        inTopbar: document.activeElement?.closest?.('#topbar') != null,
+        tag: document.activeElement?.tagName || null,
+      })));
+    }
+    assert.equal(foundationFocusTrail.some(entry => entry.inTopbar), false, 'Foundation Tab order must skip every invisible topbar control');
+    await focusPage.locator('.enter-btn[data-action="enterGlobe"]').focus();
+    assert.equal(await focusPage.evaluate(() => window.App.enterGlobe()), true, 'normal globe entry must remain available after the focus-order check');
+    await focusPage.waitForFunction(() => document.body.classList.contains('globe-mode'), null, { timeout: 15000 });
+    const globeTopbarState = await focusPage.evaluate(() => {
+      const topbar = document.getElementById('topbar');
+      return {
+        ariaHidden: topbar?.getAttribute('aria-hidden') || null,
+        inert: topbar?.hasAttribute('inert') === true,
+      };
+    });
+    assert.equal(globeTopbarState.inert, false, 'globe mode must restore topbar focusability');
+    assert.equal(globeTopbarState.ariaHidden, null, 'globe mode must restore topbar accessibility-tree visibility');
+    await focusPage.locator('#globe-theme-toggle').focus();
+    assert.equal(await focusPage.evaluate(() => document.activeElement?.id), 'globe-theme-toggle', 'visible globe topbar control must accept focus');
+    await focusPage.evaluate(() => window.App.exitGlobe());
+    await focusPage.waitForFunction(() => !document.body.classList.contains('globe-mode'), null, { timeout: 5000 });
+    await focusPage.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    const returnedTopbarState = await focusPage.evaluate(() => {
+      const topbar = document.getElementById('topbar');
+      const active = document.activeElement;
+      return {
+        ariaHidden: topbar?.getAttribute('aria-hidden') || null,
+        inert: topbar?.hasAttribute('inert') === true,
+        openerRestored: active?.matches?.('.enter-btn[data-action="enterGlobe"]') === true,
+      };
+    });
+    assert.equal(returnedTopbarState.inert, true, 'globe exit must make the hidden topbar inert again');
+    assert.equal(returnedTopbarState.ariaHidden, 'true', 'globe exit must hide the topbar from the accessibility tree again');
+    assert.equal(returnedTopbarState.openerRestored, true, 'globe exit must restore focus to the Foundation opener');
+    assert.deepEqual(focusErrors, [], `Foundation focus path emitted page errors: ${focusErrors.join('; ')}`);
+    await focusPage.close();
 
     process.stdout.write(`${JSON.stringify({
       ok: true,
@@ -149,8 +222,11 @@ async function main() {
       streamed_bytes_before_tail: Buffer.byteLength(firstChunk),
       bridge_byte_offset: bridgeAt,
       hero_byte_offset: heroAt,
-      before,
-      after,
+      activation_results: activationResults,
+      foundation_topbar: topbarState,
+      foundation_focus_trail: foundationFocusTrail,
+      globe_topbar: globeTopbarState,
+      returned_topbar: returnedTopbarState,
     }, null, 2)}\n`);
   } finally {
     if (pendingTail) pendingTail.response.destroy();

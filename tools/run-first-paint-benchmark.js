@@ -389,7 +389,7 @@ async function runEarlyAction(targetUrl) {
       clicked_after_fcp_ms: clickAt - fcp,
       acknowledgement_ms: acknowledgementAt - clickAt,
       early_bridge_present: Boolean(window.__ELU_EARLY_GLOBE__),
-      app_bound: Boolean(window.__ELU_EARLY_GLOBE__ && window.__ELU_EARLY_GLOBE__.appBound),
+      app_bound: window.App?._staticActionsBound === true,
       pending_intent: Boolean(window.__ELU_EARLY_GLOBE__ && window.__ELU_EARLY_GLOBE__.pending),
       button_disabled: button.disabled,
       button_busy: button.getAttribute('aria-busy'),

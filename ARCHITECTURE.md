@@ -81,8 +81,9 @@ first paint; ordered execution still completes before `DOMContentLoaded`:
 A dependency-free inline bridge acknowledges and queues a globe-entry click
 before those deferred files finish. `App` consumes that intent while the
 exact-SHA country evidence loads. Globe mode itself remains fail-closed until
-the asynchronous `globe-system.css` link marks its HUD geometry ready; a load
-error leaves every globe control hidden and keeps the Foundation view active.
+both asynchronous `globe-system.css` and `guided-first-orbit.css` links mark
+their HUD geometry ready; either load error leaves every globe control hidden
+and keeps the Foundation view active.
 
 `js/vendor/globe.gl.js` is loaded by `App.enterGlobe()` rather than at page
 boot. This keeps WebGL work out of the foundation-page path.
@@ -453,8 +454,8 @@ Rules:
 
 ## Service worker and freshness
 
-The source candidate uses `sw.js` cache epoch v77. The separately authorized
-CCI AI-factual builder deterministically stages epoch v79, with coupled script
+The source candidate uses `sw.js` cache epoch v78. The separately authorized
+CCI AI-factual builder deterministically stages epoch v80, with coupled script
 query pins, so the public browser cannot pair transformed runtime code with the
 candidate cache. The active epoch precaches the public page, core CSS/JS, the refined
 three-move Climate Intelligence first orbit with separately spaced visual cue lanes and runtime-enforced compact lens/card air, the shared raised-tile lenses, evidence-only

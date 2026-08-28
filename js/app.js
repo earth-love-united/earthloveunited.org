@@ -12,6 +12,7 @@ const App = {
 
   async init() {
     syncHeroScrollState();
+    _setTopbarInteractive(document.body.classList.contains('globe-mode'));
     _bindGlobeLoadingEvents();
     this._bindStaticActions();
 
@@ -160,6 +161,7 @@ const App = {
     document.body.classList.add('globe-mode');
     document.body.classList.remove('hero-active');
     document.body.setAttribute('aria-busy', 'true');
+    _setTopbarInteractive(true);
     $('topbar')?.classList.add('visible');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     _setGlobeLoading(true, 'Verifying country evidence and globe assets');
@@ -271,6 +273,7 @@ const App = {
     _setEvidenceBrowseEnabled(false);
     _setGlobeLoading(false);
     safeCall('GlobeModule', 'pause');
+    _setTopbarInteractive(false);
     document.body.classList.remove('globe-mode');
     document.body.removeAttribute('aria-busy');
     $('topbar')?.classList.remove('visible');
@@ -325,6 +328,18 @@ function _setEvidenceBrowseEnabled(enabled) {
   if (!button) return;
   button.disabled = !enabled;
   button.setAttribute('aria-disabled', String(!enabled));
+}
+
+function _setTopbarInteractive(interactive) {
+  const topbar = $('topbar');
+  if (!topbar) return;
+  if (interactive) {
+    topbar.removeAttribute('inert');
+    topbar.removeAttribute('aria-hidden');
+    return;
+  }
+  topbar.setAttribute('inert', '');
+  topbar.setAttribute('aria-hidden', 'true');
 }
 
 function _setEnterGlobeBusy(busy) {
