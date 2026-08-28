@@ -36,6 +36,7 @@ const EXTERNAL_GENERATED_DEPENDENCIES = Object.freeze([
 ].sort());
 const SUBJECT_PATHS = Object.freeze([
   '404.html',
+  'AGENTS.md',
   '.github/workflows/ci.yml',
   '.github/CODEOWNERS',
   '.gitignore',
