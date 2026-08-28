@@ -1,6 +1,6 @@
 {
-  "calculation_hash": "12849b48b1c8ad72f1681b8ab831196771ae378e708f3cdd9f00733ee2473b8d",
-  "created_at": "2026-08-28T17:37:15Z",
+  "calculation_hash": "e38d885590b668e7c7bd30b76d0a35256af823bae0123e1c58d5d46a15039d41",
+  "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
     "ct40_reuse_allowed": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "ed75540e563a4e41e9f5104a6d8c1d085613a6e7dd48a0e24eade8d0c8a07ecb",
+    "artifact_pin_digest": "785847e88cd8321b763c71cfac2538675ff86ce84df8a352b3e7ccf184246e9e",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -233,7 +233,7 @@
       },
       {
         "path": "ARCHITECTURE.md",
-        "sha256": "c5316fd833d7112a610814a36ceccea1f3e30ddd7c4c6c1d010e87245b0f875d"
+        "sha256": "4bed6b2dc8c1658b45ea93f2a53369927e09afbbe477a6a751647114553b446b"
       },
       {
         "path": "CREDITS.md",
@@ -461,7 +461,7 @@
       },
       {
         "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
-        "sha256": "02e421b1ec786af6f048c0149fff27cfce1044002e7160903b1aabee6455a01d"
+        "sha256": "b59fe84834588fb18166aafa4346100f9886ba7fce26d28a51e9c054b02a424d"
       },
       {
         "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -561,7 +561,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "a386792cc3b2efc10a517e96c3e7e93c4a47a22a9ad24500823fb7ffed22ab20"
+        "sha256": "a414f320c06c1d287ccf3ec5c6c4b5ef0e8e81d43dc2ad41e57da7e35f992a2f"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -741,7 +741,7 @@
       },
       {
         "path": "data/performance/first-paint-mobile-2026-08-28.json",
-        "sha256": "b6d027a9229686b0cbc084f3c4423aac01f47ce4d739450b66169d89d0efd9a1"
+        "sha256": "3320f6d9c70d6bd2a4b7158e43705e8291a79940e8daf1c8e787aafca9fd433b"
       },
       {
         "path": "data/pledge-nodes.json",
@@ -797,11 +797,11 @@
       },
       {
         "path": "index.html",
-        "sha256": "75d8ae2267c08f3b0f3bd1e9ab46bad7b207735d62af5cfc49920ef841662d35"
+        "sha256": "374ebf8df051be81b7dc9b6a9a78cae557bfd7753380a5873a28dd972dc4046d"
       },
       {
         "path": "js/app.js",
-        "sha256": "db08399c17c81e9b8adddd719d10cb4babe28af4dd3ffed3e49e48e4b8e41d13"
+        "sha256": "b498b029a16902c17240896fd4add7830e2a244f08bf2065abf4f0e7a737f913"
       },
       {
         "path": "js/carbon-clock.js",
@@ -1041,7 +1041,7 @@
       },
       {
         "path": "tools/check-ct42-runtime-rollback-proof.js",
-        "sha256": "f6bf47fcb6722ba9741fac6366e2b11e5b912f5181ffcf9ff5d4af3f9376328b"
+        "sha256": "de027eb2c76df497528b31bbab61c0e9408be96af1f41840d291b4a5b40a790d"
       },
       {
         "path": "tools/check-ct42-runtime-rollback-review.js",
@@ -1049,7 +1049,7 @@
       },
       {
         "path": "tools/check-first-paint-performance-receipt.js",
-        "sha256": "49bda97ae0909126b502ee639e103691f846f55bb4024301f9f5cfa62de37778"
+        "sha256": "139f8ba0201972c9de126bfb660d81c5ef02275ff54e7c36df04430d5c59ed5e"
       },
       {
         "path": "tools/check-globe-runtime-approval.js",
@@ -1137,7 +1137,7 @@
       },
       {
         "path": "tools/check-streamed-first-paint-action.js",
-        "sha256": "8c3b73ae347b70ace030c71e170928c265ea935acbf118a3d07f0ff360877ca5"
+        "sha256": "7713d95082e219ba70d87ffdd5aad44f4b556e198999b98f79806067f4aa240e"
       },
       {
         "path": "tools/check-target-comparability.js",
@@ -1261,7 +1261,7 @@
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-proof.js",
-        "sha256": "c50c1ecbf011b12cfd6fcf5b24396c93b99c387f54c0c03942f9d2c2ee8c555d"
+        "sha256": "1fd541c8880158529c0a8abcdefe24bc43957b17eeeeba52f03d7662076cc546"
       },
       {
         "path": "tools/lib/ct42-runtime-rollback-review.js",
@@ -1369,7 +1369,7 @@
       },
       {
         "path": "tools/run-first-paint-benchmark.js",
-        "sha256": "7edb22aed0b3bfe522b715253e579cb25a0d8d3eded96532e67a21c2fab2cb77"
+        "sha256": "6ce919fecfbfb720325f9e31ece1458ee2906d5665b09165eddfc239d00dddbf"
       },
       {
         "path": "tools/smoke-test.js",
