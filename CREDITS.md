@@ -251,8 +251,10 @@ Country-level emissions records from 1751 to present.
 
 ## Fonts & visual assets
 
-All UI fonts in the site are either system fonts or loaded from Google Fonts
-under the SIL Open Font License (OFL).
+The site self-hosts Cormorant Garamond, Outfit, and JetBrains Mono as WOFF2
+assets under the SIL Open Font License 1.1; exact hashes and family-specific
+licence files live in [`assets/fonts/`](assets/fonts/README.md). System fonts
+remain as fallbacks.
 
 Visual designs (color palette, glassmorphic UI patterns, ring animations) are
 original to Earth Love United and shared under the same MIT license as the

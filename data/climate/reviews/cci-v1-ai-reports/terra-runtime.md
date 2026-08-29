@@ -1,58 +1,33 @@
-# Superseding final runtime/accessibility/release-rails review
+# Terra runtime/accessibility/release-rails review
 
 Reviewer: `ai-reviewer:terra-runtime`
-Model: `gpt-5.6-terra`
-Canonical subject digest: `3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200`
-Review-request SHA-256: `0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372`
-Base commit: `91357d1389c2269609328ffb332850d5e8b85637`, with the supplied uncommitted mitigation subject.
-Staged surface: 51 exact files.
+Verdict: `approve`
 
-## Verified evidence
+Reviewed HEAD: `108e6b6be2e3a53c45b4c2a596de11656774ab8c`
+Runtime focus control: `4adeea0fc327f53b3f4e2082185d156f296ed4f5`
+Canonical subject digest: `75804cbb652bedb85acabf35996889600f82a963aebb124f4960b7a1f7b0e017`
+Review-request SHA-256: `8fe8a47dbf8eea2081f7135ab11b3baab1c4af164e6fc9542d7ceaf06c780753`
+Calculation hash: `dfd4b50b1482bbc6688b68b1536b8a2700625873424f13a60be8427bab093f35`
 
-- `node tools/check-cci-factual-public-deploy.js --staged _deploy` — PASS; exact rights-safe 51-file surface.
-- `node tools/check-country-climate-intelligence-ci.js` — PASS; CCI SHA `4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe`, 249 entities, 26 metrics, three lenses.
-- `node tools/check-globe-webgl-fallback.js` — PASS; exact WebGL/fallback parity and explicit gaps.
-- `node tools/check-globe-runtime-assets.js` — PASS: 63/63 policy checks, 149 adversarial mutations rejected, 3 staged-symlink cases rejected, and production/release authority remains false.
-- `node tools/climate-truth-ci.js --strict` — PASS.
-- `python3 scripts/verify_load_order.py`; `node --check sw.js js/*.js` — PASS.
-- Existing human release rails remain intact:
-  - CCI signature gate: candidate / 24 fail-closed mutations.
-  - Globe-asset approval trust: unprovisioned / 38 fail-closed mutations.
-  - CT-42 deterministic rollback proof: PASS, still explicitly non-authorizing.
+## Evidence
 
-## Post-mitigation findings
+- Recomputed all 300 canonical artifact pins after runtime testing. Every SHA-256 matches the frozen request; the subject digest and calculation hash also match.
+- Reviewed the early-opener control. The pre-App bridge records the activated CTA, App consumes that exact element on deferred binding, and the stored opener is used for the later focus return.
+- Independent Chromium streaming coverage passed for pointer, Enter, and Space. Before tail release, the CTA was visible after FCP while `document.readyState` was `loading`, the bridge existed, and App remained unbound. Each activation set `aria-busy="true"`, disabled duplicate entry, queued the intent, and announced readiness without prematurely entering globe mode.
+- After streamed tail release, each modality reached `globe-mode` with exactly one `#globeViz canvas`; `App.exitGlobe()` restored focus to the exact activated CTA and returned the topbar to `inert` plus `aria-hidden="true"`.
+- Foundation focus coverage confirmed the topbar starts inert and hidden from the accessibility tree, eight Tab steps do not enter it, globe mode removes both restrictions and permits topbar focus, and exit restores both restrictions.
+- Independently faulted `globe-system.css` and `guided-first-orbit.css` one at a time. Each fault set stylesheet readiness to `error`, kept globe mode false with zero canvas, retained inert/hidden topbar state, showed `The Living Globe interface could not be prepared. Please retry.`, and emitted no page errors.
+- A normal live Chromium session passed SmokeTest `30/30` with zero failures and zero critical failures, StackLint returned `[]`, runtime readiness was 249 entities, 26 metrics, and 3 lenses, and globe entry retained one canvas.
+- Source v78 and an independently materialized exact 51-file transformed v80 surface both loaded online and offline. Source used controller/cache `sw.js?v=78-first-paint-ready` and `elu-v78-first-paint-ready`; staged output used `sw.js?v=80-cci-factual-ai-review` and `elu-v80-cci-factual-ai-review`. In both cases App binding, exact data readiness, and stylesheet readiness remained true.
+- Static and release checks passed: load-order DAG, syntax checks, runtime atomicity, accessibility contract, UI contract, WebGL fallback parity, factual deploy transform self-test, profile isolation self-test, vendor integrity, and runtime-asset policy.
+- The first-paint receipt checker passed. Its `27.225×` result is limited to the hero LCP asset payload; the `6.161×` local median is a local cold-run result only, and transfer evidence remains partial.
+- CT42 rollback proof passed as deterministic local evidence with calculation hash `c447b6878b4a4b1ffc43d17631c189125c219bb6ca861851e888c65db4bb0920`. It explicitly records browser execution as an external required gate, not run or recorded by that proof checker, and denies release/deploy/independent-review authority. The actual independent CT42 review checker correctly fails closed because its required artifact is absent.
 
-No blocker was found in the implementation subject.
+## Conditions and release boundaries
 
-- The smoke job now derives and emits `integrity_mode`; CCI candidate selects `cci-ai-factual`, while legacy candidate and release profiles retain distinct routes.
-- The CCI browser build has its own unique job step and uses the AI-factual staged surface.
-- The final aggregate verifier receives `smoke_profile.outputs.integrity_mode`, eliminating the previous candidate-mode misrouting.
-- CT-45 policy recognizes CCI’s profile-aware route and attacks route reversal/hardcoding through fixtures.
-- The AI-factual lane correctly expects 404 for the excluded images; non-AI/full-texture lanes retain the exact `image/png` sky MIME assertion.
-- NASA-only surface/null sky, eliminated inverted Carbon relief, explicit fallback disclosure, cache epoch coupling, and the 51-file surface remain unchanged and verified.
-- The existing human-signed production gate is not weakened or repurposed by the AI-factual profile.
+1. Regenerate and repin all four AI reports and the multi-model aggregate against this exact HEAD, subject digest, and request before invoking the CCI AI-factual profile or staged release lane. The active profile is correctly `cci:candidate`; the current AI-factual checker blocks because the aggregate subject does not bind this exact candidate.
+2. Retain Chromium CI coverage for streamed pointer, Enter, and Space activation; exact opener restoration; Foundation/globe topbar focus state; both stylesheet faults; one-canvas readiness; and source-v78/staged-v80 offline behavior.
+3. CT42 deterministic rollback proof is not an independent CT42 review and must not be represented as legal, publication, release, or deploy authority.
+4. The v80 transformed staging result is verification evidence only; it does not authorize a deployment.
 
-## Conditions and limitations
-
-1. The four-report aggregate is still draft (`draft_final_sol_pending`); its final report pins, condition receipts, authorization, and current subject binding must be completed before the strict AI-factual profile can authorize staging.
-2. CI must run the exact Chromium SmokeTest/StackLint path against this final staged digest. Local Playwright Chromium is unavailable, so the reviewer did not independently execute the live WebGL browser lane.
-3. This approval applies only to the separately labeled AI-reviewed source-data lane. It does not authorize a human-reviewed, legally certified, or signed production release.
-
-`post_mitigation_verdict: approve_with_conditions`
-
-## Terra final binding addendum — 2026-08-28T03:07:23Z
-
-Model: `gpt-5.6-terra`
-Reviewed commit: `3a9a17b7c6d04e92f8fe3b9248af806e0f807b93`
-Bound subject: `3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200`
-Request SHA-256: `0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372`
-
-- The revised `expectedPublicOutputSha()` is correct: it falls back only for the exact vendor destination with `ENOENT`.
-- Direct branch tests for absent exact vendor, present-good vendor, dangling symlink, regular-symlink rejection, permission failure, and absent non-vendor all behaved fail-closed as intended.
-- The actual ignored/untracked vendor remains exact when present: `2ab6767f47e2be0ac346cd7a5eb55d259ea3da06d479dc22f1820ddd698f496a`.
-- CCI deploy self-test, the 51-file staged check, and release-profile isolation passed.
-- Candidate/runtime/signature/rollback rails pass; the checked-in human-signature gate remains candidate-only and fail-closed.
-
-Remaining condition: repin the four reports and aggregate to the final subject/request, then rerun the strict checker and complete Chromium CI/browser runtime evidence.
-
-`post_mitigation_verdict: approve_with_conditions`
+This is an AI runtime/accessibility/release-rails review only. It grants no human, legal, institutional, publication, release, or deploy authority.

@@ -1,5 +1,37 @@
 # Factual-public deployment
 
+There are two deliberately separate factual-public paths. The historical
+`limited_factual_display` path below serves the reviewed CT-42 surface. The
+current Country Climate Intelligence candidate uses the separately authorized
+`cci_ai_factual` path; neither path grants the signed, human-reviewed assessed
+release authority used by `tools/build-deploy.sh --release`.
+
+## Country Climate Intelligence AI-factual path
+
+The CCI path combines the immutable four-specialist-review base with one
+fail-closed presentation/performance delta review. The delta can cover only the
+exact enumerated presentation, font-delivery, first-paint evidence,
+deterministic rollback, and release-rail files. Any climate runtime/source,
+source-rights, globe data/texture, scoring, target, finance, or publication
+boundary change is rejected and requires fresh specialist review.
+
+Cloudflare Pages contract for this path:
+
+- Production branch: `main`
+- Build command: `./tools/build-cci-factual-public-deploy.sh --cci-ai-factual`
+- Build output directory: `_deploy`
+- Branch preview builds: refused by the script
+
+The build first verifies the current exact review request, the frozen four
+reports, the focused delta, and the composite publication artifact. It then
+stages the exact CCI factual allowlist, applies the reviewed browser transforms,
+and finishes with both independent staged-integrity checks. The project setting
+must be changed to this command only after the protected PR is approved and
+merged to `main`; a PR preview failure is expected and is not publication
+authority.
+
+## Historical CT-42 limited factual display
+
 This is the narrow production path for the reviewed 2023 emissions-magnitude
 globe. It publishes factual evidence and explicit source gaps only. It does not
 publish commitments, targets, delivery judgments, climate-performance states,
@@ -23,6 +55,10 @@ listed below. CCI, mixed/partial authority packages, and
   remain absent and ineligible.
 - The exact CT-42 data/UI review, deterministic rollback proof, localized runtime bytes,
   source links, public copy, notices, and marker-free browser allowlist pass.
+
+The deterministic rollback proof is squash-safe: exact file SHA-256 pins roll
+up into a canonical path/content-tree digest, and CI rehearses the proof after
+pruning the feature branch's intermediate commit objects.
 
 The gate is `node tools/check-climate-factual-public-readiness.js`. A protected
 maintainer-reviewed merge authorizes this narrow deployment. It does not create

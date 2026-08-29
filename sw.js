@@ -1,10 +1,10 @@
 /**
  * Service Worker — Earth Love United
  * Cache-first for media, network-first for HTML, data, CSS, and JavaScript.
- * Globe cache (v76) — atomically stage candidate.7 with independently
+ * Globe cache (v79) — atomically stage candidate.7 with independently
  * re-fetched open-source inputs, review-safe presentation, and rollback runtime.
  */
-const CACHE_NAME = 'elu-v77-cci-raw-byte-boundary';
+const CACHE_NAME = 'elu-v79-self-hosted-fonts';
 const STATIC_ASSETS = [
   // HTML
   '/',
@@ -13,8 +13,17 @@ const STATIC_ASSETS = [
   '/css/carbon-clock.css?v=v2',
   '/css/globe-system.css?v=v43',
   '/css/guided-first-orbit.css?v=v11',
-  '/assets/legacy/elu-logo.png',
-  '/assets/legacy/elu-logo-light.png?v=light-title-mint',
+  '/assets/legacy/elu-logo.png?v=mint-384-p256',
+  '/assets/legacy/elu-logo-light.png?v=light-title-mint-384-p256',
+  '/assets/fonts/cormorant-garamond-site.woff2?v=7f4b7877020b',
+  '/assets/fonts/outfit-site.woff2?v=fff758eb92d3',
+  '/assets/fonts/jetbrains-mono-site.woff2?v=317775f7afde',
+  '/assets/fonts/cormorant-garamond-latin-ext.woff2?v=cfa9a397d86f',
+  '/assets/fonts/cormorant-garamond-latin.woff2?v=d80df8ff5aec',
+  '/assets/fonts/outfit-latin-ext.woff2?v=0f53d1c03b39',
+  '/assets/fonts/outfit-latin.woff2?v=6c18d579fd87',
+  '/assets/fonts/jetbrains-mono-latin-ext.woff2?v=db5ff4db83e5',
+  '/assets/fonts/jetbrains-mono-latin.woff2?v=83c005d49d8a',
   '/assets/globe/runtime/manifest.json',
   '/assets/globe/runtime/ne_110m_admin_0_countries.geojson?v=a4d67eac9c75',
   '/assets/globe/runtime/earth-night.jpg?v=373e5a08c9f3',
@@ -33,7 +42,7 @@ const STATIC_ASSETS = [
   '/js/globe.js?v=v40',
   '/js/carbon-clock.js?v=v1',
   '/js/guided-first-orbit.js?v=v6',
-  '/js/app.js?v=v5',
+  '/js/app.js?v=v6',
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
   '/data/climate/runtime/country-climate-intelligence.json?v=cci1runtime13',
@@ -69,7 +78,7 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
-  // Skip external requests (CDNs, APIs, fonts)
+  // Skip external requests (CDNs and APIs)
   if (url.origin !== self.location.origin) return;
 
   // Data files: network-first (always fresh)

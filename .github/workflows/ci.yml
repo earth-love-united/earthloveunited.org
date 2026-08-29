@@ -84,6 +84,9 @@ jobs:
       - name: CCI AI-factual deploy policy self-test
         run: node tools/check-cci-factual-public-deploy.js --self-test
 
+      - name: CCI scoped presentation-performance review policy self-test
+        run: node tools/check-cci-factual-public-review.js --self-test
+
       - name: Country Climate Intelligence public-release exclusion policy
         run: node tools/check-country-climate-public-release-boundary.js --self-test
 
@@ -98,6 +101,12 @@ jobs:
 
       - name: Verify script load-order DAG
         run: python3 scripts/verify_load_order.py
+
+      - name: First-paint performance receipt self-test
+        run: node tools/check-first-paint-performance-receipt.js --self-test
+
+      - name: First-paint performance receipt
+        run: node tools/check-first-paint-performance-receipt.js
 
       - name: Country Climate Intelligence v1 candidate contract
         if: ${{ steps.climate_profile.outputs.profile == 'cci' && steps.climate_profile.outputs.phase == 'candidate' }}
@@ -326,6 +335,9 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.59.1
           npx playwright install chromium --with-deps
 
+      - name: Verify streamed first-paint action capture
+        run: node tools/check-streamed-first-paint-action.js --root _deploy
+
       - name: Serve static site in background
         run: |
           cd _deploy
@@ -441,31 +453,170 @@ jobs:
             trackErrors(target);
             let requestCount = 0;
             const startedAt = Date.now();
+            const appHandler = async route => {
+              await new Promise(resolve => setTimeout(resolve, 1500));
+              await route.continue();
+            };
             const handler = async route => {
               requestCount += 1;
               const response = await route.fetch();
               await new Promise(resolve => setTimeout(resolve, 8500));
               await route.fulfill({ response });
             };
+            await target.route('**/js/app.js*', appHandler);
             await target.route('**/data/climate/runtime/country-climate-intelligence.json*', handler);
-            await target.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
+            await target.goto('http://localhost:8000/', { waitUntil: 'commit', timeout: 30000 });
+            const firstPaintAction = target.locator('.enter-btn[data-action="enterGlobe"]');
+            await firstPaintAction.waitFor({ state: 'visible', timeout: 5000 });
+            await firstPaintAction.click();
+            const earlyState = await target.evaluate(() => ({
+              appBound: window.App?._staticActionsBound === true,
+              pending: window.__ELU_EARLY_GLOBE__?.pending === true,
+              disabled: document.querySelector('.enter-btn')?.disabled === true,
+              busy: document.querySelector('.enter-btn')?.getAttribute('aria-busy'),
+              status: document.getElementById('app-readiness-status')?.textContent || '',
+              globeMode: document.body.classList.contains('globe-mode'),
+            }));
+            assert(!earlyState.appBound && earlyState.pending && earlyState.disabled && earlyState.busy === 'true' &&
+              earlyState.status.includes('Loading verified country evidence') && !earlyState.globeMode,
+              'the first-paint globe action must acknowledge and queue before the deferred App runtime binds');
+            await target.waitForFunction(() => window.App?._staticActionsBound === true, null, { timeout: 10000 });
+            const boundState = await target.evaluate(() => ({
+              pending: window.__ELU_EARLY_GLOBE__?.pending === true,
+              disabled: document.querySelector('.enter-btn')?.disabled === true,
+              busy: document.querySelector('.enter-btn')?.getAttribute('aria-busy'),
+              state: window.Data?.climateIntelligenceState,
+              globeMode: document.body.classList.contains('globe-mode'),
+            }));
+            assert(!boundState.pending && boundState.disabled && boundState.busy === 'true' &&
+              boundState.state === 'loading' && !boundState.globeMode,
+              'App must consume the queued action but keep the hero stable while exact-SHA evidence loads');
             await waitForApp(target);
             const snapshot = await target.evaluate(() => ({
               ready: window.Data.isClimateIntelligenceReady(),
               entities: window.Data.getClimateIntelligenceRelease()?.countries?.length || 0,
               state: window.Data.climateIntelligenceState,
               fallback: document.body.classList.contains('globe-fallback-active'),
+              buttonBusy: document.querySelector('.enter-btn')?.getAttribute('aria-busy'),
             }));
             assert(Date.now() - startedAt >= 8400, 'slow-runtime regression must hold the first response beyond the retired eight-second deadline');
             assert(requestCount === 1 && snapshot.ready && snapshot.entities === 249 && snapshot.state === 'ready' && !snapshot.fallback,
               'an 8.5-second first CCI response must retain all 249 entities without entering fallback');
-            assert(await target.evaluate(() => window.App.enterGlobe()), 'slow first visit must still enter the live globe');
             await waitForLiveGlobe(target);
+            assert(await target.evaluate(() => document.querySelector('.enter-btn')?.getAttribute('aria-busy') === null),
+              'the consumed first-paint action must clear its busy state after renderer readiness');
+            await target.unroute('**/js/app.js*', appHandler);
             await target.unroute('**/data/climate/runtime/country-climate-intelligence.json*', handler);
             await target.close();
           }
 
+          async function exerciseGlobeStylesFailure(urlPattern, failedComponent) {
+            const target = await ctx.newPage();
+            trackErrors(target);
+            let failedRequests = 0;
+            const handler = route => {
+              failedRequests += 1;
+              return route.abort('failed');
+            };
+            await target.route(urlPattern, handler);
+            await target.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
+            await waitForApp(target);
+            assert(await target.evaluate(() => window.App.enterGlobe()) === false,
+              'missing ' + failedComponent + ' CSS must refuse globe-mode activation');
+            const snapshot = await target.evaluate(failed => {
+              const guide = document.getElementById('guided-orbit');
+              if (guide) {
+                guide.hidden = false;
+                guide.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('guided-orbit-active');
+              }
+              const exposed = [
+                '#climate-lens-controls', '#hex-legend', '#elu-country-rank-rail',
+                '#elu-country-card-wrap', '#guided-orbit-replay', '#guided-orbit', '#globe-loading',
+                '#globe-fallback', '#globe-back-btn',
+              ].filter(selector => {
+                const element = document.querySelector(selector);
+                return element && getComputedStyle(element).display !== 'none';
+              });
+              return {
+                componentState: failed === 'guided'
+                  ? document.documentElement.dataset.guidedOrbitStylesReady
+                  : document.documentElement.dataset.globeSystemStylesReady,
+                exposed,
+                globeMode: document.body.classList.contains('globe-mode'),
+                styleState: document.documentElement.dataset.globeStylesReady,
+                status: document.getElementById('app-readiness-status')?.textContent || '',
+              };
+            }, failedComponent);
+            assert(!snapshot.globeMode && snapshot.styleState === 'error' && snapshot.componentState === 'error' && snapshot.exposed.length === 0 &&
+              snapshot.status.includes('could not be prepared'),
+              'failed deferred ' + failedComponent + ' CSS must keep every HUD and tutorial surface hidden and announce retry readiness');
+            await target.unroute(urlPattern, handler);
+            await target.evaluate(() => {
+              const guide = document.getElementById('guided-orbit');
+              if (guide) {
+                guide.hidden = true;
+                guide.setAttribute('aria-hidden', 'true');
+              }
+              document.body.classList.remove('guided-orbit-active');
+            });
+            await target.locator('.enter-btn[data-action="enterGlobe"]').first().click();
+            await waitForLiveGlobe(target);
+            const recovered = await target.evaluate(failed => ({
+              aggregateState: document.documentElement.dataset.globeStylesReady,
+              componentState: failed === 'guided'
+                ? document.documentElement.dataset.guidedOrbitStylesReady
+                : document.documentElement.dataset.globeSystemStylesReady,
+              canvasCount: document.querySelectorAll('#globeViz canvas').length,
+              globeMode: document.body.classList.contains('globe-mode'),
+              fallbackActive: document.body.classList.contains('globe-fallback-active'),
+              status: document.getElementById('app-readiness-status')?.textContent || '',
+              retryHref: document.getElementById(failed === 'guided' ? 'guided-orbit-styles' : 'globe-system-styles')?.href || '',
+            }), failedComponent);
+            assert(failedRequests >= 1 && recovered.aggregateState === 'true' && recovered.componentState === 'true' &&
+              recovered.globeMode && !recovered.fallbackActive && recovered.canvasCount === 1 &&
+              recovered.status === 'The Living Globe is ready.' && recovered.retryHref.includes('elu-style-retry='),
+              'restored ' + failedComponent + ' CSS must reload on the next user click and recover exactly one live renderer');
+            await target.close();
+          }
+
+          async function exerciseServiceWorkerUpgradeOffline() {
+            const swContext = await browser.newContext({ serviceWorkers: 'allow', viewport: { width: 412, height: 823 } });
+            const target = await swContext.newPage();
+            const expectedCache = aiFactual ? 'elu-v80-cci-factual-ai-review' : 'elu-v79-self-hosted-fonts';
+            const expectedEpoch = aiFactual ? 'v=80-cci-factual-ai-review' : 'v=79-self-hosted-fonts';
+            await target.goto('http://localhost:8000/', { waitUntil: 'networkidle', timeout: 30000 });
+            await target.waitForFunction(() => navigator.serviceWorker.controller, null, { timeout: 30000 });
+            await waitForApp(target);
+            const online = await target.evaluate(async () => ({
+              cacheKeys: await caches.keys(),
+              controller: navigator.serviceWorker.controller?.scriptURL || '',
+              dataState: window.Data.climateIntelligenceState,
+            }));
+            assert(JSON.stringify(online.cacheKeys) === JSON.stringify([expectedCache]) &&
+              online.controller.includes(expectedEpoch) && online.dataState === 'ready',
+              'the new service-worker epoch must activate atomically and evict every older cache');
+            await swContext.setOffline(true);
+            await target.reload({ waitUntil: 'domcontentloaded', timeout: 30000 });
+            await waitForApp(target);
+            const offline = await target.evaluate(async () => ({
+              cacheKeys: await caches.keys(),
+              controller: navigator.serviceWorker.controller?.scriptURL || '',
+              dataState: window.Data.climateIntelligenceState,
+              styleReady: document.documentElement.dataset.globeStylesReady,
+            }));
+            assert(JSON.stringify(offline.cacheKeys) === JSON.stringify([expectedCache]) &&
+              offline.controller.includes(expectedEpoch) && offline.dataState === 'ready' &&
+              offline.styleReady === 'true',
+              'the exact new cache must keep HTML, code, styles, and hashed evidence available offline');
+            await swContext.setOffline(false);
+            await swContext.close();
+          }
+
           await exerciseSlowClimateRuntimeFirstVisit();
+          await exerciseGlobeStylesFailure('**/css/globe-system.css*', 'globe');
+          await exerciseGlobeStylesFailure('**/css/guided-first-orbit.css*', 'guided');
+          await exerciseServiceWorkerUpgradeOffline();
           await exercisePreRenderFailure('**/data/climate/runtime/country-climate-intelligence.json*', 'candidate_data_unavailable', { status: 503, body: 'candidate unavailable' }, /\[Data\._indexClimateIntelligence\(\)\] Country Climate Intelligence schema rejected/);
           await exercisePreRenderFailure('**/assets/globe/runtime/ne_110m_admin_0_countries.geojson*', 'country_geometry_unavailable', { status: 503, body: 'geometry unavailable' });
           await exercisePreRenderFailure('**/assets/globe/runtime/earth-night.jpg*', 'visual_assets_unavailable', { status: 200, contentType: 'image/jpeg', headers: { 'Cache-Control': 'no-store' }, body: 'invalid image bytes' });

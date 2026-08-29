@@ -1,0 +1,509 @@
+{
+  "artifact_id": "cci-v1-presentation-performance-delta-review-2026-08-29",
+  "base_subject": {
+    "artifact_pin_digest": "75804cbb652bedb85acabf35996889600f82a963aebb124f4960b7a1f7b0e017",
+    "base_model_family_count": 3,
+    "base_review_count": 4,
+    "calculation_hash": "dfd4b50b1482bbc6688b68b1536b8a2700625873424f13a60be8427bab093f35",
+    "path": "data/climate/reviews/cci-v1-ai-reports/base-first-paint-v78-review-request.json",
+    "pin_count": 300,
+    "review_request_sha256": "8fe8a47dbf8eea2081f7135ab11b3baab1c4af164e6fc9542d7ceaf06c780753",
+    "reviewed_head": "108e6b6be2e3a53c45b4c2a596de11656774ab8c"
+  },
+  "calculation_hash": "aaeac4ade2db4d467d179683b4a118105e293b8b58ee972cd4585acb2e33cba5",
+  "changes": [
+    {
+      "base_sha256": "eb5032a791d8a2f9674ab34481086f1d0827a4decd3a446ee0b667b77e8d4302",
+      "category": "scoped_release_rail",
+      "current_sha256": "5187c8871e64441018f7e06690689f06b2e1c9e26573038ac3fde7e6538d9a88",
+      "operation": "modify",
+      "path": ".github/CODEOWNERS"
+    },
+    {
+      "base_sha256": "5154058023ec298ff2c4e0b9090a7c9cb45f1d17a313c17cfe5f06eb70c68c30",
+      "category": "scoped_release_rail",
+      "current_sha256": "29f8c5e179a6e9c2df271a6d98d58528c102c26e2b256b230f7589decc8746a4",
+      "operation": "modify",
+      "path": ".github/workflows/ci.yml"
+    },
+    {
+      "base_sha256": "4bed6b2dc8c1658b45ea93f2a53369927e09afbbe477a6a751647114553b446b",
+      "category": "scoped_release_rail",
+      "current_sha256": "e2c609c56626f287e876f831326b5178e3fa388d5cd7b3b1adc8b822ed35cbde",
+      "operation": "modify",
+      "path": "ARCHITECTURE.md"
+    },
+    {
+      "base_sha256": "31968896e4e5cad9b2614373a3a15d799beab21bb384b8ae8f7fabbe8f6edc4b",
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "c4a121194969e91562091e289a1b45f0b73d65c9f95f1e39649be0c7e1df9662",
+      "operation": "modify",
+      "path": "CREDITS.md"
+    },
+    {
+      "base_sha256": "56bc8759bff3bc70b042c0861d0fbf729d73e0e451404de0c9d9bac6d21cd31e",
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "d4a292331ae4a6cd1aff4a6ecc7729c413de35d306af87913fc85f40265202d0",
+      "operation": "modify",
+      "path": "_headers"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "60700d351cac4650c51f3f9db318d2a420f8b45052dba2715eb5fec41f0f6956",
+      "operation": "add",
+      "path": "assets/fonts/OFL-cormorant-garamond.txt"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "b2fe5e8987594e9ffd1d2ca52a2f5d73eb8335243893c5d6254b5ad69269591d",
+      "operation": "add",
+      "path": "assets/fonts/OFL-jetbrains-mono.txt"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "c676351bf8576b9aba743cd5eaa8c0e7ee0d51f805d720447b4df4ddb6a2e416",
+      "operation": "add",
+      "path": "assets/fonts/OFL-outfit.txt"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "a9489c0fab89324182da7185d0e75fd54753e3608760c6319d53aae71c3c4a4e",
+      "operation": "add",
+      "path": "assets/fonts/README.md"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "cfa9a397d86f66c5c51775a2500a712d5f632a04f0c5eca6930dfaf612d4566d",
+      "operation": "add",
+      "path": "assets/fonts/cormorant-garamond-latin-ext.woff2"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "d80df8ff5aecd299a61549f9e29ab1ed0b9b05f4ea71d50fe978e07d5240b235",
+      "operation": "add",
+      "path": "assets/fonts/cormorant-garamond-latin.woff2"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "7f4b7877020b1eec89781e6e2be59825456b59e1ec99412e2af78472ce0b0423",
+      "operation": "add",
+      "path": "assets/fonts/cormorant-garamond-site.woff2"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "db5ff4db83e580426280e9337a58dc57d3a83784a1b03ad80914651594441d52",
+      "operation": "add",
+      "path": "assets/fonts/jetbrains-mono-latin-ext.woff2"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "83c005d49d8a6a50474c73a5a36ac0468076e9c4a29da7bdb14995d80560a5be",
+      "operation": "add",
+      "path": "assets/fonts/jetbrains-mono-latin.woff2"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "317775f7afde0159f060f6cb6590ab7f4c2a167e6fd579a635b5e5652736ea68",
+      "operation": "add",
+      "path": "assets/fonts/jetbrains-mono-site.woff2"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "0f53d1c03b3918d744a843b5039001ee31695ca1e255e3914188df81beb461e9",
+      "operation": "add",
+      "path": "assets/fonts/outfit-latin-ext.woff2"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "6c18d579fd87c3776be068b762cbc83fde3acb543d49eabd3ade842eb987e887",
+      "operation": "add",
+      "path": "assets/fonts/outfit-latin.woff2"
+    },
+    {
+      "base_sha256": null,
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "fff758eb92d35deee7cddeb11edcb2b6fafbbc78f207392772aca440c9277877",
+      "operation": "add",
+      "path": "assets/fonts/outfit-site.woff2"
+    },
+    {
+      "base_sha256": "24eb59810aa525c664e8fb5745d380756ecb8ccb568183e5605826c1a77a7f09",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "eaec0ff608cb571f5d1f16f65f5b7ea1eb204130e5706517928f7e7a8ec5736e",
+      "operation": "modify",
+      "path": "data/climate/operations/ct42-runtime-rollback.patch.b64"
+    },
+    {
+      "base_sha256": "a62c285fe94f96281680e8ec21a61a1a4bde24aa9ee1443e62df527d30e6d4fa",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "26c86ac390327419ee3ad00d4d470d64a29fb9538b9cd745c3d0be41135206b4",
+      "operation": "modify",
+      "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json"
+    },
+    {
+      "base_sha256": "b39acb33548ad9e23d3df23d878175b3aa67b87c25bf7236ad9a9eea17ff144d",
+      "category": "performance_evidence",
+      "current_sha256": "c3c2955765a96ad3f9a745e38907235cb754c30d5c96b6efc12460809cc37e57",
+      "operation": "modify",
+      "path": "data/performance/first-paint-mobile-2026-08-28.json"
+    },
+    {
+      "base_sha256": "de0939b508af7fd054c9326511c3a9ce7cdebfbd91cb90e3e2bb3b0ca292d57b",
+      "category": "scoped_release_rail",
+      "current_sha256": "029baa3c4d973afe69ff80cba3da1c2a8f1b94722d0f49c7278c2c156b163e6d",
+      "operation": "modify",
+      "path": "docs/FACTUAL-PUBLIC-DEPLOYMENT.md"
+    },
+    {
+      "base_sha256": "14fa420222baedbf4c2a85eec749025d4aad14e4f7006eb13fa435bb33bfb4eb",
+      "category": "scoped_release_rail",
+      "current_sha256": "a5a3def4801039c3950c0b083ebc88a699e1af3b3a7e916ed34bcce43f078bea",
+      "operation": "modify",
+      "path": "docs/operations/GO_PUBLIC.md"
+    },
+    {
+      "base_sha256": "1cb352d50ac411177c0f0f51ae272ec4bc8899b12ab1050282ce75e3e270eca3",
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "84b47f0a8542d627c96ea33c1cf0ca959ab0cc09a16eae5dcc82470e33d949a4",
+      "operation": "modify",
+      "path": "index.html"
+    },
+    {
+      "base_sha256": "582a468ebf982985f00d435fb29dcd7bba77413406a7381cf42751ea721a7d7b",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "8794531875217cba0943f74df5da0901a22cf57cf5b28aaa053c6dcf0c5d45a0",
+      "operation": "modify",
+      "path": "js/app.js"
+    },
+    {
+      "base_sha256": "ad7115851d9878c5d465a2bebd986f9aaa172dba6fd614abcd29a4b95248d8de",
+      "category": "presentation_and_font_delivery",
+      "current_sha256": "aef8600231fa492119cc14f0ac6637184eeaccc30b7159d8dbe7956b64c06a83",
+      "operation": "modify",
+      "path": "sw.js"
+    },
+    {
+      "base_sha256": null,
+      "category": "scoped_release_rail",
+      "current_sha256": "c964d34e68e9174db1369ed74495d6c6eb838e57a9a97451dcb980a431a23ae7",
+      "operation": "add",
+      "path": "tools/build-cci-scoped-delta-review.js"
+    },
+    {
+      "base_sha256": "3cc0c6d38676014c99bb0e892a3b9aa936be086a60ea49ad3dd63fdf61088b40",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "e0d47ee045e24a196d7525f2c842423ad24dd503eeeb99cf3cbdcc0c3ff4d788",
+      "operation": "modify",
+      "path": "tools/build-ct42-runtime-rollback-proof.js"
+    },
+    {
+      "base_sha256": "e95beb2ad6a1edde2316e8587dce0c32ca029e19625a552ad3ef54fdaff58b04",
+      "category": "scoped_release_rail",
+      "current_sha256": "056bef680a5bd629c7fa6a38e5ad9aa7615c4f086ece4c67b91b1bebab72c871",
+      "operation": "modify",
+      "path": "tools/check-cci-factual-public-review.js"
+    },
+    {
+      "base_sha256": "7caf67ec895fd904f580bf828105ed2ef788d1672ef26bba8a70a7807499ef04",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "1d4005b7924e78ac6f35a5b5b6f2b7cda8bb4c12ea32c14089f4ffb6904712c0",
+      "operation": "modify",
+      "path": "tools/check-country-climate-intelligence-ui.js"
+    },
+    {
+      "base_sha256": "6760800c89b375e4a1aac4d55533e39698b6a513efb66d161411200294da5fb9",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "ff9bda8928f43a69969cb02ac618c466b80d031732f4bd59abef35eb05b53d4d",
+      "operation": "modify",
+      "path": "tools/check-country-climate-runtime-atomic.js"
+    },
+    {
+      "base_sha256": "20d3fbb964669f9d824771e06cd3d003780d56b9d173d7a3b905c4aaa032d534",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "bb99d847c7555d3fb7ae03bab4e554114216b86ec37898e3c602d45488808ad5",
+      "operation": "modify",
+      "path": "tools/check-ct42-runtime-rollback-proof.js"
+    },
+    {
+      "base_sha256": "906d443a2e41387c9b5b913a3b1e39ff5d8937b7c781b5cee7725d123aa7fca5",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "fa84bda6dcd27b6ead453bbccfb3675395630106c96304616501a9b46e5d5c83",
+      "operation": "modify",
+      "path": "tools/check-ct42-runtime-rollback-review.js"
+    },
+    {
+      "base_sha256": "1bbb8eb9d2e63582dac78c497e40b5b4428bf751a579c0b0e8f67c0e02f12a6d",
+      "category": "performance_evidence",
+      "current_sha256": "289df945ff7dec1f28799502f14b0b1e7d621b12c2750413686b49c8e816bb43",
+      "operation": "modify",
+      "path": "tools/check-first-paint-performance-receipt.js"
+    },
+    {
+      "base_sha256": "3376611b5a48f08e46c5c1a4bb8ca20906dde07606630240f8bf0f75332e71c2",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "2a67dad8e2b27568583b7e1121955d244909c26be2f94d3c0761786e742517b2",
+      "operation": "modify",
+      "path": "tools/fixtures/globe-runtime-assets.json"
+    },
+    {
+      "base_sha256": "c6899c83d1c146da785c8b4fbb9d6adaad719b04eadb284a10290312c9db66d8",
+      "category": "scoped_release_rail",
+      "current_sha256": "d488570bca20c1688710398dbd9b843c91eadaa0c6c937e3485b0e0a8b1d77e3",
+      "operation": "modify",
+      "path": "tools/lib/cci-factual-public.js"
+    },
+    {
+      "base_sha256": null,
+      "category": "scoped_release_rail",
+      "current_sha256": "68e67bbb16930f12d40ca2bc10c58a40498af6a16c88592ddce36dac592d4d39",
+      "operation": "add",
+      "path": "tools/lib/cci-scoped-delta-review.js"
+    },
+    {
+      "base_sha256": "8d6dbba47edc5e7333dea2e3811242f980f31f615fd9ed7fa067eae5907166e6",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "a8519badeb1427c71f45920c3d1fa7b51350a4356bad9b5ff6f02d1a703f9d7d",
+      "operation": "modify",
+      "path": "tools/lib/ct42-runtime-rollback-proof.js"
+    },
+    {
+      "base_sha256": "8de5708fe62024b1a4255f7e9e1f9e3f6f6e392f2f6e9f33f8bdb0426b5d35ad",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "bf77cecc7352650bfb9abca9a0519d61d2858849a8485626b908779fd0056285",
+      "operation": "modify",
+      "path": "tools/lib/ct42-runtime-rollback-review.js"
+    },
+    {
+      "base_sha256": "51aecdfd6504832de06081c2c5fbf728cc92dcfb4df5009a99abfcf8e737061b",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "e08426b431943517f791962b9194d63c4db4546613a5b7ff5d4321e05527e05d",
+      "operation": "modify",
+      "path": "tools/lib/globe-runtime-assets.js"
+    },
+    {
+      "base_sha256": "90c53003a9f41d71ca07a2efa1359bd5c89d5798f71b4f1b674756fee699d17c",
+      "category": "scoped_release_rail",
+      "current_sha256": "eb2e0603bb4d28c06064e09df860118b960405fce8f37b5229c6584d18799756",
+      "operation": "modify",
+      "path": "tools/lib/public-deploy-surface.js"
+    },
+    {
+      "base_sha256": "3f2aaca33f48c3381b43e59bb415b9ac33c83753975ddf1cde880a180ebdcacc",
+      "category": "scoped_release_rail",
+      "current_sha256": "32219c665b32381774e0be5e55ea99ec9ebcb3c659e43c5f7a9d1cbfed9e7832",
+      "operation": "modify",
+      "path": "tools/prepare-country-climate-intelligence-review-request.js"
+    },
+    {
+      "base_sha256": "c26237d5c67356845d7756497108ba1bd2d162f71d26f8f842c5007d52e7e456",
+      "category": "deterministic_runtime_proof",
+      "current_sha256": "3a2c7d4799b52c0192cf7a089e87398c7bf0caf279f3017febc6f117bb8248c2",
+      "operation": "modify",
+      "path": "tools/verify-legacy-country-exit.js"
+    }
+  ],
+  "conditions": [
+    "Every current request pin must match the working tree and every base-to-current change must remain in the exact scoped policy.",
+    "The complete CCI, performance, rollback, browser, staged-integrity, and Cloudflare main-branch gates must pass.",
+    "Protected-file CODEOWNERS review remains required; this artifact is not a human review substitute.",
+    "Any climate data, source-rights, globe data/texture, scoring, target, finance, or publication-boundary change requires fresh specialist review."
+  ],
+  "created_at": "2026-08-28T21:15:39Z",
+  "current_subject": {
+    "artifact_pin_digest": "c9ad7b629472834c38501ce641a03ca69aa02e391d6c00c7242a6bbfd0d2136e",
+    "calculation_hash": "1520a1705eba3ed87d7b54a97a13be8cc51166d33c776ce2681bfa272c775a96",
+    "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
+    "pin_count": 315,
+    "review_request_sha256": "b0d549ab5827d02814b75cea5ed9e903bfdd9deaf851432f7be1d6186c07797e"
+  },
+  "deploy_authority": false,
+  "evidence": [
+    {
+      "authority": false,
+      "command": "node tools/check-country-climate-intelligence-ci.js",
+      "status": "pass"
+    },
+    {
+      "authority": false,
+      "command": "node tools/check-ct42-runtime-rollback-proof.js",
+      "status": "pass"
+    },
+    {
+      "authority": false,
+      "command": "node tools/check-first-paint-performance-receipt.js",
+      "status": "pass"
+    },
+    {
+      "authority": false,
+      "command": "node tools/check-first-paint-performance-receipt.js --self-test",
+      "status": "pass"
+    },
+    {
+      "authority": false,
+      "command": "node tools/check-streamed-first-paint-action.js",
+      "status": "pass"
+    },
+    {
+      "authority": false,
+      "command": "SmokeTest.run() + StackLint.audit()",
+      "status": "pass_30_of_30_and_zero_findings"
+    },
+    {
+      "authority": false,
+      "command": "v79 online/offline service-worker and three-font browser rehearsal",
+      "status": "pass"
+    }
+  ],
+  "evidence_boundaries": {
+    "field_core_web_vitals_claim": false,
+    "hero_payload_reduction_factor": 27.225,
+    "median_local_lcp_reduction_factor": 3.968,
+    "search_ranking_claim": false,
+    "sub_second_full_globe_claim": false,
+    "ten_x_page_speed_claim": false
+  },
+  "existing_human_signature_gate": "unchanged_and_unsatisfied",
+  "human_review": false,
+  "independent_institutional_review": false,
+  "invariant_pins": [
+    {
+      "path": "THIRD_PARTY_NOTICES.txt",
+      "sha256": "741fc18dfd4b0916884cbad6b4dddd3466b7e2399186e5dcd7ff555e482fd0f2"
+    },
+    {
+      "path": "assets/globe/runtime/earth-blue-marble.jpg",
+      "sha256": "228deba2e4b600146bdcb6cfa359b8ead6aacc2b1c13550a29cd82824cfa1c01"
+    },
+    {
+      "path": "assets/globe/runtime/earth-night.jpg",
+      "sha256": "373e5a08c9f378a2ce6320214a613148e4b1e3946b3f39a516c9093b76cb7124"
+    },
+    {
+      "path": "assets/globe/runtime/earth-topology.png",
+      "sha256": "839b12da2e4dd346b256cebae72e10c479a102c8980a22084c41275e4b9a0e12"
+    },
+    {
+      "path": "assets/globe/runtime/manifest.json",
+      "sha256": "5c11517a0f75e1af70169c565b46002c4361cdac18d6a6191f06e9f31ac7f67a"
+    },
+    {
+      "path": "assets/globe/runtime/ne_110m_admin_0_countries.geojson",
+      "sha256": "a4d67eac9c75d5b6f20170d2b07bb53ea791536b0c8e5ebae3ba94df093f76e0"
+    },
+    {
+      "path": "assets/globe/runtime/night-sky.png",
+      "sha256": "7e1d5e780301e3a33bd79fd3ac414f7a742465f33ae4605abca743d43a3ab983"
+    },
+    {
+      "path": "data/climate/country-registry.json",
+      "sha256": "51fb321661684a88e80254cd5721ee70d0f52d95587222727fb9e9722e86b075"
+    },
+    {
+      "path": "data/climate/releases/country-climate-intelligence-v1/cckp-physical.json",
+      "sha256": "aad0c81bafe85ae1659da031330ffc6db2dcc1c5af2dc7ef6eeb4151c280400a"
+    },
+    {
+      "path": "data/climate/releases/country-climate-intelligence-v1/ember-power.json",
+      "sha256": "3966f719430c8be3fb73b8dad8bf3c330c4380039e6394f8cece1ac8df64a5ec"
+    },
+    {
+      "path": "data/climate/releases/country-climate-intelligence-v1/gcb-carbon.json",
+      "sha256": "540e33d294d3eedc55cd02f6a589dd4c2bce21f651eed5a58e5cdeecd82ee048"
+    },
+    {
+      "path": "data/climate/releases/country-climate-intelligence-v1/release-manifest.json",
+      "sha256": "e7674a0c338a22d1b2e891cfa54a47361a4a9cc935361a816332074afd7c1aa1"
+    },
+    {
+      "path": "data/climate/releases/country-climate-intelligence-v1/source-receipts.json",
+      "sha256": "011c94573788fff681b0f6069a9718ae39ce6c01564d7273969fe3d499edef5e"
+    },
+    {
+      "path": "data/climate/releases/country-climate-intelligence-v1/wpp-population.json",
+      "sha256": "7ff9a8278e565fc7eb3a0119d3366c6bc413e07e3394f5063b591a78726aeab5"
+    },
+    {
+      "path": "data/climate/runtime/country-climate-intelligence.json",
+      "sha256": "4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe"
+    },
+    {
+      "path": "data/climate/source-registry.json",
+      "sha256": "6b9e468096ffd073966dea5cc5c6cea6fdffea3c3ab03e78dd31fdf629cf4eba"
+    },
+    {
+      "path": "js/country-climate-intelligence.js",
+      "sha256": "6ff0dcb81f64095cbb9543f58bcc56cc6f1de11da7ab03fe91f37c32c91ceab7"
+    },
+    {
+      "path": "js/data.js",
+      "sha256": "8415e35657bb09444861f921482daf7c33049cac9035eff0fc393d0ffb9a0de5"
+    },
+    {
+      "path": "js/globe.js",
+      "sha256": "bb3dc7e9511e78d2a886c63fa79e0b5f63d9962ce535bb21a83e339599cdb156"
+    }
+  ],
+  "legal_certification": false,
+  "maintainer_authorization": {
+    "authorized": true,
+    "authorized_at": "2026-08-28T21:15:39Z",
+    "base_multi_model_review_substitute": false,
+    "human_review_substitute": false,
+    "policy": "scoped_presentation_performance_delta_review",
+    "receipt": "The foundation maintainer explicitly answered 'evet' to the proposed single focused presentation/performance delta-review rail in this task.",
+    "scope": "cci_ai_factual_presentation_performance_delta_only"
+  },
+  "policy": {
+    "allowed_categories": [
+      "presentation_and_font_delivery",
+      "performance_evidence",
+      "deterministic_runtime_proof",
+      "scoped_release_rail"
+    ],
+    "changed_pins_require_this_delta_review": true,
+    "exact_changed_paths_only": true,
+    "no_deletions": true,
+    "outside_scope_requires_fresh_specialist_review": true,
+    "unchanged_base_pins_retain_base_review_only": true
+  },
+  "publication_authority": {
+    "authorized": true,
+    "note": "This artifact authorizes only the exact listed delta when combined with the unchanged four-review base and all strict staged checks.",
+    "scope": "combine_with_exact_four_review_base_for_cci_ai_factual_lane_only"
+  },
+  "publication_boundary": {
+    "climate_runtime_changed": false,
+    "composite_score": false,
+    "finance_judgment": false,
+    "globe_data_or_texture_bytes_changed": false,
+    "legal_or_human_review_claim": false,
+    "performance_grade": false,
+    "source_registry_changed": false,
+    "source_rights_decisions_changed": false,
+    "target_assessment": false
+  },
+  "release_authority": false,
+  "review_type": "single_ai_scoped_presentation_performance_delta",
+  "reviewer": {
+    "model_identity": "not_attested",
+    "provider": "OpenAI",
+    "reviewer_id": "ai-reviewer:codex-focused-presentation-runtime",
+    "scope": "Presentation, self-hosted font delivery, first-paint evidence, cache epoch, deterministic rollback rebinding, and the fail-closed delta rail only.",
+    "system": "Codex",
+    "verdict": "approve_with_conditions"
+  },
+  "schema_version": "1.0.0",
+  "status": "approved_for_scoped_ai_factual_publication_delta"
+}

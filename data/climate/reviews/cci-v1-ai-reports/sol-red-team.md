@@ -1,195 +1,127 @@
-# Final Sol adversarial release review
+# Sol red-team review — first-paint / CCI v1 candidate
 
-Reviewer: `ai-reviewer:sol-red-team`
-Model: `gpt-5.6-sol`
-Reviewer type: AI; not human review, legal counsel, legal certification, or institutional scientific review
-Reviewed at: `2026-08-28T03:04:08Z`
-Role: final adversarial release review
+## Verdict
 
-Subject digest: `3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200`
-Review-request SHA-256: `0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372`
-Runtime SHA-256: `4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe`
-Base commit: `91357d1389c2269609328ffb332850d5e8b85637`
-Reviewed public stage: `_deploy`, 51 exact regular files
+`approve`
 
-## Conclusion
+No blocking defect remains in the exact frozen subject. This approval is an AI technical-review result only; it grants no publication, deployment, legal, scientific, rights, rollback, or release authority.
 
-No substantive P0 or P1 defect remains in the implementation subject.
+## Reviewed subject
 
-The release can honestly be described using the existing precise label:
+- HEAD: `108e6b6be2e3a53c45b4c2a596de11656774ab8c`
+- Review-request SHA-256: `8fe8a47dbf8eea2081f7135ab11b3baab1c4af164e6fc9542d7ceaf06c780753`
+- Subject digest: `75804cbb652bedb85acabf35996889600f82a963aebb124f4960b7a1f7b0e017`
+- Request calculation hash: `dfd4b50b1482bbc6688b68b1536b8a2700625873424f13a60be8427bab093f35`
+- Artifact pins: exactly 300
 
-> AI-reviewed source-data release — source observations, estimates, modeled projections, reanalysis, and disclosed deterministic derivations; no human review or legal certification.
+I independently recomputed the request hash, calculation hash, all 300 file hashes, and the subject digest using the canonical binary path ordering. All matched. Pins are sorted and unique; every pinned path and parent component was checked with `lstat`, with no symlink, traversal, absolute-path, non-regular-file, or workspace-escape case found.
 
-It should not be shortened to “AI-verified facts,” “scientifically reviewed,” “independently reviewed,” “rights-cleared,” or an unqualified “factual release.” The defensible claim is that four AI reviews across three model families reviewed a pinned source-data release and its deterministic publication rails—not that humans, institutions, publishers, or legal counsel certified it.
+All baseline-to-HEAD changed paths are pinned except the review request itself, which must remain outside its own digest and is separately bound by its raw SHA-256 and calculation hash. The changed protected files are pinned exactly:
 
-## Findings by severity
+- `.github/workflows/ci.yml`: `5154058023ec298ff2c4e0b9090a7c9cb45f1d17a313c17cfe5f06eb70c68c30`
+- `AGENTS.md`: `5209a998d2721308483b0385a0a4143b4daaf0b52016e85157e71cc119d4e2f0`
+- `ARCHITECTURE.md`: `4bed6b2dc8c1658b45ea93f2a53369927e09afbbe477a6a751647114553b446b`
 
-### P1 — Final mechanical authorization remains deliberately pending
+The three required-absent paths remain absent. No unpinned changed protected subject file remains.
 
-The aggregate is correctly fail-closed as `draft_final_sol_pending`. Before publication:
+The dirty worktree entries are only the generated Luna/Terra review reports. They are intentionally outside the same-generation subject digest to avoid a hash cycle. They currently do not authorize release: the aggregate review gate rejects their stale binding.
 
-1. Replace `data/climate/reviews/cci-v1-ai-reports/sol-red-team.md` with this report and pin its exact SHA-256.
-2. Set the Sol reviewer timestamp and `post_mitigation_verdict`.
-3. Set aggregate `status` to `ai_factual_public_authorized`.
-4. Set `publication_authority.authorized=true`.
-5. Preserve `human_review=false`, `legal_certification=false`, `independent_institutional_review=false`, and every factual-only boundary boolean.
-6. Recompute the aggregate calculation hash, rebuild `_deploy`, and repin the exact staged artifact.
-7. Require all final review/profile/staged-integrity/strict checks to pass.
+## First-paint interaction and accessibility
 
-This is the declared final-pinning step, not an implementation defect.
+The exact pinned streamed-document checker passed in real headless Chrome while holding the document tail after the visible hero. Pointer, Enter, and Space were each activated after FCP while `App` was absent and `document.readyState` was still `loading`.
 
-### P2 — Standalone legacy source-routing snapshot remains stale
+For every activation:
 
-`node tools/check-source-routing-policy.js` exits 1 because its immutable source-registry expectation is `5c7222…`, while the current registry is `6b9e46…`.
+- The head bridge captured one pending intent.
+- The control immediately became busy and disabled.
+- The loading status was announced.
+- Globe mode remained closed until runtime and both stylesheets were ready.
+- After renderer entry and exit, focus returned to the exact originating button.
+- The foundation topbar returned to `inert` with `aria-hidden="true"`.
 
-This does not invalidate the separate CCI lane: the canonical request pins the current registry, strict CCI climate-truth passes, and profile-aware routing is adversarially tested. The stale standalone legacy snapshot should nevertheless be reconciled separately to avoid confusing future maintainers.
+Observed FCP/activation boundaries were approximately 176/184 ms for pointer, 140/144 ms for Enter, and 112/121 ms for Space. The foundation tab trail did not enter the hidden topbar. The topbar became operable in globe mode and inert again on return.
 
-### RESOLVED — Publication-authority field is independently enforced by the verifier
+Independent streamed probes forcing a 404 for each stylesheet separately also passed:
 
-`check-cci-factual-public-review.js` now requires `publication_authority.authorized === true` and the exact AI-factual scope. Contradictory artifacts fail closed.
+- `globe-system.css` failure
+- `guided-first-orbit.css` failure
 
-### P3 — Excluded-asset names remain only in non-executable provenance
+Both paths published an error state, refused globe mode, restored the opener, re-enabled the action, kept the topbar inert, hid the guided tutorial, exposed no HUD/tutorial controls, and produced a retry message without page errors. The two stylesheets therefore act as one readiness boundary rather than independently exposing partially styled UI.
 
-The three excluded filenames and upstream URLs remain in the staged historical vendor-integration record, schema, and aggregate exclusion decisions. Their image files, binary digests as staged assets, executable references, service-worker entries, and 51-file allowlist entries are absent.
+One non-blocking accessibility hardening remains: native `disabled` temporarily moves focus to `BODY` while loading. The stored opener makes failure and normal exit deterministic, but retaining visible focus with `aria-disabled` or deliberately moving focus to the live status would improve the waiting interval.
 
-This is acceptable as denylist/provenance disclosure. It must not be represented as zero textual occurrence anywhere in the stage.
+## Performance claim integrity
 
-## Scientific and data integrity
+The performance receipt calculation hash independently matches:
 
-- Runtime contains 249 unique registry entities and 26 metrics.
-- Exact lens partitions are:
-  - Carbon: `213 data + 36 gaps = 249`
-  - Physical: `245 data + 4 gaps = 249`
-  - Power: `195 data + 54 gaps = 249`
-- GCB territorial fossil CO₂ remains separate from land-use CO₂.
-- WPP 2024 Medium values remain labeled modeled projections.
-- Ember blanks remain gaps; no zero substitution or browser rescaling occurs.
-- ERA5 remains labeled reanalysis, and CMIP6 remains labeled modeled projection with period, scenario, baseline, and percentile boundaries.
-- Climate TRACE is absent from product evidence and executable output.
-- Composite scores, target assessments, finance judgments, performance grades, offset adjustments, mismatched-scope comparisons, and inverted carbon relief are disabled.
-- Same-metric ordering is disclosed as magnitude order, not a performance score.
-- Country cards expose evidence class, scope, period, transformation, uncertainty where available, checksums, citations, and explicit gap reasons.
+`2edc2eb02ccd0d13709cbff4623bbd5b19e4b91a4a7d846687aa53fd6fe90844`
 
-## Source rights and attribution
+The candidate runtime files at HEAD match measured runtime control commit `4adeea0fc327f53b3f4e2082185d156f296ed4f5`.
 
-- `night-sky.png`, `earth-blue-marble.jpg`, and `earth-topology.png` are not staged and are absent from executable JavaScript and the service-worker precache.
-- Browser requests loaded only the retained `earth-night.jpg` and Natural Earth geometry; no excluded image request occurred.
-- The NASA surface is attributed as Earth Observatory Black Marble 2012, image by Robert Simmon, using Suomi NPP VIIRS data credited to Chris Elvidge/NOAA NCEI. The staged copy limits it to a historical decorative surface and disclaims endorsement.
-- Natural Earth is retained under its public-domain basis and described as generalized 1:110m navigation geometry, not an authoritative sovereignty or legal-boundary representation.
-- Approximate small-state points and excluded disputed subfeatures are disclosed.
-- These are AI-reviewed publication decisions, not legal rights clearance.
+The receipt uses 12 counterbalanced cold runs, six per subject, with a fresh browser process/context, service workers blocked, cache disabled, identical 412×823 mobile emulation, DPR 1.75, 150 ms latency, 1.6 MiB/s download, 4× CPU throttling, and an 8.5-second measurement window.
 
-## Runtime, accessibility, and deployment rails
+Median results:
 
-A live Chrome session against the exact `_deploy` stage showed:
+- FCP: 1420 ms → 542 ms, `2.620x`
+- LCP: 4756 ms → 772 ms, `6.161x`
+- CLS: 0.006256 → 0.006265, effectively unchanged and slightly worse
+- TBT: 0 ms → 0 ms
+- Threshold loss: 40.608 → 0, reported as 100% penalty elimination with no undefined ratio
+- Completed-byte lower bound: 965,941 → 566,292 bytes, not represented as total navigation transfer
 
-- successful pre-flight module validation;
-- one rendered globe canvas;
-- the first-orbit disclosure, three independent lenses, and 249-record evidence browser;
-- Carbon, Power, and Physical lens switching with preserved country selection;
-- a China evidence card exposing observed/reanalysis and modeled-projection boundaries, periods, baselines, and uncertainty;
-- no browser console warnings or errors;
-- only the two approved globe resources requested.
+The `27.225x` result is valid only for hero image payload bytes: 395,059 → 14,511 bytes. It is not a PageSpeed, total-transfer, FCP, LCP, or threshold-loss multiplier. The receipt explicitly records that local LCP did not improve by 10×. No public claim should conflate `27.225x` asset reduction with `6.161x` local LCP improvement.
 
-The successful WebGL path was exercised directly. Fallback behavior is supported by deterministic fallback/accessibility checks and mutation tests, not by an assistive-technology certification or a forced live fallback during this review.
+External Google Fonts were excluded from the controlled same-origin benchmark. Production PageSpeed and field behavior therefore still require post-deployment measurement.
 
-Stage construction is deterministic and exact, uses coupled CCI/globe/service-worker cache epochs, preserves the 249-row rollback snapshot, rejects symlinks and unexpected files, and keeps the old human/signature release path separate and unsatisfied.
+## Theme and asset fidelity
 
-## Aggregate and report composition
+Light and dark theme selection occurred before first paint in browser checks, and both themes selected the intended corresponding logo. Normal mobile DPR 1.75 rendering showed no visible regression.
 
-The refreshed specialist reports are exactly pinned:
+The new logos are 384-pixel palette-alpha images with one-bit alpha, while the previous light logo was 1254-pixel RGBA. The hero can render at 188 CSS pixels, so high-DPR displays may upscale the new source. This is not a functional blocker, but brand review at DPR 2.5–3 should precede broad publication.
 
-- Luna science: `caff5cf48a7f49b7dc1c66d78eacdd6b289ea60f8dc6b9b9918eb663f476a91f`
-- Luna rights: `73930c6b4afc6e9801169ad4d5eb40a860ef33debb41d2ff3471399bcde1e095`
-- Terra runtime: `640393a44ae146bec9f916393bd7c302c4e52ff322561072d4693873c1ccc246`
+## Service worker and offline behavior
 
-Independent pin recomputation checked 24 implementation pins, four report pins, and nine public-output pins: all 37 matched.
+Source runtime consistently uses `elu-v78-first-paint-ready`; registration is versioned to v78. The AI-factual transform deliberately produces v80 and its self-test passed, so v78 source and v80 transformed output are not stale-document drift.
 
-The aggregation policy correctly states that no unresolved blocker may be overridden by a vote. The composition is accurately described as two Luna reviews, one Terra review, and one Sol review across three model families, with no institutional-independence claim.
+A v77→v78 upgrade rehearsal using the same unchanged `sw.js` passed controller replacement, old-cache removal, new-cache activation, runtime/style readiness, and offline reload. The final post-rehearsal changes affect opener/focus logic, not the service worker.
 
-## Commands and outcomes
+Non-blocking hardening: `self.clients.claim()` is invoked outside the activation `waitUntil` promise. The tested browsers completed it, but incorporating that promise into the activation lifetime would make the guarantee explicit.
 
-- `node tools/climate-truth-ci.js --strict` — PASS; CT-45 passed 63/63 policy cases, rejected 149 adversarial mutations and three staged symlink cases.
-- `node tools/check-country-climate-intelligence-ci.js` — PASS.
-- `node tools/check-cci-factual-public-deploy.js --self-test` — PASS.
-- `node tools/check-cci-factual-public-deploy.js --staged _deploy` — PASS, 51 exact files.
-- `node tools/check-globe-runtime-assets.js` — PASS.
-- `node tools/check-globe-webgl-fallback.js` — PASS, 249 entities and 29 fail-closed mutations.
-- `node tools/check-country-accessibility.js` — PASS.
-- `python3 scripts/verify_load_order.py` — PASS, 12 scripts.
-- `node tools/check-staged-production-integrity.js --self-test` — PASS, including filesystem, tamper, cleanup, public-surface, and mode-isolation cases.
-- `node tools/check-public-climate-release-profile.js --self-test` — PASS, including exclusive CCI-versus-legacy routing.
-- `node tools/check-country-climate-intelligence-release-signatures.js` — PASS candidate policy and 24 fail-closed mutations.
-- `node tools/check-country-climate-intelligence-release-gate.js --require-release` — expected BLOCK: human reviewed-release package absent.
-- `node tools/check-globe-runtime-approval.js` — PASS policy; production trust remains unprovisioned and fail-closed.
-- `node tools/check-ct42-runtime-rollback-proof.js` — PASS, 51 mutations and exact rollback materialization.
-- `node tools/check-ct42-runtime-rollback-review.js` — expected BLOCK: independent legacy rollback review absent.
-- `shellcheck --format=gcc tools/build-cci-factual-public-deploy.sh` — PASS.
-- `bash -n tools/build-cci-factual-public-deploy.sh` — PASS.
-- Read-only workflow audit — no material workflow-security blocker; one low-severity ad-hoc package-install finding.
-- `node tools/check-cci-factual-public-review.js` — expected BLOCK while aggregate remains draft.
-- `node tools/check-public-climate-release-profile.js --cci-ai-factual` — expected BLOCK while aggregate remains draft.
-- `node tools/check-staged-cci-factual-public-integrity.js --staged _deploy` — expected BLOCK while aggregate remains draft.
-- `node tools/check-source-routing-policy.js` — BLOCK on the disclosed stale legacy registry snapshot.
+## Rollback and public-release boundaries
 
-## Limitations
+The rollback proof passed with:
 
-- No live publisher refetch or institutional source audit was performed.
-- Some upstream inputs are referenced by pinned external receipts rather than archived raw bytes.
-- Country-level uncertainty is unavailable for several inputs; CMIP6 spread is shown, while ERA5 OLS trend uncertainty is not propagated.
-- Browser evidence is a bounded Chrome session, not exhaustive device or assistive-technology certification.
-- Cloudflare production health remains a post-merge operational requirement and is not implied by this review.
-- The existing human-signature and independent-review gates remain unsatisfied and confer no authority on this separate AI-factual lane.
+- Calculation hash: `c447b6878b4a4b1ffc43d17631c189125c219bb6ca861851e888c65db4bb0920`
+- Patch artifact SHA-256: `24eb59810aa525c664e8fb5745d380756ecb8ccb568183e5605826c1a77a7f09`
+- Decoded patch SHA-256: `632263240b0f4eb28bbbc696afb472213019ecd3f6bc12331afd2e614ae95b65`
+- Exact entity boundary: 173 + 28 = 201
+- Seven pinned controls, six patched files, and fourteen pinned dependencies
+- Fifty-one rejected mutations and successful temporary-site materialization
 
-```json
-{"post_mitigation_verdict":"approve_with_conditions"}
-```
+The proof correctly records that browser execution remains an external required gate and that release/deploy authority and independent review are absent. It does not widen rollback authority.
 
-## Superseding final delta addendum
+Positive candidate, runtime, UI, asset, WebGL fallback, public-copy, release-gate, and adversarial self-tests passed. The following gates correctly remain fail-closed:
 
-Reviewer: `ai-reviewer:sol-red-team`
-Model: `gpt-5.6-sol`
-Reviewed at: `2026-08-28T03:04:08Z`
-Reviewer type: AI; not human review or legal certification
+- AI-factual public review: stale aggregate does not bind this exact subject
+- AI-factual public release profile: blocked by that review
+- CT42 rollback review: independent review artifact absent
 
-This addendum supersedes prior subject-binding references. All unchanged scientific, rights, runtime, accessibility, and publication-boundary conclusions remain in force.
+The staged generated `js/vendor/globe.gl.js` is intentionally not directly included in the 300-pin digest. Its bytes are instead constrained by pinned fetch/integrity policy, fixture, staged-byte checks, 63 runtime-asset policies, 149 adversarial mutations, and three symlink cases. Release must not bypass those checks.
 
-Canonical subject digest: `3d044004953cd2d159a58e80384b969258611def6dca144c07f3816fe03e8200`
-Review-request SHA-256: `0904afc65386a570871fdc77262a8beb6da8f19043a3d1f235edefd4f96d0372`
-Verifier SHA-256: `e95beb2ad6a1edde2316e8587dce0c32ca029e19625a552ad3ef54fdaff58b04`
-Request-preparer SHA-256: `68f050e6f09029932e8513236350b145eac68913d4e14ac28d56bd106071be6e`
+## Privacy and workflow review
 
-### Result
+No new cookie, analytics, beacon, tracking-pixel, or telemetry behavior was introduced. Existing `localStorage` use remains limited to the theme preference. The existing Google Fonts request remains an external privacy/performance dependency, although it is now asynchronous and the preconnect was removed. Self-hosting remains preferable if IP/user-agent disclosure minimization is required.
 
-No new P0 or P1 implementation defect remains.
+Workflow static analysis found no unpinned-action or high-confidence security blocker. One low-severity inherited finding remains: CI performs an ad-hoc exact-version Playwright installation without a lockfile. Pre-provisioning or integrity-pinning that dependency would further reduce registry supply-chain exposure.
 
-The generated-vendor exception is now narrowly correct:
+## Required release conditions
 
-- Vendor absent: PASS using only the canonical vendor-policy digest.
-- Exact generated vendor present: PASS.
-- Generated vendor with wrong bytes: BLOCK on public-output pin mismatch.
-- Dangling vendor symlink: BLOCK because public deploy paths must not contain symlinks.
-- Any other missing public output: BLOCK on filesystem inspection.
+1. Regenerate every AI review and aggregate against this exact request SHA and subject digest; require the factual-public review and release-profile gates to pass.
+2. Obtain the required independent scientific, rights, accessibility/runtime, reproducibility, and rollback reviews. This report cannot substitute for them.
+3. Execute and record the independent CT42 browser rollback rehearsal before treating rollback as reviewed.
+4. Obtain human/CODEOWNERS approval because the change touches protected files and spans 28 files.
+5. Preserve the exact performance wording: `27.225x` hero bytes only and `6.161x` local LCP latency. Do not claim a 10× PageSpeed or latency result.
+6. Keep v78 source staging, the v80 factual transform, vendor-integrity checks, and fail-closed public gates intact.
+7. Perform final high-DPR light/dark logo QA and post-deployment PageSpeed measurement.
 
-Subject and authority attacks also fail closed:
-
-- `publication_authority.authorized=false`: BLOCK.
-- Wrong publication-authority scope: BLOCK.
-- Wrong subject digest: BLOCK.
-- Stale review-request SHA: BLOCK.
-- Removed review-request artifact pin: BLOCK.
-- Substituted reviewer report path: BLOCK.
-- Removed public-output pin: BLOCK.
-- Correctly rebound in-memory control artifact: PASS.
-
-The verifier requires exact sets of 24 implementation pins and nine public-output pins, canonical report paths for all four reviewers, the exact review-request bytes, and the exact subject digest.
-
-Deterministic request regeneration matched byte-for-byte: 295 subject pins, dependency closure passed, and the regenerated request SHA and subject digest matched the values above. The four reviewer reports, prepublication artifact, aggregate, and generated vendor dependency are correctly classified as post-subject generated outputs, avoiding a hash cycle while remaining mandatory final-aggregate pins.
-
-The profile-routing self-test passed all nine exclusive-routing cases. The legacy human release gate remains separately fail-closed with `reviewed_release_package_absent`.
-
-At review time the aggregate still referenced the superseded subject; the remaining condition was to repin every report and aggregate field, recompute the calculation hash, rebuild `_deploy`, and require the final verifier/profile/staged-integrity suite to pass.
-
-```json
-{"post_mitigation_verdict":"approve_with_conditions"}
-```
+Any change to the frozen commit, request bytes, calculation hash, pin set, or subject digest invalidates this approval and requires a new review.

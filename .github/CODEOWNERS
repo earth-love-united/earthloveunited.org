@@ -82,7 +82,10 @@
 /tools/lib/public-deploy-surface.js   @earth-love-united/maintainers
 /tools/check-cci-factual-public-deploy.js @earth-love-united/maintainers
 /tools/check-cci-factual-public-review.js @earth-love-united/maintainers
+/tools/build-cci-scoped-delta-review.js @earth-love-united/maintainers
 /tools/lib/cci-factual-public.js      @earth-love-united/maintainers
+/tools/lib/cci-scoped-delta-review.js @earth-love-united/maintainers
+/tools/prepare-country-climate-intelligence-review-request.js @earth-love-united/maintainers
 /tools/check-public-climate-release-profile.js @earth-love-united/maintainers
 /tools/lib/public-climate-release-profile.js @earth-love-united/maintainers
 /tools/check-climate-production-readiness.js @earth-love-united/maintainers
@@ -133,6 +136,9 @@
 /data/climate/schemas/country-climate-intelligence.schema.json @earth-love-united/maintainers
 /data/climate/releases/country-climate-intelligence-v1/ @earth-love-united/maintainers
 /data/climate/runtime/country-climate-intelligence.json @earth-love-united/maintainers
+/data/climate/reviews/cci-v1-ai-reports/ @earth-love-united/maintainers
+/data/climate/reviews/cci-v1-presentation-performance-delta-review.json @earth-love-united/maintainers
+/data/climate/reviews/country-climate-intelligence-v1-multi-model-ai-review.json @earth-love-united/maintainers
 /docs/COUNTRY-CLIMATE-METHODOLOGY.md  @earth-love-united/maintainers
 /docs/COUNTRY-CLIMATE-TRUTH-PLAN.md   @earth-love-united/maintainers
 /tools/acquire-gcb-2025.js            @earth-love-united/maintainers

@@ -51,8 +51,8 @@ function transformIndex(source) {
     'js/globe.js?v=v40',
     'js/globe.js?v=v42-rights-safe', 1, 'index globe cache pin');
   output = replaceExact(output,
-    '/sw.js?v=77-cci-raw-byte-boundary',
-    '/sw.js?v=79-cci-factual-ai-review', 1, 'index service-worker epoch');
+    '/sw.js?v=79-self-hosted-fonts',
+    '/sw.js?v=80-cci-factual-ai-review', 1, 'index service-worker epoch');
   output = replaceExact(output,
     'The live atlas reads one hashed, reproducible 249-entity factual release artifact.',
     'The live atlas reads one hashed, reproducible 249-entity source-data release.', 1, 'index factual copy');
@@ -152,8 +152,8 @@ const GLOBE_VISUAL_ASSETS = Object.freeze({
 function transformServiceWorker(source) {
   let output = source;
   output = replaceExact(output,
-    "const CACHE_NAME = 'elu-v77-cci-raw-byte-boundary';",
-    "const CACHE_NAME = 'elu-v79-cci-factual-ai-review';", 1, 'service-worker cache epoch');
+    "const CACHE_NAME = 'elu-v79-self-hosted-fonts';",
+    "const CACHE_NAME = 'elu-v80-cci-factual-ai-review';", 1, 'service-worker cache epoch');
   output = replaceExact(output,
     "  '/js/country-climate-intelligence.js?v=v17',",
     "  '/js/country-climate-intelligence.js?v=v18-factual-ai-review',", 1, 'service-worker CCI cache pin');

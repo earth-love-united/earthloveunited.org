@@ -15,18 +15,19 @@ const {
   PROHIBITED_OUTPUTS,
   REQUIRED_GLOBE_LIFECYCLE_APIS,
   ROLLBACK_PLAN_SHA256,
-  RUNTIME_CONTROL_COMMIT,
+  RUNTIME_CONTENT_TREE_FORMAT,
   RUNTIME_DEPENDENCIES,
   RUNTIME_EXCLUSIONS,
   SERVICE_WORKER_REGISTRATION,
   calculationHash,
+  runtimeContentTreeHash,
   sha256,
 } = require('./lib/ct42-runtime-rollback-proof');
 
 const ROOT = path.resolve(__dirname, '..');
-const CANDIDATE_BUILDER_COMMIT = '793eade295ae3fa787749e4d6ee112cf374a7634';
 const PATCH_PATH = 'data/climate/operations/ct42-runtime-rollback.patch.b64';
 const PROOF_PATH = 'data/climate/reviews/ct42-candidate-rollback-rehearsal.json';
+const BUILDER_PATH = 'tools/build-ct42-runtime-rollback-proof.js';
 
 function cliValue(flag) {
   const index = process.argv.indexOf(flag);
@@ -37,7 +38,6 @@ function cliValue(flag) {
 
 const reviewChainHead = cliValue('--review-chain-head');
 if (reviewChainHead !== null) assert.match(reviewChainHead, /^[a-f0-9]{40}$/, '--review-chain-head must be a full Git SHA');
-const runtimeControlCommit = RUNTIME_CONTROL_COMMIT;
 
 function git(args, options = {}) {
   const run = childProcess.spawnSync('git', args, {
@@ -89,10 +89,23 @@ function encodePatchArtifact(patch) {
 function neutralIndex(bytes) {
   let index = bytes.toString('utf8');
   index = index.replace(/^<link href="https:\/\/fonts\.googleapis\.com\/css2[^\n]*\n/m, '');
+  index = index.replace(/^  <link href="https:\/\/fonts\.googleapis\.com\/css2[^\n]*\n/m, '');
   index = index.replace(/^<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">\n/m, '');
   index = index.replace(/^<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>\n/m, '');
   index = replaceOnce(index, '<link rel="preload" href="js/country-climate-intelligence.js?v=v17" as="script">\n', '', 'remove Climate Intelligence preload');
-  index = replaceOnce(index, '<link rel="stylesheet" href="css/guided-first-orbit.css?v=v11">\n', '', 'remove guided orbit CSS');
+  index = replaceSection(index,
+    '<!-- ELU 0.7 globe HUD: both deferred sheets form one atomic readiness gate. -->',
+    '<!-- Non-critical CSS: deferred async load -->',
+    `<!-- ELU 0.7 neutral rollback HUD: only the neutral globe sheet is required. -->
+<link id="globe-system-styles" rel="stylesheet" href="css/globe-system.css?v=v43" media="print" onload="this.media='all';document.documentElement.dataset.globeStylesReady='true';window.dispatchEvent(new Event('elu:globe-styles-ready'))" onerror="document.documentElement.dataset.globeStylesReady='error';window.dispatchEvent(new Event('elu:globe-styles-error'))">
+
+`,
+    'replace atomic candidate style gate with neutral rollback style gate');
+  index = replaceOnce(index, '  <link rel="stylesheet" href="css/guided-first-orbit.css?v=v11">\n', '', 'remove guided orbit noscript CSS');
+  index = replaceOnce(index,
+    '  <link rel="stylesheet" href="css/globe-system.css?v=v43">\n',
+    '  <link rel="stylesheet" href="css/globe-system.css?v=ct42-neutral-rollback-1">\n',
+    'rollback noscript CSS key');
   index = replaceOnce(index,
     '.hex-legend-swatch{width:10px;height:10px;border-radius:2px}.hex-legend-swatch.magnitude-low{background:#5b4a97}.hex-legend-swatch.magnitude-high{background:#f6913a}.hex-legend-swatch.magnitude-gap{background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1}',
     '.hex-legend-swatch{width:10px;height:10px;border-radius:2px;background:rgba(145,160,172,.46);border:1px solid rgba(205,225,235,.52)}.hex-legend-note{max-width:230px;margin-top:3px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);line-height:1.35}',
@@ -100,10 +113,14 @@ function neutralIndex(bytes) {
   index = replaceOnce(index, 'href="css/globe-system.css?v=v43"', 'href="css/globe-system.css?v=ct42-neutral-rollback-1"', 'rollback CSS key');
   index = replaceOnce(index, 'href="js/data.js?v=v16" as="script"', 'href="js/data.js?v=ct42-neutral-rollback-1" as="script"', 'rollback data preload key');
   index = replaceOnce(index, 'src="js/data.js?v=v16"', 'src="js/data.js?v=ct42-neutral-rollback-1"', 'rollback data key');
-  index = replaceOnce(index, '<script src="js/country-climate-intelligence.js?v=v17"></script>\n', '', 'remove Climate Intelligence runtime');
+  index = replaceOnce(index, '<script src="js/country-climate-intelligence.js?v=v17" defer></script>\n', '', 'remove Climate Intelligence runtime');
   index = replaceOnce(index, 'src="js/globe.js?v=v40"', 'src="js/globe.js?v=ct42-neutral-rollback-1"', 'rollback globe key');
-  index = replaceOnce(index, '<script src="js/guided-first-orbit.js?v=v6"></script>\n', '', 'remove guided orbit script');
+  index = replaceOnce(index, '<script src="js/guided-first-orbit.js?v=v6" defer></script>\n', '', 'remove guided orbit script');
   index = replaceOnce(index, "'tools/smoke-test.js?v=v5'", "'tools/smoke-test.js?v=ct42-neutral-rollback-1'", 'rollback SmokeTest key');
+  index = replaceOnce(index,
+    'Loading verified country evidence for the Living Globe.',
+    'Preparing neutral country navigation for the Living Globe.',
+    'neutral first-paint readiness copy');
   index = replaceOnce(index,
     '    <button id="guided-orbit-replay" type="button" aria-label="Replay Climate Intelligence first orbit" title="Replay Climate Intelligence first orbit">\n      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><ellipse cx="12" cy="12" rx="9" ry="4.5" transform="rotate(-18 12 12)"></ellipse><circle cx="20.2" cy="9.3" r="1.1" fill="currentColor" stroke="none"></circle></svg>\n    </button>\n',
     '',
@@ -166,7 +183,7 @@ function neutralIndex(bytes) {
     'Choose an item to inspect its lens metrics, evidence class, methods, sources, or explicit gap state.',
     'Choose an entity to inspect its explicit evidence-withheld state. No climate value, commitment, target, delivery, performance, impact, finance, rating, or score conclusion is shown here.',
     'neutral fallback detail');
-  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=77-cci-raw-byte-boundary'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
+  index = replaceOnce(index, "navigator.serviceWorker.register('/sw.js?v=79-self-hosted-fonts'", `navigator.serviceWorker.register('${SERVICE_WORKER_REGISTRATION}'`, 'rollback service worker registration');
   return Buffer.from(index);
 }
 
@@ -1054,16 +1071,10 @@ function buildPatch(current, targets) {
 }
 
 const current = Object.fromEntries(CONTROL_FILES.map(relative => {
-  const bytes = fs.readFileSync(path.join(ROOT, relative));
-  assert.deepEqual(bytes, gitFile(runtimeControlCommit, relative), `${relative} no longer matches the exact hardened runtime-control commit`);
-  return [relative, bytes];
+  return [relative, fs.readFileSync(path.join(ROOT, relative))];
 }));
 const dependencyBytes = Object.fromEntries(RUNTIME_DEPENDENCIES.map(dependency => {
-  const bytes = fs.readFileSync(path.join(ROOT, dependency.path));
-  if (dependency.path !== EXPECTED_VENDOR_SPEC.destination) {
-    assert.deepEqual(bytes, gitFile(runtimeControlCommit, dependency.path), `${dependency.path} no longer matches the exact hardened runtime-control commit`);
-  }
-  return [dependency.path, bytes];
+  return [dependency.path, fs.readFileSync(path.join(ROOT, dependency.path))];
 }));
 const targets = rollbackTargets(current);
 const patch = buildPatch(current, targets);
@@ -1103,8 +1114,26 @@ const roles = {
   'tools/smoke-test.js': 'rollback_browser_runtime_assertions',
 };
 
+const controls = CONTROL_FILES.map(relative => ({
+  path: relative,
+  role: roles[relative],
+  changed: PATCH_FILES.includes(relative),
+  candidate_sha256: sha256(current[relative]),
+  rollback_sha256: sha256(targets[relative]),
+}));
+const runtimeDependencyClosure = RUNTIME_DEPENDENCIES.map(dependency => ({
+  path: dependency.path,
+  role: dependency.role,
+  source_binding: dependency.path === EXPECTED_VENDOR_SPEC.destination
+    ? 'verified_external_sha256'
+    : 'runtime_content_tree',
+  source_sha256: sha256(dependencyBytes[dependency.path]),
+  materialized_sha256: sha256(dependencyBytes[dependency.path]),
+}));
+const runtimeTreeSha256 = runtimeContentTreeHash(controls, runtimeDependencyClosure);
+
 const proof = {
-  schema_version: '2.3.0',
+  schema_version: '2.4.0',
   proof_id: 'ct-42-neutral-runtime-rollback-rehearsal-2026-07-15',
   status: 'built_not_reviewed_browser_gate_required',
   release_authority: false,
@@ -1117,8 +1146,14 @@ const proof = {
     independent_review_required: true,
   },
   candidate: {
-    builder_commit: CANDIDATE_BUILDER_COMMIT,
-    runtime_control_commit: runtimeControlCommit,
+    builder: { path: BUILDER_PATH, sha256: sha256(fs.readFileSync(path.join(ROOT, BUILDER_PATH))) },
+    runtime_control: {
+      format: RUNTIME_CONTENT_TREE_FORMAT,
+      sha256: runtimeTreeSha256,
+      member_count: CONTROL_FILES.length + RUNTIME_DEPENDENCIES.length,
+      git_history_required: false,
+      squash_merge_safe: true,
+    },
     review_chain_head: reviewChainHead,
     review_chain_late_bound: reviewChainHead === null,
     review_chain_ct40_sha256: reviewChainHead === null ? null : sha256(ct40Bytes),
@@ -1139,7 +1174,7 @@ const proof = {
   },
   rollback: {
     strategy: 'current_hardened_runtime_to_neutral_surface',
-    source_runtime_commit: runtimeControlCommit,
+    source_runtime_tree_sha256: runtimeTreeSha256,
     baseline_commit: null,
     cache_name: CACHE_NAME,
     service_worker_registration: SERVICE_WORKER_REGISTRATION,
@@ -1174,23 +1209,11 @@ const proof = {
       decoded_sha256: sha256(patch),
       changed_files: PATCH_FILES,
     },
-    controls: CONTROL_FILES.map(relative => ({
-      path: relative,
-      role: roles[relative],
-      changed: PATCH_FILES.includes(relative),
-      candidate_sha256: sha256(current[relative]),
-      rollback_sha256: sha256(targets[relative]),
-    })),
-    runtime_dependency_closure: RUNTIME_DEPENDENCIES.map(dependency => ({
-      path: dependency.path,
-      role: dependency.role,
-      source_commit: dependency.path === EXPECTED_VENDOR_SPEC.destination ? null : runtimeControlCommit,
-      source_sha256: sha256(dependencyBytes[dependency.path]),
-      materialized_sha256: sha256(dependencyBytes[dependency.path]),
-    })),
+    controls,
+    runtime_dependency_closure: runtimeDependencyClosure,
     runtime_exclusions: RUNTIME_EXCLUSIONS,
     assertions: [
-      'rollback targets are deterministic transformations of the pinned current hardened runtime, not a historical baseline transplant',
+      'rollback targets are deterministic transformations of the SHA-256 path/content runtime tree, not a historical baseline transplant',
       'App is byte-identical and every App-called Globe API plus reset/destroy/getState remains callable',
       'GlobeModule.init retains a boolean success boundary and renderer failure stays fail-closed',
       'exact 201 alphabetical neutral entities equal 173 retained polygons plus 28 approximate navigation points',
@@ -1209,7 +1232,8 @@ const proof = {
     command: 'node tools/rehearse-ct42-runtime-rollback.js',
     materialize_temporary_site: 'node tools/rehearse-ct42-runtime-rollback.js --site /absolute/new/temp/directory',
     checker: 'node tools/check-ct42-runtime-rollback-proof.js',
-    builder_requires_git_objects: [runtimeControlCommit],
+    builder_requires_git_objects: [],
+    squash_merge_regression: 'the checker recreates the subject through git merge --squash, prunes intermediate commits, and reruns validation plus rehearsal',
     late_bound_regeneration: reviewChainHead === null
       ? 'rerun builder with --review-chain-head <final exact review-chain commit>, then refresh checker pins after final CT-40 DENY regeneration'
       : null,
@@ -1245,6 +1269,6 @@ process.stdout.write([
   `CT-42 neutral rollback proof built: ${proof.calculation_hash}`,
   `  patch artifact ${proof.rollback.patch.sha256}`,
   `  decoded patch ${proof.rollback.patch.decoded_sha256}`,
-  `  current runtime ${runtimeControlCommit}`,
+  `  current runtime tree ${runtimeTreeSha256}`,
   `  review chain ${reviewChainHead || 'late-bound (no authority)'}`,
 ].join('\n') + '\n');

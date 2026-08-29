@@ -13,7 +13,7 @@
 **This site has NO build step. No bundler. No Vite. No Webpack. No npm run anything.**
 
 - 1 public HTML file with classic `<script>` tags — `index.html`
-- 10 runtime scripts load synchronously; globe.gl is loaded lazily on entry
+- 12 runtime scripts load with `defer` in dependency order; globe.gl is loaded lazily on entry
 - Modules use either an IIFE or a plain object and expose one global API
 - Cross-module calls go through `safeCall()`, `hasModule()`, `safeGet()` which use `window[name]`
 - Serve from any static server: nginx, GitHub Pages, `python -m http.server`

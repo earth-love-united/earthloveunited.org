@@ -59,7 +59,9 @@ mission.
 
 ## Script load order
 
-The twelve classic scripts load synchronously at the end of `index.html`:
+The twelve classic scripts use `defer` and preserve dependency order at the
+end of `index.html`. Downloads can proceed without blocking the foundation's
+first paint; ordered execution still completes before `DOMContentLoaded`:
 
 ```text
 1.  js/gaia-utils.js
@@ -75,6 +77,16 @@ The twelve classic scripts load synchronously at the end of `index.html`:
 11. js/guided-first-orbit.js
 12. js/app.js
 ```
+
+A dependency-free inline bridge acknowledges and queues a globe-entry click
+before those deferred files finish. `App` consumes that intent while the
+exact-SHA country evidence loads. Globe mode itself remains fail-closed until
+both asynchronous `globe-system.css` and `guided-first-orbit.css` links mark
+their HUD geometry ready; either load error leaves every globe control hidden
+and keeps the Foundation view active. A later globe-entry action replaces only
+the failed stylesheet links with a cache-busted same-origin retry, resets the
+aggregate gate to `loading`, and still refuses globe mode until both component
+states return to `true`.
 
 `js/vendor/globe.gl.js` is loaded by `App.enterGlobe()` rather than at page
 boot. This keeps WebGL work out of the foundation-page path.
@@ -216,6 +228,36 @@ drawer, so the renderer never duplicates a headline fact card.
 
 ### Globe performance boundary
 
+Landing-paint performance is a separate boundary from renderer frame time.
+`tools/run-first-paint-benchmark.js` compares exact baseline and candidate Git
+archives with a counterbalanced cold-mobile protocol; its receipt is pinned at
+`data/performance/first-paint-mobile-2026-08-28.json` and independently checked
+by `tools/check-first-paint-performance-receipt.js`. The loss is a weighted,
+threshold-clipped FCP/LCP/CLS/TBT penalty. A zero loss means the above-threshold
+penalty was eliminated; it is never divided into a ratio. The measured 10×
+claim is limited to the exact hero image payload, while latency, layout shift,
+blocking time, partial transfer, and post-deploy PageSpeed remain separate
+reported outcomes.
+
+The first-paint action bridge is installed in `<head>`, before any visible body
+bytes, and must acknowledge an Enter-the-Globe request even while the remaining
+HTML stream and deferred application scripts are still arriving. It queues
+exactly one intent, disables both entry controls, sets `aria-busy`, and
+announces the evidence wait. `tools/check-streamed-first-paint-action.js`
+holds the document tail after the visible hero and proves this boundary in a
+real browser. `App` consumes that intent, shares the exact-data promise, and
+may reveal globe mode only after evidence and both asynchronously loaded HUD
+stylesheets (`globe-system.css` and `guided-first-orbit.css`) are ready. Every
+globe and tutorial surface fails closed until the aggregate
+`data-globe-styles-ready="true"` gate is published.
+
+The deterministic CT-42 rollback proof binds its seven controls and fourteen
+runtime dependencies through individual SHA-256 pins plus one canonical
+path/content-tree digest. It does not require a feature-branch commit object or
+ancestry edge. Its checker performs a synthetic `git merge --squash`, deletes
+and prunes both intermediate commits, then reruns authoritative validation and
+the complete temporary-site rehearsal from the surviving squash snapshot.
+
 The live renderer targets a 120 Hz-capable display budget of 8.333 ms per
 frame. This is a scene and interaction budget, not a claim that a 60 Hz panel
 or a browser throttled by the operating system will report 120 frames per
@@ -290,8 +332,28 @@ staged profile, requires an exact source/staged fingerprint match, rehashes the
 active runtime against that profile's own review authority, and requires the
 separate three-role signed globe-asset approval. Candidate mode may omit those
 external approvals, but carries the non-publication marker and never acquires
-release authority. Every externally reachable Cloudflare build still forces
-release mode.
+release authority. Every externally reachable Cloudflare build must use one
+explicitly authorized main-branch lane; generic candidate staging remains
+forbidden.
+
+### CCI scoped presentation/performance re-review
+
+The CCI AI-factual lane keeps the original four specialist reports and their
+300-pin review request as an immutable scientific, source-rights, and runtime
+base. A single focused AI review may extend that base only for the exact
+presentation, self-hosted-font delivery, measured first-paint evidence,
+deterministic rollback proof, and release-rail files enumerated by
+`tools/lib/cci-scoped-delta-review.js`.
+
+The delta checker compares every base and current pin, rejects deletions and
+unclassified paths, and rehashes the original four reports. Climate runtime or
+source data, source-registry/rights decisions, globe data or texture bytes,
+scoring, targets, finance judgments, or publication-boundary changes are not
+eligible for the focused lane and require fresh specialist review. The focused
+artifact grants no human, legal, institutional, standalone release, or
+standalone deployment authority; it is usable only with the byte-exact
+four-review base, explicit maintainer authorization, CODEOWNERS review, and all
+staged-integrity gates.
 
 ## Current country-selection flow
 
@@ -422,8 +484,9 @@ Rules:
 
 ## Service worker and freshness
 
-The source candidate uses `sw.js` cache epoch v77. The separately authorized
-CCI AI-factual builder deterministically stages epoch v79, with coupled script
+The source candidate uses `sw.js` cache epoch v79 and self-hosts the three ELU
+font families as immutable, hash-versioned WOFF2 assets. The separately authorized
+CCI AI-factual builder deterministically stages epoch v80, with coupled script
 query pins, so the public browser cannot pair transformed runtime code with the
 candidate cache. The active epoch precaches the public page, core CSS/JS, the refined
 three-move Climate Intelligence first orbit with separately spaced visual cue lanes and runtime-enforced compact lens/card air, the shared raised-tile lenses, evidence-only
@@ -463,7 +526,7 @@ HTML or code with an old runtime artifact.
 | Stacking | `StackLint.audit()` | No known invisible blockers/z-index regressions |
 | Country intelligence aggregate | `node tools/check-country-climate-intelligence-ci.js` | Registry gates, exact component receipts, compiler derivations, 249×27 runtime, lens coverage, UI contract, and atomic pin agree |
 | CCI public-release exclusion | `node tools/check-country-climate-public-release-boundary.js` | Unapproved CCI values exist only in the marked local candidate artifact surface; factual-public staging omits them |
-| CCI AI-factual review | `node tools/check-cci-factual-public-review.js` | Four AI reviews across three model families, exact post-mitigation pins, source/asset decisions, explicit `human_review=false` and `legal_certification=false`, and maintainer authorization agree |
+| CCI AI-factual review | `node tools/check-cci-factual-public-review.js` | The immutable four-review/three-model base, one exact scoped presentation/performance delta, unchanged high-risk pins, source/asset decisions, explicit `human_review=false` and `legal_certification=false`, and maintainer authorization agree |
 | CCI AI-factual surface | `node tools/check-cci-factual-public-deploy.js --staged _deploy` | The exact public output excludes three ambiguous Three-Globe images and the inverted-relief experiment, retains the pinned NASA/Natural Earth assets, and exposes review-state disclosure in WebGL and fallback paths |
 | WebGL/fallback parity | `node tools/check-globe-webgl-fallback.js` | Three lenses share the 249-entity evidence model and explicit gaps |
 | Country truth | `tools/verify-globe-country-truth.js` | Intended country-status invariants; currently requires repair for v1 |
@@ -492,8 +555,11 @@ release-mode builder, final aggregate verifier, and signed asset approval.
 Candidate `cci` cannot borrow legacy factual-display or signed-release
 authority. It may enter only the `--cci-ai-factual` builder when the exact
 four-review AI artifact passes. That lane keeps `human_review=false`,
-`legal_certification=false`, and the existing signed production gate unchanged;
-it publishes source observations, estimates, modeled projections, reanalysis,
+`legal_certification=false`, and the existing signed production gate unchanged.
+Presentation/performance-only changes may reuse the byte-exact four-review base
+through the single focused delta rail above; any high-risk subject change fails
+closed and requires fresh specialist review. The AI-factual lane publishes
+source observations, estimates, modeled projections, reanalysis,
 and disclosed deterministic derivations rather than claiming human scientific
 or legal certification. It also strips `night-sky.png`,
 `earth-blue-marble.jpg`, and `earth-topology.png` from staged bytes and runtime

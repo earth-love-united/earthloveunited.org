@@ -54,7 +54,7 @@ function runSelfTest() {
   assert(!transformed['js/country-climate-intelligence.js'].includes("query.get('carbon-relief')"));
   assert(transformed['js/globe.js'].includes('.bumpImageUrl(null)'));
   assert(transformed['js/globe.js'].includes(PUBLIC_REVIEW_LABEL));
-  assert(transformed['sw.js'].includes('elu-v79-cci-factual-ai-review'));
+  assert(transformed['sw.js'].includes('elu-v80-cci-factual-ai-review'));
   ['night-sky.png', 'earth-blue-marble.jpg', 'earth-topology.png'].forEach(name => {
     assert(!transformed['js/globe.js'].includes(name), name);
     assert(!transformed['sw.js'].includes(name), name);

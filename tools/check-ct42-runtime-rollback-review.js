@@ -21,13 +21,11 @@ const {
   validateCt42RuntimeRollbackReview,
 } = require('./lib/ct42-runtime-rollback-review');
 const {
+  RUNTIME_CONTENT_TREE_FORMAT,
   calculationHash: proofCalculationHash,
+  runtimeContentTreeHash,
   validateProofDocument,
 } = require('./lib/ct42-runtime-rollback-proof');
-const {
-  PROFILE_CCI,
-  detectPublicClimateReleaseProfile,
-} = require('./lib/public-climate-release-profile');
 
 const ROOT = path.resolve(__dirname, '..');
 const FIXTURE_PATH = 'data/climate/fixtures/ct42-runtime-rollback-review.json';
@@ -66,34 +64,6 @@ function commit(root, message) {
   return git(root, ['rev-parse', 'HEAD']);
 }
 
-function withDetachedRuntimeRoot(root, commitSha, callback) {
-  const holder = fs.mkdtempSync(path.join(os.tmpdir(), 'elu-ct42-runtime-root-'));
-  const detachedRoot = path.join(holder, 'repository');
-  try {
-    const clone = childProcess.spawnSync('git', [
-      'clone', '--quiet', '--no-checkout', '--shared', root, detachedRoot,
-    ], { encoding: 'utf8' });
-    assert.equal(clone.status, 0, `unable to create detached runtime-control clone: ${(clone.stderr || clone.stdout || '').trim()}`);
-    const checkout = childProcess.spawnSync('git', [
-      'checkout', '--quiet', '--detach', commitSha,
-    ], { cwd: detachedRoot, encoding: 'utf8' });
-    assert.equal(checkout.status, 0, `unable to checkout runtime-control commit: ${(checkout.stderr || checkout.stdout || '').trim()}`);
-    return callback(detachedRoot);
-  } finally {
-    fs.rmSync(holder, { recursive: true, force: true });
-  }
-}
-
-function exactPathCommit(root, relative) {
-  const commitSha = git(root, ['log', '-1', '--format=%H', '--', relative]);
-  assert.match(commitSha, /^[a-f0-9]{40}$/, `${relative} must have an exact historical commit`);
-  const result = childProcess.spawnSync('git', ['show', `${commitSha}:${relative}`], { cwd: root });
-  assert.equal(result.status, 0, `unable to read ${relative} from ${commitSha}`);
-  assert.equal(sha256(result.stdout), sha256(fs.readFileSync(path.join(root, relative))),
-    `${relative} differs from its exact historical commit`);
-  return commitSha;
-}
-
 function pin(root, relative) {
   return { path: relative, sha256: sha256(fs.readFileSync(path.join(root, relative))) };
 }
@@ -124,24 +94,33 @@ function makeFixtureRoot() {
   write(root, 'data/climate/runtime/rollback-plan.json', { status: 'candidate_only' });
   write(root, PATCH_PATH, 'ZGlmZiAtLWdpdCBhL2ZpeHR1cmUgYi9maXh0dXJlCkBAIC0xICsxIEBACi1vbGQKbmV3Cg==\n');
   for (const relative of SUBJECT_PIN_PATHS.slice(7)) write(root, relative, `'use strict';\n// fixture rollback subject ${relative}\n`);
+  const controls = Array.from({ length: 7 }, (_, index) => ({
+    path: `fixture/control-${index}`,
+    candidate_sha256: sha256(`fixture-control-${index}`),
+  }));
+  const dependencies = Array.from({ length: 14 }, (_, index) => ({
+    path: index === 8 ? 'js/vendor/globe.gl.js' : `fixture/dependency-${index}`,
+    source_binding: index === 8 ? 'verified_external_sha256' : 'runtime_content_tree',
+    source_sha256: sha256(`fixture-dependency-${index}`),
+  }));
+  const runtimeTreeSha256 = runtimeContentTreeHash(controls, dependencies);
   const proof = {
-    schema_version: '2.3.0', proof_id: 'fixture-neutral-runtime-rollback-proof',
+    schema_version: '2.4.0', proof_id: 'fixture-neutral-runtime-rollback-proof',
     status: 'built_not_reviewed_browser_gate_required', release_authority: false, deploy_authority: false,
     review: { status: 'not_reviewed', builder_id: 'fixture-rollback-builder', reviewer_id: null, reviewed_at: null, independent_review_required: true },
     candidate: {
-      runtime_control_commit: u, review_chain_head: u, review_chain_late_bound: false, review_chain_ct40_sha256: sha256(fs.readFileSync(path.join(root, CT40_RESULT_PATH))),
+      runtime_control: { format: RUNTIME_CONTENT_TREE_FORMAT, sha256: runtimeTreeSha256, member_count: 21, git_history_required: false, squash_merge_safe: true },
+      review_chain_head: u, review_chain_late_bound: false, review_chain_ct40_sha256: sha256(fs.readFileSync(path.join(root, CT40_RESULT_PATH))),
       candidate_id: 'fixture-ct42', decision: 'deny', decision_scope: 'assessed_climate_release', release_eligible: false, production_runtime_release: false,
       candidate_manifest: pin(root, 'data/climate/runtime/candidate-manifest.json'),
       runtime_data: pin(root, 'data/climate/runtime/country-factual-candidate.json'),
       ct40_result: pin(root, CT40_RESULT_PATH), rollback_plan: pin(root, 'data/climate/runtime/rollback-plan.json'),
     },
     rollback: {
+      source_runtime_tree_sha256: runtimeTreeSha256,
       entity_boundary: { total: 201, retained_natural_earth_polygons: 173, approximate_small_state_points: 28, climate_values: 0, evidence_state: 'withheld_for_all' },
-      controls: Array.from({ length: 7 }, (_, index) => ({ path: `fixture/control-${index}` })),
-      runtime_dependency_closure: Array.from({ length: 14 }, (_, index) => ({
-        path: index === 8 ? 'js/vendor/globe.gl.js' : `fixture/dependency-${index}`,
-        source_commit: index === 8 ? null : u,
-      })),
+      controls,
+      runtime_dependency_closure: dependencies,
       patch: { ...pin(root, PATCH_PATH), decoded_sha256: '5ee3324b0b460543363dbe7b16f941da483058f4dbfe89ed7efe8d3fea704541', changed_files: [
         'index.html', 'css/globe-system.css', 'js/data.js', 'js/globe.js', 'sw.js', 'tools/smoke-test.js',
       ] },
@@ -231,13 +210,6 @@ function verifyFixture() {
     fs.rmSync(context.root, { recursive: true, force: true });
   }
   const realProof = readJson(ROOT, PROOF_PATH);
-  const activeProfile = detectPublicClimateReleaseProfile(ROOT).profile;
-  const authoritativeProofCommit = activeProfile === PROFILE_CCI
-    ? exactPathCommit(ROOT, PROOF_PATH)
-    : null;
-  const proofRoot = activeProfile === PROFILE_CCI
-    ? null
-    : ROOT;
   const validateAuthoritativeProof = runtimeRoot => {
     const proofOptions = {
       expectedPatchSha256: realProof.rollback.patch.sha256,
@@ -250,9 +222,7 @@ function verifyFixture() {
     assert.throws(() => validateProofDocument(runtimeRoot, widenedProof, proofOptions),
       'authoritative validator accepted a remote texture semantic widening');
   };
-  assert.doesNotThrow(() => proofRoot
-    ? validateAuthoritativeProof(proofRoot)
-    : withDetachedRuntimeRoot(ROOT, authoritativeProofCommit, validateAuthoritativeProof),
+  assert.doesNotThrow(() => validateAuthoritativeProof(ROOT),
     'authoritative validator rejected the committed rollback proof');
   return rejected;
 }
