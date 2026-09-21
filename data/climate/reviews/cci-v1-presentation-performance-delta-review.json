@@ -10,7 +10,7 @@
     "review_request_sha256": "8fe8a47dbf8eea2081f7135ab11b3baab1c4af164e6fc9542d7ceaf06c780753",
     "reviewed_head": "108e6b6be2e3a53c45b4c2a596de11656774ab8c"
   },
-  "calculation_hash": "3d95a758860b05d30d9fea0a53e33385fc80d6b766ec4460715c0551e3d0444c",
+  "calculation_hash": "99e9d303d6dcf2355582c0da1c518955102ba1bf5a3a2abf281610ec4813c44d",
   "changes": [
     {
       "base_sha256": "eb5032a791d8a2f9674ab34481086f1d0827a4decd3a446ee0b667b77e8d4302",
@@ -146,16 +146,23 @@
       "path": "assets/legacy/ekmel.jpg"
     },
     {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "27d79a350351e382c1a89c8c5855aaefac61837bc364aaf989a96bb8ceda8f75",
+      "operation": "add",
+      "path": "assets/legacy/hero-earth.webp"
+    },
+    {
       "base_sha256": "24eb59810aa525c664e8fb5745d380756ecb8ccb568183e5605826c1a77a7f09",
       "category": "deterministic_runtime_proof",
-      "current_sha256": "b58791572b243c9ba182850cef96c0021f84c7cdd7f0659a9726038292793f14",
+      "current_sha256": "f1d0a75994b7ed273e182ab87ba0df22fdd343d3aad9e7d60e57f821a77db376",
       "operation": "modify",
       "path": "data/climate/operations/ct42-runtime-rollback.patch.b64"
     },
     {
       "base_sha256": "a62c285fe94f96281680e8ec21a61a1a4bde24aa9ee1443e62df527d30e6d4fa",
       "category": "deterministic_runtime_proof",
-      "current_sha256": "14b4053a7c2024e369c2f0a47530b0879b3b22434beb0e4dd28820956ac12509",
+      "current_sha256": "182e3f0f33a7f36c3600fe6fd01c00b9834e177d826653480b7439c850802c8a",
       "operation": "modify",
       "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json"
     },
@@ -183,7 +190,7 @@
     {
       "base_sha256": "1cb352d50ac411177c0f0f51ae272ec4bc8899b12ab1050282ce75e3e270eca3",
       "category": "presentation_and_font_delivery",
-      "current_sha256": "ccb5c1145827a7b85bfc5a3145129e7c88510f05a2473e37433f965a70829717",
+      "current_sha256": "6c030dce24ea49969579e4fa517bdbe9e306c1a6d090c8986bc079b211938d0d",
       "operation": "modify",
       "path": "index.html"
     },
@@ -302,14 +309,14 @@
     {
       "base_sha256": "90c53003a9f41d71ca07a2efa1359bd5c89d5798f71b4f1b674756fee699d17c",
       "category": "scoped_release_rail",
-      "current_sha256": "eb2e0603bb4d28c06064e09df860118b960405fce8f37b5229c6584d18799756",
+      "current_sha256": "98d858e86095ee52bd4c9d48d26f7aa7ca000ebe595dc7cf64cf871895c4b65c",
       "operation": "modify",
       "path": "tools/lib/public-deploy-surface.js"
     },
     {
       "base_sha256": "3f2aaca33f48c3381b43e59bb415b9ac33c83753975ddf1cde880a180ebdcacc",
       "category": "scoped_release_rail",
-      "current_sha256": "32219c665b32381774e0be5e55ea99ec9ebcb3c659e43c5f7a9d1cbfed9e7832",
+      "current_sha256": "7e2b626351e78071d86caf68417bc62d774e87ca721e9d01a3fd557e5fc157db",
       "operation": "modify",
       "path": "tools/prepare-country-climate-intelligence-review-request.js"
     },
@@ -329,11 +336,11 @@
   ],
   "created_at": "2026-08-28T21:15:39Z",
   "current_subject": {
-    "artifact_pin_digest": "9c4758d5c4c4169ea94e596c2a390d6665812b3a6688b36c9a93bfe5e0a41807",
-    "calculation_hash": "ee34cf455b8f4dcf3b5d2a53d7dd5718176b1f6b7b160a8a08d079272ad6b514",
+    "artifact_pin_digest": "4009416d22dc1ef53f5a2cadf9f5f60ead7c9cf4aa220c5b813e96b0cd4a323b",
+    "calculation_hash": "47a37ebecc0fd8f64ae0ec96e8ad89acf2181dd38cc27ecdfdf6679f70c0cd8f",
     "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
-    "pin_count": 315,
-    "review_request_sha256": "cd326ade1a117368f24f49bd99c84b4678386f5990cc1b7c9dd1ca0df950b581"
+    "pin_count": 316,
+    "review_request_sha256": "912bda1b8f78c5a66fbf51bf341f077a319c5a702654ccad932570bccd708027"
   },
   "deploy_authority": false,
   "evidence": [

@@ -191,6 +191,12 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 .hero-actions{order:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;margin-top:30px;margin-bottom:0;animation:fadeUp .8s ease-out .6s both}
 #hero .hero-actions .glass-btn{min-width:min(100%,340px);padding:15px 32px}
 #hero .enter-btn{font-size:12px;letter-spacing:2.4px}
+#hero .globe-door-row{flex-direction:row;gap:18px}
+.globe-door{order:0;flex:0 0 auto;width:clamp(64px,9vh,84px);aspect-ratio:1;margin:0;border-radius:50%;cursor:pointer;background:radial-gradient(circle at 38% 34%,#1d3550,#0a1628 70%);box-shadow:0 0 0 1px rgba(78,205,196,.18),0 0 34px 6px rgba(78,205,196,.16),0 18px 40px rgba(10,22,40,.28);transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s}
+.globe-door canvas{display:block;width:100%;height:100%;border-radius:50%;opacity:0;transition:opacity 1.2s ease}
+.globe-door.is-ready canvas{opacity:1}
+.globe-door:hover,.hero-actions:has(.enter-btn:hover) .globe-door,.hero-actions:has(.enter-btn:focus-visible) .globe-door{transform:scale(1.06);box-shadow:0 0 0 1px rgba(78,205,196,.32),0 0 48px 10px rgba(78,205,196,.26),0 22px 48px rgba(10,22,40,.32)}
+@media(max-width:420px){.globe-door{width:56px}#hero .globe-door-row{gap:12px}}
 #hero .memorial{position:relative;bottom:auto;order:5;margin:0 auto 24px;font-size:11px;color:var(--text3);font-style:italic;opacity:.72;animation:fadeUp .8s ease-out 1s both}
 .hero-telemetry{order:3;display:flex;align-items:center;justify-content:center;width:min(920px,100%);margin:0 auto;padding:0;color:var(--text2);animation:fadeUp .6s ease-out .15s both}
 #hero-carbon-clock{margin:0;min-width:0}
@@ -526,9 +532,75 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       </script>
 
       <!-- Primary action: the globe is the door -->
-      <div class="hero-actions" aria-label="Arrival actions">
+      <div class="hero-actions globe-door-row" aria-label="Arrival actions">
+        <div class="globe-door" aria-hidden="true"><canvas class="globe-door-earth" width="320" height="320"></canvas></div>
         <button class="enter-btn glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
       </div>
+      <script>
+      /* Globe door: a small spinning Earth drawn on canvas (orthographic
+         projection of a 23 KB night-lights texture). Decorative; the button
+         below stays the accessible control. Pauses when hidden or off-screen,
+         draws one still frame under prefers-reduced-motion. */
+      (function () {
+        var door = document.querySelector('.globe-door'), cv = door && door.querySelector('canvas');
+        if (!cv || !cv.getContext) return;
+        door.addEventListener('click', function () {
+          var b = document.querySelector('.enter-btn[data-action="enterGlobe"]'); if (b) b.click();
+        });
+        function boot() {
+          var img = new Image();
+          img.decoding = 'async';
+          img.onload = function () {
+            var TW = img.naturalWidth, TH = img.naturalHeight;
+            var tc = document.createElement('canvas'); tc.width = TW; tc.height = TH;
+            var tx = tc.getContext('2d'); tx.drawImage(img, 0, 0);
+            var tex = tx.getImageData(0, 0, TW, TH).data;
+            var N = cv.width, R = N / 2, ctx = cv.getContext('2d');
+            var out = ctx.createImageData(N, N), o = out.data;
+            var tilt = 0.32, ct = Math.cos(tilt), st = Math.sin(tilt);
+            var idx = [], lon0 = [], lat = [], shade = [];
+            for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
+              var nx = (x + 0.5 - R) / R, ny = (y + 0.5 - R) / R, d2 = nx * nx + ny * ny;
+              if (d2 > 1) continue;
+              var nz = Math.sqrt(1 - d2);
+              var yy = -ny * ct + nz * st, zz = ny * st + nz * ct;
+              idx.push((y * N + x) * 4);
+              lat.push(Math.floor((0.5 - Math.asin(yy) / Math.PI) * (TH - 1)));
+              lon0.push(Math.atan2(nx, zz) / (2 * Math.PI));
+              var edge = Math.min(1, (1 - Math.sqrt(d2)) * R * 0.9);
+              shade.push((0.55 + 0.45 * nz) * edge);
+            }
+            var K = idx.length, phase = 0, raf = 0, last = 0, visible = true;
+            function draw() {
+              for (var i = 0; i < K; i++) {
+                var u = lon0[i] + phase; u -= Math.floor(u);
+                var t = (lat[i] * TW + Math.floor(u * (TW - 1))) * 4, j = idx[i], k = shade[i];
+                o[j] = tex[t] * k + 6; o[j + 1] = tex[t + 1] * k + 14; o[j + 2] = tex[t + 2] * k + 30; o[j + 3] = 255 * Math.min(1, k * 4);
+              }
+              ctx.putImageData(out, 0, 0);
+            }
+            var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+            function loop(ts) {
+              raf = 0;
+              if (!visible || document.hidden || document.body.classList.contains('globe-mode')) return;
+              if (ts - last > 33) { phase += (ts - last) / 60000; last = ts; draw(); }
+              raf = requestAnimationFrame(loop);
+            }
+            function kick() { if (!still && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); } }
+            draw(); door.classList.add('is-ready'); kick();
+            document.addEventListener('visibilitychange', kick);
+            if ('IntersectionObserver' in window) new IntersectionObserver(function (e) {
+              visible = e[0].isIntersecting; kick();
+            }).observe(door);
+            window.addEventListener('pageshow', kick);
+            new MutationObserver(kick).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+          };
+          img.src = 'assets/legacy/hero-earth.webp?v=27d79a35';
+        }
+        if (document.readyState === 'complete') setTimeout(boot, 0);
+        else window.addEventListener('load', function () { if (window.requestIdleCallback) requestIdleCallback(boot, { timeout: 1500 }); else setTimeout(boot, 200); });
+      })();
+      </script>
       <p id="app-readiness-status" class="sr-only" role="status" aria-live="polite"></p>
     </div>
 

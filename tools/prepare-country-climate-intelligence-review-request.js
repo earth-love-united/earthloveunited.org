@@ -70,6 +70,7 @@ const SUBJECT_PATHS = Object.freeze([
   'assets/globe/runtime/night-sky.png',
   'assets/legacy/brandon.jpg',
   'assets/legacy/ekmel.jpg',
+  'assets/legacy/hero-earth.webp',
   'assets/legacy/elu-logo-light.png',
   'assets/legacy/elu-logo.png',
   'assets/legacy/mike.png',
