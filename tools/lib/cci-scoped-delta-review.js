@@ -110,7 +110,12 @@ const DELTA_PATHS_BY_CATEGORY = Object.freeze({
     'tools/lib/public-deploy-surface.js',
     'tools/prepare-country-climate-intelligence-review-request.js',
   ]),
+  foundation_content: Object.freeze([]),
 });
+
+// Foundation content (team photos, partner logos) is not climate evidence: any
+// image under these prefixes may change without a fresh specialist review.
+const FOUNDATION_CONTENT_PATTERN = /^assets\/(?:legacy|partners)\/[A-Za-z0-9_.-]+\.(?:jpg|png|svg|webp)$/;
 
 const REQUIRED_UNCHANGED_PATHS = Object.freeze([
   'THIRD_PARTY_NOTICES.txt',
@@ -270,6 +275,7 @@ function categoryForPath(relative) {
   const matches = Object.entries(DELTA_PATHS_BY_CATEGORY)
     .filter(([, paths]) => paths.includes(relative))
     .map(([category]) => category);
+  if (!matches.length && FOUNDATION_CONTENT_PATTERN.test(relative)) matches.push('foundation_content');
   if (matches.length > 1) fail('delta path has multiple policy categories: ' + relative);
   return matches[0] || null;
 }
