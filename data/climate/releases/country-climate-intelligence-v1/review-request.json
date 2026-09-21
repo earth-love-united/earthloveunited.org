@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "1520a1705eba3ed87d7b54a97a13be8cc51166d33c776ce2681bfa272c775a96",
+  "calculation_hash": "9950d3f1283e5646e16a5926b7e8cfd617f12a930b6bafdb9d8f43888a4e0fd9",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "c9ad7b629472834c38501ce641a03ca69aa02e391d6c00c7242a6bbfd0d2136e",
+    "artifact_pin_digest": "fb632c50dc6868ee7840dc3e776f04dd33404335ee55dd60f2c624498a56258f",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -345,7 +345,7 @@
       },
       {
         "path": "assets/legacy/ekmel.jpg",
-        "sha256": "98106ca98b2789fe6b5a536902a11b594121386ae77f2211b1fdbb51e3204df2"
+        "sha256": "89281ca66daf53107650dc49881e5744d6c8b9f19ca50a947072a1e2a60796cc"
       },
       {
         "path": "assets/legacy/elu-logo-light.png",
@@ -517,7 +517,7 @@
       },
       {
         "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
-        "sha256": "eaec0ff608cb571f5d1f16f65f5b7ea1eb204130e5706517928f7e7a8ec5736e"
+        "sha256": "0bd23bca311d9e17d9b5931d5333ea99c57acaed10393dec35661d20e6f4edad"
       },
       {
         "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -617,7 +617,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "26c86ac390327419ee3ad00d4d470d64a29fb9538b9cd745c3d0be41135206b4"
+        "sha256": "156f1eacbdfe13ba31a5f2dc2f02bb8719ace45e6fbf62846d852642834cf559"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -853,7 +853,7 @@
       },
       {
         "path": "index.html",
-        "sha256": "84b47f0a8542d627c96ea33c1cf0ca959ab0cc09a16eae5dcc82470e33d949a4"
+        "sha256": "32dd6e5dd6a859a4510085362359030034e05066f40fdacd03010f245f98a892"
       },
       {
         "path": "js/app.js",
@@ -1257,7 +1257,7 @@
       },
       {
         "path": "tools/lib/cci-scoped-delta-review.js",
-        "sha256": "68e67bbb16930f12d40ca2bc10c58a40498af6a16c88592ddce36dac592d4d39"
+        "sha256": "ec2331ed4f692132055f311afe6fa3b0ee851e3bb5f22fe2c643e09d3015ae76"
       },
       {
         "path": "tools/lib/climate-factual-runtime-candidate.js",

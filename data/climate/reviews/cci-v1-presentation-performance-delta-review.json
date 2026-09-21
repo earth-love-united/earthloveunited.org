@@ -10,7 +10,7 @@
     "review_request_sha256": "8fe8a47dbf8eea2081f7135ab11b3baab1c4af164e6fc9542d7ceaf06c780753",
     "reviewed_head": "108e6b6be2e3a53c45b4c2a596de11656774ab8c"
   },
-  "calculation_hash": "aaeac4ade2db4d467d179683b4a118105e293b8b58ee972cd4585acb2e33cba5",
+  "calculation_hash": "dbce0a776988fbd7dee28cc3df14adef737872dd97a85f69b78cac97949abd1c",
   "changes": [
     {
       "base_sha256": "eb5032a791d8a2f9674ab34481086f1d0827a4decd3a446ee0b667b77e8d4302",
@@ -139,16 +139,23 @@
       "path": "assets/fonts/outfit-site.woff2"
     },
     {
+      "base_sha256": "98106ca98b2789fe6b5a536902a11b594121386ae77f2211b1fdbb51e3204df2",
+      "category": "foundation_content",
+      "current_sha256": "89281ca66daf53107650dc49881e5744d6c8b9f19ca50a947072a1e2a60796cc",
+      "operation": "modify",
+      "path": "assets/legacy/ekmel.jpg"
+    },
+    {
       "base_sha256": "24eb59810aa525c664e8fb5745d380756ecb8ccb568183e5605826c1a77a7f09",
       "category": "deterministic_runtime_proof",
-      "current_sha256": "eaec0ff608cb571f5d1f16f65f5b7ea1eb204130e5706517928f7e7a8ec5736e",
+      "current_sha256": "0bd23bca311d9e17d9b5931d5333ea99c57acaed10393dec35661d20e6f4edad",
       "operation": "modify",
       "path": "data/climate/operations/ct42-runtime-rollback.patch.b64"
     },
     {
       "base_sha256": "a62c285fe94f96281680e8ec21a61a1a4bde24aa9ee1443e62df527d30e6d4fa",
       "category": "deterministic_runtime_proof",
-      "current_sha256": "26c86ac390327419ee3ad00d4d470d64a29fb9538b9cd745c3d0be41135206b4",
+      "current_sha256": "156f1eacbdfe13ba31a5f2dc2f02bb8719ace45e6fbf62846d852642834cf559",
       "operation": "modify",
       "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json"
     },
@@ -176,7 +183,7 @@
     {
       "base_sha256": "1cb352d50ac411177c0f0f51ae272ec4bc8899b12ab1050282ce75e3e270eca3",
       "category": "presentation_and_font_delivery",
-      "current_sha256": "84b47f0a8542d627c96ea33c1cf0ca959ab0cc09a16eae5dcc82470e33d949a4",
+      "current_sha256": "32dd6e5dd6a859a4510085362359030034e05066f40fdacd03010f245f98a892",
       "operation": "modify",
       "path": "index.html"
     },
@@ -267,7 +274,7 @@
     {
       "base_sha256": null,
       "category": "scoped_release_rail",
-      "current_sha256": "68e67bbb16930f12d40ca2bc10c58a40498af6a16c88592ddce36dac592d4d39",
+      "current_sha256": "ec2331ed4f692132055f311afe6fa3b0ee851e3bb5f22fe2c643e09d3015ae76",
       "operation": "add",
       "path": "tools/lib/cci-scoped-delta-review.js"
     },
@@ -322,11 +329,11 @@
   ],
   "created_at": "2026-08-28T21:15:39Z",
   "current_subject": {
-    "artifact_pin_digest": "c9ad7b629472834c38501ce641a03ca69aa02e391d6c00c7242a6bbfd0d2136e",
-    "calculation_hash": "1520a1705eba3ed87d7b54a97a13be8cc51166d33c776ce2681bfa272c775a96",
+    "artifact_pin_digest": "fb632c50dc6868ee7840dc3e776f04dd33404335ee55dd60f2c624498a56258f",
+    "calculation_hash": "9950d3f1283e5646e16a5926b7e8cfd617f12a930b6bafdb9d8f43888a4e0fd9",
     "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
     "pin_count": 315,
-    "review_request_sha256": "b0d549ab5827d02814b75cea5ed9e903bfdd9deaf851432f7be1d6186c07797e"
+    "review_request_sha256": "0a52a1c49360f5091e1b50dfe8864a31866365360b6a3da3e07dcc030fc7ec63"
   },
   "deploy_authority": false,
   "evidence": [
@@ -470,7 +477,8 @@
       "presentation_and_font_delivery",
       "performance_evidence",
       "deterministic_runtime_proof",
-      "scoped_release_rail"
+      "scoped_release_rail",
+      "foundation_content"
     ],
     "changed_pins_require_this_delta_review": true,
     "exact_changed_paths_only": true,
