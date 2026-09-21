@@ -339,6 +339,7 @@ body.globe-mode #site-nav{display:none}
 .card .card-cta{margin-top:18px;padding:11px 22px;font-size:11px}
 @media(max-width:360px){.card .card-cta{width:100%;max-width:100%;padding-inline:12px;white-space:normal;overflow-wrap:anywhere}}
 .card .card-link{display:inline-flex;align-items:center;margin-top:18px;color:var(--teal);font-family:var(--body);font-size:12px;font-weight:500;letter-spacing:.3px;text-decoration:none}
+#open .card{display:flex;flex-direction:column}#open .card p{flex:1}#open .card .card-link{align-self:flex-start}
 .card .card-link:hover,.card .card-link:focus-visible{color:var(--mint);text-decoration:underline;text-underline-offset:4px;outline:none}
 .why-list{list-style:none;margin-top:20px;display:grid;gap:10px;max-width:840px}
 .why-list li{position:relative;padding:14px 16px 14px 40px;border:1px solid rgba(78,205,196,.12);border-radius:10px;background:rgba(255,255,255,.02);color:var(--text2);font-size:14px;line-height:1.55}
@@ -796,16 +797,17 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <div class="card">
         <div class="card-tag">Open Source</div>
         <p>Every line of this site is public.</p>
-        <a class="card-cta glass-btn" href="https://github.com/earth-love-united/earthloveunited.org" target="_blank" rel="noopener">Read the source</a>
+        <a class="card-link" href="https://github.com/earth-love-united/earthloveunited.org" target="_blank" rel="noopener">Read the source →</a>
       </div>
       <div class="card">
         <div class="card-tag">Open Data</div>
         <p>The atlas reads one hashed, reproducible data release, published with its sources and gaps.</p>
-        <a class="card-cta glass-btn" href="docs/COUNTRY-CLIMATE-METHODOLOGY.md">Read the climate methodology</a>
+        <a class="card-link" href="docs/COUNTRY-CLIMATE-METHODOLOGY.md">Read the methodology →</a>
       </div>
       <div class="card">
         <div class="card-tag">Truth Checks</div>
         <p>Automated checks verify every source and all 249 records before each release.</p>
+        <a class="card-link" href="https://github.com/earth-love-united/earthloveunited.org/actions" target="_blank" rel="noopener">See the checks →</a>
       </div>
     </div>
   </section>
