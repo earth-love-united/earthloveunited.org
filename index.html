@@ -384,13 +384,14 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 .trib-prose p{color:var(--text2);font-size:15px;line-height:1.8;margin-bottom:18px;max-width:70ch}
 .trib-prose p:first-of-type::first-letter{font-family:var(--display);font-size:46px;line-height:.9;color:var(--mint);float:left;padding:4px 8px 0 0}
 .trib-prose em{color:var(--text);font-style:italic}
+.trib-more summary{display:inline-flex;align-items:center;min-height:44px;margin-bottom:12px;color:var(--teal);font-size:13px;letter-spacing:.4px;cursor:pointer;list-style:none}.trib-more summary::-webkit-details-marker{display:none}.trib-more summary::after{content:'＋';margin-left:8px}.trib-more[open] summary::after{content:'−'}
 .trib-close{font-family:var(--display);font-style:italic;font-size:18px;color:var(--text);line-height:1.6;border-left:2px solid rgba(78,205,196,.35);padding-left:16px;margin-top:6px;max-width:60ch}
 .trib-aside figure{margin:0;border-radius:12px;overflow:hidden;border:1px solid rgba(78,205,196,.16)}
 .trib-aside img{width:100%;display:block}
 .trib-aside.noimg{display:none}
 .trib-aside figcaption{padding:10px 12px;font-size:11px;color:var(--text3);background:var(--bg2)}
 /* globe explainer */
-.globe-key{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.globe-key{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
 .globe-key span{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid rgba(78,205,196,.14);border-radius:999px;background:var(--bg2);color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:.6px}
 .globe-key i{width:11px;height:11px;border-radius:3px;font-style:normal;flex:0 0 auto}
 .big-cta{max-width:100%;margin-top:34px;padding:15px 32px!important;font-size:12px!important;white-space:normal}@media(max-width:360px){.big-cta{width:100%;padding:14px 12px!important}}
@@ -469,12 +470,12 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   </a>
   <div class="nav-links">
     <a href="#about">About</a>
-    <a href="#projects">Projects</a>
     <a href="#globe">Globe</a>
     <a href="#carbon">Carbon</a>
+    <a href="#partners">Partners</a>
     <a href="#team">Team</a>
     <a href="#tribute">Tribute</a>
-    <a href="#contact">Support &amp; Contact</a>
+    <a href="#contact">Contact</a>
     <button id="theme-toggle" aria-label="Toggle light / dark theme" title="Toggle theme">
       <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg>
       <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.4 14.2A8.4 8.4 0 0 1 9.8 3.6a8.4 8.4 0 1 0 10.6 10.6z"/></svg>
@@ -489,7 +490,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <div class="hero-stage">
       <span class="hero-foundation-logo" aria-hidden="true"></span>
       <h1>Earth Love United Foundation</h1>
-      <p class="hero-value">A global nonprofit established in 2020, dedicated to promoting environmental justice and driving climate action through innovative, nature-based solutions — reconnecting humanity with the Earth.</p>
+      <p class="hero-value">A nonprofit foundation for nature-based climate action and environmental justice, since 2020.</p>
 
       <!-- Hero telemetry (carbon clock injected by JS) -->
       <div id="hero-telemetry" class="hero-telemetry" aria-label="Planetary telemetry">
@@ -642,16 +643,16 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <!-- ── ABOUT ── -->
   <section class="section" id="about" aria-labelledby="about-h">
     <div class="sec-kicker">Who we are</div>
-    <h2 id="about-h">A Short Story About Us</h2>
-    <p class="sec-lead">Founded in 2020, Earth Love United connects researchers, communities, and buyers around practical nature-based climate work. We pair open evidence with on-the-ground relationships—from restoration research to higher-integrity carbon procurement.</p>
+    <h2 id="about-h">About Us</h2>
+    <p class="sec-lead">We connect researchers, communities, and carbon buyers around practical, nature-based climate work.</p>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Mission</div>
-        <p>To drive high-integrity climate solutions through research, education, and inclusive partnerships—harnessing nature, data, and innovation to remove carbon, restore ecosystems, and uplift the communities most affected by climate change.</p>
+        <p>Remove carbon, restore ecosystems, and support the communities hit hardest by climate change.</p>
       </div>
       <div class="card">
         <div class="card-tag">Vision</div>
-        <p>To create a just, climate-resilient world where science, innovation, and community action restore balance to the planet and empower every generation to thrive.</p>
+        <p>A just, climate-resilient world where science and communities restore balance together.</p>
       </div>
     </div>
     <div class="video-block">
@@ -683,18 +684,15 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <section class="section" id="projects" aria-labelledby="projects-h">
     <div class="sec-kicker">What we do</div>
     <h2 id="projects-h">Projects</h2>
-    <p class="sec-lead">Earth Love United’s integrated model blends rigorous scientific methods, blockchain innovation, and market-oriented strategies to deliver high-integrity carbon solutions while uplifting communities most vulnerable to climate change.</p>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Carbon Markets</div>
-        <h3>Access the Best. For the Best.</h3>
-        <p>Curated, verified carbon credits and consultancy for buyers who demand integrity.</p>
+        <h3>Verified credits and consultancy.</h3>
         <a class="card-link" href="#carbon">Learn more →</a>
       </div>
       <div class="card">
         <div class="card-tag">Climate Innovation &amp; Research</div>
-        <h3>Grounded in data. Powered by purpose. Built for a cooler planet.</h3>
-        <p>Our research is becoming an open instrument: a living atlas whose country evidence is being re-sourced and independently reviewed.</p>
+        <h3>An open climate atlas of 249 countries and territories.</h3>
         <a class="card-link" href="#globe">Explore the atlas →</a>
       </div>
     </div>
@@ -704,41 +702,32 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <section class="section" id="globe" aria-labelledby="globe-h">
     <div class="sec-kicker">The key instrument</div>
     <h2 id="globe-h">The Living Globe</h2>
-    <p class="sec-lead">Explore a metric-first country dashboard across carbon, power, and physical-climate lenses. All 249 registry entities remain navigable; only exact metric-and-period matches enter each order.</p>
-    <div class="globe-key" role="list" aria-label="Country evidence availability legend">
+    <p class="sec-lead">Explore 249 countries and territories through three lenses: carbon, power, and physical climate.</p>
+    <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
+    <details class="source-credits">
+      <summary>Legend, method &amp; sources</summary>
+      <div class="source-credits-body">
+        <div class="globe-key" role="list" aria-label="Country evidence availability legend">
       <span role="listitem"><i style="background:linear-gradient(135deg,#4d529c,#f47f3b)"></i> Carbon · territorial fossil CO₂ in 2024, with subtle log-scaled relief and color</span>
       <span role="listitem"><i style="background:linear-gradient(135deg,#4d5382,#30c497)"></i> Power · 2024 clean generation share, with subtle bounded relief and color</span>
       <span role="listitem"><i style="background:linear-gradient(135deg,#3f6fae,#e85b45)"></i> Physical · SSP2-4.5 median projected warming for 2040–2059, with subtle linear relief and color</span>
       <span role="listitem"><i style="background:repeating-linear-gradient(135deg,#91a0ac 0 2px,transparent 2px 4px);border:1px solid #aeb9c1"></i> Neutral pattern · exact comparison metric unavailable, visible and unranked</span>
     </div>
-    <p class="data-note">Map boundaries use generalized Natural Earth 1:110m geometry for navigation only. Twenty-eight small states absent from that dataset use manually curated approximate navigation points, not boundaries or precise centroids. Disputed subfeatures including Northern Cyprus and Somaliland are excluded from the data overlay and never inherit a parent entity’s evidence. None of these representations expresses a position on sovereignty or legal boundaries.</p>
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-tag">Source &amp; Methodology</div>
+        <p class="data-note">Map boundaries use generalized Natural Earth 1:110m geometry for navigation only. Twenty-eight small states absent from that dataset use manually curated approximate navigation points, not boundaries or precise centroids. Disputed subfeatures including Northern Cyprus and Somaliland are excluded from the data overlay and never inherit a parent entity’s evidence. None of these representations expresses a position on sovereignty or legal boundaries.</p>
         <p>Open country data from GCB, UN WPP, Ember, and the World Bank CCKP. Definitions, scope, uncertainty, checksums, and citations expand inside every country card.</p>
-      </div>
-      <div class="card">
-        <div class="card-tag">Country Cards</div>
         <p>Plain-language facts come first; an analyst drawer preserves method, uncertainty, scope, transformation, release checksum, citations, and explicit gap reasons. Fossil CO₂, land use, electricity, and physical climate remain separately labelled.</p>
-      </div>
-    </div>
-    <details class="source-credits">
-      <summary>Sources &amp; credits</summary>
-      <div class="source-credits-body">
         <p><a href="https://doi.org/10.18160/GCP-2025" target="_blank" rel="noopener">Global Carbon Budget 2025 v1.0</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; Earth Love United selects country series, converts carbon to CO₂, and derives cumulative and WPP-based per-capita values.</p>
         <p><a href="https://population.un.org/wpp/" target="_blank" rel="noopener">UN World Population Prospects 2024</a> · <a href="https://creativecommons.org/licenses/by/3.0/igo/" target="_blank" rel="noopener">CC BY 3.0 IGO</a>; 2024 Medium population projection. <a href="https://ember-energy.org/data/yearly-electricity-data/" target="_blank" rel="noopener">Ember Yearly Electricity Data</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; published actual-year values and fuel taxonomy.</p>
         <p><a href="https://climateknowledgeportal.worldbank.org/index.php/metadata" target="_blank" rel="noopener">World Bank Climate Change Knowledge Portal</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; CCKP country aggregates from CMIP6 and ERA5. We acknowledge WCRP CMIP6 modeling groups, ESGF, ECMWF, and the Copernicus Climate Change Service. Earth Love United selects scenarios and periods and derives ERA5 trends.</p>
         <p><a href="https://science.nasa.gov/earth/earth-observatory/night-lights-2012-map-79765/" target="_blank" rel="noopener">NASA Earth Observatory Black Marble 2012</a>, image by Robert Simmon; Suomi NPP VIIRS data courtesy Chris Elvidge/NOAA NCEI. Decorative background only. Original starfield from Three-Globe 2.45.2. <a href="https://github.com/earth-love-united/earthloveunited.org/blob/main/CREDITS.md" target="_blank" rel="noopener">Full attribution and change notes</a>.</p>
       </div>
     </details>
-    <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
   </section>
 
   <!-- ── CARBON CREDITS & CONSULTANCY ── -->
   <section class="section" id="carbon" aria-labelledby="carbon-h">
     <div class="sec-kicker">Our solutions</div>
     <h2 id="carbon-h">Carbon Credits &amp; Consultancy</h2>
-    <p class="sec-lead">At Earth Love United, we don’t just offer carbon credits. We offer curation, credibility, and connection. Our foundation serves as a high-integrity problem solver, linking elite buyers with the most impactful, verified projects from around the globe.</p>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Carbon Credits</div>
@@ -746,21 +735,20 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       </div>
       <div class="card">
         <div class="card-tag">Consultancy &amp; Due Diligence</div>
-        <p>We help clients pick the best from the best. Our team’s exposure to countless projects across Africa, South America, and Asia gives us a sharp edge.</p>
+        <p>Project selection backed by hands-on experience across Africa, South America, and Asia.</p>
       </div>
       <div class="card">
         <div class="card-tag">Carbon Literacy &amp; Strategic ESG Alignment</div>
-        <p>Let us help you align carbon strategies with SDGs, climate finance trends, and future-proofed procurement.</p>
+        <p>Align carbon strategy with the SDGs and future-proof procurement.</p>
       </div>
     </div>
-    <h2 style="margin-top:64px;font-size:clamp(24px,2.8vw,34px)">Why Work With Us?</h2>
+    <h3 style="margin-top:48px">Why work with us</h3>
     <ul class="why-list">
       <li>Access to over 100 million high-quality credits</li>
       <li>Transparency, speed, and discretion</li>
       <li>Regenerative economics — carbon is a bridge, and an emerging commodity</li>
     </ul>
     <div class="talk-row">
-      <span class="talk-line">You didn’t come this far to stop.</span>
       <a class="card-cta glass-btn" href="mailto:Carbon@earthloveunited.org">Let’s talk — send us an email</a>
     </div>
   </section>
@@ -803,21 +791,21 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <section class="section" id="open" aria-labelledby="open-h">
     <div class="sec-kicker">Trust layer</div>
     <h2 id="open-h">Open by Design</h2>
-    <p class="sec-lead">Most foundations ask you to trust them. We would rather publish what can be checked, disclose what cannot yet be verified, and rebuild the country evidence with explicit sources and tests.</p>
+    <p class="sec-lead">We publish what can be checked, and say plainly what cannot be yet.</p>
     <div class="card-grid">
       <div class="card">
         <div class="card-tag">Open Source</div>
-        <p>The entire site is readable classic scripts — no build step, no minified mystery. Every line is public and inspectable.</p>
+        <p>Every line of this site is public.</p>
         <a class="card-cta glass-btn" href="https://github.com/earth-love-united/earthloveunited.org" target="_blank" rel="noopener">Read the source</a>
       </div>
       <div class="card">
         <div class="card-tag">Open Data</div>
-        <p>The live atlas reads one hashed, reproducible 249-entity factual release artifact. Source receipts, explicit gaps, scope fingerprints, transformations, and the rollback boundary are published with it.</p>
+        <p>The atlas reads one hashed, reproducible data release, published with its sources and gaps.</p>
         <a class="card-cta glass-btn" href="docs/COUNTRY-CLIMATE-METHODOLOGY.md">Read the climate methodology</a>
       </div>
       <div class="card">
         <div class="card-tag">Truth Checks</div>
-        <p>Deterministic checks verify source checksums, all 249 identities, exact lens coverage, permitted derivations, scope separation, accessible fallback parity, and the exact release-state boundary.</p>
+        <p>Automated checks verify every source and all 249 records before each release.</p>
       </div>
     </div>
   </section>
@@ -857,9 +845,12 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <div class="trib-wrap">
       <div class="trib-prose">
         <p>With profound sadness, we announce the unexpected passing of Jean Missinhoun, founder and chairman of the Earth Love United Foundation, on June 1, 2024, at the age of 52. Jean’s unwavering dedication to environmental preservation has left a lasting mark on our world. Originally from Benin, Jean’s journey led him to London, where he thrived as a hedge fund investor focused on energy investments.</p>
-        <p>Recognizing the critical crossroads our planet is at, Jean committed to advocating for a shift toward green energy solutions. His book, <a href="https://www.amazon.com/Green-Energy-Boom-Global-Quest/dp/B08XFFFX45" target="_blank" rel="noopener" style="color:inherit"><em>The Green Energy Boom: A Global Quest for Money, Power and Energy</em></a>, has inspired countless individuals. Under Jean’s visionary leadership, Earth Love United Foundation forged partnerships with nearly a dozen organizations across the globe and initiated groundbreaking research into sustainable energy sources and natural carbon capture solutions such as hemp, mangroves, seagrass, and algae. His belief in inclusive policies and community empowerment resonates deeply within our ongoing initiatives.</p>
-        <p>Ekmel Ozdemir, who worked alongside Jean as General Manager since the founding of Earth Love United in 2020, serves as interim chairman. Though we mourn the loss of a visionary leader, we are comforted in knowing that Jean’s spirit will live on through the work of the Foundation. Together, we honor his memory by championing worldwide environmental stewardship and sustainable practices.</p>
-        <p>Jean’s legacy will be embodied by the advancements of the Foundation but also in the hearts of those he inspired to fight against climate change. We extend our deepest condolences to Jean Missinhoun’s family, friends, and all those whose lives he touched.</p>
+        <details class="trib-more">
+          <summary>Read the full tribute</summary>
+          <p>Recognizing the critical crossroads our planet is at, Jean committed to advocating for a shift toward green energy solutions. His book, <a href="https://www.amazon.com/Green-Energy-Boom-Global-Quest/dp/B08XFFFX45" target="_blank" rel="noopener" style="color:inherit"><em>The Green Energy Boom: A Global Quest for Money, Power and Energy</em></a>, has inspired countless individuals. Under Jean’s visionary leadership, Earth Love United Foundation forged partnerships with nearly a dozen organizations across the globe and initiated groundbreaking research into sustainable energy sources and natural carbon capture solutions such as hemp, mangroves, seagrass, and algae. His belief in inclusive policies and community empowerment resonates deeply within our ongoing initiatives.</p>
+          <p>Ekmel Ozdemir, who worked alongside Jean as General Manager since the founding of Earth Love United in 2020, serves as interim chairman. Though we mourn the loss of a visionary leader, we are comforted in knowing that Jean’s spirit will live on through the work of the Foundation. Together, we honor his memory by championing worldwide environmental stewardship and sustainable practices.</p>
+          <p>Jean’s legacy will be embodied by the advancements of the Foundation but also in the hearts of those he inspired to fight against climate change. We extend our deepest condolences to Jean Missinhoun’s family, friends, and all those whose lives he touched.</p>
+        </details>
         <div class="trib-close">May your vision guide us toward a future of harmony with our planet’s precious ecosystems and drive us to never stop saving the world.</div>
       </div>
     </div>
@@ -870,12 +861,11 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <span id="support" aria-hidden="true"></span>
     <div class="sec-kicker">Support &amp; contact</div>
     <h2 id="contact-h">Talk with the Foundation</h2>
-    <p class="sec-lead">Whether you are a buyer, researcher, partner organization, volunteer, or prospective supporter—write to us. We are volunteer-powered and independent; support starts with a conversation.</p>
+    <p class="sec-lead">Buyers, researchers, partners, volunteers: write to us. We are volunteer-powered and independent.</p>
     <div class="contact-ctas">
       <a class="mail-main glass-btn" href="mailto:info@earthloveunited.org?subject=Supporting%20Earth%20Love%20United">Talk to us about ELU</a>
       <a class="mail-alt glass-btn" href="mailto:Carbon@earthloveunited.org">Carbon desk</a>
     </div>
-    <p class="sec-note">Time and expertise count as much as funding—from ecology to code, the door is open.</p>
   </section>
 
   <div class="footer">
@@ -900,12 +890,12 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     </div>
     <div class="footer-links">
       <a href="#about">About</a>
-      <a href="#globe">The Living Globe</a>
-      <a href="#carbon">Carbon Credits</a>
+      <a href="#globe">Globe</a>
+      <a href="#carbon">Carbon</a>
       <a href="#partners">Partners</a>
       <a href="#team">Team</a>
       <a href="#tribute">Tribute</a>
-      <a href="#contact">Support &amp; Contact</a>
+      <a href="#contact">Contact</a>
       <a href="https://github.com/earth-love-united/earthloveunited.org" target="_blank" rel="noopener">Source</a>
       <a href="https://github.com/earth-love-united/earthloveunited.org/blob/main/CREDITS.md" target="_blank" rel="noopener">Credits</a>
       <a href="docs/LEGACY-COUNTRY-DATA-EXIT.md">Legacy country-data exit</a>
