@@ -54,9 +54,6 @@ function transformIndex(source) {
     '/sw.js?v=79-self-hosted-fonts',
     '/sw.js?v=80-cci-factual-ai-review', 1, 'index service-worker epoch');
   output = replaceExact(output,
-    'The live atlas reads one hashed, reproducible 249-entity factual release artifact.',
-    'The live atlas reads one hashed, reproducible 249-entity source-data release.', 1, 'index factual copy');
-  output = replaceExact(output,
     'Decorative background only. Original starfield from Three-Globe 2.45.2.',
     'Decorative historical surface only; no endorsement is implied. Three-Globe example images are excluded from this public release.',
     1, 'index rights-safe globe attribution');

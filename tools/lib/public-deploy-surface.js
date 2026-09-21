@@ -85,6 +85,7 @@ const ALWAYS_PUBLIC_PATHS = Object.freeze([
   'assets/globe/runtime/earth-topology.png',
   'assets/legacy/brandon.jpg',
   'assets/legacy/ekmel.jpg',
+  'assets/legacy/hero-earth.webp',
   'assets/legacy/elu-logo.png',
   'assets/legacy/elu-logo-light.png',
   'assets/legacy/mike.png',

@@ -18,7 +18,7 @@
     },
     "runtime_control": {
       "format": "elu-sha256-path-content-tree-v1",
-      "sha256": "0eeae3c54e04dc61882734f57300d557e6dd3334c9f33ab63df78ec280a7fef9",
+      "sha256": "42c7bac53d4a55e3e0f2e341bc57f4a7070df1cfc776acbd10477540f5749105",
       "member_count": 21,
       "git_history_required": false,
       "squash_merge_safe": true
@@ -82,7 +82,7 @@
   },
   "rollback": {
     "strategy": "current_hardened_runtime_to_neutral_surface",
-    "source_runtime_tree_sha256": "0eeae3c54e04dc61882734f57300d557e6dd3334c9f33ab63df78ec280a7fef9",
+    "source_runtime_tree_sha256": "42c7bac53d4a55e3e0f2e341bc57f4a7070df1cfc776acbd10477540f5749105",
     "baseline_commit": null,
     "cache_name": "elu-v34-ct42-neutral-rollback",
     "service_worker_registration": "/sw.js?v=34-ct42-neutral-rollback",
@@ -128,8 +128,8 @@
     "patch": {
       "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
       "encoding": "base64",
-      "sha256": "ba31eb2c19c6a6b2ad4d425046a1833d1f1a47741a586f6d8de9d41ebfb7d506",
-      "decoded_sha256": "905e559945b9bc9beda8744ab366a93e3f5306eea0d8e62b95fc0a92baee49e1",
+      "sha256": "f51c388251e3285e671165b716cc09647d1055c63f316cae455d2e2c524d92d1",
+      "decoded_sha256": "7e0e813a9ede52fcae3338e66bb8da6003b2b006e38414283ff81bd37c4d0f68",
       "changed_files": [
         "index.html",
         "css/globe-system.css",
@@ -144,8 +144,8 @@
         "path": "index.html",
         "role": "neutral_public_copy_and_v34_registration",
         "changed": true,
-        "candidate_sha256": "ad5248863736250b9fab063e917e5017fc8cc1912091b6a6613112a2d9c6be16",
-        "rollback_sha256": "a46a7dc4ae9a06333a108b500cae92c857be1ba526776daaf0a6669dd432091f"
+        "candidate_sha256": "22b94290b9f1ab1df93afd4700ef8490adfd3d0e15b63c57bd12bb57e4f88bed",
+        "rollback_sha256": "5419f847be16a9bc7bca3be9f20191b2ab0bc9d9e0d1fe31a9e9c4013df3ae86"
       },
       {
         "path": "css/globe-system.css",
@@ -351,5 +351,5 @@
     "writes_workspace": false,
     "deploys": false
   },
-  "calculation_hash": "07024b058a3988f8ce2af7a1d47574dd7ffb60b18881ac2e33a85fbde35a131c"
+  "calculation_hash": "d0afc029b82a2dcfa49861f1cc90517f319dc8efb1554e668fe9fe95b62508f4"
 }

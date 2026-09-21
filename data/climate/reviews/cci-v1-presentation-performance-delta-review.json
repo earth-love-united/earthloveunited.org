@@ -10,7 +10,7 @@
     "review_request_sha256": "8fe8a47dbf8eea2081f7135ab11b3baab1c4af164e6fc9542d7ceaf06c780753",
     "reviewed_head": "108e6b6be2e3a53c45b4c2a596de11656774ab8c"
   },
-  "calculation_hash": "8d8d21d660536cc06d677dae95f6780edcf248448bc87efa923a79d14dfd1886",
+  "calculation_hash": "ad4a1e745648bd8127881fc8575adaaffe9abfcbe63d28499603d7aa63357e7d",
   "changes": [
     {
       "base_sha256": "eb5032a791d8a2f9674ab34481086f1d0827a4decd3a446ee0b667b77e8d4302",
@@ -146,16 +146,23 @@
       "path": "assets/legacy/ekmel.jpg"
     },
     {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "27d79a350351e382c1a89c8c5855aaefac61837bc364aaf989a96bb8ceda8f75",
+      "operation": "add",
+      "path": "assets/legacy/hero-earth.webp"
+    },
+    {
       "base_sha256": "24eb59810aa525c664e8fb5745d380756ecb8ccb568183e5605826c1a77a7f09",
       "category": "deterministic_runtime_proof",
-      "current_sha256": "ba31eb2c19c6a6b2ad4d425046a1833d1f1a47741a586f6d8de9d41ebfb7d506",
+      "current_sha256": "f51c388251e3285e671165b716cc09647d1055c63f316cae455d2e2c524d92d1",
       "operation": "modify",
       "path": "data/climate/operations/ct42-runtime-rollback.patch.b64"
     },
     {
       "base_sha256": "a62c285fe94f96281680e8ec21a61a1a4bde24aa9ee1443e62df527d30e6d4fa",
       "category": "deterministic_runtime_proof",
-      "current_sha256": "2c39668c5f57f00a6da80f2ed37ae875519ef34c0e681b4e310bf8932cc6256b",
+      "current_sha256": "7e00ba3336b9aa517f88681a7e422aabe5e391952b6dd5d40de8384c68eb7674",
       "operation": "modify",
       "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json"
     },
@@ -183,7 +190,7 @@
     {
       "base_sha256": "1cb352d50ac411177c0f0f51ae272ec4bc8899b12ab1050282ce75e3e270eca3",
       "category": "presentation_and_font_delivery",
-      "current_sha256": "ad5248863736250b9fab063e917e5017fc8cc1912091b6a6613112a2d9c6be16",
+      "current_sha256": "22b94290b9f1ab1df93afd4700ef8490adfd3d0e15b63c57bd12bb57e4f88bed",
       "operation": "modify",
       "path": "index.html"
     },
@@ -267,7 +274,7 @@
     {
       "base_sha256": "c6899c83d1c146da785c8b4fbb9d6adaad719b04eadb284a10290312c9db66d8",
       "category": "scoped_release_rail",
-      "current_sha256": "d488570bca20c1688710398dbd9b843c91eadaa0c6c937e3485b0e0a8b1d77e3",
+      "current_sha256": "6b36688fbfc796f72a34b8f9f02956dd8353609ba5e3d7982fe67061e6cb1589",
       "operation": "modify",
       "path": "tools/lib/cci-factual-public.js"
     },
@@ -302,14 +309,14 @@
     {
       "base_sha256": "90c53003a9f41d71ca07a2efa1359bd5c89d5798f71b4f1b674756fee699d17c",
       "category": "scoped_release_rail",
-      "current_sha256": "eb2e0603bb4d28c06064e09df860118b960405fce8f37b5229c6584d18799756",
+      "current_sha256": "98d858e86095ee52bd4c9d48d26f7aa7ca000ebe595dc7cf64cf871895c4b65c",
       "operation": "modify",
       "path": "tools/lib/public-deploy-surface.js"
     },
     {
       "base_sha256": "3f2aaca33f48c3381b43e59bb415b9ac33c83753975ddf1cde880a180ebdcacc",
       "category": "scoped_release_rail",
-      "current_sha256": "32219c665b32381774e0be5e55ea99ec9ebcb3c659e43c5f7a9d1cbfed9e7832",
+      "current_sha256": "7e2b626351e78071d86caf68417bc62d774e87ca721e9d01a3fd557e5fc157db",
       "operation": "modify",
       "path": "tools/prepare-country-climate-intelligence-review-request.js"
     },
@@ -329,11 +336,11 @@
   ],
   "created_at": "2026-08-28T21:15:39Z",
   "current_subject": {
-    "artifact_pin_digest": "ae2bf1ac817cfffd1007d4ab78840cfa6127f1db7bf96b20ad6449d92688adb1",
-    "calculation_hash": "57cab099fc2a432fd0cb5924e7bbc864bc64892a0dc55bad58b81314a5ccf808",
+    "artifact_pin_digest": "70dcff940a84d4dc114f50167857095029a3bdb5fb15232c365191cc99012b4a",
+    "calculation_hash": "b9e21ba38ed007786854d41e417017f3a10eada567ef24c71c7cec0996753f98",
     "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
-    "pin_count": 315,
-    "review_request_sha256": "6e7518953806db2c16b0d7960096fd2128be198ed2fc162752121bca95451959"
+    "pin_count": 316,
+    "review_request_sha256": "08c8050026503235d8d3690188a4b057510a37fdb8bf5353e4557bcf10bab0af"
   },
   "deploy_authority": false,
   "evidence": [
