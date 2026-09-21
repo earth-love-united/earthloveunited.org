@@ -364,6 +364,13 @@ body.globe-mode #site-nav{display:none}
 @keyframes door-breathe{0%,100%{box-shadow:0 0 0 1px rgba(78,205,196,.2),var(--door-breathe-lo)}50%{box-shadow:0 0 0 1px rgba(78,205,196,.3),var(--door-breathe-hi)}}
 #hero .globe-door,.globe-door-big{animation:door-breathe 4.8s ease-in-out infinite}
 .globe-door:hover{animation-play-state:paused}
+@property --pill-a{syntax:"<angle>";inherits:false;initial-value:0deg}
+#hero .globe-door-row .enter-btn{border-color:transparent;background:linear-gradient(var(--bg2),var(--bg2)) padding-box,conic-gradient(from var(--pill-a),color-mix(in srgb,var(--teal) 35%,transparent) 0%,var(--mint) 18%,var(--teal) 30%,color-mix(in srgb,var(--teal) 35%,transparent) 48%,color-mix(in srgb,var(--teal) 35%,transparent) 100%) border-box;animation:pill-orbit 6s linear infinite}
+#hero .globe-door-row .enter-btn:hover,#hero .globe-door-row .enter-btn:focus-visible,#hero .globe-door-row:has(.globe-door:hover) .enter-btn{background:linear-gradient(color-mix(in srgb,var(--mint) 12%,var(--bg2)),color-mix(in srgb,var(--mint) 12%,var(--bg2))) padding-box,conic-gradient(from var(--pill-a),var(--teal),var(--mint),var(--teal)) border-box}
+@keyframes pill-orbit{to{--pill-a:360deg}}
+#site-nav .nav-links a[aria-current="true"]{color:var(--teal);box-shadow:0 1px 0 var(--teal)}
+#site-nav .nav-links a{transition:color .3s,box-shadow .3s}
+@media(prefers-reduced-motion:reduce){#hero .globe-door-row .enter-btn{animation:none}}
 @media(hover:none){.card::before{display:none}}
 @media(prefers-reduced-motion:reduce){.globe-door-big{animation:none}.card,.card:hover{transition:none;transform:none}}
 .card .card-tag{font-family:var(--mono);font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
@@ -1180,6 +1187,28 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       raf = 0; card.style.setProperty('--mx', x + 'px'); card.style.setProperty('--my', y + 'px');
     });
   }, { passive: true });
+})();
+</script>
+
+<script>
+/* Nav scroll-spy: marks the top-bar link of the section in view (aria-current). */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  var links = [].slice.call(document.querySelectorAll('#site-nav .nav-links a[href^="#"]'));
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      links.forEach(function (a) {
+        if (a.getAttribute('href') === '#' + e.target.id) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      });
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  links.forEach(function (a) { var s = document.getElementById(a.getAttribute('href').slice(1)); if (s) io.observe(s); });
+  var hero = document.getElementById('hero');
+  if (hero) new IntersectionObserver(function (e) {
+    if (e[0].isIntersecting) links.forEach(function (a) { a.removeAttribute('aria-current'); });
+  }, { rootMargin: '-45% 0px -50% 0px' }).observe(hero);
 })();
 </script>
 
