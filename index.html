@@ -191,7 +191,14 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 .hero-actions{order:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;margin-top:30px;margin-bottom:0;animation:fadeUp .8s ease-out .6s both}
 #hero .hero-actions .glass-btn{min-width:min(100%,340px);padding:15px 32px}
 #hero .enter-btn{font-size:12px;letter-spacing:2.4px}
-#hero .globe-door-row{flex-direction:row;gap:18px}
+#hero .globe-door-row{flex-direction:row;gap:0}
+#hero .globe-door-row .globe-door{position:relative;z-index:2;margin-right:-34px}
+#hero .globe-door-row .enter-btn{min-width:0;border-radius:999px;padding:17px 34px 17px 52px;background:linear-gradient(135deg,var(--teal),var(--mint));color:var(--bg);border:0;font-weight:600;letter-spacing:2.2px;box-shadow:0 10px 28px -12px var(--glow),inset 0 1px 0 rgba(255,255,255,.18);-webkit-backdrop-filter:none;backdrop-filter:none;transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s,filter .35s}
+#hero .globe-door-row .enter-btn::before,#hero .globe-door-row .enter-btn::after{display:none}
+#hero .globe-door-row .enter-btn .door-arrow{display:inline-block;margin-left:10px;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+#hero .globe-door-row .enter-btn:hover,#hero .globe-door-row .enter-btn:focus-visible,#hero .globe-door-row:has(.globe-door:hover) .enter-btn{transform:translateX(3px);color:var(--bg);background:linear-gradient(135deg,var(--teal),var(--mint));filter:brightness(1.08);box-shadow:0 16px 36px -14px var(--glow),inset 0 1px 0 rgba(255,255,255,.22)}
+#hero .globe-door-row .enter-btn:hover .door-arrow,#hero .globe-door-row .enter-btn:focus-visible .door-arrow,#hero .globe-door-row:has(.globe-door:hover) .door-arrow{transform:translateX(5px)}
+#hero .globe-door-row .enter-btn:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
 .globe-door{order:0;flex:0 0 auto;width:clamp(64px,9vh,84px);aspect-ratio:1;margin:0;border-radius:50%;cursor:pointer;background:radial-gradient(circle at 38% 34%,#1d3550,#0a1628 70%);box-shadow:0 0 0 1px rgba(78,205,196,.18),0 0 34px 6px rgba(78,205,196,.16),0 18px 40px rgba(10,22,40,.28);transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s}
 .globe-door canvas{display:block;width:100%;height:100%;border-radius:50%;opacity:0;transition:opacity 1.2s ease}
 .globe-door.is-ready canvas{opacity:1}
@@ -534,7 +541,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <!-- Primary action: the globe is the door -->
       <div class="hero-actions globe-door-row" aria-label="Arrival actions">
         <div class="globe-door" aria-hidden="true"><canvas class="globe-door-earth" width="320" height="320"></canvas></div>
-        <button class="enter-btn glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
+        <button class="enter-btn glass-btn" data-action="enterGlobe">Enter the Living Globe<span class="door-arrow" aria-hidden="true">→</span></button>
       </div>
       <script>
       /* Globe door: a small spinning Earth drawn on canvas (orthographic
@@ -570,7 +577,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
               var edge = Math.min(1, (1 - Math.sqrt(d2)) * R * 0.9);
               shade.push((0.55 + 0.45 * nz) * edge);
             }
-            var K = idx.length, phase = 0, raf = 0, last = 0, visible = true;
+            var K = idx.length, phase = 0, raf = 0, last = 0, visible = true, speed = 1;
             function draw() {
               for (var i = 0; i < K; i++) {
                 var u = lon0[i] + phase; u -= Math.floor(u);
@@ -583,7 +590,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
             function loop(ts) {
               raf = 0;
               if (!visible || document.hidden || document.body.classList.contains('globe-mode')) return;
-              if (ts - last > 33) { phase += (ts - last) / 60000; last = ts; draw(); }
+              if (ts - last > 33) { speed += ((door.parentNode.matches(':hover, :focus-within') ? 7 : 1) - speed) * 0.08; phase += (ts - last) * speed / 60000; last = ts; draw(); }
               raf = requestAnimationFrame(loop);
             }
             function kick() { if (!still && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); } }
