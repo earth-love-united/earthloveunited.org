@@ -203,6 +203,17 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 .globe-door canvas{display:block;width:100%;height:100%;border-radius:50%;opacity:0;transition:opacity 1.2s ease}
 .globe-door.is-ready canvas{opacity:1}
 .globe-door:hover,.hero-actions:has(.enter-btn:hover) .globe-door,.hero-actions:has(.enter-btn:focus-visible) .globe-door{transform:scale(1.06);box-shadow:0 0 0 1px rgba(78,205,196,.32),0 0 48px 10px rgba(78,205,196,.26),0 22px 48px rgba(10,22,40,.32)}
+#globe{position:relative}
+.globe-door-big{position:absolute;right:26px;top:96px;width:clamp(150px,18vw,220px);cursor:pointer}
+#globe .sec-lead{max-width:calc(100% - clamp(150px,18vw,220px) - 40px)}
+#globe .source-credits{max-width:min(560px,calc(100% - clamp(150px,18vw,220px) - 60px))}
+#globe .big-cta{border-radius:999px;background:var(--bg2);color:var(--teal);border:1.5px solid var(--teal);font-weight:600;letter-spacing:2.2px;box-shadow:0 10px 28px -14px var(--glow);-webkit-backdrop-filter:none;backdrop-filter:none}
+#globe .big-cta::before,#globe .big-cta::after{display:none}
+#globe .big-cta::after{content:"→";display:inline-block;position:static;width:auto;height:auto;border:0;margin-left:10px;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+#globe .big-cta:hover,#globe .big-cta:focus-visible,#globe:has(.globe-door-big:hover) .big-cta{color:var(--teal);background:color-mix(in srgb,var(--mint) 12%,var(--bg2));transform:translateX(3px)}
+#globe .big-cta:hover::after,#globe .big-cta:focus-visible::after{transform:translateX(5px)}
+#globe .big-cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+@media(max-width:720px){.globe-door-big{position:static;width:min(62vw,240px);margin:8px auto 22px}#globe .sec-lead,#globe .source-credits{max-width:none}}
 @media(max-width:420px){.globe-door{width:56px}#hero .globe-door-row{gap:12px}}
 #hero .memorial{position:relative;bottom:auto;order:5;margin:0 auto 24px;font-size:11px;color:var(--text3);font-style:italic;animation:fadeUp .8s ease-out 1s both}
 .hero-telemetry{order:3;display:flex;align-items:center;justify-content:center;width:min(920px,100%);margin:0 auto;padding:0;color:var(--text2);animation:fadeUp .6s ease-out .15s both}
@@ -351,8 +362,9 @@ body.globe-mode #site-nav{display:none}
 .card .card-cta{margin-top:18px;padding:11px 22px;font-size:11px}
 @media(max-width:360px){.card .card-cta{width:100%;max-width:100%;padding-inline:12px;white-space:normal;overflow-wrap:anywhere}}
 .card .card-link{display:inline-flex;align-items:center;margin-top:18px;color:var(--teal);font-family:var(--body);font-size:12px;font-weight:500;letter-spacing:.3px;text-decoration:none}
-#open .card{display:flex;flex-direction:column}#open .card p{flex:1}#open .card .card-link{align-self:flex-start}
+#open .card,#projects .card{display:flex;flex-direction:column}#open .card p{flex:1}#open .card .card-link,#projects .card .card-link{align-self:flex-start;margin-top:auto}#projects .card h3{margin-bottom:18px}
 .card .card-link:hover,.card .card-link:focus-visible{color:var(--mint);text-decoration:underline;text-underline-offset:4px;outline:none}
+.why-h{margin-top:52px;font-family:var(--display);font-size:clamp(24px,2.6vw,30px);font-weight:400;color:var(--mint);letter-spacing:1px}
 .why-list{list-style:none;margin-top:20px;display:grid;gap:10px;max-width:840px}
 .why-list li{position:relative;padding:14px 16px 14px 40px;border:1px solid rgba(78,205,196,.12);border-radius:10px;background:rgba(255,255,255,.02);color:var(--text2);font-size:14px;line-height:1.55}
 .why-list li::before{content:'◆';position:absolute;left:16px;top:14px;color:var(--teal);font-size:11px}
@@ -549,12 +561,18 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
          below stays the accessible control. Pauses when hidden or off-screen,
          draws one still frame under prefers-reduced-motion. */
       (function () {
-        var door = document.querySelector('.globe-door'), cv = door && door.querySelector('canvas');
-        if (!cv || !cv.getContext) return;
-        door.addEventListener('click', function () {
-          var b = document.querySelector('.enter-btn[data-action="enterGlobe"]'); if (b) b.click();
-        });
+        var doors = [];
         function boot() {
+          // Collected at boot (after load): this script runs before later sections are parsed.
+          doors = [].slice.call(document.querySelectorAll('.globe-door')).filter(function (d) {
+            var c = d.querySelector('canvas'); return c && c.getContext;
+          });
+          if (!doors.length) return;
+          doors.forEach(function (door) {
+            door.addEventListener('click', function () {
+              var b = door.parentNode.querySelector('[data-action="enterGlobe"]'); if (b) b.click();
+            });
+          });
           var img = new Image();
           img.decoding = 'async';
           img.onload = function () {
@@ -562,6 +580,11 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
             var tc = document.createElement('canvas'); tc.width = TW; tc.height = TH;
             var tx = tc.getContext('2d'); tx.drawImage(img, 0, 0);
             var tex = tx.getImageData(0, 0, TW, TH).data;
+            doors.forEach(function (door) { spin(door, door.querySelector('canvas'), tex, TW, TH); });
+          };
+          img.src = 'assets/legacy/hero-earth.webp?v=27d79a35';
+        }
+        function spin(door, cv, tex, TW, TH) {
             var N = cv.width, R = N / 2, ctx = cv.getContext('2d');
             var out = ctx.createImageData(N, N), o = out.data;
             var tilt = 0.32, ct = Math.cos(tilt), st = Math.sin(tilt);
@@ -590,7 +613,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
             function loop(ts) {
               raf = 0;
               if (!visible || document.hidden || document.body.classList.contains('globe-mode')) return;
-              if (ts - last > 33) { speed += ((door.parentNode.matches(':hover, :focus-within') ? 7 : 1) - speed) * 0.08; phase += (ts - last) * speed / 60000; last = ts; draw(); }
+              if (ts - last > 33) { speed += ((door.matches(':hover') || door.parentNode.matches(':focus-within') || (door.classList.contains('globe-door-big') ? false : door.parentNode.matches(':hover')) ? 7 : 1) - speed) * 0.08; phase += (ts - last) * speed / 60000; last = ts; draw(); }
               raf = requestAnimationFrame(loop);
             }
             function kick() { if (!still && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); } }
@@ -601,8 +624,6 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
             }).observe(door);
             window.addEventListener('pageshow', kick);
             new MutationObserver(kick).observe(document.body, { attributes: true, attributeFilter: ['class'] });
-          };
-          img.src = 'assets/legacy/hero-earth.webp?v=27d79a35';
         }
         if (document.readyState === 'complete') setTimeout(boot, 0);
         else window.addEventListener('load', function () { if (window.requestIdleCallback) requestIdleCallback(boot, { timeout: 1500 }); else setTimeout(boot, 200); });
@@ -780,6 +801,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <section class="section" id="globe" aria-labelledby="globe-h">
     <div class="sec-kicker">The key instrument</div>
     <h2 id="globe-h">The Living Globe</h2>
+    <div class="globe-door globe-door-big" aria-hidden="true"><canvas width="600" height="600"></canvas></div>
     <p class="sec-lead">Explore 249 countries and territories through three lenses: carbon, power, and physical climate.</p>
     <button class="card-cta big-cta glass-btn" data-action="enterGlobe">Enter the Living Globe</button>
     <details class="source-credits">
@@ -816,11 +838,11 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
         <p>Project selection backed by hands-on experience across Africa, South America, and Asia.</p>
       </div>
       <div class="card">
-        <div class="card-tag">Carbon Literacy &amp; Strategic ESG Alignment</div>
+        <div class="card-tag">Carbon Literacy &amp; ESG</div>
         <p>Align carbon strategy with the SDGs and future-proof procurement.</p>
       </div>
     </div>
-    <h3 style="margin-top:48px">Why work with us</h3>
+    <h3 class="why-h">Why work with us</h3>
     <ul class="why-list">
       <li>Access to over 100 million high-quality credits</li>
       <li>Transparency, speed, and discretion</li>
@@ -879,7 +901,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <div class="card">
         <div class="card-tag">Open Data</div>
         <p>The atlas reads one hashed, reproducible data release, published with its sources and gaps.</p>
-        <a class="card-link" href="docs/COUNTRY-CLIMATE-METHODOLOGY.md">Read the methodology →</a>
+        <a class="card-link" href="https://github.com/earth-love-united/earthloveunited.org/blob/main/docs/COUNTRY-CLIMATE-METHODOLOGY.md" target="_blank" rel="noopener">Read the methodology →</a>
       </div>
       <div class="card">
         <div class="card-tag">Truth Checks</div>
