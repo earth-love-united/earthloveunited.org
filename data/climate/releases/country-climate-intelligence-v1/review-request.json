@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "3f80428064d6da13cdf38dc017006015af4f4703e4de1b4402c09ceed15c3ea2",
+  "calculation_hash": "b9e21ba38ed007786854d41e417017f3a10eada567ef24c71c7cec0996753f98",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "132ef1d97d6c7c01d4d6f122ce1bf1f26f808fdd399a37bf4f319cd125f12e15",
+    "artifact_pin_digest": "70dcff940a84d4dc114f50167857095029a3bdb5fb15232c365191cc99012b4a",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -521,7 +521,7 @@
       },
       {
         "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
-        "sha256": "f85bdcd24e2ccbd0c88f9ceabda0ee80bd860aaf1bc5c13a47d9b877248491df"
+        "sha256": "f51c388251e3285e671165b716cc09647d1055c63f316cae455d2e2c524d92d1"
       },
       {
         "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -621,7 +621,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "1bb0f3c71049957b19689b85cddcd6a0a6b94c399a3bc79146b891467a57e453"
+        "sha256": "7e00ba3336b9aa517f88681a7e422aabe5e391952b6dd5d40de8384c68eb7674"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -857,7 +857,7 @@
       },
       {
         "path": "index.html",
-        "sha256": "288ff5953dd1a1db0f2d06008e7b11797e390f619b0eb87118ee112609b68406"
+        "sha256": "22b94290b9f1ab1df93afd4700ef8490adfd3d0e15b63c57bd12bb57e4f88bed"
       },
       {
         "path": "js/app.js",
