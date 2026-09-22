@@ -397,6 +397,455 @@ function _preloadImageAsset(asset, timeoutMs) {
   });
 }
 
+// ── Country polygon batching ──
+// globe.gl draws every country as its own extruded mesh plus outline: 305
+// objects and ~1,530 draw calls per frame, about 5 ms of renderer CPU on the
+// development Mac, which is the whole budget of a 200 Hz frame. The polygon
+// layer stays the source of truth for geometry, colours and altitudes. Just
+// before each render this mirrors it into four merged meshes (walls, caps,
+// depth-only parts, outlines) with per-vertex RGBA, and takes the per-country
+// objects out of the draw list and out of globe.gl's pointer raycast. Country
+// hover and click never used that raycast: they hit-test the sphere in
+// _countryFeatureFromCanvasEvent.
+const COUNTRY_BATCH_LAYER_MASK = Symbol('countryBatchLayerMask');
+
+function _installCountryBatch(world) {
+  try {
+    const scene = typeof world?.scene === 'function' ? world.scene() : null;
+    if (!scene || scene.__countryBatch) return null;
+    const radius = typeof world.getGlobeRadius === 'function' ? world.getGlobeRadius() : 100;
+    const batch = { scene, radius, layer: null, groups: [], entries: [], hidden: [], merged: null, failed: false };
+    const previous = scene.onBeforeRender;
+    scene.__countryBatch = batch;
+    scene.onBeforeRender = function (renderer, renderScene, camera, target) {
+      previous.call(this, renderer, renderScene, camera, target);
+      if (batch.failed) return;
+      try {
+        _syncCountryBatch(batch, camera);
+      } catch (error) {
+        _abandonCountryBatch(batch, error);
+      }
+    };
+    return batch;
+  } catch (error) {
+    reportWarn('GlobeModule', 'Country draw batching unavailable: ' + (error?.message || 'unknown error'));
+    return null;
+  }
+}
+
+function _findCountryPolygonLayer(root) {
+  const stack = [root];
+  while (stack.length) {
+    const object = stack.pop();
+    if (object.__globeObjType === 'polygon') return object.parent;
+    const children = object.children;
+    for (let i = children.length - 1; i >= 0; i--) stack.push(children[i]);
+  }
+  return null;
+}
+
+function _syncCountryBatch(batch, camera) {
+  if (!batch.layer) {
+    batch.layer = _findCountryPolygonLayer(batch.scene);
+    if (!batch.layer) return;
+  }
+  const groups = batch.groups;
+  const children = batch.layer.children;
+  groups.length = 0;
+  for (let i = 0; i < children.length; i++) {
+    if (children[i].__globeObjType === 'polygon') groups.push(children[i]);
+  }
+  const entries = batch.entries;
+  let current = groups.length === entries.length;
+  for (let i = 0; current && i < entries.length; i++) current = _countryBatchEntryIsCurrent(entries[i], groups[i]);
+  if (!current) {
+    _rebuildCountryBatch(batch);
+  } else if (batch.merged) {
+    for (let i = 0; i < entries.length; i++) _refreshCountryBatchEntry(batch.merged, entries[i]);
+    _flushCountryBatch(batch.merged);
+  }
+  if (batch.merged) _aimCountryBatch(batch, camera);
+}
+
+function _countryBatchEntryIsCurrent(entry, group) {
+  const mesh = entry.mesh;
+  const line = entry.line;
+  if (entry.group !== group || group.children[0] !== mesh || group.children[1] !== line) return false;
+  if (mesh.geometry !== entry.geometry || line.geometry !== entry.lineGeometry || line.material !== entry.lineMaterial) return false;
+  if ((group.visible && mesh.visible) !== entry.meshShown) return false;
+  if ((group.visible && line.visible && line.material.visible) !== entry.lineShown) return false;
+  const parts = entry.parts;
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    const material = mesh.material[part.materialIndex];
+    if (material !== part.material || (material.visible && material.opacity > 0) !== part.painted) return false;
+  }
+  return true;
+}
+
+function _countryBatchBaseClass(Constructor, method) {
+  let Base = Constructor;
+  while (typeof Object.getPrototypeOf(Base.prototype)?.[method] === 'function') {
+    Base = Object.getPrototypeOf(Base.prototype).constructor;
+  }
+  return Base;
+}
+
+function _countryBatchPlacementIsPlain(object, scaled) {
+  const s = object.scale;
+  return object.position.x === 0 && object.position.y === 0 && object.position.z === 0 &&
+    object.quaternion.x === 0 && object.quaternion.y === 0 && object.quaternion.z === 0 &&
+    s.x === s.y && s.y === s.z && (scaled || s.x === 1);
+}
+
+function _countryBatchPart(kind, source, indices, indexStart, indexCount) {
+  let first = indexStart;
+  let last = indexStart + indexCount - 1;
+  if (indices) {
+    first = Infinity;
+    last = -1;
+    for (let i = indexStart, end = indexStart + indexCount; i < end; i++) {
+      const vertex = indices[i];
+      if (vertex < first) first = vertex;
+      if (vertex > last) last = vertex;
+    }
+    if (last < 0) first = 0;
+  }
+  return {
+    kind, source, indices, indexStart, indexCount,
+    vertexStart: first, vertexCount: last - first + 1,
+    base: -1, indexBase: 0, r: NaN, g: NaN, b: NaN, a: NaN,
+  };
+}
+
+function _reserveCountryBatchPart(total, part) {
+  part.base = total.vertices;
+  part.indexBase = total.indices;
+  total.vertices += part.vertexCount;
+  total.indices += part.indexCount;
+}
+
+function _createCountryBatchMeshes(batch, groups) {
+  let sample = null;
+  let position = null;
+  for (let i = 0; i < groups.length && !position; i++) {
+    position = groups[i].children[0].geometry.getAttribute('position');
+    sample = groups[i];
+  }
+  if (!position) return null;
+  const mesh = sample.children[0];
+  const line = sample.children[1];
+  const surface = sample.__defaultCapMaterial;
+  const MeshMaterial = surface.constructor;
+  const meshOptions = {
+    side: surface.side, depthTest: surface.depthTest, depthWrite: surface.depthWrite,
+    transparent: true, vertexColors: true,
+  };
+  // Walls start at the globe centre; like globe.gl's wall shader, keep only
+  // what rises above the surface (positions here are already at altitude).
+  const clipToSurface = shader => {
+    shader.uniforms.uCountryBatchSurface = { value: batch.radius };
+    shader.vertexShader = 'varying vec3 vCountryBatchPosition;\n' +
+      shader.vertexShader.replace('void main() {', 'void main() {\n\tvCountryBatchPosition = position;');
+    shader.fragmentShader = 'uniform float uCountryBatchSurface;\nvarying vec3 vCountryBatchPosition;\n' +
+      shader.fragmentShader.replace('void main() {', 'void main() {\n\tif (length(vCountryBatchPosition) < uCountryBatchSurface) discard;');
+  };
+  const wallMaterial = new MeshMaterial(meshOptions);
+  wallMaterial.onBeforeCompile = clipToSurface;
+  // Fully transparent parts (the carbon lens walls) never showed, but they
+  // wrote depth after the caps behind them and before the outlines.
+  const maskMaterial = new MeshMaterial({ ...meshOptions, vertexColors: false, colorWrite: false });
+  maskMaterial.forceSinglePass = true;
+  maskMaterial.onBeforeCompile = clipToSurface;
+  const Geometry = _countryBatchBaseClass(mesh.geometry.constructor, 'setIndex');
+  const merged = {
+    Geometry,
+    Attribute: _countryBatchBaseClass(position.constructor, 'setUsage'),
+    side: { mesh: new mesh.constructor(new Geometry(), wallMaterial) },
+    cap: { mesh: new mesh.constructor(new Geometry(), new MeshMaterial(meshOptions)) },
+    mask: { mesh: new mesh.constructor(new Geometry(), maskMaterial) },
+    line: {
+      mesh: new line.constructor(new Geometry(), new line.material.constructor({
+        depthTest: line.material.depthTest, depthWrite: line.material.depthWrite,
+        transparent: true, vertexColors: true,
+      })),
+    },
+  };
+  // Created in draw order: equal sort depth falls back to creation order.
+  merged.targets = [merged.side, merged.cap, merged.mask, merged.line];
+  merged.targets.forEach(target => {
+    target.mesh.raycast = () => {};
+    target.mesh.visible = false;
+    batch.layer.add(target.mesh);
+    target.mesh.updateMatrixWorld(true);
+  });
+  return merged;
+}
+
+function _rebuildCountryBatch(batch) {
+  const groups = batch.groups;
+  const entries = [];
+  const totals = {
+    side: { vertices: 0, indices: 0 },
+    cap: { vertices: 0, indices: 0 },
+    mask: { vertices: 0, indices: 0 },
+    line: { vertices: 0, indices: 0 },
+  };
+  for (let g = 0; g < groups.length; g++) {
+    const group = groups[g];
+    const mesh = group.children[0];
+    const line = group.children[1];
+    if (!mesh?.isMesh || !line?.isLineSegments || !Array.isArray(mesh.material) ||
+      !group.__defaultSideMaterial || !group.__defaultCapMaterial) {
+      throw new Error('unexpected polygon object');
+    }
+    if (!_countryBatchPlacementIsPlain(group, false) || !_countryBatchPlacementIsPlain(mesh, true) ||
+      !_countryBatchPlacementIsPlain(line, true)) {
+      throw new Error('unexpected polygon transform');
+    }
+    const entry = {
+      group, mesh, line,
+      geometry: mesh.geometry,
+      lineGeometry: line.geometry,
+      lineMaterial: line.material,
+      meshShown: group.visible && mesh.visible,
+      lineShown: group.visible && line.visible && line.material.visible,
+      scale: mesh.scale.x,
+      lineScale: line.scale.x,
+      parts: [],
+      linePart: null,
+    };
+    const position = mesh.geometry.getAttribute('position');
+    const index = mesh.geometry.index;
+    if (position && index) {
+      const ranges = mesh.geometry.groups;
+      for (let i = 0; i < ranges.length; i++) {
+        const range = ranges[i];
+        const material = mesh.material[range.materialIndex];
+        const kind = material === group.__defaultSideMaterial ? 'side'
+          : (material === group.__defaultCapMaterial ? 'cap' : null);
+        if (!kind) throw new Error('unexpected polygon material');
+        const count = Math.min(range.count, index.count - range.start);
+        const painted = material.visible && material.opacity > 0;
+        const part = _countryBatchPart(painted ? kind : 'mask', position.array, index.array, range.start, count);
+        part.material = material;
+        part.materialIndex = range.materialIndex;
+        part.painted = painted;
+        if (entry.meshShown && material.visible && count > 0) _reserveCountryBatchPart(totals[part.kind], part);
+        entry.parts.push(part);
+      }
+    }
+    const linePosition = line.geometry.getAttribute('position');
+    if (entry.lineShown && linePosition) {
+      const lineIndex = line.geometry.index;
+      entry.linePart = _countryBatchPart('line', linePosition.array, lineIndex ? lineIndex.array : null,
+        0, lineIndex ? lineIndex.count : linePosition.count);
+      _reserveCountryBatchPart(totals.line, entry.linePart);
+    }
+    entries.push(entry);
+  }
+
+  const merged = batch.merged || (batch.merged = _createCountryBatchMeshes(batch, groups));
+  if (merged) {
+    ['side', 'cap', 'mask', 'line'].forEach(kind => {
+      const target = merged[kind];
+      const total = totals[kind];
+      const geometry = new merged.Geometry();
+      target.positions = new Float32Array(total.vertices * 3);
+      target.colors = new Float32Array(total.vertices * 4);
+      target.indices = new Uint32Array(total.indices);
+      target.positionAttribute = new merged.Attribute(target.positions, 3);
+      target.colorAttribute = new merged.Attribute(target.colors, 4);
+      target.positionDirty = false;
+      target.colorDirty = false;
+      geometry.setAttribute('position', target.positionAttribute);
+      geometry.setAttribute('color', target.colorAttribute);
+      geometry.setIndex(new merged.Attribute(target.indices, 1));
+      const previous = target.mesh.geometry;
+      target.mesh.geometry = geometry;
+      target.mesh.visible = total.indices > 0;
+      previous.dispose();
+    });
+    entries.forEach(entry => {
+      entry.parts.forEach(part => {
+        if (part.base < 0) return;
+        const target = merged[part.kind];
+        _fillCountryBatchIndices(target, part);
+        _placeCountryBatchPart(target, part, entry.scale);
+        _paintCountryBatchPart(target, part, part.material);
+      });
+      if (entry.linePart) {
+        _fillCountryBatchIndices(merged.line, entry.linePart);
+        _placeCountryBatchPart(merged.line, entry.linePart, entry.lineScale);
+        _paintCountryBatchPart(merged.line, entry.linePart, entry.lineMaterial);
+      }
+    });
+    merged.targets.forEach(target => {
+      target.positionAttribute.clearUpdateRanges();
+      target.colorAttribute.clearUpdateRanges();
+      target.positionDirty = false;
+      target.colorDirty = false;
+      target.mesh.geometry.computeBoundingSphere();
+    });
+  }
+
+  // Only now that the merged meshes hold every country, retire the originals.
+  const keep = new Set();
+  entries.forEach(entry => {
+    keep.add(entry.mesh);
+    keep.add(entry.line);
+  });
+  batch.hidden.forEach(object => {
+    if (!keep.has(object)) _showCountryBatchObject(object);
+  });
+  keep.forEach(_hideCountryBatchObject);
+  batch.hidden = [...keep];
+  batch.entries = entries;
+}
+
+function _fillCountryBatchIndices(target, part) {
+  const indices = target.indices;
+  if (part.indices) {
+    const offset = part.base - part.vertexStart;
+    for (let k = 0; k < part.indexCount; k++) indices[part.indexBase + k] = part.indices[part.indexStart + k] + offset;
+  } else {
+    for (let k = 0; k < part.indexCount; k++) indices[part.indexBase + k] = part.base + k;
+  }
+}
+
+function _placeCountryBatchPart(target, part, scale) {
+  const positions = target.positions;
+  const source = part.source;
+  const from = part.vertexStart * 3;
+  const to = part.base * 3;
+  const count = part.vertexCount * 3;
+  for (let k = 0; k < count; k++) positions[to + k] = source[from + k] * scale;
+  target.positionAttribute.addUpdateRange(to, count);
+  target.positionDirty = true;
+}
+
+function _paintCountryBatchPart(target, part, material) {
+  const color = material.color;
+  const alpha = material.opacity;
+  if (color.r === part.r && color.g === part.g && color.b === part.b && alpha === part.a) return;
+  part.r = color.r;
+  part.g = color.g;
+  part.b = color.b;
+  part.a = alpha;
+  const colors = target.colors;
+  for (let v = part.base * 4, end = (part.base + part.vertexCount) * 4; v < end; v += 4) {
+    colors[v] = color.r;
+    colors[v + 1] = color.g;
+    colors[v + 2] = color.b;
+    colors[v + 3] = alpha;
+  }
+  target.colorAttribute.addUpdateRange(part.base * 4, part.vertexCount * 4);
+  target.colorDirty = true;
+}
+
+function _refreshCountryBatchEntry(merged, entry) {
+  const scale = entry.mesh.scale.x;
+  const moved = scale !== entry.scale;
+  entry.scale = scale;
+  const parts = entry.parts;
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    if (part.base < 0) continue;
+    const target = merged[part.kind];
+    if (moved) _placeCountryBatchPart(target, part, scale);
+    _paintCountryBatchPart(target, part, part.material);
+  }
+  const linePart = entry.linePart;
+  if (linePart) {
+    const lineScale = entry.line.scale.x;
+    if (lineScale !== entry.lineScale) {
+      entry.lineScale = lineScale;
+      _placeCountryBatchPart(merged.line, linePart, lineScale);
+    }
+    _paintCountryBatchPart(merged.line, linePart, entry.lineMaterial);
+  }
+}
+
+function _flushCountryBatch(merged) {
+  const targets = merged.targets;
+  for (let i = 0; i < targets.length; i++) {
+    const target = targets[i];
+    if (target.positionDirty) target.positionAttribute.needsUpdate = true;
+    if (target.colorDirty) target.colorAttribute.needsUpdate = true;
+    target.positionDirty = false;
+    target.colorDirty = false;
+  }
+}
+
+// Transparent draws sort by bounding-sphere centre. Each per-country mesh sat
+// between the camera and the globe centre, so the merged meshes do too: after
+// the atmosphere, then in creation order.
+function _aimCountryBatch(batch, camera) {
+  const targets = batch.merged.targets;
+  for (let i = 0; i < targets.length; i++) {
+    const sphere = targets[i].mesh.geometry.boundingSphere;
+    if (!sphere) continue;
+    const center = batch.layer.worldToLocal(sphere.center.copy(camera.position));
+    center.multiplyScalar(batch.radius * 0.5 / (center.length() || 1));
+    sphere.radius = batch.radius * 1.6;
+  }
+}
+
+function _hideCountryBatchObject(object) {
+  if (object[COUNTRY_BATCH_LAYER_MASK] === undefined) object[COUNTRY_BATCH_LAYER_MASK] = object.layers.mask;
+  object.layers.mask = 0;
+}
+
+function _showCountryBatchObject(object) {
+  if (object[COUNTRY_BATCH_LAYER_MASK] === undefined) return;
+  object.layers.mask = object[COUNTRY_BATCH_LAYER_MASK];
+  delete object[COUNTRY_BATCH_LAYER_MASK];
+}
+
+function _abandonCountryBatch(batch, error) {
+  batch.failed = true;
+  batch.hidden.forEach(_showCountryBatchObject);
+  batch.hidden = [];
+  batch.entries = [];
+  if (batch.merged) {
+    batch.merged.targets.forEach(target => {
+      target.mesh.parent?.remove(target.mesh);
+      target.mesh.geometry.dispose();
+      target.mesh.material.dispose();
+    });
+    batch.merged = null;
+  }
+  reportWarn('GlobeModule', 'Country draw batching disabled: ' + (error?.message || 'unknown error'));
+}
+
+// ── Pointer tracking gate ──
+// globe.gl raycasts the whole scene under the pointer 20 times a second (and
+// its click handler reuses that hit) for its own hover and click callbacks:
+// several ms a pass on the development Mac. Only site points, their labels and
+// setOnGlobeClick consume them, while countries hit-test the sphere in
+// _countryFeatureFromCanvasEvent, so the tracker runs only while one exists.
+function _installGlobePointerGate(world) {
+  try {
+    const scene = typeof world?.scene === 'function' ? world.scene() : null;
+    if (!scene || scene.__pointerGate || typeof world.enablePointerInteraction !== 'function') return;
+    const pointsData = world.pointsData;
+    const labelsData = world.labelsData;
+    let enabled = null;
+    const previous = scene.onBeforeRender;
+    scene.__pointerGate = true;
+    scene.onBeforeRender = function (renderer, renderScene, camera, target) {
+      previous.call(this, renderer, renderScene, camera, target);
+      const wanted = (pointsData()?.length || 0) > 0 || (labelsData()?.length || 0) > 0 ||
+        typeof _globeClickHandler === 'function';
+      if (wanted === enabled) return;
+      enabled = wanted;
+      world.enablePointerInteraction(wanted);
+    };
+  } catch (error) {
+    reportWarn('GlobeModule', 'Pointer tracking gate unavailable: ' + (error?.message || 'unknown error'));
+  }
+}
+
 const GlobeModule = {
   _initialized: false,
   world: null,
@@ -665,6 +1114,9 @@ const GlobeModule = {
         }
       });
     }
+    // A handful of merged draws for the country layer instead of ~1,530.
+    _installCountryBatch(this.world);
+    _installGlobePointerGate(this.world);
 
     // safeChain returns a Proxy — unwrap to get the real Globe instance
     // (the Proxy target IS the Globe, so direct property access still works)

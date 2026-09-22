@@ -213,7 +213,7 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 #globe .big-cta:hover,#globe .big-cta:focus-visible,#globe:has(.globe-door-big:hover) .big-cta{color:var(--teal);background:color-mix(in srgb,var(--mint) 12%,var(--bg2));transform:translateX(3px)}
 #globe .big-cta:hover::after,#globe .big-cta:focus-visible::after{transform:translateX(5px)}
 #globe .big-cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
-@media(max-width:720px){.globe-door-big{position:static;width:min(62vw,240px);margin:8px auto 22px}#globe .sec-lead,#globe .source-credits{max-width:none}}
+@media(max-width:720px){.globe-door-big{position:relative;inset:auto;width:min(62vw,240px);margin:8px auto 22px}#globe .sec-lead,#globe .source-credits{max-width:none}}
 @media(max-width:420px){.globe-door{width:56px}#hero .globe-door-row{gap:12px}}
 #hero .memorial{position:relative;bottom:auto;order:5;margin:0 auto 24px;font-size:11px;color:var(--text3);font-style:italic;animation:fadeUp .8s ease-out 1s both}
 .hero-telemetry{order:3;display:flex;align-items:center;justify-content:center;width:min(920px,100%);margin:0 auto;padding:0;color:var(--text2);animation:fadeUp .6s ease-out .15s both}
@@ -226,7 +226,7 @@ body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-fam
 .cc-label{font-family:var(--mono);font-size:clamp(10px,1.2vw,12px);text-transform:uppercase;letter-spacing:clamp(2px,.45vw,4px);color:var(--warn);margin-bottom:14px;text-shadow:0 0 18px rgba(196,92,74,.22)}
 .cc-value-row{display:inline-flex;align-items:baseline;justify-content:center;gap:clamp(6px,1vw,12px);width:max-content;max-width:100%;margin:0 auto}
 .cc-value{font-family:var(--mono);font-size:clamp(66px,13vw,168px);font-weight:700;color:var(--text);line-height:.86;margin-bottom:0;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1,"lnum" 1;letter-spacing:0;text-align:center;white-space:nowrap;text-shadow:0 0 24px rgba(196,92,74,.26)}
-html[data-theme="light"] #hero .cc-value{text-shadow:0 4px 24px rgba(63,125,84,.16),0 0 12px rgba(63,125,84,.1)}
+html[data-theme="light"] #hero .cc-value{text-shadow:0 3px 20px rgba(63,125,84,.22)}
 .cc-unit{transform:translateY(-.08em);color:var(--warn);font-family:var(--body);font-size:clamp(30px,5.2vw,58px);font-weight:300;line-height:1;white-space:nowrap;text-shadow:0 0 18px rgba(196,92,74,.22)}
 .cc-explainer{display:flex;flex-direction:column;gap:4px;max-width:640px;margin-top:22px;color:var(--text2);font-size:clamp(15px,2vw,22px);font-weight:300;line-height:1.48}
 .cc-explainer strong{color:var(--text);font-weight:400}
@@ -354,15 +354,37 @@ body.globe-mode #site-nav{display:none}
 .section h2{font-family:var(--display);font-size:clamp(30px,3.8vw,46px);font-weight:300;color:var(--mint);letter-spacing:1.5px;margin-bottom:16px}
 .sec-lead{max-width:840px;color:var(--text2);font-size:16px;line-height:1.7}
 .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:36px}
-.card{padding:26px 24px;border:1px solid rgba(78,205,196,.14);border-radius:12px;background:var(--bg2);transition:border-color .25s,transform .25s}
-.card:hover{border-color:rgba(78,205,196,.34);transform:translateY(-2px)}
+.card{position:relative;overflow:hidden;padding:26px 24px;border:1px solid rgba(78,205,196,.14);border-radius:12px;background:var(--bg2);box-shadow:var(--card-lift);transition:border-color .25s,transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.card:hover{border-color:rgba(78,205,196,.34);transform:translateY(-3px);box-shadow:var(--card-lift-hi)}
+.card>*{position:relative;z-index:1}
+.card::before{content:"";position:absolute;z-index:0;left:0;top:0;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,var(--card-light),transparent 68%);transform:translate(calc(var(--mx,-300px) - 50%),calc(var(--my,-300px) - 50%));opacity:0;transition:opacity .4s;pointer-events:none}
+.card:hover::before{opacity:1;will-change:transform}
+:root{--card-lift:inset 0 1px 0 rgba(123,232,208,.07),inset 0 -1px 0 rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.45),0 10px 26px rgba(0,0,0,.35);--card-lift-hi:inset 0 1px 0 rgba(123,232,208,.14),inset 0 -1px 0 rgba(0,0,0,.6),0 4px 10px rgba(0,0,0,.5),0 18px 40px rgba(0,0,0,.42),0 0 28px -6px rgba(78,205,196,.18);--card-light:rgba(78,205,196,.13);--door-breathe-lo:0 0 26px 4px rgba(78,205,196,.14);--door-breathe-hi:0 0 46px 12px rgba(78,205,196,.30)}
+[data-theme="light"]{--card-lift:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(31,94,70,.06),0 1px 2px rgba(60,50,30,.06),0 8px 22px rgba(60,50,30,.07);--card-lift-hi:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(31,94,70,.08),0 2px 6px rgba(60,50,30,.08),0 16px 36px rgba(60,50,30,.12);--card-light:rgba(38,105,79,.08);--door-breathe-lo:0 0 22px 2px rgba(31,94,70,.10);--door-breathe-hi:0 0 40px 10px rgba(31,94,70,.24)}
+@keyframes door-breathe{0%,100%{opacity:0}50%{opacity:1}}
+#hero .globe-door,#globe .globe-door-big{box-shadow:none}
+.globe-door::before,.globe-door::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;box-shadow:0 0 0 1px rgba(78,205,196,.2),var(--door-breathe-lo);animation:door-breathe 4.8s ease-in-out -2.4s infinite}
+.globe-door::after{box-shadow:0 0 0 1px rgba(78,205,196,.3),var(--door-breathe-hi);opacity:0;animation-delay:0s}
+.globe-door:hover::before,.globe-door:hover::after{animation-play-state:paused}
+#hero .globe-door-row .enter-btn{border:0;padding:18.5px 35.5px 18.5px 53.5px;background:none;overflow:hidden;isolation:isolate}
+#hero .globe-door-row .enter-btn::before{display:block;content:"";position:absolute;z-index:-2;left:50%;top:50%;right:auto;bottom:auto;width:110%;height:auto;aspect-ratio:1;border:0;background:conic-gradient(color-mix(in srgb,var(--teal) 35%,transparent) 0%,var(--mint) 18%,var(--teal) 30%,color-mix(in srgb,var(--teal) 35%,transparent) 48%,color-mix(in srgb,var(--teal) 35%,transparent) 100%);transform:translate(-50%,-50%);animation:pill-orbit 6s linear infinite;transition:none}
+#hero .globe-door-row .enter-btn::after{display:block;content:"";position:absolute;z-index:-1;inset:0;width:auto;height:auto;border:1.5px solid transparent;border-radius:inherit;background:var(--bg2) padding-box;transition:none}
+#hero .globe-door-row .enter-btn:hover::before,#hero .globe-door-row .enter-btn:focus-visible::before,#hero .globe-door-row:has(.globe-door:hover) .enter-btn::before{background:conic-gradient(var(--teal),var(--mint),var(--teal))}
+#hero .globe-door-row .enter-btn:hover::after,#hero .globe-door-row .enter-btn:focus-visible::after,#hero .globe-door-row:has(.globe-door:hover) .enter-btn::after{background:color-mix(in srgb,var(--mint) 12%,var(--bg2)) padding-box}
+@keyframes pill-orbit{to{transform:translate(-50%,-50%) rotate(1turn)}}
+#site-nav .nav-links a[aria-current="true"]{color:var(--teal);box-shadow:0 1px 0 var(--teal)}
+#site-nav .nav-links a{transition:color .3s,box-shadow .3s}
+@media(prefers-reduced-motion:reduce){#hero .globe-door-row .enter-btn::before{animation:none}}
+.theme-switching *,.theme-switching *::before,.theme-switching *::after{transition:none!important}
+@media(hover:none){.card::before{display:none}}
+@media(prefers-reduced-motion:reduce){.globe-door::before,.globe-door::after{animation:none}.card,.card:hover{transition:none;transform:none}}
 .card .card-tag{font-family:var(--mono);font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
 .card h3{font-family:var(--display);font-size:23px;font-weight:400;color:var(--text);letter-spacing:.6px;margin-bottom:8px}
 .card p{color:var(--text2);font-size:14px;line-height:1.65}
 .card .card-cta{margin-top:18px;padding:11px 22px;font-size:11px}
 @media(max-width:360px){.card .card-cta{width:100%;max-width:100%;padding-inline:12px;white-space:normal;overflow-wrap:anywhere}}
 .card .card-link{display:inline-flex;align-items:center;margin-top:18px;color:var(--teal);font-family:var(--body);font-size:12px;font-weight:500;letter-spacing:.3px;text-decoration:none}
-#open .card,#projects .card{display:flex;flex-direction:column}#open .card p{flex:1}#open .card .card-link,#projects .card .card-link{align-self:flex-start;margin-top:auto}#projects .card h3{margin-bottom:18px}
+#open .card,#projects .card{display:flex;flex-direction:column}#open .card p{flex:1;margin-bottom:16px}#open .card .card-link,#projects .card .card-link{align-self:flex-start;margin-top:auto}#projects .card h3{margin-bottom:18px}
 .card .card-link:hover,.card .card-link:focus-visible{color:var(--mint);text-decoration:underline;text-underline-offset:4px;outline:none}
 .why-h{margin-top:52px;font-family:var(--display);font-size:clamp(24px,2.6vw,30px);font-weight:400;color:var(--mint);letter-spacing:1px}
 .why-list{list-style:none;margin-top:20px;display:grid;gap:10px;max-width:840px}
@@ -556,12 +578,24 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
         <button class="enter-btn glass-btn" data-action="enterGlobe">Enter the Living Globe<span class="door-arrow" aria-hidden="true">→</span></button>
       </div>
       <script>
-      /* Globe door: a small spinning Earth drawn on canvas (orthographic
-         projection of a 23 KB night-lights texture). Decorative; the button
-         below stays the accessible control. Pauses when hidden or off-screen,
-         draws one still frame under prefers-reduced-motion. */
+      /* Globe door: a small spinning Earth (orthographic projection of a 23 KB
+         night-lights texture). A tiny WebGL fragment shader does the per-pixel
+         work, so each frame costs the main thread one uniform and one draw; the
+         CPU canvas path remains as the fallback when WebGL is missing or
+         software-only. Decorative; the button below stays the accessible
+         control. Pauses when hidden or off-screen, draws one still frame under
+         prefers-reduced-motion. */
       (function () {
-        var doors = [];
+        var doors = [], texData = null;
+        var VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+        var FS = '#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n' +
+          'uniform sampler2D t;uniform float n,ph;const float CT=.949235,ST=.314567;' +
+          'void main(){float r=n*.5;vec2 q=vec2(gl_FragCoord.x-r,n-gl_FragCoord.y-r)/r;float d2=dot(q,q);' +
+          'if(d2>1.){gl_FragColor=vec4(0.);return;}' +
+          'float nz=sqrt(1.-d2),yy=-q.y*CT+nz*ST,zz=q.y*ST+nz*CT;' +
+          'vec2 uv=vec2(fract(atan(q.x,zz)*.15915494+ph),.5-asin(clamp(yy,-1.,1.))*.31830989);' +
+          'float k=(.55+.45*nz)*min(1.,(1.-sqrt(d2))*r*.9);' +
+          'gl_FragColor=vec4(texture2D(t,uv).rgb*k+vec3(.023529,.054902,.117647),min(1.,k*4.));}';
         function boot() {
           // Collected at boot (after load): this script runs before later sections are parsed.
           doors = [].slice.call(document.querySelectorAll('.globe-door')).filter(function (d) {
@@ -576,13 +610,139 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
           var img = new Image();
           img.decoding = 'async';
           img.onload = function () {
-            var TW = img.naturalWidth, TH = img.naturalHeight;
-            var tc = document.createElement('canvas'); tc.width = TW; tc.height = TH;
-            var tx = tc.getContext('2d'); tx.drawImage(img, 0, 0);
-            var tex = tx.getImageData(0, 0, TW, TH).data;
-            doors.forEach(function (door) { spin(door, door.querySelector('canvas'), tex, TW, TH); });
+            // One door per idle period: each GL context + shader + upload is a
+            // few tens of ms on first use, so they should not stack into one task.
+            var queue = doors.slice();
+            function go() {
+              var door = queue.shift(); if (!door) return;
+              var cv = door.querySelector('canvas'), cap = cv.width;
+              if (!spinGL(door, cv, img)) {
+                if (cv.__gl) { var c2 = cv.cloneNode(false); cv.parentNode.replaceChild(c2, cv); cv = c2; }
+                fit(cv, cap); spin(door, cv, texOf(img), img.naturalWidth, img.naturalHeight);
+              }
+              if (queue.length) { if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 1000 }); else setTimeout(go, 50); }
+            }
+            if (img.decode) img.decode().then(go, go); else go();
           };
           img.src = 'assets/legacy/hero-earth.webp?v=27d79a35';
+        }
+        function texOf(img) {
+          if (!texData) {
+            var tc = document.createElement('canvas'); tc.width = img.naturalWidth; tc.height = img.naturalHeight;
+            var tx = tc.getContext('2d'); tx.drawImage(img, 0, 0); texData = tx.getImageData(0, 0, tc.width, tc.height).data;
+          }
+          return texData;
+        }
+        // Backing store = displayed device pixels (never above cap).
+        function fit(cv, cap, px) {
+          var w = Math.min(cap, Math.max(px || 0, Math.round(cv.clientWidth * (window.devicePixelRatio || 1))));
+          if (w > 0 && cv.width !== w) { cv.width = cv.height = w; return true; }
+          return false;
+        }
+        // Hover/focus speed-up from events, so the frame loop never queries styles.
+        function hotness(door) {
+          var p = door.parentNode, big = door.classList.contains('globe-door-big'), h = { v: false }, a = false, b = false, f = false;
+          function upd() { h.v = a || f || (!big && b); }
+          door.addEventListener('pointerenter', function () { a = true; upd(); });
+          door.addEventListener('pointerleave', function () { a = false; upd(); });
+          if (!big) {
+            p.addEventListener('pointerenter', function () { b = true; upd(); });
+            p.addEventListener('pointerleave', function () { b = false; upd(); });
+          }
+          p.addEventListener('focusin', function () { f = true; upd(); });
+          p.addEventListener('focusout', function (e) { f = !!(e.relatedTarget && p.contains(e.relatedTarget)); upd(); });
+          return h;
+        }
+        // Shared frame loop: draw(phase) at most every minDt ms while visible.
+        function run(door, draw, minDt) {
+          var hot = hotness(door), raf = 0, last = 0, visible = true, speed = 1, phase = 0;
+          var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+          function loop(ts) {
+            raf = 0;
+            if (!visible || document.hidden || document.body.classList.contains('globe-mode')) return;
+            var dt = ts - last;
+            if (dt >= minDt) {
+              dt = Math.min(dt, 100);
+              speed += ((hot.v ? 7 : 1) - speed) * (1 - Math.pow(0.92, dt / 33.3));
+              phase += dt * speed / 60000; last = ts; draw(phase);
+            }
+            raf = requestAnimationFrame(loop);
+          }
+          function kick() { if (!still && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); } }
+          draw(phase); door.classList.add('is-ready'); kick();
+          document.addEventListener('visibilitychange', kick);
+          if ('IntersectionObserver' in window) new IntersectionObserver(function (e) {
+            visible = e[0].isIntersecting; kick();
+          }).observe(door);
+          window.addEventListener('pageshow', kick);
+          new MutationObserver(kick).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+          return function () { draw(phase); };
+        }
+        var GL_OPTS = { alpha: true, premultipliedAlpha: false, antialias: false, depth: false, stencil: false,
+          powerPreference: 'low-power', failIfMajorPerformanceCaveat: true };
+        var glUsable = null;
+        // One throwaway probe: software WebGL (SwiftShader, llvmpipe) would be read
+        // back to the CPU every frame, so those machines keep the CPU path.
+        function canGL() {
+          if (glUsable === null) {
+            glUsable = false;
+            try {
+              var g = document.createElement('canvas').getContext('webgl', GL_OPTS);
+              if (g) {
+                var dbg = g.getExtension('WEBGL_debug_renderer_info');
+                glUsable = !/swiftshader|llvmpipe|softpipe|software|basic render/i.test(dbg ? String(g.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : '');
+                var lose = g.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext();
+              }
+            } catch (e) { glUsable = false; }
+          }
+          return glUsable;
+        }
+        function spinGL(door, cv, img) {
+          var gl = null, u = null;
+          if (!canGL()) return false;
+          fit(cv, 1024); // before getContext: resizing a live WebGL buffer later costs 40-80 ms
+          try { gl = cv.getContext('webgl', GL_OPTS); } catch (e) { gl = null; }
+          if (!gl) return false;
+          cv.__gl = true;
+          function setup() {
+            function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+            var pr = gl.createProgram();
+            gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS));
+            gl.bindAttribLocation(pr, 0, 'p'); gl.linkProgram(pr);
+            if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return null;
+            gl.useProgram(pr);
+            gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+            gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+            gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+            return { n: gl.getUniformLocation(pr, 'n'), ph: gl.getUniformLocation(pr, 'ph') };
+          }
+          u = setup();
+          if (!u) return false;
+          var redraw = run(door, function (ph) {
+            if (!u || gl.isContextLost()) return;
+            gl.viewport(0, 0, cv.width, cv.height); gl.uniform1f(u.n, cv.width); gl.uniform1f(u.ph, ph);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+          }, 0);
+          cv.addEventListener('webglcontextlost', function (e) { e.preventDefault(); u = null; });
+          cv.addEventListener('webglcontextrestored', function () { u = setup(); redraw(); });
+          if (window.ResizeObserver) {
+            var pending = 0;
+            var ro = new ResizeObserver(function (en) {
+              var s = en[0].devicePixelContentBoxSize && en[0].devicePixelContentBoxSize[0], px = s ? s.inlineSize : 0;
+              var want = Math.min(1024, Math.max(px, Math.round(cv.clientWidth * (window.devicePixelRatio || 1))));
+              if (Math.abs(want - cv.width) <= 1) return; // pixel-snapping noise, not a resize
+              clearTimeout(pending);
+              pending = setTimeout(function () { if (fit(cv, 1024, px)) redraw(); }, 200);
+            });
+            try { ro.observe(cv, { box: 'device-pixel-content-box' }); } catch (e) { ro.observe(cv); }
+          }
+          return true;
         }
         function spin(door, cv, tex, TW, TH) {
             var N = cv.width, R = N / 2, ctx = cv.getContext('2d');
@@ -600,30 +760,15 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
               var edge = Math.min(1, (1 - Math.sqrt(d2)) * R * 0.9);
               shade.push((0.55 + 0.45 * nz) * edge);
             }
-            var K = idx.length, phase = 0, raf = 0, last = 0, visible = true, speed = 1;
-            function draw() {
+            var K = idx.length;
+            run(door, function (phase) {
               for (var i = 0; i < K; i++) {
                 var u = lon0[i] + phase; u -= Math.floor(u);
                 var t = (lat[i] * TW + Math.floor(u * (TW - 1))) * 4, j = idx[i], k = shade[i];
                 o[j] = tex[t] * k + 6; o[j + 1] = tex[t + 1] * k + 14; o[j + 2] = tex[t + 2] * k + 30; o[j + 3] = 255 * Math.min(1, k * 4);
               }
               ctx.putImageData(out, 0, 0);
-            }
-            var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-            function loop(ts) {
-              raf = 0;
-              if (!visible || document.hidden || document.body.classList.contains('globe-mode')) return;
-              if (ts - last > 33) { speed += ((door.matches(':hover') || door.parentNode.matches(':focus-within') || (door.classList.contains('globe-door-big') ? false : door.parentNode.matches(':hover')) ? 7 : 1) - speed) * 0.08; phase += (ts - last) * speed / 60000; last = ts; draw(); }
-              raf = requestAnimationFrame(loop);
-            }
-            function kick() { if (!still && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); } }
-            draw(); door.classList.add('is-ready'); kick();
-            document.addEventListener('visibilitychange', kick);
-            if ('IntersectionObserver' in window) new IntersectionObserver(function (e) {
-              visible = e[0].isIntersecting; kick();
-            }).observe(door);
-            window.addEventListener('pageshow', kick);
-            new MutationObserver(kick).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+            }, 33);
         }
         if (document.readyState === 'complete') setTimeout(boot, 0);
         else window.addEventListener('load', function () { if (window.requestIdleCallback) requestIdleCallback(boot, { timeout: 1500 }); else setTimeout(boot, 200); });
@@ -862,7 +1007,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     </div>
     <div class="partner-logo-grid" role="list" aria-label="Earth Love United partners">
       <a class="partner-logo-cell partner-logo-cell--st" href="https://www.stvin.com/" target="_blank" rel="noopener" role="listitem" aria-label="Visit St Vincent’s School">
-        <img src="assets/partners/st-vincents-wordmark.png" alt="St Vincent’s School" width="2171" height="724" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <img src="assets/partners/st-vincents-wordmark.png?v=25d1b3e6739e" alt="St Vincent’s School" width="2171" height="724" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
         <span class="partner-logo-fallback">St Vincent’s School</span>
       </a>
       <div class="partner-logo-cell" role="listitem" aria-label="GRND"><span class="partner-wordmark">GRND</span></div>
@@ -876,7 +1021,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
         <span class="partner-logo-fallback">Connecticut Green Bank</span>
       </a>
       <a class="partner-logo-cell partner-logo-cell--climate" href="https://www.climatechange.ai/" target="_blank" rel="noopener" role="listitem" aria-label="Visit Climate Change AI">
-        <img src="assets/partners/climate-change-ai.png" alt="" width="1201" height="1037" aria-hidden="true" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
+        <img src="assets/partners/climate-change-ai.png?v=30facb8e9170" alt="" width="1201" height="1037" aria-hidden="true" loading="lazy" decoding="async" onerror="this.closest('.partner-logo-cell').classList.add('noimg')">
         <span class="partner-climate-name" aria-hidden="true">Climate AI</span>
         <span class="partner-logo-fallback">Climate Change AI</span>
       </a>
@@ -917,7 +1062,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <h2 id="team-h">The Team</h2>
     <div class="team-grid">
       <div class="t-card">
-        <div class="t-photo" data-initials="EO"><img src="assets/legacy/ekmel.jpg?v=2026-09c" alt="Ekmel Ozdemir" width="720" height="720" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
+        <div class="t-photo" data-initials="EO"><img src="assets/legacy/ekmel.jpg?v=caaecb4c002f" alt="Ekmel Ozdemir" width="720" height="720" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"></div>
         <h3>Ekmel Ozdemir</h3>
         <div class="t-role">General Manager</div>
       </div>
@@ -1075,13 +1220,28 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   syncBodyTheme(document.documentElement.dataset.theme);
   function toggleTheme() {
     var next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    // Swap in one frame: without this ~67 colour/shadow transitions repaint 44 elements for 350 ms.
+    var root = document.documentElement;
+    root.classList.add('theme-switching');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.remove('theme-switching'); }); });
     document.documentElement.dataset.theme = next;
     syncBodyTheme(next);
     try { localStorage.setItem('elu-theme', next); } catch (e) {}
     syncMeta(next);
     if (typeof window.hasModule === 'function' && window.hasModule('GlobeModule')) {
-      window.safeCall('GlobeModule', 'setTheme', next);
+      // Hidden outside globe mode: hand the globe its theme when it is next shown.
+      if (document.body.classList.contains('globe-mode')) window.safeCall('GlobeModule', 'setTheme', next);
+      else {
+        globeThemeStale = true;
+        if (!globeThemeHooked && window.EventBus) { globeThemeHooked = true; window.EventBus.on('app:globe-entered', applyGlobeTheme); }
+      }
     }
+  }
+  var globeThemeStale = false, globeThemeHooked = false;
+  function applyGlobeTheme() {
+    if (!globeThemeStale) return;
+    globeThemeStale = false;
+    window.safeCall('GlobeModule', 'setTheme', document.documentElement.dataset.theme);
   }
   themeButtons.forEach(function (button) { button.addEventListener('click', toggleTheme); });
 })();
@@ -1156,6 +1316,44 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     </div>
   </div>
 </section>
+
+<script>
+/* Card cursor light: sets --mx/--my on the hovered .card (pointer devices only). */
+(function () {
+  if (!window.matchMedia || !matchMedia('(hover:hover)').matches) return;
+  var raf = 0, card = null, x = 0, y = 0;
+  document.addEventListener('pointermove', function (e) {
+    var c = e.target.closest && e.target.closest('.card');
+    if (!c) return;
+    var r = c.getBoundingClientRect(); card = c; x = e.clientX - r.left; y = e.clientY - r.top;
+    if (!raf) raf = requestAnimationFrame(function () {
+      raf = 0; card.style.setProperty('--mx', x + 'px'); card.style.setProperty('--my', y + 'px');
+    });
+  }, { passive: true });
+})();
+</script>
+
+<script>
+/* Nav scroll-spy: marks the top-bar link of the section in view (aria-current). */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  var links = [].slice.call(document.querySelectorAll('#site-nav .nav-links a[href^="#"]'));
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      links.forEach(function (a) {
+        if (a.getAttribute('href') === '#' + e.target.id) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      });
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  links.forEach(function (a) { var s = document.getElementById(a.getAttribute('href').slice(1)); if (s) io.observe(s); });
+  var hero = document.getElementById('hero');
+  if (hero) new IntersectionObserver(function (e) {
+    if (e[0].isIntersecting) links.forEach(function (a) { a.removeAttribute('aria-current'); });
+  }, { rootMargin: '-45% 0px -50% 0px' }).observe(hero);
+})();
+</script>
 
 <!-- Service Worker registration — deferred to window load -->
 <script>

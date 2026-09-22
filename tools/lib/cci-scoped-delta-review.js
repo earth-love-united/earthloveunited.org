@@ -70,6 +70,20 @@ const FONT_PATHS = Object.freeze([
   'assets/fonts/outfit-site.woff2',
 ]);
 
+// Renderer-only js/globe.js revisions the foundation maintainer waived fresh
+// specialist review for: they change how the globe draws, not a climate number,
+// lens, texture or source right. Each is bound to its exact bytes, so any other
+// globe.js change stays outside this rail.
+const MAINTAINER_ATTESTED_RENDERER = Object.freeze({
+  'js/globe.js': Object.freeze({
+    sha256: '9c2dd09f0e1e4bd6bd7d1a09bc81b90d532096540b50ce75eac9c85ee719cf4a',
+    scope: 'renderer_only_country_draw_batching_and_pointer_gate',
+    climate_numbers_changed: false,
+    fresh_specialist_review_waived: true,
+    receipt: "The foundation maintainer answered 'yes, we havent changed the numbers, its not necessary for this use case' and then 'you have full approval' when told this renderer change needed a fresh four-model review.",
+  }),
+});
+
 const DELTA_PATHS_BY_CATEGORY = Object.freeze({
   presentation_and_font_delivery: Object.freeze([
     'CREDITS.md',
@@ -111,6 +125,7 @@ const DELTA_PATHS_BY_CATEGORY = Object.freeze({
     'tools/prepare-country-climate-intelligence-review-request.js',
   ]),
   foundation_content: Object.freeze([]),
+  maintainer_attested_renderer: Object.freeze(Object.keys(MAINTAINER_ATTESTED_RENDERER)),
 });
 
 // Foundation content (team photos, partner logos) is not climate evidence: any
@@ -292,6 +307,9 @@ function diffSubjects(baseFacts, currentFacts) {
     const category = categoryForPath(relative);
     if (!category) fail('scoped delta contains an unreviewable path: ' + relative);
     if (!after) fail('scoped delta may not delete a reviewed subject path: ' + relative);
+    if (category === 'maintainer_attested_renderer' && after !== MAINTAINER_ATTESTED_RENDERER[relative].sha256) {
+      fail('maintainer-attested renderer bytes changed: ' + relative);
+    }
     changes.push({
       path: relative,
       operation: before ? 'modify' : 'add',
@@ -310,9 +328,16 @@ function invariantPins(baseFacts, currentFacts) {
   return REQUIRED_UNCHANGED_PATHS.map(relative => {
     const before = base.get(relative);
     const after = current.get(relative);
-    if (!before || before !== after) fail('high-risk invariant changed or disappeared: ' + relative);
+    const attested = MAINTAINER_ATTESTED_RENDERER[relative]?.sha256;
+    if (!before || !after || (before !== after && after !== attested)) fail('high-risk invariant changed or disappeared: ' + relative);
     return { path: relative, sha256: after };
   });
+}
+
+function maintainerAttestedRenderer(changes) {
+  return changes
+    .filter(change => change.category === 'maintainer_attested_renderer')
+    .map(change => ({ path: change.path, ...MAINTAINER_ATTESTED_RENDERER[change.path] }));
 }
 
 function verifyBaseReports(root, reviewers) {
@@ -405,6 +430,7 @@ function buildScopedDeltaArtifact(root, authorizedAt) {
     },
     changes: diffSubjects(base, current),
     invariant_pins: invariantPins(base, current),
+    maintainer_attested_renderer: maintainerAttestedRenderer(diffSubjects(base, current)),
     evidence: [
       { command: 'node tools/check-country-climate-intelligence-ci.js', status: 'pass', authority: false },
       { command: 'node tools/check-ct42-runtime-rollback-proof.js', status: 'pass', authority: false },
@@ -502,6 +528,9 @@ function verifyScopedDeltaArtifact(root, artifact) {
   if (!semanticallyEqual(artifact.invariant_pins, invariantPins(base, current))) {
     fail('scoped delta invariant receipt mismatch');
   }
+  if (!semanticallyEqual(artifact.maintainer_attested_renderer, maintainerAttestedRenderer(diffSubjects(base, current)))) {
+    fail('maintainer-attested renderer receipt mismatch');
+  }
   if (artifact.policy?.no_deletions !== true || artifact.policy?.exact_changed_paths_only !== true ||
       artifact.policy?.unchanged_base_pins_retain_base_review_only !== true ||
       artifact.policy?.changed_pins_require_this_delta_review !== true ||
@@ -569,7 +598,26 @@ function runSelfTest() {
   assert.throws(() => invariantPins(invariantBase, invariantChanged), /high-risk invariant changed/);
   const invariantDeleted = { pins: invariantBase.pins.slice(1) };
   assert.throws(() => invariantPins(invariantBase, invariantDeleted), /high-risk invariant changed/);
-  return 9;
+
+  const renderer = 'js/globe.js';
+  const rendererBase = { pins: [
+    { path: 'index.html', sha256: 'a'.repeat(64) },
+    { path: renderer, sha256: 'b'.repeat(64) },
+  ] };
+  const rendererAttested = { pins: [
+    { path: 'index.html', sha256: 'a'.repeat(64) },
+    { path: renderer, sha256: MAINTAINER_ATTESTED_RENDERER[renderer].sha256 },
+  ] };
+  assert.equal(diffSubjects(rendererBase, rendererAttested)[0].category, 'maintainer_attested_renderer');
+  const rendererOther = structuredClone(rendererAttested);
+  rendererOther.pins[1].sha256 = 'f'.repeat(64);
+  assert.throws(() => diffSubjects(rendererBase, rendererOther), /attested renderer bytes changed/);
+  const invariantRenderer = structuredClone(invariantBase);
+  invariantRenderer.pins.find(pin => pin.path === renderer).sha256 = MAINTAINER_ATTESTED_RENDERER[renderer].sha256;
+  assert.equal(invariantPins(invariantBase, invariantRenderer).length, REQUIRED_UNCHANGED_PATHS.length);
+  invariantRenderer.pins.find(pin => pin.path === renderer).sha256 = 'f'.repeat(64);
+  assert.throws(() => invariantPins(invariantBase, invariantRenderer), /high-risk invariant changed/);
+  return 13;
 }
 
 module.exports = {
@@ -580,6 +628,7 @@ module.exports = {
   DELTA_PATHS_BY_CATEGORY,
   DELTA_REVIEW_PATH,
   FONT_PATHS,
+  MAINTAINER_ATTESTED_RENDERER,
   REQUIRED_ARTIFACT_PIN_PATHS,
   REQUIRED_PUBLIC_OUTPUT_PATHS,
   REQUIRED_UNCHANGED_PATHS,

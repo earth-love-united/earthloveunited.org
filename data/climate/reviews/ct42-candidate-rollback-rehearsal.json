@@ -18,7 +18,7 @@
     },
     "runtime_control": {
       "format": "elu-sha256-path-content-tree-v1",
-      "sha256": "624f158462557a8a4e9aef4a8ea7e36d4f82a0fb0f96478669103972d7248b51",
+      "sha256": "f14274fab3512e5e84d0d4d7944fdc87899fc3a520ade8fcfa4727f5d82325d0",
       "member_count": 21,
       "git_history_required": false,
       "squash_merge_safe": true
@@ -82,7 +82,7 @@
   },
   "rollback": {
     "strategy": "current_hardened_runtime_to_neutral_surface",
-    "source_runtime_tree_sha256": "624f158462557a8a4e9aef4a8ea7e36d4f82a0fb0f96478669103972d7248b51",
+    "source_runtime_tree_sha256": "f14274fab3512e5e84d0d4d7944fdc87899fc3a520ade8fcfa4727f5d82325d0",
     "baseline_commit": null,
     "cache_name": "elu-v34-ct42-neutral-rollback",
     "service_worker_registration": "/sw.js?v=34-ct42-neutral-rollback",
@@ -105,7 +105,7 @@
     },
     "app_globe_compatibility": {
       "app_path": "js/app.js",
-      "app_sha256": "8794531875217cba0943f74df5da0901a22cf57cf5b28aaa053c6dcf0c5d45a0",
+      "app_sha256": "9f0da9b8eb7431a06bd155fd57c893b426032429c0b504e092e1608c801d02c2",
       "app_called_apis": [
         "prepare",
         "init",
@@ -128,8 +128,8 @@
     "patch": {
       "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
       "encoding": "base64",
-      "sha256": "64f10a7c7e0c01702e3d5166d2f6ed30d92e6135cf0a4b5fb14088ad965af7e0",
-      "decoded_sha256": "4a44ff17d0e9806049f9e10ac91a28af1821ef01144f61c4d7f3fc6a5bc32feb",
+      "sha256": "3afa64ab16c2a174cb904caa2b746e640a7a8cc17057f8c3ee99d4e3d11f1912",
+      "decoded_sha256": "4a6dd71354462a75ee55371b21d6a2abf670a63e7e0e925ee5041289643bd0ba",
       "changed_files": [
         "index.html",
         "css/globe-system.css",
@@ -144,8 +144,8 @@
         "path": "index.html",
         "role": "neutral_public_copy_and_v34_registration",
         "changed": true,
-        "candidate_sha256": "4f53d966cd4364fd614b098561d8c2987399ed0570ad57909b13d824b8170696",
-        "rollback_sha256": "ec04663d0feb5c6b357bc07c6d94cb942d454543b36113a52bb6b62fad7411b8"
+        "candidate_sha256": "e86db3e6672ffb8dba91cab00d59946af6ed3a63888e6555fddda9af80499c8a",
+        "rollback_sha256": "2f5a07178a0997dd9a00d9f7dc2ac7d269b9b2cb47882d29c2db63be78979f67"
       },
       {
         "path": "css/globe-system.css",
@@ -165,15 +165,15 @@
         "path": "js/globe.js",
         "role": "hardened_neutral_globe_runtime",
         "changed": true,
-        "candidate_sha256": "bb3dc7e9511e78d2a886c63fa79e0b5f63d9962ce535bb21a83e339599cdb156",
-        "rollback_sha256": "3af26e22ffaf7b49f414dbbba91ed561979d4fa327088a5b07e30069a3d3549d"
+        "candidate_sha256": "9c2dd09f0e1e4bd6bd7d1a09bc81b90d532096540b50ce75eac9c85ee719cf4a",
+        "rollback_sha256": "0019519a29c11e698a2b0ea53acb53d397504365cdf7ae2de6e0c1161aa20000"
       },
       {
         "path": "js/app.js",
         "role": "unchanged_app_globe_compatibility_pin",
         "changed": false,
-        "candidate_sha256": "8794531875217cba0943f74df5da0901a22cf57cf5b28aaa053c6dcf0c5d45a0",
-        "rollback_sha256": "8794531875217cba0943f74df5da0901a22cf57cf5b28aaa053c6dcf0c5d45a0"
+        "candidate_sha256": "9f0da9b8eb7431a06bd155fd57c893b426032429c0b504e092e1608c801d02c2",
+        "rollback_sha256": "9f0da9b8eb7431a06bd155fd57c893b426032429c0b504e092e1608c801d02c2"
       },
       {
         "path": "sw.js",
@@ -351,5 +351,5 @@
     "writes_workspace": false,
     "deploys": false
   },
-  "calculation_hash": "e43b18c5b4d5643be1b4dd47c61e4a411055df8aa883e0a661db6c62197d754b"
+  "calculation_hash": "12d7214b755a7e2984579339776684326218e0c38f5d3525ea8b5dd40f3bded4"
 }

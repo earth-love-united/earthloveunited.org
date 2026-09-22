@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "97576b5aaf9d4bb9c6b955fbd1a493ca2144f5fce8e08e4fccf5f16d9ac722fc",
+  "calculation_hash": "b9178292ba2b78afa973eebce58fa0a93c11a5507702ab4e64c90941a929eb56",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "a3ae6d6017f4857935add620952fb5cb6bb2ae40209b535a45a023d472fde936",
+    "artifact_pin_digest": "ffb0e1c6ac8d98bdf52c66e3ac796e4edbc6044a4bf244f72b21cc9080bd641e",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -345,7 +345,7 @@
       },
       {
         "path": "assets/legacy/ekmel.jpg",
-        "sha256": "31e56b7167b4aa41750d4aac5a8824733937568a7c6be8f1550fcf8f2311cb9a"
+        "sha256": "caaecb4c002f58cf83fb4235f70861e2deae68843537bf53794cc06f638bc2ce"
       },
       {
         "path": "assets/legacy/elu-logo-light.png",
@@ -373,7 +373,7 @@
       },
       {
         "path": "assets/partners/climate-change-ai.png",
-        "sha256": "0aaa9786e28c20f32d6eb7f355a8cd0e5b1efc0dda57ee2d31e4d0d35229c4c2"
+        "sha256": "30facb8e9170214121eb5b93b3d979223370be4b3d5c4473adc7c0dd27e3678e"
       },
       {
         "path": "assets/partners/connecticut-green-bank.png",
@@ -385,7 +385,7 @@
       },
       {
         "path": "assets/partners/st-vincents-wordmark.png",
-        "sha256": "b7a978d8ea43a9d73323e7d7caee0bfdb5d8fffeaa52f55c0cdbe5b1db384b44"
+        "sha256": "25d1b3e6739e01015fe8a4b9bd82051c966e6f0e6ef20cb0cf0a5c7d07f80a9e"
       },
       {
         "path": "css/carbon-clock.css",
@@ -521,7 +521,7 @@
       },
       {
         "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
-        "sha256": "64f10a7c7e0c01702e3d5166d2f6ed30d92e6135cf0a4b5fb14088ad965af7e0"
+        "sha256": "3afa64ab16c2a174cb904caa2b746e640a7a8cc17057f8c3ee99d4e3d11f1912"
       },
       {
         "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -621,7 +621,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "5f9767e04c357a84bb5a2d7aa9654f53253e27c31b8a253a6103d826d21ec7e9"
+        "sha256": "9c4bbb3bce7485f37724cf2573edbea6390811a4a4ff5b978a17446be563e87e"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -857,11 +857,11 @@
       },
       {
         "path": "index.html",
-        "sha256": "4f53d966cd4364fd614b098561d8c2987399ed0570ad57909b13d824b8170696"
+        "sha256": "e86db3e6672ffb8dba91cab00d59946af6ed3a63888e6555fddda9af80499c8a"
       },
       {
         "path": "js/app.js",
-        "sha256": "8794531875217cba0943f74df5da0901a22cf57cf5b28aaa053c6dcf0c5d45a0"
+        "sha256": "9f0da9b8eb7431a06bd155fd57c893b426032429c0b504e092e1608c801d02c2"
       },
       {
         "path": "js/carbon-clock.js",
@@ -897,7 +897,7 @@
       },
       {
         "path": "js/globe.js",
-        "sha256": "bb3dc7e9511e78d2a886c63fa79e0b5f63d9962ce535bb21a83e339599cdb156"
+        "sha256": "9c2dd09f0e1e4bd6bd7d1a09bc81b90d532096540b50ce75eac9c85ee719cf4a"
       },
       {
         "path": "js/guided-first-orbit.js",
@@ -1261,7 +1261,7 @@
       },
       {
         "path": "tools/lib/cci-scoped-delta-review.js",
-        "sha256": "ec2331ed4f692132055f311afe6fa3b0ee851e3bb5f22fe2c643e09d3015ae76"
+        "sha256": "5af7b563097c3835d8285e9442d2fd51fc9ae54b5f80dc263a4b5d45dfd39e1e"
       },
       {
         "path": "tools/lib/climate-factual-runtime-candidate.js",
