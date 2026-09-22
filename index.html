@@ -610,13 +610,17 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
           var img = new Image();
           img.decoding = 'async';
           img.onload = function () {
+            // One door per idle period: each GL context + shader + upload is a
+            // few tens of ms on first use, so they should not stack into one task.
+            var queue = doors.slice();
             function go() {
-              doors.forEach(function (door) {
-                var cv = door.querySelector('canvas');
-                if (spinGL(door, cv, img)) return;
+              var door = queue.shift(); if (!door) return;
+              var cv = door.querySelector('canvas'), cap = cv.width;
+              if (!spinGL(door, cv, img)) {
                 if (cv.__gl) { var c2 = cv.cloneNode(false); cv.parentNode.replaceChild(c2, cv); cv = c2; }
-                fit(cv, cv.width); spin(door, cv, texOf(img), img.naturalWidth, img.naturalHeight);
-              });
+                fit(cv, cap); spin(door, cv, texOf(img), img.naturalWidth, img.naturalHeight);
+              }
+              if (queue.length) { if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 1000 }); else setTimeout(go, 50); }
             }
             if (img.decode) img.decode().then(go, go); else go();
           };
@@ -696,6 +700,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
         function spinGL(door, cv, img) {
           var gl = null, u = null;
           if (!canGL()) return false;
+          fit(cv, 1024); // before getContext: resizing a live WebGL buffer later costs 40-80 ms
           try { gl = cv.getContext('webgl', GL_OPTS); } catch (e) { gl = null; }
           if (!gl) return false;
           cv.__gl = true;
@@ -719,7 +724,6 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
           }
           u = setup();
           if (!u) return false;
-          fit(cv, 1024);
           var redraw = run(door, function (ph) {
             if (!u || gl.isContextLost()) return;
             gl.viewport(0, 0, cv.width, cv.height); gl.uniform1f(u.n, cv.width); gl.uniform1f(u.ph, ph);
@@ -728,9 +732,13 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
           cv.addEventListener('webglcontextlost', function (e) { e.preventDefault(); u = null; });
           cv.addEventListener('webglcontextrestored', function () { u = setup(); redraw(); });
           if (window.ResizeObserver) {
+            var pending = 0;
             var ro = new ResizeObserver(function (en) {
-              var s = en[0].devicePixelContentBoxSize && en[0].devicePixelContentBoxSize[0];
-              if (fit(cv, 1024, s ? s.inlineSize : 0)) redraw();
+              var s = en[0].devicePixelContentBoxSize && en[0].devicePixelContentBoxSize[0], px = s ? s.inlineSize : 0;
+              var want = Math.min(1024, Math.max(px, Math.round(cv.clientWidth * (window.devicePixelRatio || 1))));
+              if (Math.abs(want - cv.width) <= 1) return; // pixel-snapping noise, not a resize
+              clearTimeout(pending);
+              pending = setTimeout(function () { if (fit(cv, 1024, px)) redraw(); }, 200);
             });
             try { ro.observe(cv, { box: 'device-pixel-content-box' }); } catch (e) { ro.observe(cv); }
           }
