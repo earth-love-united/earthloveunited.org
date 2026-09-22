@@ -10,7 +10,7 @@
     "review_request_sha256": "8fe8a47dbf8eea2081f7135ab11b3baab1c4af164e6fc9542d7ceaf06c780753",
     "reviewed_head": "108e6b6be2e3a53c45b4c2a596de11656774ab8c"
   },
-  "calculation_hash": "a775cced1d773dead90df491c2bb4bf46cff6fcdd6f5f733f0c17f91e8c11b8a",
+  "calculation_hash": "291e5d785ab28f6bc7ecd3c9c2b8206971f4761cf055c25189feefc94037198b",
   "changes": [
     {
       "base_sha256": "eb5032a791d8a2f9674ab34481086f1d0827a4decd3a446ee0b667b77e8d4302",
@@ -169,14 +169,14 @@
     {
       "base_sha256": "24eb59810aa525c664e8fb5745d380756ecb8ccb568183e5605826c1a77a7f09",
       "category": "deterministic_runtime_proof",
-      "current_sha256": "5454dac8fde8b48207f9fe956bc564ea69f0742091207d3ee51ac1e4a1dd3f32",
+      "current_sha256": "3afa64ab16c2a174cb904caa2b746e640a7a8cc17057f8c3ee99d4e3d11f1912",
       "operation": "modify",
       "path": "data/climate/operations/ct42-runtime-rollback.patch.b64"
     },
     {
       "base_sha256": "a62c285fe94f96281680e8ec21a61a1a4bde24aa9ee1443e62df527d30e6d4fa",
       "category": "deterministic_runtime_proof",
-      "current_sha256": "774625576249dcc7dc1ad288e60a4b905d4cf1336bb487ecc7f3e64ba09aa22b",
+      "current_sha256": "9c4bbb3bce7485f37724cf2573edbea6390811a4a4ff5b978a17446be563e87e",
       "operation": "modify",
       "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json"
     },
@@ -214,6 +214,13 @@
       "current_sha256": "9f0da9b8eb7431a06bd155fd57c893b426032429c0b504e092e1608c801d02c2",
       "operation": "modify",
       "path": "js/app.js"
+    },
+    {
+      "base_sha256": "bb3dc7e9511e78d2a886c63fa79e0b5f63d9962ce535bb21a83e339599cdb156",
+      "category": "maintainer_attested_renderer",
+      "current_sha256": "9c2dd09f0e1e4bd6bd7d1a09bc81b90d532096540b50ce75eac9c85ee719cf4a",
+      "operation": "modify",
+      "path": "js/globe.js"
     },
     {
       "base_sha256": "ad7115851d9878c5d465a2bebd986f9aaa172dba6fd614abcd29a4b95248d8de",
@@ -295,7 +302,7 @@
     {
       "base_sha256": null,
       "category": "scoped_release_rail",
-      "current_sha256": "ec2331ed4f692132055f311afe6fa3b0ee851e3bb5f22fe2c643e09d3015ae76",
+      "current_sha256": "5af7b563097c3835d8285e9442d2fd51fc9ae54b5f80dc263a4b5d45dfd39e1e",
       "operation": "add",
       "path": "tools/lib/cci-scoped-delta-review.js"
     },
@@ -350,11 +357,11 @@
   ],
   "created_at": "2026-08-28T21:15:39Z",
   "current_subject": {
-    "artifact_pin_digest": "b1da9aa4fcd2985749b7cce5fab5fa95909b5044044f2e6c90903f65a9265fe2",
-    "calculation_hash": "82e1ec2ee3ee4a7ff510fb3d51d9fe26e1651f4672437b488a6fc0e57d467bd2",
+    "artifact_pin_digest": "ffb0e1c6ac8d98bdf52c66e3ac796e4edbc6044a4bf244f72b21cc9080bd641e",
+    "calculation_hash": "b9178292ba2b78afa973eebce58fa0a93c11a5507702ab4e64c90941a929eb56",
     "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
     "pin_count": 316,
-    "review_request_sha256": "114badbd80fb688228b28df4352dd51653c26f319a5165d33271457dd1540572"
+    "review_request_sha256": "0cae7d59c7f2b9eecdf68a793052ec79051f1d38d8e7a7be33fd5e979923e7bd"
   },
   "deploy_authority": false,
   "evidence": [
@@ -480,10 +487,20 @@
     },
     {
       "path": "js/globe.js",
-      "sha256": "bb3dc7e9511e78d2a886c63fa79e0b5f63d9962ce535bb21a83e339599cdb156"
+      "sha256": "9c2dd09f0e1e4bd6bd7d1a09bc81b90d532096540b50ce75eac9c85ee719cf4a"
     }
   ],
   "legal_certification": false,
+  "maintainer_attested_renderer": [
+    {
+      "climate_numbers_changed": false,
+      "fresh_specialist_review_waived": true,
+      "path": "js/globe.js",
+      "receipt": "The foundation maintainer answered 'yes, we havent changed the numbers, its not necessary for this use case' and then 'you have full approval' when told this renderer change needed a fresh four-model review.",
+      "scope": "renderer_only_country_draw_batching_and_pointer_gate",
+      "sha256": "9c2dd09f0e1e4bd6bd7d1a09bc81b90d532096540b50ce75eac9c85ee719cf4a"
+    }
+  ],
   "maintainer_authorization": {
     "authorized": true,
     "authorized_at": "2026-08-28T21:15:39Z",
@@ -499,7 +516,8 @@
       "performance_evidence",
       "deterministic_runtime_proof",
       "scoped_release_rail",
-      "foundation_content"
+      "foundation_content",
+      "maintainer_attested_renderer"
     ],
     "changed_pins_require_this_delta_review": true,
     "exact_changed_paths_only": true,
