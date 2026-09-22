@@ -44,7 +44,7 @@
     },
     {
       "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
-      "sha256": "9e46cb6d3f55521686accd25ac82e0bd2785eadd997998f510dabbce96ac51d2"
+      "sha256": "b2aebac34fd265d34844285d6a120de21664d8859d7e1e29f71b5484705940c3"
     },
     {
       "path": "data/climate/reviews/cci-v1-ai-reports/base-first-paint-v78-review-request.json",
@@ -52,7 +52,7 @@
     },
     {
       "path": "data/climate/reviews/cci-v1-presentation-performance-delta-review.json",
-      "sha256": "6ebfe4d43df76664f779e9e15d3608e2e0c12a88541512528698c95ce110f153"
+      "sha256": "b293f65a5badfa711501560638b4846bea90a33813651476417563ffcedc7c5f"
     },
     {
       "path": "data/climate/reviews/country-climate-intelligence-v1-multi-model-ai-prepublication-review.json",
@@ -132,7 +132,7 @@
     "review_request_sha256": "8fe8a47dbf8eea2081f7135ab11b3baab1c4af164e6fc9542d7ceaf06c780753",
     "reviewed_head": "108e6b6be2e3a53c45b4c2a596de11656774ab8c"
   },
-  "calculation_hash": "6f6fe585e1c889b2f299f1d9e7f5f5303586a36aecaea358b26569a12450f1ec",
+  "calculation_hash": "da83146a84bb60b2b259316d034e4e776ce82e6c0c40d548cc4158e0982d1cd4",
   "condition_resolutions": [
     {
       "evidence": "The 65-file allowlist excludes the three image paths and legacy manifest; negative checks reject paths, hashes, URLs, and executable tokens.",
@@ -252,12 +252,12 @@
   "model_family_count": 3,
   "presentation_performance_delta_review": {
     "artifact_id": "cci-v1-presentation-performance-delta-review-2026-08-29",
-    "calculation_hash": "49b2a8cddc00b5679c22048c3488ce3b2d1ea1fd989dc5b25b6e0e967e6a418a",
+    "calculation_hash": "e1e1515ada89a71e75b9ade49a447dcbbc954582f963d203921458843457229c",
     "change_count": 45,
     "path": "data/climate/reviews/cci-v1-presentation-performance-delta-review.json",
     "reviewer_id": "ai-reviewer:codex-focused-presentation-runtime",
     "scope": "cci_ai_factual_presentation_performance_delta_only",
-    "sha256": "6ebfe4d43df76664f779e9e15d3608e2e0c12a88541512528698c95ce110f153",
+    "sha256": "b293f65a5badfa711501560638b4846bea90a33813651476417563ffcedc7c5f",
     "verdict": "approve_with_conditions"
   },
   "public_label": "AI-reviewed source-data release — four-model base plus one focused presentation/performance delta review; no human review or legal certification.",
@@ -332,7 +332,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "9d35d700c2ac4324e73464e47f4064399f66478e5d2b75435935228ad37fd90e"
+      "sha256": "6e357f779af9a960e8d5645330be04861b2a1260346607ee2f695e9f5b6fffbc"
     },
     {
       "path": "js/country-climate-intelligence.js",
@@ -471,9 +471,9 @@
     "public_file_count": 65,
     "registry_entity_count": 249,
     "release_id": "country-climate-intelligence-2026-08-27-candidate.7",
-    "review_request_artifact_pin_digest": "e91e3bd8104447871824e41ab3b86c4ac7bcf1b8a44155a62ccc32c4673d0bb7",
+    "review_request_artifact_pin_digest": "8e80936321424804066595d8d219e141d43f24ccdb388b857d007840d2ca685d",
     "review_request_path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
-    "review_request_sha256": "9e46cb6d3f55521686accd25ac82e0bd2785eadd997998f510dabbce96ac51d2",
+    "review_request_sha256": "b2aebac34fd265d34844285d6a120de21664d8859d7e1e29f71b5484705940c3",
     "runtime_sha256": "4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe"
   },
   "total_ai_review_artifact_count": 5
