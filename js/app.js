@@ -117,6 +117,20 @@ const App = {
       runAction(el, e);
     });
 
+    // Warm the 3D stack on the first sign of intent (pointer or focus on an Enter
+    // control), so the click itself does not pay for evaluating globe.gl or for
+    // fetching and decoding the globe assets.
+    const warmEvents = ['pointerover', 'focusin', 'touchstart'];
+    const prewarm = (e) => {
+      if (!(e.target instanceof Element) || !e.target.closest('[data-action="enterGlobe"],.globe-door')) return;
+      warmEvents.forEach(type => document.removeEventListener(type, prewarm, true));
+      loadGlobeGL().catch(() => {});
+      Promise.resolve(this._dataInitPromise).then(() => {
+        if (safeGet('Data', 'isClimateIntelligenceReady', false)) safeCall('GlobeModule', 'prepare');
+      }).catch(() => {});
+    };
+    warmEvents.forEach(type => document.addEventListener(type, prewarm, { capture: true, passive: true }));
+
     const earlyIntent = window.__ELU_EARLY_GLOBE__;
     if (earlyIntent?.pending) {
       const opener = earlyIntent.opener;

@@ -375,6 +375,7 @@ body.globe-mode #site-nav{display:none}
 #site-nav .nav-links a[aria-current="true"]{color:var(--teal);box-shadow:0 1px 0 var(--teal)}
 #site-nav .nav-links a{transition:color .3s,box-shadow .3s}
 @media(prefers-reduced-motion:reduce){#hero .globe-door-row .enter-btn::before{animation:none}}
+.theme-switching *,.theme-switching *::before,.theme-switching *::after{transition:none!important}
 @media(hover:none){.card::before{display:none}}
 @media(prefers-reduced-motion:reduce){.globe-door::before,.globe-door::after{animation:none}.card,.card:hover{transition:none;transform:none}}
 .card .card-tag{font-family:var(--mono);font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
@@ -577,12 +578,24 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
         <button class="enter-btn glass-btn" data-action="enterGlobe">Enter the Living Globe<span class="door-arrow" aria-hidden="true">→</span></button>
       </div>
       <script>
-      /* Globe door: a small spinning Earth drawn on canvas (orthographic
-         projection of a 23 KB night-lights texture). Decorative; the button
-         below stays the accessible control. Pauses when hidden or off-screen,
-         draws one still frame under prefers-reduced-motion. */
+      /* Globe door: a small spinning Earth (orthographic projection of a 23 KB
+         night-lights texture). A tiny WebGL fragment shader does the per-pixel
+         work, so each frame costs the main thread one uniform and one draw; the
+         CPU canvas path remains as the fallback when WebGL is missing or
+         software-only. Decorative; the button below stays the accessible
+         control. Pauses when hidden or off-screen, draws one still frame under
+         prefers-reduced-motion. */
       (function () {
-        var doors = [];
+        var doors = [], texData = null;
+        var VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+        var FS = '#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n' +
+          'uniform sampler2D t;uniform float n,ph;const float CT=.949235,ST=.314567;' +
+          'void main(){float r=n*.5;vec2 q=vec2(gl_FragCoord.x-r,n-gl_FragCoord.y-r)/r;float d2=dot(q,q);' +
+          'if(d2>1.){gl_FragColor=vec4(0.);return;}' +
+          'float nz=sqrt(1.-d2),yy=-q.y*CT+nz*ST,zz=q.y*ST+nz*CT;' +
+          'vec2 uv=vec2(fract(atan(q.x,zz)*.15915494+ph),.5-asin(clamp(yy,-1.,1.))*.31830989);' +
+          'float k=(.55+.45*nz)*min(1.,(1.-sqrt(d2))*r*.9);' +
+          'gl_FragColor=vec4(texture2D(t,uv).rgb*k+vec3(.023529,.054902,.117647),min(1.,k*4.));}';
         function boot() {
           // Collected at boot (after load): this script runs before later sections are parsed.
           doors = [].slice.call(document.querySelectorAll('.globe-door')).filter(function (d) {
@@ -597,13 +610,131 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
           var img = new Image();
           img.decoding = 'async';
           img.onload = function () {
-            var TW = img.naturalWidth, TH = img.naturalHeight;
-            var tc = document.createElement('canvas'); tc.width = TW; tc.height = TH;
-            var tx = tc.getContext('2d'); tx.drawImage(img, 0, 0);
-            var tex = tx.getImageData(0, 0, TW, TH).data;
-            doors.forEach(function (door) { spin(door, door.querySelector('canvas'), tex, TW, TH); });
+            function go() {
+              doors.forEach(function (door) {
+                var cv = door.querySelector('canvas');
+                if (spinGL(door, cv, img)) return;
+                if (cv.__gl) { var c2 = cv.cloneNode(false); cv.parentNode.replaceChild(c2, cv); cv = c2; }
+                fit(cv, cv.width); spin(door, cv, texOf(img), img.naturalWidth, img.naturalHeight);
+              });
+            }
+            if (img.decode) img.decode().then(go, go); else go();
           };
           img.src = 'assets/legacy/hero-earth.webp?v=27d79a35';
+        }
+        function texOf(img) {
+          if (!texData) {
+            var tc = document.createElement('canvas'); tc.width = img.naturalWidth; tc.height = img.naturalHeight;
+            var tx = tc.getContext('2d'); tx.drawImage(img, 0, 0); texData = tx.getImageData(0, 0, tc.width, tc.height).data;
+          }
+          return texData;
+        }
+        // Backing store = displayed device pixels (never above cap).
+        function fit(cv, cap, px) {
+          var w = Math.min(cap, Math.max(px || 0, Math.round(cv.clientWidth * (window.devicePixelRatio || 1))));
+          if (w > 0 && cv.width !== w) { cv.width = cv.height = w; return true; }
+          return false;
+        }
+        // Hover/focus speed-up from events, so the frame loop never queries styles.
+        function hotness(door) {
+          var p = door.parentNode, big = door.classList.contains('globe-door-big'), h = { v: false }, a = false, b = false, f = false;
+          function upd() { h.v = a || f || (!big && b); }
+          door.addEventListener('pointerenter', function () { a = true; upd(); });
+          door.addEventListener('pointerleave', function () { a = false; upd(); });
+          if (!big) {
+            p.addEventListener('pointerenter', function () { b = true; upd(); });
+            p.addEventListener('pointerleave', function () { b = false; upd(); });
+          }
+          p.addEventListener('focusin', function () { f = true; upd(); });
+          p.addEventListener('focusout', function (e) { f = !!(e.relatedTarget && p.contains(e.relatedTarget)); upd(); });
+          return h;
+        }
+        // Shared frame loop: draw(phase) at most every minDt ms while visible.
+        function run(door, draw, minDt) {
+          var hot = hotness(door), raf = 0, last = 0, visible = true, speed = 1, phase = 0;
+          var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+          function loop(ts) {
+            raf = 0;
+            if (!visible || document.hidden || document.body.classList.contains('globe-mode')) return;
+            var dt = ts - last;
+            if (dt >= minDt) {
+              dt = Math.min(dt, 100);
+              speed += ((hot.v ? 7 : 1) - speed) * (1 - Math.pow(0.92, dt / 33.3));
+              phase += dt * speed / 60000; last = ts; draw(phase);
+            }
+            raf = requestAnimationFrame(loop);
+          }
+          function kick() { if (!still && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); } }
+          draw(phase); door.classList.add('is-ready'); kick();
+          document.addEventListener('visibilitychange', kick);
+          if ('IntersectionObserver' in window) new IntersectionObserver(function (e) {
+            visible = e[0].isIntersecting; kick();
+          }).observe(door);
+          window.addEventListener('pageshow', kick);
+          new MutationObserver(kick).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+          return function () { draw(phase); };
+        }
+        var GL_OPTS = { alpha: true, premultipliedAlpha: false, antialias: false, depth: false, stencil: false,
+          powerPreference: 'low-power', failIfMajorPerformanceCaveat: true };
+        var glUsable = null;
+        // One throwaway probe: software WebGL (SwiftShader, llvmpipe) would be read
+        // back to the CPU every frame, so those machines keep the CPU path.
+        function canGL() {
+          if (glUsable === null) {
+            glUsable = false;
+            try {
+              var g = document.createElement('canvas').getContext('webgl', GL_OPTS);
+              if (g) {
+                var dbg = g.getExtension('WEBGL_debug_renderer_info');
+                glUsable = !/swiftshader|llvmpipe|softpipe|software|basic render/i.test(dbg ? String(g.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : '');
+                var lose = g.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext();
+              }
+            } catch (e) { glUsable = false; }
+          }
+          return glUsable;
+        }
+        function spinGL(door, cv, img) {
+          var gl = null, u = null;
+          if (!canGL()) return false;
+          try { gl = cv.getContext('webgl', GL_OPTS); } catch (e) { gl = null; }
+          if (!gl) return false;
+          cv.__gl = true;
+          function setup() {
+            function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+            var pr = gl.createProgram();
+            gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS));
+            gl.bindAttribLocation(pr, 0, 'p'); gl.linkProgram(pr);
+            if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return null;
+            gl.useProgram(pr);
+            gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+            gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+            gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+            return { n: gl.getUniformLocation(pr, 'n'), ph: gl.getUniformLocation(pr, 'ph') };
+          }
+          u = setup();
+          if (!u) return false;
+          fit(cv, 1024);
+          var redraw = run(door, function (ph) {
+            if (!u || gl.isContextLost()) return;
+            gl.viewport(0, 0, cv.width, cv.height); gl.uniform1f(u.n, cv.width); gl.uniform1f(u.ph, ph);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+          }, 0);
+          cv.addEventListener('webglcontextlost', function (e) { e.preventDefault(); u = null; });
+          cv.addEventListener('webglcontextrestored', function () { u = setup(); redraw(); });
+          if (window.ResizeObserver) {
+            var ro = new ResizeObserver(function (en) {
+              var s = en[0].devicePixelContentBoxSize && en[0].devicePixelContentBoxSize[0];
+              if (fit(cv, 1024, s ? s.inlineSize : 0)) redraw();
+            });
+            try { ro.observe(cv, { box: 'device-pixel-content-box' }); } catch (e) { ro.observe(cv); }
+          }
+          return true;
         }
         function spin(door, cv, tex, TW, TH) {
             var N = cv.width, R = N / 2, ctx = cv.getContext('2d');
@@ -621,30 +752,15 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
               var edge = Math.min(1, (1 - Math.sqrt(d2)) * R * 0.9);
               shade.push((0.55 + 0.45 * nz) * edge);
             }
-            var K = idx.length, phase = 0, raf = 0, last = 0, visible = true, speed = 1;
-            function draw() {
+            var K = idx.length;
+            run(door, function (phase) {
               for (var i = 0; i < K; i++) {
                 var u = lon0[i] + phase; u -= Math.floor(u);
                 var t = (lat[i] * TW + Math.floor(u * (TW - 1))) * 4, j = idx[i], k = shade[i];
                 o[j] = tex[t] * k + 6; o[j + 1] = tex[t + 1] * k + 14; o[j + 2] = tex[t + 2] * k + 30; o[j + 3] = 255 * Math.min(1, k * 4);
               }
               ctx.putImageData(out, 0, 0);
-            }
-            var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-            function loop(ts) {
-              raf = 0;
-              if (!visible || document.hidden || document.body.classList.contains('globe-mode')) return;
-              if (ts - last > 33) { speed += ((door.matches(':hover') || door.parentNode.matches(':focus-within') || (door.classList.contains('globe-door-big') ? false : door.parentNode.matches(':hover')) ? 7 : 1) - speed) * 0.08; phase += (ts - last) * speed / 60000; last = ts; draw(); }
-              raf = requestAnimationFrame(loop);
-            }
-            function kick() { if (!still && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); } }
-            draw(); door.classList.add('is-ready'); kick();
-            document.addEventListener('visibilitychange', kick);
-            if ('IntersectionObserver' in window) new IntersectionObserver(function (e) {
-              visible = e[0].isIntersecting; kick();
-            }).observe(door);
-            window.addEventListener('pageshow', kick);
-            new MutationObserver(kick).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+            }, 33);
         }
         if (document.readyState === 'complete') setTimeout(boot, 0);
         else window.addEventListener('load', function () { if (window.requestIdleCallback) requestIdleCallback(boot, { timeout: 1500 }); else setTimeout(boot, 200); });
@@ -1096,13 +1212,28 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   syncBodyTheme(document.documentElement.dataset.theme);
   function toggleTheme() {
     var next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    // Swap in one frame: without this ~67 colour/shadow transitions repaint 44 elements for 350 ms.
+    var root = document.documentElement;
+    root.classList.add('theme-switching');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.remove('theme-switching'); }); });
     document.documentElement.dataset.theme = next;
     syncBodyTheme(next);
     try { localStorage.setItem('elu-theme', next); } catch (e) {}
     syncMeta(next);
     if (typeof window.hasModule === 'function' && window.hasModule('GlobeModule')) {
-      window.safeCall('GlobeModule', 'setTheme', next);
+      // Hidden outside globe mode: hand the globe its theme when it is next shown.
+      if (document.body.classList.contains('globe-mode')) window.safeCall('GlobeModule', 'setTheme', next);
+      else {
+        globeThemeStale = true;
+        if (!globeThemeHooked && window.EventBus) { globeThemeHooked = true; window.EventBus.on('app:globe-entered', applyGlobeTheme); }
+      }
     }
+  }
+  var globeThemeStale = false, globeThemeHooked = false;
+  function applyGlobeTheme() {
+    if (!globeThemeStale) return;
+    globeThemeStale = false;
+    window.safeCall('GlobeModule', 'setTheme', document.documentElement.dataset.theme);
   }
   themeButtons.forEach(function (button) { button.addEventListener('click', toggleTheme); });
 })();
