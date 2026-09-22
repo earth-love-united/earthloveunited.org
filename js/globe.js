@@ -818,6 +818,34 @@ function _abandonCountryBatch(batch, error) {
   reportWarn('GlobeModule', 'Country draw batching disabled: ' + (error?.message || 'unknown error'));
 }
 
+// ── Pointer tracking gate ──
+// globe.gl raycasts the whole scene under the pointer 20 times a second (and
+// its click handler reuses that hit) for its own hover and click callbacks:
+// several ms a pass on the development Mac. Only site points, their labels and
+// setOnGlobeClick consume them, while countries hit-test the sphere in
+// _countryFeatureFromCanvasEvent, so the tracker runs only while one exists.
+function _installGlobePointerGate(world) {
+  try {
+    const scene = typeof world?.scene === 'function' ? world.scene() : null;
+    if (!scene || scene.__pointerGate || typeof world.enablePointerInteraction !== 'function') return;
+    const pointsData = world.pointsData;
+    const labelsData = world.labelsData;
+    let enabled = null;
+    const previous = scene.onBeforeRender;
+    scene.__pointerGate = true;
+    scene.onBeforeRender = function (renderer, renderScene, camera, target) {
+      previous.call(this, renderer, renderScene, camera, target);
+      const wanted = (pointsData()?.length || 0) > 0 || (labelsData()?.length || 0) > 0 ||
+        typeof _globeClickHandler === 'function';
+      if (wanted === enabled) return;
+      enabled = wanted;
+      world.enablePointerInteraction(wanted);
+    };
+  } catch (error) {
+    reportWarn('GlobeModule', 'Pointer tracking gate unavailable: ' + (error?.message || 'unknown error'));
+  }
+}
+
 const GlobeModule = {
   _initialized: false,
   world: null,
@@ -1088,6 +1116,7 @@ const GlobeModule = {
     }
     // A handful of merged draws for the country layer instead of ~1,530.
     _installCountryBatch(this.world);
+    _installGlobePointerGate(this.world);
 
     // safeChain returns a Proxy — unwrap to get the real Globe instance
     // (the Proxy target IS the Globe, so direct property access still works)
