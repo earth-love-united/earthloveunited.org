@@ -571,14 +571,21 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
           var g = d.length % 3 || 3, out = d.slice(0, g);
           for (var i = g; i < d.length; i += 3) out += ',' + d.slice(i, i + 3);
           v.textContent = out;
-          if (out.length !== fitLen) { // shrink to fit when a digit is added
-            fitLen = out.length; v.style.fontSize = '';
-            var row = v.parentNode, u = v.nextElementSibling, gap = parseFloat(getComputedStyle(row).columnGap) || 0;
-            var room = row.parentNode.clientWidth - u.offsetWidth - gap;
-            if (v.offsetWidth > room) v.style.fontSize = (parseFloat(getComputedStyle(v).fontSize) * room / v.offsetWidth * 0.97) + 'px';
-          }
         }, 120);
-        window.addEventListener('resize', function () { fitLen = 0; });
+        function fit(t) { // shrink to fit when a digit is added
+          if (t.length === fitLen) return;
+          fitLen = t.length; v.style.fontSize = '';
+          var row = v.parentNode, u = v.nextElementSibling, gap = parseFloat(getComputedStyle(row).columnGap) || 0;
+          var room = row.parentNode.clientWidth - u.offsetWidth - gap;
+          if (v.offsetWidth > room) v.style.fontSize = (parseFloat(getComputedStyle(v).fontSize) * room / v.offsetWidth * 0.97) + 'px';
+        }
+        // js/carbon-clock.js takes over this node after load and groups with '.': show ',' and keep fitting.
+        new MutationObserver(function () {
+          var t = v.textContent;
+          if (t.indexOf('.') !== -1) { v.textContent = t.replace(/\./g, ','); return; }
+          fit(t);
+        }).observe(v, { childList: true, characterData: true, subtree: true });
+        window.addEventListener('resize', function () { fitLen = 0; fit(v.textContent); });
       })();
       </script>
 
