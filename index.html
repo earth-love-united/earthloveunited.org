@@ -564,13 +564,21 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
           '<span>This is the gap. It grows every second.</span></div>' +
           '</div></div>';
         var v = document.getElementById('cc-hero-value');
+        var fitLen = 0;
         var TPMS = 20e9 / (365.25 * 24 * 3600 * 1000); // 20 Gt/yr in tons/ms
         window.__CC_TICK = setInterval(function () {
           var d = Math.floor((Date.now() - window.__CC_T0) * TPMS).toString();
           var g = d.length % 3 || 3, out = d.slice(0, g);
           for (var i = g; i < d.length; i += 3) out += ',' + d.slice(i, i + 3);
           v.textContent = out;
+          if (out.length !== fitLen) { // shrink to fit when a digit is added
+            fitLen = out.length; v.style.fontSize = '';
+            var row = v.parentNode, u = v.nextElementSibling, gap = parseFloat(getComputedStyle(row).columnGap) || 0;
+            var room = row.parentNode.clientWidth - u.offsetWidth - gap;
+            if (v.offsetWidth > room) v.style.fontSize = (parseFloat(getComputedStyle(v).fontSize) * room / v.offsetWidth * 0.97) + 'px';
+          }
         }, 120);
+        window.addEventListener('resize', function () { fitLen = 0; });
       })();
       </script>
 
