@@ -805,6 +805,9 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
       <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.4 14.2A8.4 8.4 0 0 1 9.8 3.6a8.4 8.4 0 1 0 10.6 10.6z"/></svg>
     </button>
   </div>
+  <button id="globe-hud-menu" type="button" aria-label="More globe options" aria-expanded="false" title="More options">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
 </div>
 
 <!-- ── COUNTRY CLIMATE LENSES + LEGEND (body-level overlays) ── -->
@@ -1275,6 +1278,205 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 <button id="globe-back-btn" class="glass-btn" onclick="exitGlobe()" aria-label="Return to the Foundation">
   ← Return to the Foundation
 </button>
+<style id="phone-hud-style">
+/* Phone HUD declutter (≤720px) ─────────────────────────────────────
+   Top: logo (returns to the Foundation) + lenses + one menu button.
+   Records, emissions ticker, orbit replay and theme sit in the menu.
+   Country order becomes a bottom sheet, collapsed by default (see the
+   inline script after #globe-back-btn). Wider layouts are unchanged. */
+#globe-hud-menu { display: none; }
+
+@media (max-width: 720px) {
+  html:root body.globe-mode {
+    --globe-dock-height: 46px;
+  }
+
+  html:root body.globe-mode #globe-back-btn { display: none; }
+
+  html:root body.globe-mode #topbar .logo[role="button"] { cursor: pointer; }
+
+  html:root body.globe-mode #globe-hud-menu {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    margin-left: auto;
+    border: 1px solid var(--hud-border);
+    border-radius: 50%;
+    background: var(--hud-bg);
+    color: var(--teal);
+    cursor: pointer;
+  }
+
+  html:root body.globe-mode #globe-hud-menu:focus-visible,
+  html:root body.globe-mode #topbar .logo[role="button"]:focus-visible {
+    outline: 2px solid var(--mint);
+    outline-offset: 2px;
+  }
+
+  html:root body.globe-mode #topbar:not(.hud-menu-open) .topbar-actions { display: none; }
+
+  html:root body.globe-mode #topbar.hud-menu-open .topbar-actions {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: min(260px, calc(100vw - 16px));
+    padding: 10px;
+    border: 1px solid var(--hud-border);
+    border-radius: 6px;
+    background: var(--bg2);
+    box-shadow: var(--hud-shadow);
+  }
+
+  html:root body.globe-mode #topbar.hud-menu-open .stats { display: block; }
+
+  html:root body.globe-mode #topbar.hud-menu-open .cc-topbar {
+    max-width: none;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  html:root body.globe-mode #topbar.hud-menu-open .cc-topbar::before {
+    content: 'Net emissions since you arrived';
+    flex: 1 0 100%;
+    color: var(--text2);
+    font-family: var(--body);
+    font-size: 10px;
+    letter-spacing: .3px;
+  }
+
+  html:root body.globe-mode #topbar.hud-menu-open .cc-topbar-icon { display: none; }
+
+  html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay,
+  html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle {
+    width: 100%;
+    height: 44px;
+    border-radius: 4px;
+  }
+
+  html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay,
+  html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 0 14px;
+    color: var(--teal);
+    font-family: var(--body);
+    font-size: 12px;
+  }
+
+  html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay svg { width: 16px; height: 16px; flex: 0 0 auto; }
+  html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay::after { content: 'Replay the intro orbit'; }
+  html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle::after { content: 'Switch light / dark'; }
+
+  html:root body.globe-mode #topbar.hud-menu-open #globe-evidence-browse .browse-label-full { display: inline; }
+  html:root body.globe-mode #topbar.hud-menu-open #globe-evidence-browse .browse-label-short { display: none; }
+
+  /* Country order: bottom sheet */
+  html:root body.globe-mode #elu-country-rank-rail {
+    top: auto;
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    width: auto;
+    max-height: 56vh;
+  }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-head {
+    justify-content: space-between;
+    min-height: 46px;
+    padding: 6px 8px 6px 12px;
+    text-align: left;
+  }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-title {
+    font-size: 10px;
+    letter-spacing: 1.1px;
+  }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-title::after { content: none; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-relief-note { display: none; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-boundary-compact { display: none; }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  html:root body.globe-mode #elu-country-rank-rail.is-collapsed .elu-rank-list { display: none; }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-list { height: auto; }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-search { display: grid; font-size: 9px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-search input { min-height: 44px; font-size: 16px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure { padding: 6px 12px; text-align: left; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure-full { display: inline; font-size: 10px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure-compact { display: none; }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-row {
+    grid-template-columns: 24px 8px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 6px 12px;
+  }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-number { display: block; font-size: 10px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-name { display: block; font-size: 14px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-gap { display: block; font-size: 10px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-code { display: none; }
+
+  html:root body.globe-mode #elu-country-card-wrap { left: 8px; right: 8px; }
+}
+</style>
+<script>
+/* Phone HUD (≤720px): secondary controls live behind one menu button, the
+   logo returns to the Foundation, and the country order opens as a bottom
+   sheet that starts collapsed. Wider layouts are untouched. */
+(function () {
+  var phone = window.matchMedia('(max-width: 720px)');
+  var topbar = document.getElementById('topbar');
+  var menu = document.getElementById('globe-hud-menu');
+  var logo = topbar && topbar.querySelector('.logo');
+  if (!topbar || !menu) return;
+  function setMenu(open) {
+    topbar.classList.toggle('hud-menu-open', open);
+    menu.setAttribute('aria-expanded', String(open));
+  }
+  menu.addEventListener('click', function (e) { e.stopPropagation(); setMenu(!topbar.classList.contains('hud-menu-open')); });
+  document.addEventListener('click', function (e) { if (!topbar.contains(e.target) || e.target.closest('.topbar-actions button')) setMenu(false); });
+  window.addEventListener('keydown', function (e) { if (e.key === 'Escape' && topbar.classList.contains('hud-menu-open')) { e.stopImmediatePropagation(); setMenu(false); menu.focus(); } }, true);
+  if (logo) {
+    var goHome = function () { if (phone.matches && document.body.classList.contains('globe-mode') && typeof exitGlobe === 'function') exitGlobe(); };
+    var syncLogo = function () {
+      if (phone.matches) { logo.setAttribute('role', 'button'); logo.setAttribute('tabindex', '0'); logo.setAttribute('aria-label', 'Earth Love United, return to the Foundation'); }
+      else { logo.removeAttribute('role'); logo.removeAttribute('tabindex'); logo.removeAttribute('aria-label'); }
+    };
+    syncLogo();
+    if (phone.addEventListener) phone.addEventListener('change', syncLogo);
+    logo.addEventListener('click', goHome);
+    logo.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goHome(); } });
+  }
+  var userExpanded = false;
+  function collapseRail(rail) {
+    var toggle = rail.querySelector('.elu-rank-toggle');
+    if (toggle && phone.matches && !userExpanded && !rail.classList.contains('is-collapsed')) toggle.click();
+    rail.addEventListener('click', function (e) { if (e.isTrusted && e.target.closest('.elu-rank-toggle')) userExpanded = !rail.classList.contains('is-collapsed'); });
+  }
+  new MutationObserver(function (records) {
+    records.forEach(function (r) { r.addedNodes.forEach(function (n) { if (n.id === 'elu-country-rank-rail') collapseRail(n); }); });
+  }).observe(document.body, { childList: true });
+})();
+</script>
 
 <!-- Accessible evidence route. GlobeModule reveals this body-level region
      when critical candidate data, geometry, visual assets, the renderer,
