@@ -1315,7 +1315,11 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     outline-offset: 2px;
   }
 
-  html:root body.globe-mode #topbar:not(.hud-menu-open) .topbar-actions { display: none; }
+  html:root body.globe-mode #topbar:not(.hud-menu-open) .topbar-actions { margin-left: auto; gap: 8px; }
+  html:root body.globe-mode #topbar:not(.hud-menu-open) #globe-evidence-browse,
+  html:root body.globe-mode #topbar:not(.hud-menu-open) .stats,
+  html:root body.globe-mode #topbar:not(.hud-menu-open) #guided-orbit-replay { display: none; }
+  html:root body.globe-mode #topbar:not(.hud-menu-open) #globe-hud-menu { margin-left: 8px; }
 
   html:root body.globe-mode #topbar.hud-menu-open .topbar-actions {
     position: absolute;
