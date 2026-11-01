@@ -471,6 +471,8 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 @media(max-width:720px){.section{padding:64px 20px 20px}#site-nav{padding:10px 14px}#site-nav .nav-links{gap:2px 12px}#site-nav .nav-links a{font-size:10px;letter-spacing:1.3px}#site-nav .nav-brand-text{display:none}}
 /* responsive */
 @media(max-width:720px){.hero-inner{max-width:92%}.hero-stage{padding:0 0 28px}.hero-value{margin-bottom:24px;font-size:15px}.hero-actions{gap:10px;margin-top:26px}#hero .hero-actions .glass-btn{width:100%;max-width:320px;padding:12px 18px;font-size:11px}.hero-telemetry{max-width:360px}#hero .memorial{margin-bottom:24px}}
+@media(max-width:720px){#hero .globe-door-row .enter-btn{padding-left:46px}}
+@media(max-width:480px){#site-nav .nav-links{flex:1 1 auto;min-width:0;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none}#site-nav .nav-links::-webkit-scrollbar{display:none}}
 @media(max-height:780px) and (min-width:721px){.hero-stage{padding-bottom:8px}#hero h1{font-size:clamp(34px,4.25vw,50px);margin-bottom:6px}.hero-value{margin-bottom:22px;line-height:1.45}.hero-actions{gap:8px;margin-top:18px}#hero .memorial{margin-bottom:10px}#hero .cc-label{margin-bottom:10px}#hero .cc-value{font-size:clamp(66px,11vw,132px)}#hero .cc-explainer{margin-top:14px;font-size:clamp(15px,1.7vw,19px)}}
 @media(max-width:900px),(orientation:portrait) and (max-width:1100px){body.globe-mode #topbar{padding:10px 12px 8px;background:linear-gradient(180deg,rgba(5,5,9,.96) 0%,rgba(5,5,9,.78) 64%,rgba(5,5,9,0) 100%)}body.globe-mode #topbar .logo{gap:8px;font-size:15px;letter-spacing:1px}body.globe-mode #topbar .brand-subtitle,body.globe-mode #topbar .brand-sep{display:none}body.globe-mode #topbar .stats{gap:8px}body.globe-mode #topbar .stat-block{display:none}.cc-topbar{max-width:168px}}
 @media(prefers-reduced-motion:reduce){#hero *,#hero *::before,#hero *::after{animation:none!important;transition:none!important}.glass-btn{transition:--arm-w .4s ease,--arm-h .4s ease,--cc .3s ease}.partner-logo-cell{transition:none!important}}
@@ -562,13 +564,28 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
           '<span>This is the gap. It grows every second.</span></div>' +
           '</div></div>';
         var v = document.getElementById('cc-hero-value');
+        var fitLen = 0;
         var TPMS = 20e9 / (365.25 * 24 * 3600 * 1000); // 20 Gt/yr in tons/ms
         window.__CC_TICK = setInterval(function () {
           var d = Math.floor((Date.now() - window.__CC_T0) * TPMS).toString();
           var g = d.length % 3 || 3, out = d.slice(0, g);
-          for (var i = g; i < d.length; i += 3) out += '.' + d.slice(i, i + 3);
+          for (var i = g; i < d.length; i += 3) out += ',' + d.slice(i, i + 3);
           v.textContent = out;
         }, 120);
+        function fit(t) { // shrink to fit when a digit is added
+          if (t.length === fitLen) return;
+          fitLen = t.length; v.style.fontSize = '';
+          var row = v.parentNode, u = v.nextElementSibling, gap = parseFloat(getComputedStyle(row).columnGap) || 0;
+          var room = row.parentNode.clientWidth - u.offsetWidth - gap;
+          if (v.offsetWidth > room) v.style.fontSize = (parseFloat(getComputedStyle(v).fontSize) * room / v.offsetWidth * 0.97) + 'px';
+        }
+        // js/carbon-clock.js takes over this node after load and groups with '.': show ',' and keep fitting.
+        new MutationObserver(function () {
+          var t = v.textContent;
+          if (t.indexOf('.') !== -1) { v.textContent = t.replace(/\./g, ','); return; }
+          fit(t);
+        }).observe(v, { childList: true, characterData: true, subtree: true });
+        window.addEventListener('resize', function () { fitLen = 0; fit(v.textContent); });
       })();
       </script>
 
