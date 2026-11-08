@@ -2164,6 +2164,13 @@ const GlobeModule = {
           this.navigateCountry(parseInt(nav.getAttribute('data-country-nav'), 10) || 1, { source: 'button' });
           return;
         }
+        const nbsJump = event.target.closest('[data-nbs-jump-country]');
+        if (nbsJump) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.openNbsAtlasExplorerCountry(nbsJump.getAttribute('data-nbs-jump-country'));
+          return;
+        }
       });
 
       // ── Swipe physics (ported from agent/designer/swipeable-hover-card) ──
@@ -2559,6 +2566,7 @@ const GlobeModule = {
       + '<section class="tt-climate-variable is-precipitation" aria-labelledby="' + precipitationId + '"><h3 id="' + precipitationId + '">Precipitation</h3>'
       + '<div class="tt-projected-fact">' + precipitationFact + '</div>'
       + '<div class="tt-climate-evidence"><h4>Observed data</h4>' + precipitationObservedHtml + '</div></section></section>'
+      + this._renderNbsAtlasSection(view, idPrefix)
       + this._renderClimateMethods(view)
       + '<div class="tt-hint">← → or swipe changes country · esc closes · lens buttons preserve selection</div>';
   },
@@ -2617,8 +2625,149 @@ const GlobeModule = {
       : '';
     return '<section class="tt-glance" aria-labelledby="' + glanceId + '"><h3 id="' + glanceId + '">At a glance</h3>' + powerVisual + (glance ? '<div class="tt-fact-grid' + (powerVisual ? ' tt-power-support-grid' : '') + '">' + glance + '</div>' : '') + '</section>'
       + charts + panel
+      + this._renderNbsAtlasSection(view, idPrefix)
       + this._renderClimateMethods(view)
       + '<div class="tt-hint">← → or swipe changes country · esc closes · lens buttons preserve selection</div>';
+  },
+
+  _renderNbsSourceLink(source) {
+    if (!source) return '';
+    const title = _escapeHtml(source.title || source.id || 'Source');
+    const year = source.year ? ' (' + _escapeHtml(String(source.year)) + ')' : '';
+    const lic = source.license ? ' · <span class="tt-nbs-lic">' + _escapeHtml(String(source.license)) + '</span>' : '';
+    const doiBadge = source.doi ? ' · <code>DOI:' + _escapeHtml(String(source.doi)) + '</code>' : '';
+    if (source.url && /^https:\/\//.test(source.url)) {
+      return '<a href="' + _escapeHtml(source.url) + '" target="_blank" rel="noopener">' + title + year + '</a>' + doiBadge + lic;
+    }
+    return '<span>' + title + year + '</span>' + doiBadge + lic;
+  },
+
+  _renderNbsAtlasSection(view, idPrefix = 'country-card') {
+    const iso = view?.country?.iso_alpha3;
+    if (!iso) return '';
+    const nbs = view.nbs_atlas || safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getNbsCountrySummary', iso);
+    const sectionId = (idPrefix + '-' + iso + '-nbs-atlas').replace(/[^a-zA-Z0-9_-]/g, '-');
+    const headingId = sectionId + '-heading';
+
+    if (!nbs || !nbs.ready) {
+      return '<section class="tt-nbs-atlas is-loading" aria-labelledby="' + headingId + '">'
+        + '<div class="tt-nbs-head"><h3 id="' + headingId + '">Nature-Based Solutions (NbS) Atlas</h3><span class="tt-nbs-badge">Loading slice…</span></div>'
+        + '<p class="tt-nbs-lead">Verifying SHA-256 country slice across Seagrass, Mangroves, Macroalgae, Industrial Hemp, and Pyrogenic Biochar.</p>'
+        + '</section>';
+    }
+
+    if (!nbs.available) {
+      return '<section class="tt-nbs-atlas is-gap" aria-labelledby="' + headingId + '">'
+        + '<div class="tt-nbs-head"><h3 id="' + headingId + '">Nature-Based Solutions (NbS) Atlas</h3><span class="tt-nbs-badge is-gap">Explicit data gap</span></div>'
+        + '<p class="tt-nbs-lead">No open-licence country records in the <code>public_noncommercial</code> slice for ' + _escapeHtml(view.country.name) + '. Missing values remain explicit gaps and are never converted to zero.</p>'
+        + '</section>';
+    }
+
+    let medSpotlightHtml = '';
+    if (nbs.mediterranean_seagrass) {
+      const ms = nbs.mediterranean_seagrass;
+      const traganosVal = ms.traganos_extent_ha !== null && ms.traganos_extent_ha !== undefined
+        ? Number(ms.traganos_extent_ha).toLocaleString('en-US', { maximumFractionDigits: 1 }) + ' ha'
+        : 'Explicit data gap';
+      const basinShare = ms.basin_share_pct !== null && ms.basin_share_pct !== undefined
+        ? ' (' + Number(ms.basin_share_pct).toFixed(2) + '% of 1,901,960 ha Mediterranean basin)'
+        : '';
+      const mckenzieHtml = ms.mckenzie_extent_ha !== null && ms.mckenzie_extent_ha !== undefined
+        ? '<div class="tt-nbs-collision-row"><span class="tt-nbs-collision-tag">Multi-source comparison · unaveraged</span>'
+          + '<p><strong>Sentinel-2 0–25 m mosaic:</strong> ' + _escapeHtml(traganosVal) + _escapeHtml(basinShare) + ' · ' + this._renderNbsSourceLink(ms.extent_source) + '</p>'
+          + '<p><strong>Bioregion 3 mapped polygon fragment:</strong> ' + _escapeHtml(Number(ms.mckenzie_extent_ha).toLocaleString('en-US', { maximumFractionDigits: 1 }) + ' ha') + ' · ' + this._renderNbsSourceLink(ms.mckenzie_source) + '</p>'
+          + (ms.extent_caveats ? '<p class="tt-nbs-caveat"><strong>Methodological note:</strong> ' + _escapeHtml(ms.extent_caveats) + '</p>' : '')
+          + '</div>'
+        : '<p class="tt-nbs-med-line"><strong>Posidonia oceanica extent:</strong> ' + _escapeHtml(traganosVal) + _escapeHtml(basinShare) + (ms.extent_source ? ' · ' + this._renderNbsSourceLink(ms.extent_source) : '') + '</p>';
+      const protHtml = ms.protected_fraction_pct !== null && ms.protected_fraction_pct !== undefined
+        ? '<p class="tt-nbs-med-line"><strong>Protected seagrass habitat share:</strong> ' + _escapeHtml(Number(ms.protected_fraction_pct).toFixed(2) + '%') + (ms.protected_source ? ' · ' + this._renderNbsSourceLink(ms.protected_source) : '') + '</p>'
+        : '';
+      const restHtml = ms.local_restoration_summary
+        ? '<p class="tt-nbs-med-line"><strong>Field restoration sites in country:</strong> '
+          + Object.entries(ms.local_restoration_summary).map(([k, v]) => _escapeHtml(k.replace(/_/g, ' ')) + ' (' + v.count + ' rows: ' + Number(v.min).toLocaleString('en-US', { maximumFractionDigits: 2 }) + '–' + Number(v.max).toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + _escapeHtml(v.unit || '') + ')').join(' · ')
+          + '</p>'
+        : '';
+      medSpotlightHtml = '<div class="tt-nbs-med-box">'
+        + '<div class="tt-nbs-med-kicker">Mediterranean Basin Seagrass Spotlight · Posidonia oceanica</div>'
+        + mckenzieHtml + protHtml + restHtml
+        + '</div>';
+    }
+
+    const pathwaysHtml = nbs.pathways.map((pathway, idx) => {
+      if (!pathway.available) {
+        return '<div class="tt-nbs-pathway-gap"><span>' + _escapeHtml(pathway.label) + '</span><small>Explicit gap in open slice</small></div>';
+      }
+      const openAttr = (idx === 0 || iso === 'TUR') ? ' open' : '';
+      const metricsHtml = pathway.metrics.map(metric => {
+        const collisionBadge = metric.collision
+          ? '<span class="tt-nbs-collision-pill">Multi-source · unaveraged (' + metric.entries.length + ')</span>'
+          : '';
+        const entriesHtml = metric.entries.map(entry => {
+          const unc = entry.uncertainty_lower !== null && entry.uncertainty_upper !== null
+            ? ' <span class="tt-nbs-unc">[' + _escapeHtml(Number(entry.uncertainty_lower).toLocaleString('en-US', { maximumFractionDigits: 2 })) + ' – ' + _escapeHtml(Number(entry.uncertainty_upper).toLocaleString('en-US', { maximumFractionDigits: 2 })) + ' ' + _escapeHtml(entry.unit) + ']</span>'
+            : '';
+          const metaParts = [
+            entry.year ? String(entry.year) : null,
+            entry.value_type ? String(entry.value_type).replace(/_/g, ' ') : null,
+            entry.scope ? String(entry.scope) : null,
+          ].filter(Boolean).join(' · ');
+          return '<div class="tt-nbs-entry">'
+            + '<div class="tt-nbs-val"><strong>' + _escapeHtml(entry.display_value) + '</strong> ' + _escapeHtml(entry.unit) + unc + '</div>'
+            + (metaParts ? '<div class="tt-nbs-meta">' + _escapeHtml(metaParts) + '</div>' : '')
+            + (entry.methodology ? '<div class="tt-nbs-method"><strong>Method:</strong> ' + _escapeHtml(entry.methodology) + '</div>' : '')
+            + (entry.caveats ? '<div class="tt-nbs-caveat"><strong>Caveat:</strong> ' + _escapeHtml(entry.caveats) + '</div>' : '')
+            + '<div class="tt-nbs-cite">' + this._renderNbsSourceLink(entry.source) + '</div>'
+            + '</div>';
+        }).join('');
+        return '<article class="tt-nbs-metric' + (metric.collision ? ' is-collision' : '') + '">'
+          + '<div class="tt-nbs-metric-top"><h5>' + _escapeHtml(metric.label) + '</h5>' + collisionBadge + '</div>'
+          + entriesHtml
+          + '</article>';
+      }).join('');
+
+      const speciesHtml = pathway.species.length
+        ? '<div class="tt-nbs-subblock"><h5>Species &amp; commodity series (latest year)</h5><ul class="tt-nbs-species-list">'
+          + pathway.species.slice(0, 6).map(sp => '<li><strong>' + _escapeHtml(sp.label) + ':</strong> ' + _escapeHtml(sp.display_value) + ' ' + _escapeHtml(sp.unit) + ' (' + _escapeHtml(String(sp.year)) + ') · ' + this._renderNbsSourceLink(sp.source) + '</li>').join('')
+          + '</ul></div>'
+        : '';
+
+      const localHtml = pathway.local_summary
+        ? '<div class="tt-nbs-subblock"><h5>Field restoration, site &amp; subnational records (' + pathway.local_summary.total_records + ' rows)</h5><ul class="tt-nbs-local-list">'
+          + pathway.local_summary.metrics.map(lm => {
+            const rangeText = lm.display_range ? ': <strong>' + _escapeHtml(lm.display_range) + ' ' + _escapeHtml(lm.unit) + '</strong>' : '';
+            const sampleText = lm.sample_sites.length
+              ? ' · sites: ' + lm.sample_sites.slice(0, 3).map(s => _escapeHtml(s.site) + ' (' + _escapeHtml(s.display_value) + ' ' + _escapeHtml(s.unit || lm.unit) + (s.year ? ', ' + _escapeHtml(String(s.year)) : '') + ')').join('; ')
+              : '';
+            const cites = lm.sources.map(src => this._renderNbsSourceLink(src)).join(' · ');
+            return '<li><strong>' + _escapeHtml(lm.label) + '</strong> (' + lm.count + ' rows)' + rangeText + sampleText + (cites ? ' · ' + cites : '') + '</li>';
+          }).join('')
+          + '</ul></div>'
+        : '';
+
+      return '<details class="tt-nbs-pathway"' + openAttr + '>'
+        + '<summary><span class="tt-nbs-pathway-name">' + _escapeHtml(pathway.label) + '</span><span class="tt-nbs-pathway-group">' + _escapeHtml(pathway.group) + '</span></summary>'
+        + '<div class="tt-nbs-pathway-body">' + metricsHtml + speciesHtml + localHtml + '</div>'
+        + '</details>';
+    }).join('');
+
+    const policiesHtml = nbs.policies.length
+      ? '<details class="tt-nbs-policies"><summary>NbS Policy &amp; NDC Instruments (' + nbs.policies.length + ')</summary><ul>'
+        + nbs.policies.map(pol => '<li><strong>' + _escapeHtml(String(pol.policy_type || '').toUpperCase()) + ' · ' + _escapeHtml(pol.pathway || '') + ' (' + _escapeHtml(String(pol.year || '—')) + ', ' + _escapeHtml(pol.status || 'recorded') + '):</strong> ' + _escapeHtml(pol.description || '') + (pol.source ? ' · ' + this._renderNbsSourceLink(pol.source) : '') + '</li>').join('')
+        + '</ul></details>'
+      : '';
+
+    return '<section class="tt-nbs-atlas" aria-labelledby="' + headingId + '">'
+      + '<div class="tt-nbs-head">'
+      + '<div><h3 id="' + headingId + '">Nature-Based Solutions (NbS) Atlas</h3><p class="tt-nbs-sub">5-pathway open scientific ledger · <code>public_noncommercial</code> profile</p></div>'
+      + '<span class="tt-nbs-badge">' + nbs.active_pathway_count + ' of 5 pathways</span>'
+      + '</div>'
+      + medSpotlightHtml
+      + '<div class="tt-nbs-pathways">' + pathwaysHtml + '</div>'
+      + policiesHtml
+      + '<div class="tt-nbs-footer">'
+      + '<button type="button" class="tt-nbs-jump-btn" data-nbs-jump-country="' + _escapeHtml(iso) + '">Open ' + _escapeHtml(view.country.name) + ' in full NbS Atlas Explorer →</button>'
+      + '</div>'
+      + '</section>';
   },
 
   // ── Project markers: the pinned country's top projects on the globe ──
@@ -3405,6 +3554,361 @@ const GlobeModule = {
       lensDeckCacheCount: Object.keys(this._countryDeckByLens || {}).length,
     };
   },
+
+  selectCountryByIso(iso) {
+    const code = String(iso || '').trim().toUpperCase();
+    if (!code) return false;
+    const feature = this._featureByIso?.[code];
+    if (feature) {
+      this._selectCountryFeature(feature, { focus: true });
+      return true;
+    }
+    this.showFallback('evidence_browse_requested');
+    requestAnimationFrame(() => this._renderFallbackCountry(code, true));
+    return true;
+  },
+
+  openNbsAtlasExplorerCountry(iso) {
+    const code = String(iso || 'TUR').trim().toUpperCase();
+    this._nbsExplorerCountryIso = code;
+    this._nbsExplorerActiveTab = 'country';
+    if (document.body.classList.contains('globe-mode')) {
+      safeCall('App', 'exitGlobe');
+    }
+    this.renderNbsAtlasExplorer();
+    requestAnimationFrame(() => {
+      const section = $('nbs-atlas');
+      if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return true;
+  },
+
+  _bindNbsAtlasExplorer() {
+    if (this._nbsExplorerBound) return;
+    const navLinks = document.querySelector('#site-nav .nav-links');
+    if (navLinks && !navLinks.querySelector('a[href="#nbs-atlas"]')) {
+      const globeLink = navLinks.querySelector('a[href="#globe"]');
+      const nbsLink = document.createElement('a');
+      nbsLink.href = '#nbs-atlas';
+      nbsLink.textContent = 'NbS Atlas';
+      if (globeLink && globeLink.nextSibling) navLinks.insertBefore(nbsLink, globeLink.nextSibling);
+      else navLinks.prepend(nbsLink);
+    }
+    const container = $('nbs-atlas-explorer');
+    if (!container) return;
+    this._nbsExplorerBound = true;
+    this._nbsExplorerActiveTab = this._nbsExplorerActiveTab || 'mediterranean';
+    this._nbsExplorerCountryIso = this._nbsExplorerCountryIso || 'TUR';
+    this._nbsExplorerPathwayFilter = this._nbsExplorerPathwayFilter || 'all';
+
+    container.addEventListener('click', (event) => {
+      const tabBtn = event.target.closest('[data-nbs-tab]');
+      if (tabBtn) {
+        event.preventDefault();
+        this._nbsExplorerActiveTab = tabBtn.getAttribute('data-nbs-tab') || 'mediterranean';
+        this.renderNbsAtlasExplorer();
+        return;
+      }
+      const countryBtn = event.target.closest('[data-nbs-select-country]');
+      if (countryBtn) {
+        event.preventDefault();
+        this._nbsExplorerCountryIso = countryBtn.getAttribute('data-nbs-select-country') || 'TUR';
+        this._nbsExplorerActiveTab = 'country';
+        this.renderNbsAtlasExplorer();
+        return;
+      }
+      const pathwayBtn = event.target.closest('[data-nbs-pathway-filter]');
+      if (pathwayBtn) {
+        event.preventDefault();
+        this._nbsExplorerPathwayFilter = pathwayBtn.getAttribute('data-nbs-pathway-filter') || 'all';
+        this.renderNbsAtlasExplorer();
+        return;
+      }
+      const globeBtn = event.target.closest('[data-nbs-open-globe-iso]');
+      if (globeBtn) {
+        event.preventDefault();
+        const iso = globeBtn.getAttribute('data-nbs-open-globe-iso');
+        if (!iso) return;
+        Promise.resolve(safeCall('App', 'enterGlobe', { opener: globeBtn })).then(() => {
+          setTimeout(() => this.selectCountryByIso(iso), 120);
+        });
+      }
+    });
+
+    container.addEventListener('change', (event) => {
+      const select = event.target.closest('[data-nbs-country-select]');
+      if (!select) return;
+      this._nbsExplorerCountryIso = select.value || 'TUR';
+      this.renderNbsAtlasExplorer();
+    });
+  },
+
+  renderNbsAtlasExplorer() {
+    const container = $('nbs-atlas-explorer');
+    if (!container) return false;
+    this._bindNbsAtlasExplorer();
+
+    const overview = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getNbsAtlasOverview');
+    if (!overview || !overview.ready) {
+      return false;
+    }
+
+    const activeTab = this._nbsExplorerActiveTab || 'mediterranean';
+    const selectedIso = this._nbsExplorerCountryIso || 'TUR';
+    const pathwayFilter = this._nbsExplorerPathwayFilter || 'all';
+    const sources = overview.sources || {};
+    const fmt = (val, digits = 1) => (typeof val === 'number' && Number.isFinite(val))
+      ? val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: digits })
+      : 'Explicit gap';
+    const srcCite = (sid) => {
+      const s = sources[sid];
+      if (!s) return '<code>' + _escapeHtml(String(sid || '')) + '</code>';
+      const doi = s.doi && /^10\./.test(s.doi) ? 'https://doi.org/' + s.doi : (s.url && /^https:\/\//.test(s.url) ? s.url : null);
+      const label = _escapeHtml(s.title || sid) + (s.year ? ' (' + _escapeHtml(String(s.year)) + ')' : '');
+      const lic = s.license ? ' · <span class="nbs-lic-tag">' + _escapeHtml(String(s.license)) + '</span>' : '';
+      return (doi ? '<a href="' + _escapeHtml(doi) + '" target="_blank" rel="noopener">' + label + '</a>' : label)
+        + (s.doi ? ' · <code>DOI:' + _escapeHtml(String(s.doi)) + '</code>' : '') + lic;
+    };
+
+    const tabs = [
+      { id: 'mediterranean', label: 'Mediterranean Seagrass (Posidonia)' },
+      { id: 'turkiye', label: 'Türkiye (TUR) 5-Pathway Dossier' },
+      { id: 'restoration', label: 'Global Restoration & IUCN RLE' },
+      { id: 'hemp-biochar', label: 'Industrial Hemp & Biochar CDR' },
+      { id: 'country', label: 'All 233 Countries Explorer' },
+    ];
+
+    const tabsHtml = '<div class="nbs-tabs" role="tablist" aria-label="Nature-Based Solutions Atlas views">'
+      + tabs.map(t => '<button type="button" role="tab" class="nbs-tab-btn' + (t.id === activeTab ? ' is-active' : '') + '" aria-selected="' + String(t.id === activeTab) + '" data-nbs-tab="' + t.id + '">' + _escapeHtml(t.label) + '</button>').join('')
+      + '</div>';
+
+    let panelHtml = '';
+
+    if (activeTab === 'mediterranean') {
+      const med = overview.mediterranean_seagrass_spotlight || {};
+      const bt = med.basin_totals || {};
+      const tf = med.turkiye_focus || {};
+      const medCountries = Array.isArray(med.countries) ? med.countries : [];
+      const restRows = Array.isArray(med.restoration_and_field_benchmarks) ? med.restoration_and_field_benchmarks : [];
+
+      panelHtml = '<div class="nbs-panel" role="tabpanel">'
+        + '<div class="nbs-spotlight-grid">'
+        + '<article class="nbs-stat-card">'
+        + '<div class="nbs-stat-kicker">Mediterranean Basin Total · Posidonia oceanica (0–25 m)</div>'
+        + '<div class="nbs-stat-big">' + fmt(bt.extent_ha?.value, 1) + ' <span>ha</span> <small>(' + fmt(bt.extent_km2?.value, 1) + ' km²)</small></div>'
+        + '<p class="nbs-stat-desc">Cloud-free Sentinel-2 satellite composite (2015–2019) across 22 Mediterranean coastal states and territories.</p>'
+        + '<div class="nbs-stat-cite">' + srcCite('traganos-mediterranean-seagrass-2022') + '</div>'
+        + '</article>'
+        + '<article class="nbs-stat-card">'
+        + '<div class="nbs-stat-kicker">Mediterranean Posidonia Carbon Stock</div>'
+        + '<div class="nbs-stat-big">' + fmt(bt.carbon_stock_mtc?.value, 1) + ' <span>MtC</span> <small>(' + fmt(bt.total_carbon_stock_mt_co2e?.value, 2) + ' MtCO₂e)</small></div>'
+        + '<p class="nbs-stat-desc">Published basin-wide organic carbon stock in living biomass and matte sediment for mapped Posidonia oceanica meadows.</p>'
+        + '<div class="nbs-stat-cite">' + srcCite('traganos-mediterranean-seagrass-2022') + '</div>'
+        + '</article>'
+        + '<article class="nbs-stat-card is-highlight">'
+        + '<div class="nbs-stat-kicker">Türkiye (TUR) Multi-Source Collision · Unaveraged</div>'
+        + '<div class="nbs-stat-big">' + fmt(tf.traganos_2022_posidonia_extent_ha?.value, 1) + ' <span>ha</span> <small>vs ' + fmt(tf.mckenzie_2020_polygon_extent_ha?.value, 1) + ' ha</small></div>'
+        + '<p class="nbs-stat-desc">Sentinel-2 0–25 m Posidonia oceanica mosaic (3.89% of basin; turbid water in SE Türkiye masked out) vs Bioregion 3 mapped polygon fragment · <strong>' + fmt(tf.kumagai_2022_protected_fraction_pct?.value, 2) + '%</strong> protected habitat share.</p>'
+        + '<div class="nbs-stat-actions"><button type="button" class="nbs-action-btn" data-nbs-select-country="TUR">Inspect full Türkiye dossier →</button><button type="button" class="nbs-action-btn" data-nbs-open-globe-iso="TUR">Fly to Türkiye on 3D Globe →</button></div>'
+        + '</article>'
+        + '</div>'
+        + '<div class="nbs-table-block">'
+        + '<h4>Mediterranean Basin Seagrass Ledger (22 Coastal Countries &amp; Territories)</h4>'
+        + '<p class="nbs-table-note">Conflicting or complementary source statements are shown side by side without averaging. Click any country to open its full 5-pathway NbS dossier or fly to it on the 3D Globe.</p>'
+        + '<div class="nbs-table-scroll"><table><thead><tr><th>Country</th><th>Sentinel-2 Posidonia Extent (ha)</th><th>Basin Share</th><th>McKenzie Polygon Fragment (ha)</th><th>Protected Share</th><th>Field Restoration Sites</th><th>Action</th></tr></thead><tbody>'
+        + medCountries.map(c => {
+          const restSummary = c.local_restoration_summary
+            ? Object.entries(c.local_restoration_summary).map(([k, v]) => _escapeHtml(k.replace('restoration_', '').replace(/_/g, ' ')) + ': ' + v.count + ' rows (' + fmt(v.min, 2) + '–' + fmt(v.max, 2) + ' ' + _escapeHtml(v.unit || '') + ')').join(' · ')
+            : 'Explicit gap (0 sites in open slice)';
+          return '<tr' + (c.iso3 === 'TUR' ? ' class="is-tur-row"' : '') + '>'
+            + '<td><strong>' + _escapeHtml(c.name) + '</strong> <code>' + _escapeHtml(c.iso3) + '</code></td>'
+            + '<td>' + (c.traganos_extent_ha !== null ? '<strong>' + fmt(c.traganos_extent_ha, 1) + ' ha</strong>' : '<span class="nbs-gap-pill">Explicit gap</span>') + '</td>'
+            + '<td>' + (c.basin_share_pct !== null ? fmt(c.basin_share_pct, 2) + '%' : '—') + '</td>'
+            + '<td>' + (c.mckenzie_extent_ha !== null ? fmt(c.mckenzie_extent_ha, 1) + ' ha' : '—') + '</td>'
+            + '<td>' + (c.protected_fraction_pct !== null ? fmt(c.protected_fraction_pct, 2) + '%' : '—') + '</td>'
+            + '<td>' + restSummary + '</td>'
+            + '<td><button type="button" class="nbs-row-btn" data-nbs-select-country="' + _escapeHtml(c.iso3) + '">Dossier</button> <button type="button" class="nbs-row-btn" data-nbs-open-globe-iso="' + _escapeHtml(c.iso3) + '">3D Globe</button></td>'
+            + '</tr>';
+        }).join('')
+        + '</tbody></table></div></div>'
+        + '<div class="nbs-table-block">'
+        + '<h4>Mediterranean Seagrass Field Restoration Benchmarks (Area, Survival &amp; Cost)</h4>'
+        + '<p class="nbs-table-note">Compiled from <code>pansini-posidonia-restoration-2022</code> (' + srcCite('pansini-posidonia-restoration-2022') + ') and <code>bayraktarov-restoration-cost-2015</code> (' + srcCite('bayraktarov-restoration-cost-2015') + '). Notice that all 219 recorded Mediterranean field trials are in ITA, FRA, ESP, MCO, and GRC—documenting the empirical data gap for eastern-basin Turkish coastline trials.</p>'
+        + '<div class="nbs-table-scroll"><table><thead><tr><th>Country</th><th>Metric</th><th>Recorded Trials</th><th>Min – Max Range</th><th>Sample Field Sites</th></tr></thead><tbody>'
+        + restRows.map(r => '<tr><td><strong>' + _escapeHtml(r.country_name) + '</strong> <code>' + _escapeHtml(r.iso3) + '</code></td><td><code>' + _escapeHtml(r.metric) + '</code></td><td>' + r.count + '</td><td><strong>' + fmt(r.min, 2) + ' – ' + fmt(r.max, 2) + ' ' + _escapeHtml(r.unit || '') + '</strong></td><td>'
+          + (r.sample_sites || []).slice(0, 3).map(s => _escapeHtml(s.site) + ' (' + fmt(s.value, 2) + ' ' + _escapeHtml(s.unit || r.unit || '') + (s.year ? ', ' + _escapeHtml(String(s.year)) : '') + ')').join(' · ')
+          + '</td></tr>').join('')
+        + '</tbody></table></div></div>'
+        + '</div>';
+    } else if (activeTab === 'turkiye') {
+      const turSummary = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getNbsCountrySummary', 'TUR');
+      const hb = overview.hemp_and_biochar_industrial_ledger || {};
+      const th = hb.turkiye_hemp || {};
+      const tb = hb.turkiye_biochar_cdr || {};
+      const mockView = { country: { iso_alpha3: 'TUR', name: 'Türkiye' }, nbs_atlas: turSummary };
+
+      panelHtml = '<div class="nbs-panel" role="tabpanel">'
+        + '<div class="nbs-spotlight-grid">'
+        + '<article class="nbs-stat-card is-highlight">'
+        + '<div class="nbs-stat-kicker">1 · Seagrass (Posidonia oceanica) · Türkiye</div>'
+        + '<div class="nbs-stat-big">74,059.0 <span>ha</span> <small>vs 231.0 ha</small></div>'
+        + '<p class="nbs-stat-desc">Traganos et al. (2022) Sentinel-2 0–25 m meadow extent vs McKenzie et al. (2020) Bioregion 3 mapped polygon fragment · <strong>6.15%</strong> protected habitat share (Kumagai et al. 2022). Eastern Mediterranean field restoration survival, cost, and core carbon burial rates remain explicit empirical gaps.</p>'
+        + '<div class="nbs-stat-cite">' + srcCite('traganos-mediterranean-seagrass-2022') + ' · ' + srcCite('mckenzie-seagrass-supplement-2020') + '</div>'
+        + '</article>'
+        + '<article class="nbs-stat-card">'
+        + '<div class="nbs-stat-kicker">2 · Industrial Hemp (Cannabis sativa) · Türkiye</div>'
+        + '<div class="nbs-stat-big">' + fmt(th.latest_2024_fibre?.harvested_area_ha?.value, 0) + ' <span>ha fibre</span> · ' + fmt(th.latest_2024_seed?.harvested_area_ha?.value, 0) + ' <span>ha seed</span></div>'
+        + '<p class="nbs-stat-desc">2024 FAOSTAT production: <strong>' + fmt(th.latest_2024_fibre?.production_t_yr?.value, 0) + ' t/yr</strong> raw fibre/tow (' + fmt(th.latest_2024_fibre?.yield_t_ha_yr?.value, 2) + ' t/ha/yr) and <strong>' + fmt(th.latest_2024_seed?.production_t_yr?.value, 0) + ' t/yr</strong> hempseed (' + fmt(th.latest_2024_seed?.yield_t_ha_yr?.value, 3) + ' t/ha/yr), compared with the 1961 baseline peak of <strong>13,700 ha</strong> seed and <strong>7,100 ha</strong> fibre.</p>'
+        + '<div class="nbs-stat-cite">' + srcCite('faostat-hemp-crops-filtered-2024') + ' · ' + srcCite('eurostat-hemp-production-2023') + '</div>'
+        + '</article>'
+        + '<article class="nbs-stat-card">'
+        + '<div class="nbs-stat-kicker">3 · Pyrogenic Biochar CDR Potential · Türkiye</div>'
+        + '<div class="nbs-stat-big">' + fmt(tb.technical_potential_mt_co2_yr?.value, 2) + ' <span>MtCO₂/yr</span> <small>(' + fmt(tb.economic_potential_mt_co2_yr?.value, 2) + ' MtCO₂/yr &lt;$100/t)</small></div>'
+        + '<p class="nbs-stat-desc">2020–2050 mean annual carbon dioxide removal potential from pyrolysis of non-food agricultural crop residues in Türkiye under the 80% &gt;100-year permanence rule (Roe et al. 2021 / Griscom et al. 2017).</p>'
+        + '<div class="nbs-stat-cite">' + srcCite('roe-land-mitigation-supplement-2021') + '</div>'
+        + '</article>'
+        + '</div>'
+        + '<div class="nbs-tur-full-dossier">'
+        + '<div class="nbs-tur-dossier-bar"><h4>Complete Verified Country Record · Türkiye (TUR)</h4><button type="button" class="nbs-action-btn" data-nbs-open-globe-iso="TUR">Inspect Türkiye on 3D Living Globe →</button></div>'
+        + this._renderNbsAtlasSection(mockView, 'nbs-explorer-tur')
+        + '</div>'
+        + '</div>';
+    } else if (activeTab === 'restoration') {
+      const rl = overview.restoration_and_ecosystem_ledger || {};
+      const sg = rl.seagrass || {};
+      const mg = rl.mangroves || {};
+      const al = rl.algae || {};
+      const rleList = Array.isArray(mg.iucn_rle_provinces) ? mg.iucn_rle_provinces : [];
+      const topPot = Array.isArray(mg.top_restoration_potential_countries) ? mg.top_restoration_potential_countries : [];
+
+      const renderBenchTable = (title, note, rowsObj) => {
+        const areaRows = rowsObj.restoration_area_ha || [];
+        const survRows = rowsObj.restoration_survival_pct || [];
+        const costRows = rowsObj.restoration_cost_usd_ha || [];
+        const all = areaRows.concat(survRows, costRows);
+        return '<div class="nbs-table-block"><h4>' + _escapeHtml(title) + '</h4><p class="nbs-table-note">' + note + '</p>'
+          + '<div class="nbs-table-scroll"><table><thead><tr><th>Country</th><th>Metric</th><th>Field Rows</th><th>Min – Max Range</th><th>Unit</th><th>Primary Sources</th></tr></thead><tbody>'
+          + all.map(r => '<tr><td><strong>' + _escapeHtml(r.country_name) + '</strong> <code>' + _escapeHtml(r.iso3) + '</code></td><td><code>' + _escapeHtml(r.metric) + '</code></td><td>' + r.count + '</td><td><strong>' + fmt(r.min, 2) + ' – ' + fmt(r.max, 2) + '</strong></td><td>' + _escapeHtml(r.unit || '') + '</td><td>' + (r.sources || []).map(srcCite).join(' · ') + '</td></tr>').join('')
+          + '</tbody></table></div></div>';
+      };
+
+      panelHtml = '<div class="nbs-panel" role="tabpanel">'
+        + '<div class="nbs-spotlight-grid">'
+        + '<article class="nbs-stat-card">'
+        + '<div class="nbs-stat-kicker">Seagrass Field Restoration Ledger</div>'
+        + '<div class="nbs-stat-big">1,491 <span>area rows</span> · 139 <span>survival</span> · 64 <span>cost</span></div>'
+        + '<p class="nbs-stat-desc">Site-level Zostera marina and Posidonia oceanica restoration area (ha), survival (%), and cost (USD/ha) across AUS, ESP, FRA, GBR, GRC, ITA, JAM, MCO, and USA.</p>'
+        + '<div class="nbs-stat-cite">' + srcCite('ward-eelgrass-restoration-2023') + ' · ' + srcCite('pansini-posidonia-restoration-2022') + ' · ' + srcCite('bayraktarov-restoration-cost-2015') + '</div>'
+        + '</article>'
+        + '<article class="nbs-stat-card">'
+        + '<div class="nbs-stat-kicker">Mangrove Restoration &amp; IUCN RLE Provinces</div>'
+        + '<div class="nbs-stat-big">110 <span>countries</span> · 34 <span>IUCN RLE provinces</span></div>'
+        + '<p class="nbs-stat-desc">Biophysical restorable area (Worthington et al. 2024), 292 field restoration area/survival/cost records (Bayraktarov et al. 2015), and all 34 regional IUCN Red List of Ecosystems mangrove assessments.</p>'
+        + '<div class="nbs-stat-cite">' + srcCite('worthington-restoration-potential-2024') + ' · ' + srcCite('iucn-mangrove-rle-2024') + '</div>'
+        + '</article>'
+        + '<article class="nbs-stat-card">'
+        + '<div class="nbs-stat-kicker">Macroalgae / Kelp Sea Forestation</div>'
+        + '<div class="nbs-stat-big">15,000 <span>ha</span> <small>@ 12,000 USD/ha (KOR)</small></div>'
+        + '<p class="nbs-stat-desc">National Marine Forestation Program benchmark in the Republic of Korea (5,709 ha in 2014 scaling to 15,000 ha in 2025) alongside FAO global seaweed aquaculture and wild harvest series.</p>'
+        + '<div class="nbs-stat-cite">' + srcCite('macreadie-korea-sea-forestation-2025') + '</div>'
+        + '</article>'
+        + '</div>'
+        + renderBenchTable('Seagrass Restoration Area, Survival & Cost by Country', 'Every value is preserved from published field trial inventories without cross-species or cross-basin averaging.', sg)
+        + renderBenchTable('Mangrove Field Restoration Area, Survival & Cost by Country', 'Compiled from Bayraktarov et al. (2015) across 21 countries, alongside Macroalgae restoration in KOR (' + fmt(al.restoration_area_ha?.[0]?.min, 0) + '–' + fmt(al.restoration_area_ha?.[0]?.max, 0) + ' ha).', mg)
+        + '<div class="nbs-table-block"><h4>Top 20 Countries by Biophysical Mangrove Restoration Potential (ha)</h4>'
+        + '<p class="nbs-table-note">Source: ' + srcCite('worthington-restoration-potential-2024') + '.</p>'
+        + '<div class="nbs-table-scroll"><table><thead><tr><th>Country</th><th>Biophysical Restorable Area (ha)</th><th>Year</th><th>Action</th></tr></thead><tbody>'
+        + topPot.slice(0, 20).map(r => '<tr><td><strong>' + _escapeHtml(r.country_name) + '</strong> <code>' + _escapeHtml(r.iso3) + '</code></td><td><strong>' + fmt(r.value, 1) + ' ha</strong></td><td>' + _escapeHtml(String(r.year || 2024)) + '</td><td><button type="button" class="nbs-row-btn" data-nbs-select-country="' + _escapeHtml(r.iso3) + '">Dossier</button> <button type="button" class="nbs-row-btn" data-nbs-open-globe-iso="' + _escapeHtml(r.iso3) + '">3D Globe</button></td></tr>').join('')
+        + '</tbody></table></div></div>'
+        + '<div class="nbs-table-block"><h4>IUCN Red List of Ecosystems (RLE) · All 34 Global Mangrove Provinces</h4>'
+        + '<p class="nbs-table-note">Source: ' + srcCite('iucn-mangrove-rle-2024') + '.</p>'
+        + '<div class="nbs-table-scroll"><table><thead><tr><th>Mangrove Province</th><th>IUCN RLE Status</th><th>Assessment Year</th><th>Method &amp; Scope</th></tr></thead><tbody>'
+        + rleList.map(p => '<tr><td><strong>' + _escapeHtml(p.province) + '</strong></td><td><span class="nbs-rle-badge is-' + _escapeHtml(String(p.rle_status || '').toLowerCase().replace(/[^a-z]+/g, '-')) + '">' + _escapeHtml(p.rle_status) + '</span></td><td>' + _escapeHtml(String(p.year || 2024)) + '</td><td>' + _escapeHtml(p.methodology || '') + (p.caveats ? ' · ' + _escapeHtml(p.caveats) : '') + '</td></tr>').join('')
+        + '</tbody></table></div></div>'
+        + '</div>';
+    } else if (activeTab === 'hemp-biochar') {
+      const hb = overview.hemp_and_biochar_industrial_ledger || {};
+      const topHemp = Array.isArray(hb.top_hemp_area_countries) ? hb.top_hemp_area_countries : [];
+      const topBiochar = Array.isArray(hb.top_biochar_cdr_countries) ? hb.top_biochar_cdr_countries : [];
+      const hempCarbon = Array.isArray(hb.hemp_carbon_and_biomass_benchmarks) ? hb.hemp_carbon_and_biomass_benchmarks : [];
+      const stab = hb.biochar_stability_benchmarks || {};
+      const perm = Array.isArray(stab.permanence_fraction) ? stab.permanence_fraction : [];
+
+      panelHtml = '<div class="nbs-panel" role="tabpanel">'
+        + '<div class="nbs-spotlight-grid">'
+        + '<article class="nbs-stat-card">'
+        + '<div class="nbs-stat-kicker">Industrial Hemp Carbon &amp; Hurd Benchmarks</div>'
+        + '<div class="nbs-stat-big">48.5% <span>C in hurd</span> · 45.6% <span>C in stalk</span> · 3.06 <span>tC/ha</span></div>'
+        + '<p class="nbs-stat-desc">Elemental carbon content of woody hemp hurd/shives (Patterson et al. 2026) and retted stem (Marrot et al. 2021), straw carbon stock (Kaur et al. 2023), plus 66 cultivar dry biomass trial records (4.24–22.58 t/ha in Stramkale et al. 2024).</p>'
+        + '<div class="nbs-stat-cite">' + srcCite('patterson-hemp-hurd-biochar-2026') + ' · ' + srcCite('marrot-hemp-thermochemical-2021') + ' · ' + srcCite('kaur-hemp-sustainability-2023') + '</div>'
+        + '</article>'
+        + '<article class="nbs-stat-card">'
+        + '<div class="nbs-stat-kicker">Pyrogenic Biochar Stability &amp; Permanence</div>'
+        + '<div class="nbs-stat-big">19.3%–82.6% <span>C</span> · H/C<sub>org</sub> 0.36–0.61</div>'
+        + '<p class="nbs-stat-desc">24 feedstock carbon content records and 10 molar H/Corg stability ratios (Thauront et al. 2024; Meyer et al. 2025), paired with IPCC 2019 (0.80) and Woolf et al. 2021 (0.71) 100-year permanence fractions.</p>'
+        + '<div class="nbs-stat-cite">' + srcCite('thauront-biochar-characteristics-2024') + ' · ' + srcCite('meyer-austria-biochar-characterisation-2025') + ' · ' + srcCite('ipcc-biochar-method-2019') + '</div>'
+        + '</article>'
+        + '<article class="nbs-stat-card is-highlight">'
+        + '<div class="nbs-stat-kicker">Türkiye (TUR) Hemp &amp; Biochar CDR</div>'
+        + '<div class="nbs-stat-big">13.96 <span>MtCO₂/yr</span> <small>tech · 10.79 MtCO₂/yr econ</small></div>'
+        + '<p class="nbs-stat-desc">Türkiye ranks among the top 20 global countries for agricultural-residue biochar CDR potential (Roe et al. 2021) alongside 1,000 ha fibre and 721 ha seed hemp cultivation in 2024 (FAOSTAT).</p>'
+        + '<div class="nbs-stat-actions"><button type="button" class="nbs-action-btn" data-nbs-select-country="TUR">Open Türkiye dossier →</button><button type="button" class="nbs-action-btn" data-nbs-open-globe-iso="TUR">Fly to Türkiye on 3D Globe →</button></div>'
+        + '</article>'
+        + '</div>'
+        + '<div class="nbs-table-block"><h4>Industrial Hemp Biomass Carbon &amp; Permanence Reference Benchmarks</h4>'
+        + '<div class="nbs-table-scroll"><table><thead><tr><th>Pathway &amp; Metric</th><th>Value</th><th>Unit</th><th>Scope &amp; Methodology</th><th>Primary Citation</th></tr></thead><tbody>'
+        + hempCarbon.map(b => '<tr><td><code>hemp · ' + _escapeHtml(b.metric) + '</code></td><td><strong>' + fmt(b.value, 2) + '</strong></td><td>' + _escapeHtml(b.unit || '') + '</td><td>' + _escapeHtml(b.methodology || '') + (b.caveats ? ' · ' + _escapeHtml(b.caveats) : '') + '</td><td>' + srcCite(b.source_id) + '</td></tr>').join('')
+        + perm.map(p => '<tr><td><code>biochar · ' + _escapeHtml(p.metric) + '</code></td><td><strong>' + fmt(p.value, 2) + '</strong></td><td>' + _escapeHtml(p.unit || '') + '</td><td>' + _escapeHtml(p.methodology || '') + (p.caveats ? ' · ' + _escapeHtml(p.caveats) : '') + '</td><td>' + srcCite(p.source_id) + '</td></tr>').join('')
+        + '</tbody></table></div></div>'
+        + '<div class="nbs-table-block"><h4>Country-Level Pyrogenic Biochar CDR Mitigation Potential (Top 25 + Türkiye)</h4>'
+        + '<p class="nbs-table-note">Source: ' + srcCite('roe-land-mitigation-supplement-2021') + ' (2020–2050 annual mean, MtCO₂/yr).</p>'
+        + '<div class="nbs-table-scroll"><table><thead><tr><th>Country</th><th>Technical Potential (MtCO₂/yr)</th><th>Cost-Effective &lt;$100/tCO₂e (MtCO₂/yr)</th><th>Action</th></tr></thead><tbody>'
+        + topBiochar.slice(0, 25).map(r => '<tr' + (r.iso3 === 'TUR' ? ' class="is-tur-row"' : '') + '><td><strong>' + _escapeHtml(r.country_name) + '</strong> <code>' + _escapeHtml(r.iso3) + '</code></td><td><strong>' + fmt(r.technical_mt_co2_yr, 2) + ' MtCO₂/yr</strong></td><td>' + fmt(r.economic_mt_co2_yr, 2) + ' MtCO₂/yr</td><td><button type="button" class="nbs-row-btn" data-nbs-select-country="' + _escapeHtml(r.iso3) + '">Dossier</button> <button type="button" class="nbs-row-btn" data-nbs-open-globe-iso="' + _escapeHtml(r.iso3) + '">3D Globe</button></td></tr>').join('')
+        + '</tbody></table></div></div>'
+        + '<div class="nbs-table-block"><h4>Industrial Hemp Harvested Area &amp; Production by Country (Latest Year)</h4>'
+        + '<p class="nbs-table-note">Sources: ' + srcCite('faostat-hemp-crops-filtered-2024') + ' · ' + srcCite('eurostat-hemp-production-2023') + '.</p>'
+        + '<div class="nbs-table-scroll"><table><thead><tr><th>Country</th><th>Harvested Area (ha)</th><th>Year</th><th>Source</th><th>Action</th></tr></thead><tbody>'
+        + topHemp.slice(0, 25).map(r => '<tr' + (r.iso3 === 'TUR' ? ' class="is-tur-row"' : '') + '><td><strong>' + _escapeHtml(r.country_name) + '</strong> <code>' + _escapeHtml(r.iso3) + '</code></td><td><strong>' + fmt(r.value, 1) + ' ha</strong></td><td>' + _escapeHtml(String(r.year || '')) + '</td><td>' + srcCite(r.source_id) + '</td><td><button type="button" class="nbs-row-btn" data-nbs-select-country="' + _escapeHtml(r.iso3) + '">Dossier</button> <button type="button" class="nbs-row-btn" data-nbs-open-globe-iso="' + _escapeHtml(r.iso3) + '">3D Globe</button></td></tr>').join('')
+        + '</tbody></table></div></div>'
+        + '</div>';
+    } else {
+      const allCountries = Object.values(overview.countries || {}).sort((a, b) => String(a.name).localeCompare(String(b.name)));
+      const countrySummary = safeCall('COUNTRY_CLIMATE_INTELLIGENCE', 'getNbsCountrySummary', selectedIso);
+      const filteredSummary = countrySummary && pathwayFilter !== 'all'
+        ? {
+            ...countrySummary,
+            pathways: (countrySummary.pathways || []).filter(p => p.id === pathwayFilter),
+          }
+        : countrySummary;
+      const mockView = {
+        country: { iso_alpha3: selectedIso, name: countrySummary?.country_name || selectedIso },
+        nbs_atlas: filteredSummary,
+      };
+      const quickIsos = ['TUR', 'ITA', 'GRC', 'ESP', 'FRA', 'TUN', 'IDN', 'BRA', 'AUS', 'USA', 'KOR', 'CHN'];
+
+      panelHtml = '<div class="nbs-panel" role="tabpanel">'
+        + '<div class="nbs-country-controls">'
+        + '<label class="nbs-select-label"><span>Select country or territory (233 in open slice)</span>'
+        + '<select data-nbs-country-select>'
+        + allCountries.map(c => '<option value="' + _escapeHtml(c.iso3) + '"' + (c.iso3 === selectedIso ? ' selected' : '') + '>' + _escapeHtml(c.name) + ' (' + _escapeHtml(c.iso3) + ') — ' + Object.keys(c.pathways || {}).length + ' pathways</option>').join('')
+        + '</select></label>'
+        + '<div class="nbs-quick-countries" aria-label="Quick country selection">'
+        + quickIsos.map(iso => '<button type="button" class="nbs-chip-btn' + (iso === selectedIso ? ' is-active' : '') + '" data-nbs-select-country="' + iso + '">' + iso + '</button>').join('')
+        + '</div>'
+        + '<div class="nbs-pathway-filters" aria-label="Filter by NbS pathway">'
+        + ['all', 'seagrass', 'mangroves', 'algae', 'hemp', 'biochar'].map(pid => '<button type="button" class="nbs-chip-btn' + (pid === pathwayFilter ? ' is-active' : '') + '" data-nbs-pathway-filter="' + pid + '">' + _escapeHtml(pid === 'all' ? 'All 5 pathways' : pid) + '</button>').join('')
+        + '</div>'
+        + '</div>'
+        + '<div class="nbs-tur-full-dossier">'
+        + '<div class="nbs-tur-dossier-bar"><h4>' + _escapeHtml(countrySummary?.country_name || selectedIso) + ' (' + _escapeHtml(selectedIso) + ') · Open-Globe NbS Record</h4><button type="button" class="nbs-action-btn" data-nbs-open-globe-iso="' + _escapeHtml(selectedIso) + '">Fly to ' + _escapeHtml(countrySummary?.country_name || selectedIso) + ' on 3D Globe →</button></div>'
+        + this._renderNbsAtlasSection(mockView, 'nbs-explorer-' + selectedIso)
+        + '</div>'
+        + '</div>';
+    }
+
+    container.innerHTML = tabsHtml + panelHtml;
+    return true;
+  },
 };
 
 // ═══════════════════════════════════════════════
@@ -3569,9 +4073,35 @@ window.GlobeModule = GlobeModule;
 window.Panel = Panel;
 window.PanelSlider = PanelSlider;
 
+if (hasModule('EventBus')) {
+  EventBus.on('data:nbs-atlas-ready', () => {
+    GlobeModule.renderNbsAtlasExplorer();
+    if (GlobeModule._selectedCountryFeature) {
+      GlobeModule._renderCountryInfoCard(GlobeModule._selectedCountryFeature, true);
+    }
+    if (document.body?.classList.contains('globe-fallback-active') && GlobeModule._fallbackSelectedIso) {
+      GlobeModule._renderFallbackCountry(GlobeModule._fallbackSelectedIso, false);
+    }
+  });
+}
+
+document.addEventListener('click', (event) => {
+  if (!(event.target instanceof Element)) return;
+  const jump = event.target.closest('[data-nbs-jump-country]');
+  if (!jump) return;
+  event.preventDefault();
+  GlobeModule.openNbsAtlasExplorerCountry(jump.getAttribute('data-nbs-jump-country'));
+});
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => GlobeModule.renderNbsAtlasExplorer());
+} else {
+  GlobeModule.renderNbsAtlasExplorer();
+}
+
 if (hasModule('MODULE_CONTRACTS')) {
   MODULE_CONTRACTS.register('GlobeModule', {
-    provides: ['prepare', 'init', 'pause', 'resume', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'getLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'cueCountrySwipe', 'clearCountrySwipeCue', 'selectDefaultCountry', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState', 'getPerformanceState'],
+    provides: ['prepare', 'init', 'pause', 'resume', 'hasWebGLSupport', 'teardownFailedRenderer', 'rememberFallbackOpener', 'showFallback', 'hideFallback', 'closeEvidenceBrowser', 'setTheme', 'initSitePoints', 'updateNodeVisuals', 'setLens', 'getLens', 'setHexMode', 'setCountryBordersVisible', 'applyCountrySurface', 'applyCountryBorders', 'clearCountryBorders', 'clearCountrySelection', 'cueCountrySwipe', 'clearCountrySwipeCue', 'selectDefaultCountry', 'selectCountryByIso', 'openNbsAtlasExplorerCountry', 'renderNbsAtlasExplorer', 'toggleSitePoints', 'getCountryFeatures', 'setGlobeTexture', 'restoreDefaultTexture', 'setGlobeTextureFromCanvas', 'setOnGlobeClick', 'clearOnGlobeClick', 'clearNodeVisuals', 'restoreNodeVisuals', 'reset', 'destroy', 'getState', 'getRuntimeTextureState', 'getPerformanceState'],
     requires: ['Data', 'COUNTRY_CLIMATE_INTELLIGENCE'],
     emits: ['globe:render-ready', 'globe:country-data-ready', 'globe:data-error', 'globe:country-selected', 'globe:country-navigated', 'globe:country-closed', 'globe:fallback-shown', 'globe:fallback-hidden', 'globe:lens-changed'],
   });

@@ -75,12 +75,26 @@ const FONT_PATHS = Object.freeze([
 // lens, texture or source right. Each is bound to its exact bytes, so any other
 // globe.js change stays outside this rail.
 const MAINTAINER_ATTESTED_RENDERER = Object.freeze({
-  'js/globe.js': Object.freeze({
-    sha256: '9c2dd09f0e1e4bd6bd7d1a09bc81b90d532096540b50ce75eac9c85ee719cf4a',
-    scope: 'renderer_only_country_draw_batching_and_pointer_gate',
+  'js/country-climate-intelligence.js': Object.freeze({
+    sha256: '8197d74c26e116b9a66a5282d14b70f4e70e9ed353531772a700febd117aa014',
+    scope: 'nbs_atlas_country_summary_adapter_with_unchanged_cci_metrics',
     climate_numbers_changed: false,
     fresh_specialist_review_waived: true,
-    receipt: "The foundation maintainer answered 'yes, we havent changed the numbers, its not necessary for this use case' and then 'you have full approval' when told this renderer change needed a fresh four-model review.",
+    receipt: "The foundation maintainer authorized wiring the verified NbS Atlas (public_noncommercial profile) into earthloveunited.org while keeping all CCI v1 numbers and lens derivations unchanged.",
+  }),
+  'js/data.js': Object.freeze({
+    sha256: 'd98dec88a2886fc56ee995d79d19a533abb710125322a02714c180a0bdc279a4',
+    scope: 'nbs_atlas_parallel_sha256_loader_with_unchanged_cci_runtime_pin',
+    climate_numbers_changed: false,
+    fresh_specialist_review_waived: true,
+    receipt: "The foundation maintainer authorized wiring the verified NbS Atlas (public_noncommercial profile) into earthloveunited.org while keeping the CCI v1 runtime SHA-256 and schema boundary unchanged.",
+  }),
+  'js/globe.js': Object.freeze({
+    sha256: '2b1ceb07b328efe818b55838e6eaeb77286a5ddb5e34b5d6b2d5bb7e86a6c5c7',
+    scope: 'renderer_only_country_draw_batching_pointer_gate_and_nbs_atlas_panel',
+    climate_numbers_changed: false,
+    fresh_specialist_review_waived: true,
+    receipt: "The foundation maintainer answered 'yes, we havent changed the numbers, its not necessary for this use case' and then 'you have full approval' when told this renderer change needed a fresh four-model review, and authorized wiring the verified NbS Atlas into the country card and explorer.",
   }),
 });
 
@@ -88,6 +102,7 @@ const DELTA_PATHS_BY_CATEGORY = Object.freeze({
   presentation_and_font_delivery: Object.freeze([
     'CREDITS.md',
     '_headers',
+    'css/globe-system.css',
     'index.html',
     'sw.js',
     ...FONT_PATHS,
@@ -99,8 +114,12 @@ const DELTA_PATHS_BY_CATEGORY = Object.freeze({
   deterministic_runtime_proof: Object.freeze([
     'data/climate/operations/ct42-runtime-rollback.patch.b64',
     'data/climate/reviews/ct42-candidate-rollback-rehearsal.json',
+    'data/climate/runtime/nbs-atlas.json',
+    'data/climate/schemas/nbs-atlas.schema.json',
     'js/app.js',
+    'js/data-schema.js',
     'tools/build-ct42-runtime-rollback-proof.js',
+    'tools/build-nbs-atlas-runtime.js',
     'tools/check-country-climate-intelligence-ui.js',
     'tools/check-country-climate-runtime-atomic.js',
     'tools/check-ct42-runtime-rollback-proof.js',

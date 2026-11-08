@@ -99,6 +99,7 @@ const ALWAYS_PUBLIC_PATHS = Object.freeze([
   'docs/LEGACY-COUNTRY-DATA-EXIT.md',
   'data/climate/runtime/candidate-manifest.json',
   'data/climate/runtime/country-factual-candidate.json',
+  'data/climate/runtime/nbs-atlas.json',
   'data/climate/governance/globe-runtime-approval-trust.json',
   'data/climate/schemas/globe-runtime-assets-production-review.schema.json',
   'data/governance/vendor/globe-gl-2.46.1-notices.json',

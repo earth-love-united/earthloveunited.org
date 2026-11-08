@@ -46,6 +46,7 @@ const STATIC_ASSETS = [
   '/js/vendor/globe.gl.js',
   // Data (small, cacheable)
   '/data/climate/runtime/country-climate-intelligence.json?v=cci1runtime13',
+  '/data/climate/runtime/nbs-atlas.json?v=nbs1',
   // Retained for one release epoch as the factual rollback artifact.
   '/data/climate/runtime/country-factual-candidate.json?v=ct42candidate1',
 ];

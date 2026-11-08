@@ -18,7 +18,7 @@
     },
     "runtime_control": {
       "format": "elu-sha256-path-content-tree-v1",
-      "sha256": "e7de695935f601fdddfddf7aff6373dcfe663d8d93645f41d128f0424ff436c8",
+      "sha256": "c8f13f829e858176be6f3b36579cfc4995650d7d18a0ee9da9fde06724819a17",
       "member_count": 21,
       "git_history_required": false,
       "squash_merge_safe": true
@@ -82,7 +82,7 @@
   },
   "rollback": {
     "strategy": "current_hardened_runtime_to_neutral_surface",
-    "source_runtime_tree_sha256": "e7de695935f601fdddfddf7aff6373dcfe663d8d93645f41d128f0424ff436c8",
+    "source_runtime_tree_sha256": "c8f13f829e858176be6f3b36579cfc4995650d7d18a0ee9da9fde06724819a17",
     "baseline_commit": null,
     "cache_name": "elu-v34-ct42-neutral-rollback",
     "service_worker_registration": "/sw.js?v=34-ct42-neutral-rollback",
@@ -128,8 +128,8 @@
     "patch": {
       "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
       "encoding": "base64",
-      "sha256": "d5dad8dd0e115b5632ef937aa63b2056b7bcb919f11c260e9257771c28da565d",
-      "decoded_sha256": "84b60c8ab922ddbcf72ba9a853cf3b0469d7ee7439aea762ae2baf8c2d8ae8f1",
+      "sha256": "fa3cf94fd5a1dd9185d7dff6c93c170a90a206c22b333eceee5a4df73650103d",
+      "decoded_sha256": "6fbf6011b4bd4544b7a1ba2a71715a3c39ef5ef277f24615c33a230965827247",
       "changed_files": [
         "index.html",
         "css/globe-system.css",
@@ -144,29 +144,29 @@
         "path": "index.html",
         "role": "neutral_public_copy_and_v34_registration",
         "changed": true,
-        "candidate_sha256": "31f69980d4e789f3bc9047fc43b97d8eeda47ae1e285d82da4c87fc002d961ef",
-        "rollback_sha256": "67090e9f38d3b2e7732fcdf2436c28b00f8af2cf93d3a3eeaf369f12a97d4ebc"
+        "candidate_sha256": "20f2fb85b64f1d30c89b7f222685619e7b22816043a0d09dac9ee2353d78efab",
+        "rollback_sha256": "98c365a220fed6bdebfe5556f6123b4b34d38aa1266980c10d06efa813fcd834"
       },
       {
         "path": "css/globe-system.css",
         "role": "neutral_accessible_presentation",
         "changed": true,
-        "candidate_sha256": "42c5d766eac74792885af36b03ebf4ac481a1ed3cc694cc644b1afce98f09981",
-        "rollback_sha256": "47f310b2de767f2edbc56358f59bc78d8639ba476ea3f73a7356d6a61e932dca"
+        "candidate_sha256": "025a9693d3a57ca2577fcb0419fa7461536d24c38f41b165a7929934417ae450",
+        "rollback_sha256": "e6b36c78abee6a35454d27f020d36b5ed73485b14e37e4ec8569c262f3e58bf7"
       },
       {
         "path": "js/data.js",
         "role": "withheld_country_climate_adapter",
         "changed": true,
-        "candidate_sha256": "8415e35657bb09444861f921482daf7c33049cac9035eff0fc393d0ffb9a0de5",
+        "candidate_sha256": "d98dec88a2886fc56ee995d79d19a533abb710125322a02714c180a0bdc279a4",
         "rollback_sha256": "59f723917c9d73011668af7bc6bc3ca1a1f053c438734507b54b9df4c46b6a6f"
       },
       {
         "path": "js/globe.js",
         "role": "hardened_neutral_globe_runtime",
         "changed": true,
-        "candidate_sha256": "9c2dd09f0e1e4bd6bd7d1a09bc81b90d532096540b50ce75eac9c85ee719cf4a",
-        "rollback_sha256": "0019519a29c11e698a2b0ea53acb53d397504365cdf7ae2de6e0c1161aa20000"
+        "candidate_sha256": "2b1ceb07b328efe818b55838e6eaeb77286a5ddb5e34b5d6b2d5bb7e86a6c5c7",
+        "rollback_sha256": "2e32128f2978d5bb176ea159686ee4e50d8786469fb732a3f7898879aea3795f"
       },
       {
         "path": "js/app.js",
@@ -179,8 +179,8 @@
         "path": "sw.js",
         "role": "v34_cache_and_precache_exclusions",
         "changed": true,
-        "candidate_sha256": "aef8600231fa492119cc14f0ac6637184eeaccc30b7159d8dbe7956b64c06a83",
-        "rollback_sha256": "899d9c17a9f92d32fedbe07792c9971a27a4985cd5b1a6bf17d6d953456e4f23"
+        "candidate_sha256": "4bc93f40a798139cb00c1b05cb28102daaf34906af428c6a5722ac9678e55a3f",
+        "rollback_sha256": "e94622852f123ceee88d3acb83f7852dc3acbd09fd2062cd9a2707f494335470"
       },
       {
         "path": "tools/smoke-test.js",
@@ -244,8 +244,8 @@
         "path": "js/data-schema.js",
         "role": "data_schema_runtime",
         "source_binding": "runtime_content_tree",
-        "source_sha256": "15454da35479253ccf83533ed6cfc16dc0ff3b5f6a9739424fe51d0ca55541e3",
-        "materialized_sha256": "15454da35479253ccf83533ed6cfc16dc0ff3b5f6a9739424fe51d0ca55541e3"
+        "source_sha256": "4f3fe9f5f3de0f53ebbb845c6a3f8f4a6049155aca626ebb3af3c15a97528381",
+        "materialized_sha256": "4f3fe9f5f3de0f53ebbb845c6a3f8f4a6049155aca626ebb3af3c15a97528381"
       },
       {
         "path": "js/carbon-clock.js",
@@ -351,5 +351,5 @@
     "writes_workspace": false,
     "deploys": false
   },
-  "calculation_hash": "a66cecee203c32cd02d925ec8a3f35416d66e800c9dc7fe49742038f7d2b52b0"
+  "calculation_hash": "214b234ba523653fa7392b86bb201f0cffa299624bb29687ad5304cb842aa770"
 }

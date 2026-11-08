@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════
 
 const CLIMATE_INTELLIGENCE_SHA256 = '4939fbc6e26c0ef0fc283ecf98ab3924ccb93d93b7e5392eab2014f7ab3c57fe';
+const NBS_ATLAS_SHA256 = '609b01c5a367d007afac17c3e387414605e37500d6bcc52b93423dfbfaaaf3de';
 // This is the essential 249-country runtime, not a decorative asset. Keep a
 // bounded fail-closed deadline, but allow slow first visits to finish the
 // compressed transfer and checksum instead of turning latency into "no data".
@@ -49,6 +50,11 @@ const Data = {
   climateRanking: null,
   climateCandidateState: 'idle',
   version: 'cci1runtime13',
+  nbsAtlas: null,
+  nbsAtlasCountries: null,
+  nbsAtlasState: 'idle',
+  nbsAtlasVersion: 'nbs1',
+  _nbsAtlasPromise: null,
 
   async init() {
     // Country Climate Intelligence v1 is a hashed, static factual runtime.
@@ -57,6 +63,8 @@ const Data = {
     const v = '?v=' + this.version;
     this.climateIntelligenceState = 'loading';
     this.climateCandidateState = 'loading';
+    // Kick off NbS Atlas load in parallel without blocking primary first-paint globe readiness
+    this.loadNbsAtlas();
     const [climateIntelligenceRes] = await Promise.allSettled([
       _fetchTextWithTimeout('data/climate/runtime/country-climate-intelligence.json' + v)
     ]);
@@ -136,6 +144,71 @@ const Data = {
   },
 
   reloadClimateCandidate() { return this.reloadClimateIntelligence(); },
+
+  async loadNbsAtlas() {
+    if (this.nbsAtlasState === 'ready' && this.nbsAtlas) return this.nbsAtlas;
+    if (this._nbsAtlasPromise) return this._nbsAtlasPromise;
+    this.nbsAtlasState = 'loading';
+    const url = 'data/climate/runtime/nbs-atlas.json?v=' + this.nbsAtlasVersion;
+    this._nbsAtlasPromise = Promise.allSettled([_fetchTextWithTimeout(url)])
+      .then(async ([res]) => {
+        if (res.status === 'rejected' || !res.value?.ok) {
+          this.nbsAtlasState = 'unavailable';
+          return null;
+        }
+        if (!globalThis.crypto?.subtle || typeof TextDecoder !== 'function') {
+          this.nbsAtlasState = 'unavailable';
+          return null;
+        }
+        const bytes = res.value.bytes;
+        const digest = await globalThis.crypto.subtle.digest('SHA-256', bytes);
+        const actual = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+        if (actual !== NBS_ATLAS_SHA256) {
+          reportError('Data.loadNbsAtlas()', new Error('NbS Atlas SHA-256 mismatch'));
+          this.nbsAtlasState = 'unavailable';
+          return null;
+        }
+        const parsed = JSON.parse(_decodeUtf8(bytes));
+        const validation = hasModule('DATA_SCHEMA')
+          ? safeCall('DATA_SCHEMA', 'validateNbsAtlas', parsed)
+          : { ok: true, errors: [] };
+        if (!validation?.ok) {
+          reportError('Data.loadNbsAtlas()', new Error('NbS Atlas schema rejected: ' + (validation?.errors || []).join('; ')));
+          this.nbsAtlasState = 'unavailable';
+          return null;
+        }
+        this.nbsAtlas = parsed;
+        this.nbsAtlasCountries = parsed.countries || {};
+        this.nbsAtlasState = 'ready';
+        if (typeof EventBus !== 'undefined' && typeof EventBus.emit === 'function') {
+          EventBus.emit('data:nbs-atlas-ready', { releaseId: parsed.release_id });
+        }
+        return parsed;
+      })
+      .catch(err => {
+        reportWarn('Data.loadNbsAtlas()', err?.message || 'NbS Atlas load error');
+        this.nbsAtlasState = 'unavailable';
+        return null;
+      })
+      .finally(() => {
+        this._nbsAtlasPromise = null;
+      });
+    return this._nbsAtlasPromise;
+  },
+
+  getNbsAtlas() { return this.nbsAtlas; },
+  getNbsAtlasSha256() { return NBS_ATLAS_SHA256; },
+  isNbsAtlasReady() { return this.nbsAtlasState === 'ready' && Boolean(this.nbsAtlas); },
+  getNbsCountry(id) {
+    if (!this.nbsAtlasCountries || typeof id !== 'string') return null;
+    const trimmed = id.trim();
+    const iso = trimmed.includes(':') ? trimmed.slice(trimmed.lastIndexOf(':') + 1).toUpperCase() : trimmed.toUpperCase();
+    return this.nbsAtlasCountries[iso] || null;
+  },
+  getNbsSource(sourceId) {
+    if (!this.nbsAtlas?.sources || typeof sourceId !== 'string') return null;
+    return this.nbsAtlas.sources[sourceId] || null;
+  },
 
   getBiome(key) { return this.biomes ? this.biomes[key] : null; },
   getSite(id) { return this.sites ? this.sites.find(s => s.id === id) : null; },
@@ -236,6 +309,8 @@ const Data = {
       climateIntelligenceState: this.climateIntelligenceState,
       climateReleaseId: this.climateIntelligence?.release?.id || null,
       entityCount: this.climateIntelligence?.countries?.length || 0,
+      nbsAtlasState: this.nbsAtlasState,
+      nbsAtlasReleaseId: this.nbsAtlas?.release_id || null,
     };
   }
 };
@@ -244,7 +319,7 @@ window.Data = Data;
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('Data', {
-    provides: ['init', 'reloadClimateIntelligence', 'getClimateIntelligenceRelease', 'getClimateIntelligenceSha256', 'getClimateIntelligenceCountry', 'getClimateLensCatalog', 'isClimateIntelligenceReady', 'fmt', 'getClimateCountry', 'getClimateRanking', 'reset', 'destroy', 'getState'],
+    provides: ['init', 'reloadClimateIntelligence', 'getClimateIntelligenceRelease', 'getClimateIntelligenceSha256', 'getClimateIntelligenceCountry', 'getClimateLensCatalog', 'isClimateIntelligenceReady', 'loadNbsAtlas', 'getNbsAtlas', 'getNbsAtlasSha256', 'isNbsAtlasReady', 'getNbsCountry', 'getNbsSource', 'fmt', 'getClimateCountry', 'getClimateRanking', 'reset', 'destroy', 'getState'],
     requires: ['STORAGE_ADAPTER'],
   });
 }
