@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "d931a3fac5b23ded457c6a88c2a1aa14c655156eed404065f942f13316a9438c",
+  "calculation_hash": "6543fd87a0d4998610f83fe7e5efbc6ac4ed3e520e5eb363f644d92c80925648",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "b648e3d63eeb704b94f531193715c5dee9ae9e0d82edb96cb1ba1d50cec6f657",
+    "artifact_pin_digest": "addbe7701d4c370490c0d6c73ee9b3f6a0e45923fd60a5f1ba5dc3e77bb99a7e",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -221,7 +221,7 @@
       },
       {
         "path": ".github/workflows/ci.yml",
-        "sha256": "29f8c5e179a6e9c2df271a6d98d58528c102c26e2b256b230f7589decc8746a4"
+        "sha256": "9239525a2203c8d79fa8470bc3e9c8f54f45ed794b0df6f6d07092e6ac5e9780"
       },
       {
         "path": ".gitignore",
