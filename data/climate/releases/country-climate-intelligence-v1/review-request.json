@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "6543fd87a0d4998610f83fe7e5efbc6ac4ed3e520e5eb363f644d92c80925648",
+  "calculation_hash": "a56128ba127e82b1b7ec2d58b25e1cad635ae9a36b878912a0b9185a11f548f9",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "addbe7701d4c370490c0d6c73ee9b3f6a0e45923fd60a5f1ba5dc3e77bb99a7e",
+    "artifact_pin_digest": "e40c6b113de46ec01bd95e633d937d0af85f4ea900feb1a46078a7e75d8db467",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -221,7 +221,7 @@
       },
       {
         "path": ".github/workflows/ci.yml",
-        "sha256": "9239525a2203c8d79fa8470bc3e9c8f54f45ed794b0df6f6d07092e6ac5e9780"
+        "sha256": "29f8c5e179a6e9c2df271a6d98d58528c102c26e2b256b230f7589decc8746a4"
       },
       {
         "path": ".gitignore",
@@ -393,7 +393,7 @@
       },
       {
         "path": "css/globe-system.css",
-        "sha256": "025a9693d3a57ca2577fcb0419fa7461536d24c38f41b165a7929934417ae450"
+        "sha256": "42c5d766eac74792885af36b03ebf4ac481a1ed3cc694cc644b1afce98f09981"
       },
       {
         "path": "css/guided-first-orbit.css",
@@ -521,7 +521,7 @@
       },
       {
         "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
-        "sha256": "fa3cf94fd5a1dd9185d7dff6c93c170a90a206c22b333eceee5a4df73650103d"
+        "sha256": "d5dad8dd0e115b5632ef937aa63b2056b7bcb919f11c260e9257771c28da565d"
       },
       {
         "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -621,7 +621,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "2c4e63982b2e864858287c6ddaa42953ce9b81d987618a8b45d2afa068968f3c"
+        "sha256": "7797cc36adbd6ddacc5842d71b3db469ad73daca10e1c40339a05ec93b094e3e"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -662,10 +662,6 @@
       {
         "path": "data/climate/runtime/ct10c-batch-attestation-wrapper.json",
         "sha256": "fd1e5e0a8863b082574a175639abe30b3f5b8722c430019267dac907e09ef034"
-      },
-      {
-        "path": "data/climate/runtime/nbs-atlas.json",
-        "sha256": "609b01c5a367d007afac17c3e387414605e37500d6bcc52b93423dfbfaaaf3de"
       },
       {
         "path": "data/climate/runtime/published-facts-candidate.json",
@@ -738,10 +734,6 @@
       {
         "path": "data/climate/schemas/globe-runtime-assets-production-review.schema.json",
         "sha256": "0b9a3b30cb2366c137521dd2c2e9323966f12c24d98ca72dd08a66d574499be0"
-      },
-      {
-        "path": "data/climate/schemas/nbs-atlas.schema.json",
-        "sha256": "2ed62c50676d19e91456ed63afe8f77c18b1a192cc4eea1ba65f2d1900814804"
       },
       {
         "path": "data/climate/schemas/observation.schema.json",
@@ -865,7 +857,7 @@
       },
       {
         "path": "index.html",
-        "sha256": "20f2fb85b64f1d30c89b7f222685619e7b22816043a0d09dac9ee2353d78efab"
+        "sha256": "31f69980d4e789f3bc9047fc43b97d8eeda47ae1e285d82da4c87fc002d961ef"
       },
       {
         "path": "js/app.js",
@@ -877,7 +869,7 @@
       },
       {
         "path": "js/country-climate-intelligence.js",
-        "sha256": "8197d74c26e116b9a66a5282d14b70f4e70e9ed353531772a700febd117aa014"
+        "sha256": "6ff0dcb81f64095cbb9543f58bcc56cc6f1de11da7ab03fe91f37c32c91ceab7"
       },
       {
         "path": "js/country-climate-view-model.js",
@@ -889,11 +881,11 @@
       },
       {
         "path": "js/data-schema.js",
-        "sha256": "4f3fe9f5f3de0f53ebbb845c6a3f8f4a6049155aca626ebb3af3c15a97528381"
+        "sha256": "15454da35479253ccf83533ed6cfc16dc0ff3b5f6a9739424fe51d0ca55541e3"
       },
       {
         "path": "js/data.js",
-        "sha256": "d98dec88a2886fc56ee995d79d19a533abb710125322a02714c180a0bdc279a4"
+        "sha256": "8415e35657bb09444861f921482daf7c33049cac9035eff0fc393d0ffb9a0de5"
       },
       {
         "path": "js/event-bus.js",
@@ -905,7 +897,7 @@
       },
       {
         "path": "js/globe.js",
-        "sha256": "2b1ceb07b328efe818b55838e6eaeb77286a5ddb5e34b5d6b2d5bb7e86a6c5c7"
+        "sha256": "9c2dd09f0e1e4bd6bd7d1a09bc81b90d532096540b50ce75eac9c85ee719cf4a"
       },
       {
         "path": "js/guided-first-orbit.js",
@@ -941,7 +933,7 @@
       },
       {
         "path": "sw.js",
-        "sha256": "4bc93f40a798139cb00c1b05cb28102daaf34906af428c6a5722ac9678e55a3f"
+        "sha256": "aef8600231fa492119cc14f0ac6637184eeaccc30b7159d8dbe7956b64c06a83"
       },
       {
         "path": "tools/acquire-cckp-cmip6.js",
@@ -990,10 +982,6 @@
       {
         "path": "tools/build-major-emitter-ndc-release.js",
         "sha256": "c22c8ff57a8e26e6b211f06ddb2f1f719f5239ec01012a53280e313d07908e4d"
-      },
-      {
-        "path": "tools/build-nbs-atlas-runtime.js",
-        "sha256": "daefe7a7aee8ace6de82fc3ae85eba70d5371b7276a27f53004feb9307a6d8e4"
       },
       {
         "path": "tools/check-canonical-source-links.js",
@@ -1117,7 +1105,7 @@
       },
       {
         "path": "tools/check-ct42-runtime-rollback-proof.js",
-        "sha256": "c93a85916a624b7e9cb35c8cc3263ea1d0ce2e7e6a04d79a81ac1850ff6c32b3"
+        "sha256": "bb99d847c7555d3fb7ae03bab4e554114216b86ec37898e3c602d45488808ad5"
       },
       {
         "path": "tools/check-ct42-runtime-rollback-review.js",
@@ -1273,7 +1261,7 @@
       },
       {
         "path": "tools/lib/cci-scoped-delta-review.js",
-        "sha256": "58afb0405a7ac538789e86714c67b7a7dee0307765bda3548c7e9cb1bb98b49d"
+        "sha256": "5af7b563097c3835d8285e9442d2fd51fc9ae54b5f80dc263a4b5d45dfd39e1e"
       },
       {
         "path": "tools/lib/climate-factual-runtime-candidate.js",
@@ -1389,7 +1377,7 @@
       },
       {
         "path": "tools/lib/public-deploy-surface.js",
-        "sha256": "20182e9ee308085393bf47609b409017cdc6306149fcb17a50785bb1bd92898a"
+        "sha256": "98d858e86095ee52bd4c9d48d26f7aa7ca000ebe595dc7cf64cf871895c4b65c"
       },
       {
         "path": "tools/lib/reviewed-runtime-rollback-proof.js",
@@ -1425,7 +1413,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "a2c04803871e24249bcc56e54fd669adc04930d7e7dabfd679a909502bdbd828"
+        "sha256": "7e2b626351e78071d86caf68417bc62d774e87ca721e9d01a3fd557e5fc157db"
       },
       {
         "path": "tools/reconstruct-gcb-country-map.js",

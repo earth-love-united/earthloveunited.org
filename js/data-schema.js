@@ -142,50 +142,6 @@ const DATA_SCHEMA = (() => {
         return errors.length ? errors : null;
       },
     },
-    nbsAtlas: {
-      validate(value) {
-        if (!value || typeof value !== 'object') return 'NbS Atlas root must be an object';
-        const errors = [];
-        if (value.schema_version !== '1.0.0') errors.push('schema_version must be 1.0.0');
-        if (value.release_id !== 'nbs-atlas-public-noncommercial-v1') errors.push('release_id must be nbs-atlas-public-noncommercial-v1');
-        if (value.profile !== 'public_noncommercial') errors.push('profile must be public_noncommercial');
-        if (typeof value.workbench_commit !== 'string' || !/^[0-9a-f]{40}$/.test(value.workbench_commit)) {
-          errors.push('workbench_commit must be a 40-char git SHA');
-        }
-        if (typeof value.calculation_hash !== 'string' || !/^[0-9a-f]{64}$/.test(value.calculation_hash)) {
-          errors.push('calculation_hash must be a 64-char SHA-256');
-        }
-        if (!value.atlas_totals || value.atlas_totals.canonical_v1_rows !== 46648 || value.atlas_totals.canonical_v1_sources !== 247) {
-          errors.push('atlas_totals must record 46,648 canonical rows across 247 sources');
-        }
-        const requiredCats = ['seagrass', 'mangroves', 'algae', 'hemp', 'biochar'];
-        if (!value.categories || typeof value.categories !== 'object') {
-          errors.push('categories object is required');
-        } else {
-          requiredCats.forEach(cat => {
-            if (!value.categories[cat] || typeof value.categories[cat] !== 'object') {
-              errors.push(`category ${cat} is missing`);
-            }
-          });
-        }
-        if (!value.mediterranean_seagrass_spotlight || typeof value.mediterranean_seagrass_spotlight !== 'object') {
-          errors.push('mediterranean_seagrass_spotlight is required');
-        }
-        if (!value.restoration_and_ecosystem_ledger || typeof value.restoration_and_ecosystem_ledger !== 'object') {
-          errors.push('restoration_and_ecosystem_ledger is required');
-        }
-        if (!value.hemp_and_biochar_industrial_ledger || typeof value.hemp_and_biochar_industrial_ledger !== 'object') {
-          errors.push('hemp_and_biochar_industrial_ledger is required');
-        }
-        if (!value.sources || typeof value.sources !== 'object' || Object.keys(value.sources).length < 80) {
-          errors.push('sources catalog is required');
-        }
-        if (!value.countries || typeof value.countries !== 'object' || Object.keys(value.countries).length !== 233) {
-          errors.push('countries slice must contain 233 countries');
-        }
-        return errors.length ? errors : null;
-      },
-    },
   };
 
   // ── Validate a parsed JSON value against its schema ──
@@ -215,20 +171,14 @@ const DATA_SCHEMA = (() => {
     return { ok: false, errors: Array.isArray(errors) ? errors : [errors] };
   }
 
-  function validateNbsAtlas(data) {
-    const errors = SCHEMAS.nbsAtlas.validate(data);
-    if (!errors) return { ok: true, errors: [] };
-    return { ok: false, errors: Array.isArray(errors) ? errors : [errors] };
-  }
-
-  return { validate, validateClimateIntelligence, validateNbsAtlas };
+  return { validate, validateClimateIntelligence };
 })();
 
 window.DATA_SCHEMA = DATA_SCHEMA;
 
 if (typeof MODULE_CONTRACTS !== 'undefined') {
   MODULE_CONTRACTS.register('DATA_SCHEMA', {
-    provides: ['validate', 'validateClimateIntelligence', 'validateNbsAtlas'],
+    provides: ['validate', 'validateClimateIntelligence'],
     requires: [],
   });
 }
