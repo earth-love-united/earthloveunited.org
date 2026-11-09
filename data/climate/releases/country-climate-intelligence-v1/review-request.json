@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "1c25f94d4ea7a62143b4a7dbf40d503935a453f39472732ba048b8a15b5835a2",
+  "calculation_hash": "860710ed2d4edc331da6491eabd8ae8604e9105ffe31fb1fee9d9739af9329cf",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "ea0f834e42af7fa6ada1ca6bda99e98b239983703caa2daca48ec548f23a3c36",
+    "artifact_pin_digest": "4e0a24c049c501f385b1ed17552730f229d8a242d32520638fc7a9105f8d964c",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -340,6 +340,10 @@
         "sha256": "7e1d5e780301e3a33bd79fd3ac414f7a742465f33ae4605abca743d43a3ab983"
       },
       {
+        "path": "assets/legacy/bahar.jpg",
+        "sha256": "17d560ee8b3d5290e9083d5b785ae2fee815433f5cb248142a43db4edb1e05dd"
+      },
+      {
         "path": "assets/legacy/brandon.jpg",
         "sha256": "f1f95c297e0741d1d5b4f93d57ce47aec275cd78006a52f8d5be8f97bc32987b"
       },
@@ -360,8 +364,12 @@
         "sha256": "27d79a350351e382c1a89c8c5855aaefac61837bc364aaf989a96bb8ceda8f75"
       },
       {
+        "path": "assets/legacy/ishita.jpg",
+        "sha256": "fe85600ae31fc0a208e428a3cd20a112b4e844e7771c0457f3dca904af7a6d06"
+      },
+      {
         "path": "assets/legacy/mike.png",
-        "sha256": "d99381ce0478c239c5917aceb804fdacc671cf10a20d3ca0c00190a6da6a2c37"
+        "sha256": "2137cb8f8f51e4a0131c2ac26105e21b3c5ba1354eba9c2f908cfb394485c3bc"
       },
       {
         "path": "assets/legacy/video-what-is-elu.jpg",
@@ -521,7 +529,7 @@
       },
       {
         "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
-        "sha256": "45a4228d31094bee9b4e460979ab2ddd08e7cdfbe458fe4a8b9043ccd491db9a"
+        "sha256": "e8cbd90809f85a602a01b2848132c6b3974edf84946f7fd17314696345ab4652"
       },
       {
         "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -621,7 +629,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "c7e7c40f3cd657d6c4d99198901679ce6fa7272e1b512c85920630e81a06e1a0"
+        "sha256": "ef5065e50d8ca36ea2e173646db9a96788c125e70b65cec80d8c1daad9f97d76"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -857,7 +865,7 @@
       },
       {
         "path": "index.html",
-        "sha256": "78c5e832b937ff082c1385ac6e4eb5177c79d54f75587c91345718b384cc625a"
+        "sha256": "88377d8036c53c85be63eab967788a1367b8113661a9dc7af2084957a003184a"
       },
       {
         "path": "js/app.js",
@@ -1377,7 +1385,7 @@
       },
       {
         "path": "tools/lib/public-deploy-surface.js",
-        "sha256": "98d858e86095ee52bd4c9d48d26f7aa7ca000ebe595dc7cf64cf871895c4b65c"
+        "sha256": "acac827db75b2a53b29cd4c62ab6ff879d27295f5d39bf6edfc9495fad8dd8c1"
       },
       {
         "path": "tools/lib/reviewed-runtime-rollback-proof.js",
@@ -1413,7 +1421,7 @@
       },
       {
         "path": "tools/prepare-country-climate-intelligence-review-request.js",
-        "sha256": "7e2b626351e78071d86caf68417bc62d774e87ca721e9d01a3fd557e5fc157db"
+        "sha256": "440d69d07bc76ddeadf00a0659cc2351c7e549f09e5496bcec1f65a9fd3f44dd"
       },
       {
         "path": "tools/reconstruct-gcb-country-map.js",
