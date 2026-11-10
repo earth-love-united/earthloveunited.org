@@ -520,6 +520,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   <div class="nav-links">
     <a href="#about">About</a>
     <a href="#globe">Globe</a>
+    <a href="atlas.html">Atlas</a>
     <a href="#carbon">Carbon</a>
     <a href="#partners">Partners</a>
     <a href="#team">Team</a>
@@ -1073,6 +1074,11 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
         <p>Automated checks verify every source and all 249 records before each release.</p>
         <a class="card-link" href="https://github.com/earth-love-united/earthloveunited.org/actions" target="_blank" rel="noopener">See the checks →</a>
       </div>
+      <div class="card">
+        <div class="card-tag">NbS Atlas</div>
+        <p>70,705 peer-reviewed rows and 4,517 geocoded field sites across seagrass, mangroves, kelp, hemp, and biochar.</p>
+        <a class="card-link" href="atlas.html">Explore the NbS Atlas →</a>
+      </div>
     </div>
   </section>
 
@@ -1162,6 +1168,7 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <div class="footer-links">
       <a href="#about">About</a>
       <a href="#globe">Globe</a>
+      <a href="atlas.html">Atlas</a>
       <a href="#carbon">Carbon</a>
       <a href="#partners">Partners</a>
       <a href="#team">Team</a>
@@ -1301,175 +1308,198 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   ← Return to the Foundation
 </button>
 <style id="phone-hud-style">
-/* Phone HUD declutter (≤720px) ─────────────────────────────────────
-   Top: logo (returns to the Foundation) + lenses + one menu button.
-   Records, emissions ticker, orbit replay and theme sit in the menu.
-   Country order becomes a bottom sheet, collapsed by default (see the
-   inline script after #globe-back-btn). Wider layouts are unchanged. */
+/* Universal Decluttered Globe HUD ─────────────────────────────────
+   Top: logo (returns to the Foundation) + lenses + theme + one menu button.
+   Records, emissions ticker, and orbit replay sit in the menu.
+   Country order is a sleek bottom sheet, collapsed by default (see the
+   inline script after #globe-back-btn), eliminating the old left sidebar,
+   the 72px ISO-code strip, the bottom-left Return button, and the bottom-right
+   legend box across all viewport widths. */
 #globe-hud-menu { display: none; }
 
+html:root body.globe-mode {
+  --globe-dock-inset: 14px;
+  --globe-dock-height: 46px;
+  --globe-back-height: 46px;
+  --globe-back-lift: 0px;
+}
+
+html:root body.globe-mode #globe-back-btn,
+html:root body.globe-mode .hex-legend {
+  display: none !important;
+}
+
+html:root body.globe-mode #topbar .logo[role="button"] { cursor: pointer; }
+
+html:root body.globe-mode #globe-hud-menu {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  border: 1px solid var(--hud-border);
+  border-radius: 50%;
+  background: var(--hud-bg);
+  color: var(--teal);
+  cursor: pointer;
+}
+
+html:root body.globe-mode #globe-hud-menu:focus-visible,
+html:root body.globe-mode #topbar .logo[role="button"]:focus-visible {
+  outline: 2px solid var(--mint);
+  outline-offset: 2px;
+}
+
+html:root body.globe-mode #topbar:not(.hud-menu-open) .topbar-actions { margin-left: auto; gap: 8px; }
+html:root body.globe-mode #topbar:not(.hud-menu-open) #globe-evidence-browse,
+html:root body.globe-mode #topbar:not(.hud-menu-open) .stats { display: none; }
 @media (max-width: 720px) {
-  html:root body.globe-mode {
-    --globe-dock-height: 46px;
-  }
-
-  html:root body.globe-mode #globe-back-btn { display: none; }
-
-  html:root body.globe-mode #topbar .logo[role="button"] { cursor: pointer; }
-
-  html:root body.globe-mode #globe-hud-menu {
-    display: inline-grid;
-    place-items: center;
-    flex: 0 0 auto;
-    width: 44px;
-    height: 44px;
-    margin-left: auto;
-    border: 1px solid var(--hud-border);
-    border-radius: 50%;
-    background: var(--hud-bg);
-    color: var(--teal);
-    cursor: pointer;
-  }
-
-  html:root body.globe-mode #globe-hud-menu:focus-visible,
-  html:root body.globe-mode #topbar .logo[role="button"]:focus-visible {
-    outline: 2px solid var(--mint);
-    outline-offset: 2px;
-  }
-
-  html:root body.globe-mode #topbar:not(.hud-menu-open) .topbar-actions { margin-left: auto; gap: 8px; }
-  html:root body.globe-mode #topbar:not(.hud-menu-open) #globe-evidence-browse,
-  html:root body.globe-mode #topbar:not(.hud-menu-open) .stats,
   html:root body.globe-mode #topbar:not(.hud-menu-open) #guided-orbit-replay { display: none; }
-  html:root body.globe-mode #topbar:not(.hud-menu-open) #globe-hud-menu { margin-left: 8px; }
+}
+html:root body.globe-mode #topbar:not(.hud-menu-open) #globe-hud-menu { margin-left: 8px; }
 
-  html:root body.globe-mode #topbar.hud-menu-open .topbar-actions {
-    position: absolute;
-    top: calc(100% + 4px);
-    right: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    width: min(260px, calc(100vw - 16px));
-    padding: 10px;
-    border: 1px solid var(--hud-border);
-    border-radius: 6px;
-    background: var(--bg2);
-    box-shadow: var(--hud-shadow);
+html:root body.globe-mode #topbar.hud-menu-open .topbar-actions {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: min(260px, calc(100vw - 16px));
+  padding: 10px;
+  border: 1px solid var(--hud-border);
+  border-radius: 6px;
+  background: var(--bg2);
+  box-shadow: var(--hud-shadow);
+}
+
+html:root body.globe-mode #topbar.hud-menu-open .stats { display: block; }
+
+html:root body.globe-mode #topbar.hud-menu-open .cc-topbar {
+  max-width: none;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 8px 10px;
+  font-size: 11px;
+}
+
+html:root body.globe-mode #topbar.hud-menu-open .cc-topbar::before {
+  content: 'Net emissions since you arrived';
+  flex: 1 0 100%;
+  color: var(--text2);
+  font-family: var(--body);
+  font-size: 10px;
+  letter-spacing: .3px;
+}
+
+html:root body.globe-mode #topbar.hud-menu-open .cc-topbar-icon { display: none; }
+
+html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay,
+html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle {
+  width: 100%;
+  height: 44px;
+  border-radius: 4px;
+}
+
+html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay,
+html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 0 14px;
+  color: var(--teal);
+  font-family: var(--body);
+  font-size: 12px;
+}
+
+html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay svg { width: 16px; height: 16px; flex: 0 0 auto; }
+html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay::after { content: 'Replay the intro orbit'; }
+html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle::after { content: 'Switch light / dark'; }
+
+html:root body.globe-mode #topbar.hud-menu-open #globe-evidence-browse .browse-label-full { display: inline; }
+html:root body.globe-mode #topbar.hud-menu-open #globe-evidence-browse .browse-label-short { display: none; }
+
+/* Country order: collapsible bottom sheet across all viewports */
+html:root body.globe-mode #elu-country-rank-rail {
+  top: auto !important;
+  right: 12px !important;
+  bottom: 12px !important;
+  left: 12px !important;
+  width: auto !important;
+  max-width: 560px;
+  max-height: 56vh;
+}
+
+@media (min-width: 901px) {
+  html:root body.globe-mode.country-card-open:not(.globe-fallback-active) #elu-country-rank-rail {
+    right: 484px !important;
   }
+}
 
-  html:root body.globe-mode #topbar.hud-menu-open .stats { display: block; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-head {
+  justify-content: space-between;
+  min-height: 46px;
+  padding: 6px 8px 6px 12px;
+  text-align: left;
+}
 
-  html:root body.globe-mode #topbar.hud-menu-open .cc-topbar {
-    max-width: none;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 8px 10px;
-    font-size: 11px;
-  }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-title {
+  font-size: 10px;
+  letter-spacing: 1.1px;
+}
 
-  html:root body.globe-mode #topbar.hud-menu-open .cc-topbar::before {
-    content: 'Net emissions since you arrived';
-    flex: 1 0 100%;
-    color: var(--text2);
-    font-family: var(--body);
-    font-size: 10px;
-    letter-spacing: .3px;
-  }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-title::after { content: none; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-relief-note { display: none; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-boundary-compact { display: none; }
 
-  html:root body.globe-mode #topbar.hud-menu-open .cc-topbar-icon { display: none; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 34px;
+  font-size: 15px;
+}
 
-  html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay,
-  html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle {
-    width: 100%;
-    height: 44px;
-    border-radius: 4px;
-  }
+html:root body.globe-mode #elu-country-rank-rail.is-collapsed .elu-rank-list { display: none !important; }
+html:root body.globe-mode #elu-country-rank-rail.is-collapsed .elu-rank-subtitle { display: none; }
 
-  html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay,
-  html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    padding: 0 14px;
-    color: var(--teal);
-    font-family: var(--body);
-    font-size: 12px;
-  }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-list { height: auto; max-height: calc(56vh - 54px); }
 
-  html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay svg { width: 16px; height: 16px; flex: 0 0 auto; }
-  html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay::after { content: 'Replay the intro orbit'; }
-  html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle::after { content: 'Switch light / dark'; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-search { display: grid; font-size: 9px; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-search input { min-height: 44px; font-size: 15px; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure { padding: 6px 12px; text-align: left; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure-full { display: inline; font-size: 10px; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure-compact { display: none; }
 
-  html:root body.globe-mode #topbar.hud-menu-open #globe-evidence-browse .browse-label-full { display: inline; }
-  html:root body.globe-mode #topbar.hud-menu-open #globe-evidence-browse .browse-label-short { display: none; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-row {
+  grid-template-columns: 24px 8px minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 6px 12px;
+}
 
-  /* Country order: bottom sheet */
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-number { display: block; font-size: 10px; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-name { display: block; font-size: 14px; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-gap { display: block; font-size: 10px; }
+html:root body.globe-mode #elu-country-rank-rail .elu-rank-code { display: none; }
+
+@media (max-width: 800px) {
   html:root body.globe-mode #elu-country-rank-rail {
-    top: auto;
-    right: 8px;
-    bottom: 8px;
-    left: 8px;
-    width: auto;
-    max-height: 56vh;
+    right: 8px !important;
+    bottom: 8px !important;
+    left: 8px !important;
+    max-width: none;
   }
-
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-head {
-    justify-content: space-between;
-    min-height: 46px;
-    padding: 6px 8px 6px 12px;
-    text-align: left;
-  }
-
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-title {
-    font-size: 10px;
-    letter-spacing: 1.1px;
-  }
-
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-title::after { content: none; }
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-relief-note { display: none; }
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-boundary-compact { display: none; }
-
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-toggle {
-    display: inline-grid;
-    place-items: center;
-    width: 44px;
-    height: 34px;
-    font-size: 15px;
-  }
-
-  html:root body.globe-mode #elu-country-rank-rail.is-collapsed .elu-rank-list { display: none; }
-
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-list { height: auto; }
-
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-search { display: grid; font-size: 9px; }
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-search input { min-height: 44px; font-size: 16px; }
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure { padding: 6px 12px; text-align: left; }
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure-full { display: inline; font-size: 10px; }
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure-compact { display: none; }
-
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-row {
-    grid-template-columns: 24px 8px minmax(0, 1fr) auto;
-    gap: 8px;
-    padding: 6px 12px;
-  }
-
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-number { display: block; font-size: 10px; }
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-name { display: block; font-size: 14px; }
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-gap { display: block; font-size: 10px; }
-  html:root body.globe-mode #elu-country-rank-rail .elu-rank-code { display: none; }
-
   html:root body.globe-mode #elu-country-card-wrap { left: 8px; right: 8px; }
 }
 </style>
 <script>
-/* Phone HUD (≤720px): secondary controls live behind one menu button, the
-   logo returns to the Foundation, and the country order opens as a bottom
-   sheet that starts collapsed. Wider layouts are untouched. */
+/* Universal Decluttered Globe HUD: secondary controls live behind one menu
+   button, the logo returns to the Foundation, and the country order opens as a
+   bottom sheet that starts collapsed on all viewports. */
 (function () {
-  var phone = window.matchMedia('(max-width: 720px)');
   var topbar = document.getElementById('topbar');
   var menu = document.getElementById('globe-hud-menu');
   var logo = topbar && topbar.querySelector('.logo');
@@ -1482,22 +1512,37 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   document.addEventListener('click', function (e) { if (!topbar.contains(e.target) || e.target.closest('.topbar-actions button')) setMenu(false); });
   window.addEventListener('keydown', function (e) { if (e.key === 'Escape' && topbar.classList.contains('hud-menu-open')) { e.stopImmediatePropagation(); setMenu(false); menu.focus(); } }, true);
   if (logo) {
-    var goHome = function () { if (phone.matches && document.body.classList.contains('globe-mode') && typeof exitGlobe === 'function') exitGlobe(); };
+    var goHome = function () { if (document.body.classList.contains('globe-mode') && typeof exitGlobe === 'function') exitGlobe(); };
     var syncLogo = function () {
-      if (phone.matches) { logo.setAttribute('role', 'button'); logo.setAttribute('tabindex', '0'); logo.setAttribute('aria-label', 'Earth Love United, return to the Foundation'); }
-      else { logo.removeAttribute('role'); logo.removeAttribute('tabindex'); logo.removeAttribute('aria-label'); }
+      logo.setAttribute('role', 'button');
+      logo.setAttribute('tabindex', '0');
+      logo.setAttribute('aria-label', 'Earth Love United, return to the Foundation');
     };
     syncLogo();
-    if (phone.addEventListener) phone.addEventListener('change', syncLogo);
     logo.addEventListener('click', goHome);
     logo.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goHome(); } });
   }
   var userExpanded = false;
   function collapseRail(rail) {
+    if (!rail) return;
     var toggle = rail.querySelector('.elu-rank-toggle');
-    if (toggle && phone.matches && !userExpanded && !rail.classList.contains('is-collapsed')) toggle.click();
-    rail.addEventListener('click', function (e) { if (e.isTrusted && e.target.closest('.elu-rank-toggle')) userExpanded = !rail.classList.contains('is-collapsed'); });
+    if (toggle && !userExpanded && !rail.classList.contains('is-collapsed')) {
+      rail.classList.add('is-collapsed');
+      toggle.textContent = '+';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Expand country ranking');
+    }
+    if (!rail.dataset.hudCollapseBound) {
+      rail.dataset.hudCollapseBound = 'true';
+      rail.addEventListener('click', function (e) {
+        if (e.isTrusted && e.target.closest('.elu-rank-toggle')) {
+          userExpanded = !rail.classList.contains('is-collapsed');
+        }
+      });
+    }
   }
+  var initialRail = document.getElementById('elu-country-rank-rail');
+  if (initialRail) collapseRail(initialRail);
   new MutationObserver(function (records) {
     records.forEach(function (r) { r.addedNodes.forEach(function (n) { if (n.id === 'elu-country-rank-rail') collapseRail(n); }); });
   }).observe(document.body, { childList: true });
@@ -1580,6 +1625,1630 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   if (hero) new IntersectionObserver(function (e) {
     if (e[0].isIntersecting) links.forEach(function (a) { a.removeAttribute('aria-current'); });
   }, { rootMargin: '-45% 0px -50% 0px' }).observe(hero);
+})();
+</script>
+
+<style id="nbs-globe-style">
+/* Nature-Based Solutions (NbS) In-Pill Subtabs + Additive Living Globe ─────────
+   1. Injects NbS tab directly inside #climate-lens-controls.
+   2. When NbS is clicked, #climate-lens-controls transforms in-place into a
+      horizontally scrollable subtab pill preserving exact pill height, border,
+      and glass surface.
+   3. Renders GLC1 0.25° mangrove binary grids + 4,517 geocoded field cores +
+      1,111 coastal clusters + 197 country synthesis nodes additively on the
+      Living Globe, plus click-to-inspect place readout card & country drawer. */
+#climate-lens-controls .nbs-pill-subtabs {
+  display: none;
+}
+
+#climate-lens-controls.is-nbs-mode {
+  max-width: min(860px, calc(100vw - 32px));
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+#climate-lens-controls.is-nbs-mode::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 1001px) {
+  body.globe-mode.country-card-open:not(.globe-fallback-active) #climate-lens-controls.is-nbs-mode {
+    max-width: min(680px, calc(100vw - 520px));
+  }
+}
+
+#climate-lens-controls.is-nbs-mode > .climate-lens-label,
+#climate-lens-controls.is-nbs-mode > button[data-climate-lens],
+#climate-lens-controls.is-nbs-mode > button[data-nbs-enter] {
+  display: none !important;
+}
+
+#climate-lens-controls.is-nbs-mode > .nbs-pill-subtabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: nowrap;
+  min-width: max-content;
+}
+
+#climate-lens-controls button.nbs-pill-enter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 64px;
+}
+
+#climate-lens-controls .nbs-pill-back {
+  min-width: 34px !important;
+  width: 34px;
+  padding: 6px 0 !important;
+  font-family: var(--mono) !important;
+  font-size: 12px !important;
+  color: var(--teal) !important;
+}
+
+#climate-lens-controls .nbs-pill-tag {
+  padding: 0 5px 0 3px;
+  color: var(--teal);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+#climate-lens-controls .nbs-pill-subtabs button[data-nbs-subtab] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: auto;
+  min-height: 40px;
+  padding: 6px 8.5px;
+  font-size: 9px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+#climate-lens-controls .nbs-pill-subtabs button[data-nbs-subtab].is-active::before {
+  content: none;
+}
+
+#climate-lens-controls a.nbs-pill-atlas-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 40px;
+  padding: 6px 9px;
+  border: 1px solid rgba(110, 242, 206, .24);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--teal);
+  font: 500 9px/1 var(--mono);
+  letter-spacing: .03em;
+  text-decoration: none;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+#climate-lens-controls a.nbs-pill-atlas-link:hover,
+#climate-lens-controls a.nbs-pill-atlas-link:focus-visible {
+  border-color: var(--hud-border-strong);
+  background: var(--hud-cell-hover);
+  color: var(--mint);
+  outline: none;
+}
+
+.nbs-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: 0 0 6px;
+}
+
+/* Country Card NbS Drawer + Merged 0.25° Cell / Field Core Readout */
+.tt-nbs-cell-focus {
+  margin: 6px 0 10px;
+  padding: 9px 11px;
+  border: 1px solid var(--hud-border-strong);
+  border-radius: 10px;
+  background: rgba(46, 196, 182, .09);
+}
+html[data-theme="light"] #hex-country-tooltip.selected .tt-nbs-cell-focus {
+  background: rgba(31, 94, 70, .07);
+}
+.tt-nbs-cell-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+.tt-nbs-cell-coords {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--text2);
+  margin: 2px 0 6px;
+}
+.tt-nbs-cell-rows {
+  display: grid;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--hud-divider);
+  font-size: 11px;
+}
+.tt-nbs-cell-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.tt-nbs-cell-row strong {
+  font-family: var(--mono);
+  color: var(--mint);
+  white-space: nowrap;
+}
+
+/* Country Card NbS Drawer */
+#hex-country-tooltip.selected .tt-nbs-drawer {
+  margin-top: 12px;
+  border-top: 1px solid var(--hud-divider);
+  padding-top: 10px;
+}
+#hex-country-tooltip.selected .tt-nbs-drawer > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--teal);
+  list-style: none;
+}
+#hex-country-tooltip.selected .tt-nbs-drawer > summary::-webkit-details-marker {
+  display: none;
+}
+.tt-nbs-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 6px 0 10px;
+}
+.tt-nbs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid var(--hud-border);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--text);
+}
+.tt-nbs-list {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.tt-nbs-item {
+  padding: 7px 9px;
+  border: 1px solid var(--hud-border);
+  border-radius: 8px;
+  background: rgba(15, 29, 44, .32);
+  font-size: 11px;
+}
+html[data-theme="light"] #hex-country-tooltip.selected .tt-nbs-item {
+  background: rgba(255, 255, 255, .66);
+}
+.tt-nbs-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.tt-nbs-item-label {
+  color: var(--text);
+  font-weight: 500;
+}
+.tt-nbs-item-val {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mint);
+  white-space: nowrap;
+}
+.tt-nbs-item-sub {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--text2);
+}
+.tt-nbs-item-sub a {
+  color: var(--teal);
+  text-decoration: none;
+}
+.tt-nbs-item-sub a:hover {
+  text-decoration: underline;
+}
+.tt-nbs-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+.tt-nbs-btn,
+.tt-nbs-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 11px;
+  border: 1px solid var(--hud-border-strong);
+  border-radius: 999px;
+  background: var(--hud-cell-hover);
+  color: var(--teal);
+  font-family: var(--mono);
+  font-size: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.tt-nbs-btn:hover,
+.tt-nbs-link:hover {
+  color: var(--mint);
+}
+
+</style>
+
+<script id="nbs-globe-bridge">
+(function () {
+  var PATHWAY_META = {
+    seagrass:          { label: 'Seagrass',     color: '#2ec4b6' },
+    mangroves:         { label: 'Mangroves',    color: '#34d399' },
+    'mangrove-change': { label: 'Mangrove Δ',   color: '#2dd4bf' },
+    'mangrove-soc':    { label: 'Mangrove SOC', color: '#f59e0b' },
+    algae:             { label: 'Kelp',         color: '#38bdf8' },
+    hemp:              { label: 'Hemp',         color: '#d4a373' },
+    biochar:           { label: 'Biochar',      color: '#f59e0b' }
+  };
+
+  var GRID_BASE = 'data/climate/runtime/mangrove-grids/';
+
+  var nbsAtlas = null;
+  var nbsSites = null;
+  var loadingPromise = null;
+  var gridCache = {};
+  var gridPromises = {};
+  var nbsMode = false;
+  var activeSubtab = 'all';
+  var filterIso = null;
+  var selectedCellReadout = null;
+  var worldHooked = false;
+  var pointerDownPos = null;
+  var deepLinkHandled = false;
+  var nbsBatchRoot = null;
+  var nbsThreePrimitives = null;
+  var nbsMeshBySubtab = {};
+
+  function esc(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fmtNum(val, d) {
+    if (val == null || val === '' || !Number.isFinite(Number(val))) return '—';
+    var n = Number(val);
+    var dec = d != null ? d : (Math.abs(n) >= 100 ? 0 : Math.abs(n) >= 1 ? 2 : 3);
+    return n.toLocaleString('en-US', { maximumFractionDigits: dec });
+  }
+
+  function align4(n) {
+    return (n + 3) & ~3;
+  }
+
+  function decodeGLC1(buf) {
+    var dv = new DataView(buf);
+    var magic = String.fromCharCode(dv.getUint8(0), dv.getUint8(1), dv.getUint8(2), dv.getUint8(3));
+    if (magic !== 'GLC1') throw new Error('bad GLC1 magic: ' + magic);
+    var nRows = dv.getUint32(4, true);
+    var ncols = dv.getUint16(8, true);
+    var flags = dv.getUint16(10, true);
+    var hasUnc = (flags & 1) !== 0;
+    var w = 2;
+    var rowOff = 12;
+    var colOff = rowOff + nRows * w;
+    var valOff = align4(colOff + nRows * w);
+    var uncOff = valOff + nRows * 4;
+    var rows = new Uint16Array(buf, rowOff, nRows);
+    var cols = new Uint16Array(buf, colOff, nRows);
+    var vals = new Float32Array(buf, valOff, nRows);
+    var uncs = hasUnc ? new Float32Array(buf, uncOff, nRows) : null;
+    var index = new Map();
+    for (var i = 0; i < nRows; i++) {
+      index.set(rows[i] * ncols + cols[i], i);
+    }
+    return { nRows: nRows, ncols: ncols, rows: rows, cols: cols, vals: vals, uncs: uncs, index: index };
+  }
+
+  function loadGrid(stem) {
+    if (gridCache[stem]) return Promise.resolve(gridCache[stem]);
+    if (gridPromises[stem]) return gridPromises[stem];
+    gridPromises[stem] = Promise.all([
+      fetch(GRID_BASE + stem + '.bin').then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.arrayBuffer();
+      }),
+      fetch(GRID_BASE + stem + '.attrs.json').then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+    ]).then(function (res) {
+      var decoded = decodeGLC1(res[0]);
+      decoded.attrs = res[1];
+      decoded.stem = stem;
+      gridCache[stem] = decoded;
+      return decoded;
+    }).catch(function (err) {
+      delete gridPromises[stem];
+      console.warn('[NbS Bridge] Could not load GLC1 grid ' + stem + ':', err);
+      return null;
+    });
+    return gridPromises[stem];
+  }
+
+  function lookupGridCell(grid, lat, lon) {
+    if (!grid) return null;
+    var step = (grid.attrs && grid.attrs.cell_deg) || 0.25;
+    var ncols = grid.ncols || Math.round(360 / step);
+    var nrows = Math.round(180 / step);
+    var r = Math.floor((lat + 90) / step);
+    var c = Math.floor((lon + 180) / step);
+    if (r < 0 || r >= nrows || c < 0 || c >= ncols) return null;
+    var hit = grid.index.get(r * ncols + c);
+    if (hit !== undefined) {
+      return {
+        val: grid.vals[hit],
+        unc: grid.uncs ? grid.uncs[hit] : null,
+        lat: -90 + (r + 0.5) * step,
+        lon: -180 + (c + 0.5) * step
+      };
+    }
+    for (var dr = -1; dr <= 1; dr++) {
+      for (var dc = -1; dc <= 1; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        var rr = r + dr;
+        var cc = (c + dc + ncols) % ncols;
+        if (rr < 0 || rr >= nrows) continue;
+        var h2 = grid.index.get(rr * ncols + cc);
+        if (h2 !== undefined) {
+          return {
+            val: grid.vals[h2],
+            unc: grid.uncs ? grid.uncs[h2] : null,
+            lat: -90 + (rr + 0.5) * step,
+            lon: -180 + (cc + 0.5) * step
+          };
+        }
+      }
+    }
+    return null;
+  }
+
+  function ensureNbsData(needSubtab) {
+    var basePromise = (nbsAtlas && nbsSites)
+      ? Promise.resolve({ atlas: nbsAtlas, sites: nbsSites })
+      : (loadingPromise || (loadingPromise = Promise.all([
+          fetch('data/climate/runtime/nbs-atlas.json?v=20261110v4', { cache: 'no-store' }).then(function (r) { return r.json(); }),
+          fetch('data/climate/runtime/nbs-sites.json?v=20261110v4', { cache: 'no-store' }).then(function (r) { return r.json(); })
+        ]).then(function (res) {
+          nbsAtlas = res[0];
+          nbsSites = res[1];
+          if (nbsSites && nbsSites.seagrass_grid && !gridCache['seagrass-grid']) {
+            var sg = nbsSites.seagrass_grid;
+            var sgIdx = new Map();
+            for (var si = 0; si < sg.count; si++) {
+              sgIdx.set(sg.rows[si] * 1440 + sg.cols[si], si);
+            }
+            gridCache['seagrass-grid'] = {
+              step: sg.cell_deg || 0.25,
+              nrows: 720,
+              ncols: 1440,
+              nRows: sg.count,
+              rows: sg.rows,
+              cols: sg.cols,
+              vals: sg.vals,
+              uncs: null,
+              index: sgIdx
+            };
+          }
+          return { atlas: nbsAtlas, sites: nbsSites };
+        }).catch(function (err) {
+          loadingPromise = null;
+          console.warn('[NbS Bridge] Could not load NbS runtime data:', err);
+          return null;
+        })));
+
+    var sub = needSubtab || activeSubtab;
+    var gridToLoad = [];
+    if (sub === 'all' || sub === 'mangroves') {
+      gridToLoad.push(loadGrid('mangrove-extent-2020'), loadGrid('mangrove-soc-sanderman'));
+    } else if (sub === 'mangrove-change') {
+      gridToLoad.push(loadGrid('mangrove-extent-change'), loadGrid('mangrove-extent-2020'));
+    } else if (sub === 'mangrove-soc') {
+      gridToLoad.push(loadGrid('mangrove-soc-sanderman'), loadGrid('mangrove-soc-maxwell'), loadGrid('mangrove-extent-2020'));
+    }
+
+    return Promise.all([basePromise].concat(gridToLoad)).then(function (res) {
+      return res[0];
+    });
+  }
+
+  function clearCellReadout() {
+    selectedCellReadout = null;
+  }
+
+  function injectPillControls() {
+    var pill = document.getElementById('climate-lens-controls');
+    if (!pill || pill.querySelector('[data-nbs-enter]')) return;
+
+    var enterBtn = document.createElement('button');
+    enterBtn.type = 'button';
+    enterBtn.className = 'nbs-pill-enter';
+    enterBtn.setAttribute('data-nbs-enter', '');
+    enterBtn.setAttribute('aria-pressed', 'false');
+    enterBtn.setAttribute('title', 'Nature-Based Solutions place-based layers: Seagrass, Mangroves (0.25° GMW v3 + Sanderman/Maxwell SOC), Kelp, Hemp, and Biochar');
+    enterBtn.innerHTML = '<span class="nbs-dot" style="background:#2ec4b6"></span>NbS';
+    pill.appendChild(enterBtn);
+
+    var subWrap = document.createElement('div');
+    subWrap.className = 'nbs-pill-subtabs';
+    subWrap.setAttribute('role', 'group');
+    subWrap.setAttribute('aria-label', 'Nature-Based Solutions subtabs');
+    subWrap.innerHTML =
+      '<button type="button" class="nbs-pill-back" data-nbs-back aria-label="Return to Carbon, Power, and Physical lenses" title="Back to main lenses">←</button>' +
+      '<span class="nbs-pill-tag">NbS</span>' +
+      '<button type="button" data-nbs-subtab="all" aria-pressed="false">All</button>' +
+      '<button type="button" data-nbs-subtab="seagrass" aria-pressed="false"><span class="nbs-dot" style="background:#2ec4b6"></span>Seagrass</button>' +
+      '<button type="button" data-nbs-subtab="mangroves" aria-pressed="false"><span class="nbs-dot" style="background:#34d399"></span>Mangroves</button>' +
+      '<button type="button" data-nbs-subtab="mangrove-change" aria-pressed="false"><span class="nbs-dot" style="background:#2dd4bf"></span>Mangrove Δ</button>' +
+      '<button type="button" data-nbs-subtab="mangrove-soc" aria-pressed="false"><span class="nbs-dot" style="background:#f59e0b"></span>Mangrove SOC</button>' +
+      '<button type="button" data-nbs-subtab="algae" aria-pressed="false"><span class="nbs-dot" style="background:#38bdf8"></span>Kelp</button>' +
+      '<button type="button" data-nbs-subtab="hemp" aria-pressed="false"><span class="nbs-dot" style="background:#d4a373"></span>Hemp</button>' +
+      '<button type="button" data-nbs-subtab="biochar" aria-pressed="false"><span class="nbs-dot" style="background:#f59e0b"></span>Biochar</button>' +
+      '<a class="nbs-pill-atlas-link" id="nbs-bar-atlas-link" href="atlas.html">Atlas ↗</a>';
+    pill.appendChild(subWrap);
+
+    enterBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      enterNbsMode(activeSubtab || 'all');
+    });
+
+    var backBtn = subWrap.querySelector('[data-nbs-back]');
+    if (backBtn) {
+      backBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        exitNbsMode();
+      });
+    }
+
+    subWrap.querySelectorAll('button[data-nbs-subtab]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        filterIso = null;
+        setNbsSubtab(btn.getAttribute('data-nbs-subtab'));
+      });
+    });
+
+    pill.querySelectorAll('button[data-climate-lens]').forEach(function (lensBtn) {
+      lensBtn.addEventListener('click', function () {
+        if (nbsMode) exitNbsMode();
+      });
+    });
+
+    syncPillUi();
+  }
+
+  function syncPillUi() {
+    var pill = document.getElementById('climate-lens-controls');
+    if (!pill) return;
+    pill.classList.toggle('is-nbs-mode', nbsMode);
+    var enterBtn = pill.querySelector('[data-nbs-enter]');
+    if (enterBtn) {
+      enterBtn.classList.toggle('is-active', nbsMode);
+      enterBtn.setAttribute('aria-pressed', 'false');
+    }
+    pill.querySelectorAll('button[data-nbs-subtab]').forEach(function (b) {
+      var on = nbsMode && b.getAttribute('data-nbs-subtab') === activeSubtab;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', nbsMode ? String(on) : 'false');
+    });
+  }
+
+  function enterNbsMode(subtab, isoOptional) {
+    nbsMode = true;
+    activeSubtab = subtab || activeSubtab || 'all';
+    if (isoOptional !== undefined) filterIso = isoOptional;
+    injectPillControls();
+    syncPillUi();
+    updateNbsLegend();
+    ensureNbsData(activeSubtab).then(function (loaded) {
+      if (!loaded || !nbsMode) return;
+      hookGlobeWorld();
+      applyGlobePoints();
+      if (isoOptional && nbsSites && window.GlobeModule && window.GlobeModule.world) {
+        var gm = window.GlobeModule;
+        var cn = (nbsSites.country_nodes || []).find(function (n) { return n.iso === isoOptional; });
+        if (cn && typeof gm.world.pointOfView === 'function') {
+          gm.world.pointOfView({ lat: cn.lat, lng: cn.lon, altitude: 1.45 }, 900);
+        }
+        if (gm._featureByIso && gm._featureByIso[isoOptional] && typeof gm._selectCountryFeature === 'function') {
+          gm._selectCountryFeature(gm._featureByIso[isoOptional]);
+        }
+      }
+      injectCountryNbsDrawer(true);
+    });
+  }
+
+  function exitNbsMode() {
+    nbsMode = false;
+    filterIso = null;
+    clearCellReadout();
+    syncPillUi();
+    hideAllNbsMeshes();
+    injectCountryNbsDrawer(true);
+    var railTitle = document.querySelector('#elu-country-rank-rail .elu-rank-title');
+    if (railTitle && railTitle.dataset.origLensTitle) {
+      railTitle.textContent = railTitle.dataset.origLensTitle;
+      delete railTitle.dataset.origLensTitle;
+    }
+    var gm = window.GlobeModule;
+    if (gm && gm.world) {
+      gm.world.pointsData([]).ringsData([]);
+      if (typeof gm.world.enablePointerInteraction === 'function') gm.world.enablePointerInteraction(false);
+      if (typeof gm._renderLegend === 'function') gm._renderLegend();
+      if (typeof gm._syncIdleRenderLoop === 'function') gm._syncIdleRenderLoop();
+    }
+  }
+
+  function setNbsSubtab(subtab, isoOptional) {
+    if (!subtab || subtab === 'off') {
+      exitNbsMode();
+      return;
+    }
+    enterNbsMode(subtab, isoOptional);
+  }
+
+  function updateNbsLegend() {
+    if (!nbsMode) return;
+    var metaTitle = 'NbS Atlas · All Place-Based Layers (0.25° Grids + 4,962 Field Stations)';
+    var rowsHtml = '';
+    var footText = 'Click any coastal cell, field core, or country node on the globe to inspect measured values and DOI citations.';
+
+    if (activeSubtab === 'all') {
+      rowsHtml =
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#34d399" aria-hidden="true"></span>Mangroves (GMW v3 0.25°)</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#2ec4b6" aria-hidden="true"></span>Seagrass (4,771 0.25° cells + cores)</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#38bdf8" aria-hidden="true"></span>Kelp · Hemp · Biochar</div>';
+    } else if (activeSubtab === 'seagrass') {
+      metaTitle = 'Seagrass Meadows · 4,771 0.25° Coastal Cells + 1,910 Field Stations';
+      rowsHtml =
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#0d9488" aria-hidden="true"></span>1–10 records / 0.25° cell</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#2dd4bf" aria-hidden="true"></span>10–100 records / 0.25° cell</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#99f6e4" aria-hidden="true"></span>&gt;100 records + field cores</div>';
+    } else if (activeSubtab === 'mangroves') {
+      metaTitle = 'Mangrove Canopy (GMW v3 2020 · 0.25°) + 2,671 Field Cores';
+      rowsHtml =
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#0f5132" aria-hidden="true"></span>1–50 ha / 0.25° cell</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#10b981" aria-hidden="true"></span>50–500 ha / 0.25° cell</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#6ee7b7" aria-hidden="true"></span>&gt;500 ha + field cores</div>';
+    } else if (activeSubtab === 'mangrove-change') {
+      metaTitle = 'Mangrove Net Change (1996 → 2020 · GMW v3 0.25°)';
+      rowsHtml =
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#f97316" aria-hidden="true"></span>Net mangrove loss (ha)</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#2dd4bf" aria-hidden="true"></span>Net mangrove gain (ha)</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#5eead4" aria-hidden="true"></span>&gt;50 ha net gain</div>';
+    } else if (activeSubtab === 'mangrove-soc') {
+      metaTitle = 'Mangrove Soil Organic Carbon (0–1 m · t C/ha · 0.25°)';
+      rowsHtml =
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#92400e" aria-hidden="true"></span>150–280 t C/ha (Sanderman)</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#f59e0b" aria-hidden="true"></span>280–420 t C/ha (0–1 m)</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#fde68a" aria-hidden="true"></span>&gt;420 t C/ha + Maxwell cores</div>';
+    } else if (activeSubtab === 'algae') {
+      metaTitle = 'Kelp & Macroalgae · 381 Field Sites + National Harvest';
+      rowsHtml =
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#38bdf8" aria-hidden="true"></span>381 NPP &amp; biomass field sites</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#0284c7" aria-hidden="true"></span>FAO FishStatJ national records</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#7dd3fc" aria-hidden="true"></span>Pessarrodona et al. 2022</div>';
+    } else if (activeSubtab === 'hemp') {
+      metaTitle = 'Industrial Hemp · 43 Countries (FAOSTAT / Eurostat)';
+      rowsHtml =
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#d4a373" aria-hidden="true"></span>Cultivated fibre &amp; seed area (ha)</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#eab308" aria-hidden="true"></span>Yield &amp; hurd production</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#fef08a" aria-hidden="true"></span>43 national synthesis records</div>';
+    } else if (activeSubtab === 'biochar') {
+      metaTitle = 'Biochar Pyrogenic Carbon · 195 Countries (IPCC 2019)';
+      rowsHtml =
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#f59e0b" aria-hidden="true"></span>Soil removal potential (MtCO₂/yr)</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#fbbf24" aria-hidden="true"></span>IPCC Tier-1 Fperm100 factors</div>' +
+        '<div class="hex-legend-row"><span class="hex-legend-swatch" style="background:#fde68a" aria-hidden="true"></span>Roe et al. 2021 / Woolf 2010</div>';
+    }
+
+    var legend = document.getElementById('hex-legend');
+    if (legend) {
+      legend.setAttribute('aria-label', metaTitle + ' legend');
+      legend.innerHTML =
+        '<div class="hex-legend-title">' + metaTitle + '</div>' +
+        rowsHtml +
+        '<div class="hex-legend-note">' + footText + '</div>';
+    }
+
+    var railTitle = document.querySelector('#elu-country-rank-rail .elu-rank-title');
+    if (railTitle) {
+      if (!railTitle.dataset.origLensTitle) {
+        railTitle.dataset.origLensTitle = railTitle.textContent;
+      }
+      railTitle.textContent = metaTitle;
+    }
+  }
+
+  function hookGlobeWorld() {
+    var gm = window.GlobeModule;
+    if (!gm || !gm.world || worldHooked) return;
+    worldHooked = true;
+
+    var origClear = gm._clearCountryProjects;
+    gm._clearCountryProjects = function () {
+      if (!nbsMode) {
+        if (typeof origClear === 'function') origClear.call(gm);
+      } else {
+        applyGlobePoints();
+      }
+    };
+
+    var origRenderLegend = gm._renderLegend;
+    if (typeof origRenderLegend === 'function') {
+      gm._renderLegend = function () {
+        if (nbsMode) {
+          updateNbsLegend();
+          return;
+        }
+        return origRenderLegend.apply(this, arguments);
+      };
+    }
+
+    var origRenderRankRail = gm._renderRankRail;
+    if (typeof origRenderRankRail === 'function') {
+      gm._renderRankRail = function () {
+        var res = origRenderRankRail.apply(this, arguments);
+        if (nbsMode) updateNbsLegend();
+        return res;
+      };
+    }
+
+    if (gm._canvasEl) {
+      gm._canvasEl.addEventListener('pointerdown', function (e) {
+        pointerDownPos = { x: e.clientX, y: e.clientY };
+      }, { passive: true });
+
+      gm._canvasEl.addEventListener('pointerup', function (e) {
+        if (!nbsMode || !pointerDownPos) return;
+        var dx = e.clientX - pointerDownPos.x;
+        var dy = e.clientY - pointerDownPos.y;
+        pointerDownPos = null;
+        if (dx * dx + dy * dy > 36) return;
+        var coords = pointerToGeoCoords(e);
+        if (coords) {
+          inspectGeoLocation(coords.lat, coords.lng);
+        }
+      }, { passive: true });
+    }
+  }
+
+  function pointerToGeoCoords(e) {
+    var gm = window.GlobeModule;
+    if (!gm || !gm.world || !gm._canvasEl) return null;
+    var rect = gm._canvasEl.getBoundingClientRect();
+    var relX = e.clientX - rect.left;
+    var relY = e.clientY - rect.top;
+    if (typeof gm.world.toGeoCoords === 'function') {
+      try {
+        var hit = gm.world.toGeoCoords({ x: relX, y: relY });
+        if (hit && Number.isFinite(hit.lat) && Number.isFinite(hit.lng)) return hit;
+      } catch (_) {}
+    }
+    var cam = typeof gm.world.camera === 'function' ? gm.world.camera() : null;
+    if (!cam || !cam.position) return null;
+    var R = gm._globeRadius || 100;
+    var ndcX = (relX / rect.width) * 2 - 1;
+    var ndcY = -(relY / rect.height) * 2 + 1;
+    var fovRad = (cam.fov || 50) * Math.PI / 180;
+    var tanHalfFov = Math.tan(fovRad / 2);
+    var aspect = rect.width / Math.max(1, rect.height);
+
+    var ox = cam.position.x, oy = cam.position.y, oz = cam.position.z;
+    var lenO = Math.sqrt(ox * ox + oy * oy + oz * oz);
+    if (!lenO) return null;
+    var fx = -ox / lenO, fy = -oy / lenO, fz = -oz / lenO;
+    var ux = cam.up ? cam.up.x : 0, uy = cam.up ? cam.up.y : 1, uz = cam.up ? cam.up.z : 0;
+    var rx = fy * uz - fz * uy, ry = fz * ux - fx * uz, rz = fx * uy - fy * ux;
+    var lenR = Math.sqrt(rx * rx + ry * ry + rz * rz) || 1;
+    rx /= lenR; ry /= lenR; rz /= lenR;
+    var tux = ry * fz - rz * fy, tuy = rz * fx - rx * fz, tuz = rx * fy - ry * fx;
+
+    var vx = fx + rx * (ndcX * aspect * tanHalfFov) + tux * (ndcY * tanHalfFov);
+    var vy = fy + ry * (ndcX * aspect * tanHalfFov) + tuy * (ndcY * tanHalfFov);
+    var vz = fz + rz * (ndcX * aspect * tanHalfFov) + tuz * (ndcY * tanHalfFov);
+    var lenV = Math.sqrt(vx * vx + vy * vy + vz * vz) || 1;
+    vx /= lenV; vy /= lenV; vz /= lenV;
+
+    var b = 2 * (ox * vx + oy * vy + oz * vz);
+    var c = (ox * ox + oy * oy + oz * oz) - R * R;
+    var disc = b * b - 4 * c;
+    if (disc < 0) return null;
+    var t = (-b - Math.sqrt(disc)) / 2;
+    if (t <= 0) return null;
+    var px = ox + t * vx, py = oy + t * vy, pz = oz + t * vz;
+    var lat = Math.asin(Math.max(-1, Math.min(1, py / R))) * 180 / Math.PI;
+    var lng = Math.atan2(px, pz) * 180 / Math.PI;
+    return { lat: lat, lng: lng };
+  }
+
+  var HEX_RGB_CACHE = {};
+  function hexToRgbUnit(hex) {
+    if (HEX_RGB_CACHE[hex]) return HEX_RGB_CACHE[hex];
+    var h = String(hex || '#2ec4b6').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var num = parseInt(h, 16);
+    var out = [((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255];
+    HEX_RGB_CACHE[hex] = out;
+    return out;
+  }
+
+  function colorMangroveExtent(ha) {
+    if (ha >= 1500) return '#6ee7b7';
+    if (ha >= 400) return '#34d399';
+    if (ha >= 80) return '#10b981';
+    if (ha >= 15) return '#059669';
+    return '#047857';
+  }
+
+  function colorMangroveChange(deltaHa) {
+    if (deltaHa >= 0) {
+      return deltaHa >= 50 ? '#5eead4' : deltaHa >= 10 ? '#2dd4bf' : '#0d9488';
+    }
+    var loss = Math.abs(deltaHa);
+    return loss >= 50 ? '#fb923c' : loss >= 10 ? '#f97316' : '#ea580c';
+  }
+
+  function colorMangroveSoc(soc) {
+    if (soc >= 460) return '#fde68a';
+    if (soc >= 360) return '#fbbf24';
+    if (soc >= 280) return '#f59e0b';
+    if (soc >= 200) return '#d97706';
+    return '#b45309';
+  }
+
+  function colorSeagrassGrid(recs) {
+    if (recs >= 100) return '#99f6e4';
+    if (recs >= 25) return '#5eead4';
+    if (recs >= 8) return '#2dd4bf';
+    if (recs >= 3) return '#14b8a6';
+    return '#0d9488';
+  }
+
+  // Extract Three.js BufferGeometry, Float32BufferAttribute, Uint32BufferAttribute,
+  // Mesh, and MeshMaterial constructors directly from the live Globe scene without
+  // touching js/globe.js or loading an extra script.
+  function ensureThreePrimitives() {
+    if (nbsThreePrimitives) return nbsThreePrimitives;
+    var gm = window.GlobeModule;
+    if (!gm || !gm.world || typeof gm.world.scene !== 'function') return null;
+    var scene = gm.world.scene();
+    if (!scene) return null;
+
+    var sampleMesh = null;
+    var sampleMat = null;
+    var samplePosAttr = null;
+    var sampleIdxAttr = null;
+    scene.traverse(function (obj) {
+      if (sampleMesh) return;
+      if (obj && obj.isMesh && obj.geometry && obj.geometry.attributes && obj.geometry.attributes.position) {
+        var m = Array.isArray(obj.material) ? obj.material[0] : obj.material;
+        if (m && m.constructor) {
+          sampleMesh = obj;
+          sampleMat = m;
+          samplePosAttr = obj.geometry.attributes.position;
+          sampleIdxAttr = obj.geometry.index;
+        }
+      }
+    });
+    if (!sampleMesh || !sampleMat || !samplePosAttr) return null;
+
+    var BaseGeo = sampleMesh.geometry.constructor;
+    while (Object.getPrototypeOf(BaseGeo.prototype) && typeof Object.getPrototypeOf(BaseGeo.prototype).setIndex === 'function') {
+      BaseGeo = Object.getPrototypeOf(BaseGeo.prototype).constructor;
+    }
+    var BaseAttr = samplePosAttr.constructor;
+    while (Object.getPrototypeOf(BaseAttr.prototype) && typeof Object.getPrototypeOf(BaseAttr.prototype).setUsage === 'function') {
+      BaseAttr = Object.getPrototypeOf(BaseAttr.prototype).constructor;
+    }
+
+    var GroupCtor = scene.constructor;
+    nbsBatchRoot = new GroupCtor();
+    nbsBatchRoot.name = 'nbs-hitman-batch-root';
+    // Attach inside the globe's coordinate root so rotations/scales match country polygons
+    var targetParent = sampleMesh.parent || scene;
+    while (targetParent.parent && targetParent.parent !== scene) {
+      targetParent = targetParent.parent;
+    }
+    targetParent.add(nbsBatchRoot);
+
+    nbsThreePrimitives = {
+      Mesh: sampleMesh.constructor,
+      Geometry: BaseGeo,
+      Attribute: BaseAttr,
+      Material: sampleMat.constructor
+    };
+    return nbsThreePrimitives;
+  }
+
+  function hideAllNbsMeshes() {
+    Object.keys(nbsMeshBySubtab).forEach(function (k) {
+      var entry = nbsMeshBySubtab[k];
+      if (entry && entry.mesh) entry.mesh.visible = false;
+    });
+  }
+
+  // Hitman / Glacier Engine Decal & Crowd Impostor Inspiration:
+  // 1. Non-overlapping Spatial Lattice Partitioning:
+  //    Each 0.25° cell is snapped to its exact lattice center (-90 + (r+0.5)*0.25, -180 + (c+0.5)*0.25)
+  //    with a strict 15% gutter margin (half-radius <= 0.106° < 0.125°) and a cell-occupancy map
+  //    so no two hexagonal prisms can ever occupy the same cell or intersect their neighbors.
+  // 2. Tiered Stratified Altitudes + Hardware Slope-Scaled Depth Bias (polygonOffset):
+  //    Country caps sit at 0.007–0.012. We stratify NbS layers into clean, non-colliding depth planes:
+  //    - Tier 1 (0.25° Mangrove Lattice): base 0.0126 -> top 0.0148 + polygonOffset(-1, -1)
+  //    - Tier 2 (Coastal Field Core Clusters): base 0.0149 -> top 0.0185 + polygonOffset(-2, -2)
+  //    - Tier 3 (National Synthesis Nodes): base 0.0186 -> top 0.0220 + polygonOffset(-3, -3)
+  // 3. Single Pre-Allocated TypedArray BufferGeometry per Subtab:
+  //    Zero per-point Object3D/Mesh/Matrix4 allocations, zero BufferGeometryUtils.clone() GC spikes,
+  //    zero globe.gl pointer raycasting (`mesh.raycast = noop`), and cached across tab switches.
+  var HEX_ANGLES = [0, 1, 2, 3, 4, 5].map(function (i) {
+    var a = (i * 60 + 30) * Math.PI / 180;
+    return [Math.cos(a), Math.sin(a)];
+  });
+
+  function buildNbsHexBufferMesh(cacheKey, items) {
+    var prim = ensureThreePrimitives();
+    if (!prim || !nbsBatchRoot) return null;
+
+    var gm = window.GlobeModule;
+    var R = (gm && gm._globeRadius) || 100;
+    var D = Math.PI / 180;
+    var n = items.length;
+
+    // Each hexagonal prism has:
+    // - 6 top cap vertices + 6 bottom rim vertices = 12 vertices
+    // - 4 triangles for top cap (12 indices) + 12 triangles for 6 side walls (36 indices) = 48 indices
+    var totalVerts = n * 12;
+    var totalIndices = n * 48;
+    var positions = new Float32Array(totalVerts * 3);
+    var normals = new Float32Array(totalVerts * 3);
+    var colors = new Float32Array(totalVerts * 3);
+    var indices = new Uint32Array(totalIndices);
+
+    var vOff = 0;
+    var iOff = 0;
+
+    for (var idx = 0; idx < n; idx++) {
+      var item = items[idx];
+      var lat = item.lat;
+      var lon = item.lon;
+      var degRad = item.degRadius;
+      var rBot = R * (1 + item.altBase);
+      var rTop = R * (1 + item.altTop);
+      var rgb = hexToRgbUnit(item.color);
+      // Darker side wall shade (72% brightness) so hex prism facets read crisply without specular wash
+      var sideR = rgb[0] * 0.72, sideG = rgb[1] * 0.72, sideB = rgb[2] * 0.72;
+
+      // Globe.gl polar2Cartesian convention:
+      // phi = (90 - lat) * D, theta = (90 - lon) * D
+      // x = r * sin(phi) * cos(theta), y = r * cos(phi), z = r * sin(phi) * sin(theta)
+      var phi = (90 - lat) * D;
+      var theta = (90 - lon) * D;
+      var sinPhi = Math.sin(phi), cosPhi = Math.cos(phi);
+      var sinTheta = Math.sin(theta), cosTheta = Math.cos(theta);
+
+      // Outward surface normal at cell center
+      var nx = sinPhi * cosTheta;
+      var ny = cosPhi;
+      var nz = sinPhi * sinTheta;
+
+      // Orthonormal tangent basis (east, north) on the sphere surface:
+      // Every hex vertex is offset strictly in the tangent plane by (degRad * R)
+      // and normalized back onto the sphere, guaranteeing perfectly regular,
+      // non-sheared, non-clipping hexagons at every latitude!
+      var ex = sinTheta, ey = 0, ez = -cosTheta;
+      var northX = -cosPhi * cosTheta, northY = sinPhi, northZ = -cosPhi * sinTheta;
+      var tanRadius = degRad * D;
+
+      var baseVertex = idx * 12;
+
+      for (var h = 0; h < 6; h++) {
+        var ca = HEX_ANGLES[h][0] * tanRadius;
+        var sa = HEX_ANGLES[h][1] * tanRadius;
+        var dx = nx + ex * ca + northX * sa;
+        var dy = ny + ey * ca + northY * sa;
+        var dz = nz + ez * ca + northZ * sa;
+        var invLen = 1 / Math.sqrt(dx * dx + dy * dy + dz * dz);
+        dx *= invLen; dy *= invLen; dz *= invLen;
+
+        // Top vertex (h = 0..5)
+        var tPos = (baseVertex + h) * 3;
+        positions[tPos]     = dx * rTop;
+        positions[tPos + 1] = dy * rTop;
+        positions[tPos + 2] = dz * rTop;
+        normals[tPos]       = nx;
+        normals[tPos + 1]   = ny;
+        normals[tPos + 2]   = nz;
+        colors[tPos]        = rgb[0];
+        colors[tPos + 1]    = rgb[1];
+        colors[tPos + 2]    = rgb[2];
+
+        // Bottom rim vertex (h + 6 = 6..11)
+        var bPos = (baseVertex + 6 + h) * 3;
+        positions[bPos]     = dx * rBot;
+        positions[bPos + 1] = dy * rBot;
+        positions[bPos + 2] = dz * rBot;
+        normals[bPos]       = dx;
+        normals[bPos + 1]   = dy;
+        normals[bPos + 2]   = dz;
+        colors[bPos]        = sideR;
+        colors[bPos + 1]    = sideG;
+        colors[bPos + 2]    = sideB;
+      }
+
+      // Top cap fan (4 triangles: 0-1-2, 0-2-3, 0-3-4, 0-4-5)
+      for (var t = 1; t < 5; t++) {
+        indices[iOff++] = baseVertex;
+        indices[iOff++] = baseVertex + t;
+        indices[iOff++] = baseVertex + t + 1;
+      }
+
+      // 6 side walls
+      for (var s = 0; s < 6; s++) {
+        var sNext = (s + 1) % 6;
+        var topA = baseVertex + s;
+        var topB = baseVertex + sNext;
+        var botA = baseVertex + 6 + s;
+        var botB = baseVertex + 6 + sNext;
+        indices[iOff++] = topA;
+        indices[iOff++] = botA;
+        indices[iOff++] = botB;
+        indices[iOff++] = topA;
+        indices[iOff++] = botB;
+        indices[iOff++] = topB;
+      }
+    }
+
+    var geom = new prim.Geometry();
+    geom.setAttribute('position', new prim.Attribute(positions, 3));
+    geom.setAttribute('normal', new prim.Attribute(normals, 3));
+    geom.setAttribute('color', new prim.Attribute(colors, 3));
+    geom.setIndex(new prim.Attribute(indices, 1));
+    geom.computeBoundingSphere();
+
+    // Hardware depth bias (Hitman Glacier decal technique) prevents coplanar Z-fighting
+    // against raised country caps while writing clean depth so foreground hexes occlude background hexes.
+    var mat = new prim.Material({
+      color: 0xffffff,
+      vertexColors: true,
+      transparent: false,
+      depthTest: true,
+      depthWrite: true,
+      polygonOffset: true,
+      polygonOffsetFactor: -2,
+      polygonOffsetUnits: -2
+    });
+
+    var mesh = new prim.Mesh(geom, mat);
+    mesh.raycast = function () {}; // Disable Three.js raycast — analytical sphere raycast handles clicks in O(1)
+    mesh.frustumCulled = false;
+    nbsBatchRoot.add(mesh);
+
+    var entry = { mesh: mesh, count: n };
+    nbsMeshBySubtab[cacheKey] = entry;
+    return entry;
+  }
+
+  function applyGlobePoints() {
+    var gm = window.GlobeModule;
+    if (!gm || !gm.world || !nbsSites || !nbsMode) return;
+    var world = gm.world;
+
+    // Clear globe.gl's built-in pointsData and ringsData so:
+    // 1. _installGlobePointerGate sees 0 points and disables globe.gl's 20Hz scene raycaster.
+    // 2. ringsData stops spawning leaked Three.js Line + Tween objects every 1.4s.
+    world.pointsData([]).ringsData([]);
+    if (typeof world.enablePointerInteraction === 'function') {
+      world.enablePointerInteraction(false);
+    }
+
+    hideAllNbsMeshes();
+
+    var cacheKey = activeSubtab + '|' + (filterIso || 'GLOBAL');
+    if (nbsMeshBySubtab[cacheKey]) {
+      nbsMeshBySubtab[cacheKey].mesh.visible = true;
+      updateNbsLegend();
+      if (typeof gm._syncIdleRenderLoop === 'function') gm._syncIdleRenderLoop();
+      return;
+    }
+
+    var items = [];
+    var step = 0.25;
+    // Spatial lattice occupancy map: prevents two markers in the same 0.25° cell from intersecting
+    var occupiedClusterCells = new Set();
+
+    // Tier 2: Geocoded field sites or 0.25-deg coastal clusters (placed first into lattice occupancy)
+    var siteCategory = (activeSubtab === 'mangrove-change' || activeSubtab === 'mangrove-soc')
+      ? 'mangroves'
+      : activeSubtab;
+
+    // Tier 2a: If a country is focused, place its individual coastal/field sites first at fine granularity
+    if (filterIso) {
+      var countrySites = (nbsSites.sites || []).filter(function (s) {
+        return s.iso === filterIso && (siteCategory === 'all' || s.c === siteCategory);
+      });
+      countrySites.forEach(function (s) {
+        var meta = PATHWAY_META[s.c] || PATHWAY_META.seagrass;
+        var rIdx = Math.floor((s.lat + 90) / step);
+        var cIdx = Math.floor((s.lon + 180) / step);
+        var cellId = rIdx * 1440 + cIdx;
+        if (occupiedClusterCells.has(cellId)) return;
+        occupiedClusterCells.add(cellId);
+        items.push({
+          lat: -90 + (rIdx + 0.5) * step,
+          lon: -180 + (cIdx + 0.5) * step,
+          color: meta.color,
+          degRadius: 0.104,
+          altBase: 0.0126,
+          altTop: 0.0168
+        });
+      });
+    }
+
+    // Tier 2b: Global 0.25-deg coastal field clusters (always rendered so global context is never lost)
+    var clusters = (nbsSites.clusters || []).filter(function (cl) {
+      return siteCategory === 'all' || cl.c === siteCategory;
+    });
+    // Sort by core count descending so the richest cluster wins its 0.25° lattice slot
+    clusters.slice().sort(function (a, b) { return (b.n || 1) - (a.n || 1); }).forEach(function (cl) {
+      var rIdx = Math.floor((cl.lat + 90) / step);
+      var cIdx = Math.floor((cl.lon + 180) / step);
+      var cellId = rIdx * 1440 + cIdx;
+      if (occupiedClusterCells.has(cellId)) return;
+      occupiedClusterCells.add(cellId);
+
+      // Snap to exact 0.25° lattice center so adjacent clusters never clip into each other
+      var snapLat = -90 + (rIdx + 0.5) * step;
+      var snapLon = -180 + (cIdx + 0.5) * step;
+      var meta = PATHWAY_META[cl.c] || PATHWAY_META.seagrass;
+      var hBoost = Math.min(0.0055, Math.log2(1 + (cl.n || 1)) * 0.0011);
+      items.push({
+        lat: snapLat,
+        lon: snapLon,
+        color: meta.color,
+        degRadius: 0.102, // Strictly < 0.125° half-cell (18% gutter margin -> zero neighbor clipping)
+        altBase: 0.0126,
+        altTop: 0.0152 + hBoost
+      });
+    });
+
+    // Tier 1: 0.25-deg coastal grids (mangrove GLC1 binary grids + seagrass OBIS/EMODnet/GBIF 0.25° grid)
+    if (activeSubtab === 'all' || activeSubtab === 'seagrass') {
+      var sgGrid = gridCache['seagrass-grid'];
+      if (sgGrid) {
+        for (var sIdx = 0; sIdx < sgGrid.nRows; sIdx++) {
+          var recs = sgGrid.vals[sIdx];
+          if (recs <= 0) continue;
+          var rSg = sgGrid.rows[sIdx], cSg = sgGrid.cols[sIdx];
+          var sgCellKey = rSg * 1440 + cSg;
+          if (occupiedClusterCells.has(sgCellKey)) continue;
+          occupiedClusterCells.add(sgCellKey);
+          items.push({
+            lat: -90 + (rSg + 0.5) * step,
+            lon: -180 + (cSg + 0.5) * step,
+            color: colorSeagrassGrid(recs),
+            degRadius: 0.104,
+            altBase: 0.0124,
+            altTop: recs >= 50 ? 0.0150 : recs >= 10 ? 0.0142 : 0.0135
+          });
+        }
+      }
+    }
+    if (activeSubtab === 'all' || activeSubtab === 'mangroves') {
+      var extGrid = gridCache['mangrove-extent-2020'];
+      if (extGrid) {
+        for (var i = 0; i < extGrid.nRows; i++) {
+          var ha = extGrid.vals[i];
+          if (ha <= 0) continue;
+          var rE = extGrid.rows[i], cE = extGrid.cols[i];
+          if (occupiedClusterCells.has(rE * 1440 + cE)) continue;
+          items.push({
+            lat: -90 + (rE + 0.5) * step,
+            lon: -180 + (cE + 0.5) * step,
+            color: colorMangroveExtent(ha),
+            degRadius: 0.104, // 17% gutter between adjacent 0.25° cells
+            altBase: 0.0124,
+            altTop: ha >= 500 ? 0.0150 : ha >= 80 ? 0.0142 : 0.0135
+          });
+        }
+      }
+    } else if (activeSubtab === 'mangrove-change') {
+      var chgGrid = gridCache['mangrove-extent-change'];
+      if (chgGrid) {
+        for (var j = 0; j < chgGrid.nRows; j++) {
+          var dHa = chgGrid.vals[j];
+          if (Math.abs(dHa) < 0.05) continue;
+          var rC = chgGrid.rows[j], cC = chgGrid.cols[j];
+          if (occupiedClusterCells.has(rC * 1440 + cC)) continue;
+          items.push({
+            lat: -90 + (rC + 0.5) * step,
+            lon: -180 + (cC + 0.5) * step,
+            color: colorMangroveChange(dHa),
+            degRadius: 0.104,
+            altBase: 0.0124,
+            altTop: Math.abs(dHa) >= 40 ? 0.0152 : 0.0138
+          });
+        }
+      }
+    } else if (activeSubtab === 'mangrove-soc') {
+      var socGrid = gridCache['mangrove-soc-sanderman'];
+      if (socGrid) {
+        for (var k = 0; k < socGrid.nRows; k++) {
+          var soc = socGrid.vals[k];
+          if (soc <= 0) continue;
+          var rS = socGrid.rows[k], cS = socGrid.cols[k];
+          if (occupiedClusterCells.has(rS * 1440 + cS)) continue;
+          items.push({
+            lat: -90 + (rS + 0.5) * step,
+            lon: -180 + (cS + 0.5) * step,
+            color: colorMangroveSoc(soc),
+            degRadius: 0.104,
+            altBase: 0.0124,
+            altTop: soc >= 380 ? 0.0152 : soc >= 260 ? 0.0142 : 0.0135
+          });
+        }
+      }
+    }
+
+    // Tier 3: National synthesis nodes strictly for terrestrial inland pathways (hemp, biochar)
+    // Never place middle-of-the-country centroid indicators for seagrass, mangroves, algae, or all.
+    if (activeSubtab === 'hemp' || activeSubtab === 'biochar') {
+      (nbsSites.country_nodes || []).forEach(function (cn) {
+        var pws = cn.cats || cn.pathways || [];
+        var targetPw = pws.indexOf(activeSubtab) >= 0 ? activeSubtab : null;
+        if (!targetPw) return;
+        var rN = Math.floor((cn.lat + 90) / step);
+        var cN = Math.floor((cn.lon + 180) / step);
+        var nKey = rN * 1440 + cN;
+        if (occupiedClusterCells.has(nKey)) return;
+        occupiedClusterCells.add(nKey);
+        var meta = PATHWAY_META[targetPw] || PATHWAY_META.hemp;
+        items.push({
+          lat: cn.lat,
+          lon: cn.lon,
+          color: meta.color,
+          degRadius: 0.16,
+          altBase: 0.0130,
+          altTop: 0.0185
+        });
+      });
+    }
+
+    buildNbsHexBufferMesh(cacheKey, items);
+    updateNbsLegend();
+    if (typeof gm._syncIdleRenderLoop === 'function') gm._syncIdleRenderLoop();
+  }
+
+  function formatMetricEntries(mObj) {
+    if (!mObj || typeof mObj !== 'object') return [];
+    if (Array.isArray(mObj)) {
+      return mObj.slice(0, 3).map(function (item) {
+        return { label: String(item.k || '').replace(/_/g, ' '), val: item.v, unit: item.u || '' };
+      });
+    }
+    return Object.entries(mObj).slice(0, 3).map(function (kv) {
+      var arr = kv[1];
+      return {
+        label: String(kv[0] || '').replace(/_/g, ' '),
+        val: Array.isArray(arr) ? arr[0] : null,
+        unit: Array.isArray(arr) ? (arr[1] || '') : ''
+      };
+    });
+  }
+
+  function formatAuthorCitation(src) {
+    if (!src) return '';
+    if (Array.isArray(src.authors) && src.authors.length) {
+      var first = String(src.authors[0] || '').split(',')[0].trim();
+      var label = src.authors.length > 2 ? (first + ' et al.') : (src.authors.length === 2 ? (first + ' & ' + String(src.authors[1] || '').split(',')[0].trim()) : first);
+      return label + (src.year ? ' (' + src.year + ')' : '');
+    }
+    return (src.title || src.source_id || '') + (src.year ? ' (' + src.year + ')' : '');
+  }
+
+  function inspectGeoLocation(lat, lon, explicitPt) {
+    if (!nbsSites || !nbsAtlas) return;
+
+    // 1. Check 0.25-deg coastal grids at (lat, lon)
+    var sgHit = (activeSubtab === 'seagrass' || activeSubtab === 'all')
+      ? lookupGridCell(gridCache['seagrass-grid'], lat, lon)
+      : null;
+    var extHit = (activeSubtab !== 'seagrass') ? lookupGridCell(gridCache['mangrove-extent-2020'], lat, lon) : null;
+    var chgHit = (activeSubtab !== 'seagrass') ? lookupGridCell(gridCache['mangrove-extent-change'], lat, lon) : null;
+    var socHit = (activeSubtab !== 'seagrass') ? lookupGridCell(gridCache['mangrove-soc-sanderman'], lat, lon) : null;
+    var maxHit = (activeSubtab !== 'seagrass') ? lookupGridCell(gridCache['mangrove-soc-maxwell'], lat, lon) : null;
+
+    // 2. Find nearest coastal field cluster within 1.2 deg (or nearest cluster within 3.0 deg if a 0.25° cell hit needs an ISO owner)
+    var bestPt = explicitPt || null;
+    var bestDistSq = (sgHit || extHit || chgHit || socHit || maxHit) ? 9.0 : 1.44;
+    if (!bestPt) {
+      var pool = nbsSites.clusters || [];
+      for (var i = 0; i < pool.length; i++) {
+        var cand = pool[i];
+        if (activeSubtab !== 'all' && activeSubtab !== 'mangrove-change' && activeSubtab !== 'mangrove-soc') {
+          var cCats = cand.cats || (cand.c ? [cand.c] : []);
+          if (cCats.indexOf(activeSubtab) < 0) continue;
+        }
+        var dLat = cand.lat - lat;
+        var dLon = cand.lon - lon;
+        var dSq = dLat * dLat + dLon * dLon;
+        if (dSq < bestDistSq) {
+          bestDistSq = dSq;
+          bestPt = cand;
+        }
+      }
+    }
+
+    if (!bestPt && !sgHit && !extHit && !chgHit && !socHit && !maxHit) return;
+
+    var pwKey = (bestPt && bestDistSq <= 1.44 && (bestPt.c || (bestPt.cats && bestPt.cats[0]))) ||
+      (sgHit && (activeSubtab === 'seagrass' || !extHit) ? 'seagrass' : (activeSubtab === 'all' ? 'mangroves' : activeSubtab));
+    var meta = PATHWAY_META[pwKey] || PATHWAY_META.seagrass;
+
+    var nearbySites = (nbsSites.sites || []).filter(function (s) {
+      return (activeSubtab === 'all' || s.c === pwKey) && Math.abs(s.lat - lat) < 0.55 && Math.abs(s.lon - lon) < 0.55;
+    }).sort(function (a, b) {
+      var da = (a.lat - lat) * (a.lat - lat) + (a.lon - lon) * (a.lon - lon);
+      var db = (b.lat - lat) * (b.lat - lat) + (b.lon - lon) * (b.lon - lon);
+      return da - db;
+    });
+    var iso = (nearbySites[0] && nearbySites[0].iso) || (bestPt && bestPt.iso) || resolveSelectedIso() || '';
+    var matchedSites = nearbySites.filter(function (s) { return !iso || s.iso === iso; });
+    var primarySite = matchedSites[0] || (bestDistSq <= 1.44 ? bestPt : null) || { lat: lat, lon: lon, c: pwKey };
+    var hitCell = sgHit || extHit || chgHit || socHit || maxHit;
+    var dispLat = (hitCell && hitCell.lat != null) ? hitCell.lat : (primarySite.lat != null ? primarySite.lat : lat);
+    var dispLon = (hitCell && hitCell.lon != null) ? hitCell.lon : (primarySite.lon != null ? primarySite.lon : lon);
+
+    var rowsHtml = '';
+    if (sgHit && sgHit.val > 0) {
+      rowsHtml += '<div class="tt-nbs-cell-row"><span>0.25° Seagrass Survey Grid (OBIS / EMODnet / GBIF)</span><strong>' + fmtNum(sgHit.val, 0) + ' records</strong></div>';
+    }
+    if (extHit && extHit.val > 0) {
+      rowsHtml += '<div class="tt-nbs-cell-row"><span>2020 Mangrove Canopy (0.25° GMW v3)</span><strong>' + fmtNum(extHit.val, 1) + ' ha</strong></div>';
+    }
+    if (chgHit && Math.abs(chgHit.val) > 0.01) {
+      rowsHtml += '<div class="tt-nbs-cell-row"><span>1996→2020 Canopy Δ (GMW v3)</span><strong>' + (chgHit.val >= 0 ? '+' : '') + fmtNum(chgHit.val, 1) + ' ha</strong></div>';
+    }
+    if (socHit && socHit.val > 0) {
+      rowsHtml += '<div class="tt-nbs-cell-row"><span>Soil Organic Carbon 0–1 m (Sanderman)</span><strong>' + fmtNum(socHit.val, 1) + (socHit.unc ? ' ± ' + fmtNum(socHit.unc, 0) : '') + ' t C/ha</strong></div>';
+    }
+    if (maxHit && maxHit.val > 0) {
+      rowsHtml += '<div class="tt-nbs-cell-row"><span>Measured Core SOC 0–1 m (Maxwell)</span><strong>' + fmtNum(maxHit.val, 1) + ' t C/ha</strong></div>';
+    }
+
+    var siteMetrics = formatMetricEntries(primarySite.m);
+    siteMetrics.forEach(function (m) {
+      rowsHtml += '<div class="tt-nbs-cell-row"><span>' + esc(m.label) + '</span><strong>' + fmtNum(m.val) + ' ' + esc(m.unit) + '</strong></div>';
+    });
+
+    if (!rowsHtml) return;
+
+    var srcId = primarySite.s || (sgHit ? 'obis-seagrass-occurrences-2026' : (extHit || chgHit ? 'bunting_2022_gmw_v3' : socHit ? 'sanderman_2018_mangrove_soc' : ''));
+    var srcObj = (srcId && nbsAtlas.sources && nbsAtlas.sources[srcId]) || {};
+    var srcLabel = formatAuthorCitation(srcObj) || srcId;
+    var doiUrl = srcObj.doi ? ('https://doi.org/' + String(srcObj.doi).replace(/^https?:\/\/doi\.org\//i, '')) : (srcObj.url || '');
+    var titleText = primarySite.name || (hitCell ? '0.25° Coastal Grid Cell' : 'Coastal Field Core');
+
+    selectedCellReadout = {
+      iso: iso,
+      color: meta.color,
+      pathwayLabel: meta.label,
+      titleText: titleText,
+      dispLat: dispLat,
+      dispLon: dispLon,
+      nearbyCount: matchedSites.length,
+      species: primarySite.sp || '',
+      rowsHtml: rowsHtml,
+      srcLabel: srcLabel,
+      doiUrl: doiUrl
+    };
+
+    var gm = window.GlobeModule;
+    var currentIso = resolveSelectedIso();
+    if (iso && iso !== currentIso && gm && gm._featureByIso && gm._featureByIso[iso] && typeof gm._selectCountryFeature === 'function') {
+      gm._selectCountryFeature(gm._featureByIso[iso]);
+    }
+    injectCountryNbsDrawer(true);
+  }
+
+  function resolveSelectedIso() {
+    var gm = window.GlobeModule;
+    if (!gm || !gm._selectedCountryFeature) return null;
+    var p = gm._selectedCountryFeature.properties || {};
+    return p.ISO_A3 || p.ADM0_A3 || null;
+  }
+
+  function injectCountryNbsDrawer(forceRefresh) {
+    var tt = document.getElementById('hex-country-tooltip');
+    if (!tt || !tt.classList.contains('selected')) return;
+    var iso = resolveSelectedIso();
+    if (!iso) return;
+
+    var atlasLink = document.getElementById('nbs-bar-atlas-link');
+    if (atlasLink) atlasLink.href = 'atlas.html?country=' + encodeURIComponent(iso);
+
+    if (!forceRefresh && tt.querySelector('#tt-nbs-drawer') && tt.querySelector('#tt-nbs-drawer').getAttribute('data-iso') === iso) {
+      return;
+    }
+
+    ensureNbsData().then(function (loaded) {
+      if (!loaded || !tt.classList.contains('selected')) return;
+      var currentIso = resolveSelectedIso();
+      if (currentIso !== iso) return;
+
+      var existing = tt.querySelector('#tt-nbs-drawer');
+      if (existing) existing.remove();
+
+      var cObj = nbsAtlas.countries && nbsAtlas.countries[iso];
+      var countrySites = (nbsSites.sites || []).filter(function (s) { return s.iso === iso; });
+      var drawer = document.createElement('details');
+      drawer.className = 'tt-nbs-drawer';
+      drawer.id = 'tt-nbs-drawer';
+      drawer.setAttribute('data-iso', iso);
+      drawer.open = true;
+
+      var cellFocusHtml = '';
+      if (selectedCellReadout && (!selectedCellReadout.iso || selectedCellReadout.iso === iso)) {
+        var cr = selectedCellReadout;
+        cellFocusHtml =
+          '<div class="tt-nbs-cell-focus">' +
+            '<div class="tt-nbs-cell-head">' +
+              '<span><span class="nbs-dot" style="display:inline-block;margin-right:5px;background:' + cr.color + '"></span>' + esc(cr.pathwayLabel) + ' · ' + esc(cr.titleText) + '</span>' +
+              (cr.doiUrl ? '<a href="' + esc(cr.doiUrl) + '" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none">DOI ↗</a>' : '') +
+            '</div>' +
+            '<div class="tt-nbs-cell-coords">' +
+              Math.abs(cr.dispLat).toFixed(2) + '°' + (cr.dispLat >= 0 ? 'N' : 'S') + ', ' +
+              Math.abs(cr.dispLon).toFixed(2) + '°' + (cr.dispLon >= 0 ? 'E' : 'W') +
+              (cr.nearbyCount > 1 ? ' · ' + fmtNum(cr.nearbyCount, 0) + ' stations' : '') +
+              (cr.species ? ' · <em>' + esc(cr.species) + '</em>' : '') +
+            '</div>' +
+            '<div class="tt-nbs-cell-rows">' + cr.rowsHtml + '</div>' +
+          '</div>';
+      }
+
+      if (!cObj || !(cObj.categories_present || []).length) {
+        drawer.innerHTML =
+          '<summary><span>Nature-Based Solutions · NbS Atlas</span><span>' + (cellFocusHtml ? '0.25° Cell' : 'Explicit gap') + '</span></summary>' +
+          cellFocusHtml +
+          '<p style="font-size:11px;color:var(--text2);margin:6px 0 8px">No public-noncommercial national NbS rows in release 1.0.0 for ' + esc(iso) + '.</p>' +
+          '<div class="tt-nbs-actions"><a class="tt-nbs-link" href="atlas.html">Browse NbS Atlas (233 countries) →</a></div>';
+      } else {
+        var focusPw = nbsMode
+          ? ((activeSubtab === 'mangrove-change' || activeSubtab === 'mangrove-soc') ? 'mangroves' : (PATHWAY_META[activeSubtab] ? activeSubtab : null))
+          : null;
+        var priorityOrder = ['seagrass', 'mangroves', 'algae', 'hemp', 'biochar'];
+        var pws = (cObj.categories_present || []).filter(function (k) { return PATHWAY_META[k]; }).sort(function (a, b) {
+          if (focusPw) {
+            if (a === focusPw && b !== focusPw) return -1;
+            if (b === focusPw && a !== focusPw) return 1;
+          }
+          return priorityOrder.indexOf(a) - priorityOrder.indexOf(b);
+        });
+
+        var badgesHtml = pws.map(function (k) {
+          var meta = PATHWAY_META[k];
+          return '<span class="tt-nbs-badge"><span class="nbs-dot" style="background:' + meta.color + '"></span>' + esc(meta.label) + '</span>';
+        }).join('');
+
+        var buildMetricCardHtml = function (pwKey, kv) {
+          var mObj = kv[1];
+          var latest = (mObj.latest && mObj.latest[0]) || (mObj.observations && mObj.observations[0]);
+          if (!latest || latest.value == null) return null;
+          var baseMetric = mObj.metric || String(kv[0]).split('|')[0];
+          var qual = mObj.qualifier || (String(kv[0]).indexOf('|') >= 0 ? String(kv[0]).split('|')[1] : '');
+          var mMeta = (nbsAtlas.metrics_catalog && nbsAtlas.metrics_catalog[baseMetric]) || {};
+          var metricLabel = (mMeta.label || mObj.metric_label || baseMetric).replace(/_/g, ' ');
+          if (qual) metricLabel += ' (' + qual + ')';
+          var unitStr = latest.unit || mObj.unit || mMeta.canonical_unit || '';
+          var src = (latest.source_id && nbsAtlas.sources && nbsAtlas.sources[latest.source_id]) || {};
+          var srcCite = formatAuthorCitation(src) || latest.source_id || '';
+          var doiUrl = src.doi ? ('https://doi.org/' + String(src.doi).replace(/^https?:\/\/doi\.org\//i, '')) : (src.url || '');
+          return (
+            '<div class="tt-nbs-item">' +
+              '<div class="tt-nbs-item-top">' +
+                '<span class="tt-nbs-item-label">' + esc(PATHWAY_META[pwKey].label) + ' · ' + esc(metricLabel) + '</span>' +
+                '<span class="tt-nbs-item-val">' + fmtNum(latest.value) + (unitStr ? ' ' + esc(unitStr) : '') + '</span>' +
+              '</div>' +
+              '<div class="tt-nbs-item-sub">' +
+                '<span>' + esc(srcCite) + (latest.year ? ' · ' + esc(latest.year) : '') + '</span>' +
+                (doiUrl ? '<a href="' + esc(doiUrl) + '" target="_blank" rel="noopener">DOI ↗</a>' : '') +
+              '</div>' +
+            '</div>'
+          );
+        };
+
+        var headlineItems = [];
+        // Pass 1: Ensure every present pathway shows its primary headline metric first
+        pws.forEach(function (pwKey) {
+          if (headlineItems.length >= 6) return;
+          var cat = cObj.categories && cObj.categories[pwKey];
+          if (!cat || !cat.metrics) return;
+          var entries = Object.entries(cat.metrics);
+          for (var ei = 0; ei < entries.length; ei++) {
+            var card = buildMetricCardHtml(pwKey, entries[ei]);
+            if (card) {
+              headlineItems.push(card);
+              break;
+            }
+          }
+        });
+        // Pass 2: Fill remaining slots (up to 6) with secondary metrics starting from the focused/priority pathway
+        pws.forEach(function (pwKey) {
+          if (headlineItems.length >= 6) return;
+          var cat = cObj.categories && cObj.categories[pwKey];
+          if (!cat || !cat.metrics) return;
+          var entries = Object.entries(cat.metrics);
+          for (var ei = 1; ei < Math.min(3, entries.length); ei++) {
+            if (headlineItems.length >= 6) break;
+            var card = buildMetricCardHtml(pwKey, entries[ei]);
+            if (card) headlineItems.push(card);
+          }
+        });
+
+        var plotBtnHtml = countrySites.length > 0
+          ? '<button type="button" class="tt-nbs-btn" id="tt-nbs-plot-btn" data-iso="' + esc(iso) + '">Plot ' + fmtNum(countrySites.length, 0) + ' Field Station' + (countrySites.length === 1 ? '' : 's') + ' on Globe</button>'
+          : '';
+
+        drawer.innerHTML =
+          '<summary><span>Nature-Based Solutions · NbS Atlas</span><span>' + pws.length + ' pathway' + (pws.length === 1 ? '' : 's') + (countrySites.length ? ' · ' + fmtNum(countrySites.length, 0) + ' stations' : '') + '</span></summary>' +
+          cellFocusHtml +
+          '<div class="tt-nbs-badges">' + badgesHtml + '</div>' +
+          '<div class="tt-nbs-list">' + headlineItems.join('') + '</div>' +
+          '<div class="tt-nbs-actions">' +
+            plotBtnHtml +
+            '<a class="tt-nbs-link" href="atlas.html?country=' + encodeURIComponent(iso) + '">Open ' + esc(iso) + ' NbS Dossier →</a>' +
+          '</div>';
+      }
+
+      var methodsEl = tt.querySelector('details.tt-methods');
+      if (methodsEl && methodsEl.parentNode === tt) {
+        tt.insertBefore(drawer, methodsEl);
+      } else {
+        tt.appendChild(drawer);
+      }
+
+      var plotBtn = drawer.querySelector('#tt-nbs-plot-btn');
+      if (plotBtn) {
+        plotBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          enterNbsMode('all', iso);
+        });
+      }
+    });
+  }
+
+  function handleUrlDeepLink() {
+    if (deepLinkHandled) return;
+    var params = new URLSearchParams(window.location.search);
+    var nbsParam = params.get('nbs');
+    var countryParam = params.get('country');
+    var hashGlobe = window.location.hash === '#globe' || window.location.hash === '#nbs';
+    if (!nbsParam && !hashGlobe) return;
+    deepLinkHandled = true;
+    var validSubtab = (nbsParam && PATHWAY_META[nbsParam]) ? nbsParam : 'all';
+
+    if (!document.body.classList.contains('globe-mode') && typeof window.enterGlobe === 'function') {
+      window.enterGlobe();
+    }
+
+    var tries = 0;
+    var timer = setInterval(function () {
+      tries++;
+      var gm = window.GlobeModule;
+      var pill = document.getElementById('climate-lens-controls');
+      if ((gm && gm.world && pill) || tries > 40) {
+        clearInterval(timer);
+        if (nbsParam || window.location.hash === '#nbs' || countryParam) {
+          enterNbsMode(validSubtab, countryParam ? countryParam.toUpperCase() : null);
+        }
+        if (countryParam && gm && gm._featureByIso) {
+          var feat = gm._featureByIso[countryParam.toUpperCase()];
+          if (feat && typeof gm._selectCountryFeature === 'function') {
+            gm._selectCountryFeature(feat);
+          }
+        }
+      }
+    }, 150);
+  }
+
+  function bootBridge() {
+    if (!window.COUNTRY_CLIMATE_INTELLIGENCE) return;
+    injectPillControls();
+
+    if (window.EventBus && typeof window.EventBus.on === 'function') {
+      window.EventBus.on('app:globe-entered', function () {
+        injectPillControls();
+        ensureNbsData();
+        hookGlobeWorld();
+        if (nbsMode) applyGlobePoints();
+      });
+      window.EventBus.on('globe:render-ready', function () {
+        injectPillControls();
+        hookGlobeWorld();
+        if (nbsMode) applyGlobePoints();
+      });
+      window.EventBus.on('globe:country-selected', function () {
+        setTimeout(injectCountryNbsDrawer, 30);
+      });
+      window.EventBus.on('globe:lens-changed', function () {
+        if (nbsMode) exitNbsMode();
+        setTimeout(injectCountryNbsDrawer, 30);
+      });
+      window.EventBus.on('globe:country-closed', function () {
+        var atlasLink = document.getElementById('nbs-bar-atlas-link');
+        if (atlasLink) atlasLink.href = 'atlas.html';
+      });
+    }
+
+    var obs = new MutationObserver(function () {
+      if (document.getElementById('climate-lens-controls') && !document.querySelector('#climate-lens-controls [data-nbs-enter]')) {
+        injectPillControls();
+      }
+      var tt = document.getElementById('hex-country-tooltip');
+      if (tt && tt.classList.contains('selected') && !tt.querySelector('#tt-nbs-drawer')) {
+        injectCountryNbsDrawer();
+      }
+    });
+    obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+
+    handleUrlDeepLink();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootBridge);
+  } else {
+    bootBridge();
+  }
 })();
 </script>
 

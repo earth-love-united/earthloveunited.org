@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nature-Based Solutions Atlas — Earth Love United</title>
+<meta name="description" content="Peer-reviewed coastal, marine, and terrestrial Nature-Based Solutions (NbS) Atlas across 233 countries: Seagrass, Mangroves, Kelp & Macroalgae, Industrial Hemp, and Biochar.">
+<meta name="theme-color" content="#080c12">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27%230a1628%27%2F%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%234ecdc4%27%20stroke-width%3D%271.5%27%2F%3E%3Cellipse%20cx%3D%2716%27%20cy%3D%2716%27%20rx%3D%276%27%20ry%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3Cpath%20d%3D%27M2%2016%20Q8%2012%2016%2016%20T30%2016%27%20fill%3D%27none%27%20stroke%3D%27%237be8d0%27%20stroke-width%3D%271%27%20opacity%3D%270.8%27%2F%3E%3C%2Fsvg%3E">
+<link rel="apple-touch-icon" href="assets/legacy/elu-logo.png">
+<script>
+(function () {
+  try {
+    var saved = localStorage.getItem('elu-theme');
+    if (saved === 'light' || saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  } catch (e) {}
+})();
+</script>
+<link rel="preload" href="assets/fonts/cormorant-garamond-site.woff2?v=7f4b7877020b" as="font" type="font/woff2" crossorigin fetchpriority="low">
+<link rel="preload" href="assets/fonts/outfit-site.woff2?v=fff758eb92d3" as="font" type="font/woff2" crossorigin fetchpriority="low">
+<link rel="preload" href="assets/fonts/jetbrains-mono-site.woff2?v=317775f7afde" as="font" type="font/woff2" crossorigin fetchpriority="low">
+<style>
+@font-face{font-family:'Cormorant Garamond';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/cormorant-garamond-site.woff2?v=7f4b7877020b') format('woff2');unicode-range:U+0020,U+0026,U+0028-002F,U+0030-003B,U+003F,U+0041-0059,U+0061-007A,U+007E,U+00A9,U+00B7,U+2013-2014,U+2019,U+201C-201D,U+2082,U+2192-2193}
+@font-face{font-family:'Cormorant Garamond';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/cormorant-garamond-latin-ext.woff2?v=cfa9a397d86f') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Cormorant Garamond';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/cormorant-garamond-latin.woff2?v=d80df8ff5aec') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Outfit';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/outfit-site.woff2?v=fff758eb92d3') format('woff2');unicode-range:U+0020,U+0026,U+0028-002F,U+0030-003B,U+003F,U+0041-0059,U+0061-007A,U+007E,U+00A9,U+00B7,U+2013-2014,U+2019,U+201C-201D,U+2082,U+2192-2193}
+@font-face{font-family:'Outfit';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/outfit-latin-ext.woff2?v=0f53d1c03b39') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Outfit';font-style:normal;font-weight:300 600;font-display:swap;src:url('assets/fonts/outfit-latin.woff2?v=6c18d579fd87') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 500;font-display:swap;src:url('assets/fonts/jetbrains-mono-site.woff2?v=317775f7afde') format('woff2');unicode-range:U+0020,U+0026,U+0028-002F,U+0030-003B,U+003F,U+0041-0059,U+0061-007A,U+007E,U+00A9,U+00B7,U+2013-2014,U+2019,U+201C-201D,U+2082,U+2192-2193}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 500;font-display:swap;src:url('assets/fonts/jetbrains-mono-latin-ext.woff2?v=db5ff4db83e5') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 500;font-display:swap;src:url('assets/fonts/jetbrains-mono-latin.woff2?v=83c005d49d8a') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080c12;
+  --bg-elevated:#0c121b;
+  --bg-card:rgba(13,20,30,.78);
+  --bg-subtle:rgba(255,255,255,.025);
+  --text:#e8e4dc;
+  --text-dim:#949ca8;
+  --text-faint:#5d6674;
+  --accent:#2ec4b6;
+  --accent-bright:#5eead4;
+  --accent-warm:#d4a373;
+  --border:rgba(46,196,182,.14);
+  --border-subtle:rgba(255,255,255,.07);
+  --glass:rgba(10,16,24,.78);
+  --glass-border:rgba(255,255,255,.08);
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Outfit',-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  /* Verdure globe palette (dark) */
+  --globe-bg:#070c12;
+  --globe-ocean:#0d222c;
+  --globe-land:#152c27;
+  --globe-coast:#2b544a;
+  --globe-outline:#f4f1ea;
+  --globe-marker:#f59e0b;
+  /* Pathway colors */
+  --pw-seagrass:#2ec4b6;
+  --pw-mangroves:#34d399;
+  --pw-kelp:#38bdf8;
+  --pw-hemp:#d4a373;
+  --pw-biochar:#a78bfa;
+}
+html[data-theme="light"]{
+  --bg:#f5f2eb;
+  --bg-elevated:#ece8df;
+  --bg-card:rgba(255,255,255,.86);
+  --bg-subtle:rgba(15,23,42,.035);
+  --text:#182026;
+  --text-dim:#4b5563;
+  --text-faint:#6b7280;
+  --accent:#0d9488;
+  --accent-bright:#0f766e;
+  --accent-warm:#b45309;
+  --border:rgba(13,148,136,.22);
+  --border-subtle:rgba(15,23,42,.09);
+  --glass:rgba(245,242,235,.88);
+  --glass-border:rgba(15,23,42,.1);
+  --globe-bg:#ebe6dc;
+  --globe-ocean:#cadce3;
+  --globe-land:#dfe5d7;
+  --globe-coast:#8aa399;
+  --globe-outline:#182026;
+  --globe-marker:#d97706;
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.55;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+a{color:var(--accent);text-decoration:none;transition:color .18s}
+a:hover{color:var(--accent-bright)}
+button,input,select{font:inherit;color:inherit}
+
+/* Top Navigation */
+.atlas-nav{
+  position:sticky;
+  top:0;
+  z-index:100;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  row-gap:10px;
+  column-gap:14px;
+  padding:12px 24px;
+  background:var(--glass);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--glass-border);
+}
+.atlas-nav-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-shrink:0;
+}
+.atlas-back{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  font-size:.82rem;
+  font-weight:500;
+  letter-spacing:.03em;
+  color:var(--text-dim);
+  padding:6px 11px;
+  border-radius:999px;
+  border:1px solid var(--border-subtle);
+  background:var(--bg-subtle);
+  white-space:nowrap;
+  transition:all .18s;
+}
+.atlas-back:hover{
+  color:var(--text);
+  border-color:var(--border);
+}
+.atlas-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.atlas-brand-title{
+  font-family:var(--serif);
+  font-size:1.22rem;
+  font-weight:500;
+  letter-spacing:.02em;
+  color:var(--text);
+}
+.atlas-brand-badge{
+  font-family:var(--mono);
+  font-size:.66rem;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--accent);
+  padding:2px 7px;
+  border-radius:4px;
+  border:1px solid var(--border);
+  background:rgba(46,196,182,.07);
+}
+
+/* View Switcher Tabs */
+.atlas-tabs{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px;
+  border-radius:999px;
+  background:var(--bg-subtle);
+  border:1px solid var(--border-subtle);
+  flex-shrink:0;
+}
+.atlas-tab{
+  appearance:none;
+  border:none;
+  background:transparent;
+  color:var(--text-dim);
+  font-size:.8rem;
+  font-weight:500;
+  letter-spacing:.02em;
+  padding:6px 14px;
+  border-radius:999px;
+  cursor:pointer;
+  transition:all .18s;
+  white-space:nowrap;
+}
+.atlas-tab:hover{color:var(--text)}
+.atlas-tab[aria-selected="true"]{
+  background:var(--bg-card);
+  color:var(--accent-bright);
+  border:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+
+.atlas-nav-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0;
+}
+.atlas-living-link{
+  font-family:var(--mono);
+  font-size:.73rem;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--accent);
+  padding:6px 12px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(46,196,182,.06);
+  white-space:nowrap;
+  transition:all .18s;
+}
+.atlas-living-link:hover{
+  background:rgba(46,196,182,.14);
+  color:var(--accent-bright);
+}
+.theme-btn{
+  appearance:none;
+  border:1px solid var(--border-subtle);
+  background:var(--bg-subtle);
+  color:var(--text-dim);
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:all .18s;
+}
+.theme-btn:hover{color:var(--text);border-color:var(--border)}
+
+/* Main Container */
+.atlas-main{
+  flex:1;
+  width:100%;
+  max-width:1440px;
+  margin:0 auto;
+  padding:28px 28px 64px;
+}
+.atlas-view{display:none}
+.atlas-view.active{display:block}
+
+/* Editorial Header */
+.atlas-header{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:24px;
+  padding-bottom:22px;
+  border-bottom:1px solid var(--border-subtle);
+  margin-bottom:22px;
+}
+.atlas-header-copy{max-width:760px}
+.atlas-eyebrow{
+  font-family:var(--mono);
+  font-size:.7rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:6px;
+}
+.atlas-title{
+  font-family:var(--serif);
+  font-size:clamp(2rem,3.4vw,2.75rem);
+  font-weight:400;
+  line-height:1.12;
+  letter-spacing:-.01em;
+  margin-bottom:8px;
+}
+.atlas-subtitle{
+  font-size:.95rem;
+  color:var(--text-dim);
+  line-height:1.5;
+}
+.atlas-kpis{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.atlas-kpi{
+  padding:10px 15px;
+  border-radius:10px;
+  background:var(--bg-card);
+  border:1px solid var(--border-subtle);
+  min-width:128px;
+}
+.atlas-kpi-val{
+  font-family:var(--mono);
+  font-size:1.15rem;
+  font-weight:500;
+  color:var(--text);
+}
+.atlas-kpi-lbl{
+  font-size:.72rem;
+  color:var(--text-dim);
+  letter-spacing:.02em;
+}
+
+/* Filter & Focus Bar */
+.atlas-controls{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:22px;
+}
+.pathway-pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.pw-pill{
+  appearance:none;
+  border:1px solid var(--border-subtle);
+  background:var(--bg-subtle);
+  color:var(--text-dim);
+  font-size:.8rem;
+  font-weight:500;
+  padding:7px 13px;
+  border-radius:999px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  transition:all .16s;
+}
+.pw-pill:hover{color:var(--text);border-color:var(--border)}
+.pw-pill[aria-pressed="true"]{
+  background:rgba(46,196,182,.12);
+  color:var(--text);
+  border-color:var(--accent);
+}
+.pw-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  display:inline-block;
+}
+.pw-count{
+  font-family:var(--mono);
+  font-size:.68rem;
+  color:var(--text-faint);
+}
+
+.preset-group{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px;
+}
+.preset-label{
+  font-family:var(--mono);
+  font-size:.68rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--text-faint);
+  margin-right:4px;
+}
+.preset-btn{
+  appearance:none;
+  border:1px solid var(--border-subtle);
+  background:transparent;
+  color:var(--text-dim);
+  font-size:.76rem;
+  padding:5px 11px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all .16s;
+}
+.preset-btn:hover{
+  color:var(--accent-bright);
+  border-color:var(--border);
+  background:rgba(46,196,182,.05);
+}
+.preset-btn.active{
+  color:var(--accent-bright);
+  border-color:var(--accent);
+  background:rgba(46,196,182,.11);
+}
+
+/* Two-Column Workspace: Country Index + Main Dossier */
+.atlas-workspace{
+  display:grid;
+  grid-template-columns:290px minmax(0,1fr);
+  gap:22px;
+  align-items:start;
+}
+.country-sidebar{
+  background:var(--bg-card);
+  border:1px solid var(--border-subtle);
+  border-radius:12px;
+  overflow:hidden;
+  position:sticky;
+  top:72px;
+  max-height:calc(100vh - 96px);
+  display:flex;
+  flex-direction:column;
+}
+.sidebar-search-wrap{
+  padding:12px;
+  border-bottom:1px solid var(--border-subtle);
+}
+.sidebar-search{
+  width:100%;
+  padding:8px 11px;
+  border-radius:8px;
+  border:1px solid var(--border-subtle);
+  background:var(--bg-subtle);
+  color:var(--text);
+  font-size:.83rem;
+  outline:none;
+}
+.sidebar-search:focus{border-color:var(--accent)}
+.sidebar-meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:7px 12px;
+  font-family:var(--mono);
+  font-size:.67rem;
+  color:var(--text-faint);
+  border-bottom:1px solid var(--border-subtle);
+}
+.country-list{
+  overflow-y:auto;
+  flex:1;
+  divide-y:1px solid var(--border-subtle);
+}
+.country-item{
+  width:100%;
+  text-align:left;
+  appearance:none;
+  border:none;
+  border-bottom:1px solid var(--border-subtle);
+  background:transparent;
+  padding:9px 12px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  transition:background .14s;
+}
+.country-item:hover{background:var(--bg-subtle)}
+.country-item.selected{
+  background:rgba(46,196,182,.11);
+  border-left:3px solid var(--accent);
+}
+.country-item-name{
+  font-size:.84rem;
+  font-weight:500;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.country-item-iso{
+  font-family:var(--mono);
+  font-size:.66rem;
+  color:var(--text-faint);
+  margin-left:5px;
+}
+.country-item-right{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-shrink:0;
+}
+.country-pw-dots{
+  display:inline-flex;
+  gap:3px;
+}
+.country-pw-dots span{
+  width:5px;
+  height:5px;
+  border-radius:50%;
+}
+.country-fact-cnt{
+  font-family:var(--mono);
+  font-size:.68rem;
+  color:var(--text-dim);
+  min-width:28px;
+  text-align:right;
+}
+
+/* Main Content Column */
+.dossier-col{
+  display:flex;
+  flex-direction:column;
+  gap:22px;
+  min-width:0;
+}
+.card{
+  background:var(--bg-card);
+  border:1px solid var(--border-subtle);
+  border-radius:12px;
+  padding:22px 24px;
+}
+.card-header{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--border-subtle);
+  margin-bottom:18px;
+}
+.dossier-title-row{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.dossier-country-name{
+  font-family:var(--serif);
+  font-size:2rem;
+  font-weight:500;
+  line-height:1.15;
+}
+.dossier-iso-badge{
+  font-family:var(--mono);
+  font-size:.74rem;
+  color:var(--accent);
+  padding:2px 8px;
+  border-radius:4px;
+  border:1px solid var(--border);
+}
+.dossier-sub{
+  font-size:.84rem;
+  color:var(--text-dim);
+  margin-top:4px;
+}
+.dossier-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.btn-minimal{
+  appearance:none;
+  border:1px solid var(--border);
+  background:rgba(46,196,182,.07);
+  color:var(--accent-bright);
+  font-size:.78rem;
+  font-weight:500;
+  padding:7px 13px;
+  border-radius:8px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:all .16s;
+}
+.btn-minimal:hover{
+  background:rgba(46,196,182,.15);
+}
+
+/* Pathway Sections inside Country Dossier */
+.pw-grid{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.pw-block{
+  border:1px solid var(--border-subtle);
+  border-radius:10px;
+  padding:16px 18px;
+  background:var(--bg-subtle);
+}
+.pw-block-head{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
+.pw-block-title{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-weight:600;
+  font-size:.95rem;
+}
+.pw-block-meta{
+  font-family:var(--mono);
+  font-size:.72rem;
+  color:var(--text-dim);
+}
+
+/* Clean Data Tables */
+.data-table-wrap{
+  overflow-x:auto;
+  margin-top:8px;
+}
+.data-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:.82rem;
+}
+.data-table th{
+  text-align:left;
+  font-family:var(--mono);
+  font-size:.68rem;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--text-faint);
+  padding:8px 10px;
+  border-bottom:1px solid var(--border-subtle);
+  white-space:nowrap;
+}
+.data-table td{
+  padding:8px 10px;
+  border-bottom:1px solid var(--border-subtle);
+  vertical-align:top;
+}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr.clickable-row{cursor:pointer;transition:background .12s}
+.data-table tr.clickable-row:hover{background:rgba(46,196,182,.07)}
+.num-cell{
+  font-family:var(--mono);
+  font-weight:500;
+  white-space:nowrap;
+}
+.unit-cell{
+  font-family:var(--mono);
+  font-size:.74rem;
+  color:var(--text-dim);
+}
+.doi-link{
+  font-family:var(--mono);
+  font-size:.7rem;
+  color:var(--accent);
+  padding:2px 6px;
+  border-radius:4px;
+  border:1px solid var(--border);
+  background:rgba(46,196,182,.05);
+  white-space:nowrap;
+  display:inline-block;
+}
+.doi-link:hover{
+  background:rgba(46,196,182,.15);
+}
+
+/* Spotlight Cards */
+.spotlight-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:12px;
+  margin-bottom:16px;
+}
+.stat-box{
+  padding:12px 14px;
+  border-radius:8px;
+  background:var(--bg-subtle);
+  border:1px solid var(--border-subtle);
+}
+.stat-box-lbl{
+  font-size:.73rem;
+  color:var(--text-dim);
+  margin-bottom:4px;
+}
+.stat-box-val{
+  font-family:var(--mono);
+  font-size:1.1rem;
+  font-weight:500;
+  color:var(--text);
+}
+.stat-box-sub{
+  font-family:var(--mono);
+  font-size:.67rem;
+  color:var(--text-faint);
+  margin-top:3px;
+}
+
+/* VIEW 2: Place-Based Orthographic Globe */
+.globe-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 390px;
+  gap:20px;
+  align-items:stretch;
+  min-height:680px;
+}
+.globe-stage{
+  position:relative;
+  background:var(--globe-bg);
+  border:1px solid var(--border-subtle);
+  border-radius:14px;
+  overflow:hidden;
+  min-height:640px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#atlas-globe-canvas{
+  width:100%;
+  height:100%;
+  min-height:640px;
+  display:block;
+  cursor:grab;
+  touch-action:none;
+}
+#atlas-globe-canvas:active{cursor:grabbing}
+
+.globe-hud-top{
+  position:absolute;
+  top:16px;
+  left:16px;
+  right:16px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  pointer-events:none;
+}
+.globe-lens-bar{
+  pointer-events:auto;
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  padding:6px;
+  border-radius:10px;
+  background:var(--glass);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);
+  max-width:720px;
+}
+.lens-btn{
+  appearance:none;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--text-dim);
+  font-size:.75rem;
+  font-weight:500;
+  padding:5px 10px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all .15s;
+}
+.lens-btn:hover{color:var(--text)}
+.lens-btn[aria-pressed="true"]{
+  background:rgba(46,196,182,.14);
+  color:var(--accent-bright);
+  border-color:var(--border);
+}
+.globe-overlay-toggle{
+  pointer-events:auto;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 11px;
+  border-radius:8px;
+  background:var(--glass);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);
+  font-size:.75rem;
+  color:var(--text-dim);
+  cursor:pointer;
+}
+.globe-overlay-toggle input{accent-color:var(--accent)}
+
+.globe-hud-bottom{
+  position:absolute;
+  bottom:16px;
+  left:16px;
+  right:16px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  pointer-events:none;
+}
+.globe-legend{
+  pointer-events:auto;
+  padding:10px 14px;
+  border-radius:10px;
+  background:var(--glass);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);
+  min-width:240px;
+  max-width:340px;
+}
+.globe-legend-title{
+  font-size:.76rem;
+  font-weight:500;
+  color:var(--text);
+  margin-bottom:6px;
+}
+.globe-legend-bar{
+  height:7px;
+  border-radius:4px;
+  margin-bottom:5px;
+}
+.globe-legend-ends{
+  display:flex;
+  justify-content:space-between;
+  font-family:var(--mono);
+  font-size:.67rem;
+  color:var(--text-dim);
+}
+.globe-jump-bar{
+  pointer-events:auto;
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  padding:5px;
+  border-radius:8px;
+  background:var(--glass);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);
+}
+.jump-btn{
+  appearance:none;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--text-dim);
+  font-family:var(--mono);
+  font-size:.68rem;
+  padding:4px 8px;
+  border-radius:5px;
+  cursor:pointer;
+}
+.jump-btn:hover{
+  color:var(--text);
+  border-color:var(--border-subtle);
+}
+
+.globe-inspector{
+  background:var(--bg-card);
+  border:1px solid var(--border-subtle);
+  border-radius:14px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  max-height:720px;
+  overflow-y:auto;
+}
+.inspector-coords{
+  font-family:var(--mono);
+  font-size:.74rem;
+  color:var(--accent);
+}
+.inspector-place{
+  font-family:var(--serif);
+  font-size:1.55rem;
+  font-weight:500;
+  line-height:1.15;
+}
+.inspector-section{
+  padding-top:12px;
+  border-top:1px solid var(--border-subtle);
+}
+.inspector-sec-title{
+  font-family:var(--mono);
+  font-size:.68rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--text-faint);
+  margin-bottom:8px;
+}
+.site-item{
+  padding:10px 12px;
+  border-radius:8px;
+  background:var(--bg-subtle);
+  border:1px solid var(--border-subtle);
+  margin-bottom:8px;
+}
+.site-item-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:8px;
+  margin-bottom:4px;
+}
+.site-item-name{
+  font-size:.82rem;
+  font-weight:500;
+  color:var(--text);
+}
+.site-item-dist{
+  font-family:var(--mono);
+  font-size:.67rem;
+  color:var(--text-faint);
+}
+.site-item-metrics{
+  font-family:var(--mono);
+  font-size:.72rem;
+  color:var(--text-dim);
+  margin-bottom:5px;
+}
+
+/* Footer */
+.atlas-footer{
+  border-top:1px solid var(--border-subtle);
+  padding:22px 28px;
+  font-size:.78rem;
+  color:var(--text-faint);
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:12px;
+}
+
+@media (max-width: 1180px){
+  .atlas-brand-badge{display:none}
+}
+@media (max-width: 1080px){
+  .atlas-workspace{grid-template-columns:265px minmax(0,1fr);gap:18px}
+}
+@media (max-width: 900px){
+  .atlas-nav{padding:10px 16px}
+  .atlas-tabs{order:3;width:100%;justify-content:center;overflow-x:auto}
+}
+@media (max-width: 760px){
+  .atlas-workspace{grid-template-columns:1fr}
+  .country-sidebar{position:static;max-height:280px}
+  .globe-layout{grid-template-columns:1fr}
+  .globe-stage,#atlas-globe-canvas{min-height:480px}
+  .atlas-main{padding:18px 14px 48px}
+  .card{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<nav class="atlas-nav" aria-label="NbS Atlas Navigation">
+  <div class="atlas-nav-left">
+    <a href="index.html" class="atlas-back" title="Return to Earth Love United main page">← Earth Love United</a>
+    <div class="atlas-brand">
+      <span class="atlas-brand-title">NbS Atlas</span>
+      <span class="atlas-brand-badge">v1.1 · Public Non-Commercial</span>
+    </div>
+  </div>
+
+  <div class="atlas-tabs" role="tablist" aria-label="Atlas Views">
+    <button type="button" class="atlas-tab" role="tab" id="tab-btn-dossier" aria-selected="true" data-view="dossier">Pathways &amp; Countries</button>
+    <button type="button" class="atlas-tab" role="tab" id="tab-btn-sources" aria-selected="false" data-view="sources">Sources &amp; Licence Ledger</button>
+  </div>
+
+  <div class="atlas-nav-right">
+    <a href="index.html#globe" class="atlas-living-link" id="nav-living-globe-link">Living Globe ↗</a>
+    <button type="button" class="theme-btn" id="atlas-theme-toggle" title="Toggle dark/light theme" aria-label="Toggle theme">◐</button>
+  </div>
+</nav>
+
+<main class="atlas-main">
+  <!-- Editorial Header -->
+  <header class="atlas-header">
+    <div class="atlas-header-copy">
+      <p class="atlas-eyebrow">Earth Love United · Nature-Based Solutions Intelligence</p>
+      <h1 class="atlas-title">Coastal, Marine &amp; Terrestrial Carbon Atlas</h1>
+      <p class="atlas-subtitle">Every metric, field core, restoration survival trial, and soil carbon grid cell is traced directly to its peer-reviewed DOI under strict <code style="font-family:var(--mono);font-size:.82rem;color:var(--accent)">public_noncommercial</code> licence governance.</p>
+    </div>
+    <div class="atlas-kpis" id="atlas-kpis">
+      <div class="atlas-kpi">
+        <div class="atlas-kpi-val" id="kpi-rows">70,705</div>
+        <div class="atlas-kpi-lbl">Verified Rows</div>
+      </div>
+      <div class="atlas-kpi">
+        <div class="atlas-kpi-val" id="kpi-sites">4,962</div>
+        <div class="atlas-kpi-lbl">Geocoded Field Sites</div>
+      </div>
+      <div class="atlas-kpi">
+        <div class="atlas-kpi-val" id="kpi-countries">233</div>
+        <div class="atlas-kpi-lbl">Countries &amp; Territories</div>
+      </div>
+      <div class="atlas-kpi">
+        <div class="atlas-kpi-val" id="kpi-sources">99</div>
+        <div class="atlas-kpi-lbl">Admitted Sources</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- VIEW 1: PATHWAYS & COUNTRY DOSSIERS -->
+  <section class="atlas-view active" id="view-dossier" role="tabpanel" aria-labelledby="tab-btn-dossier">
+    <div class="atlas-controls">
+      <div class="pathway-pills" id="pathway-pills" role="group" aria-label="Filter by NbS Pathway">
+        <button type="button" class="pw-pill" aria-pressed="true" data-pathway="all">
+          <span>All Pathways</span>
+          <span class="pw-count" id="pw-cnt-all">70,705</span>
+        </button>
+        <button type="button" class="pw-pill" aria-pressed="false" data-pathway="seagrass">
+          <span class="pw-dot" style="background:var(--pw-seagrass)"></span>
+          <span>Seagrass</span>
+          <span class="pw-count" id="pw-cnt-seagrass">35,705</span>
+        </button>
+        <button type="button" class="pw-pill" aria-pressed="false" data-pathway="mangroves">
+          <span class="pw-dot" style="background:var(--pw-mangroves)"></span>
+          <span>Mangroves</span>
+          <span class="pw-count" id="pw-cnt-mangroves">30,967</span>
+        </button>
+        <button type="button" class="pw-pill" aria-pressed="false" data-pathway="algae">
+          <span class="pw-dot" style="background:var(--pw-kelp)"></span>
+          <span>Kelp &amp; Algae</span>
+          <span class="pw-count" id="pw-cnt-algae">1,458</span>
+        </button>
+        <button type="button" class="pw-pill" aria-pressed="false" data-pathway="hemp">
+          <span class="pw-dot" style="background:var(--pw-hemp)"></span>
+          <span>Industrial Hemp</span>
+          <span class="pw-count" id="pw-cnt-hemp">2,431</span>
+        </button>
+        <button type="button" class="pw-pill" aria-pressed="false" data-pathway="biochar">
+          <span class="pw-dot" style="background:var(--pw-biochar)"></span>
+          <span>Biochar</span>
+          <span class="pw-count" id="pw-cnt-biochar">144</span>
+        </button>
+      </div>
+
+      <div class="preset-group">
+        <span class="preset-label">Focus:</span>
+        <button type="button" class="preset-btn" data-preset="med-seagrass">Mediterranean &amp; Türkiye Seagrass</button>
+        <button type="button" class="preset-btn" data-preset="tur-hemp-biochar">Türkiye Hemp &amp; Biochar</button>
+        <button type="button" class="preset-btn" data-preset="restoration">Restoration Economics</button>
+      </div>
+    </div>
+
+    <div class="atlas-workspace">
+      <!-- Left Sidebar: Searchable 233-Country Index -->
+      <aside class="country-sidebar" aria-label="Country Index">
+        <div class="sidebar-search-wrap">
+          <input type="search" id="country-search" class="sidebar-search" placeholder="Search 233 countries or ISO3 (e.g. TUR)..." autocomplete="off">
+        </div>
+        <div class="sidebar-meta">
+          <span id="country-list-count">233 countries</span>
+          <span>Pathways · Facts</span>
+        </div>
+        <div class="country-list" id="country-list" role="listbox" aria-label="Countries"></div>
+      </aside>
+
+      <!-- Main Column: Selected Country Dossier + Reference Spotlights -->
+      <div class="dossier-col">
+        <!-- Country Dossier Card -->
+        <article class="card" id="country-dossier-card">
+          <div class="card-header">
+            <div>
+              <div class="dossier-title-row">
+                <h2 class="dossier-country-name" id="dossier-name">Türkiye</h2>
+                <span class="dossier-iso-badge" id="dossier-iso">TUR</span>
+              </div>
+              <p class="dossier-sub" id="dossier-sub">Loading verified country Nature-Based Solutions dossier…</p>
+            </div>
+            <div class="dossier-actions">
+              <a href="index.html?nbs=all&amp;country=TUR#globe" class="btn-minimal" id="btn-open-living-globe">Inspect on Living Globe ↗</a>
+            </div>
+          </div>
+          <div class="pw-grid" id="dossier-pathways"></div>
+        </article>
+
+        <!-- Mediterranean Seagrass Spotlight Card -->
+        <article class="card" id="spotlight-med-seagrass">
+          <div class="card-header">
+            <div>
+              <p class="atlas-eyebrow">Mediterranean Basin &amp; COP31 Antalya Focus</p>
+              <h3 class="dossier-country-name" style="font-size:1.55rem">Mediterranean Seagrass Spotlight (<em>Posidonia oceanica</em> &amp; <em>Cymodocea nodosa</em>)</h3>
+              <p class="dossier-sub">Basin-wide mapped habitat, carbon stock density, and national seagrass inventories across 21 Mediterranean coastal states.</p>
+            </div>
+          </div>
+          <div class="spotlight-grid" id="med-seagrass-kpis"></div>
+          <div class="data-table-wrap">
+            <table class="data-table" id="med-seagrass-table">
+              <thead>
+                <tr>
+                  <th>Country</th>
+                  <th>Mapped Seagrass Area</th>
+                  <th>Primary Species</th>
+                  <th>Field Sites</th>
+                  <th>Facts</th>
+                  <th>Primary Sources &amp; DOIs</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- Restoration Economics Card -->
+        <article class="card" id="spotlight-restoration">
+          <div class="card-header">
+            <div>
+              <p class="atlas-eyebrow">Empirical Field Trials · 41 Countries</p>
+              <h3 class="dossier-country-name" style="font-size:1.55rem">Global Restoration Economics &amp; Survival Benchmarks</h3>
+              <p class="dossier-sub">Peer-reviewed restoration project area (<code style="font-family:var(--mono)">restoration_area_ha</code>), survival percentage (<code style="font-family:var(--mono)">restoration_survival_pct</code>), and cost per hectare (<code style="font-family:var(--mono)">restoration_cost_usd_ha</code>).</p>
+            </div>
+          </div>
+          <div class="spotlight-grid" id="restoration-kpis"></div>
+          <div class="data-table-wrap">
+            <table class="data-table" id="restoration-table">
+              <thead>
+                <tr>
+                  <th>Country / Site</th>
+                  <th>Pathway</th>
+                  <th>Species</th>
+                  <th>Metric</th>
+                  <th>Measured Value</th>
+                  <th>Year</th>
+                  <th>Source DOI</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW 2: SOURCES & LICENCE LEDGER -->
+  <section class="atlas-view" id="view-sources" role="tabpanel" aria-labelledby="tab-btn-sources">
+    <div class="dossier-col">
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <p class="atlas-eyebrow">Strict Licence &amp; Provenance Governance</p>
+            <h2 class="dossier-country-name" style="font-size:1.65rem">Public Non-Commercial Edition &amp; Withheld Sources Disclosure</h2>
+            <p class="dossier-sub">Every row in the runtime package is audited against source-level licence terms. Sources lacking explicit public redistribution clearance or pending primary-table reconciliation are withheld rather than interpolated.</p>
+          </div>
+        </div>
+        <div class="spotlight-grid" id="governance-summary-boxes"></div>
+        <div class="data-table-wrap">
+          <table class="data-table" id="withheld-sources-table">
+            <thead>
+              <tr>
+                <th>Withheld Source ID</th>
+                <th>Withheld Rows</th>
+                <th>Governance Gate / Reason</th>
+                <th>Required Clearance / Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <p class="atlas-eyebrow">96 Peer-Reviewed Scientific Datasets</p>
+            <h2 class="dossier-country-name" style="font-size:1.65rem">Admitted Source Registry (<code style="font-family:var(--mono);font-size:1.1rem">public_noncommercial</code>)</h2>
+          </div>
+          <div style="min-width:260px">
+            <input type="search" id="source-search" class="sidebar-search" placeholder="Filter 96 sources by author, pathway, or DOI...">
+          </div>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table" id="admitted-sources-table">
+            <thead>
+              <tr>
+                <th>Source ID &amp; Citation</th>
+                <th>Pathway</th>
+                <th>Licence</th>
+                <th>Kept Rows</th>
+                <th>DOI / Reference</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="atlas-footer">
+  <div>Earth Love United · Nature-Based Solutions Atlas (<code style="font-family:var(--mono)">public_noncommercial</code> edition)</div>
+  <div>Zero fabricated or interpolated values · Every metric linked to its primary DOI</div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  const PATHWAY_META = {
+    seagrass: { label: 'Seagrass Meadows', short: 'Seagrass', color: 'var(--pw-seagrass)', hex: '#2ec4b6' },
+    mangroves: { label: 'Mangrove Forests', short: 'Mangroves', color: 'var(--pw-mangroves)', hex: '#34d399' },
+    algae: { label: 'Kelp & Macroalgae', short: 'Kelp & Algae', color: 'var(--pw-kelp)', hex: '#38bdf8' },
+    hemp: { label: 'Industrial Hemp', short: 'Hemp', color: 'var(--pw-hemp)', hex: '#d4a373' },
+    biochar: { label: 'Biochar Systems', short: 'Biochar', color: 'var(--pw-biochar)', hex: '#a78bfa' }
+  };
+
+  const METRIC_LABELS = {
+    extent_ha: 'Mapped Habitat Extent',
+    extent_change_pct: 'Net Extent Change',
+    carbon_stock_tC_ha: 'Soil / Ecosystem Carbon Density',
+    carbon_stock_total_MtC: 'Total Ecosystem Carbon Stock',
+    sediment_carbon_density_gC_cm3: 'Sediment Carbon Density',
+    burial_rate_gC_m2_yr: 'Carbon Burial Rate',
+    loss_rate_pct_yr: 'Annual Habitat Loss Rate',
+    protected_fraction_pct: 'Protected Habitat Share',
+    restoration_area_ha: 'Restoration Trial Area',
+    restoration_survival_pct: 'Restoration Survival Rate',
+    restoration_cost_usd_ha: 'Restoration Cost per Hectare',
+    restoration_potential_ha: 'Biophysical Restoration Potential',
+    area_cultivated_ha: 'Cultivated Area',
+    production_t_yr: 'Annual Production',
+    yield_t_ha_yr: 'Biomass / Crop Yield',
+    biomass_t_ha: 'Dry Biomass Yield',
+    removal_potential_MtCO2_yr: 'Mitigation / Removal Potential (2020–2050)',
+    carbon_content_pct: 'Biochar Organic Carbon Content',
+    hcorg_molar_ratio: 'Molar H/Corg Stability Ratio',
+    pyrolysis_temp_C: 'Pyrolysis Temperature'
+  };
+
+  function humanMetric(m) {
+    if (!m) return 'Metric';
+    const base = String(m).split('|')[0];
+    const qual = String(m).split('|')[1];
+    const lbl = METRIC_LABELS[base] || base.replace(/_/g, ' ');
+    return qual ? `${lbl} (${qual})` : lbl;
+  }
+
+  function sourceDoi(sourceId) {
+    if (!state.atlas || !state.atlas.sources || !sourceId) return null;
+    const s = state.atlas.sources[sourceId];
+    return s ? (s.doi || s.url || null) : null;
+  }
+
+  function countryFactCount(c) {
+    if (!c || !c.categories) return 0;
+    let total = 0;
+    for (const k of Object.keys(c.categories)) {
+      const cat = c.categories[k];
+      if (!cat) continue;
+      const mObj = cat.metrics || {};
+      for (const mk of Object.keys(mObj)) {
+        const obs = mObj[mk].observations || mObj[mk].latest || [];
+        total += obs.length || 1;
+      }
+      const sites = cat.site_and_subnational || [];
+      for (const sg of sites) {
+        total += (sg.stats && sg.stats.count) ? sg.stats.count : (sg.sample_sites ? sg.sample_sites.length : 1);
+      }
+    }
+    return total;
+  }
+
+  const state = {
+    atlas: null,
+    sites: null,
+    land: null,
+    grids: new Map(),
+    activeView: 'dossier',
+    activePathway: 'all',
+    activePreset: null,
+    selectedCountry: 'TUR',
+    countryQuery: '',
+    sourceQuery: '',
+    globe: {
+      lens: 'cores',
+      showCoresOverlay: true,
+      lat0: 36.5,
+      lon0: 30.5,
+      zoom: 1.35,
+      place: { lat: 36.89, lon: 30.71 },
+      dragging: false,
+      dragStart: null
+    }
+  };
+
+  // Format helpers
+  function fmtNum(val, maxDec = 2) {
+    if (val === null || val === undefined || !Number.isFinite(Number(val))) return '—';
+    const n = Number(val);
+    if (Math.abs(n) >= 1000) {
+      return n.toLocaleString('en-US', { maximumFractionDigits: maxDec });
+    }
+    if (Math.abs(n) >= 10) {
+      return n.toLocaleString('en-US', { maximumFractionDigits: Math.min(1, maxDec) });
+    }
+    return n.toLocaleString('en-US', { maximumFractionDigits: maxDec });
+  }
+
+  function doiHref(doi) {
+    if (!doi) return null;
+    const s = String(doi).trim();
+    if (!s) return null;
+    if (s.startsWith('http://') || s.startsWith('https://')) return s;
+    return 'https://doi.org/' + s.replace(/^doi:\s*/i, '');
+  }
+
+  function doiBadge(doi, label) {
+    const href = doiHref(doi);
+    if (!href) return '<span class="unit-cell">—</span>';
+    const shortText = label || String(doi).replace(/^https?:\/\/(dx\.)?doi\.org\//i, '');
+    return `<a class="doi-link" href="${esc(href)}" target="_blank" rel="noopener">${esc(shortText)} ↗</a>`;
+  }
+
+  function esc(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // URL Sync
+  function readUrlParams() {
+    const p = new URLSearchParams(window.location.search);
+    const c = p.get('country');
+    if (c && /^[A-Z]{3}$/i.test(c)) state.selectedCountry = c.toUpperCase();
+    const pw = p.get('pathway');
+    if (pw && (pw === 'all' || PATHWAY_META[pw])) state.activePathway = pw;
+    const v = p.get('view');
+    if (v && ['dossier', 'sources'].includes(v)) state.activeView = v;
+  }
+
+  function writeUrlParams() {
+    const p = new URLSearchParams(window.location.search);
+    p.set('country', state.selectedCountry);
+    if (state.activePathway !== 'all') p.set('pathway', state.activePathway);
+    else p.delete('pathway');
+    if (state.activeView !== 'dossier') p.set('view', state.activeView);
+    else p.delete('view');
+    const qs = p.toString();
+    history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname);
+  }
+
+  // Theme Toggle
+  document.getElementById('atlas-theme-toggle').addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    const next = cur === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('elu-theme', next); } catch (e) {}
+  });
+
+  // View Tabs
+  document.querySelectorAll('.atlas-tab').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      switchView(btn.dataset.view);
+    });
+  });
+
+  function switchView(viewName) {
+    state.activeView = viewName;
+    document.querySelectorAll('.atlas-tab').forEach((b) => {
+      b.setAttribute('aria-selected', String(b.dataset.view === viewName));
+    });
+    document.querySelectorAll('.atlas-view').forEach((sec) => {
+      sec.classList.toggle('active', sec.id === `view-${viewName}`);
+    });
+    writeUrlParams();
+  }
+
+  // Pathway Pills
+  document.querySelectorAll('#pathway-pills .pw-pill').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.activePathway = btn.dataset.pathway;
+      state.activePreset = null;
+      document.querySelectorAll('.preset-btn').forEach((b) => b.classList.remove('active'));
+      document.querySelectorAll('#pathway-pills .pw-pill').forEach((b) => {
+        b.setAttribute('aria-pressed', String(b.dataset.pathway === state.activePathway));
+      });
+      renderCountryList();
+      renderCountryDossier();
+      writeUrlParams();
+    });
+  });
+
+  // Focus Presets
+  document.querySelectorAll('.preset-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const preset = btn.dataset.preset;
+      document.querySelectorAll('.preset-btn').forEach((b) => b.classList.toggle('active', b === btn));
+      state.activePreset = preset;
+      if (preset === 'med-seagrass') {
+        state.selectedCountry = 'TUR';
+        state.activePathway = 'seagrass';
+        syncPathwayButtons();
+        renderCountryList();
+        renderCountryDossier();
+        document.getElementById('spotlight-med-seagrass').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (preset === 'tur-hemp-biochar') {
+        state.selectedCountry = 'TUR';
+        state.activePathway = 'all';
+        syncPathwayButtons();
+        renderCountryList();
+        renderCountryDossier();
+        document.getElementById('country-dossier-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (preset === 'restoration') {
+        document.getElementById('spotlight-restoration').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      writeUrlParams();
+    });
+  });
+
+  function syncPathwayButtons() {
+    document.querySelectorAll('#pathway-pills .pw-pill').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.pathway === state.activePathway));
+    });
+  }
+
+  // Country Search
+  document.getElementById('country-search').addEventListener('input', (e) => {
+    state.countryQuery = e.target.value.trim().toLowerCase();
+    renderCountryList();
+  });
+
+  // Render Country Sidebar List
+  function renderCountryList() {
+    if (!state.atlas) return;
+    const listEl = document.getElementById('country-list');
+    const countries = Object.values(state.atlas.countries || {});
+    const q = state.countryQuery;
+    const pw = state.activePathway;
+
+    const filtered = countries.filter((c) => {
+      if (pw !== 'all') {
+        const hasPw = (c.categories_present || []).includes(pw) || Boolean(c.categories && c.categories[pw]);
+        if (!hasPw) return false;
+      }
+      if (!q) return true;
+      return (
+        c.iso3.toLowerCase().includes(q) ||
+        (c.country_name && c.country_name.toLowerCase().includes(q))
+      );
+    });
+
+    filtered.sort((a, b) => {
+      if (a.iso3 === 'TUR') return -1;
+      if (b.iso3 === 'TUR') return 1;
+      return countryFactCount(b) - countryFactCount(a);
+    });
+
+    document.getElementById('country-list-count').textContent = `${filtered.length} countries`;
+
+    listEl.innerHTML = filtered.map((c) => {
+      const pws = (c.categories_present || Object.keys(c.categories || {})).filter((k) => PATHWAY_META[k]);
+      const dotsHtml = pws.map((k) => `<span style="background:${PATHWAY_META[k].color}" title="${PATHWAY_META[k].label}"></span>`).join('');
+      const sel = c.iso3 === state.selectedCountry ? ' selected' : '';
+      return `<button type="button" class="country-item${sel}" data-iso="${esc(c.iso3)}" role="option" aria-selected="${c.iso3 === state.selectedCountry}">
+        <div style="min-width:0;overflow:hidden;text-overflow:ellipsis">
+          <span class="country-item-name">${esc(c.country_name || c.iso3)}</span>
+          <span class="country-item-iso">${esc(c.iso3)}</span>
+        </div>
+        <div class="country-item-right">
+          <span class="country-pw-dots">${dotsHtml}</span>
+          <span class="country-fact-cnt">${fmtNum(countryFactCount(c), 0)}</span>
+        </div>
+      </button>`;
+    }).join('');
+
+    listEl.querySelectorAll('.country-item').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        state.selectedCountry = btn.dataset.iso;
+        renderCountryList();
+        renderCountryDossier();
+        writeUrlParams();
+        if (window.innerWidth <= 760) {
+          const dossierCard = document.getElementById('country-dossier-card');
+          if (dossierCard) dossierCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  }
+
+  // Render Selected Country Dossier
+  function renderCountryDossier() {
+    if (!state.atlas) return;
+    const c = state.atlas.countries[state.selectedCountry] || state.atlas.countries.TUR || Object.values(state.atlas.countries)[0];
+    if (!c) return;
+
+    document.getElementById('dossier-name').textContent = c.country_name || c.iso3;
+    document.getElementById('dossier-iso').textContent = c.iso3;
+
+    const activePws = (c.categories_present || Object.keys(c.categories || {})).filter((k) => PATHWAY_META[k]);
+
+    // Find geocoded sites for this country in nbs-sites.json
+    const countrySites = state.sites && state.sites.sites
+      ? state.sites.sites.filter((s) => s.iso === c.iso3)
+      : [];
+
+    // Collect distinct source_ids across this country's categories
+    const countrySourceIds = new Set();
+    for (const pwKey of activePws) {
+      const cat = c.categories && c.categories[pwKey];
+      if (!cat) continue;
+      for (const mEntry of Object.values(cat.metrics || {})) {
+        for (const l of (mEntry.latest || [])) if (l.source_id) countrySourceIds.add(l.source_id);
+        for (const o of (mEntry.observations || [])) if (o.source_id) countrySourceIds.add(o.source_id);
+      }
+      for (const sg of (cat.site_and_subnational || [])) {
+        for (const sid of (sg.sources || [])) countrySourceIds.add(sid);
+      }
+    }
+
+    document.getElementById('dossier-sub').textContent =
+      `${fmtNum(countryFactCount(c), 0)} verified observations across ${activePws.length} pathway${activePws.length === 1 ? '' : 's'} · ` +
+      `${fmtNum(countrySites.length, 0)} geocoded field core${countrySites.length === 1 ? '' : 's'} · ` +
+      `${countrySourceIds.size} peer-reviewed source${countrySourceIds.size === 1 ? '' : 's'}` +
+      (c.mediterranean_basin ? ' · Mediterranean Basin State' : '');
+
+    const globeHref = `index.html?nbs=${encodeURIComponent(state.activePathway)}&country=${encodeURIComponent(c.iso3)}#globe`;
+    const livingLink = document.getElementById('btn-open-living-globe');
+    if (livingLink) livingLink.href = globeHref;
+    document.getElementById('nav-living-globe-link').href = globeHref;
+
+    const container = document.getElementById('dossier-pathways');
+    const pathwaysToShow = state.activePathway === 'all'
+      ? activePws
+      : activePws.filter((k) => k === state.activePathway);
+
+    if (!pathwaysToShow.length) {
+      container.innerHTML = `<div class="pw-block"><p class="dossier-sub">No rows for the selected pathway filter in ${esc(c.country_name || c.iso3)}. Switch filter to "All Pathways" to view ${activePws.map((k) => PATHWAY_META[k].label).join(', ')}.</p></div>`;
+      return;
+    }
+
+    container.innerHTML = pathwaysToShow.map((pwKey) => {
+      const pwMeta = PATHWAY_META[pwKey];
+      const cat = (c.categories && c.categories[pwKey]) || {};
+      const metricGroups = Object.entries(cat.metrics || {});
+      const siteGroups = cat.site_and_subnational || [];
+      const geocodedForPw = countrySites.filter((s) => s.c === pwKey);
+
+      const metricsRows = [];
+      for (const [mKey, mObj] of metricGroups) {
+        const latestList = mObj.latest || [];
+        const series = mObj.series_summary || {};
+        const obsCount = (mObj.observations || []).length;
+        for (const rec of latestList) {
+          const span = series.first_year && series.latest_year && series.first_year !== series.latest_year
+            ? `${series.first_year}–${series.latest_year}`
+            : (rec.year || mObj.latest_year || '—');
+          const doi = sourceDoi(rec.source_id);
+          const scopeNote = mObj.qualifier ? ` (${mObj.qualifier})` : '';
+          metricsRows.push(`<tr>
+            <td>
+              <strong>${esc(humanMetric(mObj.metric || mKey) + scopeNote)}</strong>
+              <div class="unit-cell">${esc(rec.evidence_class || 'peer-reviewed')}</div>
+            </td>
+            <td class="num-cell">${fmtNum(rec.value, 2)}</td>
+            <td class="unit-cell">${esc(rec.unit || '')}</td>
+            <td class="unit-cell">${esc(span)}</td>
+            <td class="unit-cell">${obsCount > 1 ? `${fmtNum(obsCount, 0)} yrs (${fmtNum(series.min_value, 1)}–${fmtNum(series.max_value, 1)})` : '1 record'}</td>
+            <td>${doiBadge(doi, rec.source_id)}</td>
+          </tr>`);
+        }
+      }
+
+      // Combine subnational summaries + geocoded field cores for this pathway
+      const siteTableRows = [];
+      for (const sg of siteGroups) {
+        for (const ss of (sg.sample_sites || []).slice(0, 8)) {
+          const coords = (ss.lat != null && ss.lon != null)
+            ? `${Number(ss.lat).toFixed(2)}°, ${Number(ss.lon).toFixed(2)}°`
+            : (sg.level || 'Subnational');
+          const doi = sourceDoi(ss.source_id);
+          siteTableRows.push(`<tr>
+            <td><strong>${esc(ss.name || c.country_name)}</strong><div class="unit-cell">${esc(coords)}</div></td>
+            <td>${ss.species ? `<em>${esc(ss.species)}</em>` : '<span class="unit-cell">—</span>'}</td>
+            <td>${esc(humanMetric(sg.metric))}</td>
+            <td class="num-cell">${fmtNum(ss.value, 2)} <span class="unit-cell">${esc(ss.unit || sg.unit || '')}</span></td>
+            <td class="unit-cell">${esc(ss.year || sg.year_range || '—')}</td>
+            <td>${doiBadge(doi, ss.source_id)}</td>
+          </tr>`);
+        }
+      }
+
+      for (const gs of geocodedForPw.slice(0, 12)) {
+        const coords = `${Number(gs.lat).toFixed(2)}°, ${Number(gs.lon).toFixed(2)}°`;
+        const doi = sourceDoi(gs.s);
+        for (const [mk, mTuple] of Object.entries(gs.m || {})) {
+          siteTableRows.push(`<tr>
+            <td><strong>${esc(gs.name || c.country_name)}</strong><div class="unit-cell">${esc(coords)}</div></td>
+            <td>${gs.sp ? `<em>${esc(gs.sp)}</em>` : '<span class="unit-cell">—</span>'}</td>
+            <td>${esc(humanMetric(mk))}</td>
+            <td class="num-cell">${fmtNum(mTuple[0], 2)} <span class="unit-cell">${esc(mTuple[1] || '')}</span></td>
+            <td class="unit-cell">${esc(mTuple[2] || '—')}</td>
+            <td>${doiBadge(doi, gs.s)}</td>
+          </tr>`);
+        }
+      }
+
+      // Special Türkiye Seagrass / Hemp / Biochar spotlight callout inside TUR dossier
+      let specialCallout = '';
+      if (c.iso3 === 'TUR' && pwKey === 'seagrass' && state.atlas.mediterranean_seagrass_spotlight && state.atlas.mediterranean_seagrass_spotlight.turkiye_highlight) {
+        const th = state.atlas.mediterranean_seagrass_spotlight.turkiye_highlight;
+        specialCallout = `<div style="margin-bottom:12px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:rgba(46,196,182,.06);font-size:.8rem;color:var(--text-dim)">
+          <strong style="color:var(--accent-bright)">Survey-Boundary vs. Basin-Mosaic Reconciliation:</strong>
+          Sentinel-2 0–25 m Mediterranean mapping records <strong style="color:var(--text)">${fmtNum(th.posidonia_extent_ha, 0)} ha</strong> of <em>Posidonia oceanica</em> along Türkiye's coast (<code style="font-family:var(--mono)">${esc(th.posidonia_source_id)}</code>), whereas the WCMC Bioregion 3 polygon fragment records <strong style="color:var(--text)">${fmtNum(th.mckenzie_bioregion_extent_ha, 0)} ha</strong> (<code style="font-family:var(--mono)">${esc(th.mckenzie_source_id)}</code>). Both are preserved side-by-side without synthetic averaging.
+        </div>`;
+      }
+
+      return `<div class="pw-block">
+        <div class="pw-block-head">
+          <div class="pw-block-title">
+            <span class="pw-dot" style="background:${pwMeta.color};width:9px;height:9px"></span>
+            <span>${esc(pwMeta.label)}</span>
+          </div>
+          <div class="pw-block-meta">${metricsRows.length} country metrics · ${ geocodedForPw.length } geocoded field cores</div>
+        </div>
+        ${specialCallout}
+        ${metricsRows.length ? `<div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Metric &amp; Evidence Class</th>
+                <th>Latest Value</th>
+                <th>Unit</th>
+                <th>Period</th>
+                <th>Series / Range</th>
+                <th>Source &amp; DOI</th>
+              </tr>
+            </thead>
+            <tbody>${metricsRows.join('')}</tbody>
+          </table>
+        </div>` : ''}
+        ${siteTableRows.length ? `<details style="margin-top:12px" ${c.iso3 === 'TUR' || siteTableRows.length <= 6 ? 'open' : ''}>
+          <summary style="cursor:pointer;font-family:var(--mono);font-size:.74rem;color:var(--accent)">
+            Geocoded Field Cores &amp; Subnational Measurements (${siteTableRows.length} shown)
+          </summary>
+          <div class="data-table-wrap" style="margin-top:8px">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Site / Coordinates</th>
+                  <th>Species</th>
+                  <th>Metric</th>
+                  <th>Measured Value</th>
+                  <th>Year</th>
+                  <th>Source &amp; DOI</th>
+                </tr>
+              </thead>
+              <tbody>${siteTableRows.slice(0, 16).join('')}</tbody>
+            </table>
+          </div>
+        </details>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  // Render Mediterranean Seagrass Spotlight
+  function renderMediterraneanSpotlight() {
+    if (!state.atlas || !state.atlas.mediterranean_seagrass_spotlight) return;
+    const spot = state.atlas.mediterranean_seagrass_spotlight;
+    const kpiEl = document.getElementById('med-seagrass-kpis');
+    const th = spot.turkiye_highlight || {};
+
+    kpiEl.innerHTML = `
+      <div class="stat-box">
+        <div class="stat-box-lbl">Basin Mapped <em>Posidonia oceanica</em></div>
+        <div class="stat-box-val">${fmtNum(spot.basin_extent_ha || 1901960, 0)} ha</div>
+        <div class="stat-box-sub">Traganos et al. 2022 · Sentinel-2 (0–25 m)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-lbl">Basin Seagrass Carbon Stock</div>
+        <div class="stat-box-val">${fmtNum(spot.basin_carbon_stock_MtC || 722.2, 1)} MtC</div>
+        <div class="stat-box-sub">${fmtNum(spot.basin_carbon_stock_MtCO2e || 2648.07, 1)} MtCO₂e stored</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-lbl">Türkiye Mapped <em>Posidonia oceanica</em></div>
+        <div class="stat-box-val">${fmtNum(th.posidonia_extent_ha || 74059, 0)} ha</div>
+        <div class="stat-box-sub">Protected share: ${fmtNum(th.protected_fraction_pct || 6.15, 2)}% (Kumagai 2022)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-lbl">Mediterranean Coastal States</div>
+        <div class="stat-box-val">${(spot.countries || []).length} States</div>
+        <div class="stat-box-sub">Click any row below to inspect dossier</div>
+      </div>
+    `;
+
+    const tbody = document.querySelector('#med-seagrass-table tbody');
+    tbody.innerHTML = (spot.countries || []).map((row) => {
+      const posHa = row.posidonia_extent_ha != null ? `${fmtNum(row.posidonia_extent_ha, 0)} ha` : '—';
+      const mckHa = row.mckenzie_extent_ha != null ? `${fmtNum(row.mckenzie_extent_ha, 0)} ha` : '—';
+      const prot = row.protected_fraction_pct != null ? `${fmtNum(row.protected_fraction_pct, 1)}%` : '—';
+      const sid = row.posidonia_source_id || 'traganos-mediterranean-seagrass-2022';
+      const doi = sourceDoi(sid);
+      return `<tr class="clickable-row" data-iso="${esc(row.iso3)}">
+        <td><strong>${esc(row.country_name || row.iso3)}</strong> <span class="unit-cell">${esc(row.iso3)}</span></td>
+        <td class="num-cell">${posHa}</td>
+        <td><em>Posidonia oceanica</em></td>
+        <td class="num-cell">${mckHa}</td>
+        <td class="num-cell">${prot}</td>
+        <td>${doiBadge(doi, sid)}</td>
+      </tr>`;
+    }).join('');
+
+    // Update table headers to match exact columns
+    const theadRow = document.querySelector('#med-seagrass-table thead tr');
+    if (theadRow) {
+      theadRow.innerHTML = `
+        <th>Country</th>
+        <th><em>Posidonia</em> Extent (Sentinel-2)</th>
+        <th>Primary Species</th>
+        <th>WCMC Polygon Extent</th>
+        <th>Protected Share</th>
+        <th>Primary Source &amp; DOI</th>
+      `;
+    }
+
+    tbody.querySelectorAll('tr.clickable-row').forEach((tr) => {
+      tr.addEventListener('click', () => {
+        state.selectedCountry = tr.dataset.iso;
+        state.activePathway = 'seagrass';
+        syncPathwayButtons();
+        renderCountryList();
+        renderCountryDossier();
+        document.getElementById('country-dossier-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  }
+
+  // Render Restoration Economics Spotlight
+  function renderRestorationSpotlight() {
+    if (!state.atlas || !state.atlas.restoration_and_ecosystem_ledger) return;
+    const ledger = state.atlas.restoration_and_ecosystem_ledger;
+    const sum = ledger.summary || {};
+    const kpiEl = document.getElementById('restoration-kpis');
+
+    kpiEl.innerHTML = `
+      <div class="stat-box">
+        <div class="stat-box-lbl">Seagrass Restoration Trials</div>
+        <div class="stat-box-val">${fmtNum(sum.seagrass_restoration_area_sites || 1491, 0)} area · ${fmtNum(sum.seagrass_restoration_survival_sites || 139, 0)} survival</div>
+        <div class="stat-box-sub">${fmtNum(sum.seagrass_restoration_cost_sites || 64, 0)} cost benchmark records (US$/ha)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-lbl">Mangrove Restoration &amp; Potential</div>
+        <div class="stat-box-val">${fmtNum(sum.mangrove_restoration_potential_countries || 110, 0)} countries · ${fmtNum(sum.mangrove_restoration_cost_sites || 109, 0)} cost sites</div>
+        <div class="stat-box-sub">${fmtNum(sum.mangrove_restoration_survival_sites || 103, 0)} survival trials · ${fmtNum(sum.mangrove_restoration_area_sites || 80, 0)} area sites</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-lbl">IUCN Red List Mangrove Provinces</div>
+        <div class="stat-box-val">${fmtNum(sum.iucn_mangrove_rle_provinces || 34, 0)} Provinces</div>
+        <div class="stat-box-sub">Global ecosystem risk assessment (IUCN RLE 2024)</div>
+      </div>
+    `;
+
+    const tbody = document.querySelector('#restoration-table tbody');
+    const flatRows = [];
+    for (const grp of (ledger.records || [])) {
+      for (const sr of (grp.sample_records || []).slice(0, 2)) {
+        const sid = sr.fact_id ? sr.fact_id.split('.').slice(-2, -1)[0] : '';
+        flatRows.push({
+          iso3: grp.iso3,
+          country_name: grp.country_name || grp.iso3,
+          site_name: sr.site_name,
+          category: grp.category,
+          species: sr.species && sr.species !== 'not given' ? sr.species : null,
+          metric: grp.metric,
+          value: sr.value,
+          unit: sr.unit,
+          year: sr.year,
+          source_id: sid,
+          doi: sourceDoi(sid)
+        });
+      }
+    }
+
+    tbody.innerHTML = flatRows.slice(0, 20).map((r) => {
+      const meta = PATHWAY_META[r.category] || { short: r.category, color: 'var(--accent)' };
+      return `<tr class="clickable-row" data-iso="${esc(r.iso3)}">
+        <td><strong>${esc(r.country_name)}</strong>${r.site_name && r.site_name !== r.country_name ? `<div class="unit-cell">${esc(r.site_name)}</div>` : ''}</td>
+        <td><span class="pw-dot" style="background:${meta.color}"></span> ${esc(meta.short)}</td>
+        <td>${r.species ? `<em>${esc(r.species)}</em>` : '<span class="unit-cell">—</span>'}</td>
+        <td>${esc(humanMetric(r.metric))}</td>
+        <td class="num-cell">${fmtNum(r.value, 2)} <span class="unit-cell">${esc(r.unit || '')}</span></td>
+        <td class="unit-cell">${esc(r.year || '—')}</td>
+        <td>${doiBadge(r.doi, r.source_id)}</td>
+      </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('tr.clickable-row').forEach((tr) => {
+      tr.addEventListener('click', () => {
+        if (!tr.dataset.iso) return;
+        state.selectedCountry = tr.dataset.iso;
+        renderCountryList();
+        renderCountryDossier();
+        document.getElementById('country-dossier-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  }
+
+  // Render View 3: Sources & Licence Ledger
+  function renderSourcesLedger() {
+    if (!state.atlas) return;
+    const tot = state.atlas.atlas_totals || {};
+    const boxes = document.getElementById('governance-summary-boxes');
+    boxes.innerHTML = `
+      <div class="stat-box">
+        <div class="stat-box-lbl">Canonical Workbench Rows</div>
+        <div class="stat-box-val">${fmtNum(tot.canonical_v1_rows || 74496, 0)}</div>
+        <div class="stat-box-sub">Audited across ${fmtNum(tot.canonical_v1_sources || 247, 0)} catalogued sources</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-lbl">Admitted Public Rows (<code style="font-family:var(--mono)">public_noncommercial</code>)</div>
+        <div class="stat-box-val">${fmtNum(tot.public_noncommercial_rows_kept || 70705, 0)}</div>
+        <div class="stat-box-sub">${fmtNum(tot.public_noncommercial_sources_admitted || 96, 0)} peer-reviewed sources with redistribution rights</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-lbl">Withheld Rows (Zero Silent Drop)</div>
+        <div class="stat-box-val">${fmtNum(tot.public_noncommercial_rows_withheld || 3791, 0)}</div>
+        <div class="stat-box-sub">Explicitly gated by redistribution licence policy</div>
+      </div>
+    `;
+
+    const withheldMap = tot.withheld_by_category_and_reason || {};
+    const withheldTbody = document.querySelector('#withheld-sources-table tbody');
+    withheldTbody.innerHTML = Object.entries(withheldMap).map(([key, count]) => {
+      const [cat, reason] = key.split(':').map((s) => s.trim());
+      return `<tr>
+        <td><code style="font-family:var(--mono);font-size:.78rem;color:var(--accent-warm)">${esc(cat)}</code></td>
+        <td class="num-cell">${fmtNum(count, 0)}</td>
+        <td><span class="atlas-brand-badge" style="color:var(--accent-warm);border-color:rgba(212,163,115,.3)">${esc(reason)}</span></td>
+        <td class="unit-cell">Withheld from public runtime package until explicit redistribution licence is verified</td>
+      </tr>`;
+    }).join('');
+
+    renderAdmittedSourcesTable();
+  }
+
+  document.getElementById('source-search').addEventListener('input', (e) => {
+    state.sourceQuery = e.target.value.trim().toLowerCase();
+    renderAdmittedSourcesTable();
+  });
+
+  function renderAdmittedSourcesTable() {
+    if (!state.atlas) return;
+    const q = state.sourceQuery;
+    const allSources = Object.values(state.atlas.sources || {});
+    const sources = allSources.filter((s) => {
+      if (!q) return true;
+      const cats = (s.categories || []).join(' ').toLowerCase();
+      const auth = (s.authors || []).join(' ').toLowerCase();
+      return (
+        (s.source_id && s.source_id.toLowerCase().includes(q)) ||
+        (s.title && s.title.toLowerCase().includes(q)) ||
+        auth.includes(q) ||
+        cats.includes(q) ||
+        (s.doi && s.doi.toLowerCase().includes(q))
+      );
+    });
+
+    const tbody = document.querySelector('#admitted-sources-table tbody');
+    tbody.innerHTML = sources.map((s) => {
+      const pwKey = (s.categories && s.categories[0]) || 'seagrass';
+      const meta = PATHWAY_META[pwKey] || { short: pwKey, color: 'var(--accent)' };
+      const licId = (s.licence && s.licence.identifier) || (s.licence && s.licence.status) || 'Public';
+      const authorsShort = (s.authors || []).slice(0, 3).join(', ') + ((s.authors || []).length > 3 ? ' et al.' : '');
+      return `<tr>
+        <td>
+          <div><strong style="font-family:var(--mono);font-size:.78rem">${esc(s.source_id)}</strong> <span class="unit-cell">(${esc(s.year || '—')})</span></div>
+          <div style="font-size:.8rem;color:var(--text);margin-top:2px">${esc(s.title || '')}</div>
+          <div style="font-size:.74rem;color:var(--text-dim);margin-top:1px">${esc(authorsShort)} ${s.publisher ? `· ${esc(s.publisher)}` : ''}</div>
+        </td>
+        <td style="white-space:nowrap"><span class="pw-dot" style="background:${meta.color}"></span> ${esc(meta.short)}</td>
+        <td><span class="atlas-brand-badge">${esc(licId)}</span></td>
+        <td class="unit-cell">${esc((s.licence && s.licence.status) || 'admitted')}</td>
+        <td>${doiBadge(s.doi || s.url, s.doi ? 'DOI' : 'Link')}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Boot & Load Runtime JSONs
+  async function init() {
+    readUrlParams();
+    const [atlasRes, sitesRes] = await Promise.all([
+      fetch('data/climate/runtime/nbs-atlas.json?v=20261110v4', { cache: 'no-store' }),
+      fetch('data/climate/runtime/nbs-sites.json?v=20261110v4', { cache: 'no-store' })
+    ]);
+    state.atlas = await atlasRes.json();
+    state.sites = await sitesRes.json();
+
+    // Update top KPIs from runtime artifact
+    if (state.atlas.atlas_totals) {
+      document.getElementById('kpi-rows').textContent = fmtNum(state.atlas.atlas_totals.public_noncommercial_rows_kept || 70705, 0);
+      document.getElementById('kpi-countries').textContent = fmtNum(state.atlas.atlas_totals.countries_in_slice || Object.keys(state.atlas.countries || {}).length, 0);
+      document.getElementById('kpi-sources').textContent = fmtNum(state.atlas.atlas_totals.public_noncommercial_sources_admitted || Object.keys(state.atlas.sources || {}).length, 0);
+    }
+    if (state.sites && state.sites.counts) {
+      document.getElementById('kpi-sites').textContent = fmtNum(state.sites.counts.distinct_sites || 4517, 0);
+    }
+
+    syncPathwayButtons();
+    renderCountryList();
+    renderCountryDossier();
+    renderMediterraneanSpotlight();
+    renderRestorationSpotlight();
+    renderSourcesLedger();
+
+    if (state.activeView !== 'dossier') {
+      switchView(state.activeView);
+    }
+  }
+
+  init().catch((err) => {
+    console.error('Failed to initialize NbS Atlas:', err);
+  });
+})();
+</script>
+</body>
+</html>

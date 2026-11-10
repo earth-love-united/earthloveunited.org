@@ -10,7 +10,7 @@
     "review_request_sha256": "8fe8a47dbf8eea2081f7135ab11b3baab1c4af164e6fc9542d7ceaf06c780753",
     "reviewed_head": "108e6b6be2e3a53c45b4c2a596de11656774ab8c"
   },
-  "calculation_hash": "2fee57738303b37fc6ed6e0c8153596f38caa16bcf672d48f040420341d0b31c",
+  "calculation_hash": "1a212a345e6ff0b74944cf596711cd8b5f4d3894a61bf7b2bc380bfb4f184d67",
   "changes": [
     {
       "base_sha256": "eb5032a791d8a2f9674ab34481086f1d0827a4decd3a446ee0b667b77e8d4302",
@@ -188,18 +188,123 @@
       "path": "assets/partners/st-vincents-wordmark.png"
     },
     {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "cdde3d32650ad0367e849d7438f80eb4e5f32e754565dfebfe68bdb6096a10b2",
+      "operation": "add",
+      "path": "atlas.html"
+    },
+    {
       "base_sha256": "24eb59810aa525c664e8fb5745d380756ecb8ccb568183e5605826c1a77a7f09",
       "category": "deterministic_runtime_proof",
-      "current_sha256": "e8cbd90809f85a602a01b2848132c6b3974edf84946f7fd17314696345ab4652",
+      "current_sha256": "a7f9740a4138cb6bba205ea4ea241f6a1c956640c8cca3bf3e279ca22ed9f824",
       "operation": "modify",
       "path": "data/climate/operations/ct42-runtime-rollback.patch.b64"
     },
     {
       "base_sha256": "a62c285fe94f96281680e8ec21a61a1a4bde24aa9ee1443e62df527d30e6d4fa",
       "category": "deterministic_runtime_proof",
-      "current_sha256": "ef5065e50d8ca36ea2e173646db9a96788c125e70b65cec80d8c1daad9f97d76",
+      "current_sha256": "da7783c91cef03d31f6a336b8c81f520e6fbad7672146c43055fadfdb209c0d9",
       "operation": "modify",
       "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "3532395f694c9293e9efb439fc30b9ca30f8904e717224c8b072298e7741514e",
+      "operation": "add",
+      "path": "data/climate/runtime/mangrove-grids/land-far.json"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "34733f0c69771838de4f1fb0e7321e29a9293d710a8a10e1d6903e3341f8f445",
+      "operation": "add",
+      "path": "data/climate/runtime/mangrove-grids/mangrove-extent-1996.attrs.json"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "bad942178ce33487e19411134ecdf4943a1eca674d3f1cfd5bb6d4cbc5a0112a",
+      "operation": "add",
+      "path": "data/climate/runtime/mangrove-grids/mangrove-extent-1996.bin"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "f06fb07e39c141441262c68c1f1c62f5dd8bf12bedaa5009be31dae3e07d7088",
+      "operation": "add",
+      "path": "data/climate/runtime/mangrove-grids/mangrove-extent-2020.attrs.json"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "077315c41fdd7bfe98c6c9d1ab884758fe0567b41485d0c5ef5e4596994691f0",
+      "operation": "add",
+      "path": "data/climate/runtime/mangrove-grids/mangrove-extent-2020.bin"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "42ef02edba2efb1a2a82aad9ac48f8d4501f2c83c61a5cb03b009a9a4033126a",
+      "operation": "add",
+      "path": "data/climate/runtime/mangrove-grids/mangrove-extent-change.attrs.json"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "cef6ed1e9a49971f354140e24e34dcc2a29197670d58e0f9cee7a334c7ad497f",
+      "operation": "add",
+      "path": "data/climate/runtime/mangrove-grids/mangrove-extent-change.bin"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "a2ed611e493685958a9932035ab56a9e19a5049466787357fc97fa5604579ddf",
+      "operation": "add",
+      "path": "data/climate/runtime/mangrove-grids/mangrove-soc-maxwell.attrs.json"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "61a76f8eeb9e851ed1fa9ab8a2f50289eb65d188238eed479b0d1c489c183444",
+      "operation": "add",
+      "path": "data/climate/runtime/mangrove-grids/mangrove-soc-maxwell.bin"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "2561b2aba2926e091597c5b6681cf4a8d6281b2a219b35ca9756ae79fc2ef167",
+      "operation": "add",
+      "path": "data/climate/runtime/mangrove-grids/mangrove-soc-sanderman.attrs.json"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "9bde6f1c1c0f3d67ddaf2ccbaa08dbfab38b3bb86e613239ffbd51c7b1fb43f9",
+      "operation": "add",
+      "path": "data/climate/runtime/mangrove-grids/mangrove-soc-sanderman.bin"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "c17706f8f35a7554480ea0ceb993ea1c3512600b024bdbecf1446ab14e7d8bd2",
+      "operation": "add",
+      "path": "data/climate/runtime/nbs-atlas.json"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "8e8503d9ec13fec4b58e93d30cdbb73c43057c2847231b29747925f18ccb5c4e",
+      "operation": "add",
+      "path": "data/climate/runtime/nbs-sites.json"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "2ed62c50676d19e91456ed63afe8f77c18b1a192cc4eea1ba65f2d1900814804",
+      "operation": "add",
+      "path": "data/climate/schemas/nbs-atlas.schema.json"
     },
     {
       "base_sha256": "b39acb33548ad9e23d3df23d878175b3aa67b87c25bf7236ad9a9eea17ff144d",
@@ -225,7 +330,7 @@
     {
       "base_sha256": "1cb352d50ac411177c0f0f51ae272ec4bc8899b12ab1050282ce75e3e270eca3",
       "category": "presentation_and_font_delivery",
-      "current_sha256": "88377d8036c53c85be63eab967788a1367b8113661a9dc7af2084957a003184a",
+      "current_sha256": "e82a4af30bff4b47440c62d41920a9fae4e67c43e17716ec26a7c68002eb66f1",
       "operation": "modify",
       "path": "index.html"
     },
@@ -263,6 +368,13 @@
       "current_sha256": "e0d47ee045e24a196d7525f2c842423ad24dd503eeeb99cf3cbdcc0c3ff4d788",
       "operation": "modify",
       "path": "tools/build-ct42-runtime-rollback-proof.js"
+    },
+    {
+      "base_sha256": null,
+      "category": "foundation_content",
+      "current_sha256": "aba2f6e307921b08531838e3b2b2e62532b59d9fe8ed484e90f7ea50407607b6",
+      "operation": "add",
+      "path": "tools/build-nbs-atlas-runtime.js"
     },
     {
       "base_sha256": "e95beb2ad6a1edde2316e8587dce0c32ca029e19625a552ad3ef54fdaff58b04",
@@ -323,7 +435,7 @@
     {
       "base_sha256": null,
       "category": "scoped_release_rail",
-      "current_sha256": "5af7b563097c3835d8285e9442d2fd51fc9ae54b5f80dc263a4b5d45dfd39e1e",
+      "current_sha256": "deca7ad09a0970c38b2e0efb51221ac9f3f0327340a844855da6770206eda6fd",
       "operation": "add",
       "path": "tools/lib/cci-scoped-delta-review.js"
     },
@@ -351,14 +463,14 @@
     {
       "base_sha256": "90c53003a9f41d71ca07a2efa1359bd5c89d5798f71b4f1b674756fee699d17c",
       "category": "scoped_release_rail",
-      "current_sha256": "acac827db75b2a53b29cd4c62ab6ff879d27295f5d39bf6edfc9495fad8dd8c1",
+      "current_sha256": "db483f09f25b772b45eabb5d7a212d9bbc22e8ff95b36578562899859005681d",
       "operation": "modify",
       "path": "tools/lib/public-deploy-surface.js"
     },
     {
       "base_sha256": "3f2aaca33f48c3381b43e59bb415b9ac33c83753975ddf1cde880a180ebdcacc",
       "category": "scoped_release_rail",
-      "current_sha256": "440d69d07bc76ddeadf00a0659cc2351c7e549f09e5496bcec1f65a9fd3f44dd",
+      "current_sha256": "8773e69f9d733a82a24555f61aef1e913d0e369d9cf99bb78496a06e8b418fc4",
       "operation": "modify",
       "path": "tools/prepare-country-climate-intelligence-review-request.js"
     },
@@ -378,11 +490,11 @@
   ],
   "created_at": "2026-08-28T21:15:39Z",
   "current_subject": {
-    "artifact_pin_digest": "4e0a24c049c501f385b1ed17552730f229d8a242d32520638fc7a9105f8d964c",
-    "calculation_hash": "860710ed2d4edc331da6491eabd8ae8604e9105ffe31fb1fee9d9739af9329cf",
+    "artifact_pin_digest": "4877a77f77d71d607ee5e21dced7502337df11cd0a0e52496b5f05bdc106ca96",
+    "calculation_hash": "99cecb629b90ee09a107f75dc3b0cd1fe7c6a6eb4cfc716a014fa136c36752d8",
     "path": "data/climate/releases/country-climate-intelligence-v1/review-request.json",
-    "pin_count": 318,
-    "review_request_sha256": "0cecc30ecffe2d98ba13f84cb122d48be4bf27c7cd111532332070ca801c8fd2"
+    "pin_count": 334,
+    "review_request_sha256": "1cae50451f2a8a7d4fe1f9de15919ecfcdd2b993a1654e92a1685c854d925acc"
   },
   "deploy_authority": false,
   "evidence": [
