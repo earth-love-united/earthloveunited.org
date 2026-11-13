@@ -16,10 +16,19 @@
 <script>
 (function () {
   var state = window.__ELU_EARLY_GLOBE__ = window.__ELU_EARLY_GLOBE__ || { pending: false, requestedAt: null, opener: null };
+  function resolveEnterTrigger(target) {
+    var trigger = target.closest('[data-action="enterGlobe"]');
+    if (trigger) return trigger;
+    var orb = target.closest('.globe-door, .hero-foundation-logo, a[href="#globe"]');
+    if (!orb) return null;
+    var scope = orb.closest('#globe, #hero') || document;
+    return scope.querySelector('.enter-btn[data-action="enterGlobe"], [data-action="enterGlobe"]') ||
+      document.querySelector('.enter-btn[data-action="enterGlobe"]');
+  }
   document.addEventListener('click', function (event) {
     if (window.App && window.App._staticActionsBound) return;
     if (!(event.target instanceof Element)) return;
-    var trigger = event.target.closest('[data-action="enterGlobe"]');
+    var trigger = resolveEnterTrigger(event.target);
     if (!trigger) return;
     event.preventDefault();
     event.stopPropagation();
@@ -33,6 +42,15 @@
     var status = document.getElementById('app-readiness-status');
     if (status) status.textContent = 'Loading verified country evidence for the Living Globe.';
   }, true);
+  document.addEventListener('click', function (event) {
+    if (!(event.target instanceof Element)) return;
+    if (event.target.closest('[data-action="enterGlobe"]')) return;
+    var orb = event.target.closest('.globe-door, .hero-foundation-logo, a[href="#globe"]');
+    if (!orb) return;
+    event.preventDefault();
+    var btn = resolveEnterTrigger(event.target);
+    if (btn) btn.click();
+  });
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -333,11 +351,14 @@ body:not(.globe-mode) .hex-legend{display:none}
 .footer .footer-social svg{width:16px;height:16px;fill:currentColor}
 .footer .footer-copy{font-size:11px;color:var(--text3)}
 /* ── site nav (foundation mode; hidden in globe mode) ── */
-#site-nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 26px;background:var(--nav-bg);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-#site-nav .nav-brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:16px;letter-spacing:1px;color:var(--mint);text-decoration:none;white-space:nowrap}
+#site-nav{position:fixed;top:0;left:0;right:0;z-index:1200;display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:14px;height:56px;padding:0 24px;background:var(--nav-bg);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+[data-theme="light"] #site-nav{background:rgba(243,239,230,.94)}
+#site-nav .nav-brand{display:flex;align-items:center;gap:9px;flex:0 0 auto;font-family:var(--display);font-size:16px;letter-spacing:1px;color:var(--mint);text-decoration:none;white-space:nowrap}
 #site-nav .foundation-mark{display:block;width:30px;height:30px;flex:0 0 auto}
-#site-nav .nav-links{display:flex;flex-wrap:wrap;align-items:center;gap:3px 17px;justify-content:flex-end}
-#site-nav .nav-links a{color:var(--text2);text-decoration:none;font-size:11px;letter-spacing:1.7px;text-transform:uppercase;transition:color .2s;padding:4px 0}
+#site-nav .nav-links{display:flex;flex:1 1 auto;min-width:0;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:17px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:2px 4px}
+#site-nav .nav-links::-webkit-scrollbar{display:none}
+#site-nav .nav-links a{flex:0 0 auto;white-space:nowrap;color:var(--text2);text-decoration:none;font-size:11px;letter-spacing:1.7px;text-transform:uppercase;transition:color .2s;padding:4px 0}
+#site-nav .nav-links a:first-child{margin-left:auto}
 #site-nav .nav-links a:hover{color:var(--teal)}
 #theme-toggle{display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:30px;height:30px;margin-left:4px;padding:0;border:1px solid var(--border-hi);border-radius:50%;background:var(--glass-bg-hi);box-shadow:inset 0 1px 0 var(--glass-hi);color:var(--teal);cursor:pointer;transition:color .2s,border-color .2s,transform .2s,background .2s}
 #theme-toggle:hover,#theme-toggle:focus-visible{border-color:var(--teal);background:var(--glass-bg);outline:none;transform:translateY(-1px)}
@@ -468,11 +489,11 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
 .contact-ctas .glass-btn{padding:14px 28px}
 .section .sec-note{margin-top:22px;font-size:12.5px;color:var(--text3)}
 .sections .section:last-of-type{padding-bottom:96px}
-@media(max-width:720px){.section{padding:64px 20px 20px}#site-nav{padding:10px 14px}#site-nav .nav-links{gap:2px 12px}#site-nav .nav-links a{font-size:10px;letter-spacing:1.3px}#site-nav .nav-brand-text{display:none}}
+@media(max-width:720px){.section{padding:64px 20px 20px}#site-nav{padding:0 14px;gap:10px}#site-nav .nav-links{gap:14px}#site-nav .nav-links a{font-size:10px;letter-spacing:1.3px}#site-nav .nav-brand-text{display:none}}
 /* responsive */
 @media(max-width:720px){.hero-inner{max-width:92%}.hero-stage{padding:0 0 28px}.hero-value{margin-bottom:24px;font-size:15px}.hero-actions{gap:10px;margin-top:26px}#hero .hero-actions .glass-btn{width:100%;max-width:320px;padding:12px 18px;font-size:11px}.hero-telemetry{max-width:360px}#hero .memorial{margin-bottom:24px}}
 @media(max-width:720px){#hero .globe-door-row .enter-btn{padding-left:46px}}
-@media(max-width:480px){#site-nav .nav-links{flex:1 1 auto;min-width:0;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none}#site-nav .nav-links::-webkit-scrollbar{display:none}}
+@media(max-width:480px){#site-nav{padding:0 12px;gap:8px}#site-nav .nav-links{gap:12px}}
 @media(max-height:780px) and (min-width:721px){.hero-stage{padding-bottom:8px}#hero h1{font-size:clamp(34px,4.25vw,50px);margin-bottom:6px}.hero-value{margin-bottom:22px;line-height:1.45}.hero-actions{gap:8px;margin-top:18px}#hero .memorial{margin-bottom:10px}#hero .cc-label{margin-bottom:10px}#hero .cc-value{font-size:clamp(66px,11vw,132px)}#hero .cc-explainer{margin-top:14px;font-size:clamp(15px,1.7vw,19px)}}
 @media(max-width:900px),(orientation:portrait) and (max-width:1100px){body.globe-mode #topbar{padding:10px 12px 8px;background:linear-gradient(180deg,rgba(5,5,9,.96) 0%,rgba(5,5,9,.78) 64%,rgba(5,5,9,0) 100%)}body.globe-mode #topbar .logo{gap:8px;font-size:15px;letter-spacing:1px}body.globe-mode #topbar .brand-subtitle,body.globe-mode #topbar .brand-sep{display:none}body.globe-mode #topbar .stats{gap:8px}body.globe-mode #topbar .stat-block{display:none}.cc-topbar{max-width:168px}}
 @media(prefers-reduced-motion:reduce){#hero *,#hero *::before,#hero *::after{animation:none!important;transition:none!important}.glass-btn{transition:--arm-w .4s ease,--arm-h .4s ease,--cc .3s ease}.partner-logo-cell{transition:none!important}}
@@ -526,11 +547,11 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
     <a href="#team">Team</a>
     <a href="#tribute">Tribute</a>
     <a href="#contact">Contact</a>
-    <button id="theme-toggle" aria-label="Toggle light / dark theme" title="Toggle theme">
-      <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg>
-      <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.4 14.2A8.4 8.4 0 0 1 9.8 3.6a8.4 8.4 0 1 0 10.6 10.6z"/></svg>
-    </button>
   </div>
+  <button id="theme-toggle" aria-label="Toggle light / dark theme" title="Toggle theme">
+    <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg>
+    <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.4 14.2A8.4 8.4 0 0 1 9.8 3.6a8.4 8.4 0 1 0 10.6 10.6z"/></svg>
+  </button>
 </nav>
 
 <!-- ═══ HERO ═══ -->
@@ -620,11 +641,6 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
             var c = d.querySelector('canvas'); return c && c.getContext;
           });
           if (!doors.length) return;
-          doors.forEach(function (door) {
-            door.addEventListener('click', function () {
-              var b = door.parentNode.querySelector('[data-action="enterGlobe"]'); if (b) b.click();
-            });
-          });
           var img = new Image();
           img.decoding = 'async';
           img.onload = function () {
@@ -1308,211 +1324,342 @@ a.partner-logo-cell:focus-visible{outline:1px solid currentColor;outline-offset:
   ← Return to the Foundation
 </button>
 <style id="phone-hud-style">
-/* Universal Decluttered Globe HUD ─────────────────────────────────
-   Top: logo (returns to the Foundation) + lenses + theme + one menu button.
-   Records, emissions ticker, and orbit replay sit in the menu.
-   Country order is a sleek bottom sheet, collapsed by default (see the
-   inline script after #globe-back-btn), eliminating the old left sidebar,
-   the 72px ISO-code strip, the bottom-left Return button, and the bottom-right
-   legend box across all viewport widths. */
+/* Globe HUD Topbar Navigation + Responsive Phone HUD Declutter ───────────
+   Desktop (>720px): keeps #elu-country-rank-rail, #globe-back-btn, and full
+   #topbar controls intact, plus adds always-accessible Foundation & Atlas nav
+   links inside #topbar so nobody ever gets lost inside the Living Globe.
+   Phone (<=720px): hides secondary controls behind #globe-hud-menu and turns
+   #elu-country-rank-rail into a collapsed bottom sheet. */
 #globe-hud-menu { display: none; }
 
-html:root body.globe-mode {
-  --globe-dock-inset: 14px;
-  --globe-dock-height: 46px;
-  --globe-back-height: 46px;
-  --globe-back-lift: 0px;
-}
-
-html:root body.globe-mode #globe-back-btn,
-html:root body.globe-mode .hex-legend {
-  display: none !important;
-}
-
 html:root body.globe-mode #topbar .logo[role="button"] { cursor: pointer; }
-
-html:root body.globe-mode #globe-hud-menu {
-  display: inline-grid;
-  place-items: center;
-  flex: 0 0 auto;
-  width: 44px;
-  height: 44px;
-  margin-left: auto;
-  border: 1px solid var(--hud-border);
-  border-radius: 50%;
-  background: var(--hud-bg);
-  color: var(--teal);
-  cursor: pointer;
-}
-
-html:root body.globe-mode #globe-hud-menu:focus-visible,
 html:root body.globe-mode #topbar .logo[role="button"]:focus-visible {
   outline: 2px solid var(--mint);
   outline-offset: 2px;
 }
 
-html:root body.globe-mode #topbar:not(.hud-menu-open) .topbar-actions { margin-left: auto; gap: 8px; }
-html:root body.globe-mode #topbar:not(.hud-menu-open) #globe-evidence-browse,
-html:root body.globe-mode #topbar:not(.hud-menu-open) .stats { display: none; }
-@media (max-width: 720px) {
-  html:root body.globe-mode #topbar:not(.hud-menu-open) #guided-orbit-replay { display: none; }
-}
-html:root body.globe-mode #topbar:not(.hud-menu-open) #globe-hud-menu { margin-left: 8px; }
-
-html:root body.globe-mode #topbar.hud-menu-open .topbar-actions {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 8px;
+/* Always-accessible Foundation + Atlas navigation inside #topbar — unified sliding bar */
+html:root body.globe-mode #topbar .topbar-site-links {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 8px;
-  width: min(260px, calc(100vw - 16px));
-  padding: 10px;
-  border: 1px solid var(--hud-border);
-  border-radius: 6px;
-  background: var(--bg2);
-  box-shadow: var(--hud-shadow);
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 8px;
+  padding: 2px 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
-
-html:root body.globe-mode #topbar.hud-menu-open .stats { display: block; }
-
-html:root body.globe-mode #topbar.hud-menu-open .cc-topbar {
-  max-width: none;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  padding: 8px 10px;
-  font-size: 11px;
+html:root body.globe-mode #topbar .topbar-site-links::-webkit-scrollbar {
+  display: none;
 }
-
-html:root body.globe-mode #topbar.hud-menu-open .cc-topbar::before {
-  content: 'Net emissions since you arrived';
-  flex: 1 0 100%;
+html:root body.globe-mode #topbar .topbar-site-links a {
+  flex: 0 0 auto;
   color: var(--text2);
+  text-decoration: none;
   font-family: var(--body);
-  font-size: 10px;
-  letter-spacing: .3px;
+  font-size: 9.5px;
+  letter-spacing: 1.15px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 4px 2px;
+  transition: color .2s ease;
 }
-
-html:root body.globe-mode #topbar.hud-menu-open .cc-topbar-icon { display: none; }
-
-html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay,
-html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle {
-  width: 100%;
-  height: 44px;
-  border-radius: 4px;
+html:root body.globe-mode #topbar .topbar-site-links a:hover,
+html:root body.globe-mode #topbar .topbar-site-links a:focus-visible {
+  color: var(--teal);
+  outline: none;
 }
-
-html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay,
-html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle {
+html:root body.globe-mode #topbar .topbar-site-links a.topbar-home-pill {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  padding: 0 14px;
+  min-height: 28px;
+  padding: 3px 9px;
+  border: 1px solid var(--border-hi);
+  border-radius: 999px;
+  background: var(--glass-bg);
   color: var(--teal);
-  font-family: var(--body);
-  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1.1px;
+}
+html:root body.globe-mode #topbar .topbar-site-links a.topbar-home-pill:hover,
+html:root body.globe-mode #topbar .topbar-site-links a.topbar-home-pill:focus-visible {
+  border-color: var(--teal);
+  background: var(--glass-bg-hi);
+  color: var(--mint);
+}
+html[data-theme="light"] body.globe-mode #topbar .logo {
+  flex: 0 0 auto;
+}
+html:root body.globe-mode .topbar-menu-link {
+  display: none;
 }
 
-html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay svg { width: 16px; height: 16px; flex: 0 0 auto; }
-html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay::after { content: 'Replay the intro orbit'; }
-html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle::after { content: 'Switch light / dark'; }
-
-html:root body.globe-mode #topbar.hud-menu-open #globe-evidence-browse .browse-label-full { display: inline; }
-html:root body.globe-mode #topbar.hud-menu-open #globe-evidence-browse .browse-label-short { display: none; }
-
-/* Country order: collapsible bottom sheet across all viewports */
-html:root body.globe-mode #elu-country-rank-rail {
-  top: auto !important;
-  right: 12px !important;
-  bottom: 12px !important;
-  left: 12px !important;
-  width: auto !important;
-  max-width: 560px;
-  max-height: 56vh;
-}
-
-@media (min-width: 901px) {
-  html:root body.globe-mode.country-card-open:not(.globe-fallback-active) #elu-country-rank-rail {
-    right: 484px !important;
+@media (max-width: 1380px) and (min-width: 721px) {
+  html:root body.globe-mode #topbar {
+    gap: 10px;
+    padding: 10px 18px;
+  }
+  html:root body.globe-mode #topbar .topbar-site-links {
+    gap: 8px;
+    margin: 0 4px;
+  }
+  html:root body.globe-mode #topbar .topbar-actions {
+    gap: 10px;
+  }
+  html:root body.globe-mode #topbar .stats {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    gap: 12px;
   }
 }
 
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-head {
-  justify-content: space-between;
-  min-height: 46px;
-  padding: 6px 8px 6px 12px;
-  text-align: left;
+@media (max-width: 1340px) {
+  html:root body.globe-mode #topbar .brand-subtitle,
+  html:root body.globe-mode #topbar .brand-sep {
+    display: none;
+  }
 }
 
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-title {
-  font-size: 10px;
-  letter-spacing: 1.1px;
+@media (max-width: 1219px) {
+  html:root body.globe-mode #topbar .stats {
+    display: none;
+  }
 }
 
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-title::after { content: none; }
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-relief-note { display: none; }
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-boundary-compact { display: none; }
-
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-toggle {
-  display: inline-grid;
-  place-items: center;
-  width: 44px;
-  height: 34px;
-  font-size: 15px;
+@media (max-width: 960px) and (min-width: 721px) {
+  html:root body.globe-mode #topbar {
+    gap: 8px;
+    padding: 10px 14px;
+  }
+  html:root body.globe-mode #topbar .topbar-actions {
+    gap: 8px;
+  }
 }
 
-html:root body.globe-mode #elu-country-rank-rail.is-collapsed .elu-rank-list { display: none !important; }
-html:root body.globe-mode #elu-country-rank-rail.is-collapsed .elu-rank-subtitle { display: none; }
+@media (max-width: 720px) {
+  html:root body.globe-mode {
+    --globe-dock-inset: 14px;
+    --globe-dock-height: 46px;
+    --globe-back-height: 46px;
+    --globe-back-lift: 0px;
+  }
 
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-list { height: auto; max-height: calc(56vh - 54px); }
+  html:root body.globe-mode #globe-back-btn,
+  html:root body.globe-mode .hex-legend {
+    display: none !important;
+  }
 
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-search { display: grid; font-size: 9px; }
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-search input { min-height: 44px; font-size: 15px; }
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure { padding: 6px 12px; text-align: left; }
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure-full { display: inline; font-size: 10px; }
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure-compact { display: none; }
+  html:root body.globe-mode #topbar .topbar-site-links {
+    gap: 8px;
+    margin: 0 4px;
+    padding: 2px;
+  }
 
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-row {
-  grid-template-columns: 24px 8px minmax(0, 1fr) auto;
-  gap: 8px;
-  padding: 6px 12px;
-}
+  html:root body.globe-mode #globe-hud-menu {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    margin-left: 4px;
+    border: 1px solid var(--hud-border);
+    border-radius: 50%;
+    background: var(--hud-bg);
+    color: var(--teal);
+    cursor: pointer;
+  }
 
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-number { display: block; font-size: 10px; }
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-name { display: block; font-size: 14px; }
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-gap { display: block; font-size: 10px; }
-html:root body.globe-mode #elu-country-rank-rail .elu-rank-code { display: none; }
+  html:root body.globe-mode #globe-hud-menu:focus-visible {
+    outline: 2px solid var(--mint);
+    outline-offset: 2px;
+  }
 
-@media (max-width: 800px) {
+  html:root body.globe-mode #topbar:not(.hud-menu-open) .topbar-actions { margin-left: 0; gap: 6px; }
+  html:root body.globe-mode #topbar:not(.hud-menu-open) #globe-evidence-browse,
+  html:root body.globe-mode #topbar:not(.hud-menu-open) .stats,
+  html:root body.globe-mode #topbar:not(.hud-menu-open) #guided-orbit-replay { display: none; }
+  html:root body.globe-mode #topbar:not(.hud-menu-open) #globe-hud-menu { margin-left: 6px; }
+
+  html:root body.globe-mode #topbar.hud-menu-open .topbar-actions {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: min(260px, calc(100vw - 16px));
+    padding: 10px;
+    border: 1px solid var(--hud-border);
+    border-radius: 6px;
+    background: var(--bg2);
+    box-shadow: var(--hud-shadow);
+  }
+
+  html:root body.globe-mode #topbar.hud-menu-open .topbar-menu-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 14px;
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+
+  html:root body.globe-mode #topbar.hud-menu-open .stats { display: block; }
+
+  html:root body.globe-mode #topbar.hud-menu-open .cc-topbar {
+    max-width: none;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  html:root body.globe-mode #topbar.hud-menu-open .cc-topbar::before {
+    content: 'Net emissions since you arrived';
+    flex: 1 0 100%;
+    color: var(--text2);
+    font-family: var(--body);
+    font-size: 10px;
+    letter-spacing: .3px;
+  }
+
+  html:root body.globe-mode #topbar.hud-menu-open .cc-topbar-icon { display: none; }
+
+  html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay,
+  html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle {
+    width: 100%;
+    height: 44px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 0 14px;
+    color: var(--teal);
+    font-family: var(--body);
+    font-size: 12px;
+  }
+
+  html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay svg { width: 16px; height: 16px; flex: 0 0 auto; }
+  html:root body.globe-mode #topbar.hud-menu-open #guided-orbit-replay::after { content: 'Replay the intro orbit'; }
+  html:root body.globe-mode #topbar.hud-menu-open #globe-theme-toggle::after { content: 'Switch light / dark'; }
+
+  html:root body.globe-mode #topbar.hud-menu-open #globe-evidence-browse .browse-label-full { display: inline; }
+  html:root body.globe-mode #topbar.hud-menu-open #globe-evidence-browse .browse-label-short { display: none; }
+
+  /* Country order: collapsible bottom sheet on phone viewports */
   html:root body.globe-mode #elu-country-rank-rail {
+    top: auto !important;
     right: 8px !important;
     bottom: 8px !important;
     left: 8px !important;
+    width: auto !important;
     max-width: none;
+    max-height: 56vh;
   }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-head {
+    justify-content: space-between;
+    min-height: 46px;
+    padding: 6px 8px 6px 12px;
+    text-align: left;
+  }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-title {
+    font-size: 10px;
+    letter-spacing: 1.1px;
+  }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-title::after { content: none; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-relief-note { display: none; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-boundary-compact { display: none; }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  html:root body.globe-mode #elu-country-rank-rail.is-collapsed .elu-rank-list { display: none !important; }
+  html:root body.globe-mode #elu-country-rank-rail.is-collapsed .elu-rank-subtitle { display: none; }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-list { height: auto; max-height: calc(56vh - 54px); }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-search { display: grid; font-size: 9px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-search input { min-height: 44px; font-size: 15px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure { padding: 6px 12px; text-align: left; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure-full { display: inline; font-size: 10px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-disclosure-compact { display: none; }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-row {
+    grid-template-columns: 24px 8px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 6px 12px;
+  }
+
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-number { display: block; font-size: 10px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-name { display: block; font-size: 14px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-gap { display: block; font-size: 10px; }
+  html:root body.globe-mode #elu-country-rank-rail .elu-rank-code { display: none; }
+
   html:root body.globe-mode #elu-country-card-wrap { left: 8px; right: 8px; }
 }
 </style>
 <script>
-/* Universal Decluttered Globe HUD: secondary controls live behind one menu
-   button, the logo returns to the Foundation, and the country order opens as a
-   bottom sheet that starts collapsed on all viewports. */
+/* Globe HUD topbar navigation + responsive phone HUD declutter. */
 (function () {
+  var phone = window.matchMedia('(max-width: 720px)');
   var topbar = document.getElementById('topbar');
   var menu = document.getElementById('globe-hud-menu');
   var logo = topbar && topbar.querySelector('.logo');
   if (!topbar || !menu) return;
+  var actions = topbar.querySelector('.topbar-actions');
+
   function setMenu(open) {
     topbar.classList.toggle('hud-menu-open', open);
     menu.setAttribute('aria-expanded', String(open));
   }
   menu.addEventListener('click', function (e) { e.stopPropagation(); setMenu(!topbar.classList.contains('hud-menu-open')); });
-  document.addEventListener('click', function (e) { if (!topbar.contains(e.target) || e.target.closest('.topbar-actions button')) setMenu(false); });
-  window.addEventListener('keydown', function (e) { if (e.key === 'Escape' && topbar.classList.contains('hud-menu-open')) { e.stopImmediatePropagation(); setMenu(false); menu.focus(); } }, true);
+  document.addEventListener('click', function (e) {
+    if (!topbar.contains(e.target) || e.target.closest('.topbar-actions button, .topbar-actions a')) setMenu(false);
+  });
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && topbar.classList.contains('hud-menu-open')) {
+      e.stopImmediatePropagation();
+      setMenu(false);
+      menu.focus();
+    }
+  }, true);
+
+  function exitAndScroll(hash) {
+    setMenu(false);
+    if (document.body.classList.contains('globe-mode') && typeof exitGlobe === 'function') {
+      exitGlobe();
+    }
+    if (hash && hash !== '#top') {
+      requestAnimationFrame(function () {
+        var el = document.querySelector(hash);
+        if (el && typeof el.scrollIntoView === 'function') {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
   if (logo) {
-    var goHome = function () { if (document.body.classList.contains('globe-mode') && typeof exitGlobe === 'function') exitGlobe(); };
+    var goHome = function () { exitAndScroll('#top'); };
     var syncLogo = function () {
       logo.setAttribute('role', 'button');
       logo.setAttribute('tabindex', '0');
@@ -1521,30 +1668,158 @@ html:root body.globe-mode #elu-country-rank-rail .elu-rank-code { display: none;
     syncLogo();
     logo.addEventListener('click', goHome);
     logo.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goHome(); } });
+
+    if (!topbar.querySelector('.topbar-site-links')) {
+      var siteNav = document.createElement('nav');
+      siteNav.className = 'topbar-site-links';
+      siteNav.setAttribute('aria-label', 'Foundation navigation');
+      siteNav.innerHTML =
+        '<a href="#top" class="topbar-home-pill" data-topbar-nav="#top">← Foundation</a>' +
+        '<a href="#about" data-topbar-nav="#about">About</a>' +
+        '<a href="atlas.html">Atlas</a>' +
+        '<a href="#carbon" data-topbar-nav="#carbon">Carbon</a>' +
+        '<a href="#partners" data-topbar-nav="#partners">Partners</a>' +
+        '<a href="#team" data-topbar-nav="#team">Team</a>' +
+        '<a href="#contact" data-topbar-nav="#contact">Contact</a>';
+      logo.insertAdjacentElement('afterend', siteNav);
+    }
   }
+
+  if (actions && !actions.querySelector('.topbar-menu-link')) {
+    var atlasMenuLink = document.createElement('a');
+    atlasMenuLink.href = 'atlas.html';
+    atlasMenuLink.className = 'glass-btn topbar-menu-link';
+    atlasMenuLink.textContent = 'NbS Atlas (233 countries)';
+    actions.insertBefore(atlasMenuLink, actions.firstChild);
+
+    var homeMenuLink = document.createElement('a');
+    homeMenuLink.href = '#top';
+    homeMenuLink.className = 'glass-btn topbar-menu-link';
+    homeMenuLink.setAttribute('data-topbar-nav', '#top');
+    homeMenuLink.textContent = '← Return to the Foundation';
+    actions.insertBefore(homeMenuLink, actions.firstChild);
+  }
+
+  topbar.addEventListener('click', function (e) {
+    if (!(e.target instanceof Element)) return;
+    var link = e.target.closest('a[data-topbar-nav]');
+    if (!link) return;
+    e.preventDefault();
+    exitAndScroll(link.getAttribute('data-topbar-nav'));
+  });
+
+  var userCollapsed = false;
   var userExpanded = false;
-  function collapseRail(rail) {
+  function syncRail(rail) {
     if (!rail) return;
     var toggle = rail.querySelector('.elu-rank-toggle');
-    if (toggle && !userExpanded && !rail.classList.contains('is-collapsed')) {
-      rail.classList.add('is-collapsed');
-      toggle.textContent = '+';
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.setAttribute('aria-label', 'Expand country ranking');
+    if (toggle) {
+      if (phone.matches && !userExpanded && !rail.classList.contains('is-collapsed')) {
+        rail.classList.add('is-collapsed');
+        toggle.textContent = '+';
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Expand country ranking');
+      } else if (!phone.matches && !userCollapsed && rail.classList.contains('is-collapsed')) {
+        rail.classList.remove('is-collapsed');
+        toggle.textContent = '−';
+        toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-label', 'Collapse country ranking');
+      }
     }
     if (!rail.dataset.hudCollapseBound) {
       rail.dataset.hudCollapseBound = 'true';
       rail.addEventListener('click', function (e) {
         if (e.isTrusted && e.target.closest('.elu-rank-toggle')) {
-          userExpanded = !rail.classList.contains('is-collapsed');
+          var collapsedNow = rail.classList.contains('is-collapsed');
+          userExpanded = !collapsedNow;
+          userCollapsed = collapsedNow;
         }
       });
     }
   }
+  function syncGlobeSize() {
+    var gm = window.GlobeModule;
+    if (!gm || !gm.world) return;
+    var w = Math.max(1, Math.round(window.innerWidth || document.documentElement.clientWidth || 0));
+    var h = Math.max(1, Math.round(window.innerHeight || document.documentElement.clientHeight || 0));
+    if (typeof gm.world.width === 'function') gm.world.width(w);
+    if (typeof gm.world.height === 'function') gm.world.height(h);
+  }
+
+  function syncVisualViewportTopbar() {
+    if (!document.body.classList.contains('globe-mode')) {
+      topbar.style.transform = '';
+      return;
+    }
+    var vv = window.visualViewport;
+    if (!vv || !(vv.scale > 1.01)) {
+      topbar.style.transform = '';
+      return;
+    }
+    topbar.style.transform = 'translate(' + Math.round(vv.offsetLeft) + 'px, ' + Math.round(vv.offsetTop) + 'px)';
+  }
+
+  window.addEventListener('resize', function () {
+    syncGlobeSize();
+    syncVisualViewportTopbar();
+  }, { passive: true });
+
+  window.addEventListener('wheel', function (e) {
+    if (!document.body.classList.contains('globe-mode') || !e.ctrlKey) return;
+    e.preventDefault();
+    var gm = window.GlobeModule;
+    if (gm && gm.world && typeof gm.world.pointOfView === 'function') {
+      var pov = gm.world.pointOfView() || {};
+      var curAlt = Number.isFinite(pov.altitude) ? pov.altitude : 2.2;
+      var nextAlt = Math.max(0.28, Math.min(4.5, curAlt * Math.exp(e.deltaY * 0.004)));
+      gm.world.pointOfView({ altitude: nextAlt }, 0);
+    }
+  }, { passive: false });
+
+  ['gesturestart', 'gesturechange'].forEach(function (type) {
+    window.addEventListener(type, function (e) {
+      if (document.body.classList.contains('globe-mode')) e.preventDefault();
+    }, { passive: false });
+  });
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', function () {
+      syncGlobeSize();
+      syncVisualViewportTopbar();
+    });
+    window.visualViewport.addEventListener('scroll', syncVisualViewportTopbar);
+  }
+
+  function bindGlobeBusSync() {
+    if (!window.EventBus || typeof window.EventBus.on !== 'function') return;
+    window.EventBus.on('app:globe-entered', function () {
+      syncGlobeSize();
+      syncVisualViewportTopbar();
+    });
+    window.EventBus.on('globe:render-ready', function () {
+      syncGlobeSize();
+      syncVisualViewportTopbar();
+    });
+    window.EventBus.on('app:globe-exited', function () {
+      topbar.style.transform = '';
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindGlobeBusSync);
+  } else {
+    bindGlobeBusSync();
+  }
+
   var initialRail = document.getElementById('elu-country-rank-rail');
-  if (initialRail) collapseRail(initialRail);
+  if (initialRail) syncRail(initialRail);
+  if (phone.addEventListener) {
+    phone.addEventListener('change', function () {
+      var r = document.getElementById('elu-country-rank-rail');
+      if (r) syncRail(r);
+    });
+  }
   new MutationObserver(function (records) {
-    records.forEach(function (r) { r.addedNodes.forEach(function (n) { if (n.id === 'elu-country-rank-rail') collapseRail(n); }); });
+    records.forEach(function (r) { r.addedNodes.forEach(function (n) { if (n.id === 'elu-country-rank-rail') syncRail(n); }); });
   }).observe(document.body, { childList: true });
 })();
 </script>
@@ -1637,6 +1912,24 @@ html:root body.globe-mode #elu-country-rank-rail .elu-rank-code { display: none;
    3. Renders GLC1 0.25° mangrove binary grids + 4,517 geocoded field cores +
       1,111 coastal clusters + 197 country synthesis nodes additively on the
       Living Globe, plus click-to-inspect place readout card & country drawer. */
+#climate-lens-controls {
+  max-width: calc(100vw - 16px);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+#climate-lens-controls::-webkit-scrollbar {
+  display: none;
+}
+
+#climate-lens-controls > * {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 #climate-lens-controls .nbs-pill-subtabs {
   display: none;
 }
@@ -1678,7 +1971,38 @@ html:root body.globe-mode #elu-country-rank-rail .elu-rank-code { display: none;
   align-items: center;
   justify-content: center;
   gap: 5px;
-  min-width: 64px;
+  min-width: 58px;
+  min-height: 44px;
+  padding: 7px 10px;
+}
+
+@media (max-width: 720px) {
+  #climate-lens-controls button.nbs-pill-enter {
+    min-width: 54px;
+    padding: 8px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  #climate-lens-controls button.nbs-pill-enter {
+    min-width: 48px;
+    padding: 8px 6px;
+    font-size: 9px;
+  }
+}
+
+body.guided-orbit-active #climate-lens-controls button.nbs-pill-enter {
+  display: none !important;
+}
+
+#hero .hero-foundation-logo {
+  cursor: pointer;
+  transition: transform .35s cubic-bezier(.2, .7, .2, 1), filter .35s ease;
+}
+
+#hero .hero-foundation-logo:hover {
+  transform: scale(1.04) translateY(-2px);
+  filter: drop-shadow(0 20px 38px rgba(78, 205, 196, .26));
 }
 
 #climate-lens-controls .nbs-pill-back {
@@ -2215,11 +2539,6 @@ html[data-theme="light"] #hex-country-tooltip.selected .tt-nbs-item {
     syncPillUi();
     hideAllNbsMeshes();
     injectCountryNbsDrawer(true);
-    var railTitle = document.querySelector('#elu-country-rank-rail .elu-rank-title');
-    if (railTitle && railTitle.dataset.origLensTitle) {
-      railTitle.textContent = railTitle.dataset.origLensTitle;
-      delete railTitle.dataset.origLensTitle;
-    }
     var gm = window.GlobeModule;
     if (gm && gm.world) {
       gm.world.pointsData([]).ringsData([]);
@@ -2299,14 +2618,6 @@ html[data-theme="light"] #hex-country-tooltip.selected .tt-nbs-item {
         '<div class="hex-legend-title">' + metaTitle + '</div>' +
         rowsHtml +
         '<div class="hex-legend-note">' + footText + '</div>';
-    }
-
-    var railTitle = document.querySelector('#elu-country-rank-rail .elu-rank-title');
-    if (railTitle) {
-      if (!railTitle.dataset.origLensTitle) {
-        railTitle.dataset.origLensTitle = railTitle.textContent;
-      }
-      railTitle.textContent = metaTitle;
     }
   }
 
@@ -3167,8 +3478,8 @@ html[data-theme="light"] #hex-country-tooltip.selected .tt-nbs-item {
     });
   }
 
-  function handleUrlDeepLink() {
-    if (deepLinkHandled) return;
+  function handleUrlDeepLink(forceHash) {
+    if (deepLinkHandled && !forceHash) return;
     var params = new URLSearchParams(window.location.search);
     var nbsParam = params.get('nbs');
     var countryParam = params.get('country');
@@ -3177,6 +3488,7 @@ html[data-theme="light"] #hex-country-tooltip.selected .tt-nbs-item {
     deepLinkHandled = true;
     var validSubtab = (nbsParam && PATHWAY_META[nbsParam]) ? nbsParam : 'all';
 
+    window.scrollTo(0, 0);
     if (!document.body.classList.contains('globe-mode') && typeof window.enterGlobe === 'function') {
       window.enterGlobe();
     }
@@ -3189,6 +3501,9 @@ html[data-theme="light"] #hex-country-tooltip.selected .tt-nbs-item {
       if ((gm && gm.world && pill) || tries > 40) {
         clearInterval(timer);
         if (nbsParam || window.location.hash === '#nbs' || countryParam) {
+          if (window.GUIDED_ORBIT && typeof window.GUIDED_ORBIT.skip === 'function' && document.body.classList.contains('guided-orbit-active')) {
+            window.GUIDED_ORBIT.skip();
+          }
           enterNbsMode(validSubtab, countryParam ? countryParam.toUpperCase() : null);
         }
         if (countryParam && gm && gm._featureByIso) {
@@ -3200,6 +3515,12 @@ html[data-theme="light"] #hex-country-tooltip.selected .tt-nbs-item {
       }
     }, 150);
   }
+
+  window.addEventListener('hashchange', function () {
+    if (window.location.hash === '#globe' || window.location.hash === '#nbs') {
+      handleUrlDeepLink(true);
+    }
+  });
 
   function bootBridge() {
     if (!window.COUNTRY_CLIMATE_INTELLIGENCE) return;

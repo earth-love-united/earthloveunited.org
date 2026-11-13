@@ -1,5 +1,5 @@
 {
-  "calculation_hash": "99cecb629b90ee09a107f75dc3b0cd1fe7c6a6eb4cfc716a014fa136c36752d8",
+  "calculation_hash": "d3ccb4ddc8ac254fa05beed2ed7efa74c25e96a4b7487d2ed94e5c1b59767356",
   "created_at": "2026-08-27T00:00:00Z",
   "governance_boundaries": {
     "composite_score": false,
@@ -213,7 +213,7 @@
   ],
   "status": "requires_independent_review",
   "subject": {
-    "artifact_pin_digest": "4877a77f77d71d607ee5e21dced7502337df11cd0a0e52496b5f05bdc106ca96",
+    "artifact_pin_digest": "531c59512a5867b489f205fedf858b3e4fd6991c5f46a8c33f449d3a463d9fe5",
     "artifact_pins": [
       {
         "path": ".github/CODEOWNERS",
@@ -397,7 +397,7 @@
       },
       {
         "path": "atlas.html",
-        "sha256": "cdde3d32650ad0367e849d7438f80eb4e5f32e754565dfebfe68bdb6096a10b2"
+        "sha256": "1ea87b9778532c31784afc5c3aa6f2342a956472bdb7928aa271f0fe36730381"
       },
       {
         "path": "css/carbon-clock.css",
@@ -533,7 +533,7 @@
       },
       {
         "path": "data/climate/operations/ct42-runtime-rollback.patch.b64",
-        "sha256": "a7f9740a4138cb6bba205ea4ea241f6a1c956640c8cca3bf3e279ca22ed9f824"
+        "sha256": "cb15b77162a5e667f3893336a80f3a826161585cfdefccd54567a95de2883980"
       },
       {
         "path": "data/climate/releases/climate-evidence-licensing-readiness-2026-07-15.json",
@@ -633,7 +633,7 @@
       },
       {
         "path": "data/climate/reviews/ct42-candidate-rollback-rehearsal.json",
-        "sha256": "da7783c91cef03d31f6a336b8c81f520e6fbad7672146c43055fadfdb209c0d9"
+        "sha256": "a574d01a1468632821506c0f94eb82bf54e47fcc05b5242f6b97f5e6391b8f9b"
       },
       {
         "path": "data/climate/reviews/ct42-ct40-release-review-input.json",
@@ -925,7 +925,7 @@
       },
       {
         "path": "index.html",
-        "sha256": "e82a4af30bff4b47440c62d41920a9fae4e67c43e17716ec26a7c68002eb66f1"
+        "sha256": "bcec4231a3c163115d3f4955e881d3c99605acd89648f4f7e79fa49a46e2f7d9"
       },
       {
         "path": "js/app.js",
